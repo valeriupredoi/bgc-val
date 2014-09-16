@@ -5,4 +5,8 @@
 TO DO:
 	Analysis code Template
 	Autoviv dict
+	need to think of some clever ways to infer model name, date,jobID, etc.
+	
+	possibly move naming scheme into analysis template.
+	 
 	
