@@ -3,7 +3,7 @@ from string import join
 from os.path  import exists
 from os import mkdir, makedirs
 from glob import glob
-
+import numpy as np
 """	This is a catch all toolkit for the python methods and shorthands used in this code.
 """
 
@@ -41,4 +41,119 @@ def getFileList(fin):
 		for f in fin:
 			filesout.extend(glob(f))
 		return filesout
+
+
+def makeThisSafe(arr,log=False,debug = True, key='',noSqueeze=False):
+	if noSqueeze:pass
+	else: arr=np.ma.array(arr).squeeze()
 	
+	ma,mi = arr.max(), arr.min()
+	
+	if ma > 9.E36:	
+		if debug: 	print "makeThisSafe: \tMasked values greater than 9.E36",key
+		arr = np.ma.masked_greater(arr, 9.E36)
+	
+	if np.isinf(ma ) or np.isnan(ma ):
+		if debug: print "makeThisSafe: \tMasking infs and Nans",key	
+		arr = np.ma.array(arr)
+		arr = np.ma.masked_where(np.isnan(arr)+arr.mask +np.isinf(arr) , arr)	
+		
+	return arr
+	
+def sliceA(arr,region):
+	# you should already have removed time by now.
+	#assume time 0.
+	#if region == 'DeepestWetCells':return getDeepestWetCells(arr)
+	#if region == 'Lutz': return applyLutzMask(arr)
+#		region = 'Lutz':			
+#		lutzmask = 	
+	arr = makeThisSafe(arr,noSqueeze=True)
+	
+	if len(arr.shape) == 2:
+	    	if region == 'SEA': 		return arr[100:200,:100]
+	    	elif region == 'Arctic': 	return arr[230:,45:320]
+	    	elif region == 'Antarctic': 	return arr[:80,:]	
+	    	elif region == 'NWAtlantic': 	return arr[205:250,220:250]
+	    	elif region == 'NEPacific': 	return arr[180:243, 130:185]		    	    	
+	    	elif region == 'Med': 		return arr[166:243,268:]	    	
+		elif region == 'Transect': 	print 'NOT POSSIBLE TO TRANSECT A 2D FIELD'
+		elif region == 'Global': 	return arr[:,:]
+		elif region == 'Surface': 	return arr[:,:]
+		elif region == 'NoArtics': 	return arr[80:240,:]
+		elif region == 'SurfaceNoArtics': 	return arr[80:240,:]		
+		elif region == 'TopLayers': 	print 'NOT POSSIBLE TO TRANSECT A 2D FIELD'						
+		elif region == 'All': 		return arr[:,:]				
+		elif region in ['BATS', 'HOT',]:return arr[:,::-1].squeeze().transpose()
+		
+	    	elif region == 'SouthPacificOcean': 	return arr[80:160,70:215]
+	    	elif region == 'NorthAtlanticOcean': 	return arr[185:251,215:286,]
+	    	elif region == 'SouthPacificOcean': 	return arr[80:160,70:215]
+	    	elif region == 'SouthAtlanticOcean': 	return arr[72:157,238:308] 	    		    	
+	    	elif region == 'NorthPacificOcean': 	return arr[170:247,57:187]	    		    	
+	    	elif region == 'IndianOcean': 		return arr[88:187,-40:]    		    		    		    		    			    				 
+
+				 
+				 		    		
+	elif len(arr.shape) == 3:
+	    	if region == 'SEA': 		return arr[0,100:200,:100]
+		elif region == 'Arctic': 	return arr[0,230:,45:320]
+	    	elif region == 'Antarctic': 	return arr[:,:80,:]	
+		elif region == 'Atlantic': 	return arr[::-1,:,260]
+	    	elif region == 'NWAtlantic': 	return arr[:,205:250,220:250]	
+	    	elif region == 'NEPacific': 	return arr[:,180:243, 130:185]	    		
+	    	elif region == 'Med': 		return arr[:,166:243,268:]
+		elif region == 'Transect': 	return arr[::-1,:,115]
+		elif region == 'Global': 	return arr[:,:,:]
+		elif region == 'Surface': 	return arr[0,:,:]
+		elif region == 'NoArtics': 	return arr[:,80:240,:]
+		elif region == 'SurfaceNoArtics': 	return arr[0,80:240,:]					
+		elif region == 'TopLayers': 	return arr[:24,:,:]						
+		elif region == 'Top200m': 	return arr[:31,:,:]
+		elif region == 'Top200mNoArtics': 	return arr[:31,80:240,:]		
+		elif region == 'Top40mNoArtics': 	return arr[:17,80:240,:]				
+		elif region == 'Top40m': 	return arr[:17,:,:]		
+		elif region == 'DeepLayers': 	return arr[24:,:,:]								
+		elif region == 'All': 		return arr[:,:,:]				
+		elif region in ['BATS', 'HOT',]:return arr[:,::-1].squeeze().transpose()
+	    	elif region == 'SouthPacificOcean': 	return arr[:,80:160,70:215]
+	    	elif region == 'NorthAtlanticOcean': 	return arr[:,185:251,215:286,]
+	    	elif region == 'SouthPacificOcean': 	return arr[:,80:160,70:215]
+	    	elif region == 'SouthAtlanticOcean': 	return arr[:,72:157,238:308] 	    		    	
+	    	elif region == 'NorthPacificOcean': 	return arr[:,170:247,57:187]	    		    	
+	    	elif region == 'IndianOcean': 		return arr[:,88:187,-40:]    
+	elif len(arr.shape) == 4:
+	    	if region == 'SEA':		return arr[:,0,100:200,:100].squeeze()
+		elif region == 'Arctic': 	return arr[:,0,230:,45:320].squeeze()
+	    	elif region == 'Antarctic': 	return arr[:,:,:80,:].squeeze()
+		elif region == 'Atlantic': 	return arr[:,::-1,:,260].squeeze()
+	    	elif region == 'NWAtlantic': 	return arr[:,:,205:250,220:250].squeeze()
+	    	elif region == 'NEPacific': 	return arr[:,:,180:243, 130:185]	
+	    	elif region == 'Med': 		return arr[:,:,166:243,268:].squeeze()	    			
+		elif region == 'Transect': 	return arr[:,::-1,:,115].squeeze()
+		elif region == 'Global': 	return arr[:,:,:,:].squeeze()		    			 
+		elif region == 'Surface': 	return arr[:,0,:,:].squeeze()
+		elif region == 'NoArtics': 	return arr[:,:,80:240,:].squeeze()
+		elif region == 'SurfaceNoArtics':return arr[:,0,80:240,:].squeeze()
+		elif region == 'TopLayers': 	return arr[:,0:24:,:,:].squeeze()	
+		elif region == 'Top200m': 	return arr[:,:31,:,:].squeeze()						
+		elif region == 'Top40m': 	return arr[:,:17,:,:].squeeze()	
+		elif region == 'Top200mNoArtics': 	return arr[:,:31,80:240,:]		
+		elif region == 'Top40mNoArtics': 	return arr[:,:17,80:240,:]									
+		elif region == 'DeepLayers': 	return arr[:,24:,:,:].squeeze()					
+		elif region == 'All': 		return arr[:,:,:,:].squeeze()		    			    							
+		elif region in ['BATS', 'HOT',]:return arr[:,::-1].squeeze().transpose()
+	    	elif region == 'SouthPacificOcean': 	return arr[:,:,80:160,70:215]
+	    	elif region == 'NorthAtlanticOcean': 	return arr[:,:,185:251,215:286,]
+	    	elif region == 'SouthPacificOcean': 	return arr[:,:,80:160,70:215]
+	    	elif region == 'SouthAtlanticOcean': 	return arr[:,:,72:157,238:308] 	    		    	
+	    	elif region == 'NorthPacificOcean': 	return arr[:,:,170:247,57:187]	    		    	
+	    	elif region == 'IndianOcean': 		return arr[:,:,88:187,-40:]    
+	else:
+	    	print 'WARNINIG: PLOT SHAPE IS ODD:',arr.shape, region
+	    	assert False
+	print 'Could not slice', region, arr.shape
+	assert False
+	return arr
+	
+	
+		

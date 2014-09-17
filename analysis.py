@@ -84,7 +84,7 @@ class analysis:
   	    for a in ascii_lowercase:
   		if self.fileIn.find(jobid+a)>-1:  	
   			self.jobID = jobid+a
-  			  
+  			return	  
   	
   def autoModel(self,):
   	for jobid in ['xhon','xjez','xkad']:
@@ -94,7 +94,7 @@ class analysis:
   	self.model	= 'MEDUSA' 	  			
   	
   def autoFilename(self,plotType,plotType2):
-  	self.filename =  folder(['images',self.model,self.jobID,key,self.date])
+  	self.filename =  folder(['images',self.model,self.jobID,plotType,self.date])
   	self.filename += '_'.join([plotType,self.model,self.jobID,self.date,plotType2])+'.png'
   	print "analysis:\tINFO:\t Auto Filename:",self.filename
   	  	
