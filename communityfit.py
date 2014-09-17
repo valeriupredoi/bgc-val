@@ -4,28 +4,20 @@ from netCDF4 import Dataset
 from sys import argv
 from matplotlib import pyplot, colors
 import numpy as np
-from scipy import optimize
+#from scipy import optimize
 #Specific local code:
 from pftnames import pftnames as pn
 from UKESMpython import folder,getFileList,sliceA
 from analysis import analysis
-#import C2Chl
-import communitystructure as cs
+try:
+	import communitystructure as cs
+except:
+	print "THIS REQUIRES LEE'S Community structure MODULE."
+	print "Please download from:"
+	print "https://gitlab.ecosystem-modelling.pml.ac.uk/ledm/communitystructure"
+	exit
 
-"""	THIS REQUIRES LEE'S Community structure MODULE:
-	https://gitlab.ecosystem-modelling.pml.ac.uk/ledm/communitystructure
 
-"""
-
-def fitAndplot(chl, carbon, dx):
-	if chl.min() < 0. or carbon.min()<0.:
-		print "is this log scale or something? carbon:", carbon.min(), '\tchl:',chl.min()
-		assert False
-		
-	communityfit_func = lambda chl,m,p: 10**m*chl**(p-1)
-	popt, pcov = optimize.curve_fit(communityfit_func, chl,carbon)
-	print 'FitAndPlot:',popt,pcov
-	return communityfit_func(np.ma.array(dx), popt[0],popt[1])
 	
 	
 class communityfit(analysis):
@@ -39,7 +31,7 @@ class communityfit(analysis):
 	#for self.pft in pfts:
 	self.loadcommunityfitData()
 	
-	for r in ['SurfaceNoArtics',]:#'Surface', 'Top40m','Top200m', 'Global']:
+	for r in ['SurfaceNoArtics','Surface', 'Top40m','Top200m', 'Global']:
 		self.makePlot(region = r)
 
 
@@ -52,31 +44,17 @@ class communityfit(analysis):
 	#c and chl have different names in each model
 	if self.model=='ERSEM':
   		print "communityfit:\tINFO:\tloading ERSEM data"
-		#fnD = self.fileIn.replace('P.nc','D.nc')		
-		#ncD = self.loadFile(fnD)  		
-		#self.chl = ncD.variables['chl'][:]
-		#if self.pft == 'Total':
-		#	self.c   = self.nc.variables['P1c'][:]+self.nc.variables['P2c'][:]+self.nc.variables['P3c'][:]+self.nc.variables['P4c'][:]
-		
-		#if self.pft == 'Diatoms':
-		self.dia   = self.nc.variables['P1c'][:]
-		#if self.pft == 'Flagellates':
-		self.flag   = self.nc.variables['P2c'][:]
-		#if self.pft == 'Picophytoplankton':
-		self.pico   = self.nc.variables['P3c'][:]		
-		#if self.pft == 'Large Phytoplankton':
-		self.large   = self.nc.variables['P4c'][:]
+		self.dia    = self.nc.variables['Chl1'][:]
+		self.flag   = self.nc.variables['Chl2'][:]
+		self.pico   = self.nc.variables['Chl3'][:]		
+		self.large  = self.nc.variables['Chl4'][:]
 			
 
 		
 	if self.model=='MEDUSA':
-  		print "communityfit:\tINFO:\tloading MEDUSA data"		
-		#self.chl = self.nc.variables['CHL'][:]
-		#if self.pft == 'Total':		
-		#	self.c   = self.nc.variables['PHD'][:]+self.nc.variables['PHN'][:]
-		#if self.pft == 'Diatoms':		
-		self.dia   = self.nc.variables['PHD'][0,0]*79.573
-		self.nond   = self.nc.variables['PHN'][0,0]*79.573
+  		print "communityfit:\tINFO:\tloading MEDUSA data"				
+		self.dia   = self.nc.variables['CHD'][:]#79.573
+		self.nond  = self.nc.variables['CHN'][:]#79.573
 		
 
 	
@@ -90,8 +68,13 @@ class communityfit(analysis):
   	print "communityfit:\tINFO\tMaking plot:", self.filename 	
   	  		
 
-
+	x_range = [-2.,1.]
+	drawRunningMean = False
+	drawfit = True
+	fx = np.arange(x_range[0],x_range[1],0.1)
+	fits = ["Brewin 2014", 'Hirata 2011',"Devred 2011","Brewin 2012",]#"Brewin 2011a","Brewin 2010",	
 	
+		
 	if self.model == 'MEDUSA':
 	  	print "communityfit:\tINFO\tMaking slices:", region
 	  	dia   = sliceA(self.dia, region)
@@ -104,10 +87,24 @@ class communityfit(analysis):
 		#totalc = 
 	  	titles = ['Diatoms', 'Non Diatoms']
 		subplots = [211,212]
+		#fits:
+		if drawfit:
+			csfs = {}
+			csfs['Non Diatoms'] = cs.comstrucFit(	totalc,			# Total Carbon
+							carbonpc[1]/100., 	# PFT carbon
+							pft='piconano',		# pft type
+							chlRange=[10.**x_range[0],10.**x_range[1]],# range
+							fitTypes =[])
+			fits_xvalues= [	fx, fx]	
+			tmpfy = csfs['Non Diatoms'].plotForX(10.**fx) *100.
+			fits_yvalues= [	100. -tmpfy , tmpfy ]
+		legx,legy = 0.475, -0.18		
+			
+
 		
 
   	
-	x_range = [-3.,1.]
+
 	
   	fig = pyplot.figure()
   	for i,sp in enumerate(subplots):
@@ -116,23 +113,47 @@ class communityfit(analysis):
 		if i ==0: 	
 		  	pyplot.title(self.model +' '+self.date+' '+region+' Community Structure')	  	
 	  	if sp == subplots[-1]:	
-	  		pyplot.xlabel(r'log$_{10}$ Phytoplankton Carbon')
+	  		pyplot.xlabel(r'log$_{10}$ Phytoplankton Chl')
 	  		
-		pyplot.ylabel(titles[i]+' %')
+		pyplot.ylabel(titles[i]+' chl %')
+
+		# Draw black to white distribution
+		pyplot.hist2d(np.ma.log10(totalc),carbonpc[i],bins=(1000,52),cmin=1, norm=colors.LogNorm(),cmap=pyplot.get_cmap('Greys'))	
+
+		# Draw plot range:
 		pyplot.xlim(x_range)		
 		pyplot.ylim([-4., 102.])
 		
-		pyplot.hist2d(np.ma.log10(totalc),carbonpc[i],bins=(1000,52),cmin=1, norm=colors.LogNorm(),cmap=pyplot.get_cmap('Greys'))	
+		# Drawing running means
+		if drawRunningMean:
+			csf = cs.comstrucFit(totalc,carbonpc[i], pft='pico', chlRange=[10.**x_range[0],10.**x_range[1]], fitTypes =['NoFit',])
+			cx,cy = csf.doRunningMean()		
+			cx = np.ma.log10(cx)
+			pyplot.plot(cx,cy, 'k-', label='Running mean')		
 		
-		csf = cs.comstrucFit(totalc,carbonpc[i], pft='pico', chlRange=[10.**x_range[0],10.**x_range[1]], fitTypes =['NoFit',])
-		cx,cy = csf.doRunningMean()		
-		#cbar=pyplot.colorbar()
-		
+		# Drawing published fits.
+		for fit in fits:	
+			if titles[i].lower().replace(' ','') in ['nondiatoms', 'piconano']:
+				fy = cs.chlPercent(10.**fx, 'piconano',fit=fit)
+				pyplot.plot(fx,fy,  label=fit)				
+			if titles[i].lower().replace(' ','') in ['diatoms', 'micro']:			
+				fy = cs.chlPercent(10.**fx, 'micro',fit=fit)			
+				pyplot.plot(fx,fy,  label=fit)
 				
-	  	
+		# Drawing fit to model data:
+		if drawfit:
+			pyplot.plot(fits_xvalues[i],fits_yvalues[i],  'r--', label='Fit to '+self.model)
+
+		# Drawing legend on last pane:						
+		if sp == subplots[-1]:
+				#legnd = ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.24), ncol=(len(fits)+1+1)/2,prop={'size':11},borderaxespad=0.)
+				legnd = ax.legend(loc='upper center', bbox_to_anchor=(legx,legy), ncol=len(fits)+2,prop={'size':8.5},borderaxespad=0.)
+				legnd.draw_frame(False) 
+				legnd.get_frame().set_alpha(0.)
+					  	
 
 
-  	print "analysis:\tINFO\tSaving: " + self.filename
+  	print "communityfit:\tINFO\tSaving: " + self.filename
 	pyplot.savefig(self.filename,dpi=100,)# bbox_inches='tight')
 	pyplot.close()	
 
@@ -148,7 +169,7 @@ def main():
 		print "Using command line arguments:", filesIn	
 		
 	except:
-		print "communityfit:\tERROR:\tNo file specified"
+		print "communityfit:\tWARNING:\tNo file specified"
 		#return
 		filesIn = ['/data/euryale7/scratch/ledm/UKESM/MEDUSA/medusa_bio_1998.nc',]
 		

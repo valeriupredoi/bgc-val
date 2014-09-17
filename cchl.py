@@ -18,7 +18,7 @@ import C2Chl
 
 def fitAndplot(chl, carbon, dx):
 	if chl.min() < 0. or carbon.min()<0.:
-		print "is this log scale or something?"
+		print "is this log scale or something? carbon:", carbon.min(), '\tchl:',chl.min()
 		assert False
 		
 	cchl_func = lambda chl,m,p: 10**m*chl**(p-1)
@@ -31,10 +31,15 @@ class cchl(analysis):
   def __init__(self,fileIn):
 	analysis.__init__(self, fileIn)
 	print self.fileIn, self.jobID
-	self.loadcchlData()
 	
-	for r in ['Surface', 'SurfaceNoArtics','Top40m','Top200m', 'Global']:
-		self.makePlot(region = r)
+	#if self.model == 'ERSEM':
+	pfts = ['Total', 'Diatoms', 'NonDiatoms' ]
+	
+	for self.pft in pfts:
+		self.loadcchlData()
+	
+		for r in ['Surface', 'SurfaceNoArtics','Top40m','Top200m', 'Global']:
+			self.makePlot(region = r)
 
 
   def loadcchlData(self,):
@@ -57,18 +62,35 @@ class cchl(analysis):
 	#c and chl have different names in each model
 	if self.model=='ERSEM':
   		print "cchl:\tINFO:\tloading ERSEM data"
+		fnD = self.fileIn.replace('P.nc','D.nc')		
+		ncD = self.loadFile(fnD)  		
 		self.chl = ncD.variables['chl'][:]
-		self.c   = self.nc.variables['P1c'][:]+self.nc.variables['P2c'][:]+self.nc.variables['P3c'][:]+self.nc.variables['P4c'][:]
+		if self.pft == 'Total':
+			self.c   = self.nc.variables['P1c'][:]+self.nc.variables['P2c'][:]+self.nc.variables['P3c'][:]+self.nc.variables['P4c'][:]
+		if self.pft == 'Diatoms':
+			self.c   = self.nc.variables['P1c'][:]
+		if self.pft == 'NonDiatoms':
+			self.c   = self.nc.variables['P2c'][:]+self.nc.variables['P3c'][:]+self.nc.variables['P4c'][:]
 		#self.poc   = 
 	if self.model=='MEDUSA':
   		print "cchl:\tINFO:\tloading MEDUSA data"		
 		self.chl = self.nc.variables['CHL'][:]
-		self.c   = (self.nc.variables['PHD'][:]+self.nc.variables['PHN'][:])*79.573
-
+		if self.pft == 'Total':		
+			self.c   = self.nc.variables['PHD'][:]+self.nc.variables['PHN'][:]
+		if self.pft == 'Diatoms':		
+			self.c   = self.nc.variables['PHD'][:]
+		if self.pft == 'NonDiatoms':		
+			self.c   = self.nc.variables['PHN'][:]
+		
+		self.c = self.c*79.573
 	
   def makePlot(self,region='Surface',doLog=True):
   	
-  	self.autoFilename('cchl','cchl_'+region)
+  	self.autoFilename('cchl','cchl_'+region+'_'+self.pft)
+  	if self.existsFilename():
+  		print "cchl:\tINFO\tPlot already exists:", self.filename  
+  		return
+  		
 	#self.filename = folder('images/analysis')+'_'.join(['analysis',self.date,self.jobID])+'.png'
   	print "cchl:\tINFO\tMaking plot:", self.filename 	
   	fig = pyplot.figure()
@@ -81,8 +103,8 @@ class cchl(analysis):
   	c   = sliceA(self.c,region)
   	chl = sliceA(self.chl,region)
 
-	c  = np.ma.masked_where((c>10E10) +(chl<10E-05),c)
-	chl  = np.ma.masked_where((c>10E10) +(chl<10E-05),chl)	
+	c    = np.ma.masked_where((c>10E10) +(c<10E-05),c)
+	chl  = np.ma.masked_where((chl>10E10) +(chl<10E-05),chl)
 
 	m = c.mask + chl.mask
 	c = 	np.ma.masked_where(m,c).compressed()
@@ -95,7 +117,7 @@ class cchl(analysis):
 			
 		c = np.log10(c)
 		chl= np.log10(chl)
-		pyplot.xlabel(r'log$_{10}$ Total Phytoplankton Carbon')
+		pyplot.xlabel(r'log$_{10}$ '+self.pft+' Phytoplankton Carbon')
 		pyplot.ylabel(r'log$_{10}$ Total Chlorophyll')
 
 		dx  = np.linspace(chl.min(), chl.max(),50.)	
@@ -120,14 +142,14 @@ class cchl(analysis):
 		
 						
 	else:
-		pyplot.xlabel('Total Phytoplankton Carbon')
+		pyplot.xlabel(self.pft+' Phytoplankton Carbon')
 		pyplot.ylabel('Total Chlorophyll')
 				
 	
   	h = pyplot.hexbin(chl, c,  bins='log',mincnt=1,) #xscale='log', yscale='log',
   	pyplot.colorbar()
   	
-  	pyplot.title(self.model +' '+self.date+' '+region+' Carbon:Chlorophyll')
+  	pyplot.title(self.model +' '+self.date+' '+region+' '+self.pft+' Carbon: Total Chlorophyll')
 
   	print "analysis:\tINFO\tSaving: " + self.filename
 	pyplot.savefig(self.filename,dpi=100,)# bbox_inches='tight')
@@ -141,7 +163,7 @@ class cchl(analysis):
 def main():
 	try:
 		filesIn = getFileList(argv[1:])
-		if len(filesI)==0:assert False
+		if len(filesIn)==0:assert False
 		print "Using command line arguments:", filesIn	
 		
 	except:

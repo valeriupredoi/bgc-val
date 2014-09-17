@@ -25,6 +25,8 @@ class cchlvsIrradiance(analysis):
 
 
   def loadcchlData(self,):
+  	"""	While this method can be memory intensive, it may be faster to do it this way than to load them from file each time.
+  	"""
   	print "cchlvsIrradiance:\tINFO:\tloadData"
   	if not self.ncOpened: self.loadData()
 	self.ncP = self.nc

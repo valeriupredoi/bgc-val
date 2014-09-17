@@ -4,7 +4,8 @@ from sys import argv
 #Specific local code:
 from UKESMpython import folder,getFileList
 #from analysisTemplate import analysistemplate
-
+from cchl import cchl
+from cchlvsIrradiance import cchlvsIrradiance
 """
 	This is the hold all for the analyses. 
 	It can be used to run each of the analyses in series, for any number of input files.
@@ -27,8 +28,8 @@ def main():
 		
 	
 	for fn in filesIn:
-		#a = analysistemplate(fn)
-
+		a = cchlvsIrradiance(fn)
+		a = cchl(fn)
 
 
 

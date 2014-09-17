@@ -5,6 +5,7 @@ from sys import argv
 from matplotlib import pyplot
 from string import ascii_lowercase
 from re import findall
+import os
 #Specific local code:
 from pftnames import pftnames as pn
 from UKESMpython import folder,getFileList
@@ -17,6 +18,7 @@ class analysis:
   def __init__(self,fileIn,):#makePlot=True):
   	self.fileIn = fileIn
 	self.ncOpened = False
+  	self.filenamed = False	  		
 	if not self.ncOpened: self.loadData()
 	  	
 	self.autoDate()
@@ -97,9 +99,12 @@ class analysis:
   	self.filename =  folder(['images',self.model,self.jobID,plotType,self.date])
   	self.filename += '_'.join([plotType,self.model,self.jobID,self.date,plotType2])+'.png'
   	print "analysis:\tINFO:\t Auto Filename:",self.filename
-  	  	
+  	self.filenamed = True	  	
 
-
+  def existsFilename(self):
+	if self.filenamed == False: 		return False
+  	if os.path.exists(self.filename): 	return True
+  	
 
   	  	
   def makePlot(self,):

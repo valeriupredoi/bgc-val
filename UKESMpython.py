@@ -69,7 +69,14 @@ def sliceA(arr,region):
 #		lutzmask = 	
 	arr = makeThisSafe(arr,noSqueeze=True)
 	
+
+	if arr.shape[-2:] != (292,362):
+		print "sliceA:\tERROR:\tThis was not designed for anything except the ORCA1 grid.", arr.shape ,"won't work."
+		assert False
+				 
 	if len(arr.shape) == 2:
+
+		
 	    	if region == 'SEA': 		return arr[100:200,:100]
 	    	elif region == 'Arctic': 	return arr[230:,45:320]
 	    	elif region == 'Antarctic': 	return arr[:80,:]	
