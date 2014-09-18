@@ -24,15 +24,15 @@ class communityfit(analysis):
   def __init__(self,fileIn):
 	analysis.__init__(self, fileIn)
 	print self.fileIn, self.jobID
-	
+	self.dataLoaded= False
 	#if self.model == 'ERSEM':
 	pfts = ['Total', 'Diatoms', 'NonDiatoms' ]
+
 	
-	#for self.pft in pfts:
-	self.loadcommunityfitData()
 	
 	for r in ['SurfaceNoArtics','Surface', 'Top40m','Top200m', 'Global']:
-		self.makePlot(region = r)
+	   for n in [2,3,4]:
+		self.makePlot(region = r,numberPlots=n)
 
 
   def loadcommunityfitData(self,):
@@ -55,10 +55,10 @@ class communityfit(analysis):
   		print "communityfit:\tINFO:\tloading MEDUSA data"				
 		self.dia   = self.nc.variables['CHD'][:]#79.573
 		self.nond  = self.nc.variables['CHN'][:]#79.573
-		
+	self.dataLoaded = True
 
 	
-  def makePlot(self,region='Surface',doLog=True):
+  def makePlot(self,region='Surface',numberPlots=2,doLog=True):
   	
   	self.autoFilename('communityfit','communityfit_'+region)
   	
@@ -67,16 +67,19 @@ class communityfit(analysis):
   		return
   	print "communityfit:\tINFO\tMaking plot:", self.filename 	
   	  		
-
+	if not self.dataLoaded: self.loadcommunityfitData()
+	
 	x_range = [-2.,1.]
-	drawRunningMean = False
+	drawRunningMean = True
 	drawfit = True
 	fx = np.arange(x_range[0],x_range[1],0.1)
 	fits = ["Brewin 2014", 'Hirata 2011',"Devred 2011","Brewin 2012",]#"Brewin 2011a","Brewin 2010",	
 	
-		
+
 	if self.model == 'MEDUSA':
-	  	print "communityfit:\tINFO\tMaking slices:", region
+		if numberPlots!=2:return
+	  	print "communityfit:\tINFO\tMaking slices:", region, self.model
+	  	
 	  	dia   = sliceA(self.dia, region)
 	  	nond  = sliceA(self.nond,region)
 		m = dia.mask + nond.mask
@@ -90,7 +93,7 @@ class communityfit(analysis):
 		#fits:
 		if drawfit:
 			csfs = {}
-			csfs['Non Diatoms'] = cs.comstrucFit(	totalc,			# Total Carbon
+			csfs['Non Diatoms'] = cs.comstrucFit(	totalc,		# Total Carbon
 							carbonpc[1]/100., 	# PFT carbon
 							pft='piconano',		# pft type
 							chlRange=[10.**x_range[0],10.**x_range[1]],# range
@@ -102,7 +105,32 @@ class communityfit(analysis):
 			
 
 		
-
+	if self.model == 'ERSEM':
+  	    print "communityfit:\tINFO\tMaking slices:", region, self.model
+	    if numberPlots==2:	  	
+	  	micro     = sliceA(self.dia , region) + sliceA(self.large , region)
+	  	piconano  = sliceA(self.pico,region)  + sliceA(self.flag,region)
+		m = micro.mask + piconano.mask
+	  	micro  = np.ma.masked_where(m, micro ).compressed()
+	  	piconano = np.ma.masked_where(m, piconano).compressed()
+  		totalc = micro+piconano		
+	  	carbonpc = [100.*micro/totalc,100.*piconano/totalc]
+		#totalc = 
+	  	titles = ['Microphytoplankton', 'Pico and Nano phytoplankton',]
+		subplots = [211,212]
+		#fits:
+		if drawfit:
+			csfs = {}
+			csfs['Pico and Nano phytoplankton'] = cs.comstrucFit(	totalc,			# Total Carbon
+							carbonpc[1]/100., 	# PFT carbon
+							pft='piconano',		# pft type
+							chlRange=[10.**x_range[0],10.**x_range[1]],# range
+							fitTypes =[])
+			fits_xvalues= [	fx, fx]	
+			tmpfy = csfs['Pico and Nano phytoplankton'].plotForX(10.**fx) *100.
+			fits_yvalues= [	100. -tmpfy , tmpfy ]
+		legx,legy = 0.475, -0.18		
+            else: return
   	
 
 	
@@ -133,10 +161,10 @@ class communityfit(analysis):
 		
 		# Drawing published fits.
 		for fit in fits:	
-			if titles[i].lower().replace(' ','') in ['nondiatoms', 'piconano']:
+			if titles[i].lower().replace(' ','') in ['nondiatoms', 'piconano', 'picoandnanophytoplankton', 'picoandnanophytoplankton']:
 				fy = cs.chlPercent(10.**fx, 'piconano',fit=fit)
 				pyplot.plot(fx,fy,  label=fit)				
-			if titles[i].lower().replace(' ','') in ['diatoms', 'micro']:			
+			if titles[i].lower().replace(' ','') in ['diatoms', 'micro','microphytoplankton',]:			
 				fy = cs.chlPercent(10.**fx, 'micro',fit=fit)			
 				pyplot.plot(fx,fy,  label=fit)
 				
@@ -171,7 +199,7 @@ def main():
 	except:
 		print "communityfit:\tWARNING:\tNo file specified"
 		#return
-		filesIn = ['/data/euryale7/scratch/ledm/UKESM/MEDUSA/medusa_bio_1998.nc',]
+		filesIn = ['/data/euryale7/scratch/ledm/UKESM/MEDUSA/medusa_bio_1998.nc','/data/euryale7/scratch/ledm/iMarNet/xhonv/MEANS/xhonvo_18990901m01P.nc',]
 		
 	
 	for fn in filesIn:
