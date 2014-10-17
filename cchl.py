@@ -30,13 +30,13 @@ def fitAndplot(chl, carbon, dx):
 class cchl(analysis):
   def __init__(self,fileIn):
 	analysis.__init__(self, fileIn)
+	self.dataloaded = False
 	print self.fileIn, self.jobID
 	
 	#if self.model == 'ERSEM':
 	pfts = ['Total', 'Diatoms', 'NonDiatoms' ]
 	
 	for self.pft in pfts:
-		self.loadcchlData()
 	
 		for r in ['Surface', 'SurfaceNoArtics','Top40m','Top200m', 'Global']:
 			self.makePlot(region = r)
@@ -83,10 +83,14 @@ class cchl(analysis):
 			self.c   = self.nc.variables['PHN'][:]
 		
 		self.c = self.c*79.573
+	self.dataloaded = True
 	
-  def makePlot(self,region='Surface',doLog=True):
-  	
-  	self.autoFilename('cchl','cchl_'+region+'_'+self.pft)
+  def makePlot(self,region='Surface',doLog=True,fullrange=False):
+  	if fullrange:
+	  	self.autoFilename('cchl','cchl_'+region+'_'+self.pft)
+	else:
+	  	self.autoFilename('cchl','cchl_'+region+'_'+self.pft+'_tight')	
+	  		
   	if self.existsFilename():
   		print "cchl:\tINFO\tPlot already exists:", self.filename  
   		return
@@ -99,20 +103,31 @@ class cchl(analysis):
   	#pyplot.pcolormesh
 
   	#etc
-  	
+  	if not self.dataloaded:self.loadcchlData()
   	c   = sliceA(self.c,region)
   	chl = sliceA(self.chl,region)
+  	
 
 	c    = np.ma.masked_where((c>10E10) +(c<10E-05),c)
-	chl  = np.ma.masked_where((chl>10E10) +(chl<10E-05),chl)
+  	if fullrange:	
+		chl  = np.ma.masked_where((chl>10E10) +(chl<10E-05),chl)
 
-	m = c.mask + chl.mask
+  	if not fullrange:
+		chl  = np.ma.masked_where((chl>20.) +(chl<0.01),chl)  	
+
+
+	m = c.mask + chl.mask	
 	c = 	np.ma.masked_where(m,c).compressed()
 	chl = 	np.ma.masked_where(m,chl).compressed()
 
+
 	if doLog:
 		# find the model fit:
-		dxnolog =  np.linspace(chl.min(), chl.max(),50.)	
+		
+		x_range = [chl.min(), chl.max()]
+
+		x_r_log10 = np.log10(x_range)
+		dxnolog =  np.linspace(x_range[0], x_range[1],50.)	
 		fitdy = fitAndplot(chl, c, dxnolog)
 			
 		c = np.log10(c)
@@ -120,8 +135,8 @@ class cchl(analysis):
 		pyplot.xlabel(r'log$_{10}$ '+self.pft+' Phytoplankton Carbon')
 		pyplot.ylabel(r'log$_{10}$ Total Chlorophyll')
 
-		dx  = np.linspace(chl.min(), chl.max(),50.)	
-		bdx = np.linspace(chl.min(), 0.,50.)
+		dx  = np.linspace(x_r_log10.min(), x_r_log10.max(),50.)	
+		bdx = np.linspace(x_r_log10.min(), 0.,50.)
 
 		
 		pyplot.plot(dx,  C2Chl.SH(dx), label = 'Sathyendranath 2009 (HPLC)')
@@ -146,7 +161,7 @@ class cchl(analysis):
 		pyplot.ylabel('Total Chlorophyll')
 				
 	
-  	h = pyplot.hexbin(chl, c,  bins='log',mincnt=1,) #xscale='log', yscale='log',
+  	h = pyplot.hexbin(chl, c,  bins='log',mincnt=1,cmap=pyplot.get_cmap('Greys')) #xscale='log', yscale='log',
   	pyplot.colorbar()
   	
   	pyplot.title(self.model +' '+self.date+' '+region+' '+self.pft+' Carbon: Total Chlorophyll')
