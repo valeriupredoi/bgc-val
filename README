@@ -7,18 +7,10 @@ README:
 	
 	
 CONTENTS:
+
 	analysis.py  
 		Global plot that other plotting tools inherit from	
-		
-	cchl.py  
-		Carbon to Chlorophyll ratio
-		
-	cchlvsIrradiance.py  
-		Carbon:Chl ratio against Irradiance
-		
-	communityfit.py  
-		Community Strcutre plotting
-			
+
 	pftnames.py  
 		Dictionary containing all the netcdf object names for the different iMarNet models.
 		
@@ -28,6 +20,22 @@ CONTENTS:
 	UKESMpython.py
 		Toolkit containing many useful functions.
 
+	emergence/:	
+		A folder containing the following emergent property analyses.
+		
+		cchl.py  
+			Carbon to Chlorophyll ratio
+		
+		cchlvsIrradiance.py  
+			Carbon:Chl ratio against Irradiance
+		
+		communityfit.py  
+			Community Strcutre plotting
+	
+	p2p/: 
+		A folder containing the Point to point analsyes scritps (develop branch only).		
+		
+				
 REQUIREMENTS:
 	Python libraries:
 	matplotlib, numpy, scipy,
