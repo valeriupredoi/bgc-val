@@ -1,6 +1,40 @@
-2014-09-15: Creating repository, importing some code from iMarNet.git
 
 
+README:
+	Some analysis tools for UKESM - MEDUSA
+	The bulk of the tools were written for the ERSEM model, then subsequently patched for performing analsysis of MEDUSA (or other iMarNet Models).
+	
+	
+	
+CONTENTS:
+	analysis.py  
+		Global plot that other plotting tools inherit from	
+		
+	cchl.py  
+		Carbon to Chlorophyll ratio
+		
+	cchlvsIrradiance.py  
+		Carbon:Chl ratio against Irradiance
+		
+	communityfit.py  
+		Community Strcutre plotting
+			
+	pftnames.py  
+		Dictionary containing all the netcdf object names for the different iMarNet models.
+		
+	testsuite.py  
+		Code to run all tests in Series
+		
+	UKESMpython.py
+		Toolkit containing many useful functions.
+
+REQUIREMENTS:
+	Python libraries:
+	matplotlib, numpy, scipy,
+	netCDF4
+	
+	communitystructure 
+		from: https://gitlab.ecosystem-modelling.pml.ac.uk/ledm/communitystructure
 
 TO DO:
 	Analysis code Template
@@ -9,4 +43,7 @@ TO DO:
 	
 	possibly move naming scheme into analysis template.
 	 
+	Move P2P code into this directory.
 	
+	Make list of required local/PML repositories
+		
