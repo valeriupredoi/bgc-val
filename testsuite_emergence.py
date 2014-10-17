@@ -4,9 +4,11 @@ from sys import argv
 
 #Specific local code:
 from UKESMpython import folder,getFileList
-from cchl import cchl
-from cchlvsIrradiance import cchlvsIrradiance
-from communityfit import communityfit
+#from cchl import cchl
+#from cchlvsIrradiance import cchlvsIrradiance
+#from communityfit import communityfit
+from emergence import cchl,cchlvsIrradiance, communityfit
+
 
 """
 	This is the hold all for the analyses. 
@@ -34,9 +36,9 @@ def main():
 	
 	for fn in filesIn:
 		print "testsuite:\tINFO:\t",fn	
-		a = cchlvsIrradiance(fn)
-		a = cchl(fn)
-		a = communityfit(fn)
+		a = cchlvsIrradiance.cchlvsIrradiance(fn)
+		a = cchl.cchl(fn)
+		a = communityfit.communityfit(fn)
 
 
 
