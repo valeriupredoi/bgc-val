@@ -43,7 +43,9 @@ TO DO:
 	
 	possibly move naming scheme into analysis template.
 	 
-	Move P2P code into this directory.
+	Move P2P code into this repository.
 	
-	Make list of required local/PML repositories
+	
+	Check requirements for local/PML repositories
+		move those into this repository?
 		
