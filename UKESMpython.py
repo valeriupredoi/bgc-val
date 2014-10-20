@@ -1,6 +1,6 @@
 from sys import argv
 from string import join
-from os.path  import exists
+from os.path  import exists,getmtime
 from os import mkdir, makedirs
 from glob import glob
 import numpy as np
@@ -161,6 +161,46 @@ def sliceA(arr,region):
 	print 'Could not slice', region, arr.shape
 	assert False
 	return arr
+
+def shouldIMakeFile(fin,fout,debug = True):
+	""" the idea is to take the file: returns:
+		 True: make the file
+		 False: Don't make the file.
+		 
+	"""
+	if not exists(fout): 
+		if debug: print 'shouldIMakeFile: out file doesn\'t exit and should be made.'
+		return True	
+
+	if type(fin)==type('abc') and fin.find('*')<0: # fin is a string file:
+		if not exists(fin): 
+			if debug: print 'Warning: ',fin ,'does not exist'
+			return False 
 	
-	
+		if getmtime(fin) > getmtime(fout):
+			if debug: print 'shouldIMakeFile: out-file is younger than in-file, you should make it.'
+			return True #
+		if debug: print 'shouldIMakeFile: out-file is older than in-file, you shouldn\'t make it.'		 
+		return False
+	if type(fin)==type('abc') and fin.find('*')>0:
+		if debug: print 'shouldIMakeFile: in-file contains *, assuming it is a wildcard: ',fin
+		fin = glob(fin)
+		if debug: print 'shouldIMakeFile: files : ', fin
+		
+	if type(fin) == type(['a','b','c',]): # fin is many files:
+		for f in fin:
+			if not exists(f): 
+				if debug: print 'Warning: ',f ,'does not exist'
+				return False 
+			if getmtime(f) > getmtime(fout):
+				if debug: print	'shouldIMakeFile: ',f,' is younger than an ',fout,', you should make it'
+				return True
+		if debug: print 'shouldIMakeFile: no new files in the list. Don\'t make it.'
+		return False
+	if debug:
+		print	'shouldIMakeFile: got to the end somehow:'
+		print type(fin), fin, fout
+	return False
+
+
 		

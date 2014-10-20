@@ -44,6 +44,10 @@ REQUIREMENTS:
 	communitystructure 
 		from: https://gitlab.ecosystem-modelling.pml.ac.uk/ledm/communitystructure
 
+	netcdf_manip:
+		changeNC, mergeNC, pruneNC, convertToOneDNC
+		from: https://gitlab.ecosystem-modelling.pml.ac.uk/ledm/netcdf_manip
+	
 TO DO:
 	Analysis code Template
 	Autoviv dict
