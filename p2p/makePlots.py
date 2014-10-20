@@ -65,67 +65,18 @@ class makePlots:
   	self.ync = ncdfView(self.yfn,Quiet=True)
 
 
-	
-	self.basicCut	  = 'All'#'Standard'##,
-	self.standardCuts = ['5-95pc','ignoreInlandSeas','OffShelf','ignoreExtraArtics','aboveZero','0.1','0.2','0.01']	
-	self.newSlices 		=['All','Standard',
-				#'aboveZero', 'TypicalIron','maskBelowBathy',
-				#'ignoreMoreArtics','ignoreArtics', 'ignoreMidArtics','ignoreExtraArtics'
-				#'OffShelf','OnShelf', '5-95pc','maskBelowBathy', 
-				#'Shallow','Depth','nonZero','aboveZero'
-				#'NitArtifact','SalArtifact','0-99pc',
-				]
-	self.months = {month_name[i+1]:i for i in xrange(0,12) }
-	self.depthRanges	=['OffShelf','maskBelowBathy', 'OnShelf',] # 'Depth_0-10m','Depth_10-20m','Depth_20-50m','Depth_50-100m','Depth_100-500m','Depth_500m',
-	self.percentiles	=['0-1pc','1-5pc','5-25pc','25-40pc','40-60pc','60-75pc','75-95pc','95-99pc','99-100pc',]
-	self.latregions		=['NorthTemperate','SouthTemperate','NorthTropics','Equatorial',
-				'SouthTropics','Antarctic','NorthArctic',]#'Arctic','Tropics','Temperate']
-	self.Seas		=['ignoreMediteranean','BlackSea','ignoreBlackSea','RedSea','BalticSea','PersianGulf', 'ignoreInlandSeas',]	# 'ignoreRedSea', 'ignoreBalticSea','ignorePersianGulf',]
-	self.Oceans		=['SouthPacificOcean',  'ignoreMoreArtics','ArcticOcean','AntarcticOcean','NorthAtlanticOcean',
-				 'SouthAtlanticOcean','NorthPacificOcean','IndianOcean',] #'ignoreExtraArtics','ignoreMidArtics','ignoreArtics',
 
-	self.QualityCuts 	=['Overestimate','Underestimate','Overestimate_2sig','Underestimate_2sig',
-			    	  'Overestimate_3sig','Underestimate_3sig', 'Matched','OffAxis','1-99pc','5-95pc','0-99pc',]
-	self.OceanMonths	= sorted([i for i in product(self.Oceans,self.months)] )
-	self.OceanMonths.extend(sorted([i for i in product(['All',],self.months)]))
-	
-	if plotallcuts:
-	 self.plotMonths	= 0#True
-	 self.plotdepthRanges	=0
-	 self.plotpercentiles	=0#True	
-	 self.plotLatRegions	=0
-	 self.plotQualityCuts	=0#True	
-	 self.plotSeas		=0#True		 
-	 self.plotOceans	= 0#True	
-	 self.plotOceanMonths   = True	
-	else: 	
-	 self.plotMonths	=0#True
-	 self.plotdepthRanges	=0#True	
-	 self.plotpercentiles	=0#True	
-	 self.plotLatRegions	=0#True
-	 self.plotQualityCuts	=0#True
-	 self.plotSeas		=0#True		 
-	 self.plotOceans	=0#True	
-	 self.plotOceanMonths   = 0	 	 	 
-
-	
-	if self.plotMonths: 	 self.newSlices.extend(self.months.keys())
-	if self.plotdepthRanges: self.newSlices.extend(self.depthRanges)
-	if self.plotpercentiles: self.newSlices.extend(self.percentiles)
-	if self.plotLatRegions:	 self.newSlices.extend(self.latregions)	
-	if self.plotQualityCuts: self.newSlices.extend(self.QualityCuts)		
-	if self.plotSeas: 	 self.newSlices.extend(self.Seas)			
-	if self.plotOceans: 	 self.newSlices.extend(self.Oceans)
-	if self.plotOceanMonths: self.newSlices.extend(self.OceanMonths)
-	print "New SLICES:", 	 self.newSlices
 
 	if compareCoords: self.CompareCoords()	
-	self.plotWithSlices()
+	self.defineSlices(plotallcuts)
+	
+	for nslice in self.newSlices:
+		self.plotWithSlices(nslice)
 	    	
   	self.xnc.close()
   	self.ync.close()  	
  
-	
+  	
 
   def CompareCoords(self,):
 	#xkeys,ykeys = ['index_t',] , ['index_t',]
@@ -155,8 +106,6 @@ class makePlots:
 				
 		print "CompareCoords:\t",xkey,':', len(dx),"\t:",ykey,':',len(dy), dx.min(),dx.max(), dy.min(), dy.max()		
 	
-
-
 		fig = pyplot.figure()
 		fig.set_size_inches(8, 12)		
 		ax = pyplot.subplot(411)
@@ -186,10 +135,79 @@ class makePlots:
 		pyplot.savefig(filename,dpi=100,)
 		pyplot.close()	  	
 
-  	
+
+  def defineSlices(self,plotallcuts):	
+	#self.basicCut	  = 'All'#'Standard'##,
+	self.newSlices 		=['All','Standard',
+				#'aboveZero', 'TypicalIron','maskBelowBathy',
+				#'ignoreMoreArtics','ignoreArtics', 'ignoreMidArtics','ignoreExtraArtics'
+				#'OffShelf','OnShelf', '5-95pc','maskBelowBathy', 
+				#'Shallow','Depth','nonZero','aboveZero'
+				#'NitArtifact','SalArtifact','0-99pc',
+				]
+
+	self.standardCuts = ['5-95pc','ignoreInlandSeas','OffShelf','ignoreExtraArtics','aboveZero',]	
+
+	self.months = {month_name[i+1]:i for i in xrange(0,12) }
+	
+	self.depthRanges	=['OffShelf','maskBelowBathy', 'OnShelf',] 
+				 # 'Depth_0-10m','Depth_10-20m','Depth_20-50m','Depth_50-100m','Depth_100-500m','Depth_500m',
+	self.percentiles	=['0-1pc','1-5pc','5-25pc',
+				  '25-40pc','40-60pc','60-75pc',
+				  '75-95pc','95-99pc','99-100pc',]
+	self.latregions		=['NorthTemperate','SouthTemperate','NorthTropics',
+				  'Equatorial',  'SouthTropics','Antarctic',
+				  'NorthArctic',]
+				  #'Arctic','Tropics','Temperate']
+	self.Seas		=['ignoreMediteranean','BlackSea','ignoreBlackSea',
+				  'RedSea','BalticSea','PersianGulf',
+				  'ignoreInlandSeas',]	
+				  # 'ignoreRedSea', 'ignoreBalticSea','ignorePersianGulf',]
+	self.Oceans		=['SouthPacificOcean',  'ignoreMoreArtics','ArcticOcean',
+				  'AntarcticOcean','NorthAtlanticOcean','SouthAtlanticOcean',
+				 'NorthPacificOcean','IndianOcean',] 
+				 #'ignoreExtraArtics','ignoreMidArtics','ignoreArtics',
+
+	self.QualityCuts 	=['Overestimate','Underestimate','Overestimate_2sig',
+				  'Underestimate_2sig','Overestimate_3sig','Underestimate_3sig', 
+				  'Matched','OffAxis','1-99pc',
+				  '5-95pc','0-99pc',]
+	self.OceanMonths	= sorted([i for i in product(self.Oceans,self.months)] )
+	self.OceanMonths.extend(sorted([i for i in product(['All',],self.months)]))
+	
+	if plotallcuts:
+		 self.plotMonths	= 0#True
+		 self.plotdepthRanges	=0
+		 self.plotpercentiles	=0#True	
+		 self.plotLatRegions	=0
+		 self.plotQualityCuts	=0#True	
+		 self.plotSeas		=0#True		 
+		 self.plotOceans	= 0#True	
+		 self.plotOceanMonths   = True	
+	else: 	
+		 self.plotMonths	=0#True
+		 self.plotdepthRanges	=0#True	
+		 self.plotpercentiles	=0#True	
+		 self.plotLatRegions	=0#True
+		 self.plotQualityCuts	=0#True
+		 self.plotSeas		=0#True		 
+		 self.plotOceans	=0#True	
+		 self.plotOceanMonths   = 0	 	 	 
+
+	
+	if self.plotMonths: 	 self.newSlices.extend(self.months.keys())
+	if self.plotdepthRanges: self.newSlices.extend(self.depthRanges)
+	if self.plotpercentiles: self.newSlices.extend(self.percentiles)
+	if self.plotLatRegions:	 self.newSlices.extend(self.latregions)	
+	if self.plotQualityCuts: self.newSlices.extend(self.QualityCuts)		
+	if self.plotSeas: 	 self.newSlices.extend(self.Seas)			
+	if self.plotOceans: 	 self.newSlices.extend(self.Oceans)
+	if self.plotOceanMonths: self.newSlices.extend(self.OceanMonths)
+	print "defineSlices:\tNew SLICES:", 	 self.newSlices
+	
  		
   def getFileName(self,newSlice,xkey,ykey):
-	  file_prefix = ukp.folder(['images',self.compType,'Slices-'+self.basicCut,self.name,])
+	  file_prefix = ukp.folder(['images',self.compType,'P2P_plots',self.name,])
 
 	  file_suffix = '_'+self.xtype+'.png'
 	  if newSlice in self.months.keys():
@@ -220,11 +238,37 @@ class makePlots:
   		
 
 
-  def plotWithSlices(self):  
+  def plotWithSlices(self,newSlice):  
 	print "plotWithSlices:\txtype:",self.xtype,"\tytype:",self.ytype,"\tname:",self.name
   	
-	mt = getmt()
-
+	#####
+	# Test if any of the plots exist.
+	  	
+	xkeys = []
+	ykeys = []
+	plotpairs = [] 
+	mt = getmt()		  
+	try: 		xkeys.append(mt[self.xtype][self.name]['name'])
+	except: 	xkeys = mt[self.xtype][self.name]
+	try: 		ykeys.append(mt[self.ytype][self.name]['name'])
+	except: 	ykeys = mt[self.ytype][self.name]  
+	print xkeys, ykeys
+	
+	plotsToMake=0
+	for xk,yk in product(xkeys,ykeys):
+	  	print 'plotWithSlices:\tlisting plotpairs:', xk, yk
+		plotpairs.append((xk,yk))
+		# this is a test to check if any files exist in the series
+		filename = self.getFileName(newSlice,xkeys[0],ykeys[0])
+		if ukp.shouldIMakeFile([self.xfn,self.yfn],filename,debug=False):
+			plotsToMake+=1
+	if plotsToMake == 0: 
+	  	print 'plotWithSlices:\tplots already made',self.name, newSlice
+		return
+	
+	#####
+	# Load data
+	
 	#time and depth
 	xt = self.xnc(self.kd[self.xtype]['t'])[:]
 	yt = self.ync(self.kd[self.ytype]['t'])[:]
@@ -238,139 +282,114 @@ class makePlots:
 	yx = self.ync(self.kd[self.ytype]['lon'])[:]	
 
 	#data
-	try:	xd = self.xnc(mt[self.xtype][self.name][0])[:]
-	except:	xd = extractData(self.xnc,mt[self.xtype][self.name])	
-	try:	yd = self.ync(mt[self.ytype][self.name][0])[:]
-	except:	yd = extractData(self.ync,mt[self.ytype][self.name])	
+	#try:	xd = self.xnc(mt[self.xtype][self.name][0])[:]
+	#except:	
+	xd = extractData(self.xnc,mt[self.xtype][self.name],key = xkeys[0])	
+	#try:	yd = self.ync(mt[self.ytype][self.name][0])[:]
+	#except:	
+	yd = extractData(self.ync,mt[self.ytype][self.name],key = ykeys[0])
+	
 	print "plotWithSlices:\tx",xd.min(),xd.mean(),xd.max()
 	print "plotWithSlices:\ty",yd.min(),yd.mean(),yd.max()
 	
+	
 	if mt[self.ytype][self.name] == ['Chlorophylla',]:	yd = yd/1000.
 
-	basicCutMask = ukp.makeMask(self.name,'All',xt,xz,xy,xx,xd).astype(int)
-        if self.name in ['mld_DT02','mld_DR003','mld_DReqDTm02']:
-        	mldMask = self.ync('mask')[:]
-        	mldMask = np.ma.masked_where(mldMask==0.,mldMask).mask
+
+	#maskx = ukp.makeMask(self.name,newSlice,xt,xz,xy,xx,xd).astype(int)
+	#masky = ukp.makeMask(self.name,newSlice,yt,yz,yy,yx,yd).astype(int)
+
+	#basicCutMask = 
+        #if self.name in ['mld_DT02','mld_DR003','mld_DReqDTm02']:
+        #	mldMask = self.ync('mask')[:]
+        #	mldMask = np.ma.masked_where(mldMask==0.,mldMask).mask
         	#basicCutMask += np.ma.masked_where(yd > 10.E6,yd).mask
         	        
-	if self.basicCut in ['Standard',]:	  	  
-	    print "Preparing Basic Cuts is Standard (5-95, no inland seas, off shelf)"	    
-	    for ns in self.standardCuts: 
-		if self.name in ['tempSurface','tempTransect', 'tempAll'] and ns in ['aboveZero',]:continue # no negative or zero values allowed.
-		if self.name not in ['nitrateSurface','nitrateAll','nitrateTransect',] 		and ns in ['0.1','0.2']:continue	    			
-		if self.name not in ['phosphateSurface','phosphateAll','phosphateTransect',] 	and ns in ['0.01',]:continue
-		basicCutMask += ukp.makeMask(self.name,ns,xt,xz,xy,xx,xd).astype(int)
-	   	basicCutMask += ukp.makeMask(self.name,ns,yt,yz,yy,yx,yd).astype(int)
+	#if self.basicCut in ['Standard',]:	  	  
+	#    print "Preparing Basic Cuts is Standard (5-95, no inland seas, off shelf)"	    
+	#    for ns in self.standardCuts: 
+	#	if self.name in ['tempSurface','tempTransect', 'tempAll'] and ns in ['aboveZero',]:continue # no negative or zero values allowed.
+	#	if self.name not in ['nitrateSurface','nitrateAll','nitrateTransect',] 		and ns in ['0.1','0.2']:continue	    			
+	#	if self.name not in ['phosphateSurface','phosphateAll','phosphateTransect',] 	and ns in ['0.01',]:continue
+	#	basicCutMask += ukp.makeMask(self.name,ns,xt,xz,xy,xx,xd).astype(int)
+	 #  	basicCutMask += ukp.makeMask(self.name,ns,yt,yz,yy,yx,yd).astype(int)
 	   
 	
-	for newSlice in self.newSlices:
-	  xmask = ukp.makeMask(self.name,'All',xt,xz,xy,xx,xd).astype(int)
-	  ymask = ukp.makeMask(self.name,'All',yt,yz,yy,yx,yd).astype(int)
+
+	xmask = ukp.makeMask(self.name,'All',xt,xz,xy,xx,xd).astype(int)
+	ymask = ukp.makeMask(self.name,'All',yt,yz,yy,yx,yd).astype(int)
 	  	  	
-	  if newSlice == "maskBelowBathy" and (self.name.lower().find('surface')>-1 or self.name in ['Seawifs',]):continue
-	  if newSlice == 'Depth' and self.name.lower().find('surface')>-1: continue
-	  if newSlice in  self.depthRanges and self.name.lower().find('surface')>-1: continue	 
-	  if newSlice == 'SalArtifact' and self.name not in ['salTransect', 'salSurface']:continue
-	  if newSlice == 'NitArtifact' and self.name not in ['nitTransect', 'nitSurface']:continue
+	# if newSlice == "maskBelowBathy" and (self.name.lower().find('surface')>-1 or self.name in ['Seawifs',]):continue
+	#  if newSlice == 'Depth' and self.name.lower().find('surface')>-1: continue
+	#  if newSlice in  self.depthRanges and self.name.lower().find('surface')>-1: continue	 
+	#  if newSlice == 'SalArtifact' and self.name not in ['salTransect', 'salSurface']:continue
+	#  if newSlice == 'NitArtifact' and self.name not in ['nitTransect', 'nitSurface']:continue
 	  
 
 	  
-	  xkeys = []
-	  ykeys = []
-	  plots = [] 	  
-	  try: 		xkeys.append(mt[self.xtype][self.name]['name'])
-	  except: 	xkeys = mt[self.xtype][self.name]
-	  try: 		ykeys.append(mt[self.ytype][self.name]['name'])
-	  except: 	ykeys = mt[self.ytype][self.name]  
-	  print xkeys, ykeys
 	  
-	  for xk,yk in product(xkeys,ykeys):
-	  	print 'listing plots:', xk, yk
-		plots.append((xk,yk))
-	  # this is a test to check if any files exist in the series
-	  filename = self.getFileName(newSlice,xkeys[0],ykeys[0])
-	  #if not ukp.shouldIMakeFile([self.xfn,self.yfn],filename,debug=False):continue	  
 
-	  if type(newSlice) in [type(['a','b',]),type(('a','b',))]:
-	  	for n in newSlice:
-	  	  xmask += ukp.makeMask(self.name,n,xt,xz,xy,xx,xd).astype(int)	  
-	  	  ymask += ukp.makeMask(self.name,n,yt,yz,yy,yx,yd).astype(int)
-		  
-	  elif newSlice in  ['OffAxis', 'Overestimate','Underestimate','Matched', 'Overestimate_2sig','Underestimate_2sig', 'Overestimate_3sig','Underestimate_3sig',]:
-	  	# These ones require both!
-		  if newSlice in ['OffAxis', 'Overestimate','Underestimate','Matched']: distance = (std(xd)+std(yd))/2.
-		  if newSlice in ['Overestimate_2sig','Underestimate_2sig',]:  	  	distance = std(xd)+std(yd)
-		  if newSlice in ['Overestimate_3sig','Underestimate_3sig',]:  	  	distance = 3.*(std(xd)+std(yd))/2.
-		  
-	  	  for i in xrange(len(self.xnc('index')[:])):		  
-	  	  	if newSlice in ['Overestimate','Overestimate_2sig','Overestimate_3sig'] :
-				if abs(xd[i] - yd[i]) < distance: xmask[i] = 1
-				if xd[i] < yd[i]: xmask[i] = 1
+	if type(newSlice) in [type(['a',]),type(('a',))]:
+	    for n in newSlice:
+	    	# newSlice is actaully a list of multiple slices.
+	  	xmask += ukp.makeMask(self.name,n,xt,xz,xy,xx,xd).astype(int)	  
+	  	ymask += ukp.makeMask(self.name,n,yt,yz,yy,yx,yd).astype(int)	  
 		
-			if newSlice in ['Underestimate','Underestimate_2sig','Underestimate_3sig',]:
-				if abs(xd[i] - yd[i]) < distance: xmask[i] = 1
-				if xd[i] > yd[i]: xmask[i] = 1
-	
-			if newSlice == 'Matched':
-				if abs(xd[i] - yd[i]) > distance: xmask[i] = 1
-			
-	  elif newSlice == 'Standard':
-	  	if self.basicCut in ['Standard',]: 
-		  	xmask = basicCutMask
-		  	ymask = basicCutMask
-		else:  
-	 	    xmask = ukp.makeMask(self.name,'All',xt,xz,xy,xx,xd).astype(int)
-		    ymask = ukp.makeMask(self.name,'All',yt,yz,yy,yx,yd).astype(int)	  	
-	  	    for ns in self.standardCuts: #['5-95pc','ignoreInlandSeas','OffShelf',]:
-			if self.name in ['tempSurface','tempTransect', 'tempAll'] and ns in ['aboveZero',]:continue # no negative or zero values allowed.	    	  	    
-			if self.name not in ['nitrateSurface','nitrateAll','nitrateTransect',] 		and ns in ['0.1','0.2']:continue	    			
-			if self.name not in ['phosphateSurface','phosphateAll','phosphateTransect',] 	and ns in ['0.01',]:continue	    						
+	elif newSlice == 'Standard':
+		# Standard is a shorthand for my favourite cuts.
+	 	#xmask = ukp.makeMask(self.name,'All',xt,xz,xy,xx,xd).astype(int)
+		#ymask = ukp.makeMask(self.name,'All',yt,yz,yy,yx,yd).astype(int)	  	
+	  	for ns in self.standardCuts: 
+			if self.name in ['tempSurface','tempTransect', 'tempAll'] and ns in ['aboveZero',]:continue # Don't cut negative values from temerature.
+			#if self.name not in ['nitrateSurface','nitrateAll','nitrateTransect',] 		and ns in ['0.1','0.2']:continue	    			
+			#if self.name not in ['phosphateSurface','phosphateAll','phosphateTransect',] 	and ns in ['0.01',]:continue	    						
 	  		xmask += ukp.makeMask(self.name,ns,xt,xz,xy,xx,xd).astype(int)
-	  	 	ymask += ukp.makeMask(self.name,ns,yt,yz,yy,yx,yd).astype(int)
-	  	 	
-	  elif newSlice in ['All','aboveZero',]:  	
-	 	xmask = ukp.makeMask(self.name,newSlice,xt,xz,xy,xx,xd).astype(int)
-		ymask = ukp.makeMask(self.name,newSlice,yt,yz,yy,yx,yd).astype(int)	  	
-	  else:
+	  	 	ymask += ukp.makeMask(self.name,ns,yt,yz,yy,yx,yd).astype(int)	
+	else:
+		# Any simple straight cut.
 	  	xmask += ukp.makeMask(self.name,newSlice,xt,xz,xy,xx,xd).astype(int)
 	  	ymask += ukp.makeMask(self.name,newSlice,yt,yz,yy,yx,yd).astype(int)
-	  	print xmask.sum(), ymask.sum() 
+	  	print 'plotWithSlices:\t',xmask.sum(), ymask.sum() 
 
-	  print self.name, newSlice
 	  
-          if self.name in ['mld_DT02','mld_DR003','mld_DReqDTm02']:
+        if self.name in ['mld_DT02','mld_DR003','mld_DReqDTm02']:
+        	mldMask = self.ync('mask')[:]
+        	mldMask = np.ma.masked_where(mldMask==0.,mldMask).mask        
         	ymask += mldMask
 
-	  keepMaskAsIs = ['All','TypicalIron',]
-	  keepMaskAsIs.extend(self.QualityCuts)
-	  keepMaskAsIs.extend(self.percentiles)	  
+	#  keepMaskAsIs = ['All','TypicalIron',]
+	#  keepMaskAsIs.extend(self.QualityCuts)
+	 # keepMaskAsIs.extend(self.percentiles)	  
 	  
-	  nmask = (xmask + ymask).astype(bool)
+	nmask = (xmask + ymask).astype(bool)
 	  	
-	  if self.basicCut in ['Standard',] and newSlice not in keepMaskAsIs:	
-		  nmask = (xmask + ymask + basicCutMask).astype(bool)  	# Apply cuts across thge board.
-	  else:
-	  	  nmask = (xmask + ymask).astype(bool)
+	  #if self.basicCut in ['Standard',] and newSlice not in keepMaskAsIs:	
+	#	  nmask = (xmask + ymask + basicCutMask).astype(bool)  	# Apply cuts across thge board.
+	 # else:
+	#  nmask = (xmask + ymask).astype(bool)
 	  	
 				
-	  print "New Mask,",newSlice,", covers ",nmask.sum(),' of ', len(self.xnc('index')[:])
+	print "plotWithSlices:\tNew Mask,",newSlice,", covers ",nmask.sum(),' of ', len(xt)
 	
-	  if nmask.sum() == len(self.xnc('index')[:]):
-		print "New Mask,",newSlice,", covers entire dataset.",nmask.sum(), len(self.xnc('index')[:])
-		continue
+	if nmask.sum() >= len(xt):
+		print "plotWithSlices:\tNew Mask,",newSlice,", covers entire dataset.",nmask.sum(), len(xt)
+		return
 
 
 	  
-	  for xkey,ykey in plots:
+	for xkey,ykey in plotpairs:
 	  	filename = self.getFileName(newSlice,xkey,ykey)
-		print "investigating:", filename
+		print "plotWithSlices:\tinvestigating:", filename
 		if not ukp.shouldIMakeFile([self.xfn,self.yfn],filename,debug=False):continue
 		
 		x = extractData(self.xnc,mt[self.xtype][self.name], key=xkey)
 		y = extractData(self.ync,mt[self.ytype][self.name], key=ykey)
 		
 		fullmask = nmask + x.mask + y.mask + np.ma.masked_invalid(x).mask + np.ma.masked_invalid(y).mask 
-		
+		if fullmask.sum() >= len(x):
+			print "plotWithSlices:\tNew Mask,",newSlice,", covers entire dataset.",fullmask.sum(), len(xt)
+			continue
+		# Apply mask to all data.	
 		nmxx = np.ma.masked_where(fullmask, xx).compressed()
 		nmxy = np.ma.masked_where(fullmask, xy).compressed()
 		nmxz = np.ma.masked_where(fullmask, xz).compressed()
@@ -385,12 +404,12 @@ class makePlots:
 		if mt[self.ytype][self.name] == ['Chlorophylla',]:	datay = datay/1000.		
 		
 		if 0 in [len(datax),len(datay),len(nmxx),len(nmxy),len(nmxz),len(nmyx),len(nmyy),len(nmyz)]:
-			print 'slice:',newSlice,'There is a zero in :',	 [len(datax),len(datay),len(nmxx),len(nmxy),len(nmxz),len(nmyx),len(nmyy),len(nmyz)]
+			print 'plotWithSlices:\tslice:',newSlice,'There is a zero in :',	 [len(datax),len(datay),len(nmxx),len(nmxy),len(nmxz),len(nmyx),len(nmyy),len(nmyz)]
 			continue	
 
-		if newSlice == 'SalArtifact':
-			print 'SalArtifact: x data:',xkey,datax.min(),datax.mean(),datax.max()
-			print 'SalArtifact: y data:',ykey,datay.min(),datay.mean(),datay.max()
+		#if newSlice == 'SalArtifact':
+		#	print 'SalArtifact: x data:',xkey,datax.min(),datax.mean(),datax.max()
+		#	print 'SalArtifact: y data:',ykey,datay.min(),datay.mean(),datay.max()
 
 		try:xunits = fancyUnits(self.xnc.variables[xkey].units,debug=True)
 		except:xunits = ''
@@ -402,67 +421,52 @@ class makePlots:
 		#try:yunits = fancyUnits(self.ync.variables[ykey].units)	
 		#except:yunits=''
 							
-		if xkey == self.kd[self.xtype]['lon']:
-		  labelx = "Longitude"
-		  labely = "Latitude"
-		else:
+		#if xkey == self.kd[self.xtype]['lon']:
+		#  labelx = "Longitude"
+		#  labely = "Latitude"
+		#else:
 		  #labelx = self.xtype+' '+getLongName(self.name)+', '+ xunits
 		  #labely = self.ytype+' '+getLongName(self.name)+', '+ yunits
-		  labelx = self.xtype+' '+self.name+', '+ xunits
-		  labely = self.ytype+' '+self.name+', '+ yunits		  
+		
+		labelx = self.xtype+' '+self.name+', '+ xunits
+		labely = self.ytype+' '+self.name+', '+ yunits		  
+		
 		try: title = getLongName(newSlice)+' '+getLongName(self.name)
 		except:title = newSlice+' '+xkey+' vs '+ykey
 		
 
 		gs = 50
-		robfnx = filename[:-4]+'_xrobin.png'
-		robfny = filename[:-4]+'_yrobin.png'
-		robfnxy = filename[:-4]+'_xyrobin.png'		
+		robfnxy  = filename.replace('.png','_xyrobin.png')
+		histfnxy = filename.replace('.png','_hist.png')
+		cufn 	 = filename.replace('.png','_cusum.png')	
+		
 
-		histfnxy = filename[:-4]+'_hist.png'
-		cufn = 	filename.replace('.png','_cusum.png')	
-		scat = True
 		dmin = min([datax.min(),datay.min()])
 		dmax = max([datax.max(),datay.max()])
 
 		if dmin == dmax: 
-			print "dmin == dmax"
+			print "plotWithSlices:\tdmin == dmax"
 			continue
+			
 		if not datax.size or not datay.size:
-			print "No data for this cut"
+			print "plotWithSlices:\tNo data for this cut"
 			continue
-					
-		documusum = False
-		if documusum:			
-			cumulativeSumPlot(datax, datay,  cufn, Title=title, labelx='Count',labely='Cumulative Sum',)
-			print "Made", cufn
-
-		
+							
 		if ukp.shouldIMakeFile([self.xfn,self.yfn],robfnxy,debug=False) or True:
 			ti1 = getLongName(self.xtype)+' ' +getLongName(newSlice)+' '+getLongName(self.name)
 			ti2 =  getLongName(self.ytype)+' ' +getLongName(newSlice)+' '+getLongName(self.name)	
 			if self.name in noXYLogs or dmin*dmax <=0.:
-				print "ROBINNOT DOING DOLOG:",[ti1,ti2],False,dmin,dmax
+				print "plotWithSlices:\tROBINNOT DOING DOLOG:",[ti1,ti2],False,dmin,dmax
 				ukp.robinPlotPair(nmxx, nmxy, datax,datay,robfnxy,titles=[ti1,ti2], vmin=dmin,vmax=dmax, doLog=False)
 				
 			else:	
-				print "ROBIN DOING DOLOG:",[ti1,ti2],False,dmin,dmax
-			#	data1 = np.ma.log10(np.ma.masked_less_equal(datax, 0.))
-			#	data2 = np.ma.log10(np.ma.masked_less_equal(datay, 0.))
-			#	min1 = np.ma.log10(min([data1.min(),data2.min(),]))
-			#	max1 = np.ma.log10(max([data1.max(),data2.max(),]))	
-			#	ukp.robinPlotPair(nmxx, nmxy, data1, data2,
-			#			robfnxy,titles=[ti1,ti2], 
-			#			vmin=min1,vmax=max1,
-			#			cbarlabel='log$_{10}$('+xunits+')',
-			#			doLog=False)
-										
+				print "plotWithSlices:\tROBIN DOING DOLOG:",[ti1,ti2],False,dmin,dmax					
 				ukp.robinPlotPair(nmxx, nmxy, np.ma.log10(datax),np.ma.log10(datay),
 						robfnxy,titles=[ti1,ti2], 
 						vmin=np.ma.log10(dmin),vmax=np.ma.log10(dmax),
 						cbarlabel='log$_{10}$('+xunits+')',
 						doLog=False)
-			
+		
 		if ukp.shouldIMakeFile([self.xfn,self.yfn],histfnxy,debug=False):
 			xaxislabel= getLongName(self.name)+', '+ xunits
 			#if self.name in self.BioLogScales: 
@@ -471,31 +475,22 @@ class makePlots:
 			else:	ukp.histPlot(datax, datay,  histfnxy, Title=title, labelx=self.xtype,labely=self.ytype,xaxislabel =xaxislabel, logx = True, )
 				
 				
-
-										
 		
-		#if ukp.shouldIMakeFile([self.xfn,self.yfn],filename,debug=False):
 		if self.name in noXYLogs:
 			ukp.scatterPlot(datax, datay,  filename, Title=title, labelx=labelx,labely=labely, bestfitLine=True,gridsize=gs)
-		else:	ukp.scatterPlot(datax, datay,  filename, Title=title, labelx=labelx,labely=labely, bestfitLine=True,gridsize=gs,logx = True, logy=True,)					
-		#else:
-		#			
-	
-		
-		#filename2 = filename[:-4]+'_01-99.png'
-		#ukp.scatterPlot(datax, datay,  filename2, Title=title +' 1%-99%', labelx=labelx,labely=labely, bestfitLine=True,gridsize=gs,percentileRange=[1,99])
+		else:	ukp.scatterPlot(datax, datay,  filename, Title=title, labelx=labelx,labely=labely, bestfitLine=True,gridsize=gs,logx = True, logy=True,)
 		
 		
 		if self.saveShelve:
 			if type(newSlice) in [type(['a','b',]),type(('a','b',))]:	
 				ns = ''.join(newSlice)
 			else: ns = newSlice
-			self.shelveName = ukp.folder(['shelves',self.compType, 'Slices'+self.basicCut,self.name])+self.name+'_'+ns+'_'+xkey+'vs'+ykey+'.shelve'
+			self.shelveName = ukp.folder(['shelves',self.compType, 'Slices',self.name])+self.name+'_'+ns+'_'+xkey+'vs'+ykey+'.shelve'
 			s = shOpen(self.shelveName)
-			print "Saving ",self.shelveName	
+			print "plotWithSlices:\tSaving ",self.shelveName	
 
 			b1, b0, rValue, pValue, stdErr = linregress(datax, datay)
-			print "linear regression: \n\tb1:",b1, "\n\tb0:", b0, "\n\trValue:",rValue, "\n\tpValue:",pValue, "\n\tstdErr:",stdErr
+			print "plotWithSlices:\tlinear regression: \n\tb1:",b1, "\n\tb0:", b0, "\n\trValue:",rValue, "\n\tpValue:",pValue, "\n\tstdErr:",stdErr
 			s['b1'] =  b1
 			s['b0'] =  b0
 			s['rValue'] =  rValue
@@ -532,14 +527,12 @@ class makePlots:
 			s['yfn'] =  self.yfn
 			s['slice']= newSlice
 			s['compType'] = self.compType
-			s['basicCut'] = self.basicCut			
+			#s['basicCut'] = self.basicCut			
 			s['newSlice'] = ns
 			s['xkey'] = xkey			
 			s['ykey'] = ykey
 			s.close()
-		#waveletA = False
-		#if waveletA:
-		#	w = wavelet(self.shelveName, plotDecomps= False)
+
 
 def extractData(nc, mt,key = ['',]):
   	""" The idea here is that the data in mt[type][name] can be a list, where the first value is the operation that you want to run.
@@ -548,7 +541,6 @@ def extractData(nc, mt,key = ['',]):
   	try: 
   		a = mt.keys()
   		print "extractData: MT is a dict", a
-
   	except:
   		print "extractData: mt Not a dict:", mt, key
   		return np.ma.array(nc(key)[:])
@@ -556,11 +548,7 @@ def extractData(nc, mt,key = ['',]):
 
   	
   	print "extractData: Extracting data:\tinit:",mt
-  		
-  	#for name in mt[1:]:
-  	#	if  name not  in nc.variables.keys(): 	
-  	#		print "ExtractData:\tWarning:\t",name , ' not in nc (', mt,')'
-  	#		assert False
+ 
   	
 	if mt['sum']:
 		print "Extracting data:\tSumming:", mt['sum']
