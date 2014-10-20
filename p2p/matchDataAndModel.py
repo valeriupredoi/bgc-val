@@ -5,35 +5,36 @@ from glob import glob
 from shelve import open as shOpen
 from shutil import copy2
 
-from matplotlib.colors import LogNorm
-from matplotlib import pyplot, ticker
-#from numpy.ma import  min as mmin, max as mmax, masked_where, array as ma,zeros as mzeros, masked,divide,nonzero,array as marray
-#from numpy import isnan as npNaN, isinf as npInf, array,arange, delete, tile,NaN,power,zeros,median
 import numpy as np
 from numpy import array,ones,unravel_index
 from math import radians, cos, sin, asin, sqrt
-from haversine import haversine
+#from haversine import haversine
 from netCDF4 import num2date
 from datetime import datetime
 
 #local imports
-from ncdfView import ncdfView
-from deMoraTools import getLogTicks,folder
 #import iMarNetPython as impy
 #from iMarNetPython import noLeapConvert, shouldIMakeFile,depthKeys,alwaysInclude,getFileList,getMareDatatype,getpco2,getHenryConstant,getORCAdepth#getJobID
 #from iMarNetPython import makeLatSafe, makeLonSafe,makeLonSafeArr
-from UKESMpython import shouldIMakeFile
+from UKESMpython import shouldIMakeFile, folder
 
+
+# imports from other gitlab repositories:
+from ncdfView import ncdfView	
+#	ncdfView is available from:
+#	https://gitlab.ecosystem-modelling.pml.ac.uk/momm/pml-python-tools
+	
 # These are availalble in the module:
 #	https://gitlab.ecosystem-modelling.pml.ac.uk/ledm/netcdf_manip
 from pruneNC import pruneNC
 from convertToOneDNC import convertToOneDNC
 from mergeNC import mergeNC
 from changeNC import changeNC, AutoVivification
-#from addERSEMtoXL import getORCAdepth# getOrcaIndexCC
-#from xtraPlots import hovmoeller
 
 
+#TO DO
+#	Remove ncdfView requirement
+#	This still requires the netcdf_manip library, the ncdfView code, the ORCA1bathy file
 
 class matchDataAndModel:
   """	matchDataAndModel: 
@@ -49,16 +50,14 @@ class matchDataAndModel:
 
 	if debug:
 		print "matchDataAndModel:\tINFO:\tStarting matchDataAndModel"
-		print "matchDataAndModel:\tINFO:\tData file: \t",DataFile
+		print "matchDataAndModel:\tINFO:\tData file:  \t",DataFile
 		print "matchDataAndModel:\tINFO:\tModel file: \t",ModelFile
-		print "matchDataAndModel:\tINFO:\tdataType: \t",dataType	
+		print "matchDataAndModel:\tINFO:\tData Type:  \t",dataType	
 	self.DataFile=DataFile
 	self.ModelFile = ModelFile 
 		
 	self.DataVars=DataVars	
 	self.ModelVars=ModelVars	
-
-	#self.ModelVars.extend( ['time_counter','nav_lat','nav_lon','deptht'])
 
 
 	self.jobID = jobID 
@@ -268,8 +267,8 @@ class matchDataAndModel:
 	   	 tdict = {i+1:i for i in xrange(12)}		   	 
 	    ncIS.close()
 
-  	    print "matchModelToData:\tOpened Model netcdf: /users/modellers/ledm/workspace/iMarNet/outNetCDF/mesh_mask_ORCA1_75.nc"
-  	    ncER = ncdfView("/users/modellers/ledm/workspace/iMarNet/outNetCDF/mesh_mask_ORCA1_75.nc",Quiet=True)
+  	    print "matchModelToData:\tOpened Model netcdf: ~/data/mesh_mask_ORCA1_75.nc"
+  	    ncER = ncdfView("data/mesh_mask_ORCA1_75.nc",Quiet=True)
 	    self.latcc    = ncER('nav_lat')[:]
 	    self.loncc    = makeLonSafeArr(ncER('nav_lon')[:])
 	    
