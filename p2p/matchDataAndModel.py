@@ -38,13 +38,14 @@ from changeNC import changeNC, AutoVivification
 class matchDataAndModel:
   """	matchDataAndModel: 
   	This code takes the real data from in situ  measurments in netcdf format and the Model data and created two 1D matched netcdfs. 
-	The 1D matched netcdfs are then used to make plots and perform statistical analysis.
+	The 1D matched netcdfs are then used to make plots and perform statistical analysis (not in this code).
+	The first step is to produce lightweight "pruned" versions of the files, which have the unused fields stripped out.
 	Some of the datasets are too large to run this code on desktop machine, so in those cases we request a specific region, ie "Surface".
 	Debug = True prints more statements.
   """
 
 
-  def __init__(self,DataFile,ModelFile,dataType, workingDir = '',DataVars='',  jobID='', year='clim',region='',debug = True,):
+  def __init__(self,DataFile,ModelFile,dataType, workingDir = '',DataVars='',ModelVars='',  jobID='', year='clim',region='',debug = True,):
 
 	if debug:
 		print "matchDataAndModel:\tINFO:\tStarting matchDataAndModel"
@@ -52,9 +53,10 @@ class matchDataAndModel:
 		print "matchDataAndModel:\tINFO:\tModel file: \t",ModelFile
 		print "matchDataAndModel:\tINFO:\tdataType: \t",dataType	
 	self.DataFile=DataFile
-	self.ModelFile = ModelFile 	
+	self.ModelFile = ModelFile 
+		
 	self.DataVars=DataVars	
-
+	self.ModelVars=ModelVars	
 
 	#self.ModelVars.extend( ['time_counter','nav_lat','nav_lon','deptht'])
 
@@ -71,19 +73,22 @@ class matchDataAndModel:
 	
 	if debug: print  "matchDataAndModel:\tINFO:\t",self.dataType, '\tModelfile:', self.ModelFile
 		
-	ekey = self.jobID+'-'+self.year
-	self.compType= 'MaredatMatched-'+ekey
+	self.compType= 'MaredatMatched-'+self.jobID+'-'+self.year
 		
 	if workingDir =='':
 		self.workingDir = folder('/data/euryale7/scratch/ledm/ukesm_postProcessed/ukesm/outNetCDF/'+'/'.join([self.compType,self.dataType+self.region]) )
 	else: 	self.workingDir = workingDir	
-	self.workingDirTmp = 	folder(self.workingDir+'/tmp/')
+
 	self.matchedShelve 	= folder(['/tmp','shelves','MaredatModelMatch',self.dataType+self.region])+self.jobID+'_'+self.dataType+'.shelve'
 	self.matchesShelve 	= folder(['shelves','MaredatModelMatch',])+'WOAtoORCA1.shelve'
 
-	self.DataFile1D  	= self.workingDirTmp +basename(self.DataFile).replace('.nc','') +self.region+'.nc'	
-	self.maskedData1D	= self.workingDir + basename(self.DataFile1D).replace('.nc','')+'_2.nc'
-	self.Model1D     	= self.workingDir +basename(self.ModelFile).replace('.nc','')+'_'+self.dataType+self.region+'_1D.nc' 
+	self.workingDirTmp = 	folder(self.workingDir+'tmp')
+	self.DataFilePruned=	self.workingDirTmp+'Data_'+self.dataType+self.jobID+'-'+self.year+'_pruned.nc'
+	self.ModelFilePruned=	self.workingDirTmp+'Model_'+self.dataType+self.jobID+'-'+self.year+'_pruned.nc'	
+	
+	self.DataFile1D  	= self.workingDirTmp +basename(self.DataFilePruned).replace('pruned.nc','1D.nc') 
+	self.maskedData1D	= self.workingDir + basename(self.DataFile1D)
+	self.Model1D     	= self.workingDir +basename(self.ModelFilePruned).replace('pruned.nc','1D.nc')
 
 
 	
@@ -95,35 +100,55 @@ class matchDataAndModel:
 	   One is designed to work with WOA formats, the other with MAREDAT formats.
 	   Other data formats are run manually.
 	"""
-
-
+	if not shouldIMakeFile(self.DataFile,self.maskedData1D,debug=False) and not shouldIMakeFile(self.ModelFile,self.Model1D,debug=False):
+		print "matchDataAndModel:\trun:\talready created:\t",self.maskedData1D, '\n\t\t\tand\t',self.Model1D
+		return
 	
+
+	self._pruneModelAndData_()	
 	self._convertDataTo1D_()	
 	self._matchModelToData_()
 	self._convertModelToOneD_()
 	self._applyMaskToData_()
 
+	#self.MatchedModelFile = self.Model1D
+	#self.MatchedDataFile = self.maskedData1D
 
 
+  def _pruneModelAndData_(self,):
+   	""" This routine reduces the full 3d netcdfs by pruning the unwanted fields.
+  	"""  	
+	if shouldIMakeFile(self.DataFile,self.DataFilePruned,debug=False):
+		print "matchDataAndModel:\tpruneModelAndData:\tMaking:", self.DataFilePruned
+		p = pruneNC(self.DataFile,self.DataFilePruned,self.DataVars, debug = self.debug) 	
+	else:	
+		print "matchDataAndModel:\tpruneModelAndData:\talready exists:",self.DataFilePruned
+	 
+	if shouldIMakeFile(self.ModelFile,self.ModelFilePruned,debug=False):
+		print "matchDataAndModel:\tpruneModelAndData:\tMaking:", self.ModelFilePruned	
+		p = pruneNC(self.ModelFile,self.ModelFilePruned,self.ModelVars, debug = self.debug) 	
+	else:	
+		print "matchDataAndModel:\tpruneModelAndData:\talready exists:",self.ModelFilePruned
+  
 
 
   def _convertDataTo1D_(self,):
    	""" This routine reduces the In Situ data into a 1D array of data with its lat,lon,depth and time components.
   	"""
 		
-	if not shouldIMakeFile(self.DataFile,self.DataFile1D,debug=False):
+	if not shouldIMakeFile(self.DataFilePruned,self.DataFile1D,debug=False):
 		print "matchDataAndModel:\tconvertDataTo1D:\talready exists:",self.DataFile1D
 		return
 
 	if self.dataType in ['pCO2','iron',]: 
 		 # pCO2, iron Files area already 1D
-		self.DataFile1D = self.DataFile 
-		print "matchDataAndModel:\tconvertDataTo1D:\tpCO2/Iron File has already been converted to 1D", 'Making',self.DataFile
+		self.DataFile1D = self.DataFilePruned 
+		print "matchDataAndModel:\tconvertDataTo1D:\tpCO2/Iron File has already been converted to 1D", 'Making',self.DataFilePruned
 		return
 		
   	
 	if self.dataType in ['temp','sal','nit','nitrate','phosphate','silicate']:	#World Ocean Atlas format
-		nc = ncdfView(self.DataFile,Quiet=True)
+		nc = ncdfView(self.DataFilePruned,Quiet=True)
 		mmask = ones(nc(self.DataVars[0]).shape)
 		
 		if self.region in ['Surface','200m','100m','500m','1000m',]:
@@ -142,12 +167,12 @@ class matchDataAndModel:
 		print mmask.shape
 		nc.close()
 		
-	  	convertToOneDNC(self.DataFile,self.DataFile1D ,newMask=mmask, variables = self.DataVars, debug=True)	
+	  	convertToOneDNC(self.DataFilePruned,self.DataFile1D ,newMask=mmask, variables = self.DataVars, debug=True)	
 	  	
 	else:
-		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking',self.DataFile,'-->',self.DataFile1D
-	  	if len(self.DataVars):	convertToOneDNC(self.DataFile, self.DataFile1D, debug=True, variables = self.DataVars)
-	  	else:			convertToOneDNC(self.DataFile, self.DataFile1D, debug=True)
+		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking',self.DataFilePruned,'-->',self.DataFile1D
+	  	if len(self.DataVars):	convertToOneDNC(self.DataFilePruned, self.DataFile1D, debug=True, variables = self.DataVars)
+	  	else:			convertToOneDNC(self.DataFilePruned, self.DataFile1D, debug=True)
   		
 	
 	
@@ -336,12 +361,12 @@ class matchDataAndModel:
 	
 	
   def _convertModelToOneD_(self,):
-	if not shouldIMakeFile(self.ModelFile,self.Model1D,debug=True):
+	if not shouldIMakeFile(self.ModelFilePruned,self.Model1D,debug=True):
 		print "convertModelToOneD:\tconvertModelToOneD:\talready exists:",self.Model1D
 		return	
 	
-	print "convertModelToOneD:\tconvertModelToOneD:\tMaking 1D Model file:", self.ModelFile,'-->', self.Model1D
-  	convertToOneDNC(self.ModelFile, self.Model1D,newMask='',debug=self.debug,dictToKeep=self.matches)
+	print "convertModelToOneD:\tconvertModelToOneD:\tMaking 1D Model file:", self.ModelFilePruned,'-->', self.Model1D
+  	convertToOneDNC(self.ModelFilePruned, self.Model1D,newMask='',debug=self.debug,dictToKeep=self.matches)
 
 
 
@@ -355,7 +380,7 @@ class matchDataAndModel:
   	    Similarly, some data points fall into a masked grid cell in the model and need to be masked in the data.
   	"""
 	
-	if not shouldIMakeFile(self.ModelFile,self.maskedData1D,debug=True):
+	if not shouldIMakeFile(self.ModelFilePruned,self.maskedData1D,debug=True):
 		print "applyMaskToData:\tapplyMaskToData:\t", "already exists:",self.maskedData1D
 		return	
 		
@@ -400,7 +425,7 @@ class matchDataAndModel:
 		if ncIS(v).ndim != 1: 
 			if self.debug: print "matchDataAndModel:\tapplyMaskToData:\tERROR:\tthis is suppoed to be the one D file"
 			assert False
-
+		print  "matchDataAndModel:\tapplyMaskToData:AutoViv:", v ,len(ncIS(v)[:]), len(self.maremask)
 		if len(ncIS(v)[:])== len(self.maremask):
 			if self.debug: print  "matchDataAndModel:\tapplyMaskToData:AutoViv:", v ,'is getting a mask.'
 			av[v]['convert'] = getMedianVal
