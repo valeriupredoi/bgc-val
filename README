@@ -47,6 +47,9 @@ REQUIREMENTS:
 	netcdf_manip:
 		changeNC, mergeNC, pruneNC, convertToOneDNC
 		from: https://gitlab.ecosystem-modelling.pml.ac.uk/ledm/netcdf_manip
+		
+	some code uses ncdfView, which a PML wrapper around netCDF4.Dataset.
+	
 	
 TO DO:
 	Analysis code Template

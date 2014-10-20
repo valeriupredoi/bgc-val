@@ -82,16 +82,17 @@ class matchDataAndModel:
 	self.matchesShelve 	= folder(['shelves','MaredatModelMatch',])+'WOAtoORCA1.shelve'
 
 	self.workingDirTmp = 	folder(self.workingDir+'tmp')
-	self.DataFilePruned=	self.workingDirTmp+'Data_'+self.dataType+self.jobID+'-'+self.year+'_pruned.nc'
+	self.DataFilePruned=	self.workingDirTmp+'Data_' +self.dataType+self.jobID+'-'+self.year+'_pruned.nc'
 	self.ModelFilePruned=	self.workingDirTmp+'Model_'+self.dataType+self.jobID+'-'+self.year+'_pruned.nc'	
 	
-	self.DataFile1D  	= self.workingDirTmp +basename(self.DataFilePruned).replace('pruned.nc','1D.nc') 
-	self.maskedData1D	= self.workingDir + basename(self.DataFile1D)
-	self.Model1D     	= self.workingDir +basename(self.ModelFilePruned).replace('pruned.nc','1D.nc')
+	self.DataFile1D  	= self.workingDirTmp + basename(self.DataFilePruned).replace('pruned.nc','1D.nc') 
+	self.maskedData1D	= self.workingDir    + basename(self.DataFile1D)
+	self.Model1D     	= self.workingDir    + basename(self.ModelFilePruned).replace('pruned.nc','1D.nc')
 
-
-	
+	self.MatchedModelFile = self.Model1D
+	self.MatchedDataFile  = self.maskedData1D
 	self.run()
+
 
 	
   def run(self,):
@@ -99,7 +100,7 @@ class matchDataAndModel:
 	   One is designed to work with WOA formats, the other with MAREDAT formats.
 	   Other data formats are run manually.
 	"""
-	if not shouldIMakeFile(self.DataFile,self.maskedData1D,debug=False) and not shouldIMakeFile(self.ModelFile,self.Model1D,debug=False):
+	if not shouldIMakeFile(self.DataFile,self.MatchedDataFile,debug=False) and not shouldIMakeFile(self.ModelFile,self.MatchedModelFile,debug=False):
 		print "matchDataAndModel:\trun:\talready created:\t",self.maskedData1D, '\n\t\t\tand\t',self.Model1D
 		return
 	
@@ -110,8 +111,7 @@ class matchDataAndModel:
 	self._convertModelToOneD_()
 	self._applyMaskToData_()
 
-	#self.MatchedModelFile = self.Model1D
-	#self.MatchedDataFile = self.maskedData1D
+
 
 
   def _pruneModelAndData_(self,):
@@ -267,6 +267,7 @@ class matchDataAndModel:
 	   	 tdict = {i+1:i for i in xrange(12)}		   	 
 	    ncIS.close()
 
+	    # This won't work unless its the 1 degree grid.
   	    print "matchModelToData:\tOpened Model netcdf: ~/data/mesh_mask_ORCA1_75.nc"
   	    ncER = ncdfView("data/mesh_mask_ORCA1_75.nc",Quiet=True)
 	    self.latcc    = ncER('nav_lat')[:]
@@ -301,7 +302,6 @@ class matchDataAndModel:
 		#Match Depth	
 		try:
 			z = zdict[wz]
-
 		except:	 
 			z = getORCAdepth(wz,deptht,debug=True)
 			zdict[wz]	= z
@@ -313,9 +313,8 @@ class matchDataAndModel:
 		except:
 			t = getMonthFromSecs(wt)
 			tdict[wt] = t
-			if self.debug: print "matchModelToData:\t",i, 'Found new month:', wt, '-->',t
+			if self.debug:	print "matchModelToData:\t",i, 'Found new month:', wt, '-->',t
 		
-
 		# Add match into array
 		try:
 			tmp = self.matches[(t,z,la,lo)][0]
