@@ -1,3 +1,5 @@
+from calendar import month_name
+
 """	This is a dictionary of all the terms that you'd need to pick out.
 	pftnames['Model Name']['Functional type']['currency']
 
@@ -337,7 +339,7 @@ def getkd():
 	kd['IFREMER-MLD']['cal'] = 'standard'	
 		
 	return kd
-def getmt():
+def getmt(): # Match Type
 	#mt: [data type][name] = [what to plot, ]
 	
 	mt = AutoVivification() # match type
@@ -521,6 +523,45 @@ def getmt():
 	#mt['PP']['PP'] 		= ['PP',]
 	return mt	
 	
-	
+def fancyUnits(units,debug=False):#'mg C/m^2',
+  	#if units in ['mg C/m^3','mg C/m^2',]:		return 'mg C m'+r'$^{-3}$'
+  	if units in ['umol/l, uM, mo/l, ug/l, ',]:	return 'mg m'+r'$^{-3}$' # silly nitrates multi units
+  	if units in ['mg C/m^3',]:			return 'mg C m'+r'$^{-3}$'
+  	if units in ['mg Chl/m3','ng/L',]:		return 'mg Chl m'+r'$^{-3}$'  	
+  	if units in ['mg C/m^3/d',]:			return 'mg C m'+r'$^{-3}$/day'
+  	if units in ['mg N/m^3',]:			return 'mg N m'+r'$^{-3}$'  
+  	if units in ['mg P/m^3',]:			return 'mg P m'+r'$^{-3}$'
+  	if units in ['mmol N/m^3', ]: 			return 'mmol N m'+r'$^{-3}$'
+  	if units in ['mmol P/m^3', ]: 			return 'mmol P m'+r'$^{-3}$'
+  	if units in ['mmol C/m^3', ]: 			return 'mmol C m'+r'$^{-3}$'
+  	if units in ['umol F/m^3',]:			return r'$\mu$'+'mol m'+r'$^{-3}$'
+  	if units in ['mmol S/m^3', ]: 			return 'mmol S m'+r'$^{-3}$'  	
+	if units in ['ug/l','mg/m^3','ug/L',]:  	return 'mg m'+r'$^{-3}$'
+	if units in ['10^12 g Carbon year^-1',]:	return r'$10^{12}$'+' g Carbon/year'
+	if units in ['mol C/m^',]:			return 'mol C/m'+r'$^{2}$'
+  	if units in ['mmmol/m^3', 'mmol/m^3','umol/l','micromoles/l',]:
+  		return 'mmol m'+r'$^{-3}$'
+	if units in ['mmol/m^2']:			return 'mmol m'+r'$^{-2}$' 
+	#if units in ['mmol/m^3']:			return 'mmol m'+r'$^{-3}$' 	
+	if units in ['degrees Celsius', 'degreesC', 'C',]:
+		return r'$\,^{\circ}\mathrm{C}$'
+	if units in ['psu','PSU',]:			return 'psu'
+	#if units in ['umol/l',]:return r'$\mu$'+'mol/l'
+	if units in ['m',]:				return 'm'	
+	if units in ['1/m',]:				return r'$\mathrm{m}^{-1}$'
+	#if units in ['ug/l']:			#	return 'mg m'+r'$^{-3}$'
+	if units in ['W/m^2']:				return 'W m'+r'$^{-2}$'
+	if units in ['umol/kg',]:			return r'$\mu$'+'mol kg'+r'$^{-1}$'
+	if units in ['nmol/kg',]:			return 'nmol kg'+r'$^{-1}$'
+	if units in ['tons C/d',]:			return 'tons C/day'
+	if units in ['ug/L/d','ug                  ']:	return 'mg m'+r'$^{-3}$'+'/day'#yes, there are lots of spaces
+	if units.replace(' ','') in ['ug',]:		return r'$\mu$'+'g' #r'$\mu$'+	
+	if units in ['1',]:			
+		print 'fancyUnits:\tWarning:\tStrange units:',units
+		return ''
+	if units in ['uatm',]:				return r'$\mu$'+'atm'
+	print 'fancyUnits:\tERROR:\t',units,' not found in fancyUnits.'
+	if debug:assert False
+	return units 		
 		
 	

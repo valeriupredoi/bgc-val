@@ -6,12 +6,9 @@ from sys import argv
 from os.path import exists,split, getmtime, basename
 from glob import glob
 from shelve import open as shOpen
-#from xtraPlots import hovmoeller
 from matplotlib.colors import LogNorm
 from matplotlib import pyplot, ticker
-#from numpy import array,ones
-#from numpy.ma import  min as mmin, max as mmax, np.ma.masked_where, array as ma,zeros as mzeros, masked,divide,nonzero,array as marray,masked_outside,masked_inside,clip, power
-#from numpy import std, isnan as npNaN, isinf as npInf, array,arange, delete, tile,NaN,mean,zeros,abs, ma,random
+
 from calendar import month_name
 from itertoolsmodule import product
 from scipy.stats import linregress
@@ -28,7 +25,7 @@ from ncdfView import ncdfView
 
 import UKESMpython as ukp 
 #from UKESMpython import ukp.shouldIMakeFile, ukp.folder,robinPlotPair,histPlot,scatterPlot,getOrcaIndexCC,makeLatSafe
-from pftnames import getLongName, AutoVivification, getkd, getmt
+from pftnames import getLongName, AutoVivification, getkd, getmt,fancyUnits
 
 #from wavelets import wavelet
 
@@ -47,7 +44,7 @@ noXYLogs 	= [ 'pCO2',
 		'salSurface', 		'salAll',	'salTransect',	'sal100m',	'sal200m','sal1000m',	'sal500m',]
 
 class makePlots:
-  def __init__(self,matchedDataFile,matchedModelFile, name, jobID='MEDUSA',year='clim',region='', compareCoords=True,saveShelve=True,plotallcuts=  False): #xfilename,yfilename,
+  def __init__(self,matchedDataFile,matchedModelFile, name, jobID='MEDUSA',year='clim',region='', compareCoords=True,saveShelve=True,plotallcuts=  True): #xfilename,yfilename,
 
   
   	self.xfn =matchedModelFile
@@ -176,7 +173,7 @@ class makePlots:
 	self.OceanMonths.extend(sorted([i for i in product(['All',],self.months)]))
 	
 	if plotallcuts:
-		 self.plotMonths	= 0#True
+		 self.plotMonths	= True
 		 self.plotdepthRanges	=0
 		 self.plotpercentiles	=0#True	
 		 self.plotLatRegions	=0
@@ -411,10 +408,12 @@ class makePlots:
 		#	print 'SalArtifact: x data:',xkey,datax.min(),datax.mean(),datax.max()
 		#	print 'SalArtifact: y data:',ykey,datay.min(),datay.mean(),datay.max()
 
-		try:xunits = fancyUnits(self.xnc.variables[xkey].units,debug=True)
-		except:xunits = ''
-		try:yunits = fancyUnits(self.ync.variables[ykey].units,debug=True)	
-		except:yunits = ''
+		#try:
+		xunits = fancyUnits(self.xnc.variables[xkey].units,debug=True)
+		#except:xunits = ''
+		#try:
+		yunits = fancyUnits(self.ync.variables[ykey].units,debug=True)	
+		#except:yunits = ''
 				
 		#try:xunits = fancyUnits(self.xnc.variables[xkey].units)
 		#except:xunits=''
