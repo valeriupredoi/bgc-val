@@ -8,7 +8,10 @@ from matplotlib import pyplot
 from mpl_toolkits.basemap import Basemap
 from scipy.stats.mstats import scoreatpercentile
 from scipy.stats import linregress
+from calendar import month_name
+from shelve import open as shOpen
 
+from ncdfView import ncdfView
 """	This is a catch all toolkit for the python methods and shorthands used in this code.
 """
 
@@ -30,7 +33,10 @@ def folder(name):
 		print 'makedirs ', name
 	return name
 
-
+def mnStr(month):
+	mn = '%02d' %  month
+	return mn
+	
 def getCommandJobIDandTime():
 	jobID = argv[1]	
 	timestamp = argv[2]
@@ -500,5 +506,198 @@ def makeLonSafeArr(lon):
 	 	 
 	assert False
 		      	
-		      	
+def makeMask(name,newSlice, xt,xz,xy,xx,xd):	  
+	print "makePlots:\tmakeMask:\tinitialise:\t",name, '\t',newSlice
+		
+	if newSlice in ['OffAxis', 'Overestimate','Underestimate','Matched', 
+			'Overestimate_2sig','Underestimate_2sig', 
+			'Overestimate_3sig','Underestimate_3sig',]:
+		print "makeMask:\tSlice", newSlice, "requires both datasets, and you should never see this"
+		assert False
+
+  	if newSlice == 'All': return np.zeros(len(xd))		
+			  	
+	nmask = np.ones(len(xd))	# everything masked	
+	nmask = np.zeros(len(xd))	# nothing masked	
+
+ 	if newSlice in ['maskBelowBathy', 'OnShelf','OffShelf',]:
+		bathync = ncdfView("data/ORCA1bathy.nc",Quiet=True)
+		bathy = abs(bathync("bathymetry")[:])
+		latcc, loncc =  bathync("lat")[:], bathync("lon")[:]	
+		bathync.close()
+		shelfDepth=500.
+		shelveFn = folder("shelves/MaredatErsemMatch-latlon/"+name)+"diag_"+name+".shelve"
+		try:
+			s = shOpen(shelveFn)		
+			lldict  = s['lldict']
+			s.close()
+		except:	lldict={}	
+	
+		print "Bathy mask: before mask:", newSlice, nmask.sum(), 'of', len(nmask)			  	
+		for i,z in enumerate(xz):
+			try:
+				la,lo = lldict[(xy[i],xx[i])]
+			except:
+				la,lo = getOrcaIndexCC(xy[i],xx[i],latcc,loncc,debug=False)
+				lldict[(xy[i],xx[i])] = la,lo
+			if la==lo==-1:
+				print "Corner case:", la,lo,bathy[la,lo] 
+				nmask[i]=1
+			if newSlice == "maskBelowBathy":
+				if (bathy[la,lo]-10.) > abs(z): nmask[i]=1	
+			if newSlice == "OnShelf":
+				if  bathy[la,lo] >= shelfDepth: nmask[i]=1	
+			if newSlice == "OffShelf":
+				if  bathy[la,lo] < shelfDepth:  nmask[i]=1
+		
+			if i%100000==0 or i==(len(xz)+1):
+				s = shOpen(shelveFn)		
+				s['lldict'] = lldict 
+				s.close()			
+		print "Bathy mask:", newSlice, nmask.sum(), 'of', len(nmask)
+		return nmask
+	
+
+	if newSlice in ['1-99pc','5-95pc','0-99pc'] or newSlice in ['0-1pc','1-5pc','5-25pc','25-40pc','40-60pc','60-75pc','75-95pc','95-99pc','99-100pc',]:	  		
+		if newSlice in ['0-1pc','1-5pc','5-25pc','25-40pc','40-60pc','60-75pc','75-95pc','95-99pc','99-100pc',]:
+		  	tmp  = newSlice.replace('pc','').split('-')
+		  	pcmin,pcmax = float(tmp[0]),float(tmp[1])
+		  	print newSlice, pcmin, pcmax
+		  	if pcmin == 0:	ymin = yd.min()
+			else:		ymin = scoreatpercentile(yd,pcmin)
+		  	if pcmax == 100:ymax = yd.max()
+			else:		ymax = scoreatpercentile(yd,pcmax)
+				
+		if newSlice in ['1-99pc',]:
+			ymin = scoreatpercentile(xd,1)
+			ymax = scoreatpercentile(xd,99)
+		if newSlice in ['5-95pc',]:
+			ymin = scoreatpercentile(xd,5)
+			ymax = scoreatpercentile(xd,95)
+		
+		if newSlice in ['0-99pc',]:
+			ymin = xd.min()
+			ymax = scoreatpercentile(xd,99)	
+		print  "makeMask:\t",newSlice,ymin,ymax
+		return  np.ma.masked_outside(xd,ymin, ymax).mask		
+	months = {month_name[i+1]:i for i in xrange(0,12) }
+	if newSlice in months.keys():
+		print "masking a month:",newSlice,xt[0], xt[-1]
+		return np.ma.masked_where( xt != months[newSlice],nmask).mask 
+	
+	if newSlice == "0.1":	return np.ma.masked_where( xd==0.1, xd).mask
+	if newSlice == "0.2":	return np.ma.masked_where( xd==0.2, xd).mask
+	if newSlice == "0.01":	return np.ma.masked_where( xd==0.01, xd).mask	
+	
+	
+	if newSlice == 'Shallow':	return np.ma.masked_where( xz > 200.,nmask).mask
+	if newSlice == 'Depth':		return np.ma.masked_where( xz < 200.,nmask).mask
+	if newSlice == 'Zoom':		return np.ma.masked_where( xd > 10.,nmask).mask 
+	if newSlice == 'Zoom5':		return np.ma.masked_where( xd > 5., nmask).mask 
+	if newSlice == 'Zoom2':		return np.ma.masked_where( xd > 2., nmask).mask 
+	if newSlice == 'nonZero':	return np.ma.masked_where( xd == 0.,nmask).mask 			
+	if newSlice == 'aboveZero':	return np.ma.masked_where( xd <= 0.,nmask).mask
+	if newSlice == 'Tropics':	return np.ma.masked_where( abs(xy) >23.,nmask).mask 			
+	if newSlice == 'Equatorial':	return np.ma.masked_where( abs(xy) >7.,nmask).mask 
+	if newSlice == 'Temperate':	return np.ma.masked_where( (abs(xy) <23.)+(abs(xy) >60.),nmask).mask 	
+	if newSlice == 'NorthTropics':	return np.ma.masked_where( (xy >23.)+(xy < 7.),nmask).mask 			
+	if newSlice == 'SouthTropics':	return np.ma.masked_where( (xy <-23.)+(xy > -7.),nmask).mask 				
+	if newSlice == 'NorthTemperate':return np.ma.masked_where( (xy <23.)+(xy >60.),nmask).mask 			
+	if newSlice == 'SouthTemperate':return np.ma.masked_where( (xy >-23.)+(xy <-60.),nmask).mask 	
+	if newSlice == 'Arctic':	return np.ma.masked_where( abs(xy) < 60.,nmask).mask
+	if newSlice == 'Antarctic':	return np.ma.masked_where( xy > -60.,nmask).mask 			
+	if newSlice == 'NorthArctic':	return np.ma.masked_where( xy < 60.,nmask).mask 														
+	if newSlice == 'SalArtifact': 	return np.ma.masked_where( (xd > 15.)+(xd < 10.),nmask).mask 
+	if newSlice == 'NitArtifact':	return np.ma.masked_where( (xd > 6.)+(xd < 2.),  nmask).mask 
+	if newSlice == 'Depth_0-10m': 	return np.ma.masked_where( abs(xz) > 10.,nmask).mask 
+	if newSlice == 'Depth_10-20m': 	return np.ma.masked_where( (abs(xz) < 10.)+(abs(xz) > 20.),nmask).mask 
+	if newSlice == 'Depth_20-50m': 	return np.ma.masked_where( (abs(xz) > 20.)+(abs(xz) > 50.),nmask).mask 
+	if newSlice == 'Depth_50-100m': return np.ma.masked_where( (abs(xz) < 50.)+(abs(xz) > 100.),nmask).mask
+	if newSlice == 'Depth_100-500m':return np.ma.masked_where( (abs(xz) < 100.)+(abs(xz) > 500.),nmask).mask
+	if newSlice == 'Depth_500m': 	return np.ma.masked_where(  abs(xz) < 500.,nmask).mask	
+
+	if newSlice == 'TypicalIron': 	return np.ma.masked_where( (xd<=0.) *(xd<=4.),nmask).mask 
+	
+	if newSlice == 'BlackSea': 	
+		mx = np.ma.masked_outside(xx, 25.9,41.7).mask
+		my = np.ma.masked_outside(xy, 39.8,48.1).mask				
+		return np.ma.masked_where( mx+my,nmask).mask 
+		
+	if newSlice == 'ignoreBlackSea':
+		mx = np.ma.masked_inside(xx, 25.9,41.7).mask
+		my = np.ma.masked_inside(xy, 39.8,48.1).mask				
+		return np.ma.masked_where( mx*my,nmask).mask 	
+		
+	if newSlice == 'BalticSea': 	
+		mx = np.ma.masked_outside(xx, 12.5,30.7).mask
+		my = np.ma.masked_outside(xy, 53.0,66.4).mask				
+		return np.ma.masked_where( mx+my,nmask).mask 
+		
+	if newSlice == 'ignoreBalticSea':
+		mx = np.ma.masked_inside(xx, 12.5,30.7).mask
+		my = np.ma.masked_inside(xy, 53.0,66.4).mask				
+		return np.ma.masked_where( mx*my,nmask).mask 	
+
+	if newSlice == 'RedSea': 	
+		mx = np.ma.masked_outside(xx, 30.0,43.0).mask
+		my = np.ma.masked_outside(xy, 12.4,30.4).mask				
+		return np.ma.masked_where( mx+my,nmask).mask 
+		
+	if newSlice == 'ignoreRedSea':
+		mx = np.ma.masked_inside(xx, 30.0,43.0).mask
+		my = np.ma.masked_inside(xy, 12.4,30.4).mask				
+		return np.ma.masked_where( mx*my,nmask).mask 	
+		
+	if newSlice == 'PersianGulf': 	
+		mx = np.ma.masked_outside(xx, 47.5, 56.8).mask
+		my = np.ma.masked_outside(xy, 22.3, 32.1).mask				
+		return np.ma.masked_where( mx+my,nmask).mask 
+		
+	if newSlice == 'ignorePersianGulf':
+		mx = np.ma.masked_inside(xx, 47.5, 56.8).mask
+		my = np.ma.masked_inside(xy, 22.3, 32.1).mask				
+		return np.ma.masked_where( mx*my,nmask).mask 										
+		
+	if newSlice == 'ignoreMediteranean':
+		mx  = np.ma.masked_inside(xx, -5.8, 42.5).mask #E
+		my  = np.ma.masked_inside(xy, 30., 43.).mask	#N			
+		mx2 = np.ma.masked_inside(xx, 0., 20.).mask #E
+		my2 = np.ma.masked_inside(xy, 32., 47.).mask #N
+		m = mx*my+ mx2*my2
+		return np.ma.masked_where( m,nmask).mask 		
+
+	if newSlice in ['ignoreInlandSeas', 'IndianOcean']: 
+		mx = np.ma.masked_inside(xx, 47.5,  56.8).mask * np.ma.masked_inside(xy, 22.3, 32.1).mask	
+		mx += np.ma.masked_inside(xx, 30.0, 43.0).mask * np.ma.masked_inside(xy, 12.4,30.4).mask	
+		mx += np.ma.masked_inside(xx, 12.5, 30.7).mask * np.ma.masked_inside(xy, 53.0,66.4).mask
+		mx += np.ma.masked_inside(xx, 25.9, 41.7).mask * np.ma.masked_inside(xy, 39.8,48.1).mask		
+		mx += np.ma.masked_inside(xx, -5.8, 42.5).mask * np.ma.masked_inside(xy, 30., 43.).mask
+		mx += np.ma.masked_inside(xx, 0.0,  20.0).mask * np.ma.masked_inside(xy, 32., 47.).mask 
+		if newSlice == 'ignoreInlandSeas':return np.ma.masked_where( mx,nmask).mask 		
+		mx += np.ma.masked_outside(xx, 25.,100.).mask
+		my = np.ma.masked_outside(xy, -50.,30.).mask
+		if newSlice == 'IndianOcean':return np.ma.masked_where( mx+my,nmask).mask 
+
+	if newSlice == 'AntarcticOcean': 	return np.ma.masked_where(  xy >-50.,nmask).mask 
+	if newSlice == 'ArcticOcean': 		return np.ma.masked_where(  xy < 60.,nmask).mask 
+	if newSlice == 'ignoreArtics':		return np.ma.masked_outside(xy,-70., 70.).mask
+	if newSlice == 'ignoreMidArtics':	return np.ma.masked_outside(xy,-65., 65.).mask
+	if newSlice == 'ignoreMoreArtics':	return np.ma.masked_outside(xy,-60., 60.).mask
+	if newSlice == 'ignoreExtraArtics':	return np.ma.masked_outside(xy,-50., 50.).mask 
+	if newSlice == 'NorthAtlanticOcean': 	return np.ma.masked_outside(makeLonSafeArr(xx), -80.,0.).mask + np.ma.masked_outside(xy, 10.,60.).mask
+	if newSlice == 'SouthAtlanticOcean':	return np.ma.masked_outside(makeLonSafeArr(xx), -65.,20.).mask + np.ma.masked_outside(xy, -50.,-10.).mask
+
+	if newSlice == 'NorthPacificOcean':
+		mx = np.ma.masked_inside(xx,-100., 120. ).mask
+		mx += np.ma.masked_inside(xx,260., 365. ).mask		
+		mx += np.ma.masked_outside(xy,10., 60. ).mask
+		return mx
+	
+	if newSlice == 'SouthPacificOcean': 	
+		mx = np.ma.masked_inside(xx,-70., 140. ).mask
+		mx += np.ma.masked_inside(xx,290., 365. ).mask		
+		my = np.ma.masked_outside(xy,-10., -50. ).mask
+		return np.ma.masked_where( mx+my,nmask).mask 
+	print "Mask region not accepted:",newSlice
+	assert False		      	
 		      		
