@@ -235,7 +235,7 @@ def robinPlotPair(lons, lats, data1,data2,filename,titles=['',''],lon0=0.,marble
 	m1.drawmeridians(np.arange(0.,420.,60.))
 
 	if doLog and rbmi*rbma <=0.:
-		print "Masking",
+		print "UKESMpython:\trobinPlotPair: \tMasking",
 		data1 = np.ma.masked_less_equal(ma.array(data1), 0.)
 		data2 = np.ma.masked_less_equal(ma.array(data2), 0.)
 	if scatter:
@@ -284,13 +284,13 @@ def robinPlotPair(lons, lats, data1,data2,filename,titles=['',''],lon0=0.,marble
 
 	pyplot.title(titles[1])			
 		
-	print "scatterPlot:\tSaving:" , filename
+	print "UKESMpython:\trobinPlotPair: \tSaving:" , filename
 	pyplot.savefig(filename ,dpi=dpi,  bbox_inches='tight')		
 	pyplot.close()
 	
 
 def histPlot(datax, datay,  filename, Title='', labelx='',labely='',xaxislabel='', logx=False,logy=False,nbins=50,dpi=100,minNumPoints = 3):
-	print "histplot:\t preparing", Title, datax.size, datay.size
+	print "UKESMpython:\thistplot:\t preparing", Title, datax.size, datay.size
 	fig = pyplot.figure()		
 	ax = pyplot.subplot(111)
 	xmin =  np.ma.min([np.ma.min(datax),np.ma.min(datay)])
@@ -298,11 +298,11 @@ def histPlot(datax, datay,  filename, Title='', labelx='',labely='',xaxislabel='
 	
 	if xmin*xmax <= 0.:
 		logx=False
-		print "histPlot:\tx value below zero, can not run log scale.", xmin, '\t',labelx,'(x):', np.ma.min(datax), '\t',labely,'(y):', np.ma.min(datay)
+		print "UKESMpython:\thistPlot:\tx value below zero, can not run log scale.", xmin, '\t',labelx,'(x):', np.ma.min(datax), '\t',labely,'(y):', np.ma.min(datay)
 	
 	
 	if datax.size < minNumPoints and datay.size < minNumPoints:
-		print "histPlot:\tThere aren't enough points for a sensible dataplot: ", datax.size
+		print "UKESMpython:\thistPlot:\tThere aren't enough points for a sensible dataplot: ", datax.size
 		return		
 
 	
@@ -328,12 +328,11 @@ def histPlot(datax, datay,  filename, Title='', labelx='',labely='',xaxislabel='
 	pyplot.title(Title)	
 	pyplot.xlabel(xaxislabel)
 	#pyplot.ylabel(labely)
-
-
 	
-	print "histPlot:\tSaving:" , filename
+	print "UKESMpython:\thistPlot:\tSaving:" , filename
 	pyplot.savefig(filename ,dpi=dpi,  bbox_inches='tight')
 	pyplot.close()	
+	
 		
 def strRound(val,i=4):
 	if round(val,i)==0. and i==4:return ' < 0.0001'
@@ -410,12 +409,12 @@ def scatterPlot(datax, datay,  filename, Title='', labelx='',labely='', logx=Fal
 
 
 
-	print "scatterPlot:\trange:",plotrange
+	print "UKESMpython:\tscatterPlot:\trange:",plotrange
 	
 	if xmin*xmax <= 0. or ymin*ymax <=.0:
 		logx=False
 		logy=False
-		print "scatterPlot:\tx value below zero, can not run log scale.", '\t',labelx,'(x):', xmin, '\t',labely,'(y):', ymin		
+		print "UKESMpython:\tscatterPlot:\tx value below zero, can not run log scale.", '\t',labelx,'(x):', xmin, '\t',labely,'(y):', ymin		
 	
 	if logx: ax.set_xscale('log')
 	if logy: ax.set_yscale('log')
@@ -439,9 +438,7 @@ def scatterPlot(datax, datay,  filename, Title='', labelx='',labely='', logx=Fal
 		#cb.set_label('np.log10(N)')
 					
 	else:
-		pyplot.scatter(datax, datay, marker ='o')
-
-		
+		pyplot.scatter(datax, datay, marker ='o')	
 
 	if bestfitLine:
 		addStraightLineFit(ax, datax, datay, showtext =True,addOneToOne=True, extent=plotrange) 
@@ -453,7 +450,7 @@ def scatterPlot(datax, datay,  filename, Title='', labelx='',labely='', logx=Fal
 	pyplot.xlabel(labelx)
 	pyplot.ylabel(labely)
 
-	print "scatterPlot:\tSaving:" , filename
+	print "UKESMpython:\tscatterPlot:\tSaving:" , filename
 	pyplot.savefig(filename ,dpi=dpi,  bbox_inches='tight')
 	pyplot.close()			
 			

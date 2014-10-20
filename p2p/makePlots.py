@@ -114,7 +114,7 @@ class makePlots:
 	 self.plotOceanMonths   = 0	 	 	 
 
 	
-	if self.plotMonths: self.newSlices.extend(self.months.keys())
+	if self.plotMonths: 	 self.newSlices.extend(self.months.keys())
 	if self.plotdepthRanges: self.newSlices.extend(self.depthRanges)
 	if self.plotpercentiles: self.newSlices.extend(self.percentiles)
 	if self.plotLatRegions:	 self.newSlices.extend(self.latregions)	
@@ -122,12 +122,8 @@ class makePlots:
 	if self.plotSeas: 	 self.newSlices.extend(self.Seas)			
 	if self.plotOceans: 	 self.newSlices.extend(self.Oceans)
 	if self.plotOceanMonths: self.newSlices.extend(self.OceanMonths)
-	
-	print "New SLICES:", self.newSlices
-	
+	print "New SLICES:", 	 self.newSlices
 	self.plotWithSlices()
-
-	
 	    	
   	self.xnc.close()
   	self.ync.close()  	
@@ -289,20 +285,16 @@ class makePlots:
 		fig = pyplot.figure()
 		fig.set_size_inches(8, 12)		
 		ax = pyplot.subplot(411)
-		#ax = pyplot.subplot2grid((5,1),(0, 0))
 
-		#pyplot.subplots_adjust(hspace = 0.35)#fig.tight_layout()
 		rects1 = pyplot.hist((dx,dy),label=[xkey,ykey],histtype='bar',bins=72/2)#,alpha=0.2)
 		pyplot.legend()
 
 		ax.set_title(xkey + ' and '+ykey)		
-		#ax = pyplot.subplot2grid((5,1),(1, 0))
 		ax = pyplot.subplot(412)		
 		rects3 = pyplot.hist(dx - dy,bins=72,label=[xkey + ' - '+ykey])
 		pyplot.legend()
 
 		ax = pyplot.subplot(212)
-	#	ax = pyplot.subplot2grid((5,1),(2, 0),rowspan=3)
 		pyplot.hexbin(dx, dy, bins='log',gridsize = 72, cmap=pyplot.get_cmap('gist_yarg'),mincnt=0)#extent=plotrange,
 		cb = pyplot.colorbar()				
 		mmax = max(dx.max(),dy.max())
@@ -310,24 +302,20 @@ class makePlots:
 			
 		fx = np.arange(mmin, mmax, (mmax-mmin)/20.)
 		pyplot.plot(fx,fx, 'k--')
-		#pyplot.autoscale(enable=True, axis='both', tight=True)
 		ax.set_aspect("equal")
 
 		pyplot.xlabel(self.xtype+' '+xkey)
 		pyplot.ylabel(self.ytype+' '+ykey)
 
 		print "\tSaving: " + filename
-		pyplot.savefig(filename,dpi=100,)# bbox_inches='tight')
+		pyplot.savefig(filename,dpi=100,)
 		pyplot.close()	  	
 
   	
  		
   def getFileName(self,newSlice,xkey,ykey):
 	  file_prefix = ukp.folder(['images',self.compType,'Slices-'+self.basicCut,self.name,])
-	  #if type(newSlice) in [type(['a','b',]),type(('a','b',))]:
-	  #	print 'getFileName:', newSlice,
-	  #	newSlice = ''.join(newSlice)
-	  #	print '-->',newSlice
+
 	  file_suffix = '_'+self.xtype+'.png'
 	  if newSlice in self.months.keys():
 		filename = ukp.folder([file_prefix,'months'])+self.name+'_'+mnStr(self.months[newSlice])+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
@@ -356,7 +344,7 @@ class makePlots:
 
 
   def makeMask(self, newSlice, xt,xz,xy,xx,xd):	  
-	print "makeMask:\tinitialise:\t",self.name, '\t',newSlice
+	print "makePlots:\tmakeMask:\tinitialise:\t",self.name, '\t',newSlice
 		
 	if newSlice in ['OffAxis', 'Overestimate','Underestimate','Matched', 
 			'Overestimate_2sig','Underestimate_2sig', 
