@@ -2,32 +2,25 @@
 from netCDF4 import num2date
 from datetime import datetime
 from sys import argv
-#from re import sub
 from os.path import exists,split, getmtime, basename
 from glob import glob
 from shelve import open as shOpen
 from matplotlib.colors import LogNorm
 from matplotlib import pyplot, ticker
-
 from calendar import month_name
 from itertoolsmodule import product
 from scipy.stats import linregress
 from StatsDiagram import StatsDiagram
 from scipy.stats.mstats import scoreatpercentile
-#from BGCnames import fancyUnits
-
 import numpy as np 
 
-#from deMoraTools import getLogTicks,folder,mnStr
+# imports from other gitlab repositories:
 from ncdfView import ncdfView
 
-
-
+#local imports
 import UKESMpython as ukp 
-#from UKESMpython import ukp.shouldIMakeFile, ukp.folder,robinPlotPair,histPlot,scatterPlot,getOrcaIndexCC,makeLatSafe
 from pftnames import getLongName, AutoVivification, getkd, getmt,fancyUnits
 
-#from wavelets import wavelet
 
     
 
@@ -35,7 +28,7 @@ from pftnames import getLongName, AutoVivification, getkd, getmt,fancyUnits
 
 """
 
-BioLogScales 	= ['bac','mesozoo','diatoms','picophyto','microzoo','PP','Seawifs', 'iron'] 	
+#BioLogScales 	= ['bac','mesozoo','diatoms','picophyto','microzoo','PP','Seawifs', 'iron'] 	
 noXYLogs 	= [ 'pCO2',
 		#'nitrateSurface', 	'nitrateAll',	'nitrateTransect',
 		#'phosphateSurface',	'phosphateAll',	'phosphateTransect',
@@ -60,7 +53,6 @@ class makePlots:
 
   	self.saveShelve = saveShelve
   	self.kd = getkd()
-  	self.BioLogScales = BioLogScales
   	self.xnc = ncdfView(self.xfn,Quiet=True)
   	self.ync = ncdfView(self.yfn,Quiet=True)
 
@@ -294,59 +286,27 @@ class makePlots:
 	
 	
 	if mt[self.ytype][self.name] == ['Chlorophylla',]:	yd = yd/1000.
-
-
-	#maskx = ukp.makeMask(self.name,newSlice,xt,xz,xy,xx,xd).astype(int)
-	#masky = ukp.makeMask(self.name,newSlice,yt,yz,yy,yx,yd).astype(int)
-
-	#basicCutMask = 
-        #if self.name in ['mld_DT02','mld_DR003','mld_DReqDTm02']:
-        #	mldMask = self.ync('mask')[:]
-        #	mldMask = np.ma.masked_where(mldMask==0.,mldMask).mask
-        	#basicCutMask += np.ma.masked_where(yd > 10.E6,yd).mask
-        	        
-	#if self.basicCut in ['Standard',]:	  	  
-	#    print "Preparing Basic Cuts is Standard (5-95, no inland seas, off shelf)"	    
-	#    for ns in self.standardCuts: 
-	#	if self.name in ['tempSurface','tempTransect', 'tempAll'] and ns in ['aboveZero',]:continue # no negative or zero values allowed.
-	#	if self.name not in ['nitrateSurface','nitrateAll','nitrateTransect',] 		and ns in ['0.1','0.2']:continue	    			
-	#	if self.name not in ['phosphateSurface','phosphateAll','phosphateTransect',] 	and ns in ['0.01',]:continue
-	#	basicCutMask += ukp.makeMask(self.name,ns,xt,xz,xy,xx,xd).astype(int)
-	 #  	basicCutMask += ukp.makeMask(self.name,ns,yt,yz,yy,yx,yd).astype(int)
-	   
+   
 	
-
+	#####
+	# Build mask
 	xmask = ukp.makeMask(self.name,'All',xt,xz,xy,xx,xd).astype(int)
-	ymask = ukp.makeMask(self.name,'All',yt,yz,yy,yx,yd).astype(int)
-	  	  	
-	# if newSlice == "maskBelowBathy" and (self.name.lower().find('surface')>-1 or self.name in ['Seawifs',]):continue
-	#  if newSlice == 'Depth' and self.name.lower().find('surface')>-1: continue
-	#  if newSlice in  self.depthRanges and self.name.lower().find('surface')>-1: continue	 
-	#  if newSlice == 'SalArtifact' and self.name not in ['salTransect', 'salSurface']:continue
-	#  if newSlice == 'NitArtifact' and self.name not in ['nitTransect', 'nitSurface']:continue
-	  
+	ymask = ukp.makeMask(self.name,'All',yt,yz,yy,yx,yd).astype(int) 
 
-	  
-	  
-
-	if type(newSlice) in [type(['a',]),type(('a',))]:
-	    for n in newSlice:
-	    	# newSlice is actaully a list of multiple slices.
-	  	xmask += ukp.makeMask(self.name,n,xt,xz,xy,xx,xd).astype(int)	  
-	  	ymask += ukp.makeMask(self.name,n,yt,yz,yy,yx,yd).astype(int)	  
-		
-	elif newSlice == 'Standard':
-		# Standard is a shorthand for my favourite cuts.
-	 	#xmask = ukp.makeMask(self.name,'All',xt,xz,xy,xx,xd).astype(int)
-		#ymask = ukp.makeMask(self.name,'All',yt,yz,yy,yx,yd).astype(int)	  	
+	if type(newSlice) in [type(['a',]),type(('a',))]:    	# newSlice is actaully a list of multiple slices.
+	   	for n in newSlice:
+	  		xmask += ukp.makeMask(self.name,n,xt,xz,xy,xx,xd).astype(int)	  
+		  	ymask += ukp.makeMask(self.name,n,yt,yz,yy,yx,yd).astype(int)	  
+		  	
+	elif newSlice == 'Standard':				# Standard is a shorthand for my favourite cuts.
 	  	for ns in self.standardCuts: 
 			if self.name in ['tempSurface','tempTransect', 'tempAll'] and ns in ['aboveZero',]:continue # Don't cut negative values from temerature.
 			#if self.name not in ['nitrateSurface','nitrateAll','nitrateTransect',] 		and ns in ['0.1','0.2']:continue	    			
 			#if self.name not in ['phosphateSurface','phosphateAll','phosphateTransect',] 	and ns in ['0.01',]:continue	    						
 	  		xmask += ukp.makeMask(self.name,ns,xt,xz,xy,xx,xd).astype(int)
 	  	 	ymask += ukp.makeMask(self.name,ns,yt,yz,yy,yx,yd).astype(int)	
-	else:
-		# Any simple straight cut.
+	  	 	
+	else:						    	# newSlice is actaully a list of multiple slices.
 	  	xmask += ukp.makeMask(self.name,newSlice,xt,xz,xy,xx,xd).astype(int)
 	  	ymask += ukp.makeMask(self.name,newSlice,yt,yz,yy,yx,yd).astype(int)
 	  	print 'plotWithSlices:\t',xmask.sum(), ymask.sum() 
@@ -356,18 +316,8 @@ class makePlots:
         	mldMask = self.ync('mask')[:]
         	mldMask = np.ma.masked_where(mldMask==0.,mldMask).mask        
         	ymask += mldMask
-
-	#  keepMaskAsIs = ['All','TypicalIron',]
-	#  keepMaskAsIs.extend(self.QualityCuts)
-	 # keepMaskAsIs.extend(self.percentiles)	  
 	  
 	nmask = (xmask + ymask).astype(bool)
-	  	
-	  #if self.basicCut in ['Standard',] and newSlice not in keepMaskAsIs:	
-	#	  nmask = (xmask + ymask + basicCutMask).astype(bool)  	# Apply cuts across thge board.
-	 # else:
-	#  nmask = (xmask + ymask).astype(bool)
-	  	
 				
 	print "plotWithSlices:\tNew Mask,",newSlice,", covers ",nmask.sum(),' of ', len(xt)
 	
@@ -376,19 +326,24 @@ class makePlots:
 		return
 
 
-	  
+	#####
+	# Make plots. (loop - because sometimes more than one value is compared against the data.
 	for xkey,ykey in plotpairs:
 	  	filename = self.getFileName(newSlice,xkey,ykey)
-		print "plotWithSlices:\tinvestigating:", filename
+		print "plotWithSlices:\tINFO:\tinvestigating:", filename
 		if not ukp.shouldIMakeFile([self.xfn,self.yfn],filename,debug=False):continue
 		
+		#####
+		# Extend mask for xkey/ykey
 		x = extractData(self.xnc,mt[self.xtype][self.name], key=xkey)
 		y = extractData(self.ync,mt[self.ytype][self.name], key=ykey)
 		
 		fullmask = nmask + x.mask + y.mask + np.ma.masked_invalid(x).mask + np.ma.masked_invalid(y).mask 
 		if fullmask.sum() >= len(x):
-			print "plotWithSlices:\tNew Mask,",newSlice,", covers entire dataset.",fullmask.sum(), len(xt)
+			print "plotWithSlices:\tWARNING:\tNew Mask,",newSlice,", covers entire dataset.",fullmask.sum(), len(xt)
 			continue
+			
+		#####
 		# Apply mask to all data.	
 		nmxx = np.ma.masked_where(fullmask, xx).compressed()
 		nmxy = np.ma.masked_where(fullmask, xy).compressed()
@@ -401,16 +356,19 @@ class makePlots:
 		datax = np.ma.masked_where(fullmask, x).compressed()
 		datay = np.ma.masked_where(fullmask, y).compressed()
 		
-		if mt[self.ytype][self.name] == ['Chlorophylla',]:	datay = datay/1000.		
-		
 		if 0 in [len(datax),len(datay),len(nmxx),len(nmxy),len(nmxz),len(nmyx),len(nmyy),len(nmyz)]:
-			print 'plotWithSlices:\tslice:',newSlice,'There is a zero in :',	 [len(datax),len(datay),len(nmxx),len(nmxy),len(nmxz),len(nmyx),len(nmyy),len(nmyz)]
+			print 'plotWithSlices:\tWARNING:\tslice:',newSlice,'There is a zero in one of the fields.' 
 			continue	
+						
+		dmin = min([datax.min(),datay.min()])
+		dmax = max([datax.max(),datay.max()])
+		if dmin == dmax: 
+			print "plotWithSlices:\tWARNING:\tminimum == maximum,\t (",dmin,' == ',dmax,')'
+			continue
+			
 
-		#if newSlice == 'SalArtifact':
-		#	print 'SalArtifact: x data:',xkey,datax.min(),datax.mean(),datax.max()
-		#	print 'SalArtifact: y data:',ykey,datay.min(),datay.mean(),datay.max()
-
+		#####
+		# Prepare units, axis labels and titles.
 		try:    xunits = fancyUnits(mt[self.xtype][self.name]['units'])
 		except: xunits = fancyUnits(self.xnc.variables[xkey].units,debug=True)
 
@@ -423,25 +381,13 @@ class makePlots:
 		
 		try: title = getLongName(newSlice)+' '+getLongName(self.name)
 		except:title = newSlice+' '+xkey+' vs '+ykey
-		
 
 		gs = 50
 		robfnxy  = filename.replace('.png','_xyrobin.png')
 		histfnxy = filename.replace('.png','_hist.png')
-		cufn 	 = filename.replace('.png','_cusum.png')	
-		
-
-		dmin = min([datax.min(),datay.min()])
-		dmax = max([datax.max(),datay.max()])
-
-		if dmin == dmax: 
-			print "plotWithSlices:\tdmin == dmax"
-			continue
-			
-		if not datax.size or not datay.size:
-			print "plotWithSlices:\tNo data for this cut"
-			continue
-							
+				
+		#####
+		# Robinson projection plot		
 		if ukp.shouldIMakeFile([self.xfn,self.yfn],robfnxy,debug=False) or True:
 			ti1 = getLongName(self.xtype)+' ' +getLongName(newSlice)+' '+getLongName(self.name)
 			ti2 =  getLongName(self.ytype)+' ' +getLongName(newSlice)+' '+getLongName(self.name)	
@@ -456,21 +402,23 @@ class makePlots:
 						vmin=np.ma.log10(dmin),vmax=np.ma.log10(dmax),
 						cbarlabel='log$_{10}$('+xunits+')',
 						doLog=False)
-		
+		#####
+		# Simultaneous histograms plot	
 		if ukp.shouldIMakeFile([self.xfn,self.yfn],histfnxy,debug=False):
 			xaxislabel= getLongName(self.name)+', '+ xunits
-			#if self.name in self.BioLogScales: 
 			if self.name in noXYLogs:				
 				ukp.histPlot(datax, datay,  histfnxy, Title=title, labelx=self.xtype,labely=self.ytype,xaxislabel =xaxislabel)	
 			else:	ukp.histPlot(datax, datay,  histfnxy, Title=title, labelx=self.xtype,labely=self.ytype,xaxislabel =xaxislabel, logx = True, )
 				
-				
-		
+		#####
+		# Scatter  (hexbin) plot			
 		if self.name in noXYLogs:
 			ukp.scatterPlot(datax, datay,  filename, Title=title, labelx=labelx,labely=labely, bestfitLine=True,gridsize=gs)
 		else:	ukp.scatterPlot(datax, datay,  filename, Title=title, labelx=labelx,labely=labely, bestfitLine=True,gridsize=gs,logx = True, logy=True,)
 		
-		
+
+		#####
+		# Save fit in a shelve file.		
 		if self.saveShelve:
 			if type(newSlice) in [type(['a','b',]),type(('a','b',))]:	
 				ns = ''.join(newSlice)

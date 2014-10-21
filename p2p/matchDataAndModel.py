@@ -18,6 +18,7 @@ from datetime import datetime
 #from iMarNetPython import makeLatSafe, makeLonSafe,makeLonSafeArr
 #from UKESMpython import shouldIMakeFile, folder
 import UKESMpython as ukp 
+from pftnames import getkd
 
 # imports from other gitlab repositories:
 from ncdfView import ncdfView	
@@ -75,10 +76,10 @@ class matchDataAndModel:
 	self.compType= 'MaredatMatched-'+self.jobID+'-'+self.year
 		
 	if workingDir =='':
-		self.workingDir = ukp.folder('/data/euryale7/scratch/ledm/ukesm_postProcessed/ukesm/outNetCDF/'+'/'.join([self.compType,self.dataType+self.region]) )
+		self.workingDir = ukp.folder('/data/euryale7/scratch/ledm/ukesm_postProcessed/ukesm/outNetCDF/'+'/'.join([self.compType,self.dataType]) )
 	else: 	self.workingDir = workingDir	
 
-	self.matchedShelve 	= ukp.folder(['/tmp','shelves','MaredatModelMatch',self.dataType+self.region])+self.jobID+'_'+self.dataType+'.shelve'
+	self.matchedShelve 	= ukp.folder(['/tmp','shelves','MaredatModelMatch',self.dataType])+self.jobID+'_'+self.dataType+'.shelve'
 	self.matchesShelve 	= ukp.folder(['shelves','MaredatModelMatch',])+'WOAtoORCA1.shelve'
 
 	self.workingDirTmp = 	ukp.folder(self.workingDir+'tmp')
@@ -206,11 +207,13 @@ class matchDataAndModel:
 	except:
 		lldict={}
 	finds = 0	
+		
 	if maxIndex+1 <len(is_i):
 	    zdict={}
 	    tdict={}
-	    	
-	    if self.dataType in ['temp','sal','nitrate','phosphate','silicate',]:
+	    
+	    WOADatas = [a+self.region for a in ['temp','sal','nitrate','phosphate','silicate',]]
+	    if self.dataType in WOADatas:
   	   	 is_t	= ncIS('time')[:]	
   	   	 is_z 	= ncIS('depth')[:]
   	   	 is_la	= ncIS('lat')[:]

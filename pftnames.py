@@ -339,8 +339,21 @@ def getkd():
 	kd['IFREMER-MLD']['cal'] = 'standard'	
 		
 	return kd
+	
 def getmt(): # Match Type
-	#mt: [data type][name] = [what to plot, ]
+
+	"""
+	getmt(): Get Match Type. 
+	Typical usage:
+		mt[ModelName or Data source][varaible name] = [list of variable names as they appears in the netcdf]
+		
+	However, it is possible tha you want to plot a combination of variables, such the sum of a series of values or the ratio of two.
+	In some cases you may want to divide a value by 1000. 
+	These cases work like this:
+		mt[ModelName or Data source][varaible name]['name'] = variable name 
+		mt[ModelName or Data source][varaible name][function in "excatractData()"] = [list of varaibles to combine in extractData]
+		mt[ModelName or Data source][varaible name][new units] = 'mg m^-3' or whatever. (preferable from fancyUnits, below)
+	"""
 	
 	mt = AutoVivification() # match type
 	mt['Ersem']['bac'] 		= ['B1c',]
@@ -455,8 +468,9 @@ def getmt(): # Match Type
 	mt['Maredat']['picophyto'] 	= ['BIOMASS',]
 	mt['Maredat']['microzoo'] 	= ['BIOMASS',]
 	mt['Maredat']['PP'] 		= ['PP',]
-	#mt['Maredat']['chl']
-	mt['Maredat']['chl']	= ['Chlorophylla',]	
+	mt['Maredat']['chl']['name']	= 'Chlorophylla'
+	mt['Maredat']['chl']['div1000']	= ['Chlorophylla',]
+	mt['Maredat']['chl']['units']	= ['ug/L',]
 	
 	mt['WOA']['tempTransect'] 	= ['t_mn',]	
 	mt['WOA']['tempSurface'] 	= ['t_mn',]	

@@ -11,12 +11,10 @@ from scipy.stats import linregress
 from calendar import month_name
 from shelve import open as shOpen
 
+#local imports
 from ncdfView import ncdfView
 """	This is a catch all toolkit for the python methods and shorthands used in this code.
 """
-
-
-
 
 
 
