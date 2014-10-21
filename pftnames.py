@@ -553,6 +553,7 @@ def fancyUnits(units,debug=False):#'mg C/m^2',
   	if units in ['mmol C/m^3', ]: 			return 'mmol C m'+r'$^{-3}$'
   	if units in ['umol F/m^3',]:			return r'$\mu$'+'mol m'+r'$^{-3}$'
   	if units in ['mmol S/m^3', ]: 			return 'mmol S m'+r'$^{-3}$'  	
+  	if units in ['mmolSi/m3', 'mmol Si/m^3', ]: 	return 'mmol Si m'+r'$^{-3}$'  	  	
 	if units in ['ug/l','mg/m^3','ug/L',]:  	return 'mg m'+r'$^{-3}$'
 	if units in ['10^12 g Carbon year^-1',]:	return r'$10^{12}$'+' g Carbon/year'
 	if units in ['mol C/m^',]:			return 'mol C/m'+r'$^{2}$'

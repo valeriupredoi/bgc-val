@@ -37,6 +37,7 @@ noXYLogs 	= [ 'pCO2',
 		'salSurface', 		'salAll',	'salTransect',	'sal100m',	'sal200m','sal1000m',	'sal500m',]
 		
 MaredatTypes = ['chl','diatoms','bac','mesozoo','picophyto','microzoo']
+WOATypes = [a+b for a,b in product(['silicate','nitrate','phosphate','salinity','temperature',],['Surface','500m','100m','200m','1000m',])]
 
 class makePlots:
   def __init__(self,matchedDataFile,matchedModelFile, name, jobID='MEDUSA',year='clim',region='', compareCoords=True,saveShelve=True,plotallcuts=  True): #xfilename,yfilename,
@@ -46,10 +47,11 @@ class makePlots:
   	self.yfn =matchedDataFile  	
     	self.name = name
   	self.xtype = jobID
-	if self.name in MaredatTypes:  self.ytype = 'Maredat'
+	if self.name in MaredatTypes:  	self.ytype = 'Maredat'
+	if self.name in WOATypes:  	self.ytype = 'WOA'
+	
 
-
-	self.compType = self.xtype+self.ytype+region
+	#self.compType = self.xtype
 
   	self.saveShelve = saveShelve
   	self.kd = getkd()
@@ -81,7 +83,7 @@ class makePlots:
   	for xkey,ykey in zip(xkeys,ykeys):
 	    	if xkey not in self.xnc.variables.keys():continue  	    
 	    	if ykey not in self.ync.variables.keys():continue
-		filename = ukp.folder(['images',self.compType,'CompareCoords',self.name])+self.name+xkey+'vs'+ykey+'.png'	    	
+		filename = ukp.folder(['images',self.xtype,'P2P_plots','CompareCoords',self.name])+self.name+xkey+'vs'+ykey+'.png'	    	
 		if not ukp.shouldIMakeFile([self.xfn,self.yfn],filename,debug=False):continue
 		print "CompareCoords:\tx:",xkey, "\ty:",ykey
 		if xkey not in self.xnc.variables.keys():
@@ -199,7 +201,7 @@ class makePlots:
 	
  		
   def getFileName(self,newSlice,xkey,ykey):
-	  file_prefix = ukp.folder(['images',self.compType,'P2P_plots',self.name,])
+	  file_prefix = ukp.folder(['images',self.xtype,'P2P_plots',self.name,])
 
 	  file_suffix = '_'+self.xtype+'.png'
 	  if newSlice in self.months.keys():
@@ -423,7 +425,7 @@ class makePlots:
 			if type(newSlice) in [type(['a','b',]),type(('a','b',))]:	
 				ns = ''.join(newSlice)
 			else: ns = newSlice
-			self.shelveName = ukp.folder(['shelves',self.compType, 'Slices',self.name])+self.name+'_'+ns+'_'+xkey+'vs'+ykey+'.shelve'
+			self.shelveName = ukp.folder(['shelves',self.xtype,self.ytype, 'Slices',self.name])+self.name+'_'+ns+'_'+xkey+'vs'+ykey+'.shelve'
 			s = shOpen(self.shelveName)
 			print "plotWithSlices:\tSaving ",self.shelveName	
 
@@ -464,7 +466,7 @@ class makePlots:
 			s['xfn'] =  self.xfn
 			s['yfn'] =  self.yfn
 			s['slice']= newSlice
-			s['compType'] = self.compType
+			#s['compType'] = self.compType
 			#s['basicCut'] = self.basicCut			
 			s['newSlice'] = ns
 			s['xkey'] = xkey			
