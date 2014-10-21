@@ -42,6 +42,8 @@ noXYLogs 	= [ 'pCO2',
 		'silicateSurface',	'silicateAll',	'silicateTransect', 'silicate100m','silicate200m','silicate500m',
 		'tempSurface',		'tempAll',	'tempTransect',	'temp100m',	'temp200m','temp1000m',	'temp500m',
 		'salSurface', 		'salAll',	'salTransect',	'sal100m',	'sal200m','sal1000m',	'sal500m',]
+		
+MaredatTypes = ['chl','diatoms','bac','mesozoo','picophyto','microzoo']
 
 class makePlots:
   def __init__(self,matchedDataFile,matchedModelFile, name, jobID='MEDUSA',year='clim',region='', compareCoords=True,saveShelve=True,plotallcuts=  True): #xfilename,yfilename,
@@ -51,7 +53,8 @@ class makePlots:
   	self.yfn =matchedDataFile  	
     	self.name = name
   	self.xtype = jobID
-	if self.name == 'chl': self.ytype = 'Maredat'
+	if self.name in MaredatTypes:  self.ytype = 'Maredat'
+
 
 	self.compType = self.xtype+self.ytype+region
 
@@ -408,24 +411,12 @@ class makePlots:
 		#	print 'SalArtifact: x data:',xkey,datax.min(),datax.mean(),datax.max()
 		#	print 'SalArtifact: y data:',ykey,datay.min(),datay.mean(),datay.max()
 
-		#try:
-		xunits = fancyUnits(self.xnc.variables[xkey].units,debug=True)
-		#except:xunits = ''
-		#try:
-		yunits = fancyUnits(self.ync.variables[ykey].units,debug=True)	
-		#except:yunits = ''
-				
-		#try:xunits = fancyUnits(self.xnc.variables[xkey].units)
-		#except:xunits=''
-		#try:yunits = fancyUnits(self.ync.variables[ykey].units)	
-		#except:yunits=''
-							
-		#if xkey == self.kd[self.xtype]['lon']:
-		#  labelx = "Longitude"
-		#  labely = "Latitude"
-		#else:
-		  #labelx = self.xtype+' '+getLongName(self.name)+', '+ xunits
-		  #labely = self.ytype+' '+getLongName(self.name)+', '+ yunits
+		try:    xunits = fancyUnits(mt[self.xtype][self.name]['units'])
+		except: xunits = fancyUnits(self.xnc.variables[xkey].units,debug=True)
+
+		try:   yunits = fancyUnits(mt[self.ytype][self.name]['units'])
+		except:yunits = fancyUnits(self.ync.variables[ykey].units,debug=True)	
+
 		
 		labelx = self.xtype+' '+self.name+', '+ xunits
 		labely = self.ytype+' '+self.name+', '+ yunits		  

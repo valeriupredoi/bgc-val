@@ -427,10 +427,13 @@ def getmt(): # Match Type
 	mt['MEDUSA']['chl'] 		=  ['CHL',]	
 	mt['MEDUSA']['diatoms']['N2Biomass'] 	=  ['PHD',]		
 	mt['MEDUSA']['diatoms']['name'] 	=  'PHD'
+	mt['MEDUSA']['diatoms']['units'] 	=  'mg C/m^3'	
 	mt['MEDUSA']['mesozoo']['N2Biomass'] 	=  ['ZME',]			
 	mt['MEDUSA']['mesozoo']['name'] 	=  'ZME'
+	mt['MEDUSA']['mesozoo']['units'] 	=  'mg C/m^3'		
 	mt['MEDUSA']['microzoo']['N2Biomass'] 	=  ['ZMI',]				
 	mt['MEDUSA']['microzoo']['name'] 	=  'ZMI'
+	mt['MEDUSA']['microzoo']['units'] 	=  'mg C/m^3'		
 	mt['MEDUSA']['silicateTransect'] =  ['SIL',]	
 	mt['MEDUSA']['silicateSurface']  =  ['SIL',]
 	mt['MEDUSA']['silicateAll']  	=  ['SIL',]	
@@ -531,7 +534,7 @@ def fancyUnits(units,debug=False):#'mg C/m^2',
   	if units in ['mg C/m^3/d',]:			return 'mg C m'+r'$^{-3}$/day'
   	if units in ['mg N/m^3',]:			return 'mg N m'+r'$^{-3}$'  
   	if units in ['mg P/m^3',]:			return 'mg P m'+r'$^{-3}$'
-  	if units in ['mmol N/m^3', ]: 			return 'mmol N m'+r'$^{-3}$'
+  	if units in ['mmol N/m^3', 'mmol-N/m3' ]: 	return 'mmol N m'+r'$^{-3}$'
   	if units in ['mmol P/m^3', ]: 			return 'mmol P m'+r'$^{-3}$'
   	if units in ['mmol C/m^3', ]: 			return 'mmol C m'+r'$^{-3}$'
   	if units in ['umol F/m^3',]:			return r'$\mu$'+'mol m'+r'$^{-3}$'

@@ -6,7 +6,7 @@ from shelve import open as shOpen
 from shutil import copy2
 
 import numpy as np
-from numpy import array,ones,unravel_index
+#from numpy import array,ones,unravel_index
 from math import radians, cos, sin, asin, sqrt
 #from haversine import haversine
 from netCDF4 import num2date
@@ -16,8 +16,8 @@ from datetime import datetime
 #import iMarNetPython as impy
 #from iMarNetPython import noLeapConvert, shouldIMakeFile,depthKeys,alwaysInclude,getFileList,getMareDatatype,getpco2,getHenryConstant,getORCAdepth#getJobID
 #from iMarNetPython import makeLatSafe, makeLonSafe,makeLonSafeArr
-from UKESMpython import shouldIMakeFile, folder
-
+#from UKESMpython import shouldIMakeFile, folder
+import UKESMpython as ukp 
 
 # imports from other gitlab repositories:
 from ncdfView import ncdfView	
@@ -75,13 +75,13 @@ class matchDataAndModel:
 	self.compType= 'MaredatMatched-'+self.jobID+'-'+self.year
 		
 	if workingDir =='':
-		self.workingDir = folder('/data/euryale7/scratch/ledm/ukesm_postProcessed/ukesm/outNetCDF/'+'/'.join([self.compType,self.dataType+self.region]) )
+		self.workingDir = ukp.folder('/data/euryale7/scratch/ledm/ukesm_postProcessed/ukesm/outNetCDF/'+'/'.join([self.compType,self.dataType+self.region]) )
 	else: 	self.workingDir = workingDir	
 
-	self.matchedShelve 	= folder(['/tmp','shelves','MaredatModelMatch',self.dataType+self.region])+self.jobID+'_'+self.dataType+'.shelve'
-	self.matchesShelve 	= folder(['shelves','MaredatModelMatch',])+'WOAtoORCA1.shelve'
+	self.matchedShelve 	= ukp.folder(['/tmp','shelves','MaredatModelMatch',self.dataType+self.region])+self.jobID+'_'+self.dataType+'.shelve'
+	self.matchesShelve 	= ukp.folder(['shelves','MaredatModelMatch',])+'WOAtoORCA1.shelve'
 
-	self.workingDirTmp = 	folder(self.workingDir+'tmp')
+	self.workingDirTmp = 	ukp.folder(self.workingDir+'tmp')
 	self.DataFilePruned=	self.workingDirTmp+'Data_' +self.dataType+self.jobID+'-'+self.year+'_pruned.nc'
 	self.ModelFilePruned=	self.workingDirTmp+'Model_'+self.dataType+self.jobID+'-'+self.year+'_pruned.nc'	
 	
@@ -100,7 +100,7 @@ class matchDataAndModel:
 	   One is designed to work with WOA formats, the other with MAREDAT formats.
 	   Other data formats are run manually.
 	"""
-	if not shouldIMakeFile(self.DataFile,self.MatchedDataFile,debug=False) and not shouldIMakeFile(self.ModelFile,self.MatchedModelFile,debug=False):
+	if not ukp.shouldIMakeFile(self.DataFile,self.MatchedDataFile,debug=False) and not ukp.shouldIMakeFile(self.ModelFile,self.MatchedModelFile,debug=False):
 		print "matchDataAndModel:\trun:\talready created:\t",self.maskedData1D, '\n\t\t\tand\t',self.Model1D
 		return
 	
@@ -117,13 +117,13 @@ class matchDataAndModel:
   def _pruneModelAndData_(self,):
    	""" This routine reduces the full 3d netcdfs by pruning the unwanted fields.
   	"""  	
-	if shouldIMakeFile(self.DataFile,self.DataFilePruned,debug=False):
+	if ukp.shouldIMakeFile(self.DataFile,self.DataFilePruned,debug=False):
 		print "matchDataAndModel:\tpruneModelAndData:\tMaking:", self.DataFilePruned
 		p = pruneNC(self.DataFile,self.DataFilePruned,self.DataVars, debug = self.debug) 	
 	else:	
 		print "matchDataAndModel:\tpruneModelAndData:\talready exists:",self.DataFilePruned
 	 
-	if shouldIMakeFile(self.ModelFile,self.ModelFilePruned,debug=False):
+	if ukp.shouldIMakeFile(self.ModelFile,self.ModelFilePruned,debug=False):
 		print "matchDataAndModel:\tpruneModelAndData:\tMaking:", self.ModelFilePruned	
 		p = pruneNC(self.ModelFile,self.ModelFilePruned,self.ModelVars, debug = self.debug) 	
 	else:	
@@ -135,7 +135,7 @@ class matchDataAndModel:
    	""" This routine reduces the In Situ data into a 1D array of data with its lat,lon,depth and time components.
   	"""
 		
-	if not shouldIMakeFile(self.DataFilePruned,self.DataFile1D,debug=False):
+	if not ukp.shouldIMakeFile(self.DataFilePruned,self.DataFile1D,debug=False):
 		print "matchDataAndModel:\tconvertDataTo1D:\talready exists:",self.DataFile1D
 		return
 
@@ -148,7 +148,7 @@ class matchDataAndModel:
   	
 	if self.dataType in ['temp','sal','nit','nitrate','phosphate','silicate']:	#World Ocean Atlas format
 		nc = ncdfView(self.DataFilePruned,Quiet=True)
-		mmask = ones(nc(self.DataVars[0]).shape)
+		mmask = np.ones(nc(self.DataVars[0]).shape)
 		
 		if self.region in ['Surface','200m','100m','500m','1000m',]:
 			if self.region in ['Surface',]:
@@ -359,7 +359,7 @@ class matchDataAndModel:
 	
 	
   def _convertModelToOneD_(self,):
-	if not shouldIMakeFile(self.ModelFilePruned,self.Model1D,debug=True):
+	if not ukp.shouldIMakeFile(self.ModelFilePruned,self.Model1D,debug=True):
 		print "convertModelToOneD:\tconvertModelToOneD:\talready exists:",self.Model1D
 		return	
 	
@@ -378,11 +378,11 @@ class matchDataAndModel:
   	    Similarly, some data points fall into a masked grid cell in the model and need to be masked in the data.
   	"""
 	
-	if not shouldIMakeFile(self.ModelFilePruned,self.maskedData1D,debug=True):
+	if not ukp.shouldIMakeFile(self.ModelFilePruned,self.maskedData1D,debug=True):
 		print "applyMaskToData:\tapplyMaskToData:\t", "already exists:",self.maskedData1D
 		return	
 		
-	maremask = array([float(a) for a in self.maremask] )
+	maremask = np.array([float(a) for a in self.maremask] )
 		# zero shouldn't happen
 		# some number:
 			# need to take the median value of for everytime that the same number appears.
@@ -402,7 +402,7 @@ class matchDataAndModel:
 		    	values.append(arr[i])
 		    	
 		    out.append(np.median(values))	
-		arr= array(out).squeeze()
+		arr= np.array(out).squeeze()
 		print arr.shape
 		return arr
 		
@@ -412,7 +412,7 @@ class matchDataAndModel:
 		for i,m in enumerate(maremask):
 			if not m: continue
 			out.append(arr[i])	
-		arr= array(out).squeeze()
+		arr= np.array(out).squeeze()
 		print arr.shape
 		return arr
 
@@ -442,12 +442,12 @@ class matchDataAndModel:
 	"""
 	km = 10.E20
 	la_ind, lo_ind = -1,-1
-	lat = makeLatSafe(lat)
-	lon = makeLonSafe(lon)	
+	lat = ukp.makeLatSafe(lat)
+	lon = ukp.makeLonSafe(lon)	
 	
 	c = (self.latcc - lat)**2 + (self.loncc - lon)**2
 
-	(la_ind,lo_ind) =  unravel_index(c.argmin(),c.shape)
+	(la_ind,lo_ind) =  np.unravel_index(c.argmin(),c.shape)
 
 	#km2 = abs(haversine((lon, lat), (locc,lacc)))
 	if debug: print 'location ', [la_ind,lo_ind],'(',self.latcc[la_ind,lo_ind],self.loncc[la_ind,lo_ind],') is closest to:',[lat,lon]	
