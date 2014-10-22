@@ -37,10 +37,11 @@ noXYLogs 	= [ 'pCO2',
 		'salSurface', 		'salAll',	'salTransect',	'sal100m',	'sal200m','sal1000m',	'sal500m',]
 		
 MaredatTypes = ['chl','diatoms','bac','mesozoo','picophyto','microzoo']
+MLDTypes = ['mld','mld_DT02','mld_DR003','mld_DReqDTm02', ]
 WOATypes = [a+b for a,b in product(['silicate','nitrate','phosphate','salinity','temperature',],['Surface','500m','100m','200m','1000m',])]
 
 class makePlots:
-  def __init__(self,matchedDataFile,matchedModelFile, name, jobID='MEDUSA',year='clim',region='', compareCoords=True,saveShelve=True,plotallcuts=  True): #xfilename,yfilename,
+  def __init__(self,matchedDataFile,matchedModelFile, name, jobID='MEDUSA',year='clim',region='', compareCoords=True,saveShelve=True,workingDir='',plotallcuts=  True): #xfilename,yfilename,
 
   
   	self.xfn =matchedModelFile
@@ -49,11 +50,16 @@ class makePlots:
   	self.xtype = jobID
 	if self.name in MaredatTypes:  	self.ytype = 'Maredat'
 	if self.name in WOATypes:  	self.ytype = 'WOA'
+	if self.name in MLDTypes:  	self.ytype = 'IFREMER'	
 	
 
 	#self.compType = self.xtype
 
   	self.saveShelve = saveShelve
+  	self.shelvedir = workingDir
+  	if self.shelvedir == '':self.shelvedir = ukp.folder(['shelves',self.xtype,self.ytype, 'Slices',self.name])
+  	else:			self.shelvedir = ukp.folder(self.shelvedir)		
+
   	self.kd = getkd()
   	self.xnc = ncdfView(self.xfn,Quiet=True)
   	self.ync = ncdfView(self.yfn,Quiet=True)
@@ -197,7 +203,7 @@ class makePlots:
 	if self.plotSeas: 	 self.newSlices.extend(self.Seas)			
 	if self.plotOceans: 	 self.newSlices.extend(self.Oceans)
 	if self.plotOceanMonths: self.newSlices.extend(self.OceanMonths)
-	print "defineSlices:\tNew SLICES:", 	 self.newSlices
+	print "defineSlices:\tSLICES:", 	 self.newSlices
 	
  		
   def getFileName(self,newSlice,xkey,ykey):
@@ -227,6 +233,9 @@ class makePlots:
 		filename = ukp.folder([file_prefix,'OceanMonths'])+self.name+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
 	  else:
 	  	print 'getFileName:', newSlice,	''.join(newSlice)  ,xkey,ykey
+	  	try:fn = newSlice+'_'+xkey+'vs'+ykey
+	  	except:
+	  		print "ERROR:\tcan't add ",newSlice,xkey,ykey, 'together as strings. It breaks in getFileName, but the problem is probably in your mt dictionary in pftnames'
 		filename = file_prefix+self.name+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
 	  return filename	    
 
@@ -245,9 +254,15 @@ class makePlots:
 	plotpairs = [] 
 	mt = getmt()		  
 	
-	nx = mt[self.xtype][self.name] 
-	if len(nx.keys()):	xkeys.append(mt[self.xtype][self.name]['name'])
-	else:			xkeys = mt[self.xtype][self.name]
+	nx = mt[self.xtype][self.name]
+	if type(nx) == type(['a',]):	xkeys = mt[self.xtype][self.name]
+	else:				xkeys.append(mt[self.xtype][self.name]['name'])
+	ny = mt[self.ytype][self.name]
+	if type(ny) == type(['a',]):	ykeys = mt[self.ytype][self.name]
+	else:				ykeys.append(mt[self.ytype][self.name]['name'])	
+#		xkeys.append(mt[self.xtype][self.name]['name'])
+#	if len(nx.keys()):	xkeys.append(mt[self.xtype][self.name]['name'])
+#	else:			
 	
 	#try: 	
 	#	print n
@@ -255,15 +270,22 @@ class makePlots:
 	#	else:   assert False
 	#except: 	xkeys = mt[self.xtype][self.name]
 	
-	try: 		ykeys.append(mt[self.ytype][self.name]['name'])
-	except: 	ykeys = mt[self.ytype][self.name]  
+	#try: 		ykeys.append(mt[self.ytype][self.name]['name'])
+	#except: 	ykeys = mt[self.ytype][self.name]  
 	print xkeys, ykeys
 	
 	plotsToMake=0
 	for xk,yk in product(xkeys,ykeys):
-	  	print 'plotWithSlices:\tlisting plotpairs:', xk, yk
+	  	print 'plotWithSlices:\tlisting plotpairs:\tX', xk,': mt[',self.xtype,'][',self.name,']'
+	  	print 'plotWithSlices:\tlisting plotpairs:\tY', yk,': mt[',self.ytype,'][',self.name,']'	 
 		plotpairs.append((xk,yk))
 		# this is a test to check if any files exist in the series
+		print xk,yk,self.xtype,self.ytype,self.name
+		try:fn = newSlice+'_'+xk+'vs'+yk
+	  	except:
+	  		print "ERROR:\tcan't add ",newSlice,xk,yk, 'together as strings. the problem is probably in your mt dictionary in pftnames.'
+	  		
+			assert False	
 		filename = self.getFileName(newSlice,xkeys[0],ykeys[0])
 		if ukp.shouldIMakeFile([self.xfn,self.yfn],filename,debug=False):
 			plotsToMake+=1
@@ -319,16 +341,15 @@ class makePlots:
 	  		xmask += ukp.makeMask(self.name,ns,xt,xz,xy,xx,xd).astype(int)
 	  	 	ymask += ukp.makeMask(self.name,ns,yt,yz,yy,yx,yd).astype(int)	
 	  	 	
-	else:						    	# newSlice is actaully a list of multiple slices.
+	else:  	# newSlice is a simple slice.
 	  	xmask += ukp.makeMask(self.name,newSlice,xt,xz,xy,xx,xd).astype(int)
 	  	ymask += ukp.makeMask(self.name,newSlice,yt,yz,yy,yx,yd).astype(int)
 	  	print 'plotWithSlices:\t',xmask.sum(), ymask.sum() 
 
 	  
-        if self.name in ['mld_DT02','mld_DR003','mld_DReqDTm02']:
+        if self.name in ['mld','mld_DT02','mld_DR003','mld_DReqDTm02']:
         	mldMask = self.ync('mask')[:]
-        	mldMask = np.ma.masked_where(mldMask==0.,mldMask).mask        
-        	ymask += mldMask
+        	ymask += np.ma.masked_where(mldMask==0.,mldMask).mask        
 	  
 	nmask = (xmask + ymask).astype(bool)
 				
@@ -436,7 +457,7 @@ class makePlots:
 			if type(newSlice) in [type(['a','b',]),type(('a','b',))]:	
 				ns = ''.join(newSlice)
 			else: ns = newSlice
-			self.shelveName = ukp.folder(['shelves',self.xtype,self.ytype, 'Slices',self.name])+self.name+'_'+ns+'_'+xkey+'vs'+ykey+'.shelve'
+			self.shelveName = self.shelvedir +self.name+'_'+ns+'_'+xkey+'vs'+ykey+'.shelve'
 			s = shOpen(self.shelveName)
 			print "plotWithSlices:\tSaving ",self.shelveName	
 

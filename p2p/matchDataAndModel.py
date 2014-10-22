@@ -79,7 +79,7 @@ class matchDataAndModel:
 		self.workingDir = ukp.folder('/data/euryale7/scratch/ledm/ukesm_postProcessed/ukesm/outNetCDF/'+'/'.join([self.compType,self.dataType]) )
 	else: 	self.workingDir = workingDir	
 
-	self.matchedShelve 	= ukp.folder(['/tmp','shelves','MaredatModelMatch',self.dataType])+self.jobID+'_'+self.dataType+'.shelve'
+	self.matchedShelve 	= ukp.folder(self.workingDir)+self.jobID+'_'+self.dataType+'.shelve'
 	self.matchesShelve 	= ukp.folder(['shelves','MaredatModelMatch',])+'WOAtoORCA1.shelve'
 
 	self.workingDirTmp = 	ukp.folder(self.workingDir+'tmp')
@@ -143,22 +143,21 @@ class matchDataAndModel:
 	if self.dataType in ['pCO2','iron',]: 
 		 # pCO2, iron Files area already 1D
 		self.DataFile1D = self.DataFilePruned 
-		print "matchDataAndModel:\tconvertDataTo1D:\tpCO2/Iron File has already been converted to 1D", 'Making',self.DataFilePruned
+		print "matchDataAndModel:\tconvertDataTo1D:\tpCO2/Iron File has already been converted to 1D"
 		return
 		
-  	
-	if self.dataType in ['temp','sal','nit','nitrate','phosphate','silicate']:	#World Ocean Atlas format
+	WOADatas = [a+self.region for a in ['salinity','temperature','temp','sal','nitrate','phosphate','silicate',]]	   	 
+	      	
+	if self.dataType in WOADatas:	#World Ocean Atlas format
 		nc = ncdfView(self.DataFilePruned,Quiet=True)
 		mmask = np.ones(nc(self.DataVars[0]).shape)
 		
-		if self.region in ['Surface','200m','100m','500m','1000m',]:
-			if self.region in ['Surface',]:
-				k = 0
-		        if self.dataType in ['silicate','nitrate','phosphate','sal','temp',]:			
-				if self.region == '100m': k = 6			
-				if self.region == '200m': k = 9
-				if self.region == '500m': k = 13
-				if self.region == '1000m': k = 18					
+		if self.region in ['Surface','200m','100m','500m','1000m',]: 
+			if self.region in ['Surface',]:	k = 0
+			if self.region == '100m': 	k = 6			
+			if self.region == '200m': 	k = 9
+			if self.region == '500m': 	k = 13
+			if self.region == '1000m': 	k = 18					
 			mmask[:,k,:,:] = 0
 						
 		if self.region == 'Transect':	mmask[:,:,:,200] = 0   # Pacific Transect.	
@@ -166,7 +165,7 @@ class matchDataAndModel:
 		mmask +=nc(self.DataVars[0]).mask
 		print mmask.shape
 		nc.close()
-		
+		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking WOA style flat array:',self.DataFilePruned,'-->',self.DataFile1D	
 	  	convertToOneDNC(self.DataFilePruned,self.DataFile1D ,newMask=mmask, variables = self.DataVars, debug=True)	
 	  	
 	else:
@@ -207,43 +206,43 @@ class matchDataAndModel:
 	except:
 		lldict={}
 	finds = 0	
-		
+	kd = getkd()
 	if maxIndex+1 <len(is_i):
 	    zdict={}
 	    tdict={}
-	    
-	    WOADatas = [a+self.region for a in ['temp','sal','nitrate','phosphate','silicate',]]
-	    if self.dataType in WOADatas:
-  	   	 is_t	= ncIS('time')[:]	
-  	   	 is_z 	= ncIS('depth')[:]
-  	   	 is_la	= ncIS('lat')[:]
-	   	 is_lo 	= ncIS('lon')[:]	    
+	    print 'kd[',self.dataType,']:', kd[self.dataType]
+  	    is_t	= ncIS(kd[self.dataType]['t'])[:]	
+  	    is_z 	= ncIS(kd[self.dataType]['z'])[:]
+  	    is_la	= ncIS(kd[self.dataType]['lat'])[:]
+	    is_lo 	= ncIS(kd[self.dataType]['lon'])[:]	
+	   	 
+	    WOADatas = [a+self.region for a in ['temp','sal','temperature','salinity','nitrate','phosphate','silicate',]]	   	 
+	    if self.dataType in WOADatas:pass
+  	  # 	 is_t	= ncIS('time')[:]	
+  	#   	 is_z 	= ncIS('depth')[:]
+  	 #  	 is_la	= ncIS('lat')[:]
+	  # 	 is_lo 	= ncIS('lon')[:]	    
 	    elif self.dataType in ['pCO2',]:
-  	   	 is_t	= ncIS('MONTH')[:]	
-  	   	 is_z 	= ncIS('index_z')[:]
-  	   	 is_la	= ncIS('LAT')[:]
-	   	 is_lo 	= ncIS('LON')[:]
+ # 	   	 is_t	= ncIS('MONTH')[:]	
+  #	   	 is_z 	= ncIS('index_z')[:]
+  #	   	 is_la	= ncIS('LAT')[:]
+#	   	 is_lo 	= ncIS('LON')[:]
 	   	 tdict = {i+1:i for i in xrange(12)}	
-	   	 zdict = {0:0, 0.:0}  
-	    elif self.dataType in ['nit',]:
-  	   	 is_t	= ncIS('index_t')[:]
-  	   	 is_z 	= ncIS('index_z')[:]
-  	   	 is_la	= ncIS('latitude')[:]
-	   	 is_lo 	= ncIS('longitude')[:]
-	   	 tdict = {i:i for i in xrange(12)}
+#	   	 zdict = {0:0, 0.:0}  
+
 	    elif self.dataType in ['seawifs','Seawifs',]: #'chl','Tchl','Micro_percent_Tchl','Nano_percent_Tchl','Pico_percent_Tchl',
-  	   	 is_t	= ncIS('month')[:]
-  	   	 is_z 	= ncIS('deptht')[:] 
-  	   	 is_la	= ncIS('latitude')[:]
-	   	 is_lo 	= ncIS('longitude')[:]
+#  	   	 is_t	= ncIS('month')[:]
+ # 	   	 is_z 	= ncIS('deptht')[:] 
+  #	   	 is_la	= ncIS('latitude')[:]
+#	   	 is_lo 	= ncIS('longitude')[:]
 	   	 tdict = {i+1:i for i in xrange(12)}
 	   	 zdict = {0:0, 0.:0}  
-	    elif self.dataType in ['intPP',]:
-  	   	 is_t	= ncIS('index_t')[:]
-  	   	 is_z 	= ncIS('index_z')[:]
-  	   	 is_la	= ncIS('LATITUDE')[:]
-	   	 is_lo 	= ncIS('LONGITUDE')[:]
-	   	 tdict = {i:i for i in xrange(12)}
+#	    elif self.dataType in ['intPP',]:
+#  	   	 is_t	= ncIS('index_t')[:]
+#  	   	 is_z 	= ncIS('index_z')[:]
+#  	   	 is_la	= ncIS('LATITUDE')[:]
+#	   	 is_lo 	= ncIS('LONGITUDE')[:]
+#	   	 tdict = {i:i for i in xrange(12)}
 	    elif self.dataType in ['iron',]:
   	   	 #fulltime	= num2date(ncIS('time')[:],ncIS.variables['time'].units)
   	   	 #is_t  = array([t.month for t in fulltime])
@@ -252,13 +251,13 @@ class matchDataAndModel:
   	   	 is_la	= ncIS('Latitude')[:]
 	   	 is_lo 	= ncIS('Longitude')[:]
 	   	 tdict = {i+1:i for i in xrange(12)}
-	    elif self.dataType in ['mld_DT02', 'mld_DR003','mld_DReqDTm02']:
+	    elif self.dataType in ['mld_DT02', 'mld_DR003','mld_DReqDTm02','mld',]:
   	   	 #fulltime	= num2date(ncIS('time')[:],ncIS.variables['time'].units)
   	   	 #is_t  = array([t.month for t in fulltime])
-  	   	 is_t	= ncIS('time')[:]
+#  	   	 is_t	= ncIS('time')[:]
   	   	 is_z 	= np.ma.zeros(len(is_t))[:]
-  	   	 is_la	= ncIS('lat')[:]
-	   	 is_lo 	= ncIS('lon')[:]
+#  	   	 is_la	= ncIS('lat')[:]
+#	   	 is_lo 	= ncIS('lon')[:]
 	   	 tdict = {i+1:i for i in xrange(12)}
 	    else:	    
   	   	 #is_t	= ncIS('index_t')[:] # range 0->11	  	   	 
@@ -299,8 +298,8 @@ class matchDataAndModel:
 				print "STRICT ERROR: Could not find, ",wla,wlo
 				assert False
 				return
-			if self.debug:
-			 print "matchModelToData:\t",i,'New match:\tlon:',[wlo,self.loncc[la,lo]],'\tlat:',[wla,self.latcc[la,lo]],[finds,len(lldict)]
+			#if finds%10000==0 and self.debug:
+			# print "matchModelToData:\t",i,'New match:\tlon:',[wlo,self.loncc[la,lo]],'\tlat:',[wla,self.latcc[la,lo]],[finds,len(lldict)]
 
 		#Match Depth	
 		try:
@@ -323,7 +322,7 @@ class matchDataAndModel:
 			tmp = self.matches[(t,z,la,lo)][0]
 			self.maremask[i] = tmp
 			self.matches[(t,z,la,lo)].append(i)
-			print "matchModelToData:\tWARNING:",i,[wt,wz,wla,wlo], '-->',(t,z,la,lo),'already matched', tmp
+			#print "matchModelToData:\tWARNING:",i,[wt,wz,wla,wlo], '-->',(t,z,la,lo),'already matched', tmp
 		except:
 			self.matches[(t,z,la,lo)]=[i,]
 			self.maremask[i] = i

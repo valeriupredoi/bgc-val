@@ -50,7 +50,7 @@ def run(jobID,key,runType):
 		L = 'D'
 		
 	if runType == 'NEMO':
-		keys = ['vosaline','votemper', ]
+		keys = ['vosaline','votemper', 'somxl010']
 		L = 'T'
 		
 	#if runType == 'NEMOSalTempWind':
@@ -111,7 +111,7 @@ def run(jobID,key,runType):
 def main():
 	jobID='xhonp'#xhono'xjeza' #
 	key ='clim'#'1894'# '2001'#'clim'#'fullClim'#'2006'#'clim'#'2001' #'1982'#'1948' #'HighResp'#'1894'#'clim'
-	runTypes= ['ERSEMNuts','ERSEMphytoBm','ERSEMphytoChl','ERSEMzoo', 'ERSEMMisc','NEMO','ERSEMbac']
+	runTypes= ['NEMO',]#'ERSEMNuts','ERSEMphytoBm','ERSEMphytoChl','ERSEMzoo', 'ERSEMMisc','ERSEMbac']
 	#'SalTempWind','ERSEMFull','ERSEMphyto','Detritus', ]#'SalTempWind', ]# ]#]#]
 		
 	try: 	

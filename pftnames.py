@@ -60,7 +60,21 @@ def getLongName(text):
   	if text == 'temp200m':		return "Temperature (200m deep)"  
   	if text == 'temp500m':		return "Temperature (500m deep)"  	
   	if text == 'temp1000m':		return "Temperature (1000m deep)"  	  		  	  	
+  	if text == 'temperatureTransect':	return "Pacific Transect Temperature"
+  	if text == 'temperatureSurface':	return "Surface Temperature"
+  	if text == 'temperatureAll':		return "Temperature"  	
+  	if text == 'temperature100m':		return "Temperature (100m deep)"  	
+  	if text == 'temperature200m':		return "Temperature (200m deep)"  
+  	if text == 'temperature500m':		return "Temperature (500m deep)"  	
+  	if text == 'temperature1000m':		return "Temperature (1000m deep)"  	  		  	  	
 
+  	if text == 'salinityTransect':		return "Pacific Transect Salinity"
+  	if text == 'salinitySurface':		return "Surface Salinity"
+  	if text == 'salinityAll':		return "Salinity"  	
+  	if text == 'salinity100m':		return "Salinity (100m deep)"  	
+  	if text == 'salinity200m':		return "Salinity (200m deep)"  	  	  	
+  	if text == 'salinity500m':		return "Salinity (500m deep)"  	
+  	if text == 'salinity1000m':		return "Salinity (1000m deep)"  	
   	if text == 'salTransect':	return "Pacific Transect Salinity"
   	if text == 'salSurface':	return "Surface Salinity"
   	if text == 'salAll':		return "Salinity"  	
@@ -93,8 +107,10 @@ def getLongName(text):
   	if text == 'nitSurface': return "Surface Nitrate (WOA40)"
     	if text == 'GEOTRACES':	return "GEOTRACES"  		
   	if text == 'iron':	return "Iron"  	
+
   	
-     	if text == 'IFREMER-MLD':	return "IFREMER MLD"
+     	if text == 'IFREMER':	return "IFREMER"
+  	if text == 'mld':		return 'Mixed Layer Depth'     	
   	if text == 'mld_DT02':		return 'MLD: Fixed Threshold Temperature '
   	if text == 'mld_DR003':		return 'MLD: Fixed Threshold Density'
   	if text == 'mld_DReqDTm02':	return 'MLD: Variable Threshold Density'  	  	
@@ -204,21 +220,25 @@ def getLongName(text):
   	if text ==  'chl': 	return 'Chlorophyll'  	
   	if text ==  'nitrate': 	return 'WOA nitrate'  	
 
-  	if text ==  'Ersem': 	return 'ERSEM'  	  	
-  	if text ==  'Ersem-1891': return 'ERSEM (1891)'    	  	
-  	if text ==  'Ersem-1893': return 'ERSEM (1893)'  	
-  	if text ==  'Ersem-1894': return 'ERSEM (1894)'
-  	if text ==  'Ersem-1895': return 'ERSEM (1895)'  	
-  	if text ==  'Ersem-1899': return 'ERSEM (1899)'  	  	
-  	if text ==  'Ersem-1909': return 'ERSEM (1909)'
-  	if text ==  'Ersem-1948': return 'ERSEM (1948)'  
-  	if text ==  'Ersem-1982': return 'ERSEM (1982)'    	
-  	if text ==  'Ersem-2001': return 'ERSEM (2001)'    		  	
-  	if text ==  'Ersem-2006': return 'ERSEM (2006)'    		
-  	if text ==  'Ersem-clim': return 'ERSEM'  	
-  	if text ==  'Ersem-clim_97-07': return 'ERSEM (\'97-\'07)'
-  	if text ==  'Ersem-2001': return 'ERSEM (2001)'    	  	
-  	if text ==  'Ersem-HighResp': return 'ERSEM (High Respiration)'  	  	   	  	 
+  	if text ==  'NEMO': 	return 'NEMO'  	  	
+  	if text ==  'Nemo': 	return 'NEMO'
+  	
+  	if text ==  'ERSEM': 	return 'ERSEM'  	  	
+  	if text ==  'ERSEM': 	return 'ERSEM'  	  	
+  	if text ==  'ERSEM-1891': return 'ERSEM (1891)'    	  	
+  	if text ==  'ERSEM-1893': return 'ERSEM (1893)'  	
+  	if text ==  'ERSEM-1894': return 'ERSEM (1894)'
+  	if text ==  'ERSEM-1895': return 'ERSEM (1895)'  	
+  	if text ==  'ERSEM-1899': return 'ERSEM (1899)'  	  	
+  	if text ==  'ERSEM-1909': return 'ERSEM (1909)'
+  	if text ==  'ERSEM-1948': return 'ERSEM (1948)'  
+  	if text ==  'ERSEM-1982': return 'ERSEM (1982)'    	
+  	if text ==  'ERSEM-2001': return 'ERSEM (2001)'    		  	
+  	if text ==  'ERSEM-2006': return 'ERSEM (2006)'    		
+  	if text ==  'ERSEM-clim': return 'ERSEM'  	
+  	if text ==  'ERSEM-clim_97-07': return 'ERSEM (\'97-\'07)'
+  	if text ==  'ERSEM-2001': return 'ERSEM (2001)'    	  	
+  	if text ==  'ERSEM-HighResp': return 'ERSEM (High Respiration)'  	  	   	  	 
   	if text ==  'Maredat': 	return 'Maredat'  	  	
   	if text ==  'WOA': 	return 'WOA'  	  	
   	if text ==  'Takahashi': 	return 'Takahashi 2009'  	  	  	
@@ -249,30 +269,40 @@ def getLongName(text):
 
 def getkd():
 	kd = AutoVivification() # key dict
-	#kd['Ersem']['t'] = 'time_counter'
-	kd['Ersem']['t'] = 'index_t'	
-	kd['Ersem']['z'] = 'deptht'
-	kd['Ersem']['lat'] = 'nav_lat'
-	kd['Ersem']['lon'] = 'nav_lon'
-	kd['Ersem']['cal'] = '365_day'
+	#kd['ERSEM']['t'] = 'time_counter'
+	kd['ERSEM']['t'] = 'index_t'	
+	kd['ERSEM']['z'] = 'deptht'
+	kd['ERSEM']['lat'] = 'nav_lat'
+	kd['ERSEM']['lon'] = 'nav_lon'
+	kd['ERSEM']['cal'] = '365_day'
+	kd['ERSEM'] = kd['ERSEM']
+	
+	kd['NEMO']['t'] = 'index_t'	
+	kd['NEMO']['z'] = 'deptht'
+	kd['NEMO']['lat'] = 'nav_lat'
+	kd['NEMO']['lon'] = 'nav_lon'
+	kd['NEMO']['cal'] = '365_day'
+	kd['Nemo'] = kd['NEMO']
 
-	#kd['Ersem-1891'] 	= kd['Ersem']	
-	#kd['Ersem-1893'] 	= kd['Ersem']			
-	#kd['Ersem-1894'] 	= kd['Ersem']	
-	#kd['Ersem-1895'] 	= kd['Ersem']		
-	#kd['Ersem-1899'] 	= kd['Ersem']			
-	#kd['Ersem-1909'] 	= kd['Ersem']				
-	#kd['Ersem-1948'] 	= kd['Ersem']		
-	#kd['Ersem-1982'] 	= kd['Ersem']			
-	#kd['Ersem-2006'] 	= kd['Ersem']				
-	#kd['Ersem-2001'] 	= kd['Ersem']				
-	#kd['Ersem-clim'] 	= kd['Ersem']					
-	#kd['Ersem-HighResp'] 	= kd['Ersem']		
-	#kd['InitialConditions'] = kd['Ersem']		
+		
+		
+	#kd['ERSEM-1891'] 	= kd['ERSEM']	
+	#kd['ERSEM-1893'] 	= kd['ERSEM']			
+	#kd['ERSEM-1894'] 	= kd['ERSEM']	
+	#kd['ERSEM-1895'] 	= kd['ERSEM']		
+	#kd['ERSEM-1899'] 	= kd['ERSEM']			
+	#kd['ERSEM-1909'] 	= kd['ERSEM']				
+	#kd['ERSEM-1948'] 	= kd['ERSEM']		
+	#kd['ERSEM-1982'] 	= kd['ERSEM']			
+	#kd['ERSEM-2006'] 	= kd['ERSEM']				
+	#kd['ERSEM-2001'] 	= kd['ERSEM']				
+	#kd['ERSEM-clim'] 	= kd['ERSEM']					
+	#kd['ERSEM-HighResp'] 	= kd['ERSEM']		
+	#kd['InitialConditions'] = kd['ERSEM']		
 	
 	#kd['Maredat']['t'] = 'TIME'	
 
-	#kd['Ersem']['t'] = 'time_counter'
+	#kd['ERSEM']['t'] = 'time_counter'
 	kd['MEDUSA']['t'] = 'index_t'	
 	kd['MEDUSA']['z'] = 'deptht'
 	kd['MEDUSA']['lat'] = 'nav_lat'
@@ -288,11 +318,17 @@ def getkd():
 	kd['Maredat']['lon'] = 'LONGITUDE'
 	kd['Maredat']['cal'] = 'standard'
 
+
 	kd['WOA']['t'] = 'index_t'
 	kd['WOA']['z'] = 'depth'
 	kd['WOA']['lat'] = 'lat'
 	kd['WOA']['lon'] = 'lon'
 	kd['WOA']['cal'] = 'standard'
+	for t in ['salinity','temperature','silicate','nitrate','phosphate',]:
+	  for d in ['Surface','200m','100m','500m','1000m','Transect','All',]:
+		kd[t+d] = kd['WOA']
+	
+	
 
 	kd['Takahashi']['t'] = 'index_t'
 	kd['Takahashi']['z'] = 'index_z'
@@ -314,17 +350,17 @@ def getkd():
 	kd['SeawifsBM-micro'] 	= kd['Seawifs']	
 	kd['Seawifs-biomass'] 	= kd['Seawifs']	
 			
-	kd['nit']['t'] = 'index_t'
-	kd['nit']['z'] = 'index_z'
-	kd['nit']['lat'] = 'latitude'
-	kd['nit']['lon'] = 'longitude'
-	kd['nit']['cal'] = 'standard'
+	#kd['nit']['t'] = 'index_t'
+	#kd['nit']['z'] = 'index_z'
+	#kd['nit']['lat'] = 'latitude'
+	#kd['nit']['lon'] = 'longitude'
+	#kd['nit']['cal'] = 'standard'
 
-	kd['intPP']['t'] = 'index_t'
-	kd['intPP']['z'] = 'index_z'
-	kd['intPP']['lat'] = 'LATITUDE'
-	kd['intPP']['lon'] = 'LONGITUDE'
-	kd['intPP']['cal'] = 'standard'
+	#kd['intPP']['t'] = 'index_t'
+	#kd['intPP']['z'] = 'index_z'
+	#kd['intPP']['lat'] = 'LATITUDE'
+	#kd['intPP']['lon'] = 'LONGITUDE'
+	#kd['intPP']['cal'] = 'standard'
 
 	kd['GEOTRACES']['t'] = 'MONTH'
 	kd['GEOTRACES']['z'] = 'DEPTH'
@@ -332,12 +368,16 @@ def getkd():
 	kd['GEOTRACES']['lon'] = 'Longitude'
 	kd['GEOTRACES']['cal'] = 'standard'
 	
-	kd['IFREMER-MLD']['t'] = 'index_t'
-	kd['IFREMER-MLD']['z'] = 'index_z'
-	kd['IFREMER-MLD']['lat'] = 'lat'
-	kd['IFREMER-MLD']['lon'] = 'lon'
-	kd['IFREMER-MLD']['cal'] = 'standard'	
-		
+	kd['IFREMER']['t'] = 'index_t'
+	kd['IFREMER']['z'] = 'index_z'
+	kd['IFREMER']['lat'] = 'lat'
+	kd['IFREMER']['lon'] = 'lon'
+	kd['IFREMER']['cal'] = 'standard'	
+	kd['mld'] 		= kd['IFREMER']	
+	kd['mld_DT02'] 		= kd['IFREMER']	
+	kd['mld_DR003'] 	= kd['IFREMER']	
+	kd['mld_DReqDTm02'] 	= kd['IFREMER']				
+
 	return kd
 	
 def getmt(): # Match Type
@@ -356,85 +396,96 @@ def getmt(): # Match Type
 	"""
 	
 	mt = AutoVivification() # match type
-	mt['Ersem']['bac'] 		= ['B1c',]
-	mt['Ersem']['mesozoo'] 		= ['Z4c',]
-	mt['Ersem']['diatoms'] 		= ['P1c',]
-	mt['Ersem']['picophyto'] 	= ['P3c',]
-	mt['Ersem']['microzoo'] 	= ['Z5c',]
-	mt['Ersem']['tempTransect'] 	= ['votemper',]
-	mt['Ersem']['tempSurface'] 	= ['votemper',]
-	mt['Ersem']['tempAll'] 		= ['votemper',]	
-	mt['Ersem']['temp100m']		= ['votemper',]	
-	mt['Ersem']['temp200m']		= ['votemper',]	
-	mt['Ersem']['temp500m']		= ['votemper',]	
-	mt['Ersem']['temp1000m']	= ['votemper',]	
-	mt['Ersem']['salTransect'] 	=  ['vosaline',]	
-	mt['Ersem']['salSurface'] 	=  ['vosaline',]
-	mt['Ersem']['salAll'] 		=  ['vosaline',]
-	mt['Ersem']['sal100m'] 		=  ['vosaline',]
-	mt['Ersem']['sal200m'] 		=  ['vosaline',]		
-	
-	mt['Ersem']['sal500m'] 		= mt['Ersem']['sal200m']
-	mt['Ersem']['sal1000m'] 	= mt['Ersem']['sal200m']	
-			 	
-	mt['Ersem']['nitrateTransect'] 	=  ['N3n',]
-	mt['Ersem']['nitrateSurface'] 	=  ['N3n',]
-	mt['Ersem']['nitrateAll'] 	=  ['N3n',]	
-	mt['Ersem']['nitrate200m'] 	=  ['N3n',]	
-	mt['Ersem']['nitrate100m'] 	=  ['N3n',]			
-	mt['Ersem']['nitrate500m'] 	=  ['N3n',]			
-	mt['Ersem']['phosphateTransect'] =  ['N1p',]	
-	mt['Ersem']['phosphateSurface'] =  ['N1p',]
-	mt['Ersem']['phosphateAll'] 	=  ['N1p',]	
-	mt['Ersem']['phosphate100m'] 	=  ['N1p',]		
-	mt['Ersem']['phosphate200m'] 	=  ['N1p',]	
-	mt['Ersem']['phosphate500m'] 	=  ['N1p',]		
-	mt['Ersem']['silicateTransect'] =  ['N5s',]	
-	mt['Ersem']['silicateSurface']  =  ['N5s',]
-	mt['Ersem']['silicateAll']  	=  ['N5s',]	
-	mt['Ersem']['silicate100m']  	=  ['N5s',]		
-	mt['Ersem']['silicate200m']  	=  ['N5s',]		
-	mt['Ersem']['silicate500m']  	=  ['N5s',]			
+	mt['ERSEM']['bac'] 		= ['B1c',]
+	mt['ERSEM']['mesozoo'] 		= ['Z4c',]
+	mt['ERSEM']['diatoms'] 		= ['P1c',]
+	mt['ERSEM']['picophyto'] 	= ['P3c',]
+	mt['ERSEM']['microzoo'] 	= ['Z5c',]			 	
+	#mt['ERSEM']['nitrateTransect'] 	=  ['N3n',]
+	#mt['ERSEM']['nitrateSurface'] 	=  ['N3n',]
+	#mt['ERSEM']['nitrateAll'] 	=  ['N3n',]	
+	#mt['ERSEM']['nitrate200m'] 	=  ['N3n',]	
+	#mt['ERSEM']['nitrate100m'] 	=  ['N3n',]			
+	#m#t['ERSEM']['nitrate500m'] 	=  ['N3n',]			
+	#mt['ERSEM']['phosphateTransect'] =  ['N1p',]	
+	#mt['ERSEM']['phosphateSurface'] =  ['N1p',]
+	#mt['ERSEM']['phosphateAll'] 	=  ['N1p',]	
+	#mt['ERSEM']['phosphate100m'] 	=  ['N1p',]		
+	#mt['ERSEM']['phosphate200m'] 	=  ['N1p',]	
+	#mt['ERSEM']['phosphate500m'] 	=  ['N1p',]		
+	#mt['ERSEM']['silicateTransect'] =  ['N5s',]	
+	#mt['ERSEM']['silicateSurface']  =  ['N5s',]
+	#mt['ERSEM']['silicateAll']  	=  ['N5s',]	
+	#mt['ERSEM']['silicate100m']  	=  ['N5s',]		
+	#mt['ERSEM']['silicate200m']  	=  ['N5s',]		
+	#mt['ERSEM']['silicate500m']  	=  ['N5s',]			
 
-	mt['Ersem-1891'] = mt['Ersem']
-	mt['Ersem-1893'] = mt['Ersem']	
-	mt['Ersem-1894'] = mt['Ersem']
-	mt['Ersem-1895'] = mt['Ersem']	
-	mt['Ersem-1899'] = mt['Ersem']
-	mt['Ersem-1948'] = mt['Ersem']	
-	mt['Ersem-1982'] = mt['Ersem']
-	mt['Ersem-2001'] = mt['Ersem']	
-	mt['Ersem-2006'] = mt['Ersem']
-	mt['Ersem-clim'] = mt['Ersem']	
-	mt['Ersem-HighResp'] = mt['Ersem']	
+	mt['ERSEM-1891'] = mt['ERSEM']
+	mt['ERSEM-1893'] = mt['ERSEM']	
+	mt['ERSEM-1894'] = mt['ERSEM']
+	mt['ERSEM-1895'] = mt['ERSEM']	
+	mt['ERSEM-1899'] = mt['ERSEM']
+	mt['ERSEM-1948'] = mt['ERSEM']	
+	mt['ERSEM-1982'] = mt['ERSEM']
+	mt['ERSEM-2001'] = mt['ERSEM']	
+	mt['ERSEM-2006'] = mt['ERSEM']
+	mt['ERSEM-clim'] = mt['ERSEM']	
+	mt['ERSEM-HighResp'] = mt['ERSEM']	
 
 
-	mt['Ersem']['pCO2'] 			=  ['pCO2w',]#'fAirSeaC',]
-	mt['Ersem']['chl'] 			=  ['chl',]	
-	mt['Ersem']['Seawifs'] 			=  ['chl',]
+	mt['ERSEM']['pCO2'] 			=  ['pCO2w',]#'fAirSeaC',]
+	mt['ERSEM']['chl'] 			=  ['chl',]	
+	mt['ERSEM']['Seawifs'] 			=  ['chl',]
 	#biomass:		
-	mt['Ersem']['Seawifs-nano'] 		=  ['Chl2']
-	mt['Ersem']['Seawifs-pico'] 		=  ['Chl3',]
-	mt['Ersem']['Seawifs-micro']['sum']	=  ['Chl1','Chl4',]
-	mt['Ersem']['Seawifs-micro']['name']	=  'Chl1Chl4'
-	mt['Ersem']['SeawifsBM-nano'] 		=  ['P2c',]
-	mt['Ersem']['SeawifsBM-pico'] 		=  ['P3c',]
-	mt['Ersem']['SeawifsBM-micro']['sum']	=  ['P1c','P4c',]
-	mt['Ersem']['SeawifsBM-micro']['name']	=  'P1cP4c'		
-	mt['Ersem']['Seawifs-biomass']['sum'] 	=  ['P1c','P2c','P3c','P4c']
-	mt['Ersem']['Seawifs-biomass']['name'] 	= 'T_phyot_biomass'
+	mt['ERSEM']['Seawifs-nano'] 		=  ['Chl2']
+	mt['ERSEM']['Seawifs-pico'] 		=  ['Chl3',]
+	mt['ERSEM']['Seawifs-micro']['sum']	=  ['Chl1','Chl4',]
+	mt['ERSEM']['Seawifs-micro']['name']	=  'Chl1Chl4'
+	mt['ERSEM']['SeawifsBM-nano'] 		=  ['P2c',]
+	mt['ERSEM']['SeawifsBM-pico'] 		=  ['P3c',]
+	mt['ERSEM']['SeawifsBM-micro']['sum']	=  ['P1c','P4c',]
+	mt['ERSEM']['SeawifsBM-micro']['name']	=  'P1cP4c'		
+	mt['ERSEM']['Seawifs-biomass']['sum'] 	=  ['P1c','P2c','P3c','P4c']
+	mt['ERSEM']['Seawifs-biomass']['name'] 	= 'T_phyot_biomass'
 	
-	mt['Ersem']['intPP'] 		=  ['netPP'] #'intPP',
-	mt['Ersem']['PP'] 		=  ['netPP',]#'intPP','netPP']	
-	mt['Ersem']['nitSurface']  	=  ['N3n',]	
-	mt['Ersem']['nitTransect'] 	=  ['N3n',]	
-	mt['Ersem']['iron'] 		=  ['N7f',]
+	mt['ERSEM']['intPP'] 		=  ['netPP'] #'intPP',
+	mt['ERSEM']['PP'] 		=  ['netPP',]#'intPP','netPP']	
+	#mt['ERSEM']['nitSurface']  	=  ['N3n',]	
+	#mt['ERSEM']['nitTransect'] 	=  ['N3n',]	
+	mt['ERSEM']['iron'] 		=  ['N7f',]
+	mt['ERSEM'] 		= mt['ERSEM']
+	mt['InitialConditions'] = mt['ERSEM']
 
-	mt['Ersem']['mld_DT02'] 	=  ['somxl010',]
-	mt['Ersem']['mld_DR003'] 	=  ['somxl010',]
-	mt['Ersem']['mld_DReqDTm02'] 	=  ['somxl010',]		
+	for d in ['Surface','200m','100m','500m','1000m','Transect','All',]:
+	
+	    for t in ['temperature','temp',]:
+	    	mt['WOA'][t+d] 		= ['t_mn',]
+	    	mt['NEMO'][t+d] 	= ['votemper',]
 
-	mt['InitialConditions'] = mt['Ersem']
+	    for t in ['salinity','sal',]:
+	    	mt['WOA' ][t+d] 	= ['s_mn',]
+	    	mt['NEMO'][t+d] 	= ['vosaline',]
+
+	    for t in ['nitrate','nit']:
+	    	mt['WOA'   ][t+d] 	= ['n_mn',]
+	    	mt['MEDUSA'][t+d]  	= ['DIN',]
+	    	mt['ERSEM' ][t+d]  	= ['N3n',]	    	
+	    for t in ['silicate',]:
+	    	mt['WOA'   ][t+d] 	= ['i_mn',]
+	    	mt['MEDUSA'][t+d]  	= ['SIL',]
+	    	mt['ERSEM' ][t+d]  	= ['N5s',]	
+	    for t in ['phosphate',]:
+	    	mt['WOA'   ][t+d] 	= ['p_mn',]
+	    	mt['ERSEM' ][t+d]  	= ['N1p',]	
+	    		    	
+    	
+	    		    	
+				
+	mt['NEMO']['mld'] 		=  ['somxl010',]
+	mt['NEMO']['mld_DT02'] 		=  ['somxl010',]
+	mt['NEMO']['mld_DR003'] 	=  ['somxl010',]
+	mt['NEMO']['mld_DReqDTm02'] 	=  ['somxl010',]		
+
 	
 	mt['MEDUSA']['iron'] 		=  ['FER',]
 	mt['MEDUSA']['chl'] 		=  ['CHL',]	
@@ -447,19 +498,19 @@ def getmt(): # Match Type
 	mt['MEDUSA']['microzoo']['N2Biomass'] 	=  ['ZMI',]				
 	mt['MEDUSA']['microzoo']['name'] 	=  'ZMI'
 	mt['MEDUSA']['microzoo']['units'] 	=  'mg C/m^3'		
-	mt['MEDUSA']['silicateTransect'] =  ['SIL',]	
-	mt['MEDUSA']['silicateSurface']  =  ['SIL',]
-	mt['MEDUSA']['silicateAll']  	=  ['SIL',]	
-	mt['MEDUSA']['silicate100m']  	=  ['SIL',]		
-	mt['MEDUSA']['silicate200m']  	=  ['SIL',]		
-	mt['MEDUSA']['silicate500m']  	=  ['SIL',]	
+	#mt['MEDUSA']['silicateTransect'] =  ['SIL',]	
+	#mt['MEDUSA']['silicateSurface']  =  ['SIL',]
+	#mt['MEDUSA']['silicateAll']  	=  ['SIL',]	
+	#mt['MEDUSA']['silicate100m']  	=  ['SIL',]		
+	#mt['MEDUSA']['silicate200m']  	=  ['SIL',]		
+	#mt['MEDUSA']['silicate500m']  	=  ['SIL',]	
 	
-	mt['MEDUSA']['nitrateTransect'] =  ['DIN',]
-	mt['MEDUSA']['nitrateSurface'] 	=  ['DIN',]
-	mt['MEDUSA']['nitrateAll'] 	=  ['DIN',]	
-	mt['MEDUSA']['nitrate200m'] 	=  ['DIN',]	
-	mt['MEDUSA']['nitrate100m'] 	=  ['DIN',]			
-	mt['MEDUSA']['nitrate500m'] 	=  ['DIN',]	
+	#mt['MEDUSA']['nitrateTransect'] =  ['DIN',]
+	#mt['MEDUSA']['nitrateSurface'] 	=  ['DIN',]
+	#mt['MEDUSA']['nitrateAll'] 	=  ['DIN',]	
+	#mt['MEDUSA']['nitrate200m'] 	=  ['DIN',]	
+	#mt['MEDUSA']['nitrate100m'] 	=  ['DIN',]			
+	#mt['MEDUSA']['nitrate500m'] 	=  ['DIN',]	
 	mt['Medusa'] = mt['MEDUSA']
 		
 	mt['Maredat']['bac'] 		= ['BIOMASS',]
@@ -472,42 +523,42 @@ def getmt(): # Match Type
 	mt['Maredat']['chl']['div1000']	= ['Chlorophylla',]
 	mt['Maredat']['chl']['units']	= ['ug/L',]
 	
-	mt['WOA']['tempTransect'] 	= ['t_mn',]	
-	mt['WOA']['tempSurface'] 	= ['t_mn',]	
-	mt['WOA']['tempAll'] 		= ['t_mn',]		
-	mt['WOA']['temp100m'] 		= ['t_mn',]		
-	mt['WOA']['temp200m'] 		= ['t_mn',]				
-	mt['WOA']['temp500m'] 		= ['t_mn',]				
-	mt['WOA']['temp1000m'] 		= ['t_mn',]
+	#mt['WOA']['tempTransect'] 	= ['t_mn',]	
+	#mt['WOA']['tempSurface'] 	= ['t_mn',]	
+	#mt['WOA']['tempAll'] 		= ['t_mn',]		
+	#mt['WOA']['temp100m'] 		= ['t_mn',]		
+	#mt['WOA']['temp200m'] 		= ['t_mn',]				
+	#mt['WOA']['temp500m'] 		= ['t_mn',]				
+	#mt['WOA']['temp1000m'] 		= ['t_mn',]
 							
-	mt['WOA']['salTransect'] 	= ['s_mn',]
-	mt['WOA']['salSurface'] 	= ['s_mn',]
-	mt['WOA']['salAll'] 		= ['s_mn',]
-	mt['WOA']['sal100m'] 		= ['s_mn',]
-	mt['WOA']['sal200m'] 		= ['s_mn',]	
-	mt['WOA']['sal500m'] 		= ['s_mn',]	
-	mt['WOA']['sal1000m'] 		= ['s_mn',]
+	#mt['WOA']['salTransect'] 	= ['s_mn',]
+	#mt['WOA']['salSurface'] 	= ['s_mn',]
+	#mt['WOA']['salAll'] 		= ['s_mn',]
+	#mt['WOA']['sal100m'] 		= ['s_mn',]
+	#mt['WOA']['sal200m'] 		= ['s_mn',]	
+	#mt['WOA']['sal500m'] 		= ['s_mn',]	
+	#mt['WOA']['sal1000m'] 		= ['s_mn',]
 			 	
-	mt['WOA']['nitrateTransect'] 	= ['n_mn',]
-	mt['WOA']['nitrateSurface']	= ['n_mn',]
-	mt['WOA']['nitrateAll'] 	= ['n_mn',]	
-	mt['WOA']['nitrate100m'] 	= ['n_mn',]	
-	mt['WOA']['nitrate200m'] 	= ['n_mn',]			
-	mt['WOA']['nitrate500m'] 	= ['n_mn',]				
+	#mt['WOA']['nitrateTransect'] 	= ['n_mn',]
+	#mt['WOA']['nitrateSurface']	= ['n_mn',]
+	#mt['WOA']['nitrateAll'] 	= ['n_mn',]	
+	#mt['WOA']['nitrate100m'] 	= ['n_mn',]	
+	#mt['WOA']['nitrate200m'] 	= ['n_mn',]			
+	#mt['WOA']['nitrate500m'] 	= ['n_mn',]				
 	
-	mt['WOA']['phosphateTransect'] 	= ['p_mn',]
-	mt['WOA']['phosphateSurface'] 	= ['p_mn',]
-	mt['WOA']['phosphateAll'] 	= ['p_mn',]	
-	mt['WOA']['phosphate100m'] 	= ['p_mn',]	
-	mt['WOA']['phosphate200m'] 	= ['p_mn',]			
-	mt['WOA']['phosphate500m'] 	= ['p_mn',]			
+	#mt['WOA']['phosphateTransect'] 	= ['p_mn',]
+	#mt['WOA']['phosphateSurface'] 	= ['p_mn',]
+	#mt['WOA']['phosphateAll'] 	= ['p_mn',]	
+	#mt['WOA']['phosphate100m'] 	= ['p_mn',]	
+	#mt['WOA']['phosphate200m'] 	= ['p_mn',]			
+	#mt['WOA']['phosphate500m'] 	= ['p_mn',]			
 		
-	mt['WOA']['silicateTransect'] 	= ['i_mn',]
-	mt['WOA']['silicateSurface'] 	= ['i_mn',]		
-	mt['WOA']['silicateAll'] 	= ['i_mn',]			
-	mt['WOA']['silicate100m'] 	= ['i_mn',]			
-	mt['WOA']['silicate200m'] 	= ['i_mn',]		
-	mt['WOA']['silicate500m'] 	= ['i_mn',]			
+	#mt['WOA']['silicateTransect'] 	= ['i_mn',]
+	#mt['WOA']['silicateSurface'] 	= ['i_mn',]		
+	#mt['WOA']['silicateAll'] 	= ['i_mn',]			
+	#mt['WOA']['silicate100m'] 	= ['i_mn',]			
+	#mt['WOA']['silicate200m'] 	= ['i_mn',]		
+	#mt['WOA']['silicate500m'] 	= ['i_mn',]			
 		 
 	mt['Takahashi']['pCO2'] 		= ['PCO2_SW',]#'DELTA_PCO2',]	'TFLUXSW06',
 	mt['Seawifs']['chl'] 			= ['chl',]	# Lester's Seawifs
@@ -528,13 +579,15 @@ def getmt(): # Match Type
 	mt['Seawifs']['Seawifs-biomass']['Chl2BM']	= ['Tchl',]
 	mt['Seawifs']['Seawifs-biomass']['name']	= 'seawifsBiomass'
 		
-	mt['nitrate']['nitSurface'] 	= ['nitrate',]	
-	mt['nitrate']['nitTransect'] 	= ['nitrate',]	
-	mt['intPP']['intPP']		= ['PPint',]								
+	#mt['nitrate']['nitSurface'] 	= ['nitrate',]	
+	#mt['nitrate']['nitTransect'] 	= ['nitrate',]	
+	#mt['intPP']['intPP']		= ['PPint',]								
 	mt['GEOTRACES']['iron']		= ['Fe_D_CONC_BOTTLE',]#'Fe_D_CONC_BOTTLE_FIA','Fe_S_CONC_BOTTLE',]
-	mt['IFREMER-MLD']['mld_DT02']	= ['mld',]
-	mt['IFREMER-MLD']['mld_DR003']	= ['mld',]
-	mt['IFREMER-MLD']['mld_DReqDTm02']	= ['mld',]		
+	
+	mt['IFREMER']['mld']	= ['mld',]	
+	mt['IFREMER']['mld_DT02']	= ['mld',]
+	mt['IFREMER']['mld_DR003']	= ['mld',]
+	mt['IFREMER']['mld_DReqDTm02']	= ['mld',]		
 
 		
 	#mt['PP']['PP'] 		= ['PP',]
@@ -562,10 +615,10 @@ def fancyUnits(units,debug=False):#'mg C/m^2',
 	if units in ['mmol/m^2']:			return 'mmol m'+r'$^{-2}$' 
 	#if units in ['mmol/m^3']:			return 'mmol m'+r'$^{-3}$' 	
 	if units in ['degrees Celsius', 'degreesC', 'C',]:
-		return r'$\,^{\circ}\mathrm{C}$'
+							return r'$\,^{\circ}\mathrm{C}$'
 	if units in ['psu','PSU',]:			return 'psu'
 	#if units in ['umol/l',]:return r'$\mu$'+'mol/l'
-	if units in ['m',]:				return 'm'	
+	if units in ['m','meters','meter',]:		return 'm'	
 	if units in ['1/m',]:				return r'$\mathrm{m}^{-1}$'
 	#if units in ['ug/l']:			#	return 'mg m'+r'$^{-3}$'
 	if units in ['W/m^2']:				return 'W m'+r'$^{-2}$'
