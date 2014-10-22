@@ -204,6 +204,7 @@ class makePlots:
 	  file_prefix = ukp.folder(['images',self.xtype,'P2P_plots',self.name,])
 
 	  file_suffix = '_'+self.xtype+'.png'
+
 	  if newSlice in self.months.keys():
 		filename = ukp.folder([file_prefix,'months'])+self.name+'_'+ukp.mnStr(self.months[newSlice])+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
 	  elif newSlice in self.depthRanges:
@@ -225,6 +226,7 @@ class makePlots:
 		  	print '-->',newSlice	  
 		filename = ukp.folder([file_prefix,'OceanMonths'])+self.name+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
 	  else:
+	  	print 'getFileName:', newSlice,	''.join(newSlice)  ,xkey,ykey
 		filename = file_prefix+self.name+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
 	  return filename	    
 
@@ -242,8 +244,17 @@ class makePlots:
 	ykeys = []
 	plotpairs = [] 
 	mt = getmt()		  
-	try: 		xkeys.append(mt[self.xtype][self.name]['name'])
-	except: 	xkeys = mt[self.xtype][self.name]
+	
+	nx = mt[self.xtype][self.name] 
+	if len(nx.keys()):	xkeys.append(mt[self.xtype][self.name]['name'])
+	else:			xkeys = mt[self.xtype][self.name]
+	
+	#try: 	
+	#	print n
+	#	if len(n.keys()):	xkeys.append(mt[self.xtype][self.name]['name'])
+	#	else:   assert False
+	#except: 	xkeys = mt[self.xtype][self.name]
+	
 	try: 		ykeys.append(mt[self.ytype][self.name]['name'])
 	except: 	ykeys = mt[self.ytype][self.name]  
 	print xkeys, ykeys
@@ -287,7 +298,7 @@ class makePlots:
 	print "plotWithSlices:\ty",yd.min(),yd.mean(),yd.max()
 	
 	
-	if mt[self.ytype][self.name] == ['Chlorophylla',]:	yd = yd/1000.
+	#if mt[self.ytype][self.name] == ['Chlorophylla',]:	yd = yd/1000.
    
 	
 	#####
