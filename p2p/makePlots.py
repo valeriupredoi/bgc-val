@@ -74,16 +74,306 @@ class makePlots:
   	self.kd = getkd()
   	self.xnc = ncdfView(self.xfn,Quiet=True)
   	self.ync = ncdfView(self.yfn,Quiet=True)
-  	
+	self.mt = getmt()		    	
 	if self.compareCoords: self.CompareCoords()	
 	self.defineSlices(self.plotallcuts)
 	
 	
-	for nslice in self.newSlices:
-		self.plotWithSlices(nslice)
+	#for nslice in self.newSlices:
+	self.plotWithSlices()
+
 	    	
   	self.xnc.close()
   	self.ync.close()  	
+
+
+  		
+
+
+  def plotWithSlices(self):#,newSlice,):  
+	print "plotWithSlices:\txtype:",self.xtype,"\tytype:",self.ytype,"\tname:",self.name
+  	
+	#####
+	# Test if any of the plots exist.
+	  	
+	xkeys = []
+	ykeys = []
+	plotpairs = [] 
+
+	
+	nx = self.mt[self.xtype][self.name]
+	if type(nx) == type(['a',]):	xkeys = self.mt[self.xtype][self.name]
+	else:				xkeys.append(self.mt[self.xtype][self.name]['name'])
+	ny = self.mt[self.ytype][self.name]
+	if type(ny) == type(['a',]):	ykeys = self.mt[self.ytype][self.name]
+	else:				ykeys.append(self.mt[self.ytype][self.name]['name'])	
+
+	print "plotWithSlices:\txkeys:", xkeys,'\tykeys:', ykeys
+	
+	
+	
+	#####
+	# This section of code is a bit of a time saver.
+	# It checks to see if the image and the output shelve exist.
+	# If they both exist and and are older than the input netcdfs, the rest of this function is skipped.
+	# If one is missing, or the input files are newer than the old image, the function runs as normal.
+	# Caveat: if some image can not be made, ie the data makes the mask cover 100% of the data, then the code will run as normal (no skipping).  
+	self.shelvesAV = AutoVivification()
+	
+	plotsToMake=0
+	for newSlice in self.newSlices:	
+	    for xk,yk in product(xkeys,ykeys):
+	  	print 'plotWithSlices:\tlisting plotpairs:\tX', xk,': self.mt[',self.xtype,'][',self.name,']'
+	  	print 'plotWithSlices:\tlisting plotpairs:\tY', yk,': self.mt[',self.ytype,'][',self.name,']'	 
+		plotpairs.append((xk,yk))
+		print xk,yk,self.xtype,self.ytype,self.name
+		try:fn = newSlice+'_'+xk+'vs'+yk
+	  	except:
+	  		print "ERROR:\tcan\'t add ",newSlice,xk,yk, 'together as strings. the problem is probably in your mt dictionary in pftnames.'
+			assert False
+			
+		#####
+		# Does the image exist?	
+		filename = self.getFileName(newSlice,xk,yk)
+		if ukp.shouldIMakeFile([self.xfn,self.yfn],filename,debug=False):
+			plotsToMake+=1
+		
+		#####
+		#Does the shelve file exist?
+		if type(newSlice) in [type(['a','b',]),type(('a','b',))]:	
+			ns = ''.join(newSlice)
+		else: 	ns = newSlice			
+		shelveName = self.shelvedir +self.name+'_'+ns+'_'+xk+'vs'+yk+'.shelve'
+		if ukp.shouldIMakeFile([self.xfn,self.yfn],shelveName,debug=False):
+			plotsToMake+=1
+			
+		#####
+		# Make a list of shelve files for the target plots.
+		self.shelvesAV[newSlice][xk][yk] = shelveName				
+		try:	self.shelves.append(shelveName)
+		except:	self.shelves = [shelveName,]
+
+		
+	if plotsToMake == 0: 
+	  	print 'plotWithSlices:\tAll plots and shelve files already made',self.name, newSlice, xkeys,ykeys
+		return
+	
+	#####
+	# Load data
+	
+	#time and depth
+	xt = self.xnc(self.kd[self.xtype]['t'])[:]
+	yt = self.ync(self.kd[self.ytype]['t'])[:]
+	xz = self.xnc(self.kd[self.xtype]['z'])[:]
+	yz = self.ync(self.kd[self.ytype]['z'])[:]
+
+	#lat and lon
+	xy = self.xnc(self.kd[self.xtype]['lat'])[:]
+	yy = self.ync(self.kd[self.ytype]['lat'])[:]
+	xx = self.xnc(self.kd[self.xtype]['lon'])[:]
+	yx = self.ync(self.kd[self.ytype]['lon'])[:]	
+
+	self.xx = xx
+	self.xy = xy
+	self.xz = xz
+	self.xt = xt	
+	self.yx = yx
+	self.yy = yy
+	self.yz = yz
+	self.yt = yt	
+	
+	
+	for newSlice in self.newSlices:	
+	    for xkey,ykey in product(xkeys,ykeys):
+	    	print "plotWithSlices:\t", newSlice, xkey,ykey
+		self.plotsFromKeys(newSlice,xkey,ykey)
+
+
+
+  def plotsFromKeys(self,newSlice,xkey,ykey):	     
+
+	#####
+	# check that the plot and shelve should be made 
+	if type(newSlice) in [type(['a','b',]),type(('a','b',))]:	
+		ns = ''.join(newSlice)
+	else: ns = newSlice
+	self.shelveName = self.shelvedir +self.name+'_'+ns+'_'+xkey+'vs'+ykey+'.shelve'		
+ 	filename = self.getFileName(newSlice,xkey,ykey)
+ 	
+	print "plotWithSlices:\tINFO:\tinvestigating:", filename
+	if not ukp.shouldIMakeFile([self.xfn,self.yfn],self.shelveName,debug=False) \
+		and not ukp.shouldIMakeFile([self.xfn,self.yfn],filename,debug=False):return
+	
+	
+	#####
+	# Extract remaining data (already know lat,lon,time,depth)
+	xd = extractData(self.xnc,self.mt[self.xtype][self.name],key = xkey)	
+	yd = extractData(self.ync,self.mt[self.ytype][self.name],key = ykey)
+ 
+	
+	#####
+	# Build mask
+	fullmask = xd.mask + yd.mask + np.ma.masked_invalid(xd).mask + np.ma.masked_invalid(yd).mask
+	
+	if type(newSlice) in [type(['a',]),type(('a',))]:    	# newSlice is actaully a list of multiple slices.
+	   	for n in newSlice:
+	  		fullmask += ukp.makeMask(self.name,n,self.xt,self.xz,self.xy,self.xx,xd).astype(int)	  
+		  	fullmask += ukp.makeMask(self.name,n,self.yt,self.yz,self.yy,self.yx,yd).astype(int)	  
+		  	
+	elif newSlice == 'Standard':				# Standard is a shorthand for my favourite cuts.
+	  	for ns in self.standardCuts: 
+			if self.name in ['tempSurface','tempTransect', 'tempAll'] and ns in ['aboveZero',]:continue 
+				    						
+	  		fullmask += ukp.makeMask(self.name,ns,self.xt,self.xz,self.xy,self.xx,xd).astype(int)
+	  	 	fullmask += ukp.makeMask(self.name,ns,self.yt,self.yz,self.yy,self.yx,yd).astype(int)	
+	  	 	
+	else:  	# newSlice is a simple slice.
+	  	fullmask += ukp.makeMask(self.name,newSlice,self.xt,self.xz,self.xy,self.xx,xd).astype(int)
+	  	fullmask += ukp.makeMask(self.name,newSlice,self.yt,self.yz,self.yy,self.yx,yd).astype(int)
+	  	print 'plotWithSlices:\t',fullmask.sum()
+
+	  
+        if self.name in ['mld','mld_DT02','mld_DR003','mld_DReqDTm02']:
+        	mldMask = self.ync('mask')[:]
+        	fullmask += np.ma.masked_where(mldMask==0.,mldMask).mask        
+	  
+	
+	N = len(self.xt)			
+
+
+	if fullmask.sum() >= N:
+		print "plotWithSlices:\tNew Mask,",newSlice,", covers entire dataset.",fullmask.sum(), N
+		try:	self.shelves[newSlice][xk][yk] = ''
+		except:	pass			
+		return
+	print "plotWithSlices:\tNew Mask,",newSlice,", covers ",fullmask.sum(),' of ', N
+		
+	#####
+	# Apply mask to all data.	
+	nmxx = np.ma.masked_where(fullmask, self.xx).compressed()
+	nmxy = np.ma.masked_where(fullmask, self.xy).compressed()
+	nmxz = np.ma.masked_where(fullmask, self.xz).compressed()
+	nmxt = np.ma.masked_where(fullmask, self.xt).compressed()	
+	nmyx = np.ma.masked_where(fullmask, self.yx).compressed()
+	nmyy = np.ma.masked_where(fullmask, self.yy).compressed()
+	nmyz = np.ma.masked_where(fullmask, self.yz).compressed()
+	nmyt = np.ma.masked_where(fullmask, self.yt).compressed()
+	datax = np.ma.masked_where(fullmask, xd).compressed()
+	datay = np.ma.masked_where(fullmask, yd).compressed()
+		
+	if 0 in [len(datax),len(datay),len(nmxx),len(nmxy),len(nmxz),len(nmyx),len(nmyy),len(nmyz)]:
+		print 'plotWithSlices:\tWARNING:\tslice:',newSlice,'There is a zero in one of the fields.' 
+		try:	self.shelvesAV[newSlice][xk][yk] = ''			
+		except:	pass			
+		return	
+						
+	dmin = min([datax.min(),datay.min()])
+	dmax = max([datax.max(),datay.max()])
+	if dmin == dmax: 
+		print "plotWithSlices:\tWARNING:\tminimum == maximum,\t (",dmin,' == ',dmax,')'
+		try:	self.shelvesAV[newSlice][xk][yk] = ''
+		except:	pass			
+		return
+			
+
+	#####
+	# Prepare units, axis labels and titles.
+	try:    xunits = fancyUnits(self.mt[self.xtype][self.name]['units'])
+	except: xunits = fancyUnits(self.xnc.variables[xkey].units,debug=True)
+
+	try:   yunits = fancyUnits(self.mt[self.ytype][self.name]['units'])
+	except:yunits = fancyUnits(self.ync.variables[ykey].units,debug=True)	
+
+	labelx = self.xtype+' '+self.name+', '+ xunits
+	labely = self.ytype+' '+self.name+', '+ yunits		  
+		
+	try: title = getLongName(newSlice)+' '+getLongName(self.name)
+	except:title = newSlice+' '+xkey+' vs '+ykey
+
+
+	robfnxy  = filename.replace('.png','_xyrobin.png')
+	histfnxy = filename.replace('.png','_hist.png')
+				
+	#####
+	# Robinson projection plot		
+	if ukp.shouldIMakeFile([self.xfn,self.yfn],robfnxy,debug=False) or True:
+		ti1 = getLongName(self.xtype)+' ' +getLongName(newSlice)+' '+getLongName(self.name)
+		ti2 =  getLongName(self.ytype)+' ' +getLongName(newSlice)+' '+getLongName(self.name)	
+		if self.name in noXYLogs or dmin*dmax <=0.:
+			print "plotWithSlices:\tROBIN NOT DOING DOLOG:",[ti1,ti2],False,dmin,dmax
+			ukp.robinPlotPair(nmxx, nmxy, datax,datay,robfnxy,titles=[ti1,ti2], vmin=dmin,vmax=dmax, doLog=False)
+				
+		else:	
+			print "plotWithSlices:\tROBIN DOING DOLOG:",[ti1,ti2],False,dmin,dmax					
+			ukp.robinPlotPair(nmxx, nmxy, np.ma.log10(datax),np.ma.log10(datay),
+						robfnxy,titles=[ti1,ti2], 
+						vmin=np.ma.log10(dmin),vmax=np.ma.log10(dmax),
+						cbarlabel='log$_{10}$('+xunits+')',
+						doLog=False)
+		
+	#####
+	# Simultaneous histograms plot	
+	if ukp.shouldIMakeFile([self.xfn,self.yfn],histfnxy,debug=False):
+		xaxislabel= getLongName(self.name)+', '+ xunits
+		if self.name in noXYLogs or dmin*dmax <=0.:				
+			ukp.histPlot(datax, datay,  histfnxy, Title=title, labelx=self.xtype,labely=self.ytype,xaxislabel =xaxislabel)	
+		else:	ukp.histPlot(datax, datay,  histfnxy, Title=title, labelx=self.xtype,labely=self.ytype,xaxislabel =xaxislabel, logx = True, )
+				
+	#####
+	# Scatter  (hexbin) plot
+	if ukp.shouldIMakeFile([self.xfn,self.yfn],filename,debug=False):		
+		gs = 50					
+		if self.name in noXYLogs or dmin*dmax <=0.:
+			ukp.scatterPlot(datax, datay,  filename, Title=title, labelx=labelx,labely=labely, bestfitLine=True,gridsize=gs)
+		else:	ukp.scatterPlot(datax, datay,  filename, Title=title, labelx=labelx,labely=labely, bestfitLine=True,gridsize=gs,logx = True, logy=True,)
+
+	#####
+	# Save fit in a shelve file.		
+	s = shOpen(self.shelveName)
+	print "plotWithSlices:\tSaving ",self.shelveName	
+	b1, b0, rValue, pValue, stdErr = linregress(datax, datay)
+	print "plotWithSlices:\tlinear regression: \n\tb1:",b1, "\n\tb0:", b0, "\n\trValue:",rValue, "\n\tpValue:",pValue, "\n\tstdErr:",stdErr
+	s['b1'] 	=  b1
+	s['b0'] 	=  b0
+	s['rValue'] 	=  rValue
+	s['pValue'] 	=  pValue
+	s['stdErr'] 	=  stdErr						
+	s['N'] 	    	=  len(datax)
+					
+  	mtaylor = StatsDiagram(datax,datay)
+	s['Taylor.E0'] 	= mtaylor.E0
+	s['Taylor.E']	= mtaylor.E
+	s['Taylor.R']	= mtaylor.R
+	s['Taylor.p']	= mtaylor.p							
+	s['Taylor.gamma']=mtaylor.gamma
+			
+	s['datax'] = datax
+	s['datay'] = datay
+
+	s['x_lon'] = nmxx
+	s['x_lat'] = nmxy
+	s['x_depth'] = nmxz
+	s['x_time'] = nmxt			
+	s['y_lon'] = nmyx
+	s['y_lat'] = nmyy
+	s['y_depth'] = nmyz
+	s['y_time'] = nmyt					
+			
+	s['title'] = 	title
+	s['labelx'] = 	labelx
+	s['labely'] = 	labely
+	s['name'] =   	self.name
+	s['year'] =   	self.year 
+	s['xtype'] =  	self.xtype
+	s['ytype'] =  	self.ytype
+	s['xfn'] =  	self.xfn
+	s['yfn'] =  	self.yfn
+	s['slice']= 	newSlice
+	s['newSlice'] = ns
+	s['xkey'] = 	xkey			
+	s['ykey'] = 	ykey
+	s.close()
+
  
   	
 
@@ -146,14 +436,7 @@ class makePlots:
 
 
   def defineSlices(self,plotallcuts):	
-	#self.basicCut	  = 'All'#'Standard'##,
-	self.newSlices 		=['All','Standard',
-				#'aboveZero', 'TypicalIron','maskBelowBathy',
-				#'ignoreMoreArtics','ignoreArtics', 'ignoreMidArtics','ignoreExtraArtics'
-				#'OffShelf','OnShelf', '5-95pc','maskBelowBathy', 
-				#'Shallow','Depth','nonZero','aboveZero'
-				#'NitArtifact','SalArtifact','0-99pc',
-				]
+	self.newSlices 		=['All','Standard',]
 
 	self.standardCuts = ['5-95pc','ignoreInlandSeas','OffShelf','ignoreExtraArtics','aboveZero',]	
 
@@ -191,8 +474,8 @@ class makePlots:
 		 self.plotLatRegions	=0
 		 self.plotQualityCuts	=0#True	
 		 self.plotSeas		=0#True		 
-		 self.plotOceans	= 0#True	
-		 self.plotOceanMonths   = True	
+		 self.plotOceans	= True	
+		 self.plotOceanMonths   = 0#True	
 	else: 	
 		 self.plotMonths	=0#True
 		 self.plotdepthRanges	=0#True	
@@ -203,7 +486,6 @@ class makePlots:
 		 self.plotOceans	=0#True	
 		 self.plotOceanMonths   = 0	 	 	 
 
-	
 	if self.plotMonths: 	 self.newSlices.extend(self.months.keys())
 	if self.plotdepthRanges: self.newSlices.extend(self.depthRanges)
 	if self.plotpercentiles: self.newSlices.extend(self.percentiles)
@@ -212,328 +494,44 @@ class makePlots:
 	if self.plotSeas: 	 self.newSlices.extend(self.Seas)			
 	if self.plotOceans: 	 self.newSlices.extend(self.Oceans)
 	if self.plotOceanMonths: self.newSlices.extend(self.OceanMonths)
-	print "defineSlices:\tSLICES:", 	 self.newSlices
+	#print "defineSlices:\tSLICES:", 	 self.newSlices
 	
  		
   def getFileName(self,newSlice,xkey,ykey):
-	  file_prefix = ukp.folder(['images',self.xtype,'P2P_plots',self.name,])
+	file_prefix = ukp.folder(['images',self.xtype,'P2P_plots',self.name,])
 
-	  file_suffix = '_'+self.xtype+'.png'
+	file_suffix = '_'+self.xtype+'.png'
 
-	  if newSlice in self.months.keys():
+	if newSlice in self.months.keys():
 		filename = ukp.folder([file_prefix,'months'])+self.name+'_'+ukp.mnStr(self.months[newSlice])+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
-	  elif newSlice in self.depthRanges:
+	elif newSlice in self.depthRanges:
 		filename = ukp.folder([file_prefix,'DepthRanges'])+self.name+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix	  
-	  elif newSlice in self.percentiles:
+	elif newSlice in self.percentiles:
 		filename = ukp.folder([file_prefix,'Percentiles'])+self.name+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix	  
-	  elif newSlice in self.latregions:
+	elif newSlice in self.latregions:
 		filename = ukp.folder([file_prefix,'LatRegions'])+self.name+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix	 
-	  elif newSlice in self.QualityCuts:
+	elif newSlice in self.QualityCuts:
 		filename = ukp.folder([file_prefix,'QualityCuts'])+self.name+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
-	  elif newSlice in self.Seas:
+	elif newSlice in self.Seas:
 		filename = ukp.folder([file_prefix,'Seas'])+self.name+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
-	  elif newSlice in self.Oceans:
+	elif newSlice in self.Oceans:
 		filename = ukp.folder([file_prefix,'Oceans'])+self.name+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
-	  elif newSlice in self.OceanMonths:
+	elif newSlice in self.OceanMonths:
 		if type(newSlice) in [type(['a','b',]),type(('a','b',))]:
 		  	print 'getFileName:', newSlice,
 		  	newSlice = ''.join(newSlice)
 		  	print '-->',newSlice	  
 		filename = ukp.folder([file_prefix,'OceanMonths'])+self.name+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
-	  else:
+	else:
 	  	print 'getFileName:', newSlice,	''.join(newSlice)  ,xkey,ykey
 	  	try:fn = newSlice+'_'+xkey+'vs'+ykey
 	  	except:
 	  		print "ERROR:\tcan't add ",newSlice,xkey,ykey, 'together as strings. It breaks in getFileName, but the problem is probably in your mt dictionary in pftnames'
 		filename = file_prefix+self.name+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
-	  return filename	    
+	return filename
 
 
-  		
 
-
-  def plotWithSlices(self,newSlice):  
-	print "plotWithSlices:\txtype:",self.xtype,"\tytype:",self.ytype,"\tname:",self.name
-  	
-	#####
-	# Test if any of the plots exist.
-	  	
-	xkeys = []
-	ykeys = []
-	plotpairs = [] 
-	mt = getmt()		  
-	
-	nx = mt[self.xtype][self.name]
-	if type(nx) == type(['a',]):	xkeys = mt[self.xtype][self.name]
-	else:				xkeys.append(mt[self.xtype][self.name]['name'])
-	ny = mt[self.ytype][self.name]
-	if type(ny) == type(['a',]):	ykeys = mt[self.ytype][self.name]
-	else:				ykeys.append(mt[self.ytype][self.name]['name'])	
-
-	print "plotWithSlices:\txkeys:", xkeys,'\tykeys:', ykeys
-	
-	
-	
-	#####
-	# This section of code is a bit of a time saver.
-	# It checks to see if the image and the output shelve exist.
-	# If they both exist and and are older than the input netcdfs, the rest of this function is skipped.
-	# If one is missing, or the input files are newer than the old image, the function runs as normal.
-	# Caveat: if some image can not be made, ie the data makes the mask cover 100% of the data, then the code will run as normal (no skipping).  
-	
-	plotsToMake=0
-	for xk,yk in product(xkeys,ykeys):
-	  	print 'plotWithSlices:\tlisting plotpairs:\tX', xk,': mt[',self.xtype,'][',self.name,']'
-	  	print 'plotWithSlices:\tlisting plotpairs:\tY', yk,': mt[',self.ytype,'][',self.name,']'	 
-		plotpairs.append((xk,yk))
-		print xk,yk,self.xtype,self.ytype,self.name
-		try:fn = newSlice+'_'+xk+'vs'+yk
-	  	except:
-	  		print "ERROR:\tcan\'t add ",newSlice,xk,yk, 'together as strings. the problem is probably in your mt dictionary in pftnames.'
-			assert False
-			
-		#####
-		# Does the image exist?	
-		filename = self.getFileName(newSlice,xk,yk)
-		if ukp.shouldIMakeFile([self.xfn,self.yfn],filename,debug=False):
-			plotsToMake+=1
-		
-		#####
-		#Does the shelve file exist?
-		if type(newSlice) in [type(['a','b',]),type(('a','b',))]:	
-			ns = ''.join(newSlice)
-		else: 	ns = newSlice			
-		shelveName = self.shelvedir +self.name+'_'+ns+'_'+xk+'vs'+yk+'.shelve'
-		if ukp.shouldIMakeFile([self.xfn,self.yfn],shelveName,debug=False):
-			plotsToMake+=1
-			
-		#####
-		# Make a list of shelve files for the target plots.
-		try:	self.shelves.append(shelveName)
-		except:	self.shelves = [shelveName,]
-		
-	if plotsToMake == 0: 
-	  	print 'plotWithSlices:\tplots already made',self.name, newSlice
-		return
-	
-	#####
-	# Load data
-	
-	#time and depth
-	xt = self.xnc(self.kd[self.xtype]['t'])[:]
-	yt = self.ync(self.kd[self.ytype]['t'])[:]
-	xz = self.xnc(self.kd[self.xtype]['z'])[:]
-	yz = self.ync(self.kd[self.ytype]['z'])[:]
-
-	#lat and lon
-	xy = self.xnc(self.kd[self.xtype]['lat'])[:]
-	yy = self.ync(self.kd[self.ytype]['lat'])[:]
-	xx = self.xnc(self.kd[self.xtype]['lon'])[:]
-	yx = self.ync(self.kd[self.ytype]['lon'])[:]	
-
-	#data
-	#try:	xd = self.xnc(mt[self.xtype][self.name][0])[:]
-	#except:	
-	xd = extractData(self.xnc,mt[self.xtype][self.name],key = xkeys[0])	
-	#try:	yd = self.ync(mt[self.ytype][self.name][0])[:]
-	#except:	
-	yd = extractData(self.ync,mt[self.ytype][self.name],key = ykeys[0])
-	
-	print "plotWithSlices:\tx",xd.min(),xd.mean(),xd.max()
-	print "plotWithSlices:\ty",yd.min(),yd.mean(),yd.max()
-	
-	
-	#if mt[self.ytype][self.name] == ['Chlorophylla',]:	yd = yd/1000.
-   
-	
-	#####
-	# Build mask
-	xmask = ukp.makeMask(self.name,'All',xt,xz,xy,xx,xd).astype(int)
-	ymask = ukp.makeMask(self.name,'All',yt,yz,yy,yx,yd).astype(int) 
-
-	if type(newSlice) in [type(['a',]),type(('a',))]:    	# newSlice is actaully a list of multiple slices.
-	   	for n in newSlice:
-	  		xmask += ukp.makeMask(self.name,n,xt,xz,xy,xx,xd).astype(int)	  
-		  	ymask += ukp.makeMask(self.name,n,yt,yz,yy,yx,yd).astype(int)	  
-		  	
-	elif newSlice == 'Standard':				# Standard is a shorthand for my favourite cuts.
-	  	for ns in self.standardCuts: 
-			if self.name in ['tempSurface','tempTransect', 'tempAll'] and ns in ['aboveZero',]:continue # Don't cut negative values from temerature.
-			#if self.name not in ['nitrateSurface','nitrateAll','nitrateTransect',] 		and ns in ['0.1','0.2']:continue	    			
-			#if self.name not in ['phosphateSurface','phosphateAll','phosphateTransect',] 	and ns in ['0.01',]:continue	    						
-	  		xmask += ukp.makeMask(self.name,ns,xt,xz,xy,xx,xd).astype(int)
-	  	 	ymask += ukp.makeMask(self.name,ns,yt,yz,yy,yx,yd).astype(int)	
-	  	 	
-	else:  	# newSlice is a simple slice.
-	  	xmask += ukp.makeMask(self.name,newSlice,xt,xz,xy,xx,xd).astype(int)
-	  	ymask += ukp.makeMask(self.name,newSlice,yt,yz,yy,yx,yd).astype(int)
-	  	print 'plotWithSlices:\t',xmask.sum(), ymask.sum() 
-
-	  
-        if self.name in ['mld','mld_DT02','mld_DR003','mld_DReqDTm02']:
-        	mldMask = self.ync('mask')[:]
-        	ymask += np.ma.masked_where(mldMask==0.,mldMask).mask        
-	  
-	nmask = (xmask + ymask).astype(bool)
-				
-	print "plotWithSlices:\tNew Mask,",newSlice,", covers ",nmask.sum(),' of ', len(xt)
-	
-	if nmask.sum() >= len(xt):
-		print "plotWithSlices:\tNew Mask,",newSlice,", covers entire dataset.",nmask.sum(), len(xt)
-		return
-
-
-	#####
-	# Make plots. (loop - because sometimes more than one value is compared against the data.
-	for xkey,ykey in plotpairs:
-		if type(newSlice) in [type(['a','b',]),type(('a','b',))]:	
-			ns = ''.join(newSlice)
-		else: ns = newSlice
-		self.shelveName = self.shelvedir +self.name+'_'+ns+'_'+xkey+'vs'+ykey+'.shelve'
-
-			
-	  	filename = self.getFileName(newSlice,xkey,ykey)
-		print "plotWithSlices:\tINFO:\tinvestigating:", filename
-		if not ukp.shouldIMakeFile([self.xfn,self.yfn],self.shelveName,debug=False) and not ukp.shouldIMakeFile([self.xfn,self.yfn],filename,debug=False):continue
-		
-		#####
-		# Extend mask for xkey/ykey
-		x = extractData(self.xnc,mt[self.xtype][self.name], key=xkey)
-		y = extractData(self.ync,mt[self.ytype][self.name], key=ykey)
-		
-		fullmask = nmask + x.mask + y.mask + np.ma.masked_invalid(x).mask + np.ma.masked_invalid(y).mask 
-		if fullmask.sum() >= len(x):
-			print "plotWithSlices:\tWARNING:\tNew Mask,",newSlice,", covers entire dataset.",fullmask.sum(), len(xt)
-			try:	self.shelves.pop(shelveName)
-			except:	pass		
-			continue
-		
-		#####
-		# Apply mask to all data.	
-		nmxx = np.ma.masked_where(fullmask, xx).compressed()
-		nmxy = np.ma.masked_where(fullmask, xy).compressed()
-		nmxz = np.ma.masked_where(fullmask, xz).compressed()
-		nmxt = np.ma.masked_where(fullmask, xt).compressed()	
-		nmyx = np.ma.masked_where(fullmask, yx).compressed()
-		nmyy = np.ma.masked_where(fullmask, yy).compressed()
-		nmyz = np.ma.masked_where(fullmask, yz).compressed()
-		nmyt = np.ma.masked_where(fullmask, yt).compressed()
-		datax = np.ma.masked_where(fullmask, x).compressed()
-		datay = np.ma.masked_where(fullmask, y).compressed()
-		
-		if 0 in [len(datax),len(datay),len(nmxx),len(nmxy),len(nmxz),len(nmyx),len(nmyy),len(nmyz)]:
-			print 'plotWithSlices:\tWARNING:\tslice:',newSlice,'There is a zero in one of the fields.' 
-			try:	self.shelves.pop(shelveName)
-			except:	pass			
-			continue	
-						
-		dmin = min([datax.min(),datay.min()])
-		dmax = max([datax.max(),datay.max()])
-		if dmin == dmax: 
-			print "plotWithSlices:\tWARNING:\tminimum == maximum,\t (",dmin,' == ',dmax,')'
-			try:	self.shelves.pop(shelveName)
-			except:	pass			
-			continue
-			
-
-		#####
-		# Prepare units, axis labels and titles.
-		try:    xunits = fancyUnits(mt[self.xtype][self.name]['units'])
-		except: xunits = fancyUnits(self.xnc.variables[xkey].units,debug=True)
-
-		try:   yunits = fancyUnits(mt[self.ytype][self.name]['units'])
-		except:yunits = fancyUnits(self.ync.variables[ykey].units,debug=True)	
-
-		labelx = self.xtype+' '+self.name+', '+ xunits
-		labely = self.ytype+' '+self.name+', '+ yunits		  
-		
-		try: title = getLongName(newSlice)+' '+getLongName(self.name)
-		except:title = newSlice+' '+xkey+' vs '+ykey
-
-
-		robfnxy  = filename.replace('.png','_xyrobin.png')
-		histfnxy = filename.replace('.png','_hist.png')
-				
-		#####
-		# Robinson projection plot		
-		if ukp.shouldIMakeFile([self.xfn,self.yfn],robfnxy,debug=False) or True:
-			ti1 = getLongName(self.xtype)+' ' +getLongName(newSlice)+' '+getLongName(self.name)
-			ti2 =  getLongName(self.ytype)+' ' +getLongName(newSlice)+' '+getLongName(self.name)	
-			if self.name in noXYLogs or dmin*dmax <=0.:
-				print "plotWithSlices:\tROBIN NOT DOING DOLOG:",[ti1,ti2],False,dmin,dmax
-				ukp.robinPlotPair(nmxx, nmxy, datax,datay,robfnxy,titles=[ti1,ti2], vmin=dmin,vmax=dmax, doLog=False)
-				
-			else:	
-				print "plotWithSlices:\tROBIN DOING DOLOG:",[ti1,ti2],False,dmin,dmax					
-				ukp.robinPlotPair(nmxx, nmxy, np.ma.log10(datax),np.ma.log10(datay),
-						robfnxy,titles=[ti1,ti2], 
-						vmin=np.ma.log10(dmin),vmax=np.ma.log10(dmax),
-						cbarlabel='log$_{10}$('+xunits+')',
-						doLog=False)
-		
-		#####
-		# Simultaneous histograms plot	
-		if ukp.shouldIMakeFile([self.xfn,self.yfn],histfnxy,debug=False):
-			xaxislabel= getLongName(self.name)+', '+ xunits
-			if self.name in noXYLogs or dmin*dmax <=0.:				
-				ukp.histPlot(datax, datay,  histfnxy, Title=title, labelx=self.xtype,labely=self.ytype,xaxislabel =xaxislabel)	
-			else:	ukp.histPlot(datax, datay,  histfnxy, Title=title, labelx=self.xtype,labely=self.ytype,xaxislabel =xaxislabel, logx = True, )
-				
-		#####
-		# Scatter  (hexbin) plot
-		if ukp.shouldIMakeFile([self.xfn,self.yfn],filename,debug=False):		
-			gs = 50					
-			if self.name in noXYLogs or dmin*dmax <=0.:
-				ukp.scatterPlot(datax, datay,  filename, Title=title, labelx=labelx,labely=labely, bestfitLine=True,gridsize=gs)
-			else:	ukp.scatterPlot(datax, datay,  filename, Title=title, labelx=labelx,labely=labely, bestfitLine=True,gridsize=gs,logx = True, logy=True,)
-
-		#####
-		# Save fit in a shelve file.		
-		s = shOpen(self.shelveName)
-		print "plotWithSlices:\tSaving ",self.shelveName	
-
-		b1, b0, rValue, pValue, stdErr = linregress(datax, datay)
-		print "plotWithSlices:\tlinear regression: \n\tb1:",b1, "\n\tb0:", b0, "\n\trValue:",rValue, "\n\tpValue:",pValue, "\n\tstdErr:",stdErr
-		s['b1'] =  b1
-		s['b0'] =  b0
-		s['rValue'] =  rValue
-		s['pValue'] =  pValue
-		s['stdErr'] =  stdErr						
-		s['N'] 	    =  len(datax)
-					
-	  	mtaylor = StatsDiagram(datax,datay)
-		s['Taylor.E0']=  	mtaylor.E0
-		s['Taylor.E']=  	mtaylor.E
-		s['Taylor.R']=   	mtaylor.R
-		s['Taylor.p']=   	mtaylor.p							
-		s['Taylor.gamma']=   	mtaylor.gamma
-			
-		s['datax'] = datax
-		s['datay'] = datay
-
-		s['x_lon'] = nmxx
-		s['x_lat'] = nmxy
-		s['x_depth'] = nmxz
-		s['x_time'] = nmxt			
-		s['y_lon'] = nmyx
-		s['y_lat'] = nmyy
-		s['y_depth'] = nmyz
-		s['y_time'] = nmyt					
-			
-		s['title'] = 	title
-		s['labelx'] = 	labelx
-		s['labely'] = 	labely
-		s['name'] =   	self.name
-		s['year'] =   	self.year 
-		s['xtype'] =  	self.xtype
-		s['ytype'] =  	self.ytype
-		s['xfn'] =  	self.xfn
-		s['yfn'] =  	self.yfn
-		s['slice']= 	newSlice
-		s['newSlice'] = ns
-		s['xkey'] = 	xkey			
-		s['ykey'] = 	ykey
-		s.close()
 		
 
 def extractData(nc, mt,key = ['',]):

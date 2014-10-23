@@ -60,6 +60,7 @@ class makeTargets:
   	self.years = {}
   	self.newSlices={}
   	for sh in self.matchedShelves:
+  		print "loadShelves:\t",sh
   		s = shOpen(sh,flag='r')
  		E0 = s['Taylor.E0' ]
 		R  = s['Taylor.R']
@@ -152,10 +153,12 @@ class makeTargets:
 		pyplot.title(title)
 		
 		if self.debug:print 'makeDiagram:\tsaving file:', self.filename 
-		pyplot.savefig(self.filename ,dpi=300,bbox_inches='tight')
+		pyplot.savefig(self.filename ,dpi=200,)
 		pyplot.close()
-		del(TD)
-		del(fig)
+		try:
+			del(TD)
+			del(fig)
+		except: pass
 		
 		
 

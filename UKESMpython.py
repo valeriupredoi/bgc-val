@@ -274,7 +274,7 @@ def robinPlotPair(lons, lats, data1,data2,filename,titles=['',''],lon0=0.,marble
 
 	fig = pyplot.figure()
 
-	fig.set_size_inches(12,10)
+	fig.set_size_inches(10,10)
 
 	lons = np.array(lons)
 	lats = np.array(lats)
@@ -346,7 +346,7 @@ def robinPlotPair(lons, lats, data1,data2,filename,titles=['',''],lon0=0.,marble
 	pyplot.title(titles[1])			
 		
 	print "UKESMpython:\trobinPlotPair: \tSaving:" , filename
-	pyplot.savefig(filename ,dpi=dpi,  bbox_inches='tight')		
+	pyplot.savefig(filename ,dpi=dpi)		
 	pyplot.close()
 	
 
@@ -391,7 +391,7 @@ def histPlot(datax, datay,  filename, Title='', labelx='',labely='',xaxislabel='
 	#pyplot.ylabel(labely)
 	
 	print "UKESMpython:\thistPlot:\tSaving:" , filename
-	pyplot.savefig(filename ,dpi=dpi,  bbox_inches='tight')
+	pyplot.savefig(filename ,dpi=dpi)
 	pyplot.close()	
 	
 		
@@ -512,7 +512,7 @@ def scatterPlot(datax, datay,  filename, Title='', labelx='',labely='', logx=Fal
 	pyplot.ylabel(labely)
 
 	print "UKESMpython:\tscatterPlot:\tSaving:" , filename
-	pyplot.savefig(filename ,dpi=dpi,  bbox_inches='tight')
+	pyplot.savefig(filename ,dpi=dpi)
 	pyplot.close()			
 			
 def getOrcaIndexCC(lat,lon, latcc, loncc, debug=True,slowMethod=False,llrange=5.):

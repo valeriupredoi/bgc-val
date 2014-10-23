@@ -155,9 +155,9 @@ def main():
 
 
 	shelves = []
-	avshelves = AutoVivification()
+	shelvesAV = AutoVivification()
 	
-	#for name in sorted(['nitrateSurface','phosphateSurface','silicateSurface',]):
+	#for name in sorted(['bac',]):#'nitrateSurface','phosphateSurface','silicateSurface',]):
 	for name in sorted(av.keys()):
 		if not av[name][model]: continue
 		
@@ -197,23 +197,57 @@ def main():
 						debug=True)
 						#imageDir='', 
 						
-		for ns, sh in zip(m.newSlices,m.shelves):
-			region = av[name]['region']
-			avshelves[name.replace(region,'')][region][ns] = sh
-	
+		#for ns, sh in zip(m.newSlices,m.shelves):
+		region = av[name]['region']
+		tmpname = name.replace(region,'')
 		
+		shelvesAV[tmpname][region] = m.shelvesAV
 	#####
-	# All possible targets in  this model
-	
+	# All possible targets in  this model	
 	filename = folder('images/'+model+'/Targets/')+model+'_'+year+'_everything.png'		
 	makeTargets.makeTargets(	shelves, 
 					filename,
 					legendKeys = ['name', 'newSlice','ykey',],					
-					debug=True)#imageDir='', diagramTypes=['Target',]			
+					debug=True)#imageDir='', diagramTypes=['Target',]	
+
+
 	
-	#avshelves[model][name]
-	
-	
+
+
+	shelves= {}
+	shelves['Allnitrate'] = []
+	shelves['Allphosphate'] = []		
+	shelves['Allsilicate'] = []						
+	shelves['nitrate'] = []	
+	shelves['phosphate'] = []		
+	shelves['silicate'] = []
+	shelves['Surface'] = []	
+	#for name in ['silicate','nitrate','phosphate',]:
+	for name in shelvesAV.keys():
+	  for region in shelvesAV[name].keys():
+	    for newSlice in shelvesAV[name][region].keys(): 
+	      for xkey in shelvesAV[name][region][newSlice].keys():
+	        for ykey in shelvesAV[name][region][newSlice][xkey].keys():        	      
+	          shelve = shelvesAV[name][region][newSlice][xkey][ykey]
+	          print name,region,newSlice,xkey,ykey,':\t', shelve
+
+	          if name == 'nitrate':	  		shelves['nitrate'].append(shelve)
+	          if name == 'phosphate':	  	shelves['phosphate'].append(shelve)
+	          if name == 'silicate':	  	shelves['silicate'].append(shelve)
+	          if region == 'Surface':	  	shelves['Surface'].append(shelve)
+	          if newSlice == 'All':
+			  if name == 'nitrate':	  	shelves['Allnitrate'].append(shelve)
+			  if name == 'phosphate':	shelves['Allphosphate'].append(shelve)
+			  if name == 'silicate':	shelves['Allsilicate'].append(shelve)	          	        
+
+	for k in shelves.keys():
+		filename = folder('images/'+model+'/Targets/Summary')+model+'_'+year+'_'+k+'.png'
+	  	makeTargets.makeTargets(	shelves[k], 
+						filename,
+						legendKeys = ['name', 'newSlice','ykey',],					
+						debug=True)#imageDir='', diagramTypes=['Target',]	
+							
+
 	#print "shelves:",shelves
 	print "Working dir:",workingDir
 	
