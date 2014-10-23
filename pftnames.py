@@ -42,8 +42,8 @@ pftnames['m'] = pftnames['MEDUSA']
 pftnames['medusa'] = pftnames['MEDUSA']
 
 
-
-
+regions = ['Surface','200m','100m','500m','1000m','Transect','All',]
+MaredatTypes = ['chl','diatoms','bac','mesozoo','picophyto','microzoo']
 
 
 def getLongName(text):
@@ -317,6 +317,7 @@ def getkd():
 	kd['Maredat']['lat'] = 'LATITUDE'
 	kd['Maredat']['lon'] = 'LONGITUDE'
 	kd['Maredat']['cal'] = 'standard'
+	for m in MaredatTypes: kd[m]=kd['Maredat']
 
 
 	kd['WOA']['t'] = 'index_t'
@@ -325,7 +326,7 @@ def getkd():
 	kd['WOA']['lon'] = 'lon'
 	kd['WOA']['cal'] = 'standard'
 	for t in ['salinity','temperature','silicate','nitrate','phosphate',]:
-	  for d in ['Surface','200m','100m','500m','1000m','Transect','All',]:
+	  for d in regions: 
 		kd[t+d] = kd['WOA']
 	
 	
@@ -456,26 +457,26 @@ def getmt(): # Match Type
 	mt['ERSEM'] 		= mt['ERSEM']
 	mt['InitialConditions'] = mt['ERSEM']
 
-	for d in ['Surface','200m','100m','500m','1000m','Transect','All',]:
+	for d in regions:#['Surface','200m','100m','500m','1000m','Transect','All',]:
 	
 	    for t in ['temperature','temp',]:
-	    	mt['WOA'][t+d] 		= ['t_mn',]
+	    	mt['WOA'][t+d] 		= ['t_mn','t_an',]
 	    	mt['NEMO'][t+d] 	= ['votemper',]
 
 	    for t in ['salinity','sal',]:
-	    	mt['WOA' ][t+d] 	= ['s_mn',]
+	    	mt['WOA' ][t+d] 	= ['s_mn','s_an',]
 	    	mt['NEMO'][t+d] 	= ['vosaline',]
 
 	    for t in ['nitrate','nit']:
-	    	mt['WOA'   ][t+d] 	= ['n_mn',]
+	    	mt['WOA'   ][t+d] 	= ['n_mn','n_an',]
 	    	mt['MEDUSA'][t+d]  	= ['DIN',]
 	    	mt['ERSEM' ][t+d]  	= ['N3n',]	    	
 	    for t in ['silicate',]:
-	    	mt['WOA'   ][t+d] 	= ['i_mn',]
+	    	mt['WOA'   ][t+d] 	= ['i_mn','i_an',]
 	    	mt['MEDUSA'][t+d]  	= ['SIL',]
 	    	mt['ERSEM' ][t+d]  	= ['N5s',]	
 	    for t in ['phosphate',]:
-	    	mt['WOA'   ][t+d] 	= ['p_mn',]
+	    	mt['WOA'   ][t+d] 	= ['p_mn','p_an',]
 	    	mt['ERSEM' ][t+d]  	= ['N1p',]	
 	    		    	
     	

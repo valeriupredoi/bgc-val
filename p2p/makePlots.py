@@ -19,7 +19,7 @@ from ncdfView import ncdfView
 
 #local imports
 import UKESMpython as ukp 
-from pftnames import getLongName, AutoVivification, getkd, getmt,fancyUnits
+from pftnames import getLongName, AutoVivification, getkd, getmt,fancyUnits,MaredatTypes
 
 
     
@@ -28,7 +28,8 @@ from pftnames import getLongName, AutoVivification, getkd, getmt,fancyUnits
 
 """
 
-#BioLogScales 	= ['bac','mesozoo','diatoms','picophyto','microzoo','PP','Seawifs', 'iron'] 	
+#BioLogScales 	= ['bac','mesozoo','diatoms','picophyto','microzoo','PP','Seawifs', 'iron'] 
+	
 noXYLogs 	= [ 'pCO2',
 		#'nitrateSurface', 	'nitrateAll',	'nitrateTransect',
 		#'phosphateSurface',	'phosphateAll',	'phosphateTransect',
@@ -36,7 +37,7 @@ noXYLogs 	= [ 'pCO2',
 		'tempSurface',		'tempAll',	'tempTransect',	'temp100m',	'temp200m','temp1000m',	'temp500m',
 		'salSurface', 		'salAll',	'salTransect',	'sal100m',	'sal200m','sal1000m',	'sal500m',]
 		
-MaredatTypes = ['chl','diatoms','bac','mesozoo','picophyto','microzoo']
+
 MLDTypes = ['mld','mld_DT02','mld_DR003','mld_DReqDTm02', ]
 WOATypes = [a+b for a,b in product(['silicate','nitrate','phosphate','salinity','temperature',],['Surface','500m','100m','200m','1000m',])]
 
@@ -64,7 +65,7 @@ class makePlots:
   	self.xnc = ncdfView(self.xfn,Quiet=True)
   	self.ync = ncdfView(self.yfn,Quiet=True)
 
-
+	self.imageDir = ukp.folder(['images',self.xtype,'P2P_plots',self.name])
 
 
 	if compareCoords: self.CompareCoords()	
@@ -89,7 +90,7 @@ class makePlots:
   	for xkey,ykey in zip(xkeys,ykeys):
 	    	if xkey not in self.xnc.variables.keys():continue  	    
 	    	if ykey not in self.ync.variables.keys():continue
-		filename = ukp.folder(['images',self.xtype,'P2P_plots','CompareCoords',self.name])+self.name+xkey+'vs'+ykey+'.png'	    	
+		filename = self.imageDir+'CompareCoords'+self.name+xkey+'vs'+ykey+'.png'	    	
 		if not ukp.shouldIMakeFile([self.xfn,self.yfn],filename,debug=False):continue
 		print "CompareCoords:\tx:",xkey, "\ty:",ykey
 		if xkey not in self.xnc.variables.keys():
@@ -426,7 +427,7 @@ class makePlots:
 			ti1 = getLongName(self.xtype)+' ' +getLongName(newSlice)+' '+getLongName(self.name)
 			ti2 =  getLongName(self.ytype)+' ' +getLongName(newSlice)+' '+getLongName(self.name)	
 			if self.name in noXYLogs or dmin*dmax <=0.:
-				print "plotWithSlices:\tROBINNOT DOING DOLOG:",[ti1,ti2],False,dmin,dmax
+				print "plotWithSlices:\tROBIN NOT DOING DOLOG:",[ti1,ti2],False,dmin,dmax
 				ukp.robinPlotPair(nmxx, nmxy, datax,datay,robfnxy,titles=[ti1,ti2], vmin=dmin,vmax=dmax, doLog=False)
 				
 			else:	
@@ -440,13 +441,13 @@ class makePlots:
 		# Simultaneous histograms plot	
 		if ukp.shouldIMakeFile([self.xfn,self.yfn],histfnxy,debug=False):
 			xaxislabel= getLongName(self.name)+', '+ xunits
-			if self.name in noXYLogs:				
+			if self.name in noXYLogs or dmin*dmax <=0.:				
 				ukp.histPlot(datax, datay,  histfnxy, Title=title, labelx=self.xtype,labely=self.ytype,xaxislabel =xaxislabel)	
 			else:	ukp.histPlot(datax, datay,  histfnxy, Title=title, labelx=self.xtype,labely=self.ytype,xaxislabel =xaxislabel, logx = True, )
 				
 		#####
 		# Scatter  (hexbin) plot			
-		if self.name in noXYLogs:
+		if self.name in noXYLogs or dmin*dmax <=0.:
 			ukp.scatterPlot(datax, datay,  filename, Title=title, labelx=labelx,labely=labely, bestfitLine=True,gridsize=gs)
 		else:	ukp.scatterPlot(datax, datay,  filename, Title=title, labelx=labelx,labely=labely, bestfitLine=True,gridsize=gs,logx = True, logy=True,)
 		
@@ -569,91 +570,9 @@ def extractData(nc, mt,key = ['',]):
 
 
 
-
-
-
-
-	
-def main():
-	assert False
-	maredatFiles 	= [] 
-	ERSEMfiles 	= []
-
-	pfts =	[
-		 'iron', 
-		'pCO2', 'PP','intPP',
-
-		'phosphateSurface','phosphate100m','phosphate200m','phosphate500m',	
-		'silicateSurface','silicate100m','silicate200m','silicate500m',
-		'nitrateSurface','nitrate100m','nitrate200m','nitrate500m',	
-
-		 	
-		'picophyto',
-		'chl',	
-
-
-	#	]
-	#tmp =[
-		
-		'diatoms',	
-
-		'microzoo',
-		'mesozoo',  		
-	
-		#'iron', 
-		#'silicate500m',	'nitrate500m',	
-		#'silicate100m','silicate200m',
-		#'nitrate100m','nitrate200m',		
-		#'silicateSurface','nitrateSurface',
-
-		#'tempSurface',	'salSurface', 			
-		#'temp500m',		'temp1000m',	'sal1000m','sal500m',
-		#'sal100m','sal200m', 'temp100m','temp200m',			
-			
-		'bac',
-
-		 
-		#'microzoo','mesozoo',  
-
-				  
-		#'nitrateAll',	'nitrateTransect',
-		#'phosphateSurface',	'phosphateAll',	'phosphateTransect',
-		#'silicateSurface',	'silicateAll',	'silicateTransect',
-		#		'tempAll',	'tempTransect',	
-		#'salSurface', 		'salAll',	'salTransect',
-		 #'mld_DT02','mld_DR003','mld_DReqDTm02'		 				
-		#'Seawifs',
-#		# 'Seawifs-biomass',
-#		 'Seawifs-biomass',		 
-#			
-#		 'Seawifs-nano','Seawifs-pico','Seawifs-micro',
-#		 'SeawifsBM-nano','SeawifsBM-pico','SeawifsBM-micro',
-		 ]
-	plotallcuts = 0#True
-	
-	
-	try: 	
-		jobID = argv[1]
-		key   = argv[2]
-		print "Using command line arguments:", argv[1], argv[2]
-	except:
-		#jobID= 'xhonp'
-		#key = "clim"
-		print "Not using command line arguments,Defaults sweep"#,jobID
-		for jobID in [  'xhont', 'xhonu', 'xhonv', 'xhonp',]:
-		  for yr in ['1894','1899']:
-		    for name in pfts:
-			m = makePlots(name, jobID+'_'+yr,plotallcuts=plotallcuts, compareCoords=True)		
-		
-	jobkey = jobID+'_'+key
-	
-	for name in pfts:
-		m = makePlots(name, jobkey,plotallcuts=plotallcuts, compareCoords=True)
-		#return
-	#	m = makePlots(ERSEMfile,maredatFile,plotallcuts=plotallcuts)
-
 		
 if __name__=="__main__":
-	main() 
+	print "makePlots isn't written to be run as a __main__"
+	print "Look at testsuite_p2p.py for examples on how to run this."
 	print 'The end.'
 	

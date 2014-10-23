@@ -161,7 +161,7 @@ class matchDataAndModel:
 			mmask[:,k,:,:] = 0
 						
 		if self.region == 'Transect':	mmask[:,:,:,200] = 0   # Pacific Transect.	
-		if self.region in ['All','']:	mmask[:,] = 0   # Entire Dataset
+		if self.region in ['All','']:	mmask[:] = 0   # Entire Dataset
 		mmask +=nc(self.DataVars[0]).mask
 		print mmask.shape
 		nc.close()
@@ -215,7 +215,8 @@ class matchDataAndModel:
   	    is_z 	= ncIS(kd[self.dataType]['z'])[:]
   	    is_la	= ncIS(kd[self.dataType]['lat'])[:]
 	    is_lo 	= ncIS(kd[self.dataType]['lon'])[:]	
-	   	 
+	    tdict = {i+1:i for i in xrange(12)}
+	     
 	    WOADatas = [a+self.region for a in ['temp','sal','temperature','salinity','nitrate','phosphate','silicate',]]	   	 
 	    if self.dataType in WOADatas:pass
   	  # 	 is_t	= ncIS('time')[:]	
@@ -286,7 +287,8 @@ class matchDataAndModel:
 		wz  = is_z[i]
 		wla = is_la[i]
 		wlo = is_lo[i] 
-		
+
+		#####		
 		# Match Latitude and Longitude
 		try:
 			la,lo = lldict[(wla,wlo)]
@@ -298,9 +300,9 @@ class matchDataAndModel:
 				print "STRICT ERROR: Could not find, ",wla,wlo
 				assert False
 				return
-			#if finds%10000==0 and self.debug:
-			# print "matchModelToData:\t",i,'New match:\tlon:',[wlo,self.loncc[la,lo]],'\tlat:',[wla,self.latcc[la,lo]],[finds,len(lldict)]
-
+			if self.debug:
+			 print "matchModelToData:\t",i,'New match:\tlon:',[wlo,self.loncc[la,lo]],'\tlat:',[wla,self.latcc[la,lo]],[finds,len(lldict)]
+		#####
 		#Match Depth	
 		try:
 			z = zdict[wz]
@@ -308,7 +310,8 @@ class matchDataAndModel:
 			z = getORCAdepth(wz,deptht,debug=True)
 			zdict[wz]	= z
 			if self.debug: print "matchModelToData:\t",i, 'Found new depth:',wz,'-->',z								
-			
+
+		#####			
 		#Match Time	
 		try:
 			t = tdict[wt]
@@ -316,17 +319,19 @@ class matchDataAndModel:
 			t = getMonthFromSecs(wt)
 			tdict[wt] = t
 			if self.debug:	print "matchModelToData:\t",i, 'Found new month:', wt, '-->',t
-		
+
+		#####		
 		# Add match into array
 		try:
 			tmp = self.matches[(t,z,la,lo)][0]
 			self.maremask[i] = tmp
 			self.matches[(t,z,la,lo)].append(i)
-			#print "matchModelToData:\tWARNING:",i,[wt,wz,wla,wlo], '-->',(t,z,la,lo),'already matched', tmp
+			print "matchModelToData:\tWARNING:",i,[wt,wz,wla,wlo], '-->',(t,z,la,lo),'already matched', tmp
 		except:
 			self.matches[(t,z,la,lo)]=[i,]
 			self.maremask[i] = i
-			
+
+		#####			
 		#increment by 1 to save/ end, as it has finished, but i is used as a starting point.
 		i+=1
 		if i%100==0:	
