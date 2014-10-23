@@ -4,27 +4,22 @@ from os.path import exists,split, getmtime, basename
 from glob import glob
 from shelve import open as shOpen
 from shutil import copy2
-
-import numpy as np
-#from numpy import array,ones,unravel_index
 from math import radians, cos, sin, asin, sqrt
-#from haversine import haversine
 from netCDF4 import num2date
 from datetime import datetime
+import numpy as np
 
-#local imports
-#import iMarNetPython as impy
-#from iMarNetPython import noLeapConvert, shouldIMakeFile,depthKeys,alwaysInclude,getFileList,getMareDatatype,getpco2,getHenryConstant,getORCAdepth#getJobID
-#from iMarNetPython import makeLatSafe, makeLonSafe,makeLonSafeArr
-#from UKESMpython import shouldIMakeFile, folder
+######
+# local imports
 import UKESMpython as ukp 
 from pftnames import getkd
 
-# imports from other gitlab repositories:
-from ncdfView import ncdfView	
-#	ncdfView is available from:
+#####
+# ncdfView is available from:
 #	https://gitlab.ecosystem-modelling.pml.ac.uk/momm/pml-python-tools
-	
+from ncdfView import ncdfView	
+
+#####	
 # These are availalble in the module:
 #	https://gitlab.ecosystem-modelling.pml.ac.uk/ledm/netcdf_manip
 from pruneNC import pruneNC
@@ -43,7 +38,7 @@ class matchDataAndModel:
 	The 1D matched netcdfs are then used to make plots and perform statistical analysis (not in this code).
 	The first step is to produce lightweight "pruned" versions of the files, which have the unused fields stripped out.
 	Some of the datasets are too large to run this code on desktop machine, so in those cases we request a specific region, ie "Surface".
-	Debug = True prints more statements.
+	Debug: prints more statements.
   """
 
 
@@ -67,9 +62,7 @@ class matchDataAndModel:
 	self.debug = debug	
 		
 	self.dataType = dataType
-		#getMareDatatype(self.DataFile) 
-		# this means that the maredat file input determines which data to process, which we don't want.
-		# ie, what if there were two different datasets in one file.
+
 	
 	if debug: print  "matchDataAndModel:\tINFO:\t",self.dataType, '\tModelfile:', self.ModelFile
 		
@@ -141,7 +134,7 @@ class matchDataAndModel:
 		return
 
 	if self.dataType in ['pCO2','iron',]: 
-		 # pCO2, iron Files area already 1D
+		# pCO2, iron Files area already 1D
 		self.DataFile1D = self.DataFilePruned 
 		print "matchDataAndModel:\tconvertDataTo1D:\tpCO2/Iron File has already been converted to 1D"
 		return
@@ -161,7 +154,7 @@ class matchDataAndModel:
 			mmask[:,k,:,:] = 0
 						
 		if self.region == 'Transect':	mmask[:,:,:,200] = 0   # Pacific Transect.	
-		if self.region in ['All','']:	mmask[:] = 0   # Entire Dataset
+		if self.region in ['All','']:	mmask[:] = 0   		# Entire Dataset
 		mmask +=nc(self.DataVars[0]).mask
 		print mmask.shape
 		nc.close()
@@ -218,32 +211,11 @@ class matchDataAndModel:
 	    tdict = {i+1:i for i in xrange(12)}
 	     
 	    WOADatas = [a+self.region for a in ['temp','sal','temperature','salinity','nitrate','phosphate','silicate',]]	   	 
-	    if self.dataType in WOADatas:pass
-  	  # 	 is_t	= ncIS('time')[:]	
-  	#   	 is_z 	= ncIS('depth')[:]
-  	 #  	 is_la	= ncIS('lat')[:]
-	  # 	 is_lo 	= ncIS('lon')[:]	    
-	    elif self.dataType in ['pCO2',]:
- # 	   	 is_t	= ncIS('MONTH')[:]	
-  #	   	 is_z 	= ncIS('index_z')[:]
-  #	   	 is_la	= ncIS('LAT')[:]
-#	   	 is_lo 	= ncIS('LON')[:]
-	   	 tdict = {i+1:i for i in xrange(12)}	
-#	   	 zdict = {0:0, 0.:0}  
+	    #if self.dataType in WOADatas:pass
 
-	    elif self.dataType in ['seawifs','Seawifs',]: #'chl','Tchl','Micro_percent_Tchl','Nano_percent_Tchl','Pico_percent_Tchl',
-#  	   	 is_t	= ncIS('month')[:]
- # 	   	 is_z 	= ncIS('deptht')[:] 
-  #	   	 is_la	= ncIS('latitude')[:]
-#	   	 is_lo 	= ncIS('longitude')[:]
-	   	 tdict = {i+1:i for i in xrange(12)}
+	    if self.dataType in ['pCO2','seawifs','Seawifs','mld_DT02', 'mld_DR003','mld_DReqDTm02','mld',]: 
+  	   	 is_z 	= np.ma.zeros(len(is_t))[:]
 	   	 zdict = {0:0, 0.:0}  
-#	    elif self.dataType in ['intPP',]:
-#  	   	 is_t	= ncIS('index_t')[:]
-#  	   	 is_z 	= ncIS('index_z')[:]
-#  	   	 is_la	= ncIS('LATITUDE')[:]
-#	   	 is_lo 	= ncIS('LONGITUDE')[:]
-#	   	 tdict = {i:i for i in xrange(12)}
 	    elif self.dataType in ['iron',]:
   	   	 #fulltime	= num2date(ncIS('time')[:],ncIS.variables['time'].units)
   	   	 #is_t  = array([t.month for t in fulltime])
@@ -252,22 +224,15 @@ class matchDataAndModel:
   	   	 is_la	= ncIS('Latitude')[:]
 	   	 is_lo 	= ncIS('Longitude')[:]
 	   	 tdict = {i+1:i for i in xrange(12)}
-	    elif self.dataType in ['mld_DT02', 'mld_DR003','mld_DReqDTm02','mld',]:
-  	   	 #fulltime	= num2date(ncIS('time')[:],ncIS.variables['time'].units)
-  	   	 #is_t  = array([t.month for t in fulltime])
-#  	   	 is_t	= ncIS('time')[:]
-  	   	 is_z 	= np.ma.zeros(len(is_t))[:]
-#  	   	 is_la	= ncIS('lat')[:]
-#	   	 is_lo 	= ncIS('lon')[:]
-	   	 tdict = {i+1:i for i in xrange(12)}
-	    else:	    
+#	    else:	    
+#	    	print "matchModelToData:\tmatchModelToData:\tERROR:\tNo "
   	   	 #is_t	= ncIS('index_t')[:] # range 0->11	  	   	 
-  	   	 is_t	= ncIS('TIME')[:] # range 1->12	
-  	   	 is_z 	= ncIS('DEPTH')[:]
-  	   	 is_la	= ncIS('LATITUDE')[:]
-	   	 is_lo 	= ncIS('LONGITUDE')[:]
-	   	 #tdict = {i:i for i in xrange(12)}
-	   	 tdict = {i+1:i for i in xrange(12)}		   	 
+#  	   	 is_t	= ncIS('TIME')[:] # range 1->12	
+# # 	   	 is_z 	= ncIS('DEPTH')[:]
+#  	   	 is_la	= ncIS('LATITUDE')[:]
+#	   	 is_lo 	= ncIS('LONGITUDE')[:]
+# 	  	 #tdict = {i:i for i in xrange(12)}
+#	   	 tdict = {i+1:i for i in xrange(12)}		   	 
 	    ncIS.close()
 
 	    # This won't work unless its the 1 degree grid.
