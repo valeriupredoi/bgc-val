@@ -68,6 +68,63 @@ def makeThisSafe(arr,log=False,debug = True, key='',noSqueeze=False):
 		arr = np.ma.masked_where(np.isnan(arr)+arr.mask +np.isinf(arr) , arr)	
 		
 	return arr
+
+
+class AutoVivification(dict):
+    """Implementation of perl's autovivification feature.
+    	This class allows you to automate the creating of layered dictionaries.
+    	from https://stackoverflow.com/questions/651794/whats-the-best-way-to-initialize-a-dict-of-dicts-in-python
+    """
+    def __getitem__(self, item):
+        try: return dict.__getitem__(self, item)
+        except KeyError:
+            value = self[item] = type(self)()
+            return value
+
+class NestedDict(dict):
+    """                                                                       
+    Nested dictionary of arbitrary depth with autovivification.               
+
+    Allows data access via extended slice notation.                           
+    
+    from https://stackoverflow.com/questions/15077973/how-can-i-access-a-deeply-nested-dictionary-using-tuples
+    """
+    def __getitem__(self, keys):
+        # Let's assume *keys* is a list or tuple.                             
+        if not isinstance(keys, basestring):
+            try:
+                node = self
+                for key in keys:
+                    node = dict.__getitem__(node, key)
+                return node
+            except TypeError:
+            # *keys* is not a list or tuple.                              
+                pass
+        try:
+            return dict.__getitem__(self, keys)
+        except KeyError:
+            raise KeyError(keys)
+    def __setitem__(self, keys, value):
+        # Let's assume *keys* is a list or tuple.                             
+        if not isinstance(keys, basestring):
+            try:
+                node = self
+                for key in keys[:-1]:
+                    try:
+                        node = dict.__getitem__(node, key)
+                    except KeyError:
+                        node[key] = type(self)()
+                        node = node[key]
+                return dict.__setitem__(node, keys[-1], value)
+            except TypeError:
+                # *keys* is not a list or tuple.                              
+                pass
+        dict.__setitem__(self, keys, value)
+        
+        
+        
+        
+        
 	
 def sliceA(arr,region):
 	# you should already have removed time by now.

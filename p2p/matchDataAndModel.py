@@ -72,7 +72,7 @@ class matchDataAndModel:
 		self.workingDir = ukp.folder('/data/euryale7/scratch/ledm/ukesm_postProcessed/ukesm/outNetCDF/'+'/'.join([self.compType,self.dataType]) )
 	else: 	self.workingDir = workingDir	
 
-	self.matchedShelve 	= ukp.folder(self.workingDir)+self.jobID+'_'+self.dataType+'.shelve'
+	self.matchedShelve 	= ukp.folder(self.workingDir)+self.jobID+'_'+self.year+'_'+self.region+'_'+self.dataType+'.shelve'
 	self.matchesShelve 	= ukp.folder(['shelves','MaredatModelMatch',])+'WOAtoORCA1.shelve'
 
 	self.workingDirTmp = 	ukp.folder(self.workingDir+'tmp')
@@ -498,119 +498,7 @@ def getMonthFromSecs(secs):
 
 def main():
 	assert False
-	# don't call main. This should be moved elsewhere.
-	try: 	
-		jobID = argv[1]
-		key   = argv[2]
-		print "Using command line arguments:", argv[1], argv[2]
-	except:
-		jobID= 'xhonp'
-		key = "clim"
-		print "Not using command line arguments,Defaults:",jobID,key
-		
-
-		##jobID = "xjeza"	
-		#jobID = "xhono"	
-
-	if jobID.upper() == 'MEDUSA':
 	
-		ppdataFold="/data/euryale7/scratch/ledm/UKESM/MEDUSA/"
-		ModelBGCFile 	= ppdataFold+"medusa_bio_"+key+".nc"
-		#SalTempWindFile	= ppdataFold+"outNetCDF/"+jobID+"-"+key+"/"+jobID+"_"+key+"_SalTempWind.nc"
-		ModeldiagFile 	= ModelBGCFile#ppdataFold+"outNetCDF/"+jobID+"-"+key+"/"+jobID+"_"+key+"_Diag.nc"
-				
-	else:
-		ppdataFold="/data/euryale7/scratch/ledm/iMarNet_postProcessed/iMarNetp2p/"
-		ModelBGCFile 	= ppdataFold+"outNetCDF/"+jobID+"-"+key+"/"+jobID+"_"+key+"_ERSEM.nc"
-		SalTempWindFile	= ppdataFold+"outNetCDF/"+jobID+"-"+key+"/"+jobID+"_"+key+"_SalTempWind.nc"
-		ModeldiagFile 	= ppdataFold+"outNetCDF/"+jobID+"-"+key+"/"+jobID+"_"+key+"_Diag.nc"
-
-	MareDatFold="/data/perseus2/scratch/ledm/MAREDAT/MAREDAT/"		
-	#ERSEMBGCFile 	= "outNetCDF/Climatologies/xhono_clim.nc"
-	#SalTempWindFile= "outNetCDF/Climatologies/xhono_clim_SalTempWind.nc"
-	#ERSEMdiagFile 	= "outNetCDF/Climatologies/xhono_clim_Diag.nc"
-
-
-	mld = 0	#True
-	if mld:
-	    mldvars = ['somxl010',]
-	    for datafile in ["/data/euryale7/scratch/ledm/IFREMER-MLD/mld_DT02_c1m_reg2.0.nc",
-	    			"/data/euryale7/scratch/ledm/IFREMER-MLD/mld_DR003_c1m_reg2.0.nc",
-	    			"/data/euryale7/scratch/ledm/IFREMER-MLD/mld_DReqDTm02_c1m_reg2.0.nc", ]:
-	    
-		b = matchDataAndModel(datafile, SalTempWindFile,mldvars,key=key)
-			
-
-	
-
-	
-
-
-
-	
-	
-	#### MAREDAT files:
-		
-	diatoms = True
-	if diatoms:
-		diatomsfn 	= MareDatFold+"MarEDat20120716Diatoms.nc"
-		if jobID.upper() == 'MEDUSA':				
-			diatomsvars = ["PHD",]
-		else:		
-			diatomsvars 	= ['N1p','N3n','N4n','N5s','N7f','P1c','P1f','P1n','P1p','P1s','Chl1']
-		b = matchDataAndModel(diatomsfn, ModelBGCFile,diatomsvars,key=key)	
-
-
-	chl =True
-	if chl:
-		chlfn 	= MareDatFold+"MarEDat20121001Pigments.nc"		
-		#datafile = "/data/euryale7/scratch/ledm/LestersReportData/Seawifs_chl.nc"
-		if jobID.upper() == 'MEDUSA':				
-			chlvars = ["CHL",]
-		else:
-			chlvars = ["chl",]
-		
-		b = matchDataAndModel(chlfn, ModeldiagFile,chlvars,key=key)	
-		
-	if jobID.upper() != 'MEDUSA':		
-		bac = True
-		if bac:
-			bacfn 		= MareDatFold+"MarEDat20120214Bacteria.nc"
-			bacvariables 	= ['B1c','B1n','B1p', 'N1p','N3n','N4n','N5s','N7f']		
-			b = matchDataAndModel(bacfn, ModelBGCFile,bacvariables,key=key)
-
-		picophyto= True
-		if picophyto:
-			picophytofn 	= MareDatFold+"MarEDat20111206Picophytoplankton.nc"
-			picovars 	= ['N1p','N3n','N4n','N5s','N7f','P3c','P3f','P3n','P3p','P3s','Chl3']			
-			b = matchDataAndModel(picophytofn, ModelBGCFile,picovars,key=key)
-			
-	microzoo= True
-	if microzoo :
-	
-		microzoofn 	= MareDatFold+"MarEDat20120424Microzooplankton.nc"
-		if jobID.upper() == 'MEDUSA':				
-			microzoovars = ["ZMI",]
-		else:
-			microzoovars 	= ['N1p','N3n','N4n','N5s','N7f','Z4c','Z5c','Z5n', 'Z5p', 'Z6c', 'Z6n', 'Z6p',]			
-		b = matchDataAndModel(microzoofn, ModelBGCFile,microzoovars,key=key)	
-	
-	macrozoo = False
-	if macrozoo :
-		macrozoofn 	= MareDatFold+"MarEDat20120216Macrozooplankton.nc"
-		macrozoovars 	= ['N1p','N3n','N4n','N5s','N7f','Z4c','Z5c','Z5n', 'Z5p', 'Z6c', 'Z6n', 'Z6p',]
-		b = matchDataAndModel(macrozoofn, modelFile,macrozoovars,key=key)
-
-	mesozoo = True
-	if mesozoo:
-		mesozoofn 	= MareDatFold+"MarEDat20120705Mesozooplankton.nc"
-		if jobID.upper() == 'MEDUSA':				
-			mesozoovars = ["ZME",]
-		else:		
-			mesozoovars 	= ['N1p','N3n','N4n','N5s','N7f','Z4c','Z5c','Z5n', 'Z5p', 'Z6c', 'Z6n', 'Z6p',]
-		b = matchDataAndModel(mesozoofn, ModelBGCFile,mesozoovars,key=key)	
-			
-	#return
 
 
 	iron = True
@@ -622,12 +510,6 @@ def main():
 			ironvars = ['N1p','N3n','N4n','N5s','N7f',]
 		b = matchDataAndModel(datafile, ModelBGCFile,ironvars,key=key)	
 
-
-
-				
-
-#	assert False
-	
 	
 
 	pCO2 =True
@@ -642,17 +524,6 @@ def main():
 			pco2vars = ["chl","fAirSeaC","pCO2w","netPP",]
 		b = matchDataAndModel(datafile, ModeldiagFile,pco2vars,key=key)	
 
-		#also need temperature for pCO2 calculation
-
-		#modelFile= SalTempWindFile
-		#pco2vars = temperaturevars
-		#b = matchDataAndModel(datafile, modelFile,pco2vars,key=key)	
-		
-		#dfile  =  "outNetCDF/MaredatMatched/pCO2/xhono_clim_Diag_pCO2_1D.nc"
-		#tfile  =  "outNetCDF/MaredatMatched/pCO2/xhono_clim_SalTempWind_pCO2_1D.nc"
-		#outfile=  "outNetCDF/MaredatMatched/pCO2/xhono_clim_pCO2_1D.nc"
-		#r = recalculate_pCO2(dfile,tfile,outfile)
-			
 			
 			
 
@@ -677,72 +548,11 @@ def main():
 		pco2vars = ["PP",]
 		b = matchDataAndModel(datafile, ModeldiagFile,pco2vars,key=key)		
 		
-
-	#pCO2 = True
-	#if pCO2:
-#		datafile = "outNetCDF/MaredatMatched-"+jobID+"-"+key+"/pCO2/takahashi2009_month_flux_pCO2_2006c_noHead.nc"
-		#try:
-#		copy2("outNetCDF/MaredatMatched-xhont-clim/pCO2/takahashi2009_month_flux_pCO2_2006c_noHead.nc", datafile)
-	#	except: pass
-		#datafile = "outNetCDF/MaredatMatched/pCO2/takahashi2009_annual_flux_pCO2_2006c_noHead.nc"
-
-#		pco2vars = ["chl","fAirSeaC","pCO2w","netPP",]
-#		b = matchDataAndModel(datafile, ModeldiagFile,pco2vars,key=key)
-
+	
+	
 
 
 		
-
-	for woaKey in ['silicate','nitrate','phosphate','salinity','temperature',]:
-		if woaKey in ['salinity','temperature',]:
-			continue
-			modelFile = SalTempWindFile
-		else:
-			modelFile = ModelBGCFile
-		datafile = '/data/euryale7/scratch/ledm/WOA/'+woaKey+'_monthly_1deg.nc'
-		
-		l = woaKey[0]
-		if woaKey == 'silicate': l='i' # silicate key is i, not s.
-		m_temp_vars = [l+'_mn','depth','lat','lon','time'] 
-		temperaturevars = ['votemper',] 
-		for s in ['Surface','500m','100m','200m',]:#'Transect',]:#'All',
-		    
-		    b = matchDataAndModel(datafile, modelFile,temperaturevars,DataVars = m_temp_vars, region = s,key=key)
-
-		for s in ['1000m',]:#'Transect','Surface',]:#'All',
-		    if  woaKey in ['silicate','nitrate','phosphate',]:#'salinity','temperature',]: 
-		    	continue
-		    
-		    b = matchDataAndModel(datafile, modelFile,temperaturevars,DataVars = m_temp_vars, region = s,key=key)
-	#assert False
-
-	
-
-
-	
-	
-	
-	
-	chl =0#True
-	if chl:
-		print "DON'T USE THIS ONE, THERE IS A "
-		datafile = "/data/euryale7/scratch/ledm/LestersReportData/Seawifs_chl.nc"
-
-		pco2vars = ["chl",]
-		b = matchDataAndModel(datafile, ModeldiagFile,pco2vars,key=key)	
-
-	
-	GLODAPpCO2 =0#True
-	if GLODAPpCO2:
-		datafile = "/data/euryale7/scratch/ledm/LestersReportData/GLODAP_TCO2.nc"
-
-		modelFile= ModeldiagFile
-		pco2vars = ["chl","fAirSeaC","pCO2w","netPP",]
-		b = matchDataAndModel(datafile, modelFile,pco2vars,key=key)	
-
-
-
-	
 	intPP =True
 	if intPP:
 		datafile = "/data/euryale7/scratch/ledm/LestersReportData/PPint_1deg.nc"

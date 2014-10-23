@@ -19,28 +19,24 @@ from sys import argv
 from shelve import open as shOpen
 
 import UKESMpython as ukp
-from pftnames import AutoVivification
+from pftnames import AutoVivification,getLongName
 
 
 
-#from deMoraTools import folder, foldToEps,AutoVivification,mnStr
-#from shelveManager import shelveManager
-#from BGCnames import fullname
-#from iMarNetPython import getLongName,shouldIMakeFile
 
 
 
 class makeTargets:
-  def __init__(self,matchedShelves, filename,name='', imageDir='', diagramTypes=['Target',],debug=True): 
+  def __init__(self,matchedShelves, filename,imageDir='', diagramTypes=['Target',],legendKeys = ['name', 'newSlice','xkey','ykey',],debug=True): #name='', 
 
   
   	self.matchedShelves =matchedShelves
-    	self.name = name
+    	#self.name = name
     	self.filename = filename
 	self.diagramTypes = diagramTypes 	#['Taylor','Target']
 	self.debug = debug
 	self.imageDir = imageDir
-
+	self.legendKeys = legendKeys #['xtype','ytype', 'name', 'newSlice','xkey','ykey',]
 
 
 	
@@ -57,7 +53,12 @@ class makeTargets:
 
   def loadShelves(self,):
   	self.data = AutoVivification()
-  	
+
+  	self.xtypes = {}
+  	self.ytypes = {}
+  	self.names = {}
+  	self.years = {}
+  	self.newSlices={}
   	for sh in self.matchedShelves:
   		s = shOpen(sh,flag='r')
  		E0 = s['Taylor.E0' ]
@@ -65,12 +66,16 @@ class makeTargets:
 		G  = s['Taylor.gamma']
 		p  = s['Taylor.p']	 		
 		N  = s['N']
-		leg = ' - '.join([s[i] for i in ['xtype','ytype', 'name', 'newSlice','xkey','ykey',]])
-		#leg =  mnStr(i)+'/'+getLongName(leg[i])
-		try:	self.xtype[s['xtype']]=True
-		except: 
-			self.xtype = {s['xtype']:True}
-			
+		leg = ' - '.join([getLongName(s[i]) for i in self.legendKeys])
+
+	  	self.xtypes[s['xtype']]	= True
+	  	self.ytypes[s['ytype']]	= True
+	  	self.names[s['name']]	= True
+	  	self.years[s['year']]	= True	
+		self.newSlices[s['newSlice']] = True
+
+
+								
 		s.close()
 		breaks=0
 		for func,a in product([np.isnan,np.isinf],[E0,R,G,N,p],):
@@ -84,15 +89,36 @@ class makeTargets:
 		self.data[leg]['p'] = p
 		self.data[leg]['N'] = N
 	
-	self.xtype = ''.join(self.xtype.keys())
 				
+  def makeTitle(self,):
+  	"""	MakeTitle determines how you have sliced the data.
+  		ie, which ever field that there is only one of gets added to the title.
+  		so if this is only from one year, or only one Model, then those are added to the title.
+  	"""
+  	
+  	self.xtype = ', '.join(self.xtypes.keys())
+	self.ytype = ', '.join(self.ytypes.keys())	
+	title =self.xtype + ' Model vs '+self.ytype+' Data'
+	if len(self.names.keys()) ==1:
+		title += ': '+', '.join([getLongName(k) for  k in self.names.keys()])
+
+	if len(self.years.keys()) ==1:
+		title += ' '+ ', '.join([str(k) for  k in self.years.keys()]) 
+
+	if len(self.newSlices.keys()) ==1:
+		title = ', '.join([getLongName(k) for  k in self.newSlices.keys()]) + title
 		
+	print 'makeTitle:\t',title
+	return title
+			
   def makeDiagram(self):
-	title = 'Model vs Data'
+  	title = self.makeTitle()
+
+						
 	filled_markers  =  ('o', 'v', '^', '<', '>', '8', 's', 'p',  'h',   'd')#'*','H','D',	
 	markercycler = cycle(filled_markers )
 
-	if self.imageDir=='':	self.imageDir = ukp.folder(['images',self.xtype,'P2P_plots',self.name])
+	if self.imageDir=='':	self.imageDir = ukp.folder(['images',self.xtype.replace(', ','-'),'Targets'])
 	else: 			self.imageDir = ukp.folder(self.imageDir)
 		
 
@@ -110,41 +136,22 @@ class makeTargets:
 		    	#TD.add(g[i], E0[i], R[i],  marker = ma, s=150, cmap=c, label=i,)
 		    	#TD.labels(i)
 		    except:
-		    	print 'First target diagram:\t', leg
+		    	print 'makeDiagram\t:First target diagram:\t', leg
 		    	TD=TargetDiagram(self.data[leg]['G'], self.data[leg]['E0'],self.data[leg]['R'],marker = ma,s=150,cmap=c, label=leg,)
 		    labs.append(leg)
 		    proxyArt.append(pyplot.Line2D([0],[0], linestyle="none", c=c(self.data[leg]['R']), marker = ma,markersize=9,))
 
-		    
-		    #print leg.ljust(maxForTable+1), '\tgamma:',round(g[i],4),'\tE0:',round(E0[i],4),'\tR:',round(R[i],4),'\tN:',N[i].rjust(maxN+1),'\tp:',round(p[i],6)
-
-
-		#w = 0.33
-		#rmax= 2.25
-		#if t == 'Target' and max(abs([pyplot.xlim().max(),pyplot.clim().max()]))<rmax:			
-		#	pyplot.xlim([-rmax,rmax])
-		#	pyplot.ylim([-rmax,rmax])
-		        #pyplot.plot((0,0),(-rmax,rmax),'k-')
-			#pyplot.plot((rmax,-rmax),(0,0),'k-')
-
-		#box = ax.get_position() 			
-		#ax.set_position([box.x0, box.y0 + box.height * 0.1, box.width, box.height * 0.9])
-		#pyplot.legend()
-
-		doLabels = True # False
-		if doLabels:
-			#labs = [l.split('/')[1] for l in labs]		
-			if len(labs)<8:
-				legnd = pyplot.legend(proxyArt, labs,loc=4, borderaxespad=0., numpoints = 1, ncol=1, scatterpoints=1, prop={'size':8},) #title=legtitle) #
-			else:
-				legnd = pyplot.legend(proxyArt, labs,loc=8, borderaxespad=0., numpoints = 1, ncol=2, scatterpoints=1, prop={'size':8},) #title=legtitle) #		
+		
+		if len(labs)<8:
+			legend = pyplot.legend(proxyArt, labs,loc=4, ncol=1, borderaxespad=0., numpoints = 1, scatterpoints=1, prop={'size':8},) 
+		else:	legend = pyplot.legend(proxyArt, labs,loc=8, ncol=2, borderaxespad=0., numpoints = 1, scatterpoints=1, prop={'size':8},) 
 		
 		
-		legnd.draw_frame(False) 
-		legnd.get_frame().set_alpha(0.) #v3
+		legend.draw_frame(False) 
+		legend.get_frame().set_alpha(0.) 
 		pyplot.title(title)
 		
-		if self.debug:print 'multiTarget:\tsaving file:', self.filename 
+		if self.debug:print 'makeDiagram:\tsaving file:', self.filename 
 		pyplot.savefig(self.filename ,dpi=300,bbox_inches='tight')
 		pyplot.close()
 		del(TD)

@@ -49,25 +49,35 @@ class makePlots:
   	self.yfn =matchedDataFile  	
     	self.name = name
   	self.xtype = jobID
+  	self.year = year
+  	self.plotallcuts = plotallcuts
+  	self.compareCoords = compareCoords
+  	
 	if self.name in MaredatTypes:  	self.ytype = 'Maredat'
 	if self.name in WOATypes:  	self.ytype = 'WOA'
 	if self.name in MLDTypes:  	self.ytype = 'IFREMER'	
 	
-
   	self.shelvedir = workingDir
   	if self.shelvedir == '':self.shelvedir = ukp.folder(['shelves',self.xtype,self.ytype, 'Slices',self.name])
   	else:			self.shelvedir = ukp.folder(self.shelvedir)		
 
-  	self.kd = getkd()
-  	self.xnc = ncdfView(self.xfn,Quiet=True)
-  	self.ync = ncdfView(self.yfn,Quiet=True)
-
 	if imageDir=='':	self.imageDir = ukp.folder(['images',self.xtype,'P2P_plots',self.name])
 	else: 			self.imageDir = ukp.folder(imageDir)
 
+	self.run()
+	
+	
+	
+	
+  def run(self,):
 
-	if compareCoords: self.CompareCoords()	
-	self.defineSlices(plotallcuts)
+  	self.kd = getkd()
+  	self.xnc = ncdfView(self.xfn,Quiet=True)
+  	self.ync = ncdfView(self.yfn,Quiet=True)
+  	
+	if self.compareCoords: self.CompareCoords()	
+	self.defineSlices(self.plotallcuts)
+	
 	
 	for nslice in self.newSlices:
 		self.plotWithSlices(nslice)
@@ -78,14 +88,14 @@ class makePlots:
   	
 
   def CompareCoords(self,):
-	#xkeys,ykeys = ['index_t',] , ['index_t',]
-	#for k in ['t','lat','lon','z','lon',]:	xkeys.append(self.kd[self.xtype][k])
-	#for k in ['t','lat','lon','z','lat',]:	ykeys.append(self.kd[self.ytype][k])
+	"""	This routine plots the coordinates of the data against the coordinates of the model.
+		This should produce a straight line plot, ensuring that the matching has been performed correctly.
+	"""
 	
-	xkeys = [self.kd[self.xtype][k] for k in ['index_t','t','lat','lon','z','lon',]]
-	ykeys = [self.kd[self.ytype][k] for k in ['index_t','t','lat','lon','z','lat',]]	
+	xcoords = [self.kd[self.xtype][k] for k in ['index_t','t','lat','lon','z','lon',]]
+	ycoords = [self.kd[self.ytype][k] for k in ['index_t','t','lat','lon','z','lat',]]	
 	  	 	  	
-  	for xkey,ykey in zip(xkeys,ykeys):
+  	for xkey,ykey in zip(xcoords,ycoords):
 	    	if xkey not in self.xnc.variables.keys():continue  	    
 	    	if ykey not in self.ync.variables.keys():continue
 		filename = self.imageDir+'CompareCoords'+self.name+xkey+'vs'+ykey+'.png'	    	
@@ -259,19 +269,8 @@ class makePlots:
 	ny = mt[self.ytype][self.name]
 	if type(ny) == type(['a',]):	ykeys = mt[self.ytype][self.name]
 	else:				ykeys.append(mt[self.ytype][self.name]['name'])	
-#		xkeys.append(mt[self.xtype][self.name]['name'])
-#	if len(nx.keys()):	xkeys.append(mt[self.xtype][self.name]['name'])
-#	else:			
-	
-	#try: 	
-	#	print n
-	#	if len(n.keys()):	xkeys.append(mt[self.xtype][self.name]['name'])
-	#	else:   assert False
-	#except: 	xkeys = mt[self.xtype][self.name]
-	
-	#try: 		ykeys.append(mt[self.ytype][self.name]['name'])
-	#except: 	ykeys = mt[self.ytype][self.name]  
-	print xkeys, ykeys
+
+	print "plotWithSlices:\txkeys:", xkeys,'\tykeys:', ykeys
 	
 	
 	
@@ -287,19 +286,19 @@ class makePlots:
 	  	print 'plotWithSlices:\tlisting plotpairs:\tX', xk,': mt[',self.xtype,'][',self.name,']'
 	  	print 'plotWithSlices:\tlisting plotpairs:\tY', yk,': mt[',self.ytype,'][',self.name,']'	 
 		plotpairs.append((xk,yk))
-		# this is a test to check if any files exist in the series
 		print xk,yk,self.xtype,self.ytype,self.name
 		try:fn = newSlice+'_'+xk+'vs'+yk
 	  	except:
-	  		print "ERROR:\tcan't add ",newSlice,xk,yk, 'together as strings. the problem is probably in your mt dictionary in pftnames.'
-	  		
+	  		print "ERROR:\tcan\'t add ",newSlice,xk,yk, 'together as strings. the problem is probably in your mt dictionary in pftnames.'
 			assert False
 			
+		#####
 		# Does the image exist?	
 		filename = self.getFileName(newSlice,xk,yk)
 		if ukp.shouldIMakeFile([self.xfn,self.yfn],filename,debug=False):
 			plotsToMake+=1
 		
+		#####
 		#Does the shelve file exist?
 		if type(newSlice) in [type(['a','b',]),type(('a','b',))]:	
 			ns = ''.join(newSlice)
@@ -308,7 +307,7 @@ class makePlots:
 		if ukp.shouldIMakeFile([self.xfn,self.yfn],shelveName,debug=False):
 			plotsToMake+=1
 			
-		####
+		#####
 		# Make a list of shelve files for the target plots.
 		try:	self.shelves.append(shelveName)
 		except:	self.shelves = [shelveName,]
@@ -521,18 +520,19 @@ class makePlots:
 		s['y_depth'] = nmyz
 		s['y_time'] = nmyt					
 			
-		s['title'] = title
-		s['labelx'] = labelx
-		s['labely'] = labely
-		s['name'] =  self.name
-		s['xtype'] =  self.xtype
-		s['ytype'] =  self.ytype
-		s['xfn'] =  self.xfn
-		s['yfn'] =  self.yfn
-		s['slice']= newSlice
+		s['title'] = 	title
+		s['labelx'] = 	labelx
+		s['labely'] = 	labely
+		s['name'] =   	self.name
+		s['year'] =   	self.year 
+		s['xtype'] =  	self.xtype
+		s['ytype'] =  	self.ytype
+		s['xfn'] =  	self.xfn
+		s['yfn'] =  	self.yfn
+		s['slice']= 	newSlice
 		s['newSlice'] = ns
-		s['xkey'] = xkey			
-		s['ykey'] = ykey
+		s['xkey'] = 	xkey			
+		s['ykey'] = 	ykey
 		s.close()
 		
 

@@ -1,20 +1,12 @@
 from calendar import month_name
-
+from UKESMpython import AutoVivification
 """	This is a dictionary of all the terms that you'd need to pick out.
 	pftnames['Model Name']['Functional type']['currency']
 
 """
 
 
-class AutoVivification(dict):
-    """Implementation of perl's autovivification feature.
-    	This class allows you to automate the creating of layered dictionaries.
-    """
-    def __getitem__(self, item):
-        try: return dict.__getitem__(self, item)
-        except KeyError:
-            value = self[item] = type(self)()
-            return value
+
             
             
 pftnames = AutoVivification()
@@ -108,6 +100,17 @@ def getLongName(text):
     	if text == 'GEOTRACES':	return "GEOTRACES"  		
   	if text == 'iron':	return "Iron"  	
 
+  	if text ==  't_mn': 	return 'WOA Mean Temperature'  	
+  	if text ==  't_an': 	return 'WOA Temperature'  
+  	if text ==  's_mn': 	return 'WOA Mean Salinity'  	
+  	if text ==  's_an': 	return 'WOA Salinity'  
+  	if text ==  'n_mn': 	return 'WOA Mean Nitrate'  	
+  	if text ==  'n_an': 	return 'WOA Nitrate'  
+  	if text ==  'p_mn': 	return 'WOA Mean Phosphate'  	
+  	if text ==  'p_an': 	return 'WOA Phosphate'  
+  	if text ==  'i_mn': 	return 'WOA Mean Silicate'  	
+  	if text ==  'i_an': 	return 'WOA Silicate'  
+  	  	  	  	  	
   	
      	if text == 'IFREMER':	return "IFREMER"
   	if text == 'mld':		return 'Mixed Layer Depth'     	
@@ -123,6 +126,8 @@ def getLongName(text):
   	if text =='OffAxis':	return 'Off Axis'  	
   	if text =='Depth':	return 'Depth >200m'  	
   	if text =='Shallow':	return 'Depth <200m'
+  	
+  	if text == 'BIOMASS':	return 'Biomass'
   	
   	if text =='Depth_0-10m':	return 'Depth <10m'
   	if text =='Depth_10-20m':	return '10m <= Depth < 20m'
@@ -217,8 +222,10 @@ def getLongName(text):
   	if text == 'mesozoo':	return 'Mesozooplankton'
   	if text == 'diatoms':	return 'Diatoms'
   	if text ==  'bac': 	return 'Bacteria'
-  	if text ==  'chl': 	return 'Chlorophyll'  	
-  	if text ==  'nitrate': 	return 'WOA nitrate'  	
+  	if text in  ['chl','Chlorophylla',]: 
+  		return 'Chlorophyll'  	
+  		
+	  	
 
   	if text ==  'NEMO': 	return 'NEMO'  	  	
   	if text ==  'Nemo': 	return 'NEMO'
