@@ -1,5 +1,6 @@
 from calendar import month_name
 from UKESMpython import AutoVivification
+from itertoolsmodule import product
 """	This is a dictionary of all the terms that you'd need to pick out.
 	pftnames['Model Name']['Functional type']['currency']
 
@@ -36,6 +37,13 @@ pftnames['medusa'] = pftnames['MEDUSA']
 
 regions = ['Surface','200m','100m','500m','1000m','Transect','All',]
 MaredatTypes = ['chl','diatoms','bac','mesozoo','picophyto','microzoo']
+
+#WOATypes = [a+b for a,b in product(['silicate','nitrate','phosphate','salinity','temperature',],['Surface','500m','100m','200m','1000m','','Transect',''])]
+
+Ocean_names	=['SouthPacificOcean',  'ArcticOcean',  'AntarcticOcean','NorthAtlanticOcean','SouthAtlanticOcean', 'NorthPacificOcean','IndianOcean',]
+
+MLDTypes = ['mld','mld_DT02','mld_DR003','mld_DReqDTm02', ]
+WOATypes = [a+b for a,b in product(['silicate','nitrate','phosphate','salinity','temperature',],['Surface','500m','100m','200m','1000m','','Transect',''])]
 
 
 def getLongName(text):
@@ -100,16 +108,16 @@ def getLongName(text):
     	if text == 'GEOTRACES':	return "GEOTRACES"  		
   	if text == 'iron':	return "Iron"  	
 
-  	if text ==  't_mn': 	return 'WOA Mean Temperature'  	
-  	if text ==  't_an': 	return 'WOA Temperature'  
-  	if text ==  's_mn': 	return 'WOA Mean Salinity'  	
-  	if text ==  's_an': 	return 'WOA Salinity'  
-  	if text ==  'n_mn': 	return 'WOA Mean Nitrate'  	
-  	if text ==  'n_an': 	return 'WOA Nitrate'  
-  	if text ==  'p_mn': 	return 'WOA Mean Phosphate'  	
-  	if text ==  'p_an': 	return 'WOA Phosphate'  
-  	if text ==  'i_mn': 	return 'WOA Mean Silicate'  	
-  	if text ==  'i_an': 	return 'WOA Silicate'  
+  	if text ==  't_mn': 	return 'Mean Temperature'  	
+  	if text ==  't_an': 	return 'Temperature'  
+  	if text ==  's_mn': 	return 'Mean Salinity'  	
+  	if text ==  's_an': 	return 'Salinity'  
+  	if text ==  'n_mn': 	return 'Mean Nitrate'  	
+  	if text ==  'n_an': 	return 'Nitrate'  
+  	if text ==  'p_mn': 	return 'Mean Phosphate'  	
+  	if text ==  'p_an': 	return 'Phosphate'  
+  	if text ==  'i_mn': 	return 'Mean Silicate'  	
+  	if text ==  'i_an': 	return 'Silicate'  
   	  	  	  	  	
   	
      	if text == 'IFREMER':	return "IFREMER"
@@ -467,23 +475,23 @@ def getmt(): # Match Type
 	for d in regions:#['Surface','200m','100m','500m','1000m','Transect','All',]:
 	
 	    for t in ['temperature','temp',]:
-	    	mt['WOA'][t+d] 		= ['t_mn','t_an',]
+	    	mt['WOA'][t+d] 		= ['t_an',]#'t_mn',
 	    	mt['NEMO'][t+d] 	= ['votemper',]
 
 	    for t in ['salinity','sal',]:
-	    	mt['WOA' ][t+d] 	= ['s_mn','s_an',]
+	    	mt['WOA' ][t+d] 	= ['s_an',]#'s_mn',
 	    	mt['NEMO'][t+d] 	= ['vosaline',]
 
 	    for t in ['nitrate','nit']:
-	    	mt['WOA'   ][t+d] 	= ['n_mn','n_an',]
+	    	mt['WOA'   ][t+d] 	= ['n_an',]#'n_mn',
 	    	mt['MEDUSA'][t+d]  	= ['DIN',]
 	    	mt['ERSEM' ][t+d]  	= ['N3n',]	    	
 	    for t in ['silicate',]:
-	    	mt['WOA'   ][t+d] 	= ['i_mn','i_an',]
+	    	mt['WOA'   ][t+d] 	= ['i_an',]#'i_mn',
 	    	mt['MEDUSA'][t+d]  	= ['SIL',]
 	    	mt['ERSEM' ][t+d]  	= ['N5s',]	
 	    for t in ['phosphate',]:
-	    	mt['WOA'   ][t+d] 	= ['p_mn','p_an',]
+	    	mt['WOA'   ][t+d] 	= ['p_an',]#'p_mn',
 	    	mt['ERSEM' ][t+d]  	= ['N1p',]	
 	    		    	
     	

@@ -14,7 +14,7 @@ import numpy as np
 from itertoolsmodule import product
 from itertools import cycle
 from operator import itemgetter
-from os.path import basename
+from os.path import basename,exists
 from sys import argv
 from shelve import open as shOpen
 
@@ -32,6 +32,7 @@ class makeTargets:
   
   	self.matchedShelves =matchedShelves
     	#self.name = name
+
     	self.filename = filename
 	self.diagramTypes = diagramTypes 	#['Taylor','Target']
 	self.debug = debug
@@ -39,16 +40,15 @@ class makeTargets:
 	self.legendKeys = legendKeys #['xtype','ytype', 'name', 'newSlice','xkey','ykey',]
 
 
-	
-	
+
 	
   	#self.shelvedir = workingDir
   	#if self.shelvedir == '':self.shelvedir = ukp.folder(['shelves',self.xtype,self.ytype, 'Slices',self.name])
   	#else:			self.shelvedir = ukp.folder(self.shelvedir)		
 
-	self.loadShelves()
-	
-	self.makeDiagram()
+	if len(self.matchedShelves)>0 and ukp.shouldIMakeFile(self.matchedShelves,self.filename,debug=False):
+		self.loadShelves()
+		self.makeDiagram()
 
 
   def loadShelves(self,):
@@ -58,9 +58,14 @@ class makeTargets:
   	self.ytypes = {}
   	self.names = {}
   	self.years = {}
+  	self.xkeys = {}
+  	self.ykeys = {}  	  	
   	self.newSlices={}
   	for sh in self.matchedShelves:
-  		print "loadShelves:\t",sh
+  		print "loadShelves:\tINFO:\tLOADING:",sh
+  		if not exists(sh): 
+  			print "loadShelves:\tWARNING:\tDoes not exist:",sh 
+  			continue
   		s = shOpen(sh,flag='r')
  		E0 = s['Taylor.E0' ]
 		R  = s['Taylor.R']
@@ -73,6 +78,8 @@ class makeTargets:
 	  	self.ytypes[s['ytype']]	= True
 	  	self.names[s['name']]	= True
 	  	self.years[s['year']]	= True	
+	  	self.xkeys[s['xkey']]	= True	
+	  	self.ykeys[s['ykey']]	= True		  		  	
 		self.newSlices[s['newSlice']] = True
 
 
@@ -101,13 +108,16 @@ class makeTargets:
 	self.ytype = ', '.join(self.ytypes.keys())	
 	title =self.xtype + ' Model vs '+self.ytype+' Data'
 	if len(self.names.keys()) ==1:
-		title += ': '+', '.join([getLongName(k) for  k in self.names.keys()])
+		title += ', '+', '.join([getLongName(k) for  k in self.names.keys()])
 
+	if len(self.ykeys.keys()) ==1:
+		title += ', '+', '.join([getLongName(k) for  k in self.ykeys.keys()])
+		
 	if len(self.years.keys()) ==1:
-		title += ' '+ ', '.join([str(k) for  k in self.years.keys()]) 
+		title += ', '+ ', '.join([str(k) for  k in self.years.keys()]) 
 
 	if len(self.newSlices.keys()) ==1:
-		title = ', '.join([getLongName(k) for  k in self.newSlices.keys()]) + title
+		title = ', '.join([getLongName(k) for  k in self.newSlices.keys()]) +' '+ title
 		
 	print 'makeTitle:\t',title
 	return title
@@ -124,6 +134,11 @@ class makeTargets:
 		
 
 	for t in self.diagramTypes:
+		if not len(self.data.keys()):
+			continue
+		    	print 'makeDiagram\t:No Plots to make'
+
+			
 		fig = pyplot.figure()		
 		ax = pyplot.subplot(111, aspect='equal')
 		c = pyplot.get_cmap('jet')

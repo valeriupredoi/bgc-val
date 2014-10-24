@@ -2,252 +2,325 @@
 #Standard Python modules:
 from sys import argv
 from os.path import exists
+from calendar import month_name
+
 #Specific local code:
 from UKESMpython import folder,getFileList, AutoVivification, NestedDict
 from p2p import matchDataAndModel,makePlots,makeTargets
 
-from pftnames import getmt
+from pftnames import MaredatTypes,WOATypes,Ocean_names
 
 ###	Potential problems?
 ###		Reliance on ORCA1 grid
-###		Can't take data from more than one file at a time.
+
 
 
 def main():
-
-    if len(argv[1:]): models  = argv[1:]
-    else:models = ['MEDUSA','ERSEM','NEMO']
-    print 'Models:',models
-    for model in models:
+	#####
+	# Can use command line arguments to choose a model.
+	if len(argv[1:]): models  = argv[1:]
+	else:	models = ['MEDUSA','ERSEM','NEMO']
+    	
 	ERSEMjobID = 'xhonc'
+
+	years = {}
+	years['NEMO']	= '1893'
+	years['ERSEM']	= '1893'	
+	years['MEDUSA']	= '1998'
 	
-	if model == 'NEMO':	year='1893'
-	if model == 'ERSEM':	year='1893'		
-	if model == 'MEDUSA':	year='1998'
-	plotallcuts = False
-	av = AutoVivification()
+
 	
-	mt = getmt()
+	#plotallcuts = 1#False
 	
+	#####
+	# Location of data files.
 	MAREDATFolder 	= "/data/perseus2/scratch/ledm/MAREDAT/MAREDAT/"
 	WOAFolder 	= "/data/euryale7/scratch/ledm/WOA/"	
 	MEDUSAFolder	= "/data/euryale7/scratch/ledm/UKESM/MEDUSA/"
-	ERSEMFolder	= "/data/euryale7/scratch/ledm/UKESM/ERSEM/"
-	
-	workingDir = folder("/data/euryale7/scratch/ledm/ukesm_postProcessed/"+model+'-'+year)
-	
-	av['chl']['Data'  ]['File'] 		= MAREDATFolder+"MarEDat20121001Pigments.nc"	
-	av['chl']['MEDUSA']['File'] 		= MEDUSAFolder+"medusa_bio_"+year+".nc"	
-	av['chl']['ERSEM' ]['File'] 		= ERSEMFolder + ERSEMjobID+'/'+year+'/'+ERSEMjobID+'_'+year+'_ERSEMMisc.nc'			
-	av['chl']['Data']['Vars'] 		= ['Chlorophylla',]
-	av['chl']['MEDUSA']['Vars'] 		= ['CHL',]	
-	av['chl']['ERSEM']['Vars'] 		= ['chl',]
-	av['chl']['region'] 			= ''
-	
-	av['diatoms']['Data'  ]['File'] 	= MAREDATFolder+"MarEDat20120716Diatoms.nc"	
-	av['diatoms']['MEDUSA']['File'] 	= MEDUSAFolder+"medusa_bio_"+year+".nc"	
-	av['diatoms']['ERSEM' ]['File'] 	= ERSEMFolder + ERSEMjobID+'/'+year+'/'+ERSEMjobID+'_'+year+'_ERSEMphytoBm.nc'				
-	av['diatoms']['Data']['Vars'] 		= ['BIOMASS',]
-	av['diatoms']['MEDUSA']['Vars'] 	= ['PHD',]	
-	av['diatoms']['ERSEM']['Vars'] 		= ['P1c',]
-	av['diatoms']['region'] 		= ''	
-	
+	ERSEMFolder	= "/data/euryale7/scratch/ledm/UKESM/ERSEM/"+ ERSEMjobID+'/'+years['ERSEM']+'/'+ERSEMjobID+'_'+years['ERSEM']
+	NEMOFolder	= "/data/euryale7/scratch/ledm/UKESM/ERSEM/"+ ERSEMjobID+'/'+years['NEMO'] +'/'+ERSEMjobID+'_'+years['NEMO']
 
-	av['bac']['Data'  ]['File'] 		= MAREDATFolder+"MarEDat20120214Bacteria.nc"	
-	av['bac']['ERSEM' ]['File'] 		= ERSEMFolder + ERSEMjobID+'/'+year+'/'+ERSEMjobID+'_'+year+'_ERSEMbac.nc'			
-	av['bac']['Data']['Vars'] 		= ['BIOMASS',]
-	av['bac']['ERSEM']['Vars'] 		= ['B1c',]
-	av['bac']['region'] 			= ''	
+	#####
+	# Location of point matched files:
+
 	
-	av['picophyto']['Data'  ]['File'] 	= MAREDATFolder+"MarEDat20111206Picophytoplankton.nc"	
-	av['picophyto']['ERSEM' ]['File'] 	= ERSEMFolder + ERSEMjobID+'/'+year+'/'+ERSEMjobID+'_'+year+'_ERSEMphytoBm.nc'			
-	av['picophyto']['Data']['Vars'] 	= ['BIOMASS',]
-	av['picophyto']['ERSEM']['Vars'] 	= ['P3c',]
-	av['picophyto']['region'] 		= ''	
+	
+	#####
+	# Which analysis to run
+	doCHL 		= True
+	doMAREDAT 	= True
+	doSalTemp	= True
+	doMLD		= True
+	doNPS		= True
+	
+	#####
+	# AutoVivification is a form of nested dictionary.
+	# we use av here to determine which files to analyse and which fields in those files.
+	# Region is added, because some WOA files are huges and my desktop can not run the p2p analysis of that data.
+	av = AutoVivification()
+	if doCHL:
+		av['chl']['Data'  ]['File'] 		= MAREDATFolder+"MarEDat20121001Pigments.nc"	
+		av['chl']['MEDUSA']['File'] 		= MEDUSAFolder+"medusa_bio_"+years['MEDUSA']+".nc"	
+		av['chl']['ERSEM' ]['File'] 		= ERSEMFolder+'_ERSEMMisc.nc'			
+		av['chl']['Data']['Vars'] 		= ['Chlorophylla',]
+		av['chl']['MEDUSA']['Vars'] 		= ['CHL',]	
+		av['chl']['ERSEM']['Vars'] 		= ['chl',]
+		av['chl']['region'] 			= ''
 		
-
-	av['microzoo']['Data'  ]['File'] 	= MAREDATFolder+"MarEDat20120424Microzooplankton.nc"	
-	av['microzoo']['MEDUSA']['File'] 	= MEDUSAFolder+"medusa_bio_"+year+".nc"	
-	av['microzoo']['ERSEM' ]['File'] 	= ERSEMFolder + ERSEMjobID+'/'+year+'/'+ERSEMjobID+'_'+year+'_ERSEMzoo.nc'			
-	av['microzoo']['Data']['Vars'] 		= ['BIOMASS',]
-	av['microzoo']['MEDUSA']['Vars'] 	= ['ZMI',]	
-	av['microzoo']['ERSEM']['Vars'] 	= ['Z5c',]
-	av['microzoo']['region'] 		= ''	
+	if doMAREDAT:
+		av['diatoms']['Data'  ]['File'] 	= MAREDATFolder+"MarEDat20120716Diatoms.nc"	
+		av['diatoms']['MEDUSA']['File'] 	= MEDUSAFolder+"medusa_bio_"+years['MEDUSA']+".nc"	
+		av['diatoms']['ERSEM' ]['File'] 	= ERSEMFolder+'_ERSEMphytoBm.nc'				
+		av['diatoms']['Data']['Vars'] 		= ['BIOMASS',]
+		av['diatoms']['MEDUSA']['Vars'] 	= ['PHD',]	
+		av['diatoms']['ERSEM']['Vars'] 		= ['P1c',]
+		av['diatoms']['region'] 		= ''	
 	
+		av['bac']['Data'  ]['File'] 		= MAREDATFolder+"MarEDat20120214Bacteria.nc"	
+		av['bac']['ERSEM' ]['File'] 		= ERSEMFolder+'_ERSEMbac.nc'			
+		av['bac']['Data']['Vars'] 		= ['BIOMASS',]
+		av['bac']['ERSEM']['Vars'] 		= ['B1c',]
+		av['bac']['region'] 			= ''	
 	
-	av['mesozoo']['Data'  ]['File'] 	= MAREDATFolder+"MarEDat20120705Mesozooplankton.nc"	
-	av['mesozoo']['MEDUSA']['File'] 	= MEDUSAFolder+"medusa_bio_"+year+".nc"	
-	av['mesozoo']['ERSEM' ]['File'] 	= ERSEMFolder + ERSEMjobID+'/'+year+'/'+ERSEMjobID+'_'+year+'_ERSEMzoo.nc'			
-	av['mesozoo']['Data']['Vars'] 		= ['BIOMASS',]
-	av['mesozoo']['MEDUSA']['Vars'] 	= ['ZME',]	
-	av['mesozoo']['ERSEM']['Vars'] 		= ['Z4c',]
-	av['mesozoo']['region'] 		= ''
-							
-			
-
-	for woa in ['salinity','temperature',]:
-		if model == 'MEDUSA' or model == 'ERSEM' : continue
-		if woa == 'salinity':		NEMOVars  	= ['vosaline',]
-		if woa == 'temperature':	NEMOVars  	= ['votemper',]
-		for s in ['Surface','500m','100m','200m','1000m',]:
-			av[woa+s]['Data'  ]['File'] 	= WOAFolder+woa+'_monthly_1deg.nc'	
-			av[woa+s]['NEMO' ]['File'] 	= ERSEMFolder + ERSEMjobID+'/'+year+'/'+ERSEMjobID+'_'+year+'_NEMO.nc'	
-			av[woa+s]['Data']['Vars'] 	= [woa[0]+'_mn',woa[0]+'_an','depth','lat','lon','time'] 
-			av[woa+s]['NEMO']['Vars'] 	= NEMOVars
-			av[woa+s]['region'] 		= s	    
-	
-	av['mld']['Data'  ]['File'] 	= "/data/euryale7/scratch/ledm/IFREMER-MLD/mld_DT02_c1m_reg2.0.nc"
-	av['mld']['NEMO' ]['File'] 	= ERSEMFolder + ERSEMjobID+'/'+year+'/'+ERSEMjobID+'_'+year+'_NEMO.nc'			
-	av['mld']['Data']['Vars'] 	= ['mld','mask',]
-	av['mld']['NEMO']['Vars'] 	= ['somxl010',]	
-	av['mld']['region'] 		= ''
-	
-
-	av['mld_DR003']['Data'  ]['File'] 	= "/data/euryale7/scratch/ledm/IFREMER-MLD/mld_DT02_c1m_reg2.0.nc"
-	av['mld_DR003']['NEMO' ]['File'] 	= ERSEMFolder + ERSEMjobID+'/'+year+'/'+ERSEMjobID+'_'+year+'_NEMO.nc'			
-	av['mld_DR003']['Data']['Vars'] 	= ['mld','mask',]
-	av['mld_DR003']['NEMO']['Vars'] 	= ['somxl010',]	
-	av['mld_DR003']['region'] 		= ''
-
-	av['mld_DReqDTm02']['Data'  ]['File'] 	= "/data/euryale7/scratch/ledm/IFREMER-MLD/mld_DT02_c1m_reg2.0.nc"
-	av['mld_DReqDTm02']['NEMO' ]['File'] 	= ERSEMFolder + ERSEMjobID+'/'+year+'/'+ERSEMjobID+'_'+year+'_NEMO.nc'			
-	av['mld_DReqDTm02']['Data']['Vars'] 	= ['mld','mask',]
-	av['mld_DReqDTm02']['NEMO']['Vars'] 	= ['somxl010',]	
-	av['mld_DReqDTm02']['region'] 		= ''
-
-	#av['mld_DT02']['Data'  ]['File'] 	= "/data/euryale7/scratch/ledm/IFREMER-MLD/mld_DT02_c1m_reg2.0.nc"
-	#av['mld_DT02']['NEMO' ]['File'] 	= ERSEMFolder + ERSEMjobID+'/'+year+'/'+ERSEMjobID+'_'+year+'_NEMO.nc'			
-	#av['mld_DT02']['Data']['Vars'] 	= ['mld','mask',]
-	#av['mld_DT02']['NEMO']['Vars'] 	= ['somxl010',]	
-	#av['mld_DT02']['region'] 		= ''
-				
-	#    mldvars = ['somxl010',]
-	#    for datafile in ["/data/euryale7/scratch/ledm/IFREMER-MLD/mld_DT02_c1m_reg2.0.nc",
-	#   			"/data/euryale7/scratch/ledm/IFREMER-MLD/mld_DR003_c1m_reg2.0.nc",
-	#    			"/data/euryale7/scratch/ledm/IFREMER-MLD/mld_DReqDTm02_c1m_reg2.0.nc", ]:
-	    				
-	
-
-	for woa in ['silicate','nitrate','phosphate',]:
-		if model == 'MEDUSA' and woa == 'phosphate' : continue
-
-		if woa == 'silicate':	
-			l='i' 
-			ERSEMVars  	= ['N5s',]
-			MEDVars		= ['SIL',]
-		elif woa == 'nitrate':	
-			l='n' 
-			ERSEMVars  	= ['N3n','N4n',]
-			MEDVars		= ['DIN',]
-		elif woa == 'phosphate':	
-			l='p' 
-			ERSEMVars  	= ['N1p',]
-			MEDVars 	= []
+		av['picophyto']['Data'  ]['File'] 	= MAREDATFolder+"MarEDat20111206Picophytoplankton.nc"	
+		av['picophyto']['ERSEM' ]['File'] 	= ERSEMFolder+'_ERSEMphytoBm.nc'			
+		av['picophyto']['Data']['Vars'] 	= ['BIOMASS',]
+		av['picophyto']['ERSEM']['Vars'] 	= ['P3c',]
+		av['picophyto']['region'] 		= ''	
 		
-		for s in ['Surface','100m','200m','500m',]:#'Transect',]:#'All',
-			av[woa+s]['Data'  ]['File'] 	= WOAFolder+woa+'_monthly_1deg.nc'	
-			av[woa+s]['ERSEM' ]['File'] 	= ERSEMFolder + ERSEMjobID+'/'+year+'/'+ERSEMjobID+'_'+year+'_ERSEMNuts.nc'	
-			av[woa+s]['MEDUSA']['File'] 	= MEDUSAFolder+"medusa_bio_"+year+".nc"									
-			av[woa+s]['Data']['Vars'] 	= [l+'_mn',l+'_an','depth','lat','lon','time'] 
-			av[woa+s]['ERSEM']['Vars'] 	= ERSEMVars
-			av[woa+s]['MEDUSA']['Vars'] 	= MEDVars				
-			av[woa+s]['region'] 		= s	    
+		av['microzoo']['Data'  ]['File'] 	= MAREDATFolder+"MarEDat20120424Microzooplankton.nc"	
+		av['microzoo']['MEDUSA']['File'] 	= MEDUSAFolder+"medusa_bio_"+years['MEDUSA']+".nc"	
+		av['microzoo']['ERSEM' ]['File'] 	= ERSEMFolder+'_ERSEMzoo.nc'			
+		av['microzoo']['Data']['Vars'] 		= ['BIOMASS',]
+		av['microzoo']['MEDUSA']['Vars'] 	= ['ZMI',]	
+		av['microzoo']['ERSEM']['Vars'] 	= ['Z5c',]
+		av['microzoo']['region'] 		= ''	
+	
+		av['mesozoo']['Data'  ]['File'] 	= MAREDATFolder+"MarEDat20120705Mesozooplankton.nc"	
+		av['mesozoo']['MEDUSA']['File'] 	= MEDUSAFolder+"medusa_bio_"+years['MEDUSA']+".nc"	
+		av['mesozoo']['ERSEM' ]['File'] 	= ERSEMFolder+'_ERSEMzoo.nc'			
+		av['mesozoo']['Data']['Vars'] 		= ['BIOMASS',]
+		av['mesozoo']['MEDUSA']['Vars'] 	= ['ZME',]	
+		av['mesozoo']['ERSEM']['Vars'] 		= ['Z4c',]
+		av['mesozoo']['region'] 		= ''
 
+	if doNPS:
+		for woa in ['nitrate','phosphate','silicate',]:
+			if woa == 'silicate':	
+				l='i' 
+				ERSEMVars  	= ['N5s',]
+				MEDVars		= ['SIL',]
+			elif woa == 'nitrate':	
+				l='n' 
+				ERSEMVars  	= ['N3n','N4n',]
+				MEDVars		= ['DIN',]
+			elif woa == 'phosphate':	
+				l='p' 
+				ERSEMVars  	= ['N1p',]
+		
+			for s in ['Surface','100m','200m','500m',]:#'Transect',]:#'All',
+				av[woa+s]['Data'  ]['File'] 	= WOAFolder+woa+'_monthly_1deg.nc'	
+				av[woa+s]['ERSEM' ]['File'] 	= ERSEMFolder+'_ERSEMNuts.nc'	
+				av[woa+s]['Data']['Vars'] 	= [l+'_an',] 		#l+'_mn',
+				av[woa+s]['ERSEM']['Vars'] 	= ERSEMVars
+				av[woa+s]['region'] 		= s	    
+				if woa != 'phosphate':
+					av[woa+s]['MEDUSA']['Vars'] 	= MEDVars									
+					av[woa+s]['MEDUSA']['File'] 	= MEDUSAFolder+"medusa_bio_"+years['MEDUSA']+".nc"
+	if doSalTemp:
+		for woa in ['salinity','temperature',]:
+			if woa == 'salinity':		NEMOVars  	= ['vosaline',]
+			if woa == 'temperature':	NEMOVars  	= ['votemper',]
+			for s in ['Surface','500m','100m','200m','1000m',]:
+				av[woa+s]['Data'  ]['File'] 	= WOAFolder+woa+'_monthly_1deg.nc'	
+				av[woa+s]['NEMO' ]['File'] 	= NEMOFolder+'_NEMO.nc'	
+				av[woa+s]['Data']['Vars'] 	= [woa[0]+'_an',]	#woa[0]+'_mn',
+				av[woa+s]['NEMO']['Vars'] 	= NEMOVars
+				av[woa+s]['region'] 		= s	 
+				   
+	if doMLD:	
+		av['mld']['Data'  ]['File'] 	= "/data/euryale7/scratch/ledm/IFREMER-MLD/mld_DT02_c1m_reg2.0.nc"
+		av['mld']['NEMO' ]['File'] 	= NEMOFolder+'_NEMO.nc'			
+		av['mld']['Data']['Vars'] 	= ['mld','mask',]
+		av['mld']['NEMO']['Vars'] 	= ['somxl010',]	
+		av['mld']['region'] 		= ''
 
-	shelves = []
+		av['mld_DR003']['Data'  ]['File'] 	= "/data/euryale7/scratch/ledm/IFREMER-MLD/mld_DT02_c1m_reg2.0.nc"
+		av['mld_DR003']['NEMO' ]['File'] 	= NEMOFolder+'_NEMO.nc'			
+		av['mld_DR003']['Data']['Vars'] 	= ['mld','mask',]
+		av['mld_DR003']['NEMO']['Vars'] 	= ['somxl010',]	
+		av['mld_DR003']['region'] 		= ''
+
+		av['mld_DReqDTm02']['Data'  ]['File'] 	= "/data/euryale7/scratch/ledm/IFREMER-MLD/mld_DT02_c1m_reg2.0.nc"
+		av['mld_DReqDTm02']['NEMO' ]['File'] 	= NEMOFolder+'_NEMO.nc'			
+		av['mld_DReqDTm02']['Data']['Vars'] 	= ['mld','mask',]
+		av['mld_DReqDTm02']['NEMO']['Vars'] 	= ['somxl010',]	
+		av['mld_DReqDTm02']['region'] 		= ''
+		
+	#####
+	# Start analysis here:
 	shelvesAV = AutoVivification()
 	
-	#for name in sorted(['bac',]):#'nitrateSurface','phosphateSurface','silicateSurface',]):
-	for name in sorted(av.keys()):
-		if not av[name][model]: continue
+	for model in models:
+		for name in sorted(av.keys()):
+		#for name in ['chl',]:	
+			#####
+			# Do some checks to make sure that the files all exist:
+			if not av[name][model]: continue
+			workingDir = folder("/data/euryale7/scratch/ledm/ukesm_postProcessed/"+model+'-'+years[model])		
 		
-		if not exists(av[name]['Data']['File']):
-			print "testsuite_p2p.py:\tWARNING:\tFile does not exist", av[name]['Data']['File']
-			continue
-		if not exists(av[name][model]['File']):
-			print "testsuite_p2p.py:\tWARNING:\tFile does not exist", av[name][model]['File']
-			continue
-		print "\n\n\ntestsuite_p2p.py:\tINFO:\tRunning:",name
-		b = matchDataAndModel.matchDataAndModel(av[name]['Data']['File'], 
-							av[name][model]['File'],
-							name,
-							DataVars  = av[name]['Data']['Vars'],
-							ModelVars = av[name][model]['Vars'],
-							jobID=model,
-							year=year,
+			if not exists(av[name]['Data']['File']):
+				print "testsuite_p2p.py:\tWARNING:\tFile does not exist", av[name]['Data']['File']
+				continue
+			
+			if not exists(av[name][model]['File']):
+				print "testsuite_p2p.py:\tWARNING:\tFile does not exist", av[name][model]['File']
+				continue
+			
+			print "\n\n\ntestsuite_p2p.py:\tINFO:\tRunning:",name
+			
+			#####
+			# matchDataAndModel:
+			# Match (real) Data and Model. 
+			# Does not produce and plots.
+			b = matchDataAndModel.matchDataAndModel(av[name]['Data']['File'], 
+								av[name][model]['File'],
+								name,
+								DataVars  = av[name]['Data']['Vars'],
+								ModelVars = av[name][model]['Vars'],
+								jobID=model,
+								year=years[model],
+								workingDir = folder(workingDir+name),
+								region = av[name]['region'])
+								
+			#####
+			# makePlots:
+			# Make some plots of the point to point datasets.
+			# MakePlot runs a series of analysis, comparing every pair in DataVars and ModelVars
+			#	 under a range of different masks. For instance, only data from Antarctic Ocean, or only data from January.
+			# The makePlot produces a shelve file in workingDir containing all results of the analysis.
+			m = makePlots.makePlots(	b.MatchedDataFile, 
+							b.MatchedModelFile, 
+							name, 
+							model, 
+							year = years[model], 
+							plotallcuts=False, 
 							workingDir = folder(workingDir+name),
-							region = av[name]['region'])
-		m = makePlots.makePlots(	b.MatchedDataFile, 
-						b.MatchedModelFile, 
-						name, 
-						model, 
-						year = year, 
-						plotallcuts=plotallcuts, 
-						workingDir = folder(workingDir+name),
-						compareCoords=True)
-		#print 'OutPutShelves:', m.shelves
-		
-		shelves.extend(m.shelves)
-		filename = folder('images/'+model+'/Targets/')+model+'_'+year+'_'+name+'.png'
-		
-		t = makeTargets.makeTargets(	m.shelves, 
-						filename,
-						#name=name,
-						legendKeys = ['newSlice','ykey',],
-						debug=True)
-						#imageDir='', 
+							compareCoords=True)
+			#Get an autoviv of the shelves.
+			shelvesAV[model][name.replace(av[name]['region'],'')][av[name]['region']] = m.shelvesAV
+										
+			#####
+			# makeTargets:
+			# Make a target diagram of all matches for this particular dataset. # not a great idea if plotAllcuts == True
+			filename = folder('images/'+model+'/Targets/')+model+'_'+years[model]+'_'+name+'.png'
+			t = makeTargets.makeTargets(	m.shelves, 
+							filename,
+							#name=name,
+							legendKeys = ['newSlice','ykey',],
+							debug=True)
+							#imageDir='', 
 						
-		#for ns, sh in zip(m.newSlices,m.shelves):
-		region = av[name]['region']
-		tmpname = name.replace(region,'')
-		
-		shelvesAV[tmpname][region] = m.shelvesAV
-	#####
-	# All possible targets in  this model	
-	filename = folder('images/'+model+'/Targets/')+model+'_'+year+'_everything.png'		
-	makeTargets.makeTargets(	shelves, 
-					filename,
-					legendKeys = ['name', 'newSlice','ykey',],					
-					debug=True)#imageDir='', diagramTypes=['Target',]	
-
-
-	
-
-
-	shelves= {}
-	shelves['Allnitrate'] = []
-	shelves['Allphosphate'] = []		
-	shelves['Allsilicate'] = []						
-	shelves['nitrate'] = []	
-	shelves['phosphate'] = []		
-	shelves['silicate'] = []
-	shelves['Surface'] = []	
-	#for name in ['silicate','nitrate','phosphate',]:
-	for name in shelvesAV.keys():
-	  for region in shelvesAV[name].keys():
-	    for newSlice in shelvesAV[name][region].keys(): 
-	      for xkey in shelvesAV[name][region][newSlice].keys():
-	        for ykey in shelvesAV[name][region][newSlice][xkey].keys():        	      
-	          shelve = shelvesAV[name][region][newSlice][xkey][ykey]
-	          print name,region,newSlice,xkey,ykey,':\t', shelve
-
-	          if name == 'nitrate':	  		shelves['nitrate'].append(shelve)
-	          if name == 'phosphate':	  	shelves['phosphate'].append(shelve)
-	          if name == 'silicate':	  	shelves['silicate'].append(shelve)
-	          if region == 'Surface':	  	shelves['Surface'].append(shelve)
-	          if newSlice == 'All':
-			  if name == 'nitrate':	  	shelves['Allnitrate'].append(shelve)
-			  if name == 'phosphate':	shelves['Allphosphate'].append(shelve)
-			  if name == 'silicate':	shelves['Allsilicate'].append(shelve)	          	        
-
-	for k in shelves.keys():
-		filename = folder('images/'+model+'/Targets/Summary')+model+'_'+year+'_'+k+'.png'
-	  	makeTargets.makeTargets(	shelves[k], 
+			
+			#####
+			# Ocean and month targets for this particular dataset.
+			Months = []
+			Oceans = []
+			for newSlice in m.shelvesAV.keys(): 
+			   for xkey in m.shelvesAV[newSlice].keys():
+				for ykey in m.shelvesAV[newSlice][xkey].keys():        	      
+				    shelve = m.shelvesAV[newSlice][xkey][ykey]			  
+				    if newSlice in month_name: 	Months.append(shelve)
+				    if newSlice in Ocean_names:	Oceans.append(shelve)
+	          
+			makeTargets.makeTargets(Months, 
+						folder('images/'+model+'/Targets/Months')+model+'_'+years[model]+'_'+name+'_Months.png',
+						legendKeys = ['newSlice',],					
+						)									
+			makeTargets.makeTargets(Oceans, 
+						folder('images/'+model+'/Targets/Oceans')+model+'_'+years[model]+'_'+name+'_Oceans.png',
+						legendKeys = ['newSlice',],					
+						)
+		# Here are some fields for comparing fields in the same model
+		Summary= {}		
+		Summary['MaredatAll'] = []
+		Summary['MaredatStandard'] = []			
+		Summary['WOAAll'] = []
+		Summary['WOAStandard'] = []	
+					
+		for name in shelvesAV[model].keys():
+		  for region in shelvesAV[model][name].keys():
+		    for newSlice in shelvesAV[model][name][region].keys(): 
+		      for xkey in shelvesAV[model][name][region][newSlice].keys():
+			for ykey in shelvesAV[model][name][region][newSlice][xkey].keys():        	      
+			  	shelve = shelvesAV[model][name][region][newSlice][xkey][ykey]
+				if name in MaredatTypes:
+	        		  	if newSlice == 'All':		Summary['MaredatAll'].append(shelve)
+	        		  	if newSlice == 'Standard':	Summary['MaredatStandard'].append(shelve)
+	        		if name in WOATypes:
+	        		  	if newSlice == 'All':		Summary['WOAAll'].append(shelve)
+	        		  	if newSlice == 'Standard':	Summary['WOAStandard'].append(shelve)	
+	        		  	
+	        		for woa in ['silicate','nitrate','phosphate','salinity','temperature',]:
+	        		   for ns in ['All', 'Standard']:
+	        		   	if ns == newSlice and woa == name.lower():
+	        		   		try: 	Summary[woa+ns].append(shelve)
+	        		   		except:	Summary[woa+ns]= [shelve,]
+		for k in Summary.keys():
+			filename = folder('images/'+model+'/Targets/Summary')+model+'_'+years[model]+'_'+k+'.png'
+	  		makeTargets.makeTargets(Summary[k], 
 						filename,
 						legendKeys = ['name', 'newSlice','ykey',],					
-						debug=True)#imageDir='', diagramTypes=['Target',]	
-							
+						debug=True)#imageDir='', diagramTypes=['Target',]
+				
+	#####
+	# Here are some fields for comparing fields between models.
 
+	modelIC = {} 	#model intercomparison shelve files
+	modelIC['MaredatAll'] = []
+	modelIC['MaredatStandard'] = []	
+	modelIC['WOAAll'] = []
+	modelIC['WOAStandard'] = []	
+		
+	for model in shelvesAV.keys():	
+	  for name in shelvesAV[model].keys():
+	    for region in shelvesAV[model][name].keys():
+	      for newSlice in shelvesAV[model][name][region].keys(): 
+	        for xkey in shelvesAV[model][name][region][newSlice].keys():
+		  for ykey in shelvesAV[model][name][region][newSlice][xkey].keys():
+		 	#print 'model:',model,'\tname:',name,'\tregion:',region,'\tnewSlice:',newSlice,'\txkey:',xkey,'\tykey:',ykey
+		 	    
+			shelve = shelvesAV[model][name][region][newSlice][xkey][ykey]
+			
+			#if newSlice not in ['All','Standard']:continue
+			
+			if name in MaredatTypes:
+	        	  	if newSlice == 'All':		modelIC['MaredatAll'].append(shelve)
+	        	  	if newSlice == 'Standard':	modelIC['MaredatStandard'].append(shelve)
+			if name in WOATypes:
+	        	  	if newSlice == 'All':		modelIC['WOAAll'].append(shelve)
+	        	  	if newSlice == 'Standard':	modelIC['WOAStandard'].append(shelve)	        		  				
+	        	for woa in WOATypes:
+	        	   for ns in ['All', 'Standard']:
+	        	   	if ns == newSlice and woa == name:
+	        	   		try: 	modelIC[woa+ns].append(shelve)
+	        	   		except:	modelIC[woa+ns]= [shelve,]	        	  	
+        		for md in MaredatTypes:
+	        	   for ns in ['All', 'Standard']:
+	        	   	if ns == newSlice and md == name:
+	        	   		try: 	modelIC[md+ns].append(shelve)
+	        	   		except:	modelIC[md+ns]= [shelve,]	        	   		
+	for k in modelIC.keys():
+		#for i in modelIC[k]:print k, i
+		makeTargets.makeTargets(modelIC[k], 
+					folder('images/ModelIntercomparison/Targets/')+'intercomparison_'+k+'.png',
+					legendKeys = ['xtype','name',],					
+					debug=True)#imageDir='', diagramTypes=['Target',]		
+			
+			
+			
+
+						
 	#print "shelves:",shelves
 	print "Working dir:",workingDir
 	

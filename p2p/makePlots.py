@@ -19,7 +19,7 @@ from StatsDiagram import StatsDiagram
 
 #local imports
 import UKESMpython as ukp 
-from pftnames import getLongName, AutoVivification, getkd, getmt,fancyUnits,MaredatTypes
+from pftnames import getLongName, AutoVivification, getkd, getmt,fancyUnits,MaredatTypes,MLDTypes,WOATypes
 
 
     
@@ -38,8 +38,6 @@ noXYLogs 	= [ 'pCO2',
 		'salSurface', 		'salAll',	'salTransect',	'sal100m',	'sal200m','sal1000m',	'sal500m',]
 		
 
-MLDTypes = ['mld','mld_DT02','mld_DR003','mld_DReqDTm02', ]
-WOATypes = [a+b for a,b in product(['silicate','nitrate','phosphate','salinity','temperature',],['Surface','500m','100m','200m','1000m',])]
 
 class makePlots:
   def __init__(self,matchedDataFile,matchedModelFile, name, jobID='MEDUSA',year='clim',region='', compareCoords=True,workingDir='',imageDir='',plotallcuts=  True): #xfilename,yfilename,saveShelve=True,
@@ -455,10 +453,10 @@ class makePlots:
 				  'RedSea','BalticSea','PersianGulf',
 				  'ignoreInlandSeas',]	
 				  # 'ignoreRedSea', 'ignoreBalticSea','ignorePersianGulf',]
-	self.Oceans		=['SouthPacificOcean',  'ignoreMoreArtics','ArcticOcean',
+	self.Oceans		=['SouthPacificOcean',  'ArcticOcean',
 				  'AntarcticOcean','NorthAtlanticOcean','SouthAtlanticOcean',
 				 'NorthPacificOcean','IndianOcean',] 
-				 #'ignoreExtraArtics','ignoreMidArtics','ignoreArtics',
+				 #'ignoreExtraArtics','ignoreMidArtics','ignoreArtics','ignoreMoreArtics',
 
 	self.QualityCuts 	=['Overestimate','Underestimate','Overestimate_2sig',
 				  'Underestimate_2sig','Overestimate_3sig','Underestimate_3sig', 
