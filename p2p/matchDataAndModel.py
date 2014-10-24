@@ -62,7 +62,7 @@ class matchDataAndModel:
 	self.debug = debug	
 		
 	self.dataType = dataType
-
+	self._meshLoaded_ = False
 	
 	if debug: print  "matchDataAndModel:\tINFO:\t",self.dataType, '\tModelfile:', self.ModelFile
 		
@@ -110,19 +110,21 @@ class matchDataAndModel:
 
   def _pruneModelAndData_(self,):
    	""" This routine reduces the full 3d netcdfs by pruning the unwanted fields.
-  	"""  	
+  	""" 
+  	
+	if ukp.shouldIMakeFile(self.ModelFile,self.ModelFilePruned,debug=False):
+		print "matchDataAndModel:\tpruneModelAndData:\tMaking:", self.ModelFilePruned	
+		p = pruneNC(self.ModelFile,self.ModelFilePruned,self.ModelVars, debug = self.debug) 	
+	else:	
+		print "matchDataAndModel:\tpruneModelAndData:\talready exists:",self.ModelFilePruned
+  	 
 	if ukp.shouldIMakeFile(self.DataFile,self.DataFilePruned,debug=False):
 		print "matchDataAndModel:\tpruneModelAndData:\tMaking:", self.DataFilePruned
 		p = pruneNC(self.DataFile,self.DataFilePruned,self.DataVars, debug = self.debug) 	
 	else:	
 		print "matchDataAndModel:\tpruneModelAndData:\talready exists:",self.DataFilePruned
 	 
-	if ukp.shouldIMakeFile(self.ModelFile,self.ModelFilePruned,debug=False):
-		print "matchDataAndModel:\tpruneModelAndData:\tMaking:", self.ModelFilePruned	
-		p = pruneNC(self.ModelFile,self.ModelFilePruned,self.ModelVars, debug = self.debug) 	
-	else:	
-		print "matchDataAndModel:\tpruneModelAndData:\talready exists:",self.ModelFilePruned
-  
+
 
 
   def _convertDataTo1D_(self,):
@@ -132,17 +134,29 @@ class matchDataAndModel:
 	if not ukp.shouldIMakeFile(self.DataFilePruned,self.DataFile1D,debug=False):
 		print "matchDataAndModel:\tconvertDataTo1D:\talready exists:",self.DataFile1D
 		return
-
-	if self.dataType in ['pCO2','iron',]: 
-		# pCO2, iron Files area already 1D
-		self.DataFile1D = self.DataFilePruned 
-		print "matchDataAndModel:\tconvertDataTo1D:\tpCO2/Iron File has already been converted to 1D"
-		return
+		
+	nc = ncdfView(self.DataFilePruned,Quiet=True)
+	#if len(nc.dimensions)==1:
+		
+	#	print "matchDataAndModel:\tconvertDataTo1D:\tFile is already been 1D, removing masked elements."
+	#	nc.close()
+		
+		#c = changeNC(self.DataFilePruned,self.DataFile1D, av)
+	#	assert False
+	#	print 'iron doesn\'t work yet'
+	#	return		
+	
+	
+	#if self.dataType in self.already1D: 
+	#	# pCO2, iron Files area already 1D
+	#	self.DataFile1D = self.DataFilePruned 
+	#	print "matchDataAndModel:\tconvertDataTo1D:\tpCO2/Iron File has already been converted to 1D"
+	#	return
 		
 	WOADatas = [a+self.region for a in ['salinity','temperature','temp','sal','nitrate','phosphate','silicate',]]	   	 
 	      	
 	if self.dataType in WOADatas:	#World Ocean Atlas format
-		nc = ncdfView(self.DataFilePruned,Quiet=True)
+		
 		mmask = np.ones(nc(self.DataVars[0]).shape)
 		
 		if self.region in ['Surface','200m','100m','500m','1000m',]: 
@@ -157,7 +171,7 @@ class matchDataAndModel:
 		if self.region in ['All','']:	mmask[:] = 0   		# Entire Dataset
 		mmask +=nc(self.DataVars[0]).mask
 		print mmask.shape
-		nc.close()
+
 		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking WOA style flat array:',self.DataFilePruned,'-->',self.DataFile1D	
 	  	convertToOneDNC(self.DataFilePruned,self.DataFile1D ,newMask=mmask, variables = self.DataVars, debug=True)	
 	  	
@@ -165,7 +179,8 @@ class matchDataAndModel:
 		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking',self.DataFilePruned,'-->',self.DataFile1D
 	  	if len(self.DataVars):	convertToOneDNC(self.DataFilePruned, self.DataFile1D, debug=True, variables = self.DataVars)
 	  	else:			convertToOneDNC(self.DataFilePruned, self.DataFile1D, debug=True)
-  		
+  	nc.close()	
+  	
 	
 	
 		
@@ -224,28 +239,12 @@ class matchDataAndModel:
   	   	 is_la	= ncIS('Latitude')[:]
 	   	 is_lo 	= ncIS('Longitude')[:]
 	   	 tdict = {i+1:i for i in xrange(12)}
-#	    else:	    
-#	    	print "matchModelToData:\tmatchModelToData:\tERROR:\tNo "
-  	   	 #is_t	= ncIS('index_t')[:] # range 0->11	  	   	 
-#  	   	 is_t	= ncIS('TIME')[:] # range 1->12	
-# # 	   	 is_z 	= ncIS('DEPTH')[:]
-#  	   	 is_la	= ncIS('LATITUDE')[:]
-#	   	 is_lo 	= ncIS('LONGITUDE')[:]
-# 	  	 #tdict = {i:i for i in xrange(12)}
-#	   	 tdict = {i+1:i for i in xrange(12)}		   	 
+	   	 
 	    ncIS.close()
 
-	    # This won't work unless its the 1 degree grid.
-  	    print "matchModelToData:\tOpened Model netcdf: ~/data/mesh_mask_ORCA1_75.nc"
-  	    ncER = ncdfView("data/mesh_mask_ORCA1_75.nc",Quiet=True)
-	    self.latcc    = ncER('nav_lat')[:]
-	    self.loncc    = makeLonSafeArr(ncER('nav_lon')[:])
+
+	    if not self._meshLoaded_:self.loadMesh()
 	    
-  	    deptht   = ncER('gdept_0')[:]
-	    ncER.close()
-
-
-		
 	    for i,ii in enumerate(is_i[maxIndex:]):
 		i+=maxIndex
 		wt  = is_t[i]
@@ -272,7 +271,7 @@ class matchDataAndModel:
 		try:
 			z = zdict[wz]
 		except:	 
-			z = getORCAdepth(wz,deptht,debug=True)
+			z = getORCAdepth(wz,self.deptht,debug=True)
 			zdict[wz]	= z
 			if self.debug: print "matchModelToData:\t",i, 'Found new depth:',wz,'-->',z								
 
@@ -363,7 +362,6 @@ class matchDataAndModel:
 	for i,m in enumerate(maremask):
 		try:	maremaskDict[m].append(i)
 		except:	maremaskDict[m] = [i,]
-		
 	def getMedianVal(arr):
 		print "applyMaskToData:\tgetMedianVal: 1d:",arr.shape,maremask.shape,'-->',
 		out = []
@@ -387,7 +385,7 @@ class matchDataAndModel:
 		arr= np.array(out).squeeze()
 		print arr.shape
 		return arr
-
+		
 
   	ncIS = ncdfView(self.DataFile1D,Quiet=True)		
 	av = AutoVivification()
@@ -408,6 +406,16 @@ class matchDataAndModel:
 	c = changeNC(self.DataFile1D, self.maskedData1D,av,debug = self.debug)
 	
 
+  def loadMesh(self,):
+      	# This won't work unless its the 1 degree grid.
+  	print "matchModelToData:\tOpened Model netcdf: ~/data/mesh_mask_ORCA1_75.nc"
+  	ncER = ncdfView("data/mesh_mask_ORCA1_75.nc",Quiet=True)
+	self.latcc    = ncER('nav_lat')[:]
+	self.loncc    = makeLonSafeArr(ncER('nav_lon')[:])
+  	self.deptht   = ncER('gdept_0')[:]
+	ncER.close()
+	self._meshLoaded_ = 1
+	
   def getOrcaIndexCC(self,lat,lon,debug=True,slowMethod=False,llrange=5.):
 	""" takes a lat and long coordinate, an returns the position of the closest coordinate in the NemoERSEM (ORCA1) grid.
 	    uses the bathymetry file.
@@ -417,6 +425,7 @@ class matchDataAndModel:
 	lat = ukp.makeLatSafe(lat)
 	lon = ukp.makeLonSafe(lon)	
 	
+	if not self._meshLoaded_:self.loadMesh()
 	c = (self.latcc - lat)**2 + (self.loncc - lon)**2
 
 	(la_ind,lo_ind) =  np.unravel_index(c.argmin(),c.shape)
@@ -425,6 +434,11 @@ class matchDataAndModel:
 	if debug: print 'location ', [la_ind,lo_ind],'(',self.latcc[la_ind,lo_ind],self.loncc[la_ind,lo_ind],') is closest to:',[lat,lon]	
 	return la_ind,lo_ind
 		
+
+#########################################
+# Trimming masked values out of 1d files:
+
+
 	
 #########################################
 # Coords and Depth:

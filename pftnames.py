@@ -45,6 +45,7 @@ Ocean_names	=['SouthPacificOcean',  'ArcticOcean',  'AntarcticOcean','NorthAtlan
 MLDTypes = ['mld','mld_DT02','mld_DR003','mld_DReqDTm02', ]
 WOATypes = [a+b for a,b in product(['silicate','nitrate','phosphate','salinity','temperature',],['Surface','500m','100m','200m','1000m','','Transect',''])]
 
+GEOTRACESTypes = ['iron',]
 
 def getLongName(text):
 	if type(text) in [type(['a','b',]),type(('a','b',))]:
@@ -103,11 +104,14 @@ def getLongName(text):
   	if text == 'silicate200m':	return "Silicate (200m deep)"    	
   	if text == 'silicate500m':	return "Silicate (500m deep)"    	
   	  	
-  	if text == 'nitTransect': return "Pacific Transect Nitrate (WOA40)"
-  	if text == 'nitSurface': return "Surface Nitrate (WOA40)"
-    	if text == 'GEOTRACES':	return "GEOTRACES"  		
-  	if text == 'iron':	return "Iron"  	
+  	#if text == 'nitTransect': return "Pacific Transect Nitrate (WOA40)"
+  	#if text == 'nitSurface': return "Surface Nitrate (WOA40)"
+  	
+    	if text == 'GEOTRACES':		return "GEOTRACES"  		
+  	if text == 'iron':		return "Iron"  	
+  	if text == 'Fe_D_CONC_BOTTLE':	return "Iron (Dissolved)"  		
 
+  	if text ==  'WOA': 	return 'WOA'  	  	
   	if text ==  't_mn': 	return 'Mean Temperature'  	
   	if text ==  't_an': 	return 'Temperature'  
   	if text ==  's_mn': 	return 'Mean Salinity'  	
@@ -255,7 +259,7 @@ def getLongName(text):
   	if text ==  'ERSEM-2001': return 'ERSEM (2001)'    	  	
   	if text ==  'ERSEM-HighResp': return 'ERSEM (High Respiration)'  	  	   	  	 
   	if text ==  'Maredat': 	return 'Maredat'  	  	
-  	if text ==  'WOA': 	return 'WOA'  	  	
+
   	if text ==  'Takahashi': 	return 'Takahashi 2009'  	  	  	
   	if text ==  'Seawifs': 		return 'Seawifs'  	  	
   	if text ==  'Seawifs-micro': 	return 'Seawifs Microphyto. chl.'  	  	
@@ -383,7 +387,9 @@ def getkd():
 	kd['GEOTRACES']['lat'] = 'Latitude'
 	kd['GEOTRACES']['lon'] = 'Longitude'
 	kd['GEOTRACES']['cal'] = 'standard'
-	
+	kd['iron'] = kd['GEOTRACES']
+
+		
 	kd['IFREMER']['t'] = 'index_t'
 	kd['IFREMER']['z'] = 'index_z'
 	kd['IFREMER']['lat'] = 'lat'
@@ -503,7 +509,9 @@ def getmt(): # Match Type
 	mt['NEMO']['mld_DReqDTm02'] 	=  ['somxl010',]		
 
 	
-	mt['MEDUSA']['iron'] 		=  ['FER',]
+	mt['MEDUSA']['iron']['mul1000']	=  ['FER',]
+	mt['MEDUSA']['iron']['name']	=  'FER'
+	mt['MEDUSA']['iron']['units']	=  'umol F/m^3'		
 	mt['MEDUSA']['chl'] 		=  ['CHL',]	
 	mt['MEDUSA']['diatoms']['N2Biomass'] 	=  ['PHD',]		
 	mt['MEDUSA']['diatoms']['name'] 	=  'PHD'
@@ -623,6 +631,8 @@ def fancyUnits(units,debug=False):#'mg C/m^2',
   	if units in ['umol F/m^3',]:			return r'$\mu$'+'mol m'+r'$^{-3}$'
   	if units in ['mmol S/m^3', ]: 			return 'mmol S m'+r'$^{-3}$'  	
   	if units in ['mmolSi/m3', 'mmol Si/m^3', ]: 	return 'mmol Si m'+r'$^{-3}$'  	  	
+  	if units in ['mmolFe/m3',]:			return 'mmol Fe m'+r'$^{-3}$'  	
+  	
 	if units in ['ug/l','mg/m^3','ug/L',]:  	return 'mg m'+r'$^{-3}$'
 	if units in ['10^12 g Carbon year^-1',]:	return r'$10^{12}$'+' g Carbon/year'
 	if units in ['mol C/m^',]:			return 'mol C/m'+r'$^{2}$'

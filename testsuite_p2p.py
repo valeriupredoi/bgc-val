@@ -15,34 +15,39 @@ from pftnames import MaredatTypes,WOATypes,Ocean_names
 
 
 
-def main():
+def testsuite_p2p():
+
 	#####
 	# Can use command line arguments to choose a model.
 	if len(argv[1:]): models  = argv[1:]
 	else:	models = ['MEDUSA','ERSEM','NEMO']
     	
+    	#####
+    	# Which ERSEM job to look at. 
 	ERSEMjobID = 'xhonc'
 
+	#####
+	# Which Year to investigate for each model.
+	# In an ideal world, they would all be the same, except that my current run is stuck in the queue.
 	years = {}
 	years['NEMO']	= '1893'
 	years['ERSEM']	= '1893'	
 	years['MEDUSA']	= '1998'
 	
 
-	
-	#plotallcuts = 1#False
+
 	
 	#####
 	# Location of data files.
 	MAREDATFolder 	= "/data/perseus2/scratch/ledm/MAREDAT/MAREDAT/"
 	WOAFolder 	= "/data/euryale7/scratch/ledm/WOA/"	
+	GEOTRACESFolder = "/data/euryale7/scratch/ledm/GEOTRACES/GEOTRACES_PostProccessed/"
+	
+	#####
+	# Location of model files.	
 	MEDUSAFolder	= "/data/euryale7/scratch/ledm/UKESM/MEDUSA/"
 	ERSEMFolder	= "/data/euryale7/scratch/ledm/UKESM/ERSEM/"+ ERSEMjobID+'/'+years['ERSEM']+'/'+ERSEMjobID+'_'+years['ERSEM']
 	NEMOFolder	= "/data/euryale7/scratch/ledm/UKESM/ERSEM/"+ ERSEMjobID+'/'+years['NEMO'] +'/'+ERSEMjobID+'_'+years['NEMO']
-
-	#####
-	# Location of point matched files:
-
 	
 	
 	#####
@@ -57,6 +62,7 @@ def main():
 	# AutoVivification is a form of nested dictionary.
 	# we use av here to determine which files to analyse and which fields in those files.
 	# Region is added, because some WOA files are huges and my desktop can not run the p2p analysis of that data.
+	
 	av = AutoVivification()
 	if doCHL:
 		av['chl']['Data'  ]['File'] 		= MAREDATFolder+"MarEDat20121001Pigments.nc"	
@@ -127,6 +133,15 @@ def main():
 				if woa != 'phosphate':
 					av[woa+s]['MEDUSA']['Vars'] 	= MEDVars									
 					av[woa+s]['MEDUSA']['File'] 	= MEDUSAFolder+"medusa_bio_"+years['MEDUSA']+".nc"
+					
+		av['iron']['Data'  ]['File'] 	= GEOTRACESFolder+"Iron_GEOTRACES_IDP2014_Discrete_Sample_Data_ascii.nc"
+		av['iron']['MEDUSA']['File'] 	= MEDUSAFolder+"medusa_bio_"+years['MEDUSA']+".nc"	
+		av['iron']['ERSEM' ]['File'] 	= ERSEMFolder+'_ERSEMNuts.nc'			
+		av['iron']['Data']['Vars'] 	= ['Fe_D_CONC_BOTTLE',]
+		av['iron']['MEDUSA']['Vars'] 	= ['FER',]	
+		av['iron']['ERSEM']['Vars'] 	= ['N7f',]
+		av['iron']['region'] 		= ''
+		
 	if doSalTemp:
 		for woa in ['salinity','temperature',]:
 			if woa == 'salinity':		NEMOVars  	= ['vosaline',]
@@ -183,7 +198,7 @@ def main():
 			# matchDataAndModel:
 			# Match (real) Data and Model. 
 			# Does not produce and plots.
-			b = matchDataAndModel.matchDataAndModel(av[name]['Data']['File'], 
+			b = matchDataAndModel(av[name]['Data']['File'], 
 								av[name][model]['File'],
 								name,
 								DataVars  = av[name]['Data']['Vars'],
@@ -199,7 +214,7 @@ def main():
 			# MakePlot runs a series of analysis, comparing every pair in DataVars and ModelVars
 			#	 under a range of different masks. For instance, only data from Antarctic Ocean, or only data from January.
 			# The makePlot produces a shelve file in workingDir containing all results of the analysis.
-			m = makePlots.makePlots(	b.MatchedDataFile, 
+			m = makePlots(	b.MatchedDataFile, 
 							b.MatchedModelFile, 
 							name, 
 							model, 
@@ -214,7 +229,7 @@ def main():
 			# makeTargets:
 			# Make a target diagram of all matches for this particular dataset. # not a great idea if plotAllcuts == True
 			filename = folder('images/'+model+'/Targets/')+model+'_'+years[model]+'_'+name+'.png'
-			t = makeTargets.makeTargets(	m.shelves, 
+			t = makeTargets(	m.shelves, 
 							filename,
 							#name=name,
 							legendKeys = ['newSlice','ykey',],
@@ -233,11 +248,11 @@ def main():
 				    if newSlice in month_name: 	Months.append(shelve)
 				    if newSlice in Ocean_names:	Oceans.append(shelve)
 	          
-			makeTargets.makeTargets(Months, 
+			makeTargets(Months, 
 						folder('images/'+model+'/Targets/Months')+model+'_'+years[model]+'_'+name+'_Months.png',
 						legendKeys = ['newSlice',],					
 						)									
-			makeTargets.makeTargets(Oceans, 
+			makeTargets(Oceans, 
 						folder('images/'+model+'/Targets/Oceans')+model+'_'+years[model]+'_'+name+'_Oceans.png',
 						legendKeys = ['newSlice',],					
 						)
@@ -261,14 +276,14 @@ def main():
 	        		  	if newSlice == 'All':		Summary['WOAAll'].append(shelve)
 	        		  	if newSlice == 'Standard':	Summary['WOAStandard'].append(shelve)	
 	        		  	
-	        		for woa in ['silicate','nitrate','phosphate','salinity','temperature',]:
+	        		for woa in ['silicate','nitrate','phosphate','salinity','temperature','iron',]:
 	        		   for ns in ['All', 'Standard']:
 	        		   	if ns == newSlice and woa == name.lower():
 	        		   		try: 	Summary[woa+ns].append(shelve)
 	        		   		except:	Summary[woa+ns]= [shelve,]
 		for k in Summary.keys():
 			filename = folder('images/'+model+'/Targets/Summary')+model+'_'+years[model]+'_'+k+'.png'
-	  		makeTargets.makeTargets(Summary[k], 
+	  		makeTargets(Summary[k], 
 						filename,
 						legendKeys = ['name', 'newSlice','ykey',],					
 						debug=True)#imageDir='', diagramTypes=['Target',]
@@ -298,13 +313,17 @@ def main():
 	    	   			except: modelIC['WOA'+ns] = [shelve,]
 	        	   		try: 	modelIC[name+ns].append(shelve)
 	        	   		except:	modelIC[name+ns]= [shelve,]
-
+				if name in ['iron',]:
+	    	   			try:	modelIC['Misc'+ns].append(shelve)
+	    	   			except: modelIC['Misc'+ns] = [shelve,]
+	        	   		try: 	modelIC[name+ns].append(shelve)
+	        	   		except:	modelIC[name+ns]= [shelve,]					
 				        	   		
 	for k in modelIC.keys():
 		for i in modelIC[k]:print k, i
 		if len(modelIC[k]) <2: continue
 		
-		makeTargets.makeTargets(modelIC[k], 
+		makeTargets(modelIC[k], 
 					folder('images/ModelIntercomparison/Targets/')+'intercomparison_'+k+'.png',
 					legendKeys = ['xtype','name',],					
 					)		
@@ -318,7 +337,7 @@ def main():
 
 	
 if __name__=="__main__":
-	main() 
+	testsuite_p2p() 
 	print 'The end.'
 	
 	

@@ -19,7 +19,7 @@ from StatsDiagram import StatsDiagram
 
 #local imports
 import UKESMpython as ukp 
-from pftnames import getLongName, AutoVivification, getkd, getmt,fancyUnits,MaredatTypes,MLDTypes,WOATypes
+from pftnames import getLongName, AutoVivification, getkd, getmt,fancyUnits,MaredatTypes,MLDTypes,WOATypes,GEOTRACESTypes
 
 
     
@@ -54,6 +54,7 @@ class makePlots:
 	if self.name in MaredatTypes:  	self.ytype = 'Maredat'
 	if self.name in WOATypes:  	self.ytype = 'WOA'
 	if self.name in MLDTypes:  	self.ytype = 'IFREMER'	
+	if self.name in GEOTRACESTypes: self.ytype = 'GEOTRACES'		
 	
   	self.shelvedir = workingDir
   	if self.shelvedir == '':self.shelvedir = ukp.folder(['shelves',self.xtype,self.ytype, 'Slices',self.name])
@@ -282,8 +283,8 @@ class makePlots:
 	try:   yunits = fancyUnits(self.mt[self.ytype][self.name]['units'])
 	except:yunits = fancyUnits(self.ync.variables[ykey].units,debug=True)	
 
-	labelx = self.xtype+' '+self.name+', '+ xunits
-	labely = self.ytype+' '+self.name+', '+ yunits		  
+	labelx = getLongName(self.xtype)+' '+getLongName(self.name)+', '+ xunits
+	labely = getLongName(self.ytype)+' '+getLongName(self.name)+', '+ yunits	
 		
 	try: title = getLongName(newSlice)+' '+getLongName(self.name)
 	except:title = newSlice+' '+xkey+' vs '+ykey
@@ -570,6 +571,12 @@ def extractData(nc, mt,key = ['',]):
 	if mt['div1000']:
   		print "Extracting data:\tDividing by 1000. ", mt['div1000']
    	  	xd = nc(mt['div1000'][0])[:]/1000.   	  	 				
+
+	if mt['mul1000']:
+  		print "Extracting data:\tMultipling by 1000. ", mt['mul1000']
+   	  	xd = nc(mt['mul1000'][0])[:]*1000.   	
+
+
 
   	if mt['SWtoBmass']:
   		print "Extracting data:\tconverting seawifsPFT% into Biomass:", mt['SWtoBmass']
