@@ -276,11 +276,7 @@ def main():
 	#####
 	# Here are some fields for comparing fields between models.
 
-	modelIC = {} 	#model intercomparison shelve files
-	modelIC['MaredatAll'] = []
-	modelIC['MaredatStandard'] = []	
-	modelIC['WOAAll'] = []
-	modelIC['WOAStandard'] = []	
+	modelIC = {} 	#model intercomparison shelve files dictionary
 		
 	for model in shelvesAV.keys():	
 	  for name in shelvesAV[model].keys():
@@ -288,48 +284,37 @@ def main():
 	      for newSlice in shelvesAV[model][name][region].keys(): 
 	        for xkey in shelvesAV[model][name][region][newSlice].keys():
 		  for ykey in shelvesAV[model][name][region][newSlice][xkey].keys():
-		 	#print 'model:',model,'\tname:',name,'\tregion:',region,'\tnewSlice:',newSlice,'\txkey:',xkey,'\tykey:',ykey
-		 	    
-			shelve = shelvesAV[model][name][region][newSlice][xkey][ykey]
-			
-			#if newSlice not in ['All','Standard']:continue
-			
-			if name in MaredatTypes:
-	        	  	if newSlice == 'All':		modelIC['MaredatAll'].append(shelve)
-	        	  	if newSlice == 'Standard':	modelIC['MaredatStandard'].append(shelve)
-			if name in WOATypes:
-	        	  	if newSlice == 'All':		modelIC['WOAAll'].append(shelve)
-	        	  	if newSlice == 'Standard':	modelIC['WOAStandard'].append(shelve)	        		  				
-	        	for woa in WOATypes:
-	        	   for ns in ['All', 'Standard']:
-	        	   	if ns == newSlice and woa == name:
-	        	   		try: 	modelIC[woa+ns].append(shelve)
-	        	   		except:	modelIC[woa+ns]= [shelve,]	        	  	
-        		for md in MaredatTypes:
-	        	   for ns in ['All', 'Standard']:
-	        	   	if ns == newSlice and md == name:
-	        	   		try: 	modelIC[md+ns].append(shelve)
-	        	   		except:	modelIC[md+ns]= [shelve,]	        	   		
+	 	    
+			shelve = shelvesAV[model][name][region][newSlice][xkey][ykey]			
+	    	   	for ns in ['All', 'Standard']:
+	    	   		if ns != newSlice: continue
+	    	   		if name in MaredatTypes:
+	    	   			try:	modelIC['Maredat'+ns].append(shelve)
+	    	   			except: modelIC['Maredat'+ns] = [shelve,]
+	        	   		try: 	modelIC[name+ns].append(shelve)
+	        	   		except:	modelIC[name+ns]= [shelve,]	    	   			
+    	   			if name in WOATypes:
+	    	   			try:	modelIC['WOA'+ns].append(shelve)
+	    	   			except: modelIC['WOA'+ns] = [shelve,]
+	        	   		try: 	modelIC[name+ns].append(shelve)
+	        	   		except:	modelIC[name+ns]= [shelve,]
+
+				        	   		
 	for k in modelIC.keys():
-		#for i in modelIC[k]:print k, i
+		for i in modelIC[k]:print k, i
+		if len(modelIC[k]) <2: continue
+		
 		makeTargets.makeTargets(modelIC[k], 
 					folder('images/ModelIntercomparison/Targets/')+'intercomparison_'+k+'.png',
 					legendKeys = ['xtype','name',],					
-					debug=True)#imageDir='', diagramTypes=['Target',]		
+					)		
 			
 			
 			
 
-						
-	#print "shelves:",shelves
+					
 	print "Working dir:",workingDir
 	
-
-
-
-
-
-
 
 	
 if __name__=="__main__":
