@@ -32,7 +32,7 @@ def testsuite_p2p():
 	years = {}
 	years['NEMO']	= '1893'
 	years['ERSEM']	= '1893'	
-	years['MEDUSA']	= '1998'
+	years['MEDUSA']	= '2007'
 	
 
 
@@ -49,6 +49,9 @@ def testsuite_p2p():
 	ERSEMFolder	= "/data/euryale7/scratch/ledm/UKESM/ERSEM/"+ ERSEMjobID+'/'+years['ERSEM']+'/'+ERSEMjobID+'_'+years['ERSEM']
 	NEMOFolder	= "/data/euryale7/scratch/ledm/UKESM/ERSEM/"+ ERSEMjobID+'/'+years['NEMO'] +'/'+ERSEMjobID+'_'+years['NEMO']
 	
+	#####
+	# Output location of image files
+	imageFolder 	= folder('images')
 	
 	#####
 	# Which analysis to run
@@ -180,6 +183,7 @@ def testsuite_p2p():
 		for name in sorted(av.keys()):
 		#for name in ['chl',]:	
 			#####
+			
 			# Do some checks to make sure that the files all exist:
 			if not av[name][model]: continue
 			workingDir = folder("/data/euryale7/scratch/ledm/ukesm_postProcessed/"+model+'-'+years[model])		
@@ -228,7 +232,7 @@ def testsuite_p2p():
 			#####
 			# makeTargets:
 			# Make a target diagram of all matches for this particular dataset. # not a great idea if plotAllcuts == True
-			filename = folder('images/'+model+'/Targets/')+model+'_'+years[model]+'_'+name+'.png'
+			filename = folder(imageFolder+model+'/'+years[model]+'/Targets/')+model+'_'+years[model]+'_'+name+'.png'
 			t = makeTargets(	m.shelves, 
 							filename,
 							#name=name,
@@ -249,11 +253,11 @@ def testsuite_p2p():
 				    if newSlice in Ocean_names:	Oceans.append(shelve)
 	          
 			makeTargets(Months, 
-						folder('images/'+model+'/Targets/Months')+model+'_'+years[model]+'_'+name+'_Months.png',
+						folder(imageFolder+model+'/Targets/Months')+model+'_'+years[model]+'_'+name+'_Months.png',
 						legendKeys = ['newSlice',],					
 						)									
 			makeTargets(Oceans, 
-						folder('images/'+model+'/Targets/Oceans')+model+'_'+years[model]+'_'+name+'_Oceans.png',
+						folder(imageFolder+model+'/Targets/'+years[model]+'/Oceans')+model+'_'+years[model]+'_'+name+'_Oceans.png',
 						legendKeys = ['newSlice',],					
 						)
 		# Here are some fields for comparing fields in the same model
@@ -282,10 +286,10 @@ def testsuite_p2p():
 	        		   		try: 	Summary[woa+ns].append(shelve)
 	        		   		except:	Summary[woa+ns]= [shelve,]
 		for k in Summary.keys():
-			filename = folder('images/'+model+'/Targets/Summary')+model+'_'+years[model]+'_'+k+'.png'
+			filename = folder(imageFolder+model+'/Targets/'+years[model]+'/Summary')+model+'_'+years[model]+'_'+k+'.png'
 	  		makeTargets(Summary[k], 
 						filename,
-						legendKeys = ['name', 'newSlice','ykey',],					
+						legendKeys = ['name', ],#'newSlice',
 						debug=True)#imageDir='', diagramTypes=['Target',]
 				
 	#####
@@ -324,7 +328,7 @@ def testsuite_p2p():
 		if len(modelIC[k]) <2: continue
 		
 		makeTargets(modelIC[k], 
-					folder('images/ModelIntercomparison/Targets/')+'intercomparison_'+k+'.png',
+					folder(imageFolder+'/ModelIntercomparison/Targets/')+'intercomparison_'+k+'.png',
 					legendKeys = ['xtype','name',],					
 					)		
 			

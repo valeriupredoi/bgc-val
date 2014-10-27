@@ -57,10 +57,10 @@ class makePlots:
 	if self.name in GEOTRACESTypes: self.ytype = 'GEOTRACES'		
 	
   	self.shelvedir = workingDir
-  	if self.shelvedir == '':self.shelvedir = ukp.folder(['shelves',self.xtype,self.ytype, 'Slices',self.name])
+  	if self.shelvedir == '':self.shelvedir = ukp.folder(['shelves',self.xtype,self.year,self.ytype, 'Slices',self.name])
   	else:			self.shelvedir = ukp.folder(self.shelvedir)		
 
-	if imageDir=='':	self.imageDir = ukp.folder(['images',self.xtype,'P2P_plots',self.name])
+	if imageDir=='':	self.imageDir = ukp.folder(['images',self.xtype,'P2P_plots',self.year,self.name])
 	else: 			self.imageDir = ukp.folder(imageDir)
 
 	self.run()
@@ -220,11 +220,11 @@ class makePlots:
 		  	fullmask += ukp.makeMask(self.name,n,self.yt,self.yz,self.yy,self.yx,yd).astype(int)	  
 		  	
 	elif newSlice == 'Standard':				# Standard is a shorthand for my favourite cuts.
-	  	for ns in self.standardCuts: 
-			if self.name in ['tempSurface','tempTransect', 'tempAll'] and ns in ['aboveZero',]:continue 
+	  	for stanSlice in self.standardCuts: 
+			if self.name in ['tempSurface','tempTransect', 'tempAll'] and stanSlice in ['aboveZero',]:continue 
 				    						
-	  		fullmask += ukp.makeMask(self.name,ns,self.xt,self.xz,self.xy,self.xx,xd).astype(int)
-	  	 	fullmask += ukp.makeMask(self.name,ns,self.yt,self.yz,self.yy,self.yx,yd).astype(int)	
+	  		fullmask += ukp.makeMask(self.name,stanSlice,self.xt,self.xz,self.xy,self.xx,xd).astype(int)
+	  	 	fullmask += ukp.makeMask(self.name,stanSlice,self.yt,self.yz,self.yy,self.yx,yd).astype(int)	
 	  	 	
 	else:  	# newSlice is a simple slice.
 	  	fullmask += ukp.makeMask(self.name,newSlice,self.xt,self.xz,self.xy,self.xx,xd).astype(int)
@@ -497,7 +497,7 @@ class makePlots:
 	
  		
   def getFileName(self,newSlice,xkey,ykey):
-	file_prefix = ukp.folder(['images',self.xtype,'P2P_plots',self.name,])
+	file_prefix = ukp.folder(['images',self.xtype,'P2P_plots',self.year,self.name,])
 
 	file_suffix = '_'+self.xtype+'.png'
 
