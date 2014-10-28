@@ -19,7 +19,7 @@ from StatsDiagram import StatsDiagram
 
 #local imports
 import UKESMpython as ukp 
-from pftnames import getLongName, AutoVivification, getkd, getmt,fancyUnits,MaredatTypes,MLDTypes,WOATypes,GEOTRACESTypes
+from pftnames import getLongName, AutoVivification, getmt,fancyUnits,MaredatTypes,MLDTypes,WOATypes,GEOTRACESTypes
 
 
     
@@ -70,7 +70,6 @@ class makePlots:
 	
   def run(self,):
 
-  	self.kd = getkd()
   	self.xnc = ncdfView(self.xfn,Quiet=True)
   	self.ync = ncdfView(self.yfn,Quiet=True)
 	self.mt = getmt()		    	
@@ -161,16 +160,16 @@ class makePlots:
 	# Load data
 	
 	#time and depth
-	xt = self.xnc(self.kd[self.xtype]['t'])[:]
-	yt = self.ync(self.kd[self.ytype]['t'])[:]
-	xz = self.xnc(self.kd[self.xtype]['z'])[:]
-	yz = self.ync(self.kd[self.ytype]['z'])[:]
+	xt = self.xnc(self.mt[self.xtype]['t'])[:]
+	yt = self.ync(self.mt[self.ytype]['t'])[:]
+	xz = self.xnc(self.mt[self.xtype]['z'])[:]
+	yz = self.ync(self.mt[self.ytype]['z'])[:]
 
 	#lat and lon
-	xy = self.xnc(self.kd[self.xtype]['lat'])[:]
-	yy = self.ync(self.kd[self.ytype]['lat'])[:]
-	xx = self.xnc(self.kd[self.xtype]['lon'])[:]
-	yx = self.ync(self.kd[self.ytype]['lon'])[:]	
+	xy = self.xnc(self.mt[self.xtype]['lat'])[:]
+	yy = self.ync(self.mt[self.ytype]['lat'])[:]
+	xx = self.xnc(self.mt[self.xtype]['lon'])[:]
+	yx = self.ync(self.mt[self.ytype]['lon'])[:]	
 
 	self.xx = xx
 	self.xy = xy
@@ -381,8 +380,8 @@ class makePlots:
 		This should produce a straight line plot, ensuring that the matching has been performed correctly.
 	"""
 	
-	xcoords = [self.kd[self.xtype][k] for k in ['index_t','t','lat','lon','z','lon',]]
-	ycoords = [self.kd[self.ytype][k] for k in ['index_t','t','lat','lon','z','lat',]]	
+	xcoords = [self.mt[self.xtype][k] for k in ['index_t','t','lat','lon','z','lon',]]
+	ycoords = [self.mt[self.ytype][k] for k in ['index_t','t','lat','lon','z','lat',]]	
 	  	 	  	
   	for xkey,ykey in zip(xcoords,ycoords):
 	    	if xkey not in self.xnc.variables.keys():continue  	    

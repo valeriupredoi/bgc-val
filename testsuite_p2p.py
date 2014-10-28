@@ -5,7 +5,7 @@ from os.path import exists
 from calendar import month_name
 
 #Specific local code:
-from UKESMpython import folder,getFileList, AutoVivification, NestedDict,AutoVivToYaml
+from UKESMpython import folder,getFileList, AutoVivification, NestedDict,AutoVivToYaml,YamlToDict
 from p2p import matchDataAndModel,makePlots,makeTargets
 
 from pftnames import MaredatTypes,WOATypes,Ocean_names
@@ -176,8 +176,11 @@ def testsuite_p2p():
 		av['mld_DReqDTm02']['region'] 		= ''
 	
 	
-	AutoVivToYaml(av,'P2P_Settings.yaml')
-	return 
+	AutoVivToYaml(av,folder('yaml')+'P2P_Settings.yaml')	
+	#av = 0
+	#print av
+	#av = YamlToDict(folder('yaml')+'P2P_Settings.yaml',)
+	print av.keys(), av['chl'].keys(),av['chl']['MEDUSA']
 	#####
 	# Start analysis here:
 	shelvesAV = AutoVivification()
@@ -186,19 +189,31 @@ def testsuite_p2p():
 		for name in sorted(av.keys()):
 		#for name in ['chl',]:	
 			#####
-			
 			# Do some checks to make sure that the files all exist:
-			if not av[name][model]: continue
+			print model,name
+			try: 
+				if not isinstance(av[name][model],dict): continue
+			except KeyError:
+				print "No ",name, 'in ',model
+				continue
+				
+			region = str(av[name]['region'])
+			
 			workingDir = folder("/data/euryale7/scratch/ledm/ukesm_postProcessed/"+model+'-'+years[model])		
-		
-			if not exists(av[name]['Data']['File']):
+			try:
+			    if not exists(av[name]['Data']['File']):
 				print "testsuite_p2p.py:\tWARNING:\tFile does not exist", av[name]['Data']['File']
 				continue
-			
-			if not exists(av[name][model]['File']):
-				print "testsuite_p2p.py:\tWARNING:\tFile does not exist", av[name][model]['File']
+			except:
+				print "testsuite_p2p.py:\tWARNING:\tFile does not exist\tav[",name,"][",model,'][File]'
+				continue			    	
+			try:
+			    if not exists(av[name][model]['File']):
+				print "testsuite_p2p.py:\tWARNING:\tFile does not exist", av[name][model]+'[File]'
 				continue
-			
+			except:
+				print "testsuite_p2p.py:\tWARNING:\tFile does not exist:\tav[",name,"][",model,'][File]'
+				continue			
 			print "\n\n\ntestsuite_p2p.py:\tINFO:\tRunning:",name
 			
 			#####
@@ -213,7 +228,7 @@ def testsuite_p2p():
 								jobID=model,
 								year=years[model],
 								workingDir = folder(workingDir+name),
-								region = av[name]['region'])
+								region = region)
 								
 			#####
 			# makePlots:
@@ -230,7 +245,7 @@ def testsuite_p2p():
 							workingDir = folder(workingDir+name),
 							compareCoords=True)
 			#Get an autoviv of the shelves.
-			shelvesAV[model][name.replace(av[name]['region'],'')][av[name]['region']] = m.shelvesAV
+			shelvesAV[model][name.replace(region,'')][region] = m.shelvesAV
 										
 			#####
 			# makeTargets:
@@ -294,6 +309,7 @@ def testsuite_p2p():
 						filename,
 						legendKeys = ['name', ],#'newSlice',
 						debug=True)#imageDir='', diagramTypes=['Target',]
+		AutoVivToYaml(shelvesAV, folder('yaml')+'shelvesAV.yaml')
 				
 	#####
 	# Here are some fields for comparing fields between models.
@@ -325,6 +341,8 @@ def testsuite_p2p():
 	    	   			except: modelIC['Misc'+ns] = [shelve,]
 	        	   		try: 	modelIC[name+ns].append(shelve)
 	        	   		except:	modelIC[name+ns]= [shelve,]					
+	
+
 				        	   		
 	for k in modelIC.keys():
 		for i in modelIC[k]:print k, i

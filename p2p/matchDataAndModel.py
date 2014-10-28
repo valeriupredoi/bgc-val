@@ -12,7 +12,7 @@ import numpy as np
 ######
 # local imports
 import UKESMpython as ukp 
-from pftnames import getkd
+from pftnames import getmt
 
 #####
 # ncdfView is available from:
@@ -214,15 +214,15 @@ class matchDataAndModel:
 	except:
 		lldict={}
 	finds = 0	
-	kd = getkd()
+	mt = getmt()
 	if maxIndex+1 <len(is_i):
 	    zdict={}
 	    tdict={}
-	    print 'kd[',self.dataType,']:', kd[self.dataType]
-  	    is_t	= ncIS(kd[self.dataType]['t'])[:]	
-  	    is_z 	= ncIS(kd[self.dataType]['z'])[:]
-  	    is_la	= ncIS(kd[self.dataType]['lat'])[:]
-	    is_lo 	= ncIS(kd[self.dataType]['lon'])[:]	
+	    print 'mt[',self.dataType,']:', mt[self.dataType]
+  	    is_t	= ncIS(mt[self.dataType]['t'])[:]	
+  	    is_z 	= ncIS(mt[self.dataType]['z'])[:]
+  	    is_la	= ncIS(mt[self.dataType]['lat'])[:]
+	    is_lo 	= ncIS(mt[self.dataType]['lon'])[:]	
 	    tdict = {i+1:i for i in xrange(12)}
 	     
 	    WOADatas = [a+self.region for a in ['temp','sal','temperature','salinity','nitrate','phosphate','silicate',]]	   	 

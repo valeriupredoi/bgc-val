@@ -40,12 +40,14 @@ REQUIREMENTS:
 	Python libraries:
 	
 	simple to install:
-		pip install matplotlib numpy scipy ipython
+		pip install matplotlib numpy scipy ipython netCDF4 pyyaml
+		
+		(you may need to install python-pip or sudo this)
+			
+		
+		
 	
-	Less simple to install:
-		netCDF4
-	
-	Code from 
+	Code from :
 	communitystructure 
 		from: https://gitlab.ecosystem-modelling.pml.ac.uk/ledm/communitystructure
 

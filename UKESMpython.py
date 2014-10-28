@@ -106,6 +106,12 @@ def AutoVivToYaml(av,yamlFile):
 	fn.write(s)
 	fn.close()
 
+def YamlToDict(yamlFile):
+	print 'YamlToDict:\tLoading:',yamlFile	
+	with open(yamlFile, 'r') as f:
+		d = yaml.load(f)
+	return d
+
 
 	
 class NestedDict(dict):
