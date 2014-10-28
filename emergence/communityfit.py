@@ -6,7 +6,7 @@ from matplotlib import pyplot, colors
 import numpy as np
 #from scipy import optimize
 #Specific local code:
-from pftnames import pftnames as pn
+#from pftnames import pftnames as pn
 from UKESMpython import folder,getFileList,sliceA
 from analysis import analysis
 try:

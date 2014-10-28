@@ -65,7 +65,6 @@ def testsuite_p2p():
 	# AutoVivification is a form of nested dictionary.
 	# we use av here to determine which files to analyse and which fields in those files.
 	# Region is added, because some WOA files are huges and my desktop can not run the p2p analysis of that data.
-	
 	av = AutoVivification()
 	if doCHL:
 		av['chl']['Data']['File'] 		= MAREDATFolder+"MarEDat20121001Pigments.nc"	
@@ -257,7 +256,7 @@ def testsuite_p2p():
 			#####
 			# makeTargets:
 			# Make a target diagram of all matches for this particular dataset. # not a great idea if plotAllcuts == True
-			filename = folder(imageFolder+model+'/'+years[model]+'/Targets/')+model+'_'+years[model]+'_'+name+'.png'
+			filename = folder(imageFolder+model+'/Targets/'+years[model]+'/AllSlices')+model+'_'+years[model]+'_'+name+'.png'
 			t = makeTargets(	m.shelves, 
 							filename,
 							#name=name,
@@ -278,14 +277,15 @@ def testsuite_p2p():
 				    if newSlice in Ocean_names:	Oceans.append(shelve)
 	          
 			makeTargets(	Months, 
-					folder(imageFolder+model+'/Targets/Months')+model+'_'+years[model]+'_'+name+'_Months.png',
+					folder(imageFolder+model+'/Targets/'+years[model]+'/Months')+model+'_'+years[model]+'_'+name+'_Months.png',
 					legendKeys = ['newSlice',],					
 					)									
 			makeTargets(	Oceans, 
 					folder(imageFolder+model+'/Targets/'+years[model]+'/Oceans')+model+'_'+years[model]+'_'+name+'_Oceans.png',
 					legendKeys = ['newSlice',],					
+
 					)
-						
+		#####				
 		# Here are some fields for comparing fields in the same model
 		Summary= {}		
 		Summary['MaredatAll'] = []
@@ -321,7 +321,8 @@ def testsuite_p2p():
 				
 	#####
 	# Here are some fields for comparing fields between models.
-
+	# Only works if the same "name" is matched with multiple models.
+	
 	modelIC = {} 	#model intercomparison shelve files dictionary
 		
 	for model in shelvesAV.keys():	

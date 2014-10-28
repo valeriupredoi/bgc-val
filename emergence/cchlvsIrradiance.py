@@ -5,7 +5,7 @@ from sys import argv
 from matplotlib import pyplot
 import numpy as np
 #Specific local code:
-from pftnames import pftnames as pn
+#from pftnames import pftnames as pn
 from UKESMpython import folder,getFileList,sliceA
 from analysis import analysis
 

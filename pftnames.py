@@ -4,37 +4,32 @@ from itertoolsmodule import product
 from os.path import exists
 
 """	This is a dictionary of all the terms that you'd need to pick out.
-	pftnames['Model Name']['Functional type']['currency']
+
 
 """
 
-
-
-            
-            
-pftnames = AutoVivification()
-pftnames['ERSEM']['diatoms']['c'] = 'P1c'
-pftnames['ERSEM']['diatoms']['n'] = 'P1n'
-pftnames['ERSEM']['diatoms']['p'] = 'P1p'
-pftnames['ERSEM']['diatoms']['f'] = 'P1f'
-pftnames['ERSEM']['diatoms']['s'] = 'P1s'
-pftnames['ERSEM']['diatoms']['chl'] = 'Chl1'
-
-pftnames['ERSEM' ]['total']['chl'] = 'chl'
-pftnames['MEDUSA']['total']['chl'] = 'CHL'
-
-pftnames['MEDUSA']['diatoms']['n'] = ['']
-pftnames['MEDUSA']['diatoms']['f'] = ['']
-pftnames['MEDUSA']['diatoms']['s'] = ['']
-
-
+#####
+# The name sake for this file, is not usefiul anymore.         
+#	pftnames['Model Name']['Functional type']['currency']       
+#pftnames = AutoVivification()
+#pftnames['ERSEM']['diatoms']['c'] = 'P1c'
+#pftnames['ERSEM']['diatoms']['n'] = 'P1n'
+#pftnames['ERSEM']['diatoms']['p'] = 'P1p'
+#pftnames['ERSEM']['diatoms']['f'] = 'P1f'
+#pftnames['ERSEM']['diatoms']['s'] = 'P1s'
+#pftnames['ERSEM']['diatoms']['chl'] = 'Chl1'
+#pftnames['ERSEM' ]['total']['chl'] = 'chl'
+#pftnames['MEDUSA']['total']['chl'] = 'CHL'
+#pftnames['MEDUSA']['diatoms']['n'] = ['']
+#pftnames['MEDUSA']['diatoms']['f'] = ['']
+#pftnames['MEDUSA']['diatoms']['s'] = ['']
 # overloading different names with the same dict.
-pftnames['E'] = pftnames['ERSEM']
-pftnames['e'] = pftnames['ERSEM']
-pftnames['ersem'] = pftnames['ERSEM']
-pftnames['M'] = pftnames['MEDUSA']
-pftnames['m'] = pftnames['MEDUSA']
-pftnames['medusa'] = pftnames['MEDUSA']
+#pftnames['E'] = pftnames['ERSEM']
+#pftnames['e'] = pftnames['ERSEM']
+#pftnames['ersem'] = pftnames['ERSEM']
+#pftnames['M'] = pftnames['MEDUSA']
+#pftnames['m'] = pftnames['MEDUSA']
+#pftnames['medusa'] = pftnames['MEDUSA']
 
 
 
@@ -292,7 +287,6 @@ WOATypes 	= ['silicate','nitrate','phosphate','salinity','temperature',]
 GEOTRACESTypes 	= ['iron',]
 	
 def getmt(loadYaml=False): # Match Type
-
 	"""
 	getmt(): Get Match Type. 
 	Typical usage:
@@ -310,7 +304,9 @@ def getmt(loadYaml=False): # Match Type
 		mt[ModelName or Data source][varaible name][new units] = 'mg m^-3' or whatever. (preferable from fancyUnits, below)
 	"""
 	
-	
+	#####
+	# Try to open a yaml file. 
+	# By detault, this is not used.
 	yamlFile = folder('yaml')+'matchMetadata.yaml'
 	if exists(yamlFile) and loadYaml:
 		print 'getmt:\tLoading mt file from ',yamlFile
@@ -337,19 +333,6 @@ def getmt(loadYaml=False): # Match Type
 	mt['ERSEM']['lat'] 		= 'nav_lat'
 	mt['ERSEM']['lon'] 		= 'nav_lon'
 	mt['ERSEM']['cal'] 		= '365_day'
-
-	    		
-	mt['WOA']['temperature'] 	= ['t_an',]#'t_mn',
-  	mt['WOA']['salinity'] 		= ['s_an',]#'s_mn',
-  	mt['WOA']['nitrate'] 		= ['n_an',]#'s_mn',  	
-	mt['WOA']['silicate'] 		= ['i_an',]#'i_mn',
-	mt['WOA']['phosphate'] 		= ['p_an',]#'p_mn',	    	  		
-	mt['WOA']['t'] 			= 'index_t'
-	mt['WOA']['z'] 			= 'depth'
-	mt['WOA']['lat'] 		= 'lat'
-	mt['WOA']['lon'] 		= 'lon'
-	mt['WOA']['cal'] 		= 'standard'    		    	
-    	
 	    		    	
 	mt['NEMO']['temperature'] 	= ['votemper',]	
  	mt['NEMO']['salinity'] 		= ['vosaline',]				
@@ -362,7 +345,6 @@ def getmt(loadYaml=False): # Match Type
 	mt['NEMO']['lat'] 		= 'nav_lat'
 	mt['NEMO']['lon'] 		= 'nav_lon'
 	mt['NEMO']['cal']		= '365_day'
-	
 
 	mt['MEDUSA']['chl'] 			=  ['CHL',]	
 	mt['MEDUSA']['diatoms']['N2Biomass'] 	=  ['PHD',]		
@@ -404,7 +386,17 @@ def getmt(loadYaml=False): # Match Type
 	mt['MAREDAT']['cal'] 		= 'standard'	
 	mt['Maredat'] 			= mt['MAREDAT']
 			
-		 
+	mt['WOA']['temperature'] 	= ['t_an',]#'t_mn',
+  	mt['WOA']['salinity'] 		= ['s_an',]#'s_mn',
+  	mt['WOA']['nitrate'] 		= ['n_an',]#'s_mn',  	
+	mt['WOA']['silicate'] 		= ['i_an',]#'i_mn',
+	mt['WOA']['phosphate'] 		= ['p_an',]#'p_mn',	    	  		
+	mt['WOA']['t'] 			= 'index_t'
+	mt['WOA']['z'] 			= 'depth'
+	mt['WOA']['lat'] 		= 'lat'
+	mt['WOA']['lon'] 		= 'lon'
+	mt['WOA']['cal'] 		= 'standard'    
+			 
 	#mt['Takahashi']['pCO2'] 	= ['PCO2_SW',]#'DELTA_PCO2',]	'TFLUXSW06',
 	#mt['Takahashi']['t'] 		= 'index_t'
 	#mt['Takahashi']['z'] 		= 'index_z'

@@ -7,7 +7,7 @@ from string import ascii_lowercase
 from re import findall
 import os
 #Specific local code:
-from pftnames import pftnames as pn
+#from pftnames import pftnames as pn
 from UKESMpython import folder,getFileList
 
 
