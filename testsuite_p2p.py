@@ -180,7 +180,10 @@ def testsuite_p2p():
 	#av = 0
 	#print av
 	#av = YamlToDict(folder('yaml')+'P2P_Settings.yaml',)
-	print av.keys(), av['chl'].keys(),av['chl']['MEDUSA']
+	#print av.keys(), av['chl'].keys(),av['chl']['MEDUSA']
+	
+	
+	
 	#####
 	# Start analysis here:
 	shelvesAV = AutoVivification()

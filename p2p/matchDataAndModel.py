@@ -215,30 +215,49 @@ class matchDataAndModel:
 		lldict={}
 	finds = 0	
 	mt = getmt()
+	
+	#####
+	# Figure out which type of data this is.
+	ytype = []
+	for key in mt.keys():
+		key = key.upper()
+		if key in ['ERSEM','NEMO','MEDUSA']:continue
+		try:
+			if self.dataType in mt[key].keys() and key not in ytype:
+				ytype.append(key)
+		except:pass
+	if len(ytype) == 1:
+		ytype = ytype[0]
+		
+	else:
+		print "matchModelToData:\tUnable to determine data dataset type (ie, Maredat, WOA, etc...)", ytype
+	#print ytype, ytype[0]
+
+				
 	if maxIndex+1 <len(is_i):
 	    zdict={}
 	    tdict={}
-	    print 'mt[',self.dataType,']:', mt[self.dataType]
-  	    is_t	= ncIS(mt[self.dataType]['t'])[:]	
-  	    is_z 	= ncIS(mt[self.dataType]['z'])[:]
-  	    is_la	= ncIS(mt[self.dataType]['lat'])[:]
-	    is_lo 	= ncIS(mt[self.dataType]['lon'])[:]	
+	    print 'mt[',ytype,']:', mt[ytype]
+  	    is_t	= ncIS(mt[ytype]['t'])[:]	
+  	    is_z 	= ncIS(mt[ytype]['z'])[:]
+  	    is_la	= ncIS(mt[ytype]['lat'])[:]
+	    is_lo 	= ncIS(mt[ytype]['lon'])[:]	
 	    tdict = {i+1:i for i in xrange(12)}
 	     
-	    WOADatas = [a+self.region for a in ['temp','sal','temperature','salinity','nitrate','phosphate','silicate',]]	   	 
+	   # WOADatas = [a+self.region for a in ['temp','sal','temperature','salinity','nitrate','phosphate','silicate',]]	   	 
 	    #if self.dataType in WOADatas:pass
 
 	    if self.dataType in ['pCO2','seawifs','Seawifs','mld_DT02', 'mld_DR003','mld_DReqDTm02','mld',]: 
   	   	 is_z 	= np.ma.zeros(len(is_t))[:]
 	   	 zdict = {0:0, 0.:0}  
-	    elif self.dataType in ['iron',]:
-  	   	 #fulltime	= num2date(ncIS('time')[:],ncIS.variables['time'].units)
-  	   	 #is_t  = array([t.month for t in fulltime])
-  	   	 is_t	= ncIS('MONTH')[:]
-  	   	 is_z 	= ncIS('DEPTH')[:]
-  	   	 is_la	= ncIS('Latitude')[:]
-	   	 is_lo 	= ncIS('Longitude')[:]
-	   	 tdict = {i+1:i for i in xrange(12)}
+	#    elif self.dataType in ['iron',]:
+  	 #  	 #fulltime	= num2date(ncIS('time')[:],ncIS.variables['time'].units)
+  	  # 	 #is_t  = array([t.month for t in fulltime])
+  	   #	 is_t	= ncIS('MONTH')[:]
+  	   #	 is_z 	= ncIS('DEPTH')[:]
+  	   #	 is_la	= ncIS('Latitude')[:]
+	   #	 is_lo 	= ncIS('Longitude')[:]
+	   #	 tdict = {i+1:i for i in xrange(12)}
 	   	 
 	    ncIS.close()
 

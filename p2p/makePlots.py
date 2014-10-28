@@ -380,8 +380,8 @@ class makePlots:
 		This should produce a straight line plot, ensuring that the matching has been performed correctly.
 	"""
 	
-	xcoords = [self.mt[self.xtype][k] for k in ['index_t','t','lat','lon','z','lon',]]
-	ycoords = [self.mt[self.ytype][k] for k in ['index_t','t','lat','lon','z','lat',]]	
+	xcoords = [self.mt[self.xtype][k] for k in ['t','lat','lon','z','lon',]]
+	ycoords = [self.mt[self.ytype][k] for k in ['t','lat','lon','z','lat',]]
 	  	 	  	
   	for xkey,ykey in zip(xcoords,ycoords):
 	    	if xkey not in self.xnc.variables.keys():continue  	    
@@ -536,64 +536,65 @@ def extractData(nc, mt,key = ['',]):
   	""" The idea here is that the data in mt[type][name] can be a list, where the first value is the operation that you want to run.
   	    Also accepts the keywords: 'product', 'sum', 'mean', 'quotient'
   	"""
-  	try: 
-  		a = mt.keys()
-  		print "extractData: MT is a dict", a
-  	except:
+  	#try: 
+	if isinstance(mt,dict): 
+  		mtkeys = mt.keys()
+  		print "extractData: MT is a dict", mtkeys
+  	else:
+  	#except:
   		print "extractData: mt Not a dict:", mt, key
   		return np.ma.array(nc(key)[:])
-  	if mt[0] == {}:	print "warning:MT may be empty"
+
 
   	
   	print "extractData: Extracting data:\tinit:",mt
  
   	
-	if mt['sum']:
+	if 'sum' in mtkeys:
 		print "Extracting data:\tSumming:", mt['sum']
   	  	xd = nc(mt['sum'][0])[:]
 		for  name in mt['sum'][1:]:	xd +=nc(name)[:]
   	
-  	if mt['product']:
+	if 'product' in mtkeys: 
   		print "Extracting data:\tmultiplying:", mt['product']
   	  	xd = nc(mt['product'][0])[:]
 		for  name in mt['product'][1:]:	xd *= nc(name)[:]
-
-  	if mt['productPC']:
+		
+	if 'productPC' in mtkeys:
   		print "Extracting data:\tmultiplying:", mt['productPC']
   	  	xd = nc(mt['productPC'][0])[:]*nc(mt['productPC'][1])[:]/100.   	  	
-
-  	if mt['N2Biomass']:
-  		
+  	  	
+	if 'N2Biomass' in mtkeys: 		
   		print "Extracting data:\tmultiplying:", mt['N2Biomass'] ,'by 79.573'
   	  	xd = nc(mt['N2Biomass'][0])[:] * 79.573
-  	  		
-	if mt['div1000']:
+  	  	
+ 	if 'div1000' in mtkeys: 	  		
   		print "Extracting data:\tDividing by 1000. ", mt['div1000']
-   	  	xd = nc(mt['div1000'][0])[:]/1000.   	  	 				
-
-	if mt['mul1000']:
+   	  	xd = nc(mt['div1000'][0])[:]/1000. 
+   	  	  	  	 				
+	if 'mul1000' in mtkeys:
   		print "Extracting data:\tMultipling by 1000. ", mt['mul1000']
    	  	xd = nc(mt['mul1000'][0])[:]*1000.   	
 
 
-
-  	if mt['SWtoBmass']:
+	if 'SWtoBmass' in mtkeys:
   		print "Extracting data:\tconverting seawifsPFT% into Biomass:", mt['SWtoBmass']
   	  	xd = nc(mt['SWtoBmass'][0])[:]*nc(mt['SWtoBmass'][1])[:]/100. 
 		xd = 79. * power(xd, 0.65)
 		#fit From http://www.int-res.com/articles/meps_oa/m383p073.pdf
 		# doi: 10.3354/meps07998
-	if mt['Chl2BM']:
+		
+	if 'Chl2BM' in mtkeys:		
   		print "Extracting data:\tconverting Chl to Biomass:", mt['Chl2BM']
   		xd = 79. * power(nc(mt['Chl2BM'][0])[:], 0.65)
-  				
-  	if mt['mean']:
+  		
+ 	if 'mean' in mtkeys: 				
   		print "Extracting data:\tmeaning:", mt['mean'] 
   	  	xd = nc(mt['mean'][0])[:]
 		for  name in mt['mean'][1:]:	xd +=nc(name)[:]
 		xd  = xd/float(len(mt['mean']))
-
-	if mt['divide']:
+		
+	if 'divide' in mtkeys:
   		print "Extracting data:\tdividing", mt['divide'] 	
 		xd = nc(mt['divide'][0])[:]/nc(mt['divide'][1])[:]
 		

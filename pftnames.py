@@ -1,6 +1,8 @@
 from calendar import month_name
 from UKESMpython import AutoVivification,AutoVivToYaml,folder,YamlToDict
 from itertoolsmodule import product
+from os.path import exists
+
 """	This is a dictionary of all the terms that you'd need to pick out.
 	pftnames['Model Name']['Functional type']['currency']
 
@@ -35,17 +37,6 @@ pftnames['m'] = pftnames['MEDUSA']
 pftnames['medusa'] = pftnames['MEDUSA']
 
 
-regions = ['Surface','200m','100m','500m','1000m','Transect','All','',]
-MaredatTypes = ['chl','diatoms','bac','mesozoo','picophyto','microzoo']
-
-#WOATypes = [a+b for a,b in product(['silicate','nitrate','phosphate','salinity','temperature',],['Surface','500m','100m','200m','1000m','','Transect',''])]
-
-Ocean_names	=['SouthPacificOcean',  'ArcticOcean',  'AntarcticOcean','NorthAtlanticOcean','SouthAtlanticOcean', 'NorthPacificOcean','IndianOcean',]
-
-MLDTypes = ['mld','mld_DT02','mld_DR003','mld_DReqDTm02', ]
-WOATypes = [a+b for a,b in product(['silicate','nitrate','phosphate','salinity','temperature',],regions)]
-
-GEOTRACESTypes = ['iron',]
 
 def getLongName(text):
 	if type(text) in [type(['a','b',]),type(('a','b',))]:
@@ -288,7 +279,17 @@ def getLongName(text):
 
 	assert False
 
+regions 	= ['Surface','200m','100m','500m','1000m','Transect','All','',]
 
+MaredatTypes 	= ['chl','diatoms','bac','mesozoo','picophyto','microzoo']
+
+Ocean_names	= ['SouthPacificOcean',  'ArcticOcean',  'AntarcticOcean','NorthAtlanticOcean','SouthAtlanticOcean', 'NorthPacificOcean','IndianOcean',]
+
+MLDTypes 	= ['mld','mld_DT02','mld_DR003','mld_DReqDTm02', ]
+
+WOATypes 	= [a+b for a,b in product(['silicate','nitrate','phosphate','salinity','temperature',],regions)]
+
+GEOTRACESTypes 	= ['iron',]
 	
 def getmt(): # Match Type
 
@@ -309,6 +310,12 @@ def getmt(): # Match Type
 		mt[ModelName or Data source][varaible name][new units] = 'mg m^-3' or whatever. (preferable from fancyUnits, below)
 	"""
 	
+	yamlFile = folder('yaml')+'matchMetadata.yaml'
+	if exists(yamlFile):
+		print 'getmt:\tLoading mt file from ',yamlFile
+		mt = YamlToDict(folder('yaml')+'matchMetadata.yaml',)
+		return mt
+	print 'getmt:\tCreating mt file:',yamlFile			
 	#####
 	# Models:
 	mt = AutoVivification() # match type
@@ -429,14 +436,13 @@ def getmt(): # Match Type
 	mt['IFREMER']['lat'] 		= 'lat'
 	mt['IFREMER']['lon'] 		= 'lon'
 	mt['IFREMER']['cal'] 		= 'standard'	
+
 		
 	#mt['PP']['PP'] 		= ['PP',]
-	AutoVivToYaml(mt,folder('yaml')+'matchMetadata.yaml')
-	
-	mt = 0
-	print mt
-	mt = YamlToDict(folder('yaml')+'matchMetadata.yaml',)
+	AutoVivToYaml(mt,)
 	return mt	
+		
+	
 	
 def fancyUnits(units,debug=False):#'mg C/m^2',
   	#if units in ['mg C/m^3','mg C/m^2',]:		return 'mg C m'+r'$^{-3}$'
