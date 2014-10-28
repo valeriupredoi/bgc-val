@@ -69,15 +69,15 @@ class matchDataAndModel:
 	self.compType= 'MaredatMatched-'+self.jobID+'-'+self.year
 		
 	if workingDir =='':
-		self.workingDir = ukp.folder('/data/euryale7/scratch/ledm/ukesm_postProcessed/ukesm/outNetCDF/'+'/'.join([self.compType,self.dataType]) )
+		self.workingDir = ukp.folder('/data/euryale7/scratch/ledm/ukesm_postProcessed/ukesm/outNetCDF/'+'/'.join([self.compType,self.dataType+self.region]) )
 	else: 	self.workingDir = workingDir	
 
-	self.matchedShelve 	= ukp.folder(self.workingDir)+self.jobID+'_'+self.year+'_'+self.region+'_'+self.dataType+'.shelve'
+	self.matchedShelve 	= ukp.folder(self.workingDir)+self.jobID+'_'+self.year+'_'+'_'+self.dataType+self.region+'.shelve'
 	self.matchesShelve 	= ukp.folder(['shelves','MaredatModelMatch',])+'WOAtoORCA1.shelve'
 
 	self.workingDirTmp = 	ukp.folder(self.workingDir+'tmp')
-	self.DataFilePruned=	self.workingDirTmp+'Data_' +self.dataType+self.jobID+'-'+self.year+'_pruned.nc'
-	self.ModelFilePruned=	self.workingDirTmp+'Model_'+self.dataType+self.jobID+'-'+self.year+'_pruned.nc'	
+	self.DataFilePruned=	self.workingDirTmp+'Data_' +self.dataType+self.region+self.jobID+'-'+self.year+'_pruned.nc'
+	self.ModelFilePruned=	self.workingDirTmp+'Model_'+self.dataType+self.region+self.jobID+'-'+self.year+'_pruned.nc'	
 	
 	self.DataFile1D  	= self.workingDirTmp + basename(self.DataFilePruned).replace('pruned.nc','1D.nc') 
 	self.maskedData1D	= self.workingDir    + basename(self.DataFile1D)
@@ -136,28 +136,15 @@ class matchDataAndModel:
 		return
 		
 	nc = ncdfView(self.DataFilePruned,Quiet=True)
-	#if len(nc.dimensions)==1:
+
 		
-	#	print "matchDataAndModel:\tconvertDataTo1D:\tFile is already been 1D, removing masked elements."
-	#	nc.close()
-		
-		#c = changeNC(self.DataFilePruned,self.DataFile1D, av)
-	#	assert False
-	#	print 'iron doesn\'t work yet'
-	#	return		
+	#WOADatas = [a+self.region for a in ['salinity','temperature','temp','sal','nitrate','phosphate','silicate',]]	   	 
 	
-	
-	#if self.dataType in self.already1D: 
-	#	# pCO2, iron Files area already 1D
-	#	self.DataFile1D = self.DataFilePruned 
-	#	print "matchDataAndModel:\tconvertDataTo1D:\tpCO2/Iron File has already been converted to 1D"
-	#	return
-		
-	WOADatas = [a+self.region for a in ['salinity','temperature','temp','sal','nitrate','phosphate','silicate',]]	   	 
-	      	
-	if self.dataType in WOADatas:	#World Ocean Atlas format
-		
+	if self.region in ['Surface','200m','100m','500m','1000m','Transect',]:	
+	    if nc(self.DataVars[0]).shape in [(12, 14, 180, 360), (12, 14, 180, 360)]: # WOA format
 		mmask = np.ones(nc(self.DataVars[0]).shape)
+		#####
+		# This could be rewritten to just figure out which level is closest, but a bit much effort for not a lot of gain.
 		
 		if self.region in ['Surface','200m','100m','500m','1000m',]: 
 			if self.region in ['Surface',]:	k = 0
@@ -168,13 +155,11 @@ class matchDataAndModel:
 			mmask[:,k,:,:] = 0
 						
 		if self.region == 'Transect':	mmask[:,:,:,200] = 0   # Pacific Transect.	
-		if self.region in ['All','']:	mmask[:] = 0   		# Entire Dataset
 		mmask +=nc(self.DataVars[0]).mask
 		print mmask.shape
 
 		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking WOA style flat array:',self.DataFilePruned,'-->',self.DataFile1D	
-	  	convertToOneDNC(self.DataFilePruned,self.DataFile1D ,newMask=mmask, variables = self.DataVars, debug=True)	
-	  	
+	  	convertToOneDNC(self.DataFilePruned,self.DataFile1D ,newMask=mmask, variables = self.DataVars, debug=True)		  	
 	else:
 		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking',self.DataFilePruned,'-->',self.DataFile1D
 	  	if len(self.DataVars):	convertToOneDNC(self.DataFilePruned, self.DataFile1D, debug=True, variables = self.DataVars)
@@ -227,44 +212,38 @@ class matchDataAndModel:
 				ytype.append(key)
 		except:pass
 	if len(ytype) == 1:
-		ytype = ytype[0]
-		
+		ytype = ytype[0]		
 	else:
 		print "matchModelToData:\tUnable to determine data dataset type (ie, Maredat, WOA, etc...)", ytype
-	#print ytype, ytype[0]
 
-				
-	if maxIndex+1 <len(is_i):
-	    zdict={}
-	    tdict={}
-	    print 'mt[',ytype,']:', mt[ytype]
-  	    is_t	= ncIS(mt[ytype]['t'])[:]	
-  	    is_z 	= ncIS(mt[ytype]['z'])[:]
-  	    is_la	= ncIS(mt[ytype]['lat'])[:]
-	    is_lo 	= ncIS(mt[ytype]['lon'])[:]	
-	    tdict = {i+1:i for i in xrange(12)}
-	     
-	   # WOADatas = [a+self.region for a in ['temp','sal','temperature','salinity','nitrate','phosphate','silicate',]]	   	 
-	    #if self.dataType in WOADatas:pass
+	#####
+	# Check if there is any data left to match. 
+	# This makes it easier to stop and start the longer analyses.
+	if maxIndex+1 >=len(is_i):
+		ncIS.close()
+		print "matchModelToData:\tNo need to do further matches, Finsished with ",maxIndex+1,"\tfinished:",len(self.matches)
+		return 		
+		
+	#if maxIndex+1 <len(is_i):
+	zdict={}
+	tdict={}
+	print 'mt[',ytype,']:', mt[ytype]
+  	is_t	= ncIS(mt[ytype]['t'])[:]	
+  	is_z 	= ncIS(mt[ytype]['z'])[:]
+  	is_la	= ncIS(mt[ytype]['lat'])[:]
+	is_lo 	= ncIS(mt[ytype]['lon'])[:]	
+	tdict = {i+1:i for i in xrange(12)}
+	ncIS.close()	     
 
-	    if self.dataType in ['pCO2','seawifs','Seawifs','mld_DT02', 'mld_DR003','mld_DReqDTm02','mld',]: 
-  	   	 is_z 	= np.ma.zeros(len(is_t))[:]
-	   	 zdict = {0:0, 0.:0}  
-	#    elif self.dataType in ['iron',]:
-  	 #  	 #fulltime	= num2date(ncIS('time')[:],ncIS.variables['time'].units)
-  	  # 	 #is_t  = array([t.month for t in fulltime])
-  	   #	 is_t	= ncIS('MONTH')[:]
-  	   #	 is_z 	= ncIS('DEPTH')[:]
-  	   #	 is_la	= ncIS('Latitude')[:]
-	   #	 is_lo 	= ncIS('Longitude')[:]
-	   #	 tdict = {i+1:i for i in xrange(12)}
-	   	 
-	    ncIS.close()
+	#####
+	# This list could be removed by adding a check dimensionality of data after it was been pruned.	    
+	if self.dataType in ['pCO2','seawifs','Seawifs','mld_DT02', 'mld_DR003','mld_DReqDTm02','mld',]: 
+  	   	is_z 	= np.ma.zeros(len(is_t))[:]
+	   	zdict = {0:0, 0.:0}  
 
-
-	    if not self._meshLoaded_:self.loadMesh()
+	if not self._meshLoaded_:self.loadMesh()
 	    
-	    for i,ii in enumerate(is_i[maxIndex:]):
+	for i,ii in enumerate(is_i[maxIndex:]):
 		i+=maxIndex
 		wt  = is_t[i]
 		wz  = is_z[i]
@@ -285,6 +264,7 @@ class matchDataAndModel:
 				return
 			if self.debug:
 			 print "matchModelToData:\t",i,'New match:\tlon:',[wlo,self.loncc[la,lo]],'\tlat:',[wla,self.latcc[la,lo]],[finds,len(lldict)]
+
 		#####
 		#Match Depth	
 		try:
@@ -318,7 +298,7 @@ class matchDataAndModel:
 		#increment by 1 to save/ end, as it has finished, but i is used as a starting point.
 		i+=1
 		if i%100==0:	
-			if self.debug: print "matchModelToData:\t", i,ii,self.dataType,':\t',[wt,wz,wla,wlo] ,'--->',[t,z,la,lo]
+			if self.debug: print "matchModelToData:\t", i,ii,self.dataType,self.region,':\t',[wt,wz,wla,wlo] ,'--->',[t,z,la,lo]
 			
 		if i>1 and i%500000==0:
 			if self.debug: print "matchModelToData:\tSaving Shelve: ", self.matchedShelve
@@ -332,19 +312,16 @@ class matchDataAndModel:
 			s['lldict'] = lldict 
 			s.close()				
 			
-	    print "matchDataAndModel:\tSaving Shelve", self.matchedShelve	
-	    s = shOpen(self.matchedShelve)
-	    s['matches']  = self.matches
-	    s['maxIndex'] = i
-	    s['maremask'] = self.maremask
-	    s.close()
+	print "matchDataAndModel:\tSaving Shelve", self.matchedShelve	
+	s = shOpen(self.matchedShelve)
+	s['matches']  = self.matches
+	s['maxIndex'] = i
+	s['maremask'] = self.maremask
+	s.close()
 	    
-	    s = shOpen(self.matchesShelve)		
-	    s['lldict'] = lldict 
-	    s.close()
-				    
-	try:ncIS.close()
-	except:pass
+	s = shOpen(self.matchesShelve)		
+	s['lldict'] = lldict 
+	s.close()
 	print "matchModelToData:\tFinsished with ",maxIndex+1,"\tfinished:",len(self.matches) #, "Mask:",self.maremask.sum()
 	
 	

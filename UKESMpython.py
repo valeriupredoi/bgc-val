@@ -614,7 +614,7 @@ def makeMask(name,newSlice, xt,xz,xy,xx,xd):
 		latcc, loncc =  bathync("lat")[:], bathync("lon")[:]	
 		bathync.close()
 		shelfDepth=500.
-		shelveFn = folder("shelves/MaredatErsemMatch-latlon/"+name)+"diag_"+name+".shelve"
+		shelveFn = folder("shelves/MatchingMasks/")+"diag_maskMask.shelve"
 		try:
 			s = shOpen(shelveFn)		
 			lldict  = s['lldict']
@@ -622,6 +622,7 @@ def makeMask(name,newSlice, xt,xz,xy,xx,xd):
 		except:	lldict={}	
 	
 		print "Bathy mask: before mask:", newSlice, nmask.sum(), 'of', len(nmask)			  	
+		i =0
 		for i,z in enumerate(xz):
 			try:
 				la,lo = lldict[(xy[i],xx[i])]
@@ -638,10 +639,14 @@ def makeMask(name,newSlice, xt,xz,xy,xx,xd):
 			if newSlice == "OffShelf":
 				if  bathy[la,lo] < shelfDepth:  nmask[i]=1
 		
-			if i%100000==0 or i==(len(xz)+1):
+			if i%100000==0:# or i==(len(xz)+1):
 				s = shOpen(shelveFn)		
 				s['lldict'] = lldict 
-				s.close()			
+				s.close()
+		if i > 0:
+			s = shOpen(shelveFn)		
+			s['lldict'] = lldict 
+			s.close()
 		print "Bathy mask:", newSlice, nmask.sum(), 'of', len(nmask)
 		return nmask
 	

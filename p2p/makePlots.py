@@ -46,6 +46,7 @@ class makePlots:
   	self.xfn =matchedModelFile
   	self.yfn =matchedDataFile  	
     	self.name = name
+    	self.region = region
   	self.xtype = jobID
   	self.year = year
   	self.plotallcuts = plotallcuts
@@ -57,10 +58,10 @@ class makePlots:
 	if self.name in GEOTRACESTypes: self.ytype = 'GEOTRACES'		
 	
   	self.shelvedir = workingDir
-  	if self.shelvedir == '':self.shelvedir = ukp.folder(['shelves',self.xtype,self.year,self.ytype, 'Slices',self.name])
+  	if self.shelvedir == '':self.shelvedir = ukp.folder(['shelves',self.xtype,self.year,self.ytype, 'Slices',self.name+self.region])
   	else:			self.shelvedir = ukp.folder(self.shelvedir)		
 
-	if imageDir=='':	self.imageDir = ukp.folder(['images',self.xtype,'P2P_plots',self.year,self.name])
+	if imageDir=='':	self.imageDir = ukp.folder(['images',self.xtype,'P2P_plots',self.year,self.name+self.region])
 	else: 			self.imageDir = ukp.folder(imageDir)
 
 	self.run()
@@ -89,7 +90,7 @@ class makePlots:
 
 
   def plotWithSlices(self):#,newSlice,):  
-	print "plotWithSlices:\txtype:",self.xtype,"\tytype:",self.ytype,"\tname:",self.name
+	print "plotWithSlices:\txtype:",self.xtype,"\tytype:",self.ytype,"\tname:",self.name,self.region
   	
 	#####
 	# Test if any of the plots exist.
@@ -496,36 +497,38 @@ class makePlots:
 	
  		
   def getFileName(self,newSlice,xkey,ykey):
-	file_prefix = ukp.folder(['images',self.xtype,'P2P_plots',self.year,self.name,])
+  	#####
+  	# This needs some work.
+	file_prefix = ukp.folder(['images',self.xtype,'P2P_plots',self.year,self.name+self.region,])
 
 	file_suffix = '_'+self.xtype+'.png'
 
 	if newSlice in self.months.keys():
-		filename = ukp.folder([file_prefix,'months'])+self.name+'_'+ukp.mnStr(self.months[newSlice])+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
+		filename = ukp.folder([file_prefix,'months'])+self.name+self.region+'_'+ukp.mnStr(self.months[newSlice])+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
 	elif newSlice in self.depthRanges:
-		filename = ukp.folder([file_prefix,'DepthRanges'])+self.name+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix	  
+		filename = ukp.folder([file_prefix,'DepthRanges'])+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix	  
 	elif newSlice in self.percentiles:
-		filename = ukp.folder([file_prefix,'Percentiles'])+self.name+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix	  
+		filename = ukp.folder([file_prefix,'Percentiles'])+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix	  
 	elif newSlice in self.latregions:
-		filename = ukp.folder([file_prefix,'LatRegions'])+self.name+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix	 
+		filename = ukp.folder([file_prefix,'LatRegions'])+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix	 
 	elif newSlice in self.QualityCuts:
-		filename = ukp.folder([file_prefix,'QualityCuts'])+self.name+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
+		filename = ukp.folder([file_prefix,'QualityCuts'])+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
 	elif newSlice in self.Seas:
-		filename = ukp.folder([file_prefix,'Seas'])+self.name+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
+		filename = ukp.folder([file_prefix,'Seas'])+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
 	elif newSlice in self.Oceans:
-		filename = ukp.folder([file_prefix,'Oceans'])+self.name+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
+		filename = ukp.folder([file_prefix,'Oceans'])+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
 	elif newSlice in self.OceanMonths:
 		if type(newSlice) in [type(['a','b',]),type(('a','b',))]:
 		  	print 'getFileName:', newSlice,
 		  	newSlice = ''.join(newSlice)
 		  	print '-->',newSlice	  
-		filename = ukp.folder([file_prefix,'OceanMonths'])+self.name+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
+		filename = ukp.folder([file_prefix,'OceanMonths'])+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
 	else:
 	  	print 'getFileName:', newSlice,	''.join(newSlice)  ,xkey,ykey
 	  	try:fn = newSlice+'_'+xkey+'vs'+ykey
 	  	except:
 	  		print "ERROR:\tcan't add ",newSlice,xkey,ykey, 'together as strings. It breaks in getFileName, but the problem is probably in your mt dictionary in pftnames'
-		filename = file_prefix+self.name+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
+		filename = file_prefix+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
 	return filename
 
 

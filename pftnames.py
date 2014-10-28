@@ -287,11 +287,11 @@ Ocean_names	= ['SouthPacificOcean',  'ArcticOcean',  'AntarcticOcean','NorthAtla
 
 MLDTypes 	= ['mld','mld_DT02','mld_DR003','mld_DReqDTm02', ]
 
-WOATypes 	= [a+b for a,b in product(['silicate','nitrate','phosphate','salinity','temperature',],regions)]
+WOATypes 	= ['silicate','nitrate','phosphate','salinity','temperature',]
 
 GEOTRACESTypes 	= ['iron',]
 	
-def getmt(): # Match Type
+def getmt(loadYaml=False): # Match Type
 
 	"""
 	getmt(): Get Match Type. 
@@ -310,12 +310,14 @@ def getmt(): # Match Type
 		mt[ModelName or Data source][varaible name][new units] = 'mg m^-3' or whatever. (preferable from fancyUnits, below)
 	"""
 	
+	
 	yamlFile = folder('yaml')+'matchMetadata.yaml'
-	if exists(yamlFile):
+	if exists(yamlFile) and loadYaml:
 		print 'getmt:\tLoading mt file from ',yamlFile
-		mt = YamlToDict(folder('yaml')+'matchMetadata.yaml',)
+		mt = YamlToDict(yamlFile,)
 		return mt
-	print 'getmt:\tCreating mt file:',yamlFile			
+	print 'getmt:\tCreating mt file:',yamlFile
+				
 	#####
 	# Models:
 	mt = AutoVivification() # match type
@@ -326,6 +328,9 @@ def getmt(): # Match Type
 	mt['ERSEM']['microzoo'] 	= ['Z5c',]			 	
 	mt['ERSEM']['pCO2'] 		= ['pCO2w',]#'fAirSeaC',]
 	mt['ERSEM']['chl'] 		= ['chl',]
+    	mt['ERSEM']['phosphate']  	= ['N1p',]	
+    	mt['ERSEM']['nitrate']  	= ['N3n',]	    	
+    	mt['ERSEM']['silicate']  	= ['N5s',]	
 	mt['ERSEM']['iron'] 		= ['N7f',]
 	mt['ERSEM']['t']		= 'index_t'	
 	mt['ERSEM']['z'] 		= 'deptht'
@@ -333,27 +338,12 @@ def getmt(): # Match Type
 	mt['ERSEM']['lon'] 		= 'nav_lon'
 	mt['ERSEM']['cal'] 		= '365_day'
 
-	for d in regions:#['Surface','200m','100m','500m','1000m','Transect','All',]:
-	    for t in ['temperature','temp',]:
-	    	mt['WOA'][t+d] 		= ['t_an',]#'t_mn',
-	    	mt['NEMO'][t+d] 	= ['votemper',]
-
-	    for t in ['salinity','sal',]:
-	    	mt['WOA' ][t+d] 	= ['s_an',]#'s_mn',
-	    	mt['NEMO'][t+d] 	= ['vosaline',]
-
-	    for t in ['nitrate','nit']:
-	    	mt['WOA'   ][t+d] 	= ['n_an',]#'n_mn',
-	    	mt['MEDUSA'][t+d]  	= ['DIN',]
-	    	mt['ERSEM' ][t+d]  	= ['N3n',]	    	
-	    for t in ['silicate',]:
-	    	mt['WOA'   ][t+d] 	= ['i_an',]#'i_mn',
-	    	mt['MEDUSA'][t+d]  	= ['SIL',]
-	    	mt['ERSEM' ][t+d]  	= ['N5s',]	
-	    for t in ['phosphate',]:
-	    	mt['WOA'   ][t+d] 	= ['p_an',]#'p_mn',
-	    	mt['ERSEM' ][t+d]  	= ['N1p',]	
-	
+	    		
+	mt['WOA']['temperature'] 	= ['t_an',]#'t_mn',
+  	mt['WOA']['salinity'] 		= ['s_an',]#'s_mn',
+  	mt['WOA']['nitrate'] 		= ['n_an',]#'s_mn',  	
+	mt['WOA']['silicate'] 		= ['i_an',]#'i_mn',
+	mt['WOA']['phosphate'] 		= ['p_an',]#'p_mn',	    	  		
 	mt['WOA']['t'] 			= 'index_t'
 	mt['WOA']['z'] 			= 'depth'
 	mt['WOA']['lat'] 		= 'lat'
@@ -361,65 +351,69 @@ def getmt(): # Match Type
 	mt['WOA']['cal'] 		= 'standard'    		    	
     	
 	    		    	
-				
-	mt['NEMO']['mld'] 		=  ['somxl010',]
-	mt['NEMO']['mld_DT02'] 		=  ['somxl010',]
-	mt['NEMO']['mld_DR003'] 	=  ['somxl010',]
-	mt['NEMO']['mld_DReqDTm02'] 	=  ['somxl010',]		
+	mt['NEMO']['temperature'] 	= ['votemper',]	
+ 	mt['NEMO']['salinity'] 		= ['vosaline',]				
+	mt['NEMO']['mld'] 		= ['somxl010',]
+	mt['NEMO']['mld_DT02'] 		= ['somxl010',]
+	mt['NEMO']['mld_DR003'] 	= ['somxl010',]
+	mt['NEMO']['mld_DReqDTm02'] 	= ['somxl010',]		
 	mt['NEMO']['t'] 		= 'index_t'	
 	mt['NEMO']['z'] 		= 'deptht'
 	mt['NEMO']['lat'] 		= 'nav_lat'
 	mt['NEMO']['lon'] 		= 'nav_lon'
 	mt['NEMO']['cal']		= '365_day'
 	
-	mt['MEDUSA']['iron']['mul1000']		=  ['FER',]
-	mt['MEDUSA']['iron']['name']		=  'FER'
-	mt['MEDUSA']['iron']['units']		=  'umol F/m^3'		
+
 	mt['MEDUSA']['chl'] 			=  ['CHL',]	
 	mt['MEDUSA']['diatoms']['N2Biomass'] 	=  ['PHD',]		
 	mt['MEDUSA']['diatoms']['name'] 	=  'PHD'
 	mt['MEDUSA']['diatoms']['units'] 	=  'mg C/m^3'	
+	mt['MEDUSA']['iron']['mul1000']		=  ['FER',]
+	mt['MEDUSA']['iron']['name']		=  'FER'
+	mt['MEDUSA']['iron']['units']		=  'umol F/m^3'		
 	mt['MEDUSA']['mesozoo']['N2Biomass'] 	=  ['ZME',]			
 	mt['MEDUSA']['mesozoo']['name'] 	=  'ZME'
 	mt['MEDUSA']['mesozoo']['units'] 	=  'mg C/m^3'		
 	mt['MEDUSA']['microzoo']['N2Biomass'] 	=  ['ZMI',]				
 	mt['MEDUSA']['microzoo']['name'] 	=  'ZMI'
-	mt['MEDUSA']['microzoo']['units'] 	=  'mg C/m^3'		
+	mt['MEDUSA']['microzoo']['units'] 	=  'mg C/m^3'
+    	mt['MEDUSA']['nitrate'] 	 	= ['DIN',]
+    	mt['MEDUSA']['silicate']	  	= ['SIL',]			
 	mt['MEDUSA']['t'] 			= 'index_t'	
 	mt['MEDUSA']['z'] 			= 'deptht'
 	mt['MEDUSA']['lat'] 			= 'nav_lat'
 	mt['MEDUSA']['lon'] 			= 'nav_lon'
 	mt['MEDUSA']['cal'] 			= '365_day'
-	
-	mt['Medusa'] = mt['MEDUSA']
+	mt['Medusa']				= mt['MEDUSA']
 	
 	#####
 	# Data:
-	mt['Maredat']['bac'] 		= ['BIOMASS',]
-	mt['Maredat']['mesozoo'] 	= ['BIOMASS',]
-	mt['Maredat']['diatoms'] 	= ['BIOMASS',]
-	mt['Maredat']['picophyto'] 	= ['BIOMASS',]
-	mt['Maredat']['microzoo'] 	= ['BIOMASS',]
-	mt['Maredat']['PP'] 		= ['PP',]
-	mt['Maredat']['chl']['name']	= 'Chlorophylla'
-	mt['Maredat']['chl']['div1000']	= ['Chlorophylla',]
-	mt['Maredat']['chl']['units']	= ['ug/L',]
-	mt['Maredat']['t'] 		= 'index_t'
-	mt['Maredat']['z'] 		= 'DEPTH'
-	mt['Maredat']['lat'] 		= 'LATITUDE'
-	mt['Maredat']['lon'] 		= 'LONGITUDE'
-	mt['Maredat']['cal'] 		= 'standard'	
-	mt['MAREDAT'] 			= mt['Maredat']
+	mt['MAREDAT']['bac'] 		= ['BIOMASS',]
+	mt['MAREDAT']['mesozoo'] 	= ['BIOMASS',]
+	mt['MAREDAT']['diatoms'] 	= ['BIOMASS',]
+	mt['MAREDAT']['picophyto'] 	= ['BIOMASS',]
+	mt['MAREDAT']['microzoo'] 	= ['BIOMASS',]
+	mt['MAREDAT']['PP'] 		= ['PP',]
+	mt['MAREDAT']['chl']['name']	= 'Chlorophylla'
+	mt['MAREDAT']['chl']['div1000']	= ['Chlorophylla',]
+	mt['MAREDAT']['chl']['units']	= ['ug/L',]
+	mt['MAREDAT']['t'] 		= 'index_t'
+	mt['MAREDAT']['z'] 		= 'DEPTH'
+	mt['MAREDAT']['lat'] 		= 'LATITUDE'
+	mt['MAREDAT']['lon'] 		= 'LONGITUDE'
+	mt['MAREDAT']['cal'] 		= 'standard'	
+	mt['Maredat'] 			= mt['MAREDAT']
 			
 		 
-	mt['Takahashi']['pCO2'] 	= ['PCO2_SW',]#'DELTA_PCO2',]	'TFLUXSW06',
-	mt['Takahashi']['t'] 		= 'index_t'
-	mt['Takahashi']['z'] 		= 'index_z'
-	mt['Takahashi']['lat'] 		= 'LAT'
-	mt['Takahashi']['lon'] 		= 'LON'
-	mt['Takahashi']['cal'] 		= 'standard'	
-	
-	#mt['intPP']['intPP']		= ['PPint',]								
+	#mt['Takahashi']['pCO2'] 	= ['PCO2_SW',]#'DELTA_PCO2',]	'TFLUXSW06',
+	#mt['Takahashi']['t'] 		= 'index_t'
+	#mt['Takahashi']['z'] 		= 'index_z'
+	#mt['Takahashi']['lat'] 		= 'LAT'
+	#mt['Takahashi']['lon'] 		= 'LON'
+	#mt['Takahashi']['cal'] 		= 'standard'	
+	#mt['Takahashi']['cal'] 		= 'standard'		
+	#mt['intPP']['intPP']		= ['PPint',]	
+								
 	mt['GEOTRACES']['iron']		= ['Fe_D_CONC_BOTTLE',]#'Fe_D_CONC_BOTTLE_FIA','Fe_S_CONC_BOTTLE',]
 	mt['GEOTRACES']['t']		= 'MONTH'
 	mt['GEOTRACES']['z'] 		= 'DEPTH'
@@ -439,7 +433,7 @@ def getmt(): # Match Type
 
 		
 	#mt['PP']['PP'] 		= ['PP',]
-	AutoVivToYaml(mt,)
+	AutoVivToYaml(mt,yamlFile)
 	return mt	
 		
 	
