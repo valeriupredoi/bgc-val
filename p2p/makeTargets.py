@@ -3,7 +3,7 @@ from matplotlib import pyplot
 from matplotlib import rc
 from matplotlib.patches import Arrow
 #from matplotlib.markers import filled_markers 
-from StatsDiagram import TaylorDiagram, TargetDiagram
+from StatsDiagram import TaylorDiagram, TargetDiagram,TaylorDiagramMulti
 from glob import glob
 
 import numpy as np
@@ -27,7 +27,7 @@ from pftnames import AutoVivification,getLongName
 
 
 class makeTargets:
-  def __init__(self,matchedShelves, filename,imageDir='', diagramTypes=['Target',],legendKeys = ['name', 'newSlice','xkey','ykey',],debug=True): #name='', 
+  def __init__(self,matchedShelves, filename,imageDir='', diagramTypes=['Target','Taylor'],legendKeys = ['name', 'newSlice','xkey','ykey',],debug=True): #name='', 
 
   
   	self.matchedShelves =matchedShelves
@@ -37,7 +37,9 @@ class makeTargets:
 	self.diagramTypes = diagramTypes 	#['Taylor','Target']
 	self.debug = debug
 	self.imageDir = imageDir
-	self.legendKeys = legendKeys #['xtype','ytype', 'name', 'newSlice','xkey','ykey',]
+
+	self.legendKeys = legendKeys 
+	self.determineLegend()
 
 
 
@@ -50,17 +52,49 @@ class makeTargets:
 		self.loadShelves()
 		self.makeDiagram()
 
-
-  def loadShelves(self,):
-  	self.data = AutoVivification()
-
+  def determineLegend(self,):
+  	#####
+  	# Determine legend:
+  	# Looks for ways to differenciate the shelves by looking through their metadata. 
+  	# It generally works, but it might be better just to declare what you want in the legend when you run it.
   	self.xtypes = {}
   	self.ytypes = {}
   	self.names = {}
   	self.years = {}
   	self.xkeys = {}
-  	self.ykeys = {}  	  	
+  	self.ykeys = {}  
   	self.newSlices={}
+  	  	  	
+  	for sh in self.matchedShelves:  	
+  		print "determineLegend:\tINFO:\tLOADING:",sh
+  		if not exists(sh): 
+  			print "determineLegend:\tWARNING:\tDoes not exist:",sh 
+  			continue    
+  		s = shOpen(sh,flag='r')
+	  	self.xtypes[s['xtype']]	= True
+	  	self.ytypes[s['ytype']]	= True
+	  	self.names[s['name']]	= True
+	  	self.years[s['year']]	= True	
+	  	self.xkeys[s['xkey']]	= True	
+	  	self.ykeys[s['ykey']]	= True		  		  	
+		self.newSlices[s['newSlice']] = True  		
+ 		s.close() 
+
+ 	if len(self.legendKeys):return
+ 	
+	self.legendKeys = []
+	if len(self.names.keys()) >1:		self.legendKeys.append('name')
+	if len(self.newSlices.keys()) >1:	self.legendKeys.append('newSlice')
+	if len(self.xtypes.keys()) >1:		self.legendKeys.append('xtype')		
+	if len(self.ytypes.keys()) >1:		self.legendKeys.append('ytype')		
+	if len(self.xkeys.keys()) >1:		self.legendKeys.append('xkey')		
+	if len(self.ykeys.keys()) >1:		self.legendKeys.append('ykey')	
+	if len(self.years.keys()) >1:		self.legendKeys.append('year')				  	
+
+
+  def loadShelves(self,):
+  	self.data = AutoVivification()
+  	
   	for sh in self.matchedShelves:
   		print "loadShelves:\tINFO:\tLOADING:",sh
   		if not exists(sh): 
@@ -73,14 +107,6 @@ class makeTargets:
 		p  = s['Taylor.p']	 		
 		N  = s['N']
 		leg = ' - '.join([getLongName(s[i]) for i in self.legendKeys])
-
-	  	self.xtypes[s['xtype']]	= True
-	  	self.ytypes[s['ytype']]	= True
-	  	self.names[s['name']]	= True
-	  	self.years[s['year']]	= True	
-	  	self.xkeys[s['xkey']]	= True	
-	  	self.ykeys[s['ykey']]	= True		  		  	
-		self.newSlices[s['newSlice']] = True
 
 
 								
@@ -142,33 +168,74 @@ class makeTargets:
 		fig = pyplot.figure()		
 		ax = pyplot.subplot(111, aspect='equal')
 		c = pyplot.get_cmap('jet')
-		
-		proxyArt,labs = [],[]
-		for leg in sorted(self.data.keys()):
-		    ma = next(markercycler)
-		    
-		    try:
-		    	TD.add(self.data[leg]['G'], self.data[leg]['E0'],self.data[leg]['R'], marker = ma, s=150, cmap=c, label=leg,)
-		    	#TD.add(g[i], E0[i], R[i],  marker = ma, s=150, cmap=c, label=i,)
-		    	#TD.labels(i)
-		    except:
-		    	print 'makeDiagram\t:First target diagram:\t', leg
-		    	TD=TargetDiagram(self.data[leg]['G'], self.data[leg]['E0'],self.data[leg]['R'],marker = ma,s=150,cmap=c, label=leg,)
-		    labs.append(leg)
-		    proxyArt.append(pyplot.Line2D([0],[0], linestyle="none", c=c(self.data[leg]['R']), marker = ma,markersize=9,))
 
+		proxyArt,labs = [],[]
 		
-		if len(labs)<8:
-			legend = pyplot.legend(proxyArt, labs,loc=4, ncol=1, borderaxespad=0., numpoints = 1, scatterpoints=1, prop={'size':8},) 
-		else:	legend = pyplot.legend(proxyArt, labs,loc=8, ncol=2, borderaxespad=0., numpoints = 1, scatterpoints=1, prop={'size':8},) 
+		if t == 'Target':
+			for leg in sorted(self.data.keys()):
+			    ma = next(markercycler)
+			    
+			    try:
+			    	Target.add(self.data[leg]['G'], self.data[leg]['E0'],self.data[leg]['R'], marker = ma, s=150, cmap=c, label=leg,)
+			    	#TD.add(g[i], E0[i], R[i],  marker = ma, s=150, cmap=c, label=i,)
+			    	#TD.labels(i)
+			    except:
+			    	print 'makeDiagram:\tFirst target diagram:\t', title
+			    	Target=TargetDiagram(self.data[leg]['G'], self.data[leg]['E0'],self.data[leg]['R'],marker = ma,s=150,cmap=c, label=leg,)
+			    labs.append(leg)
+
+			    print 'Target:\t',leg,'\tGamma:',self.data[leg]['G'], '\tE0:',self.data[leg]['E0'],'\tR:',self.data[leg]['R']			    
+			    proxyArt.append(pyplot.Line2D([0],[0], linestyle="none", c=c(self.data[leg]['R']), marker = ma,markersize=9,))
+				
+
+			if len(labs)<8:
+				legend = pyplot.legend(proxyArt, labs,loc=4, ncol=1, borderaxespad=0., numpoints = 1, scatterpoints=1, prop={'size':8},) 
+			else:	legend = pyplot.legend(proxyArt, labs,loc=8, ncol=2, borderaxespad=0., numpoints = 1, scatterpoints=1, prop={'size':8},) 
+	
 		
+		
+		if t == 'Taylor':		
+			#fig.set_size_inches(10,4)		# only if antiCorrelation = True
+			gams = []
+			e0s  = []
+			Rs   = []
+			marks = []
+			for leg in sorted(self.data.keys()):
+				gams.append(self.data[leg]['G'])
+				e0s.append(self.data[leg]['E0'])
+				Rs.append(self.data[leg]['R'])
+				ma = next(markercycler)				
+				marks.append(ma)
+			    	labs.append(leg)
+
+			    				
+			
+			Taylor=TaylorDiagramMulti(gams, e0s,Rs,antiCorrelation=False,markers = marks,s=150,cmap=c, label=leg,)
+
+			cmax=max(1,int(np.abs(np.max(e0s))+1))
+			
+			for leg in sorted(self.data.keys()):
+			    	print 'Taylor:\t',leg,'\tGamma:',self.data[leg]['G'], '\tE0:',self.data[leg]['E0'],'\tR:',self.data[leg]['R']
+			    	proxyArt.append(pyplot.Line2D([0],[0], linestyle="none", c=c((1./(2*cmax))*self.data[leg]['E0'] +0.5), marker = ma,markersize=9,))	
+			    				
+
+
+			    #try:
+			    #	Taylor.add(self.data[leg]['G'], self.data[leg]['E0'],self.data[leg]['R'], marker = ma, s=150, cmap=c, label=leg,)
+
+			    #except:
+			    #	print 'makeDiagram\t:First Taylor diagram:\t', title
+			    #	Taylor=TaylorDiagramMulti(self.data[leg]['G'], self.data[leg]['E0'],self.data[leg]['R'],R=5,antiCorrelation=False,marker = ma,s=150,cmap=c, label=leg,)
+	    
+				
+			legend = pyplot.legend(proxyArt, labs,loc=1, ncol=1, borderaxespad=0., numpoints = 1, scatterpoints=1, prop={'size':8},) 		
 		
 		legend.draw_frame(False) 
 		legend.get_frame().set_alpha(0.) 
 		pyplot.title(title)
-		
-		if self.debug:print 'makeDiagram:\tsaving file:', self.filename 
-		pyplot.savefig(self.filename ,dpi=200,)
+		filename = self.filename.replace('.png','_'+t+'.png')
+		if self.debug:print 'makeDiagram:\tsaving file:', filename 
+		pyplot.savefig(filename ,dpi=200,)
 		pyplot.close()
 		try:
 			del(TD)

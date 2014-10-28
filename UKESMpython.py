@@ -10,6 +10,7 @@ from scipy.stats.mstats import scoreatpercentile
 from scipy.stats import linregress
 from calendar import month_name
 from shelve import open as shOpen
+import yaml 
 
 #local imports
 from ncdfView import ncdfView
@@ -81,6 +82,32 @@ class AutoVivification(dict):
             value = self[item] = type(self)()
             return value
 
+def AutoVivToYaml(av,yamlFile):
+	#####
+	# Saving Nested dictionary or AutoVivification as a yaml readable file.
+	space = 4*' '
+	s = ''	
+	def recursivePrint(d,depth,s):
+	    for key in sorted(d.keys()):
+	        if depth==0:s+='\n'	# empty line separator.
+	        if isinstance(d[key], dict):
+	            s += depth * space + str(key) + ': \n'
+	            s = recursivePrint(d[key], depth+1, s)
+	        else:
+	            s += depth * space + str(key) + ': ' + str(d[key]) + '\n'	      
+	    return s
+
+	s = recursivePrint(av,0,s)
+	
+	#print 'AutoVivToYaml:\tFinal string:\n',s
+	
+	print 'AutoVivToYaml:\tSaving:',yamlFile
+	fn = open(yamlFile,'w')
+	fn.write(s)
+	fn.close()
+
+
+	
 class NestedDict(dict):
     """                                                                       
     Nested dictionary of arbitrary depth with autovivification.               

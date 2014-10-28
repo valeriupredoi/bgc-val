@@ -38,9 +38,14 @@ CONTENTS:
 				
 REQUIREMENTS:
 	Python libraries:
-	matplotlib, numpy, scipy,
-	netCDF4
 	
+	simple to install:
+		pip install matplotlib numpy scipy ipython
+	
+	Less simple to install:
+		netCDF4
+	
+	Code from 
 	communitystructure 
 		from: https://gitlab.ecosystem-modelling.pml.ac.uk/ledm/communitystructure
 
@@ -48,7 +53,11 @@ REQUIREMENTS:
 		changeNC, mergeNC, pruneNC, convertToOneDNC
 		from: https://gitlab.ecosystem-modelling.pml.ac.uk/ledm/netcdf_manip
 		
-	some code uses ncdfView, which a PML wrapper around netCDF4.Dataset.
+	some code uses ncdfView which a PML wrapper around netCDF4.Dataset.
+	some code uses StatsDiagram, a Taylor/Target diagram routine in PMLpython.
+
+	ncdfview and StatsDiagram (written by Momme Butenschon) are availalbe to all registered users on the gitlab server.
+	
 	
 	
 TO DO:

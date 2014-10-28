@@ -5,7 +5,7 @@ from os.path import exists
 from calendar import month_name
 
 #Specific local code:
-from UKESMpython import folder,getFileList, AutoVivification, NestedDict
+from UKESMpython import folder,getFileList, AutoVivification, NestedDict,AutoVivToYaml
 from p2p import matchDataAndModel,makePlots,makeTargets
 
 from pftnames import MaredatTypes,WOATypes,Ocean_names
@@ -50,7 +50,7 @@ def testsuite_p2p():
 	NEMOFolder	= "/data/euryale7/scratch/ledm/UKESM/ERSEM/"+ ERSEMjobID+'/'+years['NEMO'] +'/'+ERSEMjobID+'_'+years['NEMO']
 	
 	#####
-	# Output location of image files
+	# Location of image Output files
 	imageFolder 	= folder('images')
 	
 	#####
@@ -59,7 +59,7 @@ def testsuite_p2p():
 	doMAREDAT 	= True
 	doSalTemp	= True
 	doMLD		= True
-	doNPS		= True
+	doNPSF		= True
 	
 	#####
 	# AutoVivification is a form of nested dictionary.
@@ -113,7 +113,7 @@ def testsuite_p2p():
 		av['mesozoo']['ERSEM']['Vars'] 		= ['Z4c',]
 		av['mesozoo']['region'] 		= ''
 
-	if doNPS:
+	if doNPSF:
 		for woa in ['nitrate','phosphate','silicate',]:
 			if woa == 'silicate':	
 				l='i' 
@@ -174,7 +174,10 @@ def testsuite_p2p():
 		av['mld_DReqDTm02']['Data']['Vars'] 	= ['mld','mask',]
 		av['mld_DReqDTm02']['NEMO']['Vars'] 	= ['somxl010',]	
 		av['mld_DReqDTm02']['region'] 		= ''
-		
+	
+	
+	AutoVivToYaml(av,'P2P_Settings.yaml')
+	return 
 	#####
 	# Start analysis here:
 	shelvesAV = AutoVivification()

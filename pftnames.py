@@ -274,6 +274,10 @@ def getLongName(text):
 
   	if text ==  'medusa_1998': 	return 'MEDUSA (1998)'  
   	if text ==  'MEDUSA': 		return 'MEDUSA'    
+  	if text == 'ZMI':		return 'Microzooplankton'
+  	if text == 'ZME':		return 'Mesozooplankton'
+  	if text == 'PHD':		return 'Diatoms'
+  	if text in  ['CHL',]: 		return 'Chlorophyll'  
 
   	if text ==  'InitialConditions': return 'Initial Conditions'    
   	  		 	  	  	  	
