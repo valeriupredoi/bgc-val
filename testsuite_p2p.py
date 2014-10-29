@@ -26,6 +26,11 @@ def testsuite_p2p():
     	# Which ERSEM job to look at. 
 	ERSEMjobID = 'xhonc'
 
+
+	#####
+	# Plot p2p for all regions/oceans, or just everything and "standard" cuts.
+	plotallcuts = False
+	
 	#####
 	# Which Year to investigate for each model.
 	# In an ideal world, they would all be the same, except that my current run is stuck in the queue.
@@ -247,7 +252,7 @@ def testsuite_p2p():
 							model, 
 							region = region,
 							year = years[model], 
-							plotallcuts=True, 
+							plotallcuts=plotallcuts, 
 							workingDir = folder(workingDir+name+region),
 							compareCoords=True)
 			#Get an autoviv of the shelves.

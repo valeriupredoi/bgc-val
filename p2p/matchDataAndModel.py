@@ -113,16 +113,16 @@ class matchDataAndModel:
   	""" 
   	
 	if ukp.shouldIMakeFile(self.ModelFile,self.ModelFilePruned,debug=False):
-		print "matchDataAndModel:\tpruneModelAndData:\tMaking:", self.ModelFilePruned	
+		print "matchDataAndModel:\tpruneModelAndData:\tMaking ModelFilePruned:", self.ModelFilePruned	
 		p = pruneNC(self.ModelFile,self.ModelFilePruned,self.ModelVars, debug = self.debug) 	
 	else:	
-		print "matchDataAndModel:\tpruneModelAndData:\talready exists:",self.ModelFilePruned
+		print "matchDataAndModel:\tpruneModelAndData:\tModelFilePruned already exists:",self.ModelFilePruned
   	 
 	if ukp.shouldIMakeFile(self.DataFile,self.DataFilePruned,debug=False):
-		print "matchDataAndModel:\tpruneModelAndData:\tMaking:", self.DataFilePruned
+		print "matchDataAndModel:\tpruneModelAndData:\tMaking DataFilePruned:", self.DataFilePruned
 		p = pruneNC(self.DataFile,self.DataFilePruned,self.DataVars, debug = self.debug) 	
 	else:	
-		print "matchDataAndModel:\tpruneModelAndData:\talready exists:",self.DataFilePruned
+		print "matchDataAndModel:\tpruneModelAndData:\tDataFilePruned already exists:",self.DataFilePruned
 	 
 
 
@@ -132,16 +132,17 @@ class matchDataAndModel:
   	"""
 		
 	if not ukp.shouldIMakeFile(self.DataFilePruned,self.DataFile1D,debug=False):
-		print "matchDataAndModel:\tconvertDataTo1D:\talready exists:",self.DataFile1D
+		print "matchDataAndModel:\tconvertDataTo1D:\talready exists: (DataFile1D):\t",self.DataFile1D
 		return
-		
+
+	print "matchDataAndModel:\tconvertDataTo1D:\topening DataFilePruned:\t",self.DataFilePruned		
 	nc = ncdfView(self.DataFilePruned,Quiet=True)
 
 		
 	#WOADatas = [a+self.region for a in ['salinity','temperature','temp','sal','nitrate','phosphate','silicate',]]	   	 
 	
 	if self.region in ['Surface','200m','100m','500m','1000m','Transect',]:	
-	    if nc(self.DataVars[0]).shape in [(12, 14, 180, 360), (12, 14, 180, 360)]: # WOA format
+	    if nc(self.DataVars[0]).shape in [(12, 14, 180, 360), (12, 24, 180, 360)]: # WOA format
 		mmask = np.ones(nc(self.DataVars[0]).shape)
 		#####
 		# This could be rewritten to just figure out which level is closest, but a bit much effort for not a lot of gain.
@@ -160,6 +161,10 @@ class matchDataAndModel:
 
 		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking WOA style flat array:',self.DataFilePruned,'-->',self.DataFile1D	
 	  	convertToOneDNC(self.DataFilePruned,self.DataFile1D ,newMask=mmask, variables = self.DataVars, debug=True)		  	
+	    else:
+		print 'matchDataAndModel:\tconvertDataTo1D:\tYou need to add more file spcific regions here.', nc(self.DataVars[0]).shape
+		assert False
+			
 	else:
 		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking',self.DataFilePruned,'-->',self.DataFile1D
 	  	if len(self.DataVars):	convertToOneDNC(self.DataFilePruned, self.DataFile1D, debug=True, variables = self.DataVars)

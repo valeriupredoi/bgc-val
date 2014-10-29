@@ -7,6 +7,11 @@ README:
 	There are two categories of analysis done here:
 		1. Emergent property analysis
 		2. Model vs data point to point comparison 
+
+	The key files that do all the leg work are:
+		    testsuite_emergence.py
+		    testsuite_p2p.py
+	They both run a selection of analsyes.
 	
 	
 CONTENTS:
@@ -46,12 +51,15 @@ REQUIREMENTS:
 		pip install numpy scipy matplotlib netCDF4 pyyaml pyproj
 		
 		Harder to install:
-			mpl_toolkits (needed for basemap)
-		
-			also requires GEOs
-		sudo apt-get install python-mpltoolkits.basemap
-		sudo yum install python-mpltoolkits.basemap		
-		or from source:
+			mpl_toolkits (needed for basemap, but has a new set of requirements)
+			sudo apt-get install python-mpltoolkits.basemap
+			sudo yum install python-mpltoolkits.basemap		
+			or from source.
+							
+			It may be possible to switch casemap out for cartopy. I'm not sure.
+					
+
+
 			
 			
 		
@@ -64,17 +72,23 @@ REQUIREMENTS:
 	netcdf_manip:
 		changeNC, mergeNC, pruneNC, convertToOneDNC
 		from: https://gitlab.ecosystem-modelling.pml.ac.uk/ledm/netcdf_manip
-		
-	some code uses ncdfView which a PML wrapper around netCDF4.Dataset.
-	some code uses StatsDiagram, a Taylor/Target diagram routine in PMLpython.
+	
+	PMLpython:
+		from https://gitlab.ecosystem-modelling.pml.ac.uk/momm/pml-python-tools
+		some code uses ncdfView which a PML wrapper around netCDF4.Dataset.
+		some code uses StatsDiagram, a Taylor/Target diagram routine in PMLpython.
+		some code uses C2chl.py
 
-	ncdfview and StatsDiagram (written by Momme Butenschon) are availalbe to all registered users on the gitlab server.
+		These resources are availalbe to all registered users on the gitlab server.
 	
 	
 	
 TO DO:
-	Replace getlongname with something better.
+	Replace pftnames.getlongname with something better.
 
+	add some better "alwaysInclude" methods to netcdf_manip
+	
+	more documentation.
 	
 	possibly move naming scheme into analysis template.
 
