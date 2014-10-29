@@ -1,9 +1,12 @@
 
 
 README:
-	Some analysis tools for UKESM - MEDUSA
+	Some analysis tools for UKESM - MEDUSA/ERSEM/NEMO 
 	The bulk of the tools were written for the ERSEM model, then subsequently patched for performing analsysis of MEDUSA (or other iMarNet Models).
 	
+	There are two categories of analysis done here:
+		1. Emergent property analysis
+		2. Model vs data point to point comparison 
 	
 	
 CONTENTS:
@@ -40,9 +43,16 @@ REQUIREMENTS:
 	Python libraries:
 	
 	simple to install:
-		pip install matplotlib numpy scipy ipython netCDF4 pyyaml
+		pip install numpy scipy matplotlib netCDF4 pyyaml pyproj
 		
-		(you may need to install python-pip or sudo this)
+		Harder to install:
+			mpl_toolkits (needed for basemap)
+		
+			also requires GEOs
+		sudo apt-get install python-mpltoolkits.basemap
+		sudo yum install python-mpltoolkits.basemap		
+		or from source:
+			
 			
 		
 		
@@ -63,15 +73,17 @@ REQUIREMENTS:
 	
 	
 TO DO:
-	Analysis code Template
-	Autoviv dict
-	need to think of some clever ways to infer model name, date,jobID, etc.
+	Replace getlongname with something better.
+
 	
 	possibly move naming scheme into analysis template.
-	 
-	Move P2P code into this repository.
-	
+
 	
 	Check requirements for local/PML repositories
 		move those into this repository?
+		remove ncdfView
+		remove StatsDiagram
+		relocate C2chl
+		
+		
 		

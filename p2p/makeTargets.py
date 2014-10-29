@@ -11,8 +11,8 @@ import numpy as np
 #from numpy import isnan as npNaN, isinf as npInf
 #from calendar import month_name
 
-from itertoolsmodule import product
-from itertools import cycle
+#from itertoolsmodule import product
+from itertools import cycle, product
 from operator import itemgetter
 from os.path import basename,exists
 from sys import argv

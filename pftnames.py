@@ -1,6 +1,6 @@
 from calendar import month_name
 from UKESMpython import AutoVivification,AutoVivToYaml,folder,YamlToDict
-from itertoolsmodule import product
+from itertools import product
 from os.path import exists
 
 """	This is a dictionary of all the terms that you'd need to pick out.
@@ -39,7 +39,20 @@ def getLongName(text):
 		for t in text:out+=getLongName(t)+' '
 		return out
 
-			 		
+
+  	if text == 'Transect':		return "Pacific Transect"
+  	if text == 'Surface':		return "Surface"
+  	if text == '100m':		return "100m deep"  	
+  	if text == '200m':		return "200m deep"  	  	  	
+  	if text == '500m':		return "500m deep"  	
+  	if text == '1000m':		return "1000m deep"  	
+
+  	if text == 'temperature':	return "Temperature" 
+  	if text == 'salinity':		return "salinity" 
+  	if text == 'nitrate':		return "nitrate" 
+  	if text == 'phosphate':		return "phosphate" 
+  	if text == 'silicate':		return "silicate"   	  	  	
+  	  				 		
   	if text == 'tempTransect':	return "Pacific Transect Temperature"
   	if text == 'tempSurface':	return "Surface Temperature"
   	if text == 'tempAll':		return "Temperature"  	
@@ -55,6 +68,8 @@ def getLongName(text):
   	if text == 'temperature500m':		return "Temperature (500m deep)"  	
   	if text == 'temperature1000m':		return "Temperature (1000m deep)"  	  		  	  	
 
+
+  	
   	if text == 'salinityTransect':		return "Pacific Transect Salinity"
   	if text == 'salinitySurface':		return "Surface Salinity"
   	if text == 'salinityAll':		return "Salinity"  	

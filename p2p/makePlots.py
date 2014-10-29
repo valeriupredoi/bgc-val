@@ -8,7 +8,7 @@ from shelve import open as shOpen
 from matplotlib.colors import LogNorm
 from matplotlib import pyplot, ticker
 from calendar import month_name
-from itertoolsmodule import product
+from itertools import product
 from scipy.stats import linregress
 from scipy.stats.mstats import scoreatpercentile
 import numpy as np 
@@ -286,7 +286,7 @@ class makePlots:
 	labelx = getLongName(self.xtype)+' '+getLongName(self.name)+', '+ xunits
 	labely = getLongName(self.ytype)+' '+getLongName(self.name)+', '+ yunits	
 		
-	try: title = getLongName(newSlice)+' '+getLongName(self.name)
+	try: title = getLongName(newSlice)+' '+getLongName(self.name+self.region)#+getLongName(self.name)
 	except:title = newSlice+' '+xkey+' vs '+ykey
 
 
@@ -296,8 +296,8 @@ class makePlots:
 	#####
 	# Robinson projection plot		
 	if ukp.shouldIMakeFile([self.xfn,self.yfn],robfnxy,debug=False) or True:
-		ti1 = getLongName(self.xtype)+' ' +getLongName(newSlice)+' '+getLongName(self.name)
-		ti2 =  getLongName(self.ytype)+' ' +getLongName(newSlice)+' '+getLongName(self.name)	
+		ti1 = getLongName(self.xtype)+' ' +getLongName(newSlice)+' '+getLongName(self.name+self.region)
+		ti2 =  getLongName(self.ytype)+' ' +getLongName(newSlice)+' '+getLongName(self.name+self.region)	
 		if self.name in noXYLogs or dmin*dmax <=0.:
 			print "plotWithSlices:\tROBIN NOT DOING DOLOG:",[ti1,ti2],False,dmin,dmax
 			ukp.robinPlotPair(nmxx, nmxy, datax,datay,robfnxy,titles=[ti1,ti2], vmin=dmin,vmax=dmax, doLog=False)
