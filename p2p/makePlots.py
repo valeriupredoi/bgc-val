@@ -19,7 +19,8 @@ from StatsDiagram import StatsDiagram
 
 #local imports
 import UKESMpython as ukp 
-from pftnames import getLongName, AutoVivification, getmt,fancyUnits,MaredatTypes,MLDTypes,WOATypes,GEOTRACESTypes
+from pftnames import getLongName, AutoVivification, getmt,fancyUnits
+#from pftnames import MaredatTypes,IFREMERTypes,WOATypes,GEOTRACESTypes
 
 
     
@@ -51,11 +52,24 @@ class makePlots:
   	self.year = year
   	self.plotallcuts = plotallcuts
   	self.compareCoords = compareCoords
-  	
-	if self.name in MaredatTypes:  	self.ytype = 'Maredat'
-	if self.name in WOATypes:  	self.ytype = 'WOA'
-	if self.name in MLDTypes:  	self.ytype = 'IFREMER'	
-	if self.name in GEOTRACESTypes: self.ytype = 'GEOTRACES'		
+	self.mt = getmt()	
+	Models = ['ERSEM','NEMO','MEDUSA',]
+	
+	ytypes = []
+  	for dk in self.mt.keys():
+  		if dk.upper() in Models:continue
+  		if self.name in self.mt[dk].keys():ytypes.append(dk)
+  	if len(ytypes)==1:
+  		self.ytype = ytypes[0]
+  	else:
+  	    if len(ytypes)>1:	print "ERROR:\t The same name,(",self.name,") appears in multiple datasets:",ytypes
+   	    if len(ytypes)<1:	print "ERROR:\t The name,(",self.name,") not appears in any datasets" 	
+#  	    print "THis job will probably fa
+  		
+	#if self.name in MaredatTypes:  	self.ytype = 'Maredat'
+	#if self.name in WOATypes:  	self.ytype = 'WOA'
+	#if self.name in IFREMERTypes:  	self.ytype = 'IFREMER'	
+	#if self.name in GEOTRACESTypes: self.ytype = 'GEOTRACES'		
 	
   	self.shelvedir = workingDir
   	if self.shelvedir == '':self.shelvedir = ukp.folder(['shelves',self.xtype,self.year,self.ytype, 'Slices',self.name+self.region])
@@ -73,7 +87,7 @@ class makePlots:
 
   	self.xnc = ncdfView(self.xfn,Quiet=True)
   	self.ync = ncdfView(self.yfn,Quiet=True)
-	self.mt = getmt()		    	
+
 	if self.compareCoords: self.CompareCoords()	
 	self.defineSlices(self.plotallcuts)
 	
@@ -362,6 +376,7 @@ class makePlots:
 	s['labelx'] = 	labelx
 	s['labely'] = 	labely
 	s['name'] =   	self.name
+	s['region'] =   self.region	
 	s['year'] =   	self.year 
 	s['xtype'] =  	self.xtype
 	s['ytype'] =  	self.ytype

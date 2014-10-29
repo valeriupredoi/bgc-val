@@ -92,6 +92,12 @@ TO DO:
 	
 	possibly move naming scheme into analysis template.
 
+	Move the NameTypes (ie GEOTRACESTypes) into the getmt?
+	
+	Target diagrams:
+		the same file name is copied multiple times
+		different symbols are used in legend to the plot.
+	
 	
 	Check requirements for local/PML repositories
 		move those into this repository?

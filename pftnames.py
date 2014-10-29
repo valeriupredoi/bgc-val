@@ -34,32 +34,38 @@ from os.path import exists
 
 
 def getLongName(text):
+	print "Getting long name:",text
 	if type(text) in [type(['a','b',]),type(('a','b',))]:
 		out = ''
 		for t in text:out+=getLongName(t)+' '
 		return out
+	
+	mt = getmt()
+	
+	noChange = ['Surface',]
+	noChange.extend(mt.keys())
+	
+	if text in noChange:return text
+	
+	firstLetterCaps = ['temperature', "salinity", "nitrate", "phosphate" ,'silicate','iron',]
+	
+	if text.lower() in firstLetterCaps:	return text.title()
 
 
+	
   	if text == 'Transect':		return "Pacific Transect"
-  	if text == 'Surface':		return "Surface"
+#  	if text == 'Surface':		return "Surface"
   	if text == '100m':		return "100m deep"  	
   	if text == '200m':		return "200m deep"  	  	  	
   	if text == '500m':		return "500m deep"  	
   	if text == '1000m':		return "1000m deep"  	
 
-  	if text == 'temperature':	return "Temperature" 
-  	if text == 'salinity':		return "salinity" 
-  	if text == 'nitrate':		return "nitrate" 
-  	if text == 'phosphate':		return "phosphate" 
-  	if text == 'silicate':		return "silicate"   	  	  	
-  	  				 		
-  	if text == 'tempTransect':	return "Pacific Transect Temperature"
-  	if text == 'tempSurface':	return "Surface Temperature"
-  	if text == 'tempAll':		return "Temperature"  	
-  	if text == 'temp100m':		return "Temperature (100m deep)"  	
-  	if text == 'temp200m':		return "Temperature (200m deep)"  
-  	if text == 'temp500m':		return "Temperature (500m deep)"  	
-  	if text == 'temp1000m':		return "Temperature (1000m deep)"  	  		  	  	
+#  	if text == 'temperature':	return "Temperature" 
+# 	if text == 'salinity':		return "salinity" 
+#  	if text == 'nitrate':		return "nitrate" 
+#  	if text == 'phosphate':		return "phosphate" 
+#  	if text == 'silicate':		return "silicate"   	  	  	
+	  		  	  	
   	if text == 'temperatureTransect':	return "Pacific Transect Temperature"
   	if text == 'temperatureSurface':	return "Surface Temperature"
   	if text == 'temperatureAll':		return "Temperature"  	
@@ -67,8 +73,6 @@ def getLongName(text):
   	if text == 'temperature200m':		return "Temperature (200m deep)"  
   	if text == 'temperature500m':		return "Temperature (500m deep)"  	
   	if text == 'temperature1000m':		return "Temperature (1000m deep)"  	  		  	  	
-
-
   	
   	if text == 'salinityTransect':		return "Pacific Transect Salinity"
   	if text == 'salinitySurface':		return "Surface Salinity"
@@ -76,14 +80,7 @@ def getLongName(text):
   	if text == 'salinity100m':		return "Salinity (100m deep)"  	
   	if text == 'salinity200m':		return "Salinity (200m deep)"  	  	  	
   	if text == 'salinity500m':		return "Salinity (500m deep)"  	
-  	if text == 'salinity1000m':		return "Salinity (1000m deep)"  	
-  	if text == 'salTransect':	return "Pacific Transect Salinity"
-  	if text == 'salSurface':	return "Surface Salinity"
-  	if text == 'salAll':		return "Salinity"  	
-  	if text == 'sal100m':		return "Salinity (100m deep)"  	
-  	if text == 'sal200m':		return "Salinity (200m deep)"  	  	  	
-  	if text == 'sal500m':		return "Salinity (500m deep)"  	
-  	if text == 'sal1000m':		return "Salinity (1000m deep)"  	  	  	
+  	if text == 'salinity1000m':		return "Salinity (1000m deep)"  	 	  	
   	
   	if text == 'nitrateTransect':	return "Pacific Transect Nitrate (WOA14)"
   	if text == 'nitrateSurface':	return "Surface Nitrate (WOA14)"
@@ -295,7 +292,7 @@ MaredatTypes 	= ['chl','diatoms','bac','mesozoo','picophyto','microzoo']
 
 Ocean_names	= ['SouthPacificOcean',  'ArcticOcean',  'AntarcticOcean','NorthAtlanticOcean','SouthAtlanticOcean', 'NorthPacificOcean','IndianOcean',]
 
-MLDTypes 	= ['mld','mld_DT02','mld_DR003','mld_DReqDTm02', ]
+IFREMERTypes 	= ['mld','mld_DT02','mld_DR003','mld_DReqDTm02', ]
 
 WOATypes 	= ['silicate','nitrate','phosphate','salinity','temperature',]
 
@@ -327,7 +324,7 @@ def getmt(loadYaml=False): # Match Type
 		print 'getmt:\tLoading mt file from ',yamlFile
 		mt = YamlToDict(yamlFile,)
 		return mt
-	print 'getmt:\tCreating mt file:',yamlFile
+		print 'getmt:\tCreating mt file:',yamlFile
 				
 	#####
 	# Models:
@@ -381,7 +378,7 @@ def getmt(loadYaml=False): # Match Type
 	mt['MEDUSA']['lat'] 			= 'nav_lat'
 	mt['MEDUSA']['lon'] 			= 'nav_lon'
 	mt['MEDUSA']['cal'] 			= '365_day'
-	mt['Medusa']				= mt['MEDUSA']
+	#mt['Medusa']				= mt['MEDUSA']
 	
 	#####
 	# Data:
@@ -399,7 +396,7 @@ def getmt(loadYaml=False): # Match Type
 	mt['MAREDAT']['lat'] 		= 'LATITUDE'
 	mt['MAREDAT']['lon'] 		= 'LONGITUDE'
 	mt['MAREDAT']['cal'] 		= 'standard'	
-	mt['Maredat'] 			= mt['MAREDAT']
+	#mt['Maredat'] 			= mt['MAREDAT']
 			
 	mt['WOA']['temperature'] 	= ['t_an',]#'t_mn',
   	mt['WOA']['salinity'] 		= ['s_an',]#'s_mn',
@@ -440,7 +437,7 @@ def getmt(loadYaml=False): # Match Type
 
 		
 	#mt['PP']['PP'] 		= ['PP',]
-	AutoVivToYaml(mt,yamlFile)
+	#'AutoVivToYaml(mt,yamlFile)
 	return mt	
 		
 	

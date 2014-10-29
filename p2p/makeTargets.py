@@ -60,6 +60,7 @@ class makeTargets:
   	self.xtypes = {}
   	self.ytypes = {}
   	self.names = {}
+  	self.regions = {}  	
   	self.years = {}
   	self.xkeys = {}
   	self.ykeys = {}  
@@ -74,6 +75,7 @@ class makeTargets:
 	  	self.xtypes[s['xtype']]	= True
 	  	self.ytypes[s['ytype']]	= True
 	  	self.names[s['name']]	= True
+	  	self.regions[s['region']]= True	  	
 	  	self.years[s['year']]	= True	
 	  	self.xkeys[s['xkey']]	= True	
 	  	self.ykeys[s['ykey']]	= True		  		  	
@@ -84,6 +86,7 @@ class makeTargets:
  	
 	self.legendKeys = []
 	if len(self.names.keys()) >1:		self.legendKeys.append('name')
+	if len(self.regions.keys()) >1:		self.legendKeys.append('region')
 	if len(self.newSlices.keys()) >1:	self.legendKeys.append('newSlice')
 	if len(self.xtypes.keys()) >1:		self.legendKeys.append('xtype')		
 	if len(self.ytypes.keys()) >1:		self.legendKeys.append('ytype')		
@@ -135,7 +138,9 @@ class makeTargets:
 	title =self.xtype + ' Model vs '+self.ytype+' Data'
 	if len(self.names.keys()) ==1:
 		title += ', '+', '.join([getLongName(k) for  k in self.names.keys()])
-
+	if len(self.regions.keys()) ==1:
+		title += ', '+', '.join([getLongName(k) for  k in self.regions.keys()])
+		
 	if len(self.ykeys.keys()) ==1:
 		title += ', '+', '.join([getLongName(k) for  k in self.ykeys.keys()])
 		
@@ -214,9 +219,9 @@ class makeTargets:
 
 			cmax=max(1,int(np.abs(np.max(e0s))+1))
 			
-			for leg in sorted(self.data.keys()):
+			for i,leg in enumerate(sorted(self.data.keys())):
 			    	print 'Taylor:\t',leg,'\tGamma:',self.data[leg]['G'], '\tE0:',self.data[leg]['E0'],'\tR:',self.data[leg]['R']
-			    	proxyArt.append(pyplot.Line2D([0],[0], linestyle="none", c=c((1./(2*cmax))*self.data[leg]['E0'] +0.5), marker = ma,markersize=9,))	
+			    	proxyArt.append(pyplot.Line2D([0],[0], linestyle="none", c=c((1./(2*cmax))*self.data[leg]['E0'] +0.5), marker = marks[i],markersize=9,))	
 			    				
 
 

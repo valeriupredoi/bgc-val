@@ -24,7 +24,7 @@ def testsuite_p2p():
     	
     	#####
     	# Which ERSEM job to look at. 
-	ERSEMjobID = 'xhonc'
+	ERSEMjobID = 'xhonp'
 
 
 	#####
@@ -35,10 +35,13 @@ def testsuite_p2p():
 	# Which Year to investigate for each model.
 	# In an ideal world, they would all be the same, except that my current run is stuck in the queue.
 	years = {}
-	years['NEMO']	= '1893'
-	years['ERSEM']	= '1893'	
-	years['MEDUSA']	= '2007'
-	
+	years['NEMO']	= '1998'
+	years['ERSEM']	= '1998'	
+	years['MEDUSA']	= '1998'
+#	years['NEMO']	= '1893'
+#	years['ERSEM']	= '1893'	
+#	years['MEDUSA']	= '2007'
+		
 
 
 	
@@ -54,17 +57,16 @@ def testsuite_p2p():
 	ERSEMFolder	= "/data/euryale7/scratch/ledm/UKESM/ERSEM/"+ ERSEMjobID+'/'+years['ERSEM']+'/'+ERSEMjobID+'_'+years['ERSEM']
 	NEMOFolder	= "/data/euryale7/scratch/ledm/UKESM/ERSEM/"+ ERSEMjobID+'/'+years['NEMO'] +'/'+ERSEMjobID+'_'+years['NEMO']
 	
-	#####
-	# Location of image Output files
-	imageFolder 	= folder('images')
+
 	
 	#####
 	# Which analysis to run
 	doCHL 		= True
 	doMAREDAT 	= True
+	doNPSF		= True
 	doSalTemp	= True
 	doMLD		= True
-	doNPSF		= True
+
 	
 	#####
 	# AutoVivification is a form of nested dictionary.
@@ -169,17 +171,17 @@ def testsuite_p2p():
 		av['mld']['NEMO']['Vars'] 		= ['somxl010',]	
 		av['mld']['regions'] 			= ['',]
 
-		av['mld_DR003']['Data']['File'] 	= "/data/euryale7/scratch/ledm/IFREMER-MLD/mld_DT02_c1m_reg2.0.nc"
-		av['mld_DR003']['NEMO']['File'] 	= NEMOFolder+'_NEMO.nc'			
-		av['mld_DR003']['Data']['Vars'] 	= ['mld','mask',]
-		av['mld_DR003']['NEMO']['Vars'] 	= ['somxl010',]	
-		av['mld_DR003']['regions'] 		= ['',]
+		#av['mld_DR003']['Data']['File'] 	= "/data/euryale7/scratch/ledm/IFREMER-MLD/mld_DT02_c1m_reg2.0.nc"
+		#av['mld_DR003']['NEMO']['File'] 	= NEMOFolder+'_NEMO.nc'			
+		#av['mld_DR003']['Data']['Vars'] 	= ['mld','mask',]
+		#av['mld_DR003']['NEMO']['Vars'] 	= ['somxl010',]	
+		#av['mld_DR003']['regions'] 		= ['',]
 
-		av['mld_DReqDTm02']['Data']['File'] 	= "/data/euryale7/scratch/ledm/IFREMER-MLD/mld_DT02_c1m_reg2.0.nc"
-		av['mld_DReqDTm02']['NEMO']['File'] 	= NEMOFolder+'_NEMO.nc'			
-		av['mld_DReqDTm02']['Data']['Vars'] 	= ['mld','mask',]
-		av['mld_DReqDTm02']['NEMO']['Vars'] 	= ['somxl010',]	
-		av['mld_DReqDTm02']['regions'] 		= ['',]
+		#av['mld_DReqDTm02']['Data']['File'] 	= "/data/euryale7/scratch/ledm/IFREMER-MLD/mld_DT02_c1m_reg2.0.nc"
+		#av['mld_DReqDTm02']['NEMO']['File'] 	= NEMOFolder+'_NEMO.nc'			
+		#av['mld_DReqDTm02']['Data']['Vars'] 	= ['mld','mask',]
+		#av['mld_DReqDTm02']['NEMO']['Vars'] 	= ['somxl010',]	
+		#av['mld_DReqDTm02']['regions'] 		= ['',]
 	
 	
 	AutoVivToYaml(av,folder('yaml')+'P2P_Settings.yaml')	
@@ -208,8 +210,17 @@ def testsuite_p2p():
 				continue
 				
 			region = str(region)
-			
-			workingDir = folder("/data/euryale7/scratch/ledm/ukesm_postProcessed/"+model+'-'+years[model])		
+			#####
+			# Location of image Output files
+
+				
+			if model == 'ERSEM':
+				imageFolder 	= folder('images/'+model+'-'+ERSEMjobID)				
+				workingDir = folder("/data/euryale7/scratch/ledm/ukesm_postProcessed/"+model+'-'+ERSEMjobID+'-'+years[model])			
+			else:
+				imageFolder 	= folder('images/'+model)			
+				workingDir = folder("/data/euryale7/scratch/ledm/ukesm_postProcessed/"+model+'-'+years[model])
+		
 			try:
 			    if not exists(av[name]['Data']['File']):
 				print "testsuite_p2p.py:\tWARNING:\tFile does not exist", av[name]['Data']['File']
@@ -261,7 +272,7 @@ def testsuite_p2p():
 			#####
 			# makeTargets:
 			# Make a target diagram of all matches for this particular dataset. # not a great idea if plotAllcuts == True
-			filename = folder(imageFolder+model+'/Targets/'+years[model]+'/AllSlices')+model+'_'+years[model]+'_'+name+'.png'
+			filename = folder(imageFolder+'/Targets/'+years[model]+'/AllSlices')+model+'_'+years[model]+'_'+name+region+'.png'
 			t = makeTargets(	m.shelves, 
 							filename,
 							#name=name,
@@ -282,11 +293,11 @@ def testsuite_p2p():
 				    if newSlice in Ocean_names:	Oceans.append(shelve)
 	          
 			makeTargets(	Months, 
-					folder(imageFolder+model+'/Targets/'+years[model]+'/Months')+model+'_'+years[model]+'_'+name+'_Months.png',
+					folder(imageFolder+'/Targets/'+years[model]+'/Months')+model+'_'+years[model]+'_'+name+region+'_Months.png',
 					legendKeys = ['newSlice',],					
 					)									
 			makeTargets(	Oceans, 
-					folder(imageFolder+model+'/Targets/'+years[model]+'/Oceans')+model+'_'+years[model]+'_'+name+'_Oceans.png',
+					folder(imageFolder+'/Targets/'+years[model]+'/Oceans')+model+'_'+years[model]+'_'+name+region+'_Oceans.png',
 					legendKeys = ['newSlice',],					
 
 					)
@@ -317,7 +328,7 @@ def testsuite_p2p():
 	        		   		try: 	Summary[woa+ns].append(shelve)
 	        		   		except:	Summary[woa+ns]= [shelve,]
 		for k in Summary.keys():
-			filename = folder(imageFolder+model+'/Targets/'+years[model]+'/Summary')+model+'_'+years[model]+'_'+k+'.png'
+			filename = folder(imageFolder+'/Targets/'+years[model]+'/Summary')+model+'_'+years[model]+'_'+k+'.png'
 	  		makeTargets(Summary[k], 
 						filename,
 						legendKeys = ['name',],#'newSlice',
