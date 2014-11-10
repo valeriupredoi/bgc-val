@@ -15,29 +15,34 @@ from pftnames import MaredatTypes,WOATypes,Ocean_names
 
 
 
-def testsuite_p2p():
+def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
+			year=1998,
+			ERSEMjobID='xhonp',
+			plotallcuts = True,):
 
 	#####
 	# Can use command line arguments to choose a model.
-	if len(argv[1:]): models  = argv[1:]
-	else:	models = ['MEDUSA','ERSEM','NEMO']
+	#if len(argv[1:]): models  = argv[1:]
+	#else:	models = ['MEDUSA','ERSEM','NEMO']
     	
     	#####
     	# Which ERSEM job to look at. 
-	ERSEMjobID = 'xhonp'
+	#ERSEMjobID = 'xhonp'
 
 
 	#####
 	# Plot p2p for all regions/oceans, or just everything and "standard" cuts.
-	plotallcuts = False
+	#plotallcuts = True
 	
 	#####
 	# Which Year to investigate for each model.
 	# In an ideal world, they would all be the same, except that my current run is stuck in the queue.
-	years = {}
-	years['NEMO']	= '1998'
-	years['ERSEM']	= '1998'	
-	years['MEDUSA']	= '1998'
+	year = str(year)	
+	years = {m:year for m in ['MEDUSA','ERSEM','NEMO']}
+	#for 
+	#years['NEMO']	= year
+	#years['ERSEM']	= year	
+	#years['MEDUSA']	= year
 #	years['NEMO']	= '1893'
 #	years['ERSEM']	= '1893'	
 #	years['MEDUSA']	= '2007'
@@ -387,7 +392,50 @@ def testsuite_p2p():
 
 	
 if __name__=="__main__":
-	testsuite_p2p() 
+	# Can use command line arguments to choose a model.
+	models 		= []
+	years 		= []
+	ERSEMjobIDs 	= []
+	
+	#####
+	# Determine command line arguments
+	for a in argv[1:]:	
+		try:	
+			y = int(a)
+			years.append(a)
+			continue			
+		except:pass
+		
+		if str(a).upper() in ['MEDUSA','ERSEM','NEMO']:
+			models.append(str(a).upper())
+			continue			
+		if a[:4] in ['xhon','xjez']:
+			ERSEMjobIDs.append(a)
+			continue
+			
+		print "Command line argument not understood:",a
+	
+
+	#####
+	#Set Defaults:
+	if not len(years): 	years = ['1998',]
+	if not len(models): 	models = ['MEDUSA','ERSEM','NEMO']
+	if not len(ERSEMjobIDs):ERSEMjobIDs = ['xhonp',]	
+
+	print "#############################"
+	print "__main__ arguments: "
+	print "models:        ",models
+	print "year:          ",years
+	print "ERSEM jobID:   ",ERSEMjobIDs
+	print "#############################"
+	#sleep(20)
+	for year in years:
+	
+		testsuite_p2p(models = models,	year=year,ERSEMjobID=ERSEMjobIDs[0] ) 
+		if len(ERSEMjobIDs)==1:continue
+		for e in ERSEMjobIDs[1:]:
+			testsuite_p2p(models = ['ERSEM',],year=year,ERSEMjobID=e ) 
+	
 	print 'The end.'
 	
 	
