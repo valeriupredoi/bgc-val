@@ -75,7 +75,10 @@ class makePlots:
   	if self.shelvedir == '':self.shelvedir = ukp.folder(['shelves',self.xtype,self.year,self.ytype, 'Slices',self.name+self.region])
   	else:			self.shelvedir = ukp.folder(self.shelvedir)		
 
-	if imageDir=='':	self.imageDir = ukp.folder(['images',self.xtype,'P2P_plots',self.year,self.name+self.region])
+	if imageDir=='':	
+		
+		self.imageDir = ukp.folder(['images',self.xtype,'P2P_plots',self.year,self.name+self.region])
+		print "Using default image folder:",self.imageDir
 	else: 			self.imageDir = ukp.folder(imageDir)
 
 	self.run()
@@ -305,25 +308,58 @@ class makePlots:
 
 
 	robfnxy  = filename.replace('.png','_xyrobin.png')
+	robfnquad  = filename.replace('.png','_robinquad.png')	
 	histfnxy = filename.replace('.png','_hist.png')
 				
 	#####
-	# Robinson projection plot		
-	if ukp.shouldIMakeFile([self.xfn,self.yfn],robfnxy,debug=False) or True:
-		ti1 = getLongName(self.xtype)+' ' +getLongName(newSlice)+' '+getLongName(self.name+self.region)
-		ti2 =  getLongName(self.ytype)+' ' +getLongName(newSlice)+' '+getLongName(self.name+self.region)	
+	# Robinson projection plots	
+	if ukp.shouldIMakeFile([self.xfn,self.yfn],robfnquad,debug=False) or True:
+		ti1 = getLongName(self.xtype)
+		ti2 =  getLongName(self.ytype)
 		if self.name in noXYLogs or dmin*dmax <=0.:
-			print "plotWithSlices:\tROBIN NOT DOING DOLOG:",[ti1,ti2],False,dmin,dmax
-			ukp.robinPlotPair(nmxx, nmxy, datax,datay,robfnxy,titles=[ti1,ti2], vmin=dmin,vmax=dmax, doLog=False)
-				
+			doLog=False
+			cbarlabel=xunits
 		else:	
-			print "plotWithSlices:\tROBIN DOING DOLOG:",[ti1,ti2],False,dmin,dmax					
-			ukp.robinPlotPair(nmxx, nmxy, np.ma.log10(datax),np.ma.log10(datay),
-						robfnxy,titles=[ti1,ti2], 
-						vmin=np.ma.log10(dmin),vmax=np.ma.log10(dmax),
-						cbarlabel='log$_{10}$('+xunits+')',
-						doLog=False)
-		
+			doLog=True
+			cbarlabel='log$_{10}$('+xunits+')'		
+		print "plotWithSlices:\tROBIN QUAD:",[ti1,ti2],False,dmin,dmax
+		ukp.robinPlotQuad(nmxx, nmxy, 
+				datax,datay,
+				robfnquad,
+				titles=[ti1,ti2],
+				title  = ' '.join([getLongName(newSlice),getLongName(self.name+self.region),self.year]),
+				cbarlabel=cbarlabel, 
+				doLog=doLog,
+				vmin=dmin,vmax=dmax,)
+				
+		#else:	
+		#	print "plotWithSlices:\tROBIN QUAD DOING DOLOG:",[ti1,ti2],False,dmin,dmax					
+		#	ukp.robinPlotQuad(nmxx, nmxy, datax,datay,
+		#				robfnquad,
+		#				titles=[ti1,ti2], 
+		#				#vmin=np.ma.log10(dmin),
+		#				#vmax=np.ma.log10(dmax),
+		#				cbarlabel='log$_{10}$('+xunits+')',
+		#				doLog=False)
+								
+	#if ukp.shouldIMakeFile([self.xfn,self.yfn],robfnxy,debug=False) or True:
+	#	ti1 = getLongName(self.xtype)+' ' +getLongName(newSlice)+' '+getLongName(self.name+self.region)
+	#	ti2 =  getLongName(self.ytype)+' ' +getLongName(newSlice)+' '+getLongName(self.name+self.region)	
+	#	if self.name in noXYLogs or dmin*dmax <=0.:
+	#		print "plotWithSlices:\tROBIN NOT DOING DOLOG:",[ti1,ti2],False,dmin,dmax
+	#		ukp.robinPlotPair(nmxx, nmxy, datax,datay,robfnxy,titles=[ti1,ti2], vmin=dmin,vmax=dmax, doLog=False)
+	#			
+	#	else:	
+	#		print "plotWithSlices:\tROBIN DOING DOLOG:",[ti1,ti2],False,dmin,dmax					
+	#		ukp.robinPlotPair(nmxx, nmxy, np.ma.log10(datax),np.ma.log10(datay),
+	#					robfnxy,titles=[ti1,ti2], 
+	#					vmin=np.ma.log10(dmin),vmax=np.ma.log10(dmax),
+	#					cbarlabel='log$_{10}$('+xunits+')',
+	#					doLog=False)
+
+
+						
+								
 	#####
 	# Simultaneous histograms plot	
 	if ukp.shouldIMakeFile([self.xfn,self.yfn],histfnxy,debug=False):
@@ -514,7 +550,7 @@ class makePlots:
   def getFileName(self,newSlice,xkey,ykey):
   	#####
   	# This needs some work.
-	file_prefix = ukp.folder(['images',self.xtype,'P2P_plots',self.year,self.name+self.region,])
+	file_prefix = self.imageDir #ukp.folder(['images',self.xtype,'P2P_plots',self.year,self.name+self.region,])
 
 	file_suffix = '_'+self.xtype+'.png'
 

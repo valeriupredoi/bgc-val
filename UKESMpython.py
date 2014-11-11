@@ -303,7 +303,7 @@ def shouldIMakeFile(fin,fout,debug = True):
 
 
 	
-def robinPlotPair(lons, lats, data1,data2,filename,titles=['',''],lon0=0.,marble=False,drawCbar=True,cbarlabel='',doLog=False,scatter=True,dpi=100,**kwargs):
+def robinPlotPair(lons, lats, data1,data2,filename,titles=['',''],lon0=0.,marble=False,drawCbar=True,cbarlabel='',doLog=False,scatter=True,dpi=100,):#**kwargs):
 
 	fig = pyplot.figure()
 
@@ -381,7 +381,107 @@ def robinPlotPair(lons, lats, data1,data2,filename,titles=['',''],lon0=0.,marble
 	print "UKESMpython:\trobinPlotPair: \tSaving:" , filename
 	pyplot.savefig(filename ,dpi=dpi)		
 	pyplot.close()
+
+
+def robinPlotQuad(lons, lats, data1,data2,filename,titles=['',''],title='',lon0=0.,marble=False,drawCbar=True,cbarlabel='',doLog=False,scatter=True,dpi=100,vmin='',vmax=''):#,**kwargs):
+
+	fig = pyplot.figure()
+	fig.set_size_inches(14,8)
+
+	lons = np.array(lons)
+	lats = np.array(lats)
+	data1 = np.ma.array(data1)
+	data2 = np.ma.array(data2)
+	axs,bms,cbs,ims = [],[],[],[]
+	doLogs = [doLog,doLog,False,True]
+	for i,spl in enumerate([221,222,223,224]):	
+		axs.append(fig.add_subplot(spl))
+		bms.append( Basemap(projection='robin',lon_0=lon0,resolution='c') )#lon_0=-106.,
+		x1, y1 = bms[i](lons, lats)
+		bms[i].drawcoastlines(linewidth=0.5)
+		if marble: bms[i].bluemarble()
+		else:
+			bms[i].drawmapboundary(fill_color='1.')
+			bms[i].fillcontinents(color=(255/255.,255/255.,255/255.,1))
+		bms[i].drawparallels(np.arange(-90.,120.,30.))
+		bms[i].drawmeridians(np.arange(0.,420.,60.))
+		
+		
+		if spl in [221,222]:
+			if not vmin: vmin = data1.min()
+			if not vmax: vmax = data1.max()
+			#if 'vmin' in kwargs.keys():vmin = kwargs['vmin']
+			#if 'vmax' in kwargs.keys():vmax = kwargs['vmax']
+					
+			rbmi = min([data1.min(),data2.min(),vmin])
+			rbma = max([data1.max(),data2.max(),vmax])
+		if spl in [223,]:
+			
+			rbma =3*np.ma.std(data1 -data2)
+			print spl,i, rbma, max(data1),max(data2)
+			#assert False
+			rbmi = -rbma
+		if spl in [224,]:
+			rbma = 10. #max(np.ma.abs(data1 -data2))
+			rbmi = 0.1		
+				
+		if doLogs[i] and rbmi*rbma <=0.:
+			print "UKESMpython:\trobinPlotQuad: \tMasking",
+			data1 = np.ma.masked_less_equal(ma.array(data1), 0.)
+			data2 = np.ma.masked_less_equal(ma.array(data2), 0.)
+		data = ''
+		
+		if spl in [221,]:data  = np.ma.clip(data1, 	 rbmi,rbma)
+		if spl in [222,]:data  = np.ma.clip(data2, 	 rbmi,rbma)
+		if spl in [223,]:data  = np.ma.clip(data1-data2, rbmi,rbma)
+		if spl in [224,]:data  = np.ma.clip(data1/data2, rbmi,rbma)
+
+		if doLogs[i]:
+			rbmi = np.int(np.log10(rbmi))
+			rbma = np.log10(rbma)
+			if rbma > np.int(rbma): rbma+=1
+			rbma = np.int(rbma)
+			
+		if scatter:
+			if doLogs[i]:	ims.append(bms[i].scatter(x1,y1,c = np.log10(data),marker="s",alpha=0.9,linewidth='0',vmin=rbmi, vmax=rbma,))# **kwargs))
+			else:		ims.append(bms[i].scatter(x1,y1,c = data,	   marker="s",alpha=0.9,linewidth='0',vmin=rbmi, vmax=rbma,))# **kwargs))
+		else:
+			xi1,yi1,di1=mapIrregularGrid(bms[i],axs[i],lons,lats,data,lon0,xres=360,yres=180)
+			if doLogs[i]: 	ims.append( bms[i].pcolormesh(xi1,yi1,di1,cmap=pyplot.cm.jet,norm = LogNorm() ))
+			else:	  	ims.append( bms[i].pcolormesh(xi1,yi1,di1,cmap=pyplot.cm.jet))
+
+		
+		if drawCbar:
+			if spl in [221,222,223]:
+				if doLogs[i]:	cbs.append(fig.colorbar(ims[i],pad=0.05,shrink=0.5,ticks = np.linspace(rbmi,rbma,rbma-rbmi+1)))
+				else:		cbs.append(fig.colorbar(ims[i],pad=0.05,shrink=0.5,))
+			if spl in [224,]:
+				cbs.append(fig.colorbar(ims[i],pad=0.05,shrink=0.5,))
+				cbs[i].set_ticks ([-1,0,1])
+				cbs[i].set_ticklabels(['0.1','1.','10.'])
+			#else:		ticks = np.linspace( rbmi,rbma,9)
+			#print i, spl, ticks, [rbmi,rbma]
+			
+			#pyplot.colorbar(ims[i],cmap=pyplot.cm.jet,values=[rbmi,rbma])#boundaries=[rbmi,rbma])
+		 	#cbs.append(fig.colorbar(ims[i],pad=0.05,shrink=0.5))#,ticks=ticks))
+		 	
+		 	cbs[i].set_clim(rbmi,rbma)
+
+		    	if len(cbarlabel)>0 and spl in [221,222,]: cbs[i].set_label(cbarlabel)
+		if i in [0,1]:
+			pyplot.title(titles[i])
+		if i ==2:	pyplot.title('Difference ('+titles[0]+' - '+titles[1]+')')
+		if i ==3:	pyplot.title('Quotient ('  +titles[0]+' / '+titles[1]+')')
 	
+	if title:
+		fig.text(0.5,0.975,title,horizontalalignment='center',verticalalignment='top')	
+	pyplot.tight_layout()		
+	print "UKESMpython:\trobinPlotQuad: \tSaving:" , filename
+	pyplot.savefig(filename ,dpi=dpi)		
+	pyplot.close()
+	
+	
+		
 
 def histPlot(datax, datay,  filename, Title='', labelx='',labely='',xaxislabel='', logx=False,logy=False,nbins=50,dpi=100,minNumPoints = 3):
 	print "UKESMpython:\thistplot:\t preparing", Title, datax.size, datay.size
@@ -575,7 +675,8 @@ def makeLatSafe(lat):
 		if -90.<=lat<=90.:return lat
 		#print 'You can\'t have a latitude > 90 or <-90',lat
 		print "makeLatSafe:\tERROR:\tYou can\'t have a latitude > 90 or <-90", lat
-		if lat is masked: return lat
+		#if lat is np.ma.masked: 
+		return lat
 		assert False		
 		#return False
 		#if lon<=-90:lat+=360.

@@ -18,7 +18,7 @@ from pftnames import MaredatTypes,WOATypes,Ocean_names
 def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 			year=1998,
 			ERSEMjobID='xhonp',
-			plotallcuts = True,):
+			plotallcuts = False,):
 
 	#####
 	# Can use command line arguments to choose a model.
@@ -26,10 +26,13 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 	#else:	models = ['MEDUSA','ERSEM','NEMO']
     	
     	#####
-    	# Which ERSEM job to look at. 
+    	# Which jobs to look at. 
 	#ERSEMjobID = 'xhonp'
-
-
+	jobIDs={}
+	jobIDs['ERSEM'] 	= ERSEMjobID
+	jobIDs['NEMO'] 		= ERSEMjobID
+	jobIDs['MEDUSA'] 	= 'iMarNet'
+	
 	#####
 	# Plot p2p for all regions/oceans, or just everything and "standard" cuts.
 	#plotallcuts = True
@@ -59,8 +62,8 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 	#####
 	# Location of model files.	
 	MEDUSAFolder	= "/data/euryale7/scratch/ledm/UKESM/MEDUSA/"
-	ERSEMFolder	= "/data/euryale7/scratch/ledm/UKESM/ERSEM/"+ ERSEMjobID+'/'+years['ERSEM']+'/'+ERSEMjobID+'_'+years['ERSEM']
-	NEMOFolder	= "/data/euryale7/scratch/ledm/UKESM/ERSEM/"+ ERSEMjobID+'/'+years['NEMO'] +'/'+ERSEMjobID+'_'+years['NEMO']
+	ERSEMFolder	= "/data/euryale7/scratch/ledm/UKESM/ERSEM/"+ jobIDs['ERSEM']+'/'+years['ERSEM']+'/'+jobIDs['ERSEM']+'_'+years['ERSEM']
+	NEMOFolder	= "/data/euryale7/scratch/ledm/UKESM/ERSEM/"+ jobIDs['NEMO'] +'/'+years['NEMO'] +'/'+jobIDs['NEMO'] +'_'+years['NEMO']
 	
 
 	
@@ -204,7 +207,6 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 	for model in models:
 		for name in sorted(av.keys()):
 		    for region in av[name]['regions']:
-		#for name in ['chl',]:	
 			#####
 			# Do some checks to make sure that the files all exist:
 			print model,name
@@ -212,19 +214,15 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 				if not isinstance(av[name][model],dict): continue
 			except KeyError:
 				print "No ",name, 'in ',model
-				continue
-				
+				continue	
 			region = str(region)
+			
+			
 			#####
 			# Location of image Output files
+			imageFolder 	= folder('images/'+model+'-'+jobIDs[model])
+			workingDir = folder("/data/euryale7/scratch/ledm/ukesm_postProcessed/"+model+'-'+jobIDs[model]+'-'+years[model])		
 
-				
-			if model == 'ERSEM':
-				imageFolder 	= folder('images/'+model+'-'+ERSEMjobID)				
-				workingDir = folder("/data/euryale7/scratch/ledm/ukesm_postProcessed/"+model+'-'+ERSEMjobID+'-'+years[model])			
-			else:
-				imageFolder 	= folder('images/'+model)			
-				workingDir = folder("/data/euryale7/scratch/ledm/ukesm_postProcessed/"+model+'-'+years[model])
 		
 			try:
 			    if not exists(av[name]['Data']['File']):
@@ -249,35 +247,40 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 			b = matchDataAndModel(av[name]['Data']['File'], 
 								av[name][model]['File'],
 								name,
-								DataVars  = av[name]['Data']['Vars'],
-								ModelVars = av[name][model]['Vars'],
-								jobID=model,
-								year=years[model],
-								workingDir = folder(workingDir+name),
-								region = region)
-								
+								DataVars  	= av[name]['Data']['Vars'],
+								ModelVars 	= av[name][model]['Vars'],
+								model 		= model,
+								jobID		= jobIDs[model],
+								year		= years[model],
+								workingDir 	= folder(workingDir+name),
+								region 		= region)
+							
 			#####
 			# makePlots:
 			# Make some plots of the point to point datasets.
 			# MakePlot runs a series of analysis, comparing every pair in DataVars and ModelVars
 			#	 under a range of different masks. For instance, only data from Antarctic Ocean, or only data from January.
 			# The makePlot produces a shelve file in workingDir containing all results of the analysis.
+			imageDir	= folder(imageFolder +'P2Pplots/'+years[model]+'/'+name+region)			
 			m = makePlots(	b.MatchedDataFile, 
-							b.MatchedModelFile, 
-							name, 
-							model, 
-							region = region,
-							year = years[model], 
-							plotallcuts=plotallcuts, 
-							workingDir = folder(workingDir+name+region),
-							compareCoords=True)
+					b.MatchedModelFile, 
+					name, 
+					model, 
+					region 		= region,
+					year 		= years[model], 
+					plotallcuts	= plotallcuts, 
+					workingDir 	= folder(workingDir+name+region),
+					imageDir	= imageDir,
+					compareCoords	=True)
 			#Get an autoviv of the shelves.
 			shelvesAV[model][name.replace(region,'')][region] = m.shelvesAV
+								
 										
 			#####
 			# makeTargets:
 			# Make a target diagram of all matches for this particular dataset. # not a great idea if plotAllcuts == True
-			filename = folder(imageFolder+'/Targets/'+years[model]+'/AllSlices')+model+'_'+years[model]+'_'+name+region+'.png'
+			filename = folder(imageFolder+'/Targets/'+years[model]+'/AllSlices')+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region+'.png'
+			#if model=='ERSEM':filename = filename.replace('ERSEM','ERSEM-'+ERSEMjobID)			
 			t = makeTargets(	m.shelves, 
 							filename,
 							#name=name,
@@ -296,15 +299,19 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 				    shelve = m.shelvesAV[newSlice][xkey][ykey]			  
 				    if newSlice in month_name: 	Months.append(shelve)
 				    if newSlice in Ocean_names:	Oceans.append(shelve)
-	          
+				    
+	          	filename = folder(imageFolder+'/Targets/'+years[model]+'/Months')+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region+'_Months.png'
+			#if model=='ERSEM':filename = filename.replace('ERSEM','ERSEM-'+ERSEMjobID)				          	
 			makeTargets(	Months, 
-					folder(imageFolder+'/Targets/'+years[model]+'/Months')+model+'_'+years[model]+'_'+name+region+'_Months.png',
+					filename,
 					legendKeys = ['newSlice',],					
-					)									
+					)
+					
+			filename = folder(imageFolder+'/Targets/'+years[model]+'/Oceans')+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region+'_Oceans.png'
+			#if model=='ERSEM':filename = filename.replace('ERSEM','ERSEM-'+ERSEMjobID)						
 			makeTargets(	Oceans, 
-					folder(imageFolder+'/Targets/'+years[model]+'/Oceans')+model+'_'+years[model]+'_'+name+region+'_Oceans.png',
+					filename,
 					legendKeys = ['newSlice',],					
-
 					)
 		#####				
 		# Here are some fields for comparing fields in the same model
@@ -334,12 +341,15 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 	        		   		except:	Summary[woa+ns]= [shelve,]
 		for k in Summary.keys():
 			filename = folder(imageFolder+'/Targets/'+years[model]+'/Summary')+model+'_'+years[model]+'_'+k+'.png'
+			#if model=='ERSEM':filename = filename.replace('ERSEM','ERSEM-'+ERSEMjobID)
 	  		makeTargets(Summary[k], 
 						filename,
 						legendKeys = ['name',],#'newSlice',
 						debug=True)#imageDir='', diagramTypes=['Target',]
-		AutoVivToYaml(shelvesAV, folder('yaml')+'shelvesAV.yaml')
-				
+		if model=='ERSEM':
+			AutoVivToYaml(shelvesAV, folder('yaml')+'shelvesAV'+model+years[model]+ERSEMjobID+'.yaml')
+		else:
+			AutoVivToYaml(shelvesAV, folder('yaml')+'shelvesAV'+model+years[model]+'.yaml')				
 	#####
 	# Here are some fields for comparing fields between models.
 	# Only works if the same "name" is matched with multiple models.
@@ -389,7 +399,62 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 					
 	print "Working dir:",workingDir
 	
+def multiERSEMtargets(shelvesAVs,ERSEMjobIDs):
+	#####
+	# Here are some fields for comparing fields ERSEM runs.
+	print "multiERSEMtargets",ERSEMjobIDs
 
+	shAVs = AutoVivification()	
+	modelIC = {} 	#model intercomparison shelve files dictionary
+	
+	for e,avfn in zip(ERSEMjobIDs,shelvesAVs):
+		shAVs[e] = YamlToDict(avfn)
+		print "loaded:",e,av
+		
+	for jobID in shAVs.keys():
+	  for model in shAVs[jobID].keys():	
+	    for name in shAVs[jobID][model].keys():
+	      for region in shAVs[jobID][model][name].keys():
+	        for newSlice in shAVs[jobID][model][name][region].keys(): 
+	          for xkey in shAVs[jobID][model][name][region][newSlice].keys():
+		    for ykey in shAVs[jobID][model][name][region][newSlice][xkey].keys():
+	 	    
+			shelve = shAVs[jobID][model][name][region][newSlice][xkey][ykey]			
+	    	   	for ns in ['All', 'Standard']:
+	    	   		if ns != newSlice: continue
+	    	   		if name in MaredatTypes:
+	    	   			try:	modelIC['Maredat'+ns].append(shelve)
+	    	   			except: modelIC['Maredat'+ns] = [shelve,]
+	        	   		try: 	modelIC[name+ns].append(shelve)
+	        	   		except:	modelIC[name+ns]= [shelve,]	    	   			
+    	   			if name in WOATypes:
+	    	   			try:	modelIC['WOA'+ns].append(shelve)
+	    	   			except: modelIC['WOA'+ns] = [shelve,]
+	        	   		try: 	modelIC[name+ns].append(shelve)
+	        	   		except:	modelIC[name+ns]= [shelve,]
+				if name in ['iron',]:
+	    	   			try:	modelIC['Misc'+ns].append(shelve)
+	    	   			except: modelIC['Misc'+ns] = [shelve,]
+	        	   		try: 	modelIC[name+ns].append(shelve)
+	        	   		except:	modelIC[name+ns]= [shelve,]					
+	
+
+				        	   		
+	for k in modelIC.keys():
+		for i in modelIC[k]:print k, i
+		if len(modelIC[k]) <2: continue
+		
+		makeTargets(modelIC[k], 
+					folder(imageFolder+'/ModelIntercomparison/Targets/')+'intercomparison_'+k+'.png',
+					legendKeys = ['xtype','name',],					
+					)		
+			
+			
+			
+
+
+	
+	
 	
 if __name__=="__main__":
 	# Can use command line arguments to choose a model.
@@ -411,6 +476,7 @@ if __name__=="__main__":
 			continue			
 		if a[:4] in ['xhon','xjez']:
 			ERSEMjobIDs.append(a)
+			if 'ERSEM' not in models:models.append('ERSEM')
 			continue
 			
 		print "Command line argument not understood:",a
@@ -429,13 +495,37 @@ if __name__=="__main__":
 	print "ERSEM jobID:   ",ERSEMjobIDs
 	print "#############################"
 	#sleep(20)
+
+
+			
 	for year in years:
-	
+		#multiERSEMtargets(['yaml/shelvesAVERSEM'+year+e+'.yaml' for e in ERSEMjobIDs],ERSEMjobIDs)	
+		#continue
 		testsuite_p2p(models = models,	year=year,ERSEMjobID=ERSEMjobIDs[0] ) 
 		if len(ERSEMjobIDs)==1:continue
 		for e in ERSEMjobIDs[1:]:
 			testsuite_p2p(models = ['ERSEM',],year=year,ERSEMjobID=e ) 
+		multiERSEMtargets(['shelvesAVERSEM'+year+e+'.yaml' for e in ERSEMjobIDs],ERSEMjobIDs)
 	
 	print 'The end.'
 	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	

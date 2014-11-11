@@ -42,7 +42,7 @@ class matchDataAndModel:
   """
 
 
-  def __init__(self,DataFile,ModelFile,dataType, workingDir = '',DataVars='',ModelVars='',  jobID='', year='clim',region='',debug = True,):
+  def __init__(self,DataFile,ModelFile,dataType, workingDir = '',DataVars='',ModelVars='',  model = '',jobID='', year='clim',region='',debug = True,):
 
 	if debug:
 		print "matchDataAndModel:\tINFO:\tStarting matchDataAndModel"
@@ -55,7 +55,7 @@ class matchDataAndModel:
 	self.DataVars=DataVars	
 	self.ModelVars=ModelVars	
 
-
+	self.model = model 
 	self.jobID = jobID 
 	self.year = year
 	self.region = region
@@ -66,18 +66,18 @@ class matchDataAndModel:
 	
 	if debug: print  "matchDataAndModel:\tINFO:\t",self.dataType, '\tModelfile:', self.ModelFile
 		
-	self.compType= 'MaredatMatched-'+self.jobID+'-'+self.year
+	self.compType= 'MaredatMatched-'+self.model+'-'+self.jobID+'-'+self.year
 		
 	if workingDir =='':
 		self.workingDir = ukp.folder('/data/euryale7/scratch/ledm/ukesm_postProcessed/ukesm/outNetCDF/'+'/'.join([self.compType,self.dataType+self.region]) )
 	else: 	self.workingDir = workingDir	
 
-	self.matchedShelve 	= ukp.folder(self.workingDir)+self.jobID+'_'+self.year+'_'+'_'+self.dataType+self.region+'.shelve'
+	self.matchedShelve 	= ukp.folder(self.workingDir)+self.model+'-'+self.jobID+'_'+self.year+'_'+'_'+self.dataType+'_'+self.region+'.shelve'
 	self.matchesShelve 	= ukp.folder(['shelves','MaredatModelMatch',])+'WOAtoORCA1.shelve'
 
 	self.workingDirTmp = 	ukp.folder(self.workingDir+'tmp')
-	self.DataFilePruned=	self.workingDirTmp+'Data_' +self.dataType+self.region+self.jobID+'-'+self.year+'_pruned.nc'
-	self.ModelFilePruned=	self.workingDirTmp+'Model_'+self.dataType+self.region+self.jobID+'-'+self.year+'_pruned.nc'	
+	self.DataFilePruned=	self.workingDirTmp+'Data_' +self.dataType+'_'+self.region+'_'+self.model+'-'+self.jobID+'-'+self.year+'_pruned.nc'
+	self.ModelFilePruned=	self.workingDirTmp+'Model_'+self.dataType+'_'+self.region+'_'+self.model+'-'+self.jobID+'-'+self.year+'_pruned.nc'	
 	
 	self.DataFile1D  	= self.workingDirTmp + basename(self.DataFilePruned).replace('pruned.nc','1D.nc') 
 	self.maskedData1D	= self.workingDir    + basename(self.DataFile1D)
