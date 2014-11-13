@@ -307,9 +307,27 @@ class makePlots:
 	except:title = newSlice+' '+xkey+' vs '+ykey
 
 
-	robfnxy  = filename.replace('.png','_xyrobin.png')
-	robfnquad  = filename.replace('.png','_robinquad.png')	
-	histfnxy = filename.replace('.png','_hist.png')
+	robfnxy  	= filename.replace('.png','_xyrobin.png')
+	robfnquad  	= filename.replace('.png','_robinquad.png')	
+	histfnxy 	= filename.replace('.png','_hist.png')
+	histsfnxy 	= filename.replace('.png','_hists.png')				
+	
+	#####
+	# Simultaneous histograms plot	
+	if ukp.shouldIMakeFile([self.xfn,self.yfn],histfnxy,debug=False):
+		xaxislabel= getLongName(self.name)+', '+ xunits
+		if self.name in noXYLogs or dmin*dmax <=0.:				
+			ukp.histPlot(datax, datay,  histfnxy, Title=title, labelx=self.xtype,labely=self.ytype,xaxislabel =xaxislabel)	
+		else:	ukp.histPlot(datax, datay,  histfnxy, Title=title, labelx=self.xtype,labely=self.ytype,xaxislabel =xaxislabel, logx = True, )
+
+	if ukp.shouldIMakeFile([self.xfn,self.yfn],histsfnxy,debug=False):
+		xaxislabel= getLongName(self.name)+', '+ xunits
+		if self.name in noXYLogs or dmin*dmax <=0.:				
+			ukp.histsPlot(datax, datay,  histsfnxy, Title=title, labelx=self.xtype,labely=self.ytype,xaxislabel =xaxislabel)	
+		else:	ukp.histsPlot(datax, datay,  histsfnxy, Title=title, labelx=self.xtype,labely=self.ytype,xaxislabel =xaxislabel, logx = True, )
+		
+			
+			
 				
 	#####
 	# Robinson projection plots	
@@ -360,14 +378,7 @@ class makePlots:
 
 						
 								
-	#####
-	# Simultaneous histograms plot	
-	if ukp.shouldIMakeFile([self.xfn,self.yfn],histfnxy,debug=False):
-		xaxislabel= getLongName(self.name)+', '+ xunits
-		if self.name in noXYLogs or dmin*dmax <=0.:				
-			ukp.histPlot(datax, datay,  histfnxy, Title=title, labelx=self.xtype,labely=self.ytype,xaxislabel =xaxislabel)	
-		else:	ukp.histPlot(datax, datay,  histfnxy, Title=title, labelx=self.xtype,labely=self.ytype,xaxislabel =xaxislabel, logx = True, )
-				
+			
 	#####
 	# Scatter  (hexbin) plot
 	if ukp.shouldIMakeFile([self.xfn,self.yfn],filename,debug=False):		

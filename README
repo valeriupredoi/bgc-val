@@ -56,7 +56,7 @@ REQUIREMENTS:
 			sudo yum install python-mpltoolkits.basemap		
 			or from source.
 							
-			It may be possible to switch casemap out for cartopy. I'm not sure.
+			It may be possible to switch Basemap out for cartopy. I'm not sure.
 					
 
 
@@ -89,6 +89,8 @@ TO DO:
 	add some better "alwaysInclude" methods to netcdf_manip
 	
 	more documentation.
+	
+	Investigate a 1D point to point validation at HOTS/BATS.
 	
 	possibly move naming scheme into analysis template.
 

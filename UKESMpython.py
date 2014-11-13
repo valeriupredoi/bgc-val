@@ -526,7 +526,72 @@ def histPlot(datax, datay,  filename, Title='', labelx='',labely='',xaxislabel='
 	print "UKESMpython:\thistPlot:\tSaving:" , filename
 	pyplot.savefig(filename ,dpi=dpi)
 	pyplot.close()	
+
+
+def histsPlot(datax, datay,  filename, Title='', labelx='',labely='',xaxislabel='', logx=False,logy=False,nbins=50,dpi=100,minNumPoints = 3):
+	print "UKESMpython:\thistplot:\t preparing", Title, datax.size, datay.size
+	fig = pyplot.figure()		
+	ax = pyplot.subplot(311)
+	fig.set_size_inches(8,14)	
+	xmin =  np.ma.min([np.ma.min(datax),np.ma.min(datay)])
+	xmax =  np.ma.max([np.ma.max(datax),np.ma.max(datay)])
 	
+	if xmin*xmax <= 0.:
+		logx=False
+		print "UKESMpython:\thistPlot:\tx value below zero, can not run log scale.", xmin, '\t',labelx,'(x):', np.ma.min(datax), '\t',labely,'(y):', np.ma.min(datay)
+	
+	
+	if datax.size < minNumPoints and datay.size < minNumPoints:
+		print "UKESMpython:\thistPlot:\tThere aren't enough points for a sensible dataplot: ", datax.size
+		return		
+
+	
+	if logx:
+		n, bins, patchesx = pyplot.hist(datax,  histtype='stepfilled', bins=10**np.linspace(np.log10(xmin), np.log10(xmax), nbins),range=[xmin,xmax])
+		n, bins, patchesy = pyplot.hist(datay,  histtype='stepfilled', bins=10**np.linspace(np.log10(xmin), np.log10(xmax), nbins),range=[xmin,xmax])
+	else: 
+		n, bins, patchesx = pyplot.hist(datax,  bins=np.linspace(xmin, xmax, nbins), histtype='stepfilled',range=[xmin,xmax] )
+		n, bins, patchesy = pyplot.hist(datay,  bins=np.linspace(xmin, xmax, nbins), histtype='stepfilled',range=[xmin,xmax])
+			
+	pyplot.setp(patchesx, 'facecolor', 'g', 'alpha', 0.5)	
+	pyplot.setp(patchesy, 'facecolor', 'b', 'alpha', 0.5)
+	
+	#if logx:
+	#	bins = range(xmin, xmax)
+	#	pyplot.xticks(bins, ["2^%s" % i for i in bins])
+	#	plt.hist(numpy.log2(data), log=True, bins=bins)
+	
+	if logx: ax.set_xscale('log')
+	if logy: ax.set_yscale('log')
+	pyplot.legend([labelx,labely],loc='upper left')
+	
+	pyplot.title(Title)	
+	pyplot.xlabel(xaxislabel)
+	#pyplot.ylabel(labely)
+
+	ax = pyplot.subplot(312)
+	pyplot.title('Difference: '+labelx+' - '+labely )	
+	d = datax-datay
+	maxd = np.max(np.abs(d))
+	n, bins, patchesx = pyplot.hist(d,  bins=np.linspace(-maxd, maxd, nbins), histtype='stepfilled',range=[-maxd,maxd] )
+	pyplot.setp(patchesx, 'facecolor', 'g', 'alpha', 0.5)		
+	
+	ax = pyplot.subplot(313)
+	pyplot.title('Quotient: '+labelx+' / '+labely)	
+	d = datax/datay
+	
+	maxd = np.power(10.,np.int(np.ma.max(np.ma.abs(np.ma.log10(d)))+1))
+	print maxd, 1/maxd
+	n, bins, patchesx = pyplot.hist(d,  histtype='stepfilled', bins=10**np.linspace(np.log10(1./maxd), np.log10(maxd), nbins),range=[xmin,xmax])	
+	pyplot.setp(patchesx, 'facecolor', 'g', 'alpha', 0.5)	
+	ax.set_xscale('log')
+		
+	print "UKESMpython:\thistPlot:\tSaving:" , filename
+	pyplot.savefig(filename ,dpi=dpi)
+	pyplot.close()	
+	
+	
+		
 		
 def strRound(val,i=4):
 	if round(val,i)==0. and i==4:return ' < 0.0001'
