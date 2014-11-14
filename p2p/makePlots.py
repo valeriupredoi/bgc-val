@@ -359,13 +359,14 @@ class makePlots:
 				
 
 	#####
-	# Simultaneous histograms plot	
+	# Simultaneous histograms plot	- single
 	if ukp.shouldIMakeFile([self.xfn,self.yfn],histfnxy,debug=False):
 		xaxislabel= getLongName(self.name)+', '+ xunits
 		if self.name in noXYLogs or dmin*dmax <=0.:				
 			ukp.histPlot(datax, datay,  histfnxy, Title=title, labelx=self.xtype,labely=self.ytype,xaxislabel =xaxislabel)	
 		else:	ukp.histPlot(datax, datay,  histfnxy, Title=title, labelx=self.xtype,labely=self.ytype,xaxislabel =xaxislabel, logx = True, )
 
+	# Simultaneous histograms plot	- triple
 	if ukp.shouldIMakeFile([self.xfn,self.yfn],histsfnxy,debug=False):
 		xaxislabel= getLongName(self.name)+', '+ xunits
 		if self.name in noXYLogs or dmin*dmax <=0.:				

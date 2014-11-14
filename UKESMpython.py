@@ -461,11 +461,12 @@ def robinPlotQuad(lons, lats, data1,data2,filename,titles=['',''],title='',lon0=
 			#axs.append(fig.add_subplot(spl))
 			bms.append(pyplot.subplot(spl,projection=ccrs.Robinson()))
 			bms[i].set_global()
-			#bms[i].stock_img()
-			#bms[i].coastlines()
-			# Because Cartopy is hard wired to download the shapes files from a website that doesn't exist anymore:
-			bms[i].add_geometries(list(shapereader.Reader('data/ne_110m_coastline.shp').geometries()), ccrs.PlateCarree(), color='k',facecolor = 'none',linewidth=0.5)
-
+			if marble:	bms[i].stock_img()
+			else:
+				# Because Cartopy is hard wired to download the shapes files from a website that doesn't exist anymore:
+				#bms[i].coastlines()	#doesn't work.
+				bms[i].add_geometries(list(shapereader.Reader('data/ne_110m_coastline.shp').geometries()),
+							ccrs.PlateCarree(), color='k',facecolor = 'none',linewidth=0.5)
 			
 			if scatter:
 				if doLogs[i]:	ims.append(bms[i].scatter(lons, lats,c = np.log10(data),marker="s",alpha=0.9,linewidth='0',vmin=rbmi, vmax=rbma,transform=ccrs.PlateCarree(),))# **kwargs))
@@ -602,8 +603,11 @@ def histsPlot(datax, datay,  filename, Title='', labelx='',labely='',xaxislabel=
 	d = datax-datay
 	maxd = np.max(np.abs(d))
 	n, bins, patchesx = pyplot.hist(d,  bins=np.linspace(-maxd, maxd, nbins), histtype='stepfilled',range=[-maxd,maxd] )
-	pyplot.setp(patchesx, 'facecolor', 'g', 'alpha', 0.5)		
+	pyplot.setp(patchesx, 'facecolor', 'g', 'alpha', 0.5,)		
 	y = pyplot.axvline(x=0., c = 'k',ls='--')
+	y = pyplot.axvline(x=np.ma.mean(d), c = 'k',ls='-',label= 'Mean Bias: '+str(round(np.ma.mean(d),2)))	
+	y = pyplot.axvline(x=np.ma.median(d), c = 'k',ls='--',label= 'Median Bias: '+str(round(np.ma.median(d),2)))		
+	pyplot.legend(loc='upper left')
 	
 	ax = pyplot.subplot(313)
 	pyplot.title('Quotient: '+labelx+' / '+labely)	
@@ -615,7 +619,10 @@ def histsPlot(datax, datay,  filename, Title='', labelx='',labely='',xaxislabel=
 	pyplot.setp(patchesx, 'facecolor', 'g', 'alpha', 0.5)	
 	ax.set_xscale('log')
 	y = pyplot.axvline(x=1., c = 'k',ls='--')
-		
+	y = pyplot.axvline(x=np.ma.mean(d), c = 'k',ls='-',label= 'Mean Slope: '+str(round(np.ma.mean(d),2)))	
+	y = pyplot.axvline(x=np.ma.median(d), c = 'k',ls='--',label= 'Median Slope: '+str(round(np.ma.median(d),2)))	
+	pyplot.legend(loc='upper left')		
+	
 	print "UKESMpython:\thistPlot:\tSaving:" , filename
 	pyplot.savefig(filename ,dpi=dpi)
 	pyplot.close()	
