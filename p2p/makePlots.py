@@ -22,7 +22,7 @@ import UKESMpython as ukp
 from pftnames import getLongName, AutoVivification, getmt,fancyUnits
 #from pftnames import MaredatTypes,IFREMERTypes,WOATypes,GEOTRACESTypes
 
-
+#import seaborn as sb
     
 
 """	This code makes matched plots, hexbins, scatter plots, and so on.
@@ -309,28 +309,14 @@ class makePlots:
 
 	robfnxy  	= filename.replace('.png','_xyrobin.png')
 	robfnquad  	= filename.replace('.png','_robinquad.png')	
+	robfncartopy	= filename.replace('.png','_robinquad-cartopy.png')		
 	histfnxy 	= filename.replace('.png','_hist.png')
 	histsfnxy 	= filename.replace('.png','_hists.png')				
 	
-	#####
-	# Simultaneous histograms plot	
-	if ukp.shouldIMakeFile([self.xfn,self.yfn],histfnxy,debug=False):
-		xaxislabel= getLongName(self.name)+', '+ xunits
-		if self.name in noXYLogs or dmin*dmax <=0.:				
-			ukp.histPlot(datax, datay,  histfnxy, Title=title, labelx=self.xtype,labely=self.ytype,xaxislabel =xaxislabel)	
-		else:	ukp.histPlot(datax, datay,  histfnxy, Title=title, labelx=self.xtype,labely=self.ytype,xaxislabel =xaxislabel, logx = True, )
 
-	if ukp.shouldIMakeFile([self.xfn,self.yfn],histsfnxy,debug=False):
-		xaxislabel= getLongName(self.name)+', '+ xunits
-		if self.name in noXYLogs or dmin*dmax <=0.:				
-			ukp.histsPlot(datax, datay,  histsfnxy, Title=title, labelx=self.xtype,labely=self.ytype,xaxislabel =xaxislabel)	
-		else:	ukp.histsPlot(datax, datay,  histsfnxy, Title=title, labelx=self.xtype,labely=self.ytype,xaxislabel =xaxislabel, logx = True, )
-		
-			
-			
 				
 	#####
-	# Robinson projection plots	
+	# Robinson projection plots - Basemap
 	if ukp.shouldIMakeFile([self.xfn,self.yfn],robfnquad,debug=False) or True:
 		ti1 = getLongName(self.xtype)
 		ti2 =  getLongName(self.ytype)
@@ -349,7 +335,47 @@ class makePlots:
 				cbarlabel=cbarlabel, 
 				doLog=doLog,
 				vmin=dmin,vmax=dmax,)
+
+	# Robinson projection plots - Cartopy
+	if ukp.shouldIMakeFile([self.xfn,self.yfn],robfncartopy,debug=False) or True:
+		ti1 = getLongName(self.xtype)
+		ti2 =  getLongName(self.ytype)
+		if self.name in noXYLogs or dmin*dmax <=0.:
+			doLog=False
+			cbarlabel=xunits
+		else:	
+			doLog=True
+			cbarlabel='log$_{10}$('+xunits+')'		
+		print "plotWithSlices:\tROBIN QUAD:",[ti1,ti2],False,dmin,dmax
+		ukp.robinPlotQuad(nmxx, nmxy, 
+				datax,datay,
+				robfncartopy,
+				titles=[ti1,ti2],
+				title  = ' '.join([getLongName(newSlice),getLongName(self.name+self.region),self.year]),
+				cbarlabel=cbarlabel, 
+				doLog=doLog,
+				vmin=dmin,vmax=dmax,
+				maptype = 'Cartopy')
 				
+
+	#####
+	# Simultaneous histograms plot	
+	if ukp.shouldIMakeFile([self.xfn,self.yfn],histfnxy,debug=False):
+		xaxislabel= getLongName(self.name)+', '+ xunits
+		if self.name in noXYLogs or dmin*dmax <=0.:				
+			ukp.histPlot(datax, datay,  histfnxy, Title=title, labelx=self.xtype,labely=self.ytype,xaxislabel =xaxislabel)	
+		else:	ukp.histPlot(datax, datay,  histfnxy, Title=title, labelx=self.xtype,labely=self.ytype,xaxislabel =xaxislabel, logx = True, )
+
+	if ukp.shouldIMakeFile([self.xfn,self.yfn],histsfnxy,debug=False):
+		xaxislabel= getLongName(self.name)+', '+ xunits
+		if self.name in noXYLogs or dmin*dmax <=0.:				
+			ukp.histsPlot(datax, datay,  histsfnxy, Title=title, labelx=self.xtype,labely=self.ytype,xaxislabel =xaxislabel)	
+		else:	ukp.histsPlot(datax, datay,  histsfnxy, Title=title, labelx=self.xtype,labely=self.ytype,xaxislabel =xaxislabel, logx = True, )
+		
+			
+			
+			
+											
 		#else:	
 		#	print "plotWithSlices:\tROBIN QUAD DOING DOLOG:",[ti1,ti2],False,dmin,dmax					
 		#	ukp.robinPlotQuad(nmxx, nmxy, datax,datay,
@@ -442,7 +468,8 @@ class makePlots:
 	"""	This routine plots the coordinates of the data against the coordinates of the model.
 		This should produce a straight line plot, ensuring that the matching has been performed correctly.
 	"""
-	
+	#import seaborn as sb
+	#sb.set(style="ticks")
 	xcoords = [self.mt[self.xtype][k] for k in ['t','lat','lon','z','lon',]]
 	ycoords = [self.mt[self.ytype][k] for k in ['t','lat','lon','z','lat',]]
 	  	 	  	

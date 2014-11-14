@@ -6,10 +6,13 @@ from glob import glob
 import numpy as np
 from matplotlib import pyplot
 from mpl_toolkits.basemap import Basemap
+import cartopy.crs as ccrs
+import cartopy.io.shapereader as shapereader
 from scipy.stats.mstats import scoreatpercentile
 from scipy.stats import linregress
 from calendar import month_name
 from shelve import open as shOpen
+
 import yaml 
 
 #local imports
@@ -383,7 +386,9 @@ def robinPlotPair(lons, lats, data1,data2,filename,titles=['',''],lon0=0.,marble
 	pyplot.close()
 
 
-def robinPlotQuad(lons, lats, data1,data2,filename,titles=['',''],title='',lon0=0.,marble=False,drawCbar=True,cbarlabel='',doLog=False,scatter=True,dpi=100,vmin='',vmax=''):#,**kwargs):
+
+
+def robinPlotQuad(lons, lats, data1,data2,filename,titles=['',''],title='',lon0=0.,marble=False,drawCbar=True,cbarlabel='',doLog=False,scatter=True,dpi=100,vmin='',vmax='',maptype='Basemap'):#,**kwargs):
 
 	fig = pyplot.figure()
 	fig.set_size_inches(14,8)
@@ -395,16 +400,7 @@ def robinPlotQuad(lons, lats, data1,data2,filename,titles=['',''],title='',lon0=
 	axs,bms,cbs,ims = [],[],[],[]
 	doLogs = [doLog,doLog,False,True]
 	for i,spl in enumerate([221,222,223,224]):	
-		axs.append(fig.add_subplot(spl))
-		bms.append( Basemap(projection='robin',lon_0=lon0,resolution='c') )#lon_0=-106.,
-		x1, y1 = bms[i](lons, lats)
-		bms[i].drawcoastlines(linewidth=0.5)
-		if marble: bms[i].bluemarble()
-		else:
-			bms[i].drawmapboundary(fill_color='1.')
-			bms[i].fillcontinents(color=(255/255.,255/255.,255/255.,1))
-		bms[i].drawparallels(np.arange(-90.,120.,30.))
-		bms[i].drawmeridians(np.arange(0.,420.,60.))
+
 		
 		
 		if spl in [221,222]:
@@ -441,14 +437,42 @@ def robinPlotQuad(lons, lats, data1,data2,filename,titles=['',''],title='',lon0=
 			rbma = np.log10(rbma)
 			if rbma > np.int(rbma): rbma+=1
 			rbma = np.int(rbma)
+		if maptype=='Basemap':
+			axs.append(fig.add_subplot(spl))		
+			bms.append( Basemap(projection='robin',lon_0=lon0,resolution='c') )#lon_0=-106.,
+			x1, y1 = bms[i](lons, lats)
+			bms[i].drawcoastlines(linewidth=0.5)
+			if marble: bms[i].bluemarble()
+			else:
+				bms[i].drawmapboundary(fill_color='1.')
+				bms[i].fillcontinents(color=(255/255.,255/255.,255/255.,1))
+			bms[i].drawparallels(np.arange(-90.,120.,30.))
+			bms[i].drawmeridians(np.arange(0.,420.,60.))
+								
+			if scatter:
+				if doLogs[i]:	ims.append(bms[i].scatter(x1,y1,c = np.log10(data),marker="s",alpha=0.9,linewidth='0',vmin=rbmi, vmax=rbma,))# **kwargs))
+				else:		ims.append(bms[i].scatter(x1,y1,c = data,	   marker="s",alpha=0.9,linewidth='0',vmin=rbmi, vmax=rbma,))# **kwargs))
+			else:
+				xi1,yi1,di1=mapIrregularGrid(bms[i],axs[i],lons,lats,data,lon0,xres=360,yres=180)
+				if doLogs[i]: 	ims.append( bms[i].pcolormesh(xi1,yi1,di1,cmap=pyplot.cm.jet,norm = LogNorm() ))
+				else:	  	ims.append( bms[i].pcolormesh(xi1,yi1,di1,cmap=pyplot.cm.jet))
+
+		if maptype=='Cartopy':
+			#axs.append(fig.add_subplot(spl))
+			bms.append(pyplot.subplot(spl,projection=ccrs.Robinson()))
+			bms[i].set_global()
+			#bms[i].stock_img()
+			#bms[i].coastlines()
+			# Because Cartopy is hard wired to download the shapes files from a website that doesn't exist anymore:
+			bms[i].add_geometries(list(shapereader.Reader('data/ne_110m_coastline.shp').geometries()), ccrs.PlateCarree(), color='k',facecolor = 'none',linewidth=0.5)
+
 			
-		if scatter:
-			if doLogs[i]:	ims.append(bms[i].scatter(x1,y1,c = np.log10(data),marker="s",alpha=0.9,linewidth='0',vmin=rbmi, vmax=rbma,))# **kwargs))
-			else:		ims.append(bms[i].scatter(x1,y1,c = data,	   marker="s",alpha=0.9,linewidth='0',vmin=rbmi, vmax=rbma,))# **kwargs))
-		else:
-			xi1,yi1,di1=mapIrregularGrid(bms[i],axs[i],lons,lats,data,lon0,xres=360,yres=180)
-			if doLogs[i]: 	ims.append( bms[i].pcolormesh(xi1,yi1,di1,cmap=pyplot.cm.jet,norm = LogNorm() ))
-			else:	  	ims.append( bms[i].pcolormesh(xi1,yi1,di1,cmap=pyplot.cm.jet))
+			if scatter:
+				if doLogs[i]:	ims.append(bms[i].scatter(lons, lats,c = np.log10(data),marker="s",alpha=0.9,linewidth='0',vmin=rbmi, vmax=rbma,transform=ccrs.PlateCarree(),))# **kwargs))
+				else:		ims.append(bms[i].scatter(lons, lats,c = data,	  	marker="s",alpha=0.9,linewidth='0',vmin=rbmi, vmax=rbma,transform=ccrs.PlateCarree(),))# **kwargs))
+			else:
+				assert False
+
 
 		
 		if drawCbar:
@@ -484,6 +508,9 @@ def robinPlotQuad(lons, lats, data1,data2,filename,titles=['',''],title='',lon0=
 		
 
 def histPlot(datax, datay,  filename, Title='', labelx='',labely='',xaxislabel='', logx=False,logy=False,nbins=50,dpi=100,minNumPoints = 3):
+#	try:import seaborn as sb
+#	except:pass
+	
 	print "UKESMpython:\thistplot:\t preparing", Title, datax.size, datay.size
 	fig = pyplot.figure()		
 	ax = pyplot.subplot(111)
@@ -529,6 +556,7 @@ def histPlot(datax, datay,  filename, Title='', labelx='',labely='',xaxislabel='
 
 
 def histsPlot(datax, datay,  filename, Title='', labelx='',labely='',xaxislabel='', logx=False,logy=False,nbins=50,dpi=100,minNumPoints = 3):
+
 	print "UKESMpython:\thistplot:\t preparing", Title, datax.size, datay.size
 	fig = pyplot.figure()		
 	ax = pyplot.subplot(311)
@@ -566,7 +594,7 @@ def histsPlot(datax, datay,  filename, Title='', labelx='',labely='',xaxislabel=
 	pyplot.legend([labelx,labely],loc='upper left')
 	
 	pyplot.title(Title)	
-	pyplot.xlabel(xaxislabel)
+	#pyplot.xlabel(xaxislabel)
 	#pyplot.ylabel(labely)
 
 	ax = pyplot.subplot(312)
@@ -575,6 +603,7 @@ def histsPlot(datax, datay,  filename, Title='', labelx='',labely='',xaxislabel=
 	maxd = np.max(np.abs(d))
 	n, bins, patchesx = pyplot.hist(d,  bins=np.linspace(-maxd, maxd, nbins), histtype='stepfilled',range=[-maxd,maxd] )
 	pyplot.setp(patchesx, 'facecolor', 'g', 'alpha', 0.5)		
+	y = pyplot.axvline(x=0., c = 'k',ls='--')
 	
 	ax = pyplot.subplot(313)
 	pyplot.title('Quotient: '+labelx+' / '+labely)	
@@ -585,6 +614,7 @@ def histsPlot(datax, datay,  filename, Title='', labelx='',labely='',xaxislabel=
 	n, bins, patchesx = pyplot.hist(d,  histtype='stepfilled', bins=10**np.linspace(np.log10(1./maxd), np.log10(maxd), nbins),range=[xmin,xmax])	
 	pyplot.setp(patchesx, 'facecolor', 'g', 'alpha', 0.5)	
 	ax.set_xscale('log')
+	y = pyplot.axvline(x=1., c = 'k',ls='--')
 		
 	print "UKESMpython:\thistPlot:\tSaving:" , filename
 	pyplot.savefig(filename ,dpi=dpi)
