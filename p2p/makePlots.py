@@ -1,5 +1,5 @@
 #!/usr/bin/ipython
-from netCDF4 import num2date
+from netCDF4 import Dataset, num2date
 from datetime import datetime
 from sys import argv
 from os.path import exists,split, getmtime, basename
@@ -14,7 +14,7 @@ from scipy.stats.mstats import scoreatpercentile
 import numpy as np 
 
 # imports from other gitlab repositories:
-from ncdfView import ncdfView
+#from ncdfView import ncdfView
 from StatsDiagram import StatsDiagram
 
 #local imports
@@ -88,8 +88,10 @@ class makePlots:
 	
   def run(self,):
 
-  	self.xnc = ncdfView(self.xfn,Quiet=True)
-  	self.ync = ncdfView(self.yfn,Quiet=True)
+  	self.xnc = Dataset(self.xfn,'r')
+  	self.ync = Dataset(self.yfn,'r')
+  	#self.xnc = ncdfView(self.xfn,Quiet=True)
+  	#self.ync = ncdfView(self.yfn,Quiet=True)
 
 	if self.compareCoords: self.CompareCoords()	
 	self.defineSlices(self.plotallcuts)
@@ -174,21 +176,23 @@ class makePlots:
 	  	print 'plotWithSlices:\tAll plots and shelve files already made',self.name, newSlice, xkeys,ykeys
 		return
 	
+
 	#####
 	# Load data
 	
 	#time and depth
-	xt = self.xnc(self.mt[self.xtype]['t'])[:]
-	yt = self.ync(self.mt[self.ytype]['t'])[:]
-	xz = self.xnc(self.mt[self.xtype]['z'])[:]
-	yz = self.ync(self.mt[self.ytype]['z'])[:]
+	xt = self.xnc.variables[self.mt[self.xtype]['t']][:]
+	yt = self.ync.variables[self.mt[self.ytype]['t']][:]
+	xz = self.xnc.variables[self.mt[self.xtype]['z']][:]
+	yz = self.ync.variables[self.mt[self.ytype]['z']][:]
 
 	#lat and lon
-	xy = self.xnc(self.mt[self.xtype]['lat'])[:]
-	yy = self.ync(self.mt[self.ytype]['lat'])[:]
-	xx = self.xnc(self.mt[self.xtype]['lon'])[:]
-	yx = self.ync(self.mt[self.ytype]['lon'])[:]	
-
+	xy = self.xnc.variables[self.mt[self.xtype]['lat']][:]
+	yy = self.ync.variables[self.mt[self.ytype]['lat']][:]
+	xx = self.xnc.variables[self.mt[self.xtype]['lon']][:]
+	yx = self.ync.variables[self.mt[self.ytype]['lon']][:]
+	
+	
 	self.xx = xx
 	self.xy = xy
 	self.xz = xz
@@ -250,7 +254,7 @@ class makePlots:
 
 	  
         if self.name in ['mld','mld_DT02','mld_DR003','mld_DReqDTm02']:
-        	mldMask = self.ync('mask')[:]
+        	mldMask = self.ync.variables['mask'][:]
         	fullmask += np.ma.masked_where(mldMask==0.,mldMask).mask        
 	  
 	
@@ -488,9 +492,9 @@ class makePlots:
 			assert False		
 		
 
-		mask = np.ma.array(self.xnc(xkey)[:]).mask + np.ma.array(self.ync(ykey)[:]).mask
-		dx = np.ma.masked_where(mask, np.ma.array(self.xnc(xkey)[:])).compressed()
-		dy = np.ma.masked_where(mask, np.ma.array(self.ync(ykey)[:])).compressed()
+		mask = np.ma.array(self.xnc.variables[xkey][:]).mask + np.ma.array(self.ync.variables[ykey][:]).mask
+		dx = np.ma.masked_where(mask, np.ma.array(self.xnc.variables[xkey][:])).compressed()
+		dy = np.ma.masked_where(mask, np.ma.array(self.ync.variables[ykey][:])).compressed()
 				
 		print "CompareCoords:\t",xkey,':', len(dx),"\t:",ykey,':',len(dy), dx.min(),dx.max(), dy.min(), dy.max()		
 	
@@ -636,7 +640,7 @@ def extractData(nc, mt,key = ['',]):
   	else:
   	#except:
   		print "extractData: mt Not a dict:", mt, key
-  		return np.ma.array(nc(key)[:])
+  		return np.ma.array(nc.variables[key][:])
 
 
   	
@@ -645,51 +649,51 @@ def extractData(nc, mt,key = ['',]):
   	
 	if 'sum' in mtkeys:
 		print "Extracting data:\tSumming:", mt['sum']
-  	  	xd = nc(mt['sum'][0])[:]
-		for  name in mt['sum'][1:]:	xd +=nc(name)[:]
+  	  	xd = nc.variables[mt['sum'][0]][:]
+		for  name in mt['sum'][1:]:	xd +=nc.variables[name][:]
   	
 	if 'product' in mtkeys: 
   		print "Extracting data:\tmultiplying:", mt['product']
-  	  	xd = nc(mt['product'][0])[:]
-		for  name in mt['product'][1:]:	xd *= nc(name)[:]
+  	  	xd = nc.variables[mt['product'][0]][:]
+		for  name in mt['product'][1:]:	xd *= nc.variables[name][:]
 		
 	if 'productPC' in mtkeys:
   		print "Extracting data:\tmultiplying:", mt['productPC']
-  	  	xd = nc(mt['productPC'][0])[:]*nc(mt['productPC'][1])[:]/100.   	  	
+  	  	xd = nc.variables[mt['productPC'][0]][:]*nc.variables[mt['productPC'][1]][:]/100.   	  	
   	  	
 	if 'N2Biomass' in mtkeys: 		
   		print "Extracting data:\tmultiplying:", mt['N2Biomass'] ,'by 79.573'
-  	  	xd = nc(mt['N2Biomass'][0])[:] * 79.573
+  	  	xd = nc.variables[mt['N2Biomass'][0]][:] * 79.573
   	  	
  	if 'div1000' in mtkeys: 	  		
   		print "Extracting data:\tDividing by 1000. ", mt['div1000']
-   	  	xd = nc(mt['div1000'][0])[:]/1000. 
+   	  	xd = nc.variables[mt['div1000'][0]][:]/1000. 
    	  	  	  	 				
 	if 'mul1000' in mtkeys:
   		print "Extracting data:\tMultipling by 1000. ", mt['mul1000']
-   	  	xd = nc(mt['mul1000'][0])[:]*1000.   	
+   	  	xd = nc.variables[mt['mul1000'][0]][:]*1000.   	
 
 
 	if 'SWtoBmass' in mtkeys:
   		print "Extracting data:\tconverting seawifsPFT% into Biomass:", mt['SWtoBmass']
-  	  	xd = nc(mt['SWtoBmass'][0])[:]*nc(mt['SWtoBmass'][1])[:]/100. 
+  	  	xd = nc.variables[mt['SWtoBmass'][0]][:]*nc.variables[mt['SWtoBmass'][1]][:]/100. 
 		xd = 79. * power(xd, 0.65)
 		#fit From http://www.int-res.com/articles/meps_oa/m383p073.pdf
 		# doi: 10.3354/meps07998
 		
 	if 'Chl2BM' in mtkeys:		
   		print "Extracting data:\tconverting Chl to Biomass:", mt['Chl2BM']
-  		xd = 79. * power(nc(mt['Chl2BM'][0])[:], 0.65)
+  		xd = 79. * power(nc.variables[mt['Chl2BM'][0]][:], 0.65)
   		
  	if 'mean' in mtkeys: 				
   		print "Extracting data:\tmeaning:", mt['mean'] 
-  	  	xd = nc(mt['mean'][0])[:]
-		for  name in mt['mean'][1:]:	xd +=nc(name)[:]
+  	  	xd = nc.variables[mt['mean'][0]][:]
+		for  name in mt['mean'][1:]:	xd +=nc.variables[name][:]
 		xd  = xd/float(len(mt['mean']))
 		
 	if 'divide' in mtkeys:
   		print "Extracting data:\tdividing", mt['divide'] 	
-		xd = nc(mt['divide'][0])[:]/nc(mt['divide'][1])[:]
+		xd = nc.variables[mt['divide'][0]][:]/nc.variables[mt['divide'][1]][:]
 		
   	return np.ma.array(xd)
 

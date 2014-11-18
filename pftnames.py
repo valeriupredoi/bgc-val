@@ -302,7 +302,7 @@ def getmt(loadYaml=False): # Match Type
 	"""
 	getmt(): Get Match Type. 
 	Typical usage:
-		mt[ModelName or Data source][varaible name] = [list of variable names as they appears in the netcdf]
+		mt[ModelName or Data source][variable name] = [list of variable names as they appears in the netcdf]
 		
 	mt always includes the coordinate names as their appear in the netcdf file too. ie:
 		mt['GEOTRACES']['lat'] 		= 'Latitude'
@@ -311,9 +311,9 @@ def getmt(loadYaml=False): # Match Type
 	However, it is possible tha you want to plot a combination of variables, such the sum of a series of values or the ratio of two.
 	In some cases you may want to divide a value by 1000. 
 	These cases work like this:
-		mt[ModelName or Data source][varaible name]['name'] = variable name 
-		mt[ModelName or Data source][varaible name][function in "excatractData()"] = [list of varaibles to combine in extractData]
-		mt[ModelName or Data source][varaible name][new units] = 'mg m^-3' or whatever. (preferable from fancyUnits, below)
+		mt[ModelName or Data source][variable name]['name'] = variable name 
+		mt[ModelName or Data source][variable name][function in "excatractData()"] = [list of variables to combine in extractData]
+		mt[ModelName or Data source][variable name][new units] = 'mg m^-3' or whatever. (preferable from fancyUnits, below)
 	"""
 	
 	#####

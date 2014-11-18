@@ -5,7 +5,7 @@ from glob import glob
 from shelve import open as shOpen
 from shutil import copy2
 from math import radians, cos, sin, asin, sqrt
-from netCDF4 import num2date
+from netCDF4 import num2date,Dataset
 from datetime import datetime
 import numpy as np
 
@@ -17,7 +17,7 @@ from pftnames import getmt
 #####
 # ncdfView is available from:
 #	https://gitlab.ecosystem-modelling.pml.ac.uk/momm/pml-python-tools
-from ncdfView import ncdfView	
+#from ncdfView import ncdfView	
 
 #####	
 # These are availalble in the module:
@@ -136,14 +136,14 @@ class matchDataAndModel:
 		return
 
 	print "matchDataAndModel:\tconvertDataTo1D:\topening DataFilePruned:\t",self.DataFilePruned		
-	nc = ncdfView(self.DataFilePruned,Quiet=True)
-
+	#nc = ncdfView(self.DataFilePruned,Quiet=True)
+	nc = Dataset(self.DataFilePruned,'r')
 		
 	#WOADatas = [a+self.region for a in ['salinity','temperature','temp','sal','nitrate','phosphate','silicate',]]	   	 
 	
 	if self.region in ['Surface','200m','100m','500m','1000m','Transect',]:	
-	    if nc(self.DataVars[0]).shape in [(12, 14, 180, 360), (12, 24, 180, 360)]: # WOA format
-		mmask = np.ones(nc(self.DataVars[0]).shape)
+	    if nc.variables[self.DataVars[0]].shape in [(12, 14, 180, 360), (12, 24, 180, 360)]: # WOA format
+		mmask = np.ones(nc.variables[self.DataVars[0]].shape)
 		#####
 		# This could be rewritten to just figure out which level is closest, but a bit much effort for not a lot of gain.
 		
@@ -156,13 +156,13 @@ class matchDataAndModel:
 			mmask[:,k,:,:] = 0
 						
 		if self.region == 'Transect':	mmask[:,:,:,200] = 0   # Pacific Transect.	
-		mmask +=nc(self.DataVars[0]).mask
+		mmask +=nc.variables[self.DataVars[0]].mask
 		print mmask.shape
 
 		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking WOA style flat array:',self.DataFilePruned,'-->',self.DataFile1D	
 	  	convertToOneDNC(self.DataFilePruned,self.DataFile1D ,newMask=mmask, variables = self.DataVars, debug=True)		  	
 	    else:
-		print 'matchDataAndModel:\tconvertDataTo1D:\tYou need to add more file spcific regions here.', nc(self.DataVars[0]).shape
+		print 'matchDataAndModel:\tconvertDataTo1D:\tYou need to add more file spcific regions here.', nc.variables[self.DataVars[0]].shape
 		assert False
 			
 	else:
@@ -178,8 +178,9 @@ class matchDataAndModel:
   def _matchModelToData_(self,):
   	print "matchModelToData:\tOpened MAREDAT netcdf:", self.DataFile1D
   	
-  	ncIS = ncdfView(self.DataFile1D,Quiet=True)
-	is_i	= ncIS('index')[:]
+  	ncIS = Dataset(self.DataFile1D,'r')
+  	#ncIS = ncdfView(self.DataFile1D,Quiet=True)  	
+	is_i	= ncIS.variables['index'][:]
 	
 	try:
 		s = shOpen(self.matchedShelve)
@@ -233,10 +234,10 @@ class matchDataAndModel:
 	zdict={}
 	tdict={}
 	print 'mt[',ytype,']:', mt[ytype]
-  	is_t	= ncIS(mt[ytype]['t'])[:]	
-  	is_z 	= ncIS(mt[ytype]['z'])[:]
-  	is_la	= ncIS(mt[ytype]['lat'])[:]
-	is_lo 	= ncIS(mt[ytype]['lon'])[:]	
+  	is_t	= ncIS.variables[mt[ytype]['t']][:]	
+  	is_z 	= ncIS.variables[mt[ytype]['z']][:]
+  	is_la	= ncIS.variables[mt[ytype]['lat']][:]
+	is_lo 	= ncIS.variables[mt[ytype]['lon']][:]	
 	tdict = {i+1:i for i in xrange(12)}
 	ncIS.close()	     
 
@@ -388,14 +389,15 @@ class matchDataAndModel:
 		return arr
 		
 
-  	ncIS = ncdfView(self.DataFile1D,Quiet=True)		
+  	ncIS = Dataset(self.DataFile1D,'r')		
+  	#ncIS = ncdfView(self.DataFile1D,Quiet=True)		
 	av = AutoVivification()
 	for v in ncIS.variables.keys():
-		if ncIS(v).ndim != 1: 
+		if ncIS.variables[v].ndim != 1: 
 			if self.debug: print "matchDataAndModel:\tapplyMaskToData:\tERROR:\tthis is suppoed to be the one D file"
 			assert False
-		print  "matchDataAndModel:\tapplyMaskToData:AutoViv:", v ,len(ncIS(v)[:]), len(self.maremask)
-		if len(ncIS(v)[:])== len(self.maremask):
+		print  "matchDataAndModel:\tapplyMaskToData:AutoViv:", v ,len(ncIS.variables[v][:]), len(self.maremask)
+		if len(ncIS.variables[v][:])== len(self.maremask):
 			if self.debug: print  "matchDataAndModel:\tapplyMaskToData:AutoViv:", v ,'is getting a mask.'
 			av[v]['convert'] = getMedianVal
 	ncIS.close()
@@ -410,10 +412,11 @@ class matchDataAndModel:
   def loadMesh(self,):
       	# This won't work unless its the 1 degree grid.
   	print "matchModelToData:\tOpened Model netcdf: ~/data/mesh_mask_ORCA1_75.nc"
-  	ncER = ncdfView("data/mesh_mask_ORCA1_75.nc",Quiet=True)
-	self.latcc    = ncER('nav_lat')[:]
-	self.loncc    = makeLonSafeArr(ncER('nav_lon')[:])
-  	self.deptht   = ncER('gdept_0')[:]
+  	ncER = Dataset("data/mesh_mask_ORCA1_75.nc",'r')
+  	#ncER = ncdfView("data/mesh_mask_ORCA1_75.nc",Quiet=True)  	
+	self.latcc    = ncER.variables['nav_lat'][:]
+	self.loncc    = makeLonSafeArr(ncER.variables['nav_lon'][:])
+  	self.deptht   = ncER.variables['gdept_0'][:]
 	ncER.close()
 	self._meshLoaded_ = 1
 	

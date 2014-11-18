@@ -56,7 +56,9 @@ REQUIREMENTS:
 			sudo yum install python-mpltoolkits.basemap		
 			or from source.
 							
-			It may be possible to switch Basemap out for cartopy. I'm not sure.
+			It may be possible to switch Basemap out for cartopy.
+			Cartopy is equally difficult to install.
+			
 					
 
 

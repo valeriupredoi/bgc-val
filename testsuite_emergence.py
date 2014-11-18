@@ -33,7 +33,8 @@ def main():
 	if not len(filesIn):
 		print "testsuite:\tERROR:\tNo files specified, try:"
 		print "./testsuite.py /data/euryale7/scratch/ledm/UKESM/MEDUSA/medusa_bio_1998.nc"
-	
+
+	#a = primaryproduction.primaryproduction(filesIn)	
 	for fn in filesIn:
 		print "testsuite:\tINFO:\t",fn	
 		a = cchlvsIrradiance.cchlvsIrradiance(fn)
