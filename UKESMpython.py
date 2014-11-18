@@ -628,6 +628,45 @@ def histsPlot(datax, datay,  filename, Title='', labelx='',labely='',xaxislabel=
 	pyplot.savefig(filename ,dpi=dpi)
 	pyplot.close()	
 	
+
+def makeOneDPlot(dates, data, title, filename, minmax=[0.,0.],dpi=100):
+	print "makeOneDPlot: ", filename
+	fig = pyplot.figure()
+	ax = fig.add_subplot(111)
+	fig.set_size_inches(16, 6)
+	
+	if len(dates) != len(data):
+		print "makeOneDPlot:\tTHere is a size Mismatch between time and data", len(dates) ,len(data)
+		assert False
+		
+	ma,mi = np.ma.max(data), np.ma.min(data)
+	if np.isinf(ma ) or np.isnan(ma ) :
+		print title,"has an inf/NaN:",ma,mi, np.isinf(ma ) , np.isnan(ma)	
+		data = np.ma.array(data)
+		data = np.ma.masked_invalid(data)
+		ma = np.ma.max(data)
+		mi = np.ma.min(data)
+		
+	if ma is np.ma.masked: 
+		print 'makeOneDPlot:\tNo values in the masked array'
+		return
+	try: print ma+mi
+	except: 
+		print 'makeOneDPlot:\tmaximum isn\'t a number. exiting.'	
+		return
+				
+	if minmax!= [0.,0.]:
+		mi,ma = minmax[0],minmax[1]
+		
+	pyplot.plot(dates, data)
+		
+	if ma/100. > mi and ma * mi > 0. and ma > 0.: ax.set_yscale('log')
+	
+	pyplot.title(title) 
+		
+	print "makeOneDPlot:\tSaving: " + filename
+	pyplot.savefig(filename,dpi=dpi)#, bbox_inches='tight')
+	pyplot.close()	
 	
 		
 		

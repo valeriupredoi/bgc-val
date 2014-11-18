@@ -7,7 +7,7 @@ from UKESMpython import folder,getFileList
 #from cchl import cchl
 #from cchlvsIrradiance import cchlvsIrradiance
 #from communityfit import communityfit
-from emergence import cchl,cchlvsIrradiance, communityfit
+from emergence import cchl,cchlvsIrradiance, communityfit,primaryproduction
 
 
 """
@@ -34,7 +34,8 @@ def main():
 		print "testsuite:\tERROR:\tNo files specified, try:"
 		print "./testsuite.py /data/euryale7/scratch/ledm/UKESM/MEDUSA/medusa_bio_1998.nc"
 
-	#a = primaryproduction.primaryproduction(filesIn)	
+	a = primaryproduction.primaryproduction(filesIn)	
+	assert False
 	for fn in filesIn:
 		print "testsuite:\tINFO:\t",fn	
 		a = cchlvsIrradiance.cchlvsIrradiance(fn)
