@@ -1,5 +1,6 @@
 from sys import argv
 from string import join
+from netCDF4 import Dataset
 from os.path  import exists,getmtime
 from os import mkdir, makedirs
 from glob import glob
@@ -16,7 +17,7 @@ from shelve import open as shOpen
 import yaml 
 
 #local imports
-from ncdfView import ncdfView
+#from ncdfView import ncdfView
 """	This is a catch all toolkit for the python methods and shorthands used in this code.
 """
 
@@ -812,9 +813,10 @@ def makeMask(name,newSlice, xt,xz,xy,xx,xd):
 	nmask = np.zeros(len(xd))	# nothing masked	
 
  	if newSlice in ['maskBelowBathy', 'OnShelf','OffShelf',]:
-		bathync = ncdfView("data/ORCA1bathy.nc",Quiet=True)
-		bathy = abs(bathync("bathymetry")[:])
-		latcc, loncc =  bathync("lat")[:], bathync("lon")[:]	
+		#bathync = ncdfView("data/ORCA1bathy.nc",Quiet=True)
+		bathync = Dataset("data/ORCA1bathy.nc",'r')		
+		bathy = abs(bathync.variables["bathymetry"][:])
+		latcc, loncc =  bathync.variables["lat"][:], bathync.variables["lon"][:]	
 		bathync.close()
 		shelfDepth=500.
 		shelveFn = folder("shelves/MatchingMasks/")+"diag_maskMask.shelve"
