@@ -59,31 +59,11 @@ REQUIREMENTS:
 			It may be possible to switch Basemap out for cartopy.
 			Cartopy is equally difficult to install.
 			
-					
-
-
-			
-			
-		
-		
-	
-	Code from :
-	communitystructure 
-		from: https://gitlab.ecosystem-modelling.pml.ac.uk/ledm/communitystructure
-
 	netcdf_manip:
 		changeNC, mergeNC, pruneNC, convertToOneDNC
 		from: https://gitlab.ecosystem-modelling.pml.ac.uk/ledm/netcdf_manip
 	
-	PMLpython:
-		from https://gitlab.ecosystem-modelling.pml.ac.uk/momm/pml-python-tools
-		some code uses ncdfView which a PML wrapper around netCDF4.Dataset.
-		some code uses StatsDiagram, a Taylor/Target diagram routine in PMLpython.
-		some code uses C2chl.py
 
-		These resources are availalbe to all registered users on the gitlab server.
-	
-	
 	
 TO DO:
 	Replace pftnames.getlongname with something better.
@@ -92,22 +72,19 @@ TO DO:
 	
 	more documentation.
 	
-	Investigate a 1D point to point validation at HOTS/BATS.
 	
-	possibly move naming scheme into analysis template.
+	Investigate a 1D point to point validation at HOTS/BATS.
+
+	Sort out longnames.	
 
 	Move the NameTypes (ie GEOTRACESTypes) into the getmt?
 	
 	Target diagrams:
-		the same file name is copied multiple times
 		different symbols are used in legend to the plot.
 	
-	
-	Check requirements for local/PML repositories
-		move those into this repository?
-		remove ncdfView
-		remove StatsDiagram
-		relocate C2chl
+	Test code for a new grid beyond ORCA100-75.
+		ORCA025 ior ORCA100-60 ? 
+
 		
 		
 		
