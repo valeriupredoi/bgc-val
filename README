@@ -1,9 +1,17 @@
 
 
 README:
-	Some analysis tools for UKESM - MEDUSA
+	Some analysis tools for UKESM - MEDUSA/ERSEM/NEMO 
 	The bulk of the tools were written for the ERSEM model, then subsequently patched for performing analsysis of MEDUSA (or other iMarNet Models).
 	
+	There are two categories of analysis done here:
+		1. Emergent property analysis
+		2. Model vs data point to point comparison 
+
+	The key files that do all the leg work are:
+		    testsuite_emergence.py
+		    testsuite_p2p.py
+	They both run a selection of analsyes.
 	
 	
 CONTENTS:
@@ -38,22 +46,68 @@ CONTENTS:
 				
 REQUIREMENTS:
 	Python libraries:
-	matplotlib, numpy, scipy,
-	netCDF4
 	
+	simple to install:
+		pip install numpy scipy matplotlib netCDF4 pyyaml pyproj
+		
+		Harder to install:
+			mpl_toolkits (needed for basemap, but has a new set of requirements)
+			sudo apt-get install python-mpltoolkits.basemap
+			sudo yum install python-mpltoolkits.basemap		
+			or from source.
+							
+			It may be possible to switch Basemap out for cartopy.
+			Cartopy is equally difficult to install.
+			
+					
+
+
+			
+			
+		
+		
+	
+	Code from :
 	communitystructure 
 		from: https://gitlab.ecosystem-modelling.pml.ac.uk/ledm/communitystructure
 
+	netcdf_manip:
+		changeNC, mergeNC, pruneNC, convertToOneDNC
+		from: https://gitlab.ecosystem-modelling.pml.ac.uk/ledm/netcdf_manip
+	
+	PMLpython:
+		from https://gitlab.ecosystem-modelling.pml.ac.uk/momm/pml-python-tools
+		some code uses ncdfView which a PML wrapper around netCDF4.Dataset.
+		some code uses StatsDiagram, a Taylor/Target diagram routine in PMLpython.
+		some code uses C2chl.py
+
+		These resources are availalbe to all registered users on the gitlab server.
+	
+	
+	
 TO DO:
-	Analysis code Template
-	Autoviv dict
-	need to think of some clever ways to infer model name, date,jobID, etc.
+	Replace pftnames.getlongname with something better.
+
+	add some better "alwaysInclude" methods to netcdf_manip
+	
+	more documentation.
+	
+	Investigate a 1D point to point validation at HOTS/BATS.
 	
 	possibly move naming scheme into analysis template.
-	 
-	Move P2P code into this repository.
+
+	Move the NameTypes (ie GEOTRACESTypes) into the getmt?
+	
+	Target diagrams:
+		the same file name is copied multiple times
+		different symbols are used in legend to the plot.
 	
 	
 	Check requirements for local/PML repositories
 		move those into this repository?
+		remove ncdfView
+		remove StatsDiagram
+		relocate C2chl
+		
+		
 		

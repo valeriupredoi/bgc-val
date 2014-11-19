@@ -5,7 +5,7 @@ from sys import argv
 from matplotlib import pyplot
 import numpy as np
 #Specific local code:
-from pftnames import pftnames as pn
+#from pftnames import pftnames as pn
 from UKESMpython import folder,getFileList,sliceA
 from analysis import analysis
 
@@ -15,12 +15,13 @@ from analysis import analysis
 
 
 class cchlvsIrradiance(analysis):
-  def __init__(self,fileIn):
+  def __init__(self,fileIn,regions = ['Surface',]):
 	analysis.__init__(self, fileIn)
 	print self.fileIn, self.jobID
 	self.loadcchlData()
 	
-	for r in ['Surface', 'SurfaceNoArtics', 'Global']:
+	for r in regions:
+		#['Surface', 'SurfaceNoArtics', 'Global']:
 		self.makePlot(region = r)
 
 

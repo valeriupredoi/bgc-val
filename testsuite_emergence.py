@@ -7,7 +7,7 @@ from UKESMpython import folder,getFileList
 #from cchl import cchl
 #from cchlvsIrradiance import cchlvsIrradiance
 #from communityfit import communityfit
-from emergence import cchl,cchlvsIrradiance, communityfit
+from emergence import cchl,cchlvsIrradiance, communityfit,primaryproduction
 
 
 """
@@ -33,13 +33,14 @@ def main():
 	if not len(filesIn):
 		print "testsuite:\tERROR:\tNo files specified, try:"
 		print "./testsuite.py /data/euryale7/scratch/ledm/UKESM/MEDUSA/medusa_bio_1998.nc"
-	
+
+	a = primaryproduction.primaryproduction(filesIn)	
+
 	for fn in filesIn:
 		print "testsuite:\tINFO:\t",fn	
-		a = cchlvsIrradiance.cchlvsIrradiance(fn)
 		a = cchl.cchl(fn)
-		a = communityfit.communityfit(fn)
-
+		a = communityfit.communityfit(fn)		
+		a = cchlvsIrradiance.cchlvsIrradiance(fn)	# C:Chl vs light Will only work if MEDUSA irradiance exists.
 
 
 

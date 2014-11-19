@@ -7,7 +7,7 @@ from string import ascii_lowercase
 from re import findall
 import os
 #Specific local code:
-from pftnames import pftnames as pn
+#from pftnames import pftnames as pn
 from UKESMpython import folder,getFileList
 
 
@@ -23,7 +23,8 @@ class analysis:
 	  	
 	self.autoDate()
 	self.autoJobID()
-	self.autoModel()		
+	self.autoModel()
+	self.autoCalendar()		
 	#self.autoFilename()
 
 	
@@ -87,6 +88,8 @@ class analysis:
   		if self.fileIn.find(jobid+a)>-1:  	
   			self.jobID = jobid+a
   			return	  
+	self.jobID = 'iMarNet'
+	  	
   	
   def autoModel(self,):
   	for jobid in ['xhon','xjez','xkad']:
@@ -94,10 +97,27 @@ class analysis:
   			self.model	= 'ERSEM'		
   			return 
   	self.model	= 'MEDUSA' 	  			
-  	
-  def autoFilename(self,plotType,plotType2):
-  	self.filename =  folder(['images',self.model,self.jobID,plotType,self.date])
-  	self.filename += '_'.join([plotType,self.model,self.jobID,self.date,plotType2])+'.png'
+
+  def autoCalendar(self,):
+  	for jobid in ['xhon',]:#'xjez','xkad']:
+  		if self.fileIn.find(jobid)>-1:  	
+  			self.cal	= '365_day'		
+  			return 
+  	for jobid in ['xjez',]:
+  		if self.fileIn.find(jobid)>-1:  	
+  			self.cal	= '360_day'		
+  			return 
+  	self.cal	= '365_day'
+  			  			
+
+  	  	
+  def autoFilename(self,plotType,plotType2,noDate=False):
+  	if noDate:
+ 	 	self.filename =  folder(['images',self.model,self.jobID,plotType])
+	  	self.filename += '_'.join([plotType,self.model,self.jobID,plotType2])+'.png'
+  	else:
+ 	 	self.filename =  folder(['images',self.model,self.jobID,plotType,self.date])
+	  	self.filename += '_'.join([plotType,self.model,self.jobID,self.date,plotType2])+'.png'
   	print "analysis:\tINFO:\t Auto Filename:",self.filename
   	self.filenamed = True	  	
 
