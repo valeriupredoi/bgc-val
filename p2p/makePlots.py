@@ -13,11 +13,8 @@ from scipy.stats import linregress
 from scipy.stats.mstats import scoreatpercentile
 import numpy as np 
 
-# imports from other gitlab repositories:
-#from ncdfView import ncdfView
-from StatsDiagram import StatsDiagram
-
 #local imports
+from bgcvaltools.StatsDiagram import StatsDiagram
 import UKESMpython as ukp 
 from pftnames import getLongName, AutoVivification, getmt,fancyUnits
 #from pftnames import MaredatTypes,IFREMERTypes,WOATypes,GEOTRACESTypes

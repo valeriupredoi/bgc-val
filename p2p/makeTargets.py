@@ -3,7 +3,6 @@ from matplotlib import pyplot
 from matplotlib import rc
 from matplotlib.patches import Arrow
 #from matplotlib.markers import filled_markers 
-from StatsDiagram import TaylorDiagram, TargetDiagram,TaylorDiagramMulti
 from glob import glob
 
 import numpy as np
@@ -21,6 +20,7 @@ from shelve import open as shOpen
 import UKESMpython as ukp
 from pftnames import AutoVivification,getLongName
 
+from bgcvaltools.StatsDiagram import TaylorDiagram, TargetDiagram,TaylorDiagramMulti
 
 
 

@@ -35,13 +35,12 @@ def main():
 		print "./testsuite.py /data/euryale7/scratch/ledm/UKESM/MEDUSA/medusa_bio_1998.nc"
 
 	a = primaryproduction.primaryproduction(filesIn)	
-	assert False
+
 	for fn in filesIn:
 		print "testsuite:\tINFO:\t",fn	
-		a = cchlvsIrradiance.cchlvsIrradiance(fn)
 		a = cchl.cchl(fn)
-		a = communityfit.communityfit(fn)
-
+		a = communityfit.communityfit(fn)		
+		a = cchlvsIrradiance.cchlvsIrradiance(fn)	# C:Chl vs light Will only work if MEDUSA irradiance exists.
 
 
 

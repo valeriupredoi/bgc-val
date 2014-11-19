@@ -14,10 +14,6 @@ import numpy as np
 import UKESMpython as ukp 
 from pftnames import getmt
 
-#####
-# ncdfView is available from:
-#	https://gitlab.ecosystem-modelling.pml.ac.uk/momm/pml-python-tools
-#from ncdfView import ncdfView	
 
 #####	
 # These are availalble in the module:
@@ -156,7 +152,7 @@ class matchDataAndModel:
 			mmask[:,k,:,:] = 0
 						
 		if self.region == 'Transect':	mmask[:,:,:,200] = 0   # Pacific Transect.	
-		mmask +=nc.variables[self.DataVars[0]].mask
+		mmask +=nc.variables[self.DataVars[0]][:].mask
 		print mmask.shape
 
 		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking WOA style flat array:',self.DataFilePruned,'-->',self.DataFile1D	
