@@ -813,16 +813,16 @@ def makeLonSafe(lon):
 		if lon> 180:lon-=360.		
 	
 def makeLatSafe(lat):
-	while True:
-		if -90.<=lat<=90.:return lat
-		#print 'You can\'t have a latitude > 90 or <-90',lat
-		print "makeLatSafe:\tERROR:\tYou can\'t have a latitude > 90 or <-90", lat
-		#if lat is np.ma.masked: 
-		return lat
-		assert False		
-		#return False
-		#if lon<=-90:lat+=360.
-		#if lon> 90:lat-=360.		
+	#while True:
+	if -90.<=lat<=90.:return lat
+	#print 'You can\'t have a latitude > 90 or <-90',lat
+	print "makeLatSafe:\tERROR:\tYou can\'t have a latitude > 90 or <-90", lat
+	if lat is np.ma.masked: return lat
+	return np.ma.clip(lat,-90.,90.)
+	assert False		
+	#return False
+	#if lon<=-90:lat+=360.
+	#if lon> 90:lat-=360.		
 	   
 def makeLonSafeArr(lon):
 	if lon.ndim == 2:
