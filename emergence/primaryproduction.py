@@ -26,33 +26,19 @@ class primaryproduction(analysis):
 	self.makeOneDPlot(region = 'Global')
 
   def loadPProdData(self,region='Global'):
+	shelveFile = folder('shelves/primaryproduction/'+self.model+'/'+self.jobID)+self.jobID+'_'+region+'.shelve'	
 
-	#jobID = getJobID(files[0],False)
-	#cal = getCalendar(files[0])
-	#print jobID
-	shelveFile = folder('shelves/primaryproduction/'+self.model+'/'+self.jobID)+self.jobID+'_'+region+'.shelve'
-	
-	annual = {}
 
 	try:
 		s = shOpen(shelveFile)
 		fnDictsT	= s['fnDictsT']
 		fnDictsPP	= s['fnDictsPP']				
-		#netPPs 	= s['netPPs']
-		#times 		= s['times']
 		readFiles	= fnDictsPP.keys()
 		s.close()
 		savedLength = len(readFiles)
 		print "makePProdPlot:\tOpened shelve:", shelveFile, '\tread'#, len(times)
-		#fnDictsPP,fnDictsT = {},{}
-		#for fn in readFiles:	
-		#	fnDictsPP[fn] = netPPs[fn]
-		#	fnDictsT[fn]  = times[fn]			
-			
-
+		
 	except:
-		#netPPs = {}
-		#times = {}
 		readFiles= []
 		fnDictsPP,fnDictsT = {},{}
 		savedLength = 0		
@@ -70,10 +56,9 @@ class primaryproduction(analysis):
 		if fn not in readFiles: 
 		    print 'run:', fn
 		    nc = Dataset(fn,'r')
-			
-		    dtime = num2date(nc.variables['time_counter'][:], nc.variables['time_counter'].units,calendar='365_day')
+		
+		    dtime = num2date(nc.variables['time_counter'][:], nc.variables['time_counter'].units,calendar=self.cal)
 		    for t,dt in enumerate(dtime):
-			#yr= dtime.year
 			if self.model=='ERSEM':
 				npp = sliceA(nc.variables['netPP'][t,],region)
 				pp = np.ma.masked_where(npp > 1.E30,npp).sum()
@@ -81,53 +66,35 @@ class primaryproduction(analysis):
 				pp = pp*365. 							# /day -> /year	
 			if self.model=='MEDUSA':
 				npp = sliceA(nc.variables['TOTPP3'][t,:],region)		# [gC/m3/d]
-				pp =  np.ma.masked_where(npp > 1.E35,npp*pvol).sum() 		# [gC/d]
-				pp = pp*365. 							# [gC/year]
-				pp = pp/10.E15							# [GT/year]
-			#time = dt	#dtime.year + (dtime.month-1)/12.
+				pp  = np.ma.masked_where(npp > 1.E35,npp*pvol).sum() 		# [gC/d]
+				pp  = pp*365. 							# [gC/year]
+				pp  = pp/10.E15							# [GT/year]
+				
 			try:	fnDictsPP[fn].append(pp)
 			except: fnDictsPP[fn] = [pp,]
 			try:	fnDictsT[fn].append(dt)
-			except: fnDictsT[fn] = [dt,]			
-			
-			#netPPs.append(pp)
-			#times.append(dt)
+			except: fnDictsT[fn] = [dt,]
 
 	 		if fn not in readFiles: readFiles.append(fn)
 			count+=1
 			if count%SaveEvery ==0:
 				print "primProd:\tSaving shelve:", shelveFile, '\tread'#, len(netPPs)									
 				s = shOpen(shelveFile)			
-				#s['netPPs'] = netPPs
-				#s['times']  = times
-				#s['readFiles']= readFiles
 				s['fnDictsPP'] = 	fnDictsPP			
 				s['fnDictsT'] = 	fnDictsT							
 				s.close()
 				count=0	
 		    nc.close()				
 
-		#pps = fnDictsPP[fn] 
-		#times = fnDictsT[fn] 
-		
-		#yr = np.mean([t.year for t in times])
-		#try:annual[yr] = pps
-		#except:annual[yr] = [pp,]
-		#print os.path.basename(fn),time,pp,yr
-		
-		
 	if savedLength < len(self.files):
 		print "primProd:\tFinal saving shelve:", shelveFile, '\tread', len(fnDictsPP.keys())									
 	  	s = shOpen(shelveFile)	
-		#s['netPPs'] = netPPs
-		#s['times']  = times
-		s['fnDictsPP'] = 	fnDictsPP			
-		s['fnDictsT'] = 	fnDictsT		
-		#s['readFiles']= readFiles
+		s['fnDictsPP'] 	= fnDictsPP			
+		s['fnDictsT'] 	= fnDictsT
 		s.close()
 		
 	netPPs = []
-	times = []		
+	times  = []		
 	for fn in sorted(fnDictsPP.keys()):
 		print fn,fnDictsPP[fn], fnDictsT[fn]
 		netPPs.extend(fnDictsPP[fn])
@@ -135,25 +102,30 @@ class primaryproduction(analysis):
 
 
 
-
+	annual 		= {}
 	years 		= []
-	annualNetPP 	= [] #
+	annualNetPP 	= [] 
+	for t,n in zip(times,netPPs):
+		try:	annual[t.year].append(n)
+		except: annual[t.year] = [n,]
+	
 	for k,i in sorted(annual.items()):
 		years.append(k+0.5)
 		if len(i)==12:
-			annualNetPP.append(array(i).mean())
+			annualNetPP.append(np.ma.array(i).mean())
 		elif len(i)==1:
 			annualNetPP.append(i)
 			print k, 'One file per year'	
 		else:
-			annualNetPP.append(masked)
+			annualNetPP.append(np.ma.masked)
 			print k, 'Not enough months for annual mean:', len(i)	
 
 	self.times 		= np.array(times).squeeze()
 	self.netPPs 		= np.array(netPPs).squeeze()
 	self.years 		= np.array(years)
 	self.annualNetPP	= np.array(annualNetPP)
-	
+
+	print self.years, self.annualNetPP
 	
 	if len(self.times) != len(self.netPPs):
 		print "makeOneDPlot:\tTHere is a size Mismatch between time and data", len(self.times),'!=', len(self.netPPs)
@@ -170,7 +142,6 @@ class primaryproduction(analysis):
 
   def makeOneDPlot(self,region='Global',dpi=100):
 	analysis.autoFilename(self,'primaryproduction', 'primaryproduction_'+region,noDate=True)
-	#filename = folder(['images',self.model,self.jobID,'PrimaryProduction'])+'primaryproduction_'+region+'.png'
 	
 	print "makeOneDPlot: ", self.filename
 	
@@ -180,20 +151,20 @@ class primaryproduction(analysis):
 	
 	print self.times,self.netPPs
 	newTimes  = [t.year + (t.month-1)/12. for t in self.times]
-	pyplot.plot(newTimes, self.netPPs,c='k',ls='-')	
-	#pyplot.plot_date(x=self.times, y=self.netPPs,c='k',ls='-')
-	#pyplot.plot(self.years, self.annualNetPP,'b-')	
+	pyplot.plot(newTimes, self.netPPs,c='k',ls='-')
+	pyplot.plot(self.years, self.annualNetPP,'b-')
 	
+	#pyplot.plot_date(x=self.times, y=self.netPPs,c='k',ls='-')
 	#pyplot.axhline(y=45.,c='r',ls='--')
-	#pyplot.axhline(y=65.,c='r',ls='--')	
-
+	#pyplot.axhline(y=65.,c='r',ls='--')
+	
 #	title = region + ' Primary Production - Gigatons / year'						
 	title	= ' '.join([region,self.model,'Primary Production, GT/year'])
 	
 	pyplot.title(title) 
 		
 	print "makeOneDPlot:\tSaving: " +  self.filename
-	pyplot.savefig( self.filename,dpi=dpi)#, bbox_inches='tight')
+	pyplot.savefig( self.filename,dpi=dpi)
 	pyplot.close()	
 
 			

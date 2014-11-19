@@ -9,13 +9,15 @@ import numpy as np
 #from pftnames import pftnames as pn
 from UKESMpython import folder,getFileList,sliceA
 from analysis import analysis
-try:
-	import communitystructure as cs
-except:
-	print "THIS REQUIRES LEE'S Community structure MODULE."
-	print "Please download from:"
-	print "https://gitlab.ecosystem-modelling.pml.ac.uk/ledm/communitystructure"
-	exit
+
+from bgcvaltools import communitystructure as cs
+#try:
+#	import communitystructure as cs
+#except:#
+#	print "THIS REQUIRES The Community structure MODULE."
+#	print "Please download from:"
+#	print "https://gitlab.ecosystem-modelling.pml.ac.uk/ledm/communitystructure"
+#	exit
 
 
 	

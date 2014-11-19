@@ -23,7 +23,8 @@ class analysis:
 	  	
 	self.autoDate()
 	self.autoJobID()
-	self.autoModel()		
+	self.autoModel()
+	self.autoCalendar()		
 	#self.autoFilename()
 
 	
@@ -96,7 +97,20 @@ class analysis:
   			self.model	= 'ERSEM'		
   			return 
   	self.model	= 'MEDUSA' 	  			
-  	
+
+  def autoCalendar(self,):
+  	for jobid in ['xhon',]:#'xjez','xkad']:
+  		if self.fileIn.find(jobid)>-1:  	
+  			self.cal	= '365_day'		
+  			return 
+  	for jobid in ['xjez',]:
+  		if self.fileIn.find(jobid)>-1:  	
+  			self.cal	= '360_day'		
+  			return 
+  	self.cal	= '365_day'
+  			  			
+
+  	  	
   def autoFilename(self,plotType,plotType2,noDate=False):
   	if noDate:
  	 	self.filename =  folder(['images',self.model,self.jobID,plotType])

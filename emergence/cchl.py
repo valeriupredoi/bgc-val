@@ -9,7 +9,7 @@ from scipy import optimize
 #from pftnames import pftnames as pn
 from UKESMpython import folder,getFileList,sliceA
 from analysis import analysis
-import C2Chl
+from bgcvaltools import C2Chl
 
 
 """	THIS REQUIRES MOMME'S C2CHL MODULE:
