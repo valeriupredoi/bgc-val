@@ -104,15 +104,14 @@ REQUIREMENTS:
 TO DO:
 	Replace pftnames.getlongname with something better.
 
-	add some better "alwaysInclude" methods to netcdf_manip
+	Improve "alwaysInclude" methods in netcdf_manip
 	
-	more documentation.
+	Add more documentation.
 	
-	Add Takahashi data to p2p
 	
 	Investigate a 1D point to point validation at HOTS/BATS.
 
-	Sort out longnames.	
+	Sort out longnames.
 
 	Move the NameTypes (ie GEOTRACESTypes) into the getmt?
 	
@@ -123,5 +122,8 @@ TO DO:
 		ORCA025 ior ORCA100-60 ? 
 
 		
-		
+	Move target diagram faff out of testsuite.
+	
+	
+	
 		

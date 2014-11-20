@@ -179,9 +179,10 @@ def getmt(loadYaml=False): # Match Type
 def getLongName(text):
 	print "Getting long name:",text
 	if type(text) in [type(['a','b',]),type(('a','b',))]:
-		out = ''
-		for t in text:out+=getLongName(t)+' '
-		return out
+		return ' '.join([getLongName(t) for t in text])
+		#out = ''
+		#for t in text:out+=getLongName(t)+' '
+		#return out
 	
 	mt = getmt()
 	
