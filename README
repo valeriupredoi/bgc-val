@@ -17,7 +17,7 @@ README:
 CONTENTS:
 
 	analysis.py  
-		Global plot that other plotting tools inherit from	
+		Global plotting class that other plotting tools inherit.
 
 	pftnames.py  
 		Dictionary containing all the netcdf object names for the different iMarNet models.
@@ -27,6 +27,7 @@ CONTENTS:
 		
 	UKESMpython.py
 		Toolkit containing many useful functions.
+
 
 	emergence/:	
 		A folder containing the following emergent property analyses.
@@ -39,16 +40,46 @@ CONTENTS:
 		
 		communityfit.py  
 			Community Strcutre plotting
+			
+		primaryproduction.py
+			Calculate annual and monthly primary production.
+	
 	
 	p2p/: 
-		A folder containing the Point to point analsyes scritps (develop branch only).		
+		A folder containing the Point to point analsyes scritps.
+
+		prepareERSEMyear.py:
+			this merges 12 monthly netcdfs into one annual file. 
+
+		matchDataAndModel.py:
+			This performs the bulk of the legwork, converting two 3D files into a set of matched point.
+							
+		makePlots.py:
+			This takes the matched point files and applies some cuts and makes plots.
+
+		makeTargets.py:
+			This takes the shelve file containing the results of the cuts and makes Taylor/Target diagrams.
+
+	
+	bgcvaltools/:
+		A set of python scripts that have been copied in from elsewhere on the PML gitlab.
+		
+		C2Chl.py:
+			Carbon to Chlorophyll ratio, from Sathyrendranath 2009. Written by Momme.
+		
+		communitystructure.py and comstrucFit.py:
+			Comminity structure code and fit, ie Brewin 2014. Written by Lee.
+		
+		StatsDiagram.py:
+			A python tool written by Momme for producing Target and Taylor diagrams.
+
 		
 				
 REQUIREMENTS:
-	Python libraries:
-	
-	simple to install:
-		pip install numpy scipy matplotlib netCDF4 pyyaml pyproj
+	Python libraries
+		Installed with pip:
+		numpy scipy matplotlib netCDF4 pyyaml pyproj
+
 		
 		Harder to install:
 			mpl_toolkits (needed for basemap, but has a new set of requirements)
@@ -58,56 +89,41 @@ REQUIREMENTS:
 							
 			It may be possible to switch Basemap out for cartopy.
 			Cartopy is equally difficult to install.
+	
+	Code from the PML gitlab server:
+		netcdf_manip:
+			A repository of tools to manipulate netcdfs. 
+			Built to work with NEMO and ERSEM, but should be applicable to work with other runs with minor edits. Questions: ledm@pml.ac.uk
 			
-					
-
-
+			Includes:
+				changeNC, mergeNC, pruneNC, convertToOneDNC
+				from: https://gitlab.ecosystem-modelling.pml.ac.uk/ledm/netcdf_manip
 			
-			
-		
-		
-	
-	Code from :
-	communitystructure 
-		from: https://gitlab.ecosystem-modelling.pml.ac.uk/ledm/communitystructure
 
-	netcdf_manip:
-		changeNC, mergeNC, pruneNC, convertToOneDNC
-		from: https://gitlab.ecosystem-modelling.pml.ac.uk/ledm/netcdf_manip
-	
-	PMLpython:
-		from https://gitlab.ecosystem-modelling.pml.ac.uk/momm/pml-python-tools
-		some code uses ncdfView which a PML wrapper around netCDF4.Dataset.
-		some code uses StatsDiagram, a Taylor/Target diagram routine in PMLpython.
-		some code uses C2chl.py
-
-		These resources are availalbe to all registered users on the gitlab server.
-	
-	
 	
 TO DO:
 	Replace pftnames.getlongname with something better.
 
-	add some better "alwaysInclude" methods to netcdf_manip
+	Improve "alwaysInclude" methods in netcdf_manip
 	
-	more documentation.
+	Add more documentation.
+	
 	
 	Investigate a 1D point to point validation at HOTS/BATS.
-	
-	possibly move naming scheme into analysis template.
+
+	Sort out longnames.
 
 	Move the NameTypes (ie GEOTRACESTypes) into the getmt?
 	
 	Target diagrams:
-		the same file name is copied multiple times
 		different symbols are used in legend to the plot.
 	
+	Test code for a new grid beyond ORCA100-75.
+		ORCA025 ior ORCA100-60 ? 
+
+		
+	Move target diagram faff out of testsuite.
 	
-	Check requirements for local/PML repositories
-		move those into this repository?
-		remove ncdfView
-		remove StatsDiagram
-		relocate C2chl
-		
-		
+	
+	
 		

@@ -178,26 +178,26 @@ class makePlots:
 	# Load data
 	
 	#time and depth
-	xt = self.xnc.variables[self.mt[self.xtype]['t']][:]
-	yt = self.ync.variables[self.mt[self.ytype]['t']][:]
-	xz = self.xnc.variables[self.mt[self.xtype]['z']][:]
-	yz = self.ync.variables[self.mt[self.ytype]['z']][:]
+	self.xt = np.ma.array(self.xnc.variables[self.mt[self.xtype]['t']][:])
+	self.yt = np.ma.array(self.ync.variables[self.mt[self.ytype]['t']][:])
+	self.xz = np.ma.array(self.xnc.variables[self.mt[self.xtype]['z']][:])
+	self.yz = np.ma.array(self.ync.variables[self.mt[self.ytype]['z']][:])
 
 	#lat and lon
-	xy = self.xnc.variables[self.mt[self.xtype]['lat']][:]
-	yy = self.ync.variables[self.mt[self.ytype]['lat']][:]
-	xx = self.xnc.variables[self.mt[self.xtype]['lon']][:]
-	yx = self.ync.variables[self.mt[self.ytype]['lon']][:]
+	self.xy = np.ma.array(self.xnc.variables[self.mt[self.xtype]['lat']][:])
+	self.yy = np.ma.array(self.ync.variables[self.mt[self.ytype]['lat']][:])
+	self.xx = np.ma.array(self.xnc.variables[self.mt[self.xtype]['lon']][:])
+	self.yx = np.ma.array(self.ync.variables[self.mt[self.ytype]['lon']][:])
 	
 	
-	self.xx = xx
-	self.xy = xy
-	self.xz = xz
-	self.xt = xt	
-	self.yx = yx
-	self.yy = yy
-	self.yz = yz
-	self.yt = yt	
+	#self.xx = xx
+	#self.xy = xy
+	#self.xz = xz
+	#self.xt = xt	
+	#self.yx = yx
+	#self.yy = yy
+	#self.yz = yz
+	#self.yt = yt	
 	
 	
 	for newSlice in self.newSlices:	
@@ -217,7 +217,7 @@ class makePlots:
 	self.shelveName = self.shelvedir +self.name+'_'+ns+'_'+xkey+'vs'+ykey+'.shelve'		
  	filename = self.getFileName(newSlice,xkey,ykey)
  	
-	print "plotWithSlices:\tINFO:\tinvestigating:", filename
+	print "plotWithSlices:\tINFO:\tinvestigating:",(newSlice), filename
 	if not ukp.shouldIMakeFile([self.xfn,self.yfn],self.shelveName,debug=False) \
 		and not ukp.shouldIMakeFile([self.xfn,self.yfn],filename,debug=False):return
 	
@@ -277,7 +277,9 @@ class makePlots:
 	nmyt = np.ma.masked_where(fullmask, self.yt).compressed()
 	datax = np.ma.masked_where(fullmask, xd).compressed()
 	datay = np.ma.masked_where(fullmask, yd).compressed()
-		
+	
+	
+	print "plotWithSlices:\tlenghts",  [len(datax),len(datay)],'x:\t',[len(nmxx),len(nmxy)],'y:\t',[len(nmxz),len(nmyx)],'z:\t',[len(nmyy),len(nmyz)]
 	if 0 in [len(datax),len(datay),len(nmxx),len(nmxy),len(nmxz),len(nmyx),len(nmyy),len(nmyz)]:
 		print 'plotWithSlices:\tWARNING:\tslice:',newSlice,'There is a zero in one of the fields.' 
 		try:	self.shelvesAV[newSlice][xk][yk] = ''			

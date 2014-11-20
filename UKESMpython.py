@@ -400,9 +400,8 @@ def robinPlotQuad(lons, lats, data1,data2,filename,titles=['',''],title='',lon0=
 	data2 = np.ma.array(data2)
 	axs,bms,cbs,ims = [],[],[],[]
 	doLogs = [doLog,doLog,False,True]
+	print "robinPlotQuad:\t",len(lons),len(lats),len(data1),len(data2)
 	for i,spl in enumerate([221,222,223,224]):	
-
-		
 		
 		if spl in [221,222]:
 			if not vmin: vmin = data1.min()
@@ -846,7 +845,13 @@ def makeMask(name,newSlice, xt,xz,xy,xx,xd):
 		print "makeMask:\tSlice", newSlice, "requires both datasets, and you should never see this"
 		assert False
 
-  	if newSlice == 'All': return np.zeros(len(xd))		
+  	if newSlice == 'All': 		
+ # 		return
+  		m = np.zeros(len(xd))		
+  		for a in [xt,xz,xy,xx,xd]:
+  			try: m+=a.mask
+  			except:pass
+  		return m
 			  	
 	nmask = np.ones(len(xd))	# everything masked	
 	nmask = np.zeros(len(xd))	# nothing masked	

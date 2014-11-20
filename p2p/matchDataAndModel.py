@@ -515,14 +515,6 @@ def main():
 	
 
 
-	iron = True
-	if iron:
-		datafile = "/data/euryale7/scratch/ledm/GEOTRACES/GEOTRACES_PostProccessed/Iron_GEOTRACES_IDP2014_Discrete_Sample_Data_ascii.nc"
-		if jobID.upper() == 'MEDUSA':		
-			ironvars = ['FER',]
-		else:
-			ironvars = ['N1p','N3n','N4n','N5s','N7f',]
-		b = matchDataAndModel(datafile, ModelBGCFile,ironvars,key=key)	
 
 	
 
