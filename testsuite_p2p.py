@@ -58,7 +58,7 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 	MAREDATFolder 	= "/data/perseus2/scratch/ledm/MAREDAT/MAREDAT/"
 	WOAFolder 	= "/data/euryale7/scratch/ledm/WOA/"	
 	GEOTRACESFolder = "/data/euryale7/scratch/ledm/GEOTRACES/GEOTRACES_PostProccessed/"
-	
+	TakahashiFolder = "/data/euryale7/scratch/ledm/Takahashi2009_pCO2/"
 	#####
 	# Location of model files.	
 	MEDUSAFolder	= "/data/euryale7/scratch/ledm/UKESM/MEDUSA/"
@@ -69,12 +69,12 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 	
 	#####
 	# Which analysis to run
-	doCHL 		= True
-	doMAREDAT 	= True
-	doNPSF		= True
-	doSalTemp	= True
-	doMLD		= True
-
+	doCHL 		= 0	#True
+	doMAREDAT 	= 0	#True
+	doNPSF		= 0	#True
+	doSalTemp	= 0	#True
+	doMLD		= 0	#True
+	doPCO2		= True
 	
 	#####
 	# AutoVivification is a form of nested dictionary.
@@ -190,7 +190,15 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 		#av['mld_DReqDTm02']['Data']['Vars'] 	= ['mld','mask',]
 		#av['mld_DReqDTm02']['NEMO']['Vars'] 	= ['somxl010',]	
 		#av['mld_DReqDTm02']['regions'] 		= ['',]
-	
+		
+	if doPCO2:
+		av['pCO2']['Data']['File'] 	= TakahashiFolder + "takahashi2009_month_flux_pCO2_2006c_noHead.nc"	
+		av['pCO2']['ERSEM']['File'] 	= ERSEMFolder+'_ERSEMMisc.nc'	
+		av['pCO2']['MEDUSA']['File'] 	= MEDUSAFolder+"medusa_bio_"+years['MEDUSA']+".nc"
+		av['pCO2']['Data']['Vars'] 	= ['PCO2_SW',] 		#l+'_mn',
+		av['pCO2']['ERSEM']['Vars'] 	= ['pCO2w',]
+		av['pCO2']['MEDUSA']['Vars'] 	= ['OCN_PCO2',]	
+		av['pCO2']['regions'] 		= ['',]
 	
 	AutoVivToYaml(av,folder('yaml')+'P2P_Settings.yaml')	
 	#av = 0
