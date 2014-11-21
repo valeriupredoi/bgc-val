@@ -626,76 +626,28 @@ class makePlots:
 
 
 
-		
-
 def extractData(nc, mt,key = ['',]):
-  	""" The idea here is that the data in mt[type][name] can be a list, where the first value is the operation that you want to run.
-  	    Also accepts the keywords: 'product', 'sum', 'mean', 'quotient'
+  	""" 	This loads the data based on the instructions from the getMT() function.
+  		If you want to do something funking to the data before plotting it,
+  			just create a new convert function in getMT().
   	"""
-  	#try: 
+
+  	
 	if isinstance(mt,dict): 
   		mtkeys = mt.keys()
   		print "extractData: MT is a dict", mtkeys
   	else:
-  	#except:
   		print "extractData: mt Not a dict:", mt, key
   		return np.ma.array(nc.variables[key][:])
 
-
+	if 'convert' in mtkeys and 'vars' in mtkeys:		
+		xd = np.ma.array(mt['convert'](nc,mt['vars']))
+		return xd
   	
+  	assert False
   	print "extractData: Extracting data:\tinit:",mt
  
   	
-	if 'sum' in mtkeys:
-		print "Extracting data:\tSumming:", mt['sum']
-  	  	xd = nc.variables[mt['sum'][0]][:]
-		for  name in mt['sum'][1:]:	xd +=nc.variables[name][:]
-  	
-	if 'product' in mtkeys: 
-  		print "Extracting data:\tmultiplying:", mt['product']
-  	  	xd = nc.variables[mt['product'][0]][:]
-		for  name in mt['product'][1:]:	xd *= nc.variables[name][:]
-		
-	if 'productPC' in mtkeys:
-  		print "Extracting data:\tmultiplying:", mt['productPC']
-  	  	xd = nc.variables[mt['productPC'][0]][:]*nc.variables[mt['productPC'][1]][:]/100.   	  	
-  	  	
-	if 'N2Biomass' in mtkeys: 		
-  		print "Extracting data:\tmultiplying:", mt['N2Biomass'] ,'by 79.573'
-  	  	xd = nc.variables[mt['N2Biomass'][0]][:] * 79.573
-  	  	
- 	if 'div1000' in mtkeys: 	  		
-  		print "Extracting data:\tDividing by 1000. ", mt['div1000']
-   	  	xd = nc.variables[mt['div1000'][0]][:]/1000. 
-   	  	  	  	 				
-	if 'mul1000' in mtkeys:
-  		print "Extracting data:\tMultipling by 1000. ", mt['mul1000']
-   	  	xd = nc.variables[mt['mul1000'][0]][:]*1000.   	
-
-
-	if 'SWtoBmass' in mtkeys:
-  		print "Extracting data:\tconverting seawifsPFT% into Biomass:", mt['SWtoBmass']
-  	  	xd = nc.variables[mt['SWtoBmass'][0]][:]*nc.variables[mt['SWtoBmass'][1]][:]/100. 
-		xd = 79. * power(xd, 0.65)
-		#fit From http://www.int-res.com/articles/meps_oa/m383p073.pdf
-		# doi: 10.3354/meps07998
-		
-	if 'Chl2BM' in mtkeys:		
-  		print "Extracting data:\tconverting Chl to Biomass:", mt['Chl2BM']
-  		xd = 79. * power(nc.variables[mt['Chl2BM'][0]][:], 0.65)
-  		
- 	if 'mean' in mtkeys: 				
-  		print "Extracting data:\tmeaning:", mt['mean'] 
-  	  	xd = nc.variables[mt['mean'][0]][:]
-		for  name in mt['mean'][1:]:	xd +=nc.variables[name][:]
-		xd  = xd/float(len(mt['mean']))
-		
-	if 'divide' in mtkeys:
-  		print "Extracting data:\tdividing", mt['divide'] 	
-		xd = nc.variables[mt['divide'][0]][:]/nc.variables[mt['divide'][1]][:]
-		
-  	return np.ma.array(xd)
-
 
 
 		

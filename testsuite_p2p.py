@@ -69,8 +69,8 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 	
 	#####
 	# Which analysis to run
-	doCHL 		= 0	#True
-	doMAREDAT 	= 0	#True
+	doCHL 		= True
+	doMAREDAT 	= True
 	doNPSF		= 0	#True
 	doSalTemp	= 0	#True
 	doMLD		= 0	#True

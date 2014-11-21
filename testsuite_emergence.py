@@ -35,7 +35,7 @@ def main():
 		print "./testsuite.py /data/euryale7/scratch/ledm/UKESM/MEDUSA/medusa_bio_1998.nc"
 
 	a = primaryproduction.primaryproduction(filesIn)	
-
+	#assert False
 	for fn in filesIn:
 		print "testsuite:\tINFO:\t",fn	
 		a = cchl.cchl(fn)
