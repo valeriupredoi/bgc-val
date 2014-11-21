@@ -198,6 +198,14 @@ def getmt(loadYaml=False):
 	#'AutoVivToYaml(mt,yamlFile)
 	return mt	
 	
+#def getShelveName(workingDir,model,jobID,year,name,newslice,xkey='*',ykey='*'):
+	#workingDir  = "/data/euryale7/scratch/ledm/ukesm_postProcessed/"
+	#Model = "ERSEM"
+	#jobID = "xhonp"
+	#year="1998"
+	#name="pCO2"
+#	shelvename = workingDir + model+'-'+jobID+'-'+year+'/'+name+'_'+newslice+'_'xkey+'vs'+ykey+'.shelve'
+	#return shelve
 
 def getLongName(text):
 	print "Getting long name:",text

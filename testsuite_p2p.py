@@ -62,10 +62,11 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 	#####
 	# Which analysis to run
 	doCHL 		= True
-	doMAREDAT 	= 0#	True
-	doNPSF		= 0	#True
-	doSalTemp	= 0	#True
-	doMLD		= True
+	doMAREDAT 	= 0#True
+	doN		= True
+	doPSF		= 0#False#True	
+	doSalTemp	= 0#True
+	doMLD		= 0#True
 	doPCO2		= True
 	
 	#####
@@ -130,15 +131,15 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 		av['mesozoo']['ERSEM']['Vars'] 		= ['Z4c',]
 		av['mesozoo']['regions'] 		= ['',]
 
-	if doNPSF:
+	if doN:
 		av['nitrate']['Data']['File'] 		= WOAFolder+'nitrate_monthly_1deg.nc'	
 		av['nitrate']['ERSEM']['File'] 		= ERSEMFolder+'_ERSEMNuts.nc'	
 		av['nitrate']['MEDUSA']['File'] 	= MEDUSAFolder+"medusa_bio_"+years['MEDUSA']+".nc"
 		av['nitrate']['Data']['Vars'] 		= ['n_an',] 		#l+'_mn',
 		av['nitrate']['ERSEM']['Vars'] 		= ['N3n','N4n',]
 		av['nitrate']['MEDUSA']['Vars'] 	= ['DIN',]									
-		av['nitrate']['regions'] 		= ['Surface','100m','200m','500m',]
-
+		av['nitrate']['regions'] 		= ['Surface',]#'100m','200m','500m',]
+	if doPSF:
 		av['silicate']['Data']['File'] 		= WOAFolder+'silicate_monthly_1deg.nc'	
 		av['silicate']['ERSEM']['File'] 	= ERSEMFolder+'_ERSEMNuts.nc'	
 		av['silicate']['Data']['Vars'] 		= ['i_an',] 		#l+'_mn',
@@ -338,7 +339,11 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 		Summary['MaredatStandard'] = []			
 		Summary['WOAAll'] = []
 		Summary['WOAStandard'] = []	
-					
+
+		Summary['SurfaceMetricsAll'] = []	
+		Summary['SurfaceMetricsStandard'] = []			
+		surfacemetrics = ['chl', 'pCO2', 'nitrate',]
+							
 		for name in shelvesAV[model].keys():
 		  for region in shelvesAV[model][name].keys():
 		    for newSlice in shelvesAV[model][name][region].keys(): 
@@ -351,7 +356,11 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 	        		if name in WOATypes:
 	        		  	if newSlice == 'All':		Summary['WOAAll'].append(shelve)
 	        		  	if newSlice == 'Standard':	Summary['WOAStandard'].append(shelve)	
-	        		  	
+	        		
+	        		if name in surfacemetrics:
+	        		  	if newSlice == 'All':		Summary['SurfaceMetricsAll'].append(shelve)
+	        		  	if newSlice == 'Standard':	Summary['SurfaceMetricsStandard'].append(shelve)	
+	        		  		        				
 	        		for woa in ['silicate','nitrate','phosphate','salinity','temperature','iron',]:
 	        		   for ns in ['All', 'Standard']:
 	        		   	if ns == newSlice and woa == name.lower():
@@ -364,10 +373,10 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 					filename,
 					legendKeys = ['name',],
 					debug=True)
-		if model=='ERSEM':
-			AutoVivToYaml(shelvesAV, folder('yaml')+'shelvesAV'+model+years[model]+ERSEMjobID+'.yaml')
-		else:
-			AutoVivToYaml(shelvesAV, folder('yaml')+'shelvesAV'+model+years[model]+'.yaml')				
+		#if model=='ERSEM':
+		AutoVivToYaml(shelvesAV, folder('yaml')+'shelvesAV'+model+years[model]+jobIDs[model]+'.yaml')
+		#else:
+		#	AutoVivToYaml(shelvesAV, folder('yaml')+'shelvesAV'+model+years[model]+'.yaml')				
 
 			
 

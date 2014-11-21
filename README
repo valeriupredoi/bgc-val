@@ -115,7 +115,10 @@ TO DO:
 	
 	add consistent jobID naming to MEDUSA
 	
-	Move target diagram faff out of testsuite.	
+	Move target diagram faff out of testsuite:
+		made target diagrams out of a series of shelve files
+		move shelve File into its own routine?
+		
 	
 	Investigate a 1D point to point validation at HOTS/BATS.
 
