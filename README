@@ -104,10 +104,17 @@ REQUIREMENTS:
 TO DO:
 
 		
-	getMT, testsuite_p2p and extractData are bad.:
+	getMT, testsuite_p2p aren't great:
 		There has got to be a better way.
 		Move extraction function into getMT?
-		
+		extractData is much better now
+		a lot of the same imformation is duplicated in testsuite_p2p and getmtime 
+			ie MEDUSA chl = 'CHL' in both files
+	
+	jobID may cause trouble, as it is explicitly defined in a few places.
+	
+	add consistent jobID naming to MEDUSA
+	
 	Move target diagram faff out of testsuite.	
 	
 	Investigate a 1D point to point validation at HOTS/BATS.

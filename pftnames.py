@@ -2,7 +2,7 @@ from calendar import month_name
 from UKESMpython import AutoVivification,AutoVivToYaml,folder,YamlToDict
 from itertools import product
 from os.path import exists
-
+import numpy as np
 
 
 
@@ -68,7 +68,8 @@ def getmt(loadYaml=False):
 	def N2Biomass(nc,keys):	return nc.variables[keys[0]][:]* 79.573
 	def mul1000(nc,keys):	return nc.variables[keys[0]][:]* 1000.
 	def div1000(nc,keys):	return nc.variables[keys[0]][:]/ 1000.	
-	
+	def applymask(nc,keys):	return np.ma.masked_where(nc.variables[keys[1]][:]==0.,nc.variables[keys[0]][:])
+	 #np.ma.masked_where(nc.variables[keys[1]][:],nc.variables[keys[0]][:])
 					
 	#####
 	# Models:
@@ -142,12 +143,10 @@ def getmt(loadYaml=False):
 	mt['MAREDAT']['picophyto'] 		= ['BIOMASS',]
 	mt['MAREDAT']['microzoo'] 		= ['BIOMASS',]
 	mt['MAREDAT']['PP'] 			= ['PP',]
-	
 	mt['MAREDAT']['chl']['name']		= 'Chlorophylla'
 	mt['MAREDAT']['chl']['vars']		= ['Chlorophylla',]
 	mt['MAREDAT']['chl']['convert']		= div1000	
 	mt['MAREDAT']['chl']['units']		= ['ug/L',]
-		
 	mt['MAREDAT']['t'] 			= 'index_t'
 	mt['MAREDAT']['z'] 			= 'DEPTH'
 	mt['MAREDAT']['lat'] 			= 'LATITUDE'
@@ -181,10 +180,13 @@ def getmt(loadYaml=False):
 	mt['GEOTRACES']['lon'] 			= 'Longitude'
 	mt['GEOTRACES']['cal'] 			= 'standard'
 		
-	mt['IFREMER']['mld']			= ['mld',]	
-	mt['IFREMER']['mld_DT02']		= ['mld',]
-	mt['IFREMER']['mld_DR003']		= ['mld',]
-	mt['IFREMER']['mld_DReqDTm02']		= ['mld',]		
+	mt['IFREMER']['mld']['name']		= 'mld'
+	mt['IFREMER']['mld']['vars']		= ['mld','mask']
+	mt['IFREMER']['mld']['convert']		= applymask	
+	mt['IFREMER']['mld']['units']		= ['m',]
+	#mt['IFREMER']['mld_DT02']		= ['mld','mask']
+	#mt['IFREMER']['mld_DR003']		= ['mld','mask']
+	#mt['IFREMER']['mld_DReqDTm02']		= ['mld','mask']
 	mt['IFREMER']['t'] 			= 'index_t'
 	mt['IFREMER']['z'] 			= 'index_z'
 	mt['IFREMER']['lat'] 			= 'lat'

@@ -8,7 +8,7 @@ from calendar import month_name
 from UKESMpython import folder,getFileList, AutoVivification, NestedDict,AutoVivToYaml,YamlToDict
 from p2p import matchDataAndModel,makePlots,makeTargets
 
-from pftnames import MaredatTypes,WOATypes,Ocean_names
+from pftnames import MaredatTypes,WOATypes,Ocean_names,getmt
 
 ###	Potential problems?
 ###		Reliance on ORCA1 grid
@@ -42,14 +42,6 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 	# In an ideal world, they would all be the same, except that my current run is stuck in the queue.
 	year = str(year)	
 	years = {m:year for m in ['MEDUSA','ERSEM','NEMO']}
-	#for 
-	#years['NEMO']	= year
-	#years['ERSEM']	= year	
-	#years['MEDUSA']	= year
-#	years['NEMO']	= '1893'
-#	years['ERSEM']	= '1893'	
-#	years['MEDUSA']	= '2007'
-		
 
 
 	
@@ -70,12 +62,23 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 	#####
 	# Which analysis to run
 	doCHL 		= True
-	doMAREDAT 	= True
+	doMAREDAT 	= 0#	True
 	doNPSF		= 0	#True
 	doSalTemp	= 0	#True
-	doMLD		= 0	#True
+	doMLD		= True
 	doPCO2		= True
 	
+	#####
+	# getmt
+	#mt = getmt()
+	#def getVarsFromMT(var, model):
+	#	try:	outs = mt[model][var]['vars']
+	#	except: outs = mt[model][var]
+	#	#print model,var,outs
+	#	if len(outs):return outs
+	#	return []
+		
+		
 	#####
 	# AutoVivification is a form of nested dictionary.
 	# we use av here to determine which files to analyse and which fields in those files.
@@ -200,7 +203,15 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 		av['pCO2']['MEDUSA']['Vars'] 	= ['OCN_PCO2',]	
 		av['pCO2']['regions'] 		= ['',]
 	
-	AutoVivToYaml(av,folder('yaml')+'P2P_Settings.yaml')	
+	#for var in av.keys():
+	#	for m in models: 
+	#		#keys = getVarsFromMT(var,m)
+	#		av[var][m]['Vars'] = getVarsFromMT(var,m)
+	#		#print var,m, keys, av[var][m]['Vars']
+	#		#if len(keys) and keys != av[var][m]['Vars']:print "Dont' match."
+	#assert False	
+	
+	#AutoVivToYaml(av,folder('yaml')+'P2P_Settings.yaml')	
 	#av = 0
 	#print av
 	#av = YamlToDict(folder('yaml')+'P2P_Settings.yaml',)
@@ -248,6 +259,7 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 				continue			
 			print "\n\n\ntestsuite_p2p.py:\tINFO:\tRunning:",name
 			
+			
 			#####
 			# matchDataAndModel:
 			# Match (real) Data and Model. 
@@ -277,50 +289,48 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 					region 		= region,
 					year 		= years[model], 
 					plotallcuts	= plotallcuts, 
-					workingDir 	= folder(workingDir+name+region),
+					shelveDir 	= folder(workingDir+name+region),
 					imageDir	= imageDir,
 					compareCoords	=True)
-			#Get an autoviv of the shelves.
+
 			shelvesAV[model][name.replace(region,'')][region] = m.shelvesAV
 								
 										
 			#####
 			# makeTargets:
-			# Make a target diagram of all matches for this particular dataset. # not a great idea if plotAllcuts == True
+			# Make a target diagram of all matches for this particular dataset. 
 			filename = folder(imageFolder+'/Targets/'+years[model]+'/AllSlices')+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region+'.png'
-			#if model=='ERSEM':filename = filename.replace('ERSEM','ERSEM-'+ERSEMjobID)			
 			t = makeTargets(	m.shelves, 
-							filename,
-							#name=name,
-							legendKeys = ['newSlice','ykey',],
-							debug=True)
-							#imageDir='', 
+						filename,
+						#name=name,
+						legendKeys = ['newSlice','ykey',],
+						debug=True)
+						#imageDir='', 
 						
 			
 			#####
 			# Ocean and month targets for this particular dataset.
-			Months = []
-			Oceans = []
+			MonthShelves = []
+			OceanShelves = []
 			for newSlice in m.shelvesAV.keys(): 
 			   for xkey in m.shelvesAV[newSlice].keys():
 				for ykey in m.shelvesAV[newSlice][xkey].keys():        	      
 				    shelve = m.shelvesAV[newSlice][xkey][ykey]			  
-				    if newSlice in month_name: 	Months.append(shelve)
-				    if newSlice in Ocean_names:	Oceans.append(shelve)
-				    
-	          	filename = folder(imageFolder+'/Targets/'+years[model]+'/Months')+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region+'_Months.png'
-			#if model=='ERSEM':filename = filename.replace('ERSEM','ERSEM-'+ERSEMjobID)				          	
-			makeTargets(	Months, 
-					filename,
-					legendKeys = ['newSlice',],					
-					)
-					
-			filename = folder(imageFolder+'/Targets/'+years[model]+'/Oceans')+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region+'_Oceans.png'
-			#if model=='ERSEM':filename = filename.replace('ERSEM','ERSEM-'+ERSEMjobID)						
-			makeTargets(	Oceans, 
-					filename,
-					legendKeys = ['newSlice',],					
-					)
+				    if newSlice in month_name: 	MonthShelves.append(shelve)
+				    if newSlice in Ocean_names:	OceanShelves.append(shelve)
+			if len(MonthShelves):	    
+			  	filename = folder(imageFolder+'/Targets/'+years[model]+'/Months')+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region+'_Months.png'
+				makeTargets(	MonthShelves, 
+						filename,
+						legendKeys = ['newSlice',],					
+						)
+			if len(OceanShelves):	
+				filename = folder(imageFolder+'/Targets/'+years[model]+'/Oceans')+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region+'_Oceans.png'
+				makeTargets(	OceanShelves, 
+						filename,
+						legendKeys = ['newSlice',],					
+						)
+
 		#####				
 		# Here are some fields for comparing fields in the same model
 		Summary= {}		
@@ -349,114 +359,22 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 	        		   		except:	Summary[woa+ns]= [shelve,]
 		for k in Summary.keys():
 			filename = folder(imageFolder+'/Targets/'+years[model]+'/Summary')+model+'_'+years[model]+'_'+k+'.png'
-			#if model=='ERSEM':filename = filename.replace('ERSEM','ERSEM-'+ERSEMjobID)
+			
 	  		makeTargets(Summary[k], 
-						filename,
-						legendKeys = ['name',],#'newSlice',
-						debug=True)#imageDir='', diagramTypes=['Target',]
+					filename,
+					legendKeys = ['name',],
+					debug=True)
 		if model=='ERSEM':
 			AutoVivToYaml(shelvesAV, folder('yaml')+'shelvesAV'+model+years[model]+ERSEMjobID+'.yaml')
 		else:
 			AutoVivToYaml(shelvesAV, folder('yaml')+'shelvesAV'+model+years[model]+'.yaml')				
-	#####
-	# Here are some fields for comparing fields between models.
-	# Only works if the same "name" is matched with multiple models.
-	
-	modelIC = {} 	#model intercomparison shelve files dictionary
-		
-	for model in shelvesAV.keys():	
-	  for name in shelvesAV[model].keys():
-	    for region in shelvesAV[model][name].keys():
-	      for newSlice in shelvesAV[model][name][region].keys(): 
-	        for xkey in shelvesAV[model][name][region][newSlice].keys():
-		  for ykey in shelvesAV[model][name][region][newSlice][xkey].keys():
-	 	    
-			shelve = shelvesAV[model][name][region][newSlice][xkey][ykey]			
-	    	   	for ns in ['All', 'Standard']:
-	    	   		if ns != newSlice: continue
-	    	   		if name in MaredatTypes:
-	    	   			try:	modelIC['Maredat'+ns].append(shelve)
-	    	   			except: modelIC['Maredat'+ns] = [shelve,]
-	        	   		try: 	modelIC[name+ns].append(shelve)
-	        	   		except:	modelIC[name+ns]= [shelve,]	    	   			
-    	   			if name in WOATypes:
-	    	   			try:	modelIC['WOA'+ns].append(shelve)
-	    	   			except: modelIC['WOA'+ns] = [shelve,]
-	        	   		try: 	modelIC[name+ns].append(shelve)
-	        	   		except:	modelIC[name+ns]= [shelve,]
-				if name in ['iron',]:
-	    	   			try:	modelIC['Misc'+ns].append(shelve)
-	    	   			except: modelIC['Misc'+ns] = [shelve,]
-	        	   		try: 	modelIC[name+ns].append(shelve)
-	        	   		except:	modelIC[name+ns]= [shelve,]					
-	
 
-				        	   		
-	for k in modelIC.keys():
-		for i in modelIC[k]:print k, i
-		if len(modelIC[k]) <2: continue
-		
-		makeTargets(modelIC[k], 
-					folder(imageFolder+'/ModelIntercomparison/Targets/')+'intercomparison_'+k+'.png',
-					legendKeys = ['xtype','name',],					
-					)		
-			
-			
 			
 
 					
 	print "Working dir:",workingDir
 	
-def multiERSEMtargets(shelvesAVs,ERSEMjobIDs):
-	#####
-	# Here are some fields for comparing fields ERSEM runs.
-	print "multiERSEMtargets",ERSEMjobIDs
 
-	shAVs = AutoVivification()	
-	modelIC = {} 	#model intercomparison shelve files dictionary
-	
-	for e,avfn in zip(ERSEMjobIDs,shelvesAVs):
-		shAVs[e] = YamlToDict(avfn)
-		print "loaded:",e,av
-		
-	for jobID in shAVs.keys():
-	  for model in shAVs[jobID].keys():	
-	    for name in shAVs[jobID][model].keys():
-	      for region in shAVs[jobID][model][name].keys():
-	        for newSlice in shAVs[jobID][model][name][region].keys(): 
-	          for xkey in shAVs[jobID][model][name][region][newSlice].keys():
-		    for ykey in shAVs[jobID][model][name][region][newSlice][xkey].keys():
-	 	    
-			shelve = shAVs[jobID][model][name][region][newSlice][xkey][ykey]			
-	    	   	for ns in ['All', 'Standard']:
-	    	   		if ns != newSlice: continue
-	    	   		if name in MaredatTypes:
-	    	   			try:	modelIC['Maredat'+ns].append(shelve)
-	    	   			except: modelIC['Maredat'+ns] = [shelve,]
-	        	   		try: 	modelIC[name+ns].append(shelve)
-	        	   		except:	modelIC[name+ns]= [shelve,]	    	   			
-    	   			if name in WOATypes:
-	    	   			try:	modelIC['WOA'+ns].append(shelve)
-	    	   			except: modelIC['WOA'+ns] = [shelve,]
-	        	   		try: 	modelIC[name+ns].append(shelve)
-	        	   		except:	modelIC[name+ns]= [shelve,]
-				if name in ['iron',]:
-	    	   			try:	modelIC['Misc'+ns].append(shelve)
-	    	   			except: modelIC['Misc'+ns] = [shelve,]
-	        	   		try: 	modelIC[name+ns].append(shelve)
-	        	   		except:	modelIC[name+ns]= [shelve,]					
-	
-
-				        	   		
-	for k in modelIC.keys():
-		for i in modelIC[k]:print k, i
-		if len(modelIC[k]) <2: continue
-		
-		makeTargets(modelIC[k], 
-					folder(imageFolder+'/ModelIntercomparison/Targets/')+'intercomparison_'+k+'.png',
-					legendKeys = ['xtype','name',],					
-					)		
-			
 			
 			
 
@@ -465,6 +383,7 @@ def multiERSEMtargets(shelvesAVs,ERSEMjobIDs):
 	
 	
 if __name__=="__main__":
+
 	# Can use command line arguments to choose a model.
 	models 		= []
 	years 		= []
@@ -502,18 +421,14 @@ if __name__=="__main__":
 	print "year:          ",years
 	print "ERSEM jobID:   ",ERSEMjobIDs
 	print "#############################"
-	#sleep(20)
 
-
-			
+	
 	for year in years:
-		#multiERSEMtargets(['yaml/shelvesAVERSEM'+year+e+'.yaml' for e in ERSEMjobIDs],ERSEMjobIDs)	
-		#continue
+
 		testsuite_p2p(models = models,	year=year,ERSEMjobID=ERSEMjobIDs[0] ) 
 		if len(ERSEMjobIDs)==1:continue
 		for e in ERSEMjobIDs[1:]:
 			testsuite_p2p(models = ['ERSEM',],year=year,ERSEMjobID=e ) 
-		multiERSEMtargets(['shelvesAVERSEM'+year+e+'.yaml' for e in ERSEMjobIDs],ERSEMjobIDs)
 	
 	print 'The end.'
 	

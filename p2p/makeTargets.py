@@ -27,7 +27,7 @@ from bgcvaltools.StatsDiagram import TaylorDiagram, TargetDiagram,TaylorDiagramM
 
 
 class makeTargets:
-  def __init__(self,matchedShelves, filename,imageDir='', diagramTypes=['Target','Taylor'],legendKeys = ['name', 'newSlice','xkey','ykey',],debug=True): #name='', 
+  def __init__(self,matchedShelves, filename, diagramTypes=['Target','Taylor'],legendKeys = ['name', 'newSlice','xkey','ykey',],debug=True): #name='', #imageDir='',
 
   
   	self.matchedShelves =matchedShelves
@@ -36,7 +36,7 @@ class makeTargets:
     	self.filename = filename
 	self.diagramTypes = diagramTypes 	#['Taylor','Target']
 	self.debug = debug
-	self.imageDir = imageDir
+	#self.imageDir = imageDir
 
 	self.legendKeys = legendKeys 
 	self.determineLegend()
@@ -160,8 +160,8 @@ class makeTargets:
 	filled_markers  =  ('o', 'v', '^', '<', '>', '8', 's', 'p',  'h',   'd')#'*','H','D',	
 	markercycler = cycle(filled_markers )
 
-	if self.imageDir=='':	self.imageDir = ukp.folder(['images',self.xtype.replace(', ','-'),'Targets'])
-	else: 			self.imageDir = ukp.folder(self.imageDir)
+	#if self.imageDir=='':	self.imageDir = ukp.folder(['images',self.xtype.replace(', ','-'),'Targets'])
+	#else: 			self.imageDir = ukp.folder(self.imageDir)
 		
 
 	for t in self.diagramTypes:

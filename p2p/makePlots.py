@@ -38,7 +38,7 @@ noXYLogs 	= [ 'pCO2',
 
 
 class makePlots:
-  def __init__(self,matchedDataFile,matchedModelFile, name, jobID='MEDUSA',year='clim',region='', compareCoords=True,workingDir='',imageDir='',plotallcuts=  True): #xfilename,yfilename,saveShelve=True,
+  def __init__(self,matchedDataFile,matchedModelFile, name, jobID='MEDUSA',year='clim',region='', compareCoords=True,shelveDir='',imageDir='',plotallcuts=  True): #xfilename,yfilename,saveShelve=True,
 
   
   	self.xfn =matchedModelFile
@@ -47,8 +47,10 @@ class makePlots:
     	self.region = region
   	self.xtype = jobID
   	self.year = year
+  	self.shelveDir = shelveDir
   	self.plotallcuts = plotallcuts
   	self.compareCoords = compareCoords
+  	
 	self.mt = getmt()	
 	Models = ['ERSEM','NEMO','MEDUSA',]
 	
@@ -68,9 +70,9 @@ class makePlots:
 	#if self.name in IFREMERTypes:  	self.ytype = 'IFREMER'	
 	#if self.name in GEOTRACESTypes: self.ytype = 'GEOTRACES'		
 	
-  	self.shelvedir = workingDir
-  	if self.shelvedir == '':self.shelvedir = ukp.folder(['shelves',self.xtype,self.year,self.ytype, 'Slices',self.name+self.region])
-  	else:			self.shelvedir = ukp.folder(self.shelvedir)		
+
+  	if self.shelveDir == '':self.shelveDir = ukp.folder(['shelves',self.xtype,self.year,self.ytype, 'Slices',self.name+self.region])
+  	else:			self.shelveDir = ukp.folder(self.shelveDir)		
 
 	if imageDir=='':	
 		
@@ -87,8 +89,6 @@ class makePlots:
 
   	self.xnc = Dataset(self.xfn,'r')
   	self.ync = Dataset(self.yfn,'r')
-  	#self.xnc = ncdfView(self.xfn,Quiet=True)
-  	#self.ync = ncdfView(self.yfn,Quiet=True)
 
 	if self.compareCoords: self.CompareCoords()	
 	self.defineSlices(self.plotallcuts)
@@ -158,7 +158,7 @@ class makePlots:
 		if type(newSlice) in [type(['a','b',]),type(('a','b',))]:	
 			ns = ''.join(newSlice)
 		else: 	ns = newSlice			
-		shelveName = self.shelvedir +self.name+'_'+ns+'_'+xk+'vs'+yk+'.shelve'
+		shelveName = self.shelveDir +self.name+'_'+ns+'_'+xk+'vs'+yk+'.shelve'
 		if ukp.shouldIMakeFile([self.xfn,self.yfn],shelveName,debug=False):
 			plotsToMake+=1
 			
@@ -175,8 +175,7 @@ class makePlots:
 	
 
 	#####
-	# Load data
-	
+	# Load Coordinates
 	#time and depth
 	self.xt = np.ma.array(self.xnc.variables[self.mt[self.xtype]['t']][:])
 	self.yt = np.ma.array(self.ync.variables[self.mt[self.ytype]['t']][:])
@@ -188,17 +187,6 @@ class makePlots:
 	self.yy = np.ma.array(self.ync.variables[self.mt[self.ytype]['lat']][:])
 	self.xx = np.ma.array(self.xnc.variables[self.mt[self.xtype]['lon']][:])
 	self.yx = np.ma.array(self.ync.variables[self.mt[self.ytype]['lon']][:])
-	
-	
-	#self.xx = xx
-	#self.xy = xy
-	#self.xz = xz
-	#self.xt = xt	
-	#self.yx = yx
-	#self.yy = yy
-	#self.yz = yz
-	#self.yt = yt	
-	
 	
 	for newSlice in self.newSlices:	
 	    for xkey,ykey in product(xkeys,ykeys):
@@ -214,7 +202,7 @@ class makePlots:
 	if type(newSlice) in [type(['a','b',]),type(('a','b',))]:	
 		ns = ''.join(newSlice)
 	else: ns = newSlice
-	self.shelveName = self.shelvedir +self.name+'_'+ns+'_'+xkey+'vs'+ykey+'.shelve'		
+	self.shelveName = self.shelveDir +self.name+'_'+ns+'_'+xkey+'vs'+ykey+'.shelve'		
  	filename = self.getFileName(newSlice,xkey,ykey)
  	
 	print "plotWithSlices:\tINFO:\tinvestigating:",(newSlice), filename
@@ -267,16 +255,16 @@ class makePlots:
 		
 	#####
 	# Apply mask to all data.	
-	nmxx = np.ma.masked_where(fullmask, self.xx).compressed()
-	nmxy = np.ma.masked_where(fullmask, self.xy).compressed()
-	nmxz = np.ma.masked_where(fullmask, self.xz).compressed()
-	nmxt = np.ma.masked_where(fullmask, self.xt).compressed()	
-	nmyx = np.ma.masked_where(fullmask, self.yx).compressed()
-	nmyy = np.ma.masked_where(fullmask, self.yy).compressed()
-	nmyz = np.ma.masked_where(fullmask, self.yz).compressed()
-	nmyt = np.ma.masked_where(fullmask, self.yt).compressed()
-	datax = np.ma.masked_where(fullmask, xd).compressed()
-	datay = np.ma.masked_where(fullmask, yd).compressed()
+	nmxx 	= np.ma.masked_where(fullmask, self.xx).compressed()
+	nmxy 	= np.ma.masked_where(fullmask, self.xy).compressed()
+	nmxz 	= np.ma.masked_where(fullmask, self.xz).compressed()
+	nmxt 	= np.ma.masked_where(fullmask, self.xt).compressed()	
+	nmyx 	= np.ma.masked_where(fullmask, self.yx).compressed()
+	nmyy 	= np.ma.masked_where(fullmask, self.yy).compressed()
+	nmyz 	= np.ma.masked_where(fullmask, self.yz).compressed()
+	nmyt 	= np.ma.masked_where(fullmask, self.yt).compressed()
+	datax 	= np.ma.masked_where(fullmask, xd).compressed()
+	datay 	= np.ma.masked_where(fullmask, yd).compressed()
 	
 	
 	print "plotWithSlices:\tlenghts",  [len(datax),len(datay)],'x:\t',[len(nmxx),len(nmxy)],'y:\t',[len(nmxz),len(nmyx)],'z:\t',[len(nmyy),len(nmyz)]
@@ -320,7 +308,7 @@ class makePlots:
 				
 	#####
 	# Robinson projection plots - Basemap
-	if ukp.shouldIMakeFile([self.xfn,self.yfn],robfnquad,debug=False) or True:
+	if ukp.shouldIMakeFile([self.xfn,self.yfn],robfnquad,debug=False):
 		ti1 = getLongName(self.xtype)
 		ti2 =  getLongName(self.ytype)
 		if self.name in noXYLogs or dmin*dmax <=0.:
@@ -340,7 +328,7 @@ class makePlots:
 				vmin=dmin,vmax=dmax,)
 
 	# Robinson projection plots - Cartopy
-	if ukp.shouldIMakeFile([self.xfn,self.yfn],robfncartopy,debug=False) or True:
+	if ukp.shouldIMakeFile([self.xfn,self.yfn],robfncartopy,debug=False):
 		ti1 = getLongName(self.xtype)
 		ti2 =  getLongName(self.ytype)
 		if self.name in noXYLogs or dmin*dmax <=0.:
@@ -375,39 +363,7 @@ class makePlots:
 		if self.name in noXYLogs or dmin*dmax <=0.:				
 			ukp.histsPlot(datax, datay,  histsfnxy, Title=title, labelx=self.xtype,labely=self.ytype,xaxislabel =xaxislabel)	
 		else:	ukp.histsPlot(datax, datay,  histsfnxy, Title=title, labelx=self.xtype,labely=self.ytype,xaxislabel =xaxislabel, logx = True, )
-		
-			
-			
-			
-											
-		#else:	
-		#	print "plotWithSlices:\tROBIN QUAD DOING DOLOG:",[ti1,ti2],False,dmin,dmax					
-		#	ukp.robinPlotQuad(nmxx, nmxy, datax,datay,
-		#				robfnquad,
-		#				titles=[ti1,ti2], 
-		#				#vmin=np.ma.log10(dmin),
-		#				#vmax=np.ma.log10(dmax),
-		#				cbarlabel='log$_{10}$('+xunits+')',
-		#				doLog=False)
-								
-	#if ukp.shouldIMakeFile([self.xfn,self.yfn],robfnxy,debug=False) or True:
-	#	ti1 = getLongName(self.xtype)+' ' +getLongName(newSlice)+' '+getLongName(self.name+self.region)
-	#	ti2 =  getLongName(self.ytype)+' ' +getLongName(newSlice)+' '+getLongName(self.name+self.region)	
-	#	if self.name in noXYLogs or dmin*dmax <=0.:
-	#		print "plotWithSlices:\tROBIN NOT DOING DOLOG:",[ti1,ti2],False,dmin,dmax
-	#		ukp.robinPlotPair(nmxx, nmxy, datax,datay,robfnxy,titles=[ti1,ti2], vmin=dmin,vmax=dmax, doLog=False)
-	#			
-	#	else:	
-	#		print "plotWithSlices:\tROBIN DOING DOLOG:",[ti1,ti2],False,dmin,dmax					
-	#		ukp.robinPlotPair(nmxx, nmxy, np.ma.log10(datax),np.ma.log10(datay),
-	#					robfnxy,titles=[ti1,ti2], 
-	#					vmin=np.ma.log10(dmin),vmax=np.ma.log10(dmax),
-	#					cbarlabel='log$_{10}$('+xunits+')',
-	#					doLog=False)
-
-
-						
-								
+							
 			
 	#####
 	# Scatter  (hexbin) plot
@@ -631,7 +587,6 @@ def extractData(nc, mt,key = ['',]):
   		If you want to do something funking to the data before plotting it,
   			just create a new convert function in getMT().
   	"""
-
   	
 	if isinstance(mt,dict): 
   		mtkeys = mt.keys()
