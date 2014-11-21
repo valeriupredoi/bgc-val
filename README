@@ -102,27 +102,39 @@ REQUIREMENTS:
 
 	
 TO DO:
-	Replace pftnames.getlongname with something better.
+
+		
+	getMT, testsuite_p2p and extractData are bad.:
+		There has got to be a better way.
+		Move extraction function into getMT?
+		
+	Move target diagram faff out of testsuite.	
+	
+	Investigate a 1D point to point validation at HOTS/BATS.
+
+	Sort out longnames.
+		Replace pftnames.getlongname with something better.
+		how about moving long_names into testsuite_p2p?
 
 	Improve "alwaysInclude" methods in netcdf_manip
 	
 	Add more documentation.
 	
-	
-	Investigate a 1D point to point validation at HOTS/BATS.
-
-	Sort out longnames.
+	remaining datasets to add to p2p:
+		Add primary prodcution p2p.
+		integrated p2p
+		other takahashi data, ie air sea flux?
+			
 
 	Move the NameTypes (ie GEOTRACESTypes) into the getmt?
 	
-	Target diagrams:
-		different symbols are used in legend to the plot.
 	
 	Test code for a new grid beyond ORCA100-75.
 		ORCA025 ior ORCA100-60 ? 
 
+		ie P2P location matching assumes ORCA1 grid.
 		
-	Move target diagram faff out of testsuite.
+		this will be more important later when we encounter ukesm at 1/4 degree,
 	
 	
 	
