@@ -134,6 +134,10 @@ TO DO:
 		Add primary prodcution p2p.
 		integrated p2p
 		other takahashi data, ie air sea flux?
+	
+
+	Make the p2p region cut more generic. 
+		Currently only works for WOA depth fields.
 			
 
 	Move the NameTypes (ie GEOTRACESTypes) into the getmt?

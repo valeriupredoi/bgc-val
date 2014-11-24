@@ -140,7 +140,7 @@ class primaryproduction(analysis):
 
 
 
-  def makeOneDPlot(self,region='Global',dpi=100):
+  def makeOneDPlot(self,region='Global',dpi=100, drawRange=True):
 	analysis.autoFilename(self,'primaryproduction', 'primaryproduction_'+region,noDate=True)
 	
 	print "makeOneDPlot: ", self.filename
@@ -152,12 +152,34 @@ class primaryproduction(analysis):
 	print self.times,self.netPPs
 	newTimes  = [t.year + (t.month-1)/12. for t in self.times]
 	pyplot.plot(newTimes, self.netPPs,c='k',ls='-')
-	pyplot.plot(self.years, self.annualNetPP,'b-')
+	#pyplot.plot(self.years, self.annualNetPP,'b-')
 	
 	#pyplot.plot_date(x=self.times, y=self.netPPs,c='k',ls='-')
-	#pyplot.axhline(y=45.,c='r',ls='--')
-	#pyplot.axhline(y=65.,c='r',ls='--')
-	
+	if drawRange:
+		ymin,ymax = pyplot.ylim()
+		ymin = min([ymin,40.])
+		ymax = max([ymax,70.])
+		pyplot.ylim((ymin,ymax))
+			
+		xlims  = pyplot.xlim()
+		#pyplot.axhline(y=45.,c='r',ls='-',lw=3,alpha=0.4)
+		#pyplot.axhline(y=65.,c='r',ls='-',lw=3,alpha=0.4)
+		lll = np.array([ymin for i in xlims]) 
+		l45 = np.array([45. for i in xlims])
+		l50 = np.array([50. for i in xlims])
+		l60 = np.array([60. for i in xlims])		
+		l65 = np.array([65. for i in xlims])
+		lul = np.array([ymax for i in xlims]) 		
+
+		ax.fill_between(xlims,lll, l45 ,color='r', alpha = 0.2)		
+		ax.fill_between(xlims,l45 ,l50 ,color='DarkOrange', alpha = 0.2)				
+		ax.fill_between(xlims,l50 ,l60 ,color='g', alpha = 0.2)
+		ax.fill_between(xlims,l60 ,l65 ,color='DarkOrange', alpha = 0.2)
+		ax.fill_between(xlims,l65 ,lul ,color='r', alpha = 0.2)		
+		
+		#pyplot.axhline(y=50.,c='g',ls='-',lw=2,alpha=0.5)
+		#pyplot.axhline(y=60.,c='g',ls='-',lw=2,alpha=0.5)		
+
 #	title = region + ' Primary Production - Gigatons / year'						
 	title	= ' '.join([region,self.model,'Primary Production, GT/year'])
 	
