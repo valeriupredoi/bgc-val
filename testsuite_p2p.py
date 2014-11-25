@@ -58,16 +58,17 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 	NEMOFolder	= "/data/euryale7/scratch/ledm/UKESM/ERSEM/"+ jobIDs['NEMO'] +'/'+years['NEMO'] +'/'+jobIDs['NEMO'] +'_'+years['NEMO']
 	
 
+	regions = ['Surface',]#'100m','200m','500m',]
 	
 	#####
 	# Which analysis to run
-	doCHL 		= 0#True
+	doCHL 		= True
 	doMAREDAT 	= True
-	doN		= 0#True
-	doPSF		= 0#False#True	
-	doSalTemp	= 0#True
-	doMLD		= 0#True
-	doPCO2		= 0#True
+	doN		= True
+	doPSF		= True	
+	doSalTemp	= True
+	doMLD		= True
+	doPCO2		= True
 	
 	#####
 	# getmt
@@ -138,13 +139,13 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 		av['nitrate']['Data']['Vars'] 		= ['n_an',] 		#l+'_mn',
 		av['nitrate']['ERSEM']['Vars'] 		= ['N3n','N4n',]
 		av['nitrate']['MEDUSA']['Vars'] 	= ['DIN',]									
-		av['nitrate']['regions'] 		= ['Surface',]#'100m','200m','500m',]
+		av['nitrate']['regions'] 		= regions
 	if doPSF:
 		av['silicate']['Data']['File'] 		= WOAFolder+'silicate_monthly_1deg.nc'	
 		av['silicate']['ERSEM']['File'] 	= ERSEMFolder+'_ERSEMNuts.nc'	
 		av['silicate']['Data']['Vars'] 		= ['i_an',] 		#l+'_mn',
 		av['silicate']['ERSEM']['Vars'] 	= ['N5s',]
-		av['silicate']['regions'] 		= ['Surface','100m','200m','500m',]
+		av['silicate']['regions'] 		= regions
 		av['silicate']['MEDUSA']['Vars'] 	= ['SIL',]									
 		av['silicate']['MEDUSA']['File'] 	= MEDUSAFolder+"medusa_bio_"+years['MEDUSA']+".nc"
 			
@@ -152,7 +153,7 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 		av['phosphate']['ERSEM']['File'] 	= ERSEMFolder+'_ERSEMNuts.nc'	
 		av['phosphate']['Data']['Vars'] 	= ['p_an',] 		#l+'_mn',
 		av['phosphate']['ERSEM']['Vars'] 	= ['N1p',]
-		av['phosphate']['regions'] 		= ['Surface','100m','200m','500m',]		
+		av['phosphate']['regions'] 		= regions		
 					
 		av['iron']['Data']['File'] 		= GEOTRACESFolder+"Iron_GEOTRACES_IDP2014_Discrete_Sample_Data_ascii.nc"
 		av['iron']['MEDUSA']['File'] 		= MEDUSAFolder+"medusa_bio_"+years['MEDUSA']+".nc"	
@@ -167,13 +168,13 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 		av['salinity']['NEMO']['File'] 		= NEMOFolder+'_NEMO.nc'	
 		av['salinity']['Data']['Vars'] 		= ['s_an',]
 		av['salinity']['NEMO']['Vars'] 		= ['vosaline',]
-		av['salinity']['regions'] 		= ['Surface','500m','100m','200m','1000m',]	 
+		av['salinity']['regions'] 		= regions	 
 
 		av['temperature']['Data']['File'] 	= WOAFolder+'temperature_monthly_1deg.nc'	
 		av['temperature']['NEMO']['File'] 	= NEMOFolder+'_NEMO.nc'	
 		av['temperature']['Data']['Vars'] 	= ['t_an',]	
 		av['temperature']['NEMO']['Vars'] 	= ['votemper',]
-		av['temperature']['regions'] 		= ['Surface','500m','100m','200m','1000m',]	
+		av['temperature']['regions'] 		= regions	
 						
 				   
 	if doMLD:	
@@ -340,6 +341,8 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 		Summary['WOAAll'] = []
 		Summary['WOAStandard'] = []	
 
+		Summary['AllAll'] = []	
+		Summary['AllStandard'] = []			
 		Summary['SurfaceMetricsAll'] = []	
 		Summary['SurfaceMetricsStandard'] = []			
 		surfacemetrics = ['chl', 'pCO2', 'nitrate',]
@@ -350,6 +353,8 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 		      for xkey in shelvesAV[model][name][region][newSlice].keys():
 			for ykey in shelvesAV[model][name][region][newSlice][xkey].keys():        	      
 			  	shelve = shelvesAV[model][name][region][newSlice][xkey][ykey]
+	       		  	if newSlice == 'All':		Summary['AllAll'].append(shelve)
+	       		  	if newSlice == 'Standard':	Summary['AllStandard'].append(shelve)
 				if name in MaredatTypes:
 	        		  	if newSlice == 'All':		Summary['MaredatAll'].append(shelve)
 	        		  	if newSlice == 'Standard':	Summary['MaredatStandard'].append(shelve)
