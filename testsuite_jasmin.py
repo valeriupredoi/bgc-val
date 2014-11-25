@@ -68,13 +68,13 @@ def testsuite_jasmin(	models=['MEDUSA','NEMO'],
 	
 	#####
 	# Which analysis to run
-	doCHL 		= 0#True
+	doCHL 		= True
 	doMAREDAT 	= True
-	doN		= 0#True
-	doPSF		= 0#False#True	
-	doSalTemp	= 0#True
-	doMLD		= 0#True
-	doPCO2		= 0#True
+	doN		= True
+	doPSF		= True	
+	doSalTemp	= True
+	doMLD		= True
+	doPCO2		= True
 	
 	
 	#####
