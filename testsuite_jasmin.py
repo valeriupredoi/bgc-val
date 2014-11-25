@@ -182,7 +182,7 @@ def testsuite_jasmin(	models=['MEDUSA','NEMO'],
 			#####
 			# Location of image Output files
 			imageFolder 	= folder(imageFolder+model+'-'+jobIDs[model])
-			postprocFolder = folder(postprocFolder + +model+'-'+jobIDs[model]+'-'+years[model])		
+			postprocFolder = folder(postprocFolder + model+'-'+jobIDs[model]+'-'+years[model])
 
 		
 			try:
