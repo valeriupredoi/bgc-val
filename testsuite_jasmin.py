@@ -67,6 +67,11 @@ def testsuite_jasmin(	models=['MEDUSA','NEMO'],
 	
 	
 	#####
+	# regions for large datasets. (WOA)
+	
+	regions = ['Surface',]#'100m','200m','500m',]
+	
+	#####
 	# Which analysis to run
 	doCHL 		= True
 	doMAREDAT 	= True
@@ -115,14 +120,13 @@ def testsuite_jasmin(	models=['MEDUSA','NEMO'],
 		av['nitrate']['MEDUSA']['File'] 	= MEDUSAFolder+"medusa_bio_"+years['MEDUSA']+".nc"
 		av['nitrate']['Data']['Vars'] 		= ['n_an',] 		#l+'_mn',
 		av['nitrate']['MEDUSA']['Vars'] 	= ['DIN',]									
-		av['nitrate']['regions'] 		= ['Surface',]#'100m','200m','500m',]
+		av['nitrate']['regions'] 		= regions
 	if doPSF:
 		av['silicate']['Data']['File'] 		= WOAFolder+'silicate_monthly_1deg.nc'	
 		av['silicate']['Data']['Vars'] 		= ['i_an',] 		#l+'_mn',
-		av['silicate']['regions'] 		= ['Surface','100m','200m','500m',]
 		av['silicate']['MEDUSA']['Vars'] 	= ['SIL',]									
 		av['silicate']['MEDUSA']['File'] 	= MEDUSAFolder+"medusa_bio_"+years['MEDUSA']+".nc"
-			
+		av['silicate']['regions'] 		= regions			
 					
 		av['iron']['Data']['File'] 		= GEOTRACESFolder+"Iron_GEOTRACES_IDP2014_Discrete_Sample_Data_ascii.nc"
 		av['iron']['MEDUSA']['File'] 		= MEDUSAFolder+"medusa_bio_"+years['MEDUSA']+".nc"	
@@ -135,13 +139,13 @@ def testsuite_jasmin(	models=['MEDUSA','NEMO'],
 		av['salinity']['NEMO']['File'] 		= NEMOFolder+jobIDs['NEMO'] +'_'+years['NEMO']+'_NEMO.nc'
 		av['salinity']['Data']['Vars'] 		= ['s_an',]
 		av['salinity']['NEMO']['Vars'] 		= ['vosaline',]
-		av['salinity']['regions'] 		= ['Surface','500m','100m','200m','1000m',]	 
+		av['salinity']['regions'] 		= regions	 
 
 		av['temperature']['Data']['File'] 	= WOAFolder+'temperature_monthly_1deg.nc'	
 		av['temperature']['NEMO']['File'] 	= NEMOFolder+jobIDs['NEMO'] +'_'+years['NEMO']+'_NEMO.nc'	
 		av['temperature']['Data']['Vars'] 	= ['t_an',]	
 		av['temperature']['NEMO']['Vars'] 	= ['votemper',]
-		av['temperature']['regions'] 		= ['Surface','500m','100m','200m','1000m',]	
+		av['temperature']['regions'] 		= regions	
 						
 				   
 	if doMLD:	
