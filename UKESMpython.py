@@ -14,7 +14,8 @@ from scipy.stats import linregress
 from calendar import month_name
 from shelve import open as shOpen
 import socket
-import yaml 
+try:import yaml 
+except: pass
 
 #local imports
 #from ncdfView import ncdfView
