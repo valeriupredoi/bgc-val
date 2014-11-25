@@ -13,7 +13,7 @@ from scipy.stats.mstats import scoreatpercentile
 from scipy.stats import linregress
 from calendar import month_name
 from shelve import open as shOpen
-
+import socket
 import yaml 
 
 #local imports
@@ -117,6 +117,13 @@ def YamlToDict(yamlFile):
 	return d
 
 
+def machineName():
+	name = str(socket.gethostname())
+	if name.find('npm')>-1:	return 'PML'
+	if name.find('pmpc')>-1: return 'PML'
+	if name.find('esmval')>-1: return 'esmval'
+	if name.find('ceda')>-1: return 'ceda'
+	return False
 	
 class NestedDict(dict):
     """                                                                       

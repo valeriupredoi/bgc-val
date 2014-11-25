@@ -2,6 +2,7 @@
 
 #Standard Python modules:
 import os
+from sys import argv
 from netCDF4 import Dataset,num2date
 from matplotlib import pyplot
 import numpy as np
@@ -68,7 +69,7 @@ class primaryproduction(analysis):
 				npp = sliceA(nc.variables['TOTPP3'][t,:],region)		# [gC/m3/d]
 				pp  = np.ma.masked_where(npp > 1.E35,npp*pvol).sum() 		# [gC/d]
 				pp  = pp*365. 							# [gC/year]
-				pp  = pp/10.E15							# [GT/year]
+				pp  = pp/1.E15							# [GT/year]
 				
 			try:	fnDictsPP[fn].append(pp)
 			except: fnDictsPP[fn] = [pp,]
@@ -152,30 +153,30 @@ class primaryproduction(analysis):
 	print self.times,self.netPPs
 	newTimes  = [t.year + (t.month-1)/12. for t in self.times]
 	pyplot.plot(newTimes, self.netPPs,c='k',ls='-')
-	#pyplot.plot(self.years, self.annualNetPP,'b-')
+	pyplot.plot(self.years, self.annualNetPP,'b-')
 	
 	#pyplot.plot_date(x=self.times, y=self.netPPs,c='k',ls='-')
 	if drawRange:
 		ymin,ymax = pyplot.ylim()
-		ymin = min([ymin,40.])
-		ymax = max([ymax,70.])
+		ymin = min([ymin,35.])
+		ymax = max([ymax,75.])
 		pyplot.ylim((ymin,ymax))
 			
 		xlims  = pyplot.xlim()
 		#pyplot.axhline(y=45.,c='r',ls='-',lw=3,alpha=0.4)
 		#pyplot.axhline(y=65.,c='r',ls='-',lw=3,alpha=0.4)
 		lll = np.array([ymin for i in xlims]) 
-		l45 = np.array([45. for i in xlims])
+		l40 = np.array([40. for i in xlims])
 		l50 = np.array([50. for i in xlims])
 		l60 = np.array([60. for i in xlims])		
-		l65 = np.array([65. for i in xlims])
+		l70 = np.array([70. for i in xlims])
 		lul = np.array([ymax for i in xlims]) 		
 
-		ax.fill_between(xlims,lll, l45 ,color='r', alpha = 0.2)		
-		ax.fill_between(xlims,l45 ,l50 ,color='DarkOrange', alpha = 0.2)				
+		ax.fill_between(xlims,lll, l40 ,color='r', alpha = 0.2)		
+		ax.fill_between(xlims,l40 ,l50 ,color='DarkOrange', alpha = 0.2)				
 		ax.fill_between(xlims,l50 ,l60 ,color='g', alpha = 0.2)
-		ax.fill_between(xlims,l60 ,l65 ,color='DarkOrange', alpha = 0.2)
-		ax.fill_between(xlims,l65 ,lul ,color='r', alpha = 0.2)		
+		ax.fill_between(xlims,l60 ,l70 ,color='DarkOrange', alpha = 0.2)
+		ax.fill_between(xlims,l70 ,lul ,color='r', alpha = 0.2)		
 		
 		#pyplot.axhline(y=50.,c='g',ls='-',lw=2,alpha=0.5)
 		#pyplot.axhline(y=60.,c='g',ls='-',lw=2,alpha=0.5)		
@@ -189,4 +190,30 @@ class primaryproduction(analysis):
 	pyplot.savefig( self.filename,dpi=dpi)
 	pyplot.close()	
 
-			
+
+def main():
+
+	try:
+		filesIn = getFileList(argv[1:])
+		if len(filesIn)==0:assert False
+		print "Using command line arguments:", filesIn	
+		
+	except:
+		print "cchl:\tERROR:\tNo file specified"
+		#return
+		filesIn = ['/data/euryale7/scratch/ledm/UKESM/MEDUSA/medusa_bio_199?.nc',]
+	
+	a = primaryproduction(filesIn)
+
+
+
+
+
+
+	
+if __name__=="__main__":
+	main() 
+	#print 'The end.'
+	
+	
+	

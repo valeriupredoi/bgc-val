@@ -3,7 +3,7 @@
 from sys import argv
 
 #Specific local code:
-from UKESMpython import folder,getFileList
+from UKESMpython import folder,getFileList,machineName
 #from cchl import cchl
 #from cchlvsIrradiance import cchlvsIrradiance
 #from communityfit import communityfit
@@ -15,6 +15,7 @@ from emergence import cchl,cchlvsIrradiance, communityfit,primaryproduction
 	It can be used to run each of the analyses in series, for any number of input files.
 	As more analsyes are added to the package, please copy the template and add more.
 	/data/euryale7/scratch/ledm/UKESM/MEDUSA/medusa_bio_1998.nc
+	/group_workspaces/jasmin/esmeval/bgc/MEDUSA/medusa_bio_1998.nc
 
 """
 
@@ -32,8 +33,11 @@ def main():
 	
 	if not len(filesIn):
 		print "testsuite:\tERROR:\tNo files specified, try:"
-		print "./testsuite.py /data/euryale7/scratch/ledm/UKESM/MEDUSA/medusa_bio_1998.nc"
-
+		if machineName() == 'PML':
+			print "./testsuite.py /data/euryale7/scratch/ledm/UKESM/MEDUSA/medusa_bio_1998.nc"
+		else:
+			print "./testsuite.py /group_workspaces/jasmin/esmeval/bgc/MEDUSA/medusa_bio_1998.nc"
+		
 	a = primaryproduction.primaryproduction(filesIn)	
 	#assert False
 	for fn in filesIn:
