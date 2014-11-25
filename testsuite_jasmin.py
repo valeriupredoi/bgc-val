@@ -62,7 +62,7 @@ def testsuite_jasmin(	models=['MEDUSA','NEMO'],
 	NEMOFolder	= folder(esmvalFolder+"NEMO/")
 	
 	# Directory for output files:
-	postprocFolder 	= folder(esmvalFolder+"ukesm_postProcessed/")
+	postprocDir 	= folder(esmvalFolder+"ukesm_postProcessed/")
 	imageDir	= folder('images')
 	
 	
@@ -183,7 +183,7 @@ def testsuite_jasmin(	models=['MEDUSA','NEMO'],
 			#####
 			# Location of image Output files
 			imageFolder 	= folder(imageDir+model+'-'+jobIDs[model])
-			postprocFolder = folder(postprocFolder + model+'-'+jobIDs[model]+'-'+years[model])
+			postprocFolder = folder(postprocDir + model+'-'+jobIDs[model]+'-'+years[model])
 
 		
 			try:
