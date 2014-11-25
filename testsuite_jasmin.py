@@ -224,7 +224,6 @@ def testsuite_jasmin(	models=['MEDUSA','NEMO'],
 			# MakePlot runs a series of analysis, comparing every pair in DataVars and ModelVars
 			#	 under a range of different masks. For instance, only data from Antarctic Ocean, or only data from January.
 			# The makePlot produces a shelve file in workingDir containing all results of the analysis.
-			imageFolder	= folder(imageDir +'P2Pplots/'+years[model]+'/'+name+region)			
 			m = makePlots(	b.MatchedDataFile, 
 					b.MatchedModelFile, 
 					name, 
@@ -233,7 +232,7 @@ def testsuite_jasmin(	models=['MEDUSA','NEMO'],
 					year 		= years[model], 
 					plotallcuts	= plotallcuts, 
 					shelveDir 	= folder(postprocFolder+name+region),
-					imageDir	= imageFolder,
+					imageDir	= folder(imageFolder +'P2Pplots/'+years[model]+'/'+name+region)	,
 					compareCoords	=True)
 
 			shelvesAV[model][name.replace(region,'')][region] = m.shelvesAV
@@ -242,7 +241,7 @@ def testsuite_jasmin(	models=['MEDUSA','NEMO'],
 			#####
 			# makeTargets:
 			# Make a target diagram of all matches for this particular dataset. 
-			filename = folder(imageDir+'/Targets/'+years[model]+'/AllSlices')+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region+'.png'
+			filename = folder(imageFolder+'/Targets/'+years[model]+'/AllSlices')+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region+'.png'
 			t = makeTargets(	m.shelves, 
 						filename,
 						#name=name,
@@ -262,13 +261,13 @@ def testsuite_jasmin(	models=['MEDUSA','NEMO'],
 				    if newSlice in month_name: 	MonthShelves.append(shelve)
 				    if newSlice in Ocean_names:	OceanShelves.append(shelve)
 			if len(MonthShelves):	    
-			  	filename = folder(imageDir+'/Targets/'+years[model]+'/Months')+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region+'_Months.png'
+			  	filename = folder(imageFolder+'/Targets/'+years[model]+'/Months')+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region+'_Months.png'
 				makeTargets(	MonthShelves, 
 						filename,
 						legendKeys = ['newSlice',],					
 						)
 			if len(OceanShelves):	
-				filename = folder(imageDir+'/Targets/'+years[model]+'/Oceans')+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region+'_Oceans.png'
+				filename = folder(imageFolder+'/Targets/'+years[model]+'/Oceans')+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region+'_Oceans.png'
 				makeTargets(	OceanShelves, 
 						filename,
 						legendKeys = ['newSlice',],					
@@ -309,7 +308,7 @@ def testsuite_jasmin(	models=['MEDUSA','NEMO'],
 	        		   		try: 	Summary[woa+ns].append(shelve)
 	        		   		except:	Summary[woa+ns]= [shelve,]
 		for k in Summary.keys():
-			filename = folder(imageDir+'/Targets/'+years[model]+'/Summary')+model+'_'+years[model]+'_'+k+'.png'
+			filename = folder(imageFolder+'/Targets/'+years[model]+'/Summary')+model+'_'+years[model]+'_'+k+'.png'
 			
 	  		makeTargets(Summary[k], 
 					filename,
