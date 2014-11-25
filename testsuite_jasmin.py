@@ -47,7 +47,7 @@ def testsuite_jasmin(	models=['MEDUSA','NEMO'],
 	years = {m:year for m in ['MEDUSA','NEMO']}
 	
 	
-	esmvalFolder = "/group_workspaces/jasmin/esmeval/bgc/"
+	esmvalFolder = "/group_workspaces/jasmin/esmeval/example_data/bgc/"
 	#####
 	# Location of data files.
 	MAREDATFolder 	= folder(esmvalFolder+"/MAREDAT/")
