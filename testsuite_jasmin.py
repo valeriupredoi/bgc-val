@@ -363,7 +363,7 @@ if __name__=="__main__":
 	
 	for year in years:
 
-		testsuite_jamin(models = models,	year=year,)#ERSEMjobID=ERSEMjobIDs[0] ) 
+		testsuite_jasmin(models = models,	year=year,)#ERSEMjobID=ERSEMjobIDs[0] ) 
 		#if len(ERSEMjobIDs)==1:continue
 		#for e in ERSEMjobIDs[1:]:
 		#	testsuite_p2p(models = ['ERSEM',],year=year,ERSEMjobID=e ) 
