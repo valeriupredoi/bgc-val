@@ -58,7 +58,8 @@ def testsuite_jasmin(	models=['MEDUSA','NEMO'],
 	#####
 	# Location of model files.	
 	MEDUSAFolder	= folder(esmvalFolder+"MEDUSA/")
-	NEMOFolder	= folder(esmvalFolder+"NEMO/"+ jobIDs['NEMO'] +'/'+years['NEMO'] +'/'+jobIDs['NEMO'] +'_'+years['NEMO'])
+	#NEMOFolder	= folder(esmvalFolder+"NEMO/"+ jobIDs['NEMO'] +'/'+years['NEMO'] +'/'+jobIDs['NEMO'] +'_'+years['NEMO'])
+	NEMOFolder	= folder(esmvalFolder+"NEMO/")
 	
 	# Directory for output files:
 	postprocFolder 	= folder(esmvalFolder+"ukesm_postProcessed/")
@@ -131,13 +132,13 @@ def testsuite_jasmin(	models=['MEDUSA','NEMO'],
 		
 	if doSalTemp:
 		av['salinity']['Data']['File'] 		= WOAFolder+'salinity_monthly_1deg.nc'	
-		av['salinity']['NEMO']['File'] 		= NEMOFolder+'_NEMO.nc'	
+		av['salinity']['NEMO']['File'] 		= NEMOFolder+jobIDs['NEMO'] +'_'+years['NEMO']+'_NEMO.nc'
 		av['salinity']['Data']['Vars'] 		= ['s_an',]
 		av['salinity']['NEMO']['Vars'] 		= ['vosaline',]
 		av['salinity']['regions'] 		= ['Surface','500m','100m','200m','1000m',]	 
 
 		av['temperature']['Data']['File'] 	= WOAFolder+'temperature_monthly_1deg.nc'	
-		av['temperature']['NEMO']['File'] 	= NEMOFolder+'_NEMO.nc'	
+		av['temperature']['NEMO']['File'] 	= NEMOFolder+jobIDs['NEMO'] +'_'+years['NEMO']+'_NEMO.nc'	
 		av['temperature']['Data']['Vars'] 	= ['t_an',]	
 		av['temperature']['NEMO']['Vars'] 	= ['votemper',]
 		av['temperature']['regions'] 		= ['Surface','500m','100m','200m','1000m',]	
@@ -145,7 +146,7 @@ def testsuite_jasmin(	models=['MEDUSA','NEMO'],
 				   
 	if doMLD:	
 		av['mld']['Data']['File'] 		= iFERMERDFolder+ "mld_DT02_c1m_reg2.0.nc"
-		av['mld']['NEMO']['File'] 		= NEMOFolder+'_NEMO.nc'			
+		av['mld']['NEMO']['File'] 		= NEMOFolder+jobIDs['NEMO'] +'_'+years['NEMO']+'_NEMO.nc'		
 		av['mld']['Data']['Vars'] 		= ['mld','mask',]
 		av['mld']['NEMO']['Vars'] 		= ['somxl010',]	
 		av['mld']['regions'] 			= ['',]
