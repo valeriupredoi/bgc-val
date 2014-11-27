@@ -21,7 +21,8 @@ from pftnames import MaredatTypes,WOATypes,Ocean_names,getmt
 def testsuite_jasmin(	models=['MEDUSA','NEMO'],
 			year=1998,
 			ERSEMjobID='xhonp',
-			plotallcuts = False,):
+			plotallcuts = False,
+			regions = ['Surface',]):
 
 	#####
 	# Can use command line arguments to choose a model.
@@ -68,8 +69,8 @@ def testsuite_jasmin(	models=['MEDUSA','NEMO'],
 	
 	#####
 	# regions for large datasets. (WOA)
-	
-	regions = ['Surface',]#'100m','200m','500m',]
+	# Moved into function call
+	# regions = ['Surface',]#'100m','200m','500m',]
 	
 	#####
 	# Which analysis to run
@@ -235,13 +236,13 @@ def testsuite_jasmin(	models=['MEDUSA','NEMO'],
 					region 		= region,
 					year 		= years[model], 
 					plotallcuts	= plotallcuts, 
-					shelveDir 	= folder(postprocFolder+name+region),
-					imageDir	= folder(imageFolder +'P2Pplots/'+years[model]+'/'+name+region)	,
-					compareCoords	=True)
+					shelveDir 	= folder(postprocFolder+name+region+'/shelves'),
+					imageDir	= folder(imageFolder +'P2Pplots/'+years[model]+'/'+name+region),
+					compareCoords	= True )
 
 			shelvesAV[model][name.replace(region,'')][region] = m.shelvesAV
 								
-										
+
 			#####
 			# makeTargets:
 			# Make a target diagram of all matches for this particular dataset. 
