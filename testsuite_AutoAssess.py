@@ -42,7 +42,6 @@ from pftnames import MaredatTypes,WOATypes,Ocean_names,getmt
 #####
 # This is a copy of the testsuite_jamin.py script, but tailored to take an AutoAsses dictionary. 
 
-
 def testsuite_AutoAssess(run,):
 
 	models = [run['ocean_model'],]
@@ -58,11 +57,12 @@ def testsuite_AutoAssess(run,):
 	
 	for m in models:
 		jobIDs  = {m:run['runid']}
-		years 	= {m:run['end_year']}	# This needs some work.
-	esmvalFolder = run['data_root'] 	# was: "/group_workspaces/jasmin/esmeval/example_data/bgc/"	
+		years 	= {m:run['end_year']}	# This needs some work, at the moment it only runs the final year.
+		
+	esmvalFolder = folder(run['data_root'])	# was: "/group_workspaces/jasmin/esmeval/example_data/bgc/"	
 	
 	
-	# 			models=['MEDUSA','NEMO'],
+	# 		models=['MEDUSA','NEMO'],
 	#		year=1998,
 	#		ERSEMjobID='xhonp',
 	#		plotallcuts = False,
@@ -103,12 +103,12 @@ def testsuite_AutoAssess(run,):
 	
 	#####
 	# Location of model files.	
-	MEDUSAFolder	= folder(esmvalFolder+"MEDUSA/")
+	MEDUSAFolder	= folder(esmvalFolder+"/MEDUSA/")
 	#NEMOFolder	= folder(esmvalFolder+"NEMO/"+ jobIDs['NEMO'] +'/'+years['NEMO'] +'/'+jobIDs['NEMO'] +'_'+years['NEMO'])
-	NEMOFolder	= folder(esmvalFolder+"NEMO/")
+	NEMOFolder	= folder(esmvalFolder+"/NEMO/")
 	
 	# Directory for output files:
-	postprocDir 	= folder(esmvalFolder+"ukesm_postProcessed/")
+	postprocDir 	= folder(esmvalFolder+"/ukesm_postProcessed/")
 	imageDir	= folder('images')
 	
 	
@@ -449,29 +449,29 @@ if __name__=="__main__":
 
 	run = {}
 	# Info about the run:
-	run['runid']=		'amzgg' 
+	run['runid']=		'iMarNet' 
 	run['run_type']=	'AMIP' 		#AMIP = forced-SST atmos-only
 	run['ocean_model']=	'NEMO'  	# Or Medusa
 
 	# Various start and end times:
-	run['start']=		'1982.0' 
-	run['start_year']=	'1982.0' 
-	run['end_year']=	'2006.0' 
-	run['nyear']=		'25.0' 
-	run['from_annual']=	'1981-12-01'
+	#run['start']=		'1982.0' 
+	#run['start_year']=	'1982.0' 
+	run['end_year']=	'1998'
+	#run['nyear']=		'25.0' 
+	#run['from_annual']=	'1981-12-01'
 	#run['from_daily']=	#'1981-12-01'
-	run['from_monthly']=	'1981-12-01'
+	#run['from_monthly']=	'1981-12-01'
 	#run['from_seasonal']=	#'1981-12-01'
-	run['to_annual']=	'2005-12-01'
+	#run['to_annual']=	'2005-12-01'
 	#run['to_daily']=	'1986-11-30'
-	run['to_monthly']=	'2006-11-01'
+	#run['to_monthly']=	'2006-11-01'
 	#run['to_seasonal']=	'2006-09-01'
 	
 	
 	
 	
 	# Data locations:
-	run['ss_annual']=	'/group_workspaces/jasmin/esmeval/example_data/autoassess/model_data/amzgg/amzgg.splitlev.000100' 
+	run['ss_annual']=	'/group_workspaces/jasmin/esmeval/example_data/bgc/MEDUSA/' 
 	#run['ss_daily']=	'' 
 	run['ss_monthly']=	'' 
 	#run['ss_seasonal']=	'/group_workspaces/jasmin/esmeval/example_data/autoassess/model_data/amzgg/amzgg.splitlev.000003' 
