@@ -45,7 +45,7 @@ from pftnames import MaredatTypes,WOATypes,Ocean_names,getmt
 
 def testsuite_AutoAssess(run,):
 
-	models = [run.ocean_model,]
+	models = [run['ocean_model'],]
 	if 'UM' in models:
 		print "testsuite_AutoAssess:\tWARNING:\tThis code is not made for the UM model"
 		return
@@ -119,6 +119,10 @@ def testsuite_AutoAssess(run,):
 	
 	#####
 	# Which analysis to run
+	if 'NEMO' in models:
+	
+	
+	if
 	doCHL 		= True
 	doMAREDAT 	= True
 	doN		= True
@@ -437,43 +441,43 @@ if __name__=="__main__":
 
 	run = {}
 	# Info about the run:
-	run['runid']:		'amzgg' 
-	run['run_type']:	'AMIP' 		#AMIP = forced-SST atmos-only
-	run['ocean_model']:	'NEMO'  	# Or Medusa
+	run['runid']=		'amzgg' 
+	run['run_type']=	'AMIP' 		#AMIP = forced-SST atmos-only
+	run['ocean_model']=	'NEMO'  	# Or Medusa
 
 	# Various start and end times:
-	run['start']:		'1982.0' 
-	run['start_year']:	'1982.0' 
-	run['end_year']:	'2006.0' 
-	run['nyear']:		'25.0' 
-	run['from_annual']:	'1981-12-01'
-	#run['from_daily']:	#'1981-12-01'
-	run['from_monthly']:	'1981-12-01'
-	#run['from_seasonal']:	#'1981-12-01'
-	run['to_annual']:	'2005-12-01'
-	#run['to_daily']:	'1986-11-30'
-	run['to_monthly']:	'2006-11-01'
-	#run['to_seasonal']:	'2006-09-01'
+	run['start']=		'1982.0' 
+	run['start_year']=	'1982.0' 
+	run['end_year']=	'2006.0' 
+	run['nyear']=		'25.0' 
+	run['from_annual']=	'1981-12-01'
+	#run['from_daily']=	#'1981-12-01'
+	run['from_monthly']=	'1981-12-01'
+	#run['from_seasonal']=	#'1981-12-01'
+	run['to_annual']=	'2005-12-01'
+	#run['to_daily']=	'1986-11-30'
+	run['to_monthly']=	'2006-11-01'
+	#run['to_seasonal']=	'2006-09-01'
 	
 	
 	
 	
 	# Data locations:
-	run['ss_annual']:	'/group_workspaces/jasmin/esmeval/example_data/autoassess/model_data/amzgg/amzgg.splitlev.000100' 
-	#run['ss_daily']:	'' 
-	run['ss_monthly']:	'' 
-	#run['ss_seasonal']:	'/group_workspaces/jasmin/esmeval/example_data/autoassess/model_data/amzgg/amzgg.splitlev.000003' 
-	#run['ss_spatiot']:	'' 
-	run['ancil_root']:	'/project/cma/ancil' 
-	run['clim_root']:	'/project/cma/clim' 
-	run['data_root']:	'/group_workspaces/jasmin/esmeval/example_data/bgc' 
+	run['ss_annual']=	'/group_workspaces/jasmin/esmeval/example_data/autoassess/model_data/amzgg/amzgg.splitlev.000100' 
+	#run['ss_daily']=	'' 
+	run['ss_monthly']=	'' 
+	#run['ss_seasonal']=	'/group_workspaces/jasmin/esmeval/example_data/autoassess/model_data/amzgg/amzgg.splitlev.000003' 
+	#run['ss_spatiot']=	'' 
+	run['ancil_root']=	'/project/cma/ancil' 
+	run['clim_root']=	'/project/cma/clim' 
+	run['data_root']=	'/group_workspaces/jasmin/esmeval/example_data/bgc' 
 	
 	
 	# Specific files needed to output for AutoAssess
-	run['metrics_model_uncertainty']:'amzgg_m_stdev' 
-	run['radiation_table']:		 '/home/users/simonread/dev_workspace/CMA_rev1097_sandbox/example_output/valnote_results/antia_v_amzgg/rad.txt' 	
-	run['summary_file']:		 '/home/users/simonread/dev_workspace/CMA_rev1097_sandbox/example_output/valnote_results/antia_v_amzgg/summary_global.csv' 
-	run['supermean_root']:		 '/group_workspaces/jasmin/esmeval/example_data/autoassess/model_data/amzgg/supermeans/amzgga.ms2006' 
+	run['metrics_model_uncertainty']='amzgg_m_stdev' 
+	run['radiation_table']=		 '/home/users/simonread/dev_workspace/CMA_rev1097_sandbox/example_output/valnote_results/antia_v_amzgg/rad.txt' 	
+	run['summary_file']=		 '/home/users/simonread/dev_workspace/CMA_rev1097_sandbox/example_output/valnote_results/antia_v_amzgg/summary_global.csv' 
+	run['supermean_root']=		 '/group_workspaces/jasmin/esmeval/example_data/autoassess/model_data/amzgg/supermeans/amzgga.ms2006' 
 	
 
 	
@@ -515,8 +519,8 @@ if __name__=="__main__":
 
 	
 	
-	for year in years:
-		testsuite_AutoAssess(run)
+#	for year in years:
+	testsuite_AutoAssess(run)
 	
 	print 'The end.'
 	
