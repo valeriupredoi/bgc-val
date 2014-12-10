@@ -43,12 +43,31 @@ from pftnames import MaredatTypes,WOATypes,Ocean_names,getmt
 # This is a copy of the testsuite_jamin.py script, but tailored to take an AutoAsses dictionary. 
 
 
-def testsuite_AutoAssess(	models=['MEDUSA','NEMO'],
-			year=1998,
-			ERSEMjobID='xhonp',
-			plotallcuts = False,
-			regions = ['Surface',]):
+def testsuite_AutoAssess(run,):
 
+	models = [run.ocean_model,]
+	if 'UM' in models:
+		print "testsuite_AutoAssess:\tWARNING:\tThis code is not made for the UM model"
+		return
+	
+	if 'NEMO' not in models and 'MEDUSA' not in models:
+		print "testsuite_AutoAssess:\tWARNING:\tThis code is not made for the ",models," model, only for", ['NEMO','MEDUSA']
+		return		
+	
+	
+	
+	for m in models:
+		jobIDs  = {m:run['runid']}
+		years 	= {m:run['end_year']}	# This needs some work.
+	esmvalFolder = run['data_root'] 	# was: "/group_workspaces/jasmin/esmeval/example_data/bgc/"	
+	
+	
+	# 			models=['MEDUSA','NEMO'],
+	#		year=1998,
+	#		ERSEMjobID='xhonp',
+	#		plotallcuts = False,
+	#		regions = ['Surface',]
+			
 	#####
 	# Can use command line arguments to choose a model.
 	#if len(argv[1:]): models  = argv[1:]
@@ -57,10 +76,10 @@ def testsuite_AutoAssess(	models=['MEDUSA','NEMO'],
     	#####
     	# Which jobs to look at. 
 	#ERSEMjobID = 'xhonp'
-	jobIDs={}
+	#jobIDs={}
 	#jobIDs['ERSEM'] 	= ERSEMjobID
-	jobIDs['NEMO'] 		= ERSEMjobID
-	jobIDs['MEDUSA'] 	= 'iMarNet'
+	#jobIDs['NEMO'] 		= ERSEMjobID
+	#jobIDs['MEDUSA'] 	= 'iMarNet'
 	
 	#####
 	# Plot p2p for all regions/oceans, or just everything and "standard" cuts.
@@ -69,18 +88,19 @@ def testsuite_AutoAssess(	models=['MEDUSA','NEMO'],
 	#####
 	# Which Year to investigate for each model.
 	# In an ideal world, they would all be the same, except that my current run is stuck in the queue.
-	year = str(year)	
-	years = {m:year for m in ['MEDUSA','NEMO']}
+	#year = str(year)	
+	#years = {m:year for m in ['MEDUSA','NEMO']}
 	
 	
-	esmvalFolder = "/group_workspaces/jasmin/esmeval/example_data/bgc/"
+
 	#####
 	# Location of data files.
 	MAREDATFolder 	= folder(esmvalFolder+"/MAREDAT/")
-	WOAFolder 	= folder(esmvalFolder+"WOA/")
-	GEOTRACESFolder = folder(esmvalFolder+"GEOTRACES/GEOTRACES_PostProccessed/")
-	TakahashiFolder = folder(esmvalFolder+"Takahashi2009_pCO2/")
-	iFERMERDFolder  = folder(esmvalFolder+"IFREMER-MLD/")
+	WOAFolder 	= folder(esmvalFolder+"/WOA/")
+	GEOTRACESFolder = folder(esmvalFolder+"/GEOTRACES/GEOTRACES_PostProccessed/")
+	TakahashiFolder = folder(esmvalFolder+"/Takahashi2009_pCO2/")
+	iFERMERDFolder  = folder(esmvalFolder+"/IFREMER-MLD/")
+	
 	#####
 	# Location of model files.	
 	MEDUSAFolder	= folder(esmvalFolder+"MEDUSA/")
@@ -358,36 +378,108 @@ def testsuite_AutoAssess(	models=['MEDUSA','NEMO'],
 	
 if __name__=="__main__":
 
+	"""
+	./maverick/lib/model_run.py documentation
+	
+	Module for the Run class.  Each run object holds information about a
+	model run, primarily for passing to the assessment area code.
+
+	Keys available in run dictionary for use by assessment code:
+	    General
+	    -------
+	    runid            : 5-character UM runid
+	    summary_file     : RMS stats from valnote (csv)
+	    radiation_table  : rad means from valnote (plain text)
+	    ocean_model      : UM or NEMO
+	    run_type         : type of run:
+		                      PDC = present-day control
+		                      PIC = pre-industrial control
+		                      AMIP = forced-SST atmos-only
+
+	    Obs and ancillary data
+	    ----------------------
+	    clim_root        : Observational climatologies (/project/cma/clim)
+	    ancil_root       : Ancillary input files (/project/cma/ancil)
+
+	    Data locations (stashsplit directories except supermeans)
+	    ---------------------------------------------------------
+	    data_root        : top dir for most data
+	    supermean_root   : suprmn filenames up to season
+	    ss_daily         : daily means
+	    ss_monthly       : monthly means
+	    ss_seasonal      : seasonal means
+	    ss_annual        : annual means
+	    ss_spatiot       : diags for spatio-temp variability
+
+	    Dates specifying standard periods for assessment
+	    Values are datetime.date objects.
+	    ------------------------------------------------
+	    from_daily       : period start for daily data
+	    to_daily         : period end for daily data
+	    from_monthly     : period start for monthly data
+	    to_monthly       : period end for monthly data
+	    from_seasonal    : period start for seasonal data
+	    to_seasonal      : period end for seasonal data
+	    from_annual      : period start for annual data
+	    to_annual        : period end for annual data
+
+	    The 'Runs' class is a dictionary of 'Run' instances.
+	    Both Run and Runs have an id attribute, for file/dir naming purposes.
+	    The id attr for Run instances is the runid; for the Runs group, it is
+	    built from the id attrs of the indvidual Run instances.
+
+	    Note difference from areas definition.  The 'runs' section in the config
+	    is of the form name=runid.  Name is e.g. 'control', 'exper'.
+	    The run is selected from the run_defs config using runid, not name.
+
+	"""
+	
 
 	run = {}
-	run['ancil_root']:	'/project/cma/ancil' 
-	run['clim_root']:	'/project/cma/clim' 
-	run['data_root']:	'/group_workspaces/jasmin/esmeval/example_data/autoassess/model_data/amzgg' 
-	run['from_annual']:	'1981-12-01'
-	run['from_daily']:	'1981-12-01'
-	run['from_monthly']:	'1981-12-01'
-	run['from_seasonal']:	'1981-12-01'
-	run['metrics_model_uncertainty']:'amzgg_m_stdev' 
-	run['ocean_model']:	'NEMO' 
-	run['radiation_table']:	'/home/users/simonread/dev_workspace/CMA_rev1097_sandbox/example_output/valnote_results/antia_v_amzgg/rad.txt' 
-	run['run_type']:	'AMIP' 
+	# Info about the run:
 	run['runid']:		'amzgg' 
-	run['ss_annual']:	'/group_workspaces/jasmin/esmeval/example_data/autoassess/model_data/amzgg/amzgg.splitlev.000100' 
-	run['ss_daily']:	'' 
-	run['ss_monthly']:	'' 
-	run['ss_seasonal']:	'/group_workspaces/jasmin/esmeval/example_data/autoassess/model_data/amzgg/amzgg.splitlev.000003' 
-	run['ss_spatiot']:	'' 
+	run['run_type']:	'AMIP' 		#AMIP = forced-SST atmos-only
+	run['ocean_model']:	'NEMO'  	# Or Medusa
+
+	# Various start and end times:
 	run['start']:		'1982.0' 
 	run['start_year']:	'1982.0' 
 	run['end_year']:	'2006.0' 
 	run['nyear']:		'25.0' 
-	run['summary_file']:	'/home/users/simonread/dev_workspace/CMA_rev1097_sandbox/example_output/valnote_results/antia_v_amzgg/summary_global.csv' 
-	run['supermean_root']:	'/group_workspaces/jasmin/esmeval/example_data/autoassess/model_data/amzgg/supermeans/amzgga.ms2006' 
+	run['from_annual']:	'1981-12-01'
+	#run['from_daily']:	#'1981-12-01'
+	run['from_monthly']:	'1981-12-01'
+	#run['from_seasonal']:	#'1981-12-01'
 	run['to_annual']:	'2005-12-01'
-	run['to_daily']:	'1986-11-30'
+	#run['to_daily']:	'1986-11-30'
 	run['to_monthly']:	'2006-11-01'
-	run['to_seasonal']:	'2006-09-01'
-	run['validation_note']:	'/home/users/simonread/dev_workspace/CMA_rev1097_sandbox/example_output/valnote_results/antia_v_amzgg' 	
+	#run['to_seasonal']:	'2006-09-01'
+	
+	
+	
+	
+	# Data locations:
+	run['ss_annual']:	'/group_workspaces/jasmin/esmeval/example_data/autoassess/model_data/amzgg/amzgg.splitlev.000100' 
+	#run['ss_daily']:	'' 
+	run['ss_monthly']:	'' 
+	#run['ss_seasonal']:	'/group_workspaces/jasmin/esmeval/example_data/autoassess/model_data/amzgg/amzgg.splitlev.000003' 
+	#run['ss_spatiot']:	'' 
+	run['ancil_root']:	'/project/cma/ancil' 
+	run['clim_root']:	'/project/cma/clim' 
+	run['data_root']:	'/group_workspaces/jasmin/esmeval/example_data/bgc' 
+	
+	
+	# Specific files needed to output for AutoAssess
+	run['metrics_model_uncertainty']:'amzgg_m_stdev' 
+	run['radiation_table']:		 '/home/users/simonread/dev_workspace/CMA_rev1097_sandbox/example_output/valnote_results/antia_v_amzgg/rad.txt' 	
+	run['summary_file']:		 '/home/users/simonread/dev_workspace/CMA_rev1097_sandbox/example_output/valnote_results/antia_v_amzgg/summary_global.csv' 
+	run['supermean_root']:		 '/group_workspaces/jasmin/esmeval/example_data/autoassess/model_data/amzgg/supermeans/amzgga.ms2006' 
+	
+
+	
+
+
+
 
 	# Can use command line arguments to choose a model.
 	#models 	= []

@@ -41,7 +41,7 @@ from pftnames import MaredatTypes,WOATypes,Ocean_names,getmt
 
 
 #####
-# This is a copy of the testsuite_p2p.py script, but tailored for jasmin-esmval and with no ERSEM code.
+# This is a copy of the testsuite_p2p.py script, but tailored to run on jasmin-esmval and with no ERSEM code.
 
 
 def testsuite_jasmin(	models=['MEDUSA','NEMO'],
