@@ -36,6 +36,7 @@ README:
 	The key files that do all the leg work are:
 		    testsuite_emergence.py
 		    testsuite_p2p.py
+		    testsuite_jasmin.py
 	They both run a selection of analsyes.
 	
 	
@@ -136,9 +137,17 @@ TO DO:
 		a lot of the same imformation is duplicated in testsuite_p2p and getmtime 
 			ie MEDUSA chl = 'CHL' in both files
 	
+		As it stands now, to add more p2p datasets you need to:
+			add it to the testsuite and to the getMT, and to the longnames.
+			
+		
 	jobID may cause trouble, as it is explicitly defined in a few places.
+	This needs to be set by Valnote/AutoAssess
+		(add consistent jobID naming to MEDUSA)
 	
-	add consistent jobID naming to MEDUSA
+	Valnote requires an output metric.
+		It can be read it from the shelve file.
+	
 	
 	Move target diagram faff out of testsuite:
 		made target diagrams out of a series of shelve files
@@ -149,7 +158,7 @@ TO DO:
 
 	Sort out longnames.
 		Replace pftnames.getlongname with something better.
-		how about moving long_names into testsuite_p2p?
+		how about moving long_names into testsuite_p2p? - not really an option.
 
 	Improve "alwaysInclude" methods in netcdf_manip
 	
@@ -174,7 +183,10 @@ TO DO:
 		ie P2P location matching assumes ORCA1 grid.
 		
 		this will be more important later when we encounter ukesm at 1/4 degree,
-	
+
+	P2P:
+		coarsen model precision	to match data
+		use robust statistics instead of standard.
 	
 	
 		
