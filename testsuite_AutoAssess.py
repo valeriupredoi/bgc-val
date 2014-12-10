@@ -66,7 +66,7 @@ def testsuite_AutoAssess(run,):
 	#		year=1998,
 	#		ERSEMjobID='xhonp',
 	#		plotallcuts = False,
-	#		regions = ['Surface',]
+	regions = ['Surface',]
 			
 	#####
 	# Can use command line arguments to choose a model.
@@ -118,9 +118,7 @@ def testsuite_AutoAssess(run,):
 	# regions = ['Surface',]#'100m','200m','500m',]
 	
 	#####
-	# Which analysis to run
-	plotKeys = {}
-	plotKeys['
+	# Which analyses to run
 	if 'NEMO' in models:
 		doSalTemp	= True
 		doMLD		= True	
