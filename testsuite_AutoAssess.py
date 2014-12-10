@@ -119,17 +119,27 @@ def testsuite_AutoAssess(run,):
 	
 	#####
 	# Which analysis to run
+	plotKeys = {}
+	plotKeys['
 	if 'NEMO' in models:
-	
-	
-	if
-	doCHL 		= True
-	doMAREDAT 	= True
-	doN		= True
-	doPSF		= True	
-	doSalTemp	= True
-	doMLD		= True
-	doPCO2		= True
+		doSalTemp	= True
+		doMLD		= True	
+	else:
+		doSalTemp	= False
+		doMLD		= False
+		
+	if 'MEDUSA' in models:
+		doCHL 		= True
+		doMAREDAT 	= True
+		doN		= True
+		doPSF		= True	
+		doPCO2		= True
+	else:
+		doCHL 		= False
+		doMAREDAT 	= False
+		doN		= False
+		doPSF		= False	
+		doPCO2		= False		
 	
 	
 	#####
