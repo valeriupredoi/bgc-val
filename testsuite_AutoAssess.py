@@ -44,6 +44,8 @@ from pftnames import MaredatTypes,WOATypes,Ocean_names,getmt
 
 def testsuite_AutoAssess(run,):
 
+	#####
+	# Do some tests to determine which model we're lookinat at here, MEDUSA or NEMO.
 	models = [run['ocean_model'],]
 	if 'UM' in models:
 		print "testsuite_AutoAssess:\tWARNING:\tThis code is not made for the UM model"
@@ -54,17 +56,19 @@ def testsuite_AutoAssess(run,):
 		return		
 	
 	
-	
+	#####
+	# For each model, load the appropriate year and job ID.
 	for m in models:
 		jobIDs  = {m:run['runid']}
 		try:	years 	= {m:str(run['end_year'].year)}
 		except:	years 	= {m:str(run['end_year'])}	# This needs some work, at the moment it only runs the final year.
 		
-	esmvalFolder 	= folder(run['data_root'])	# was: "/group_workspaces/jasmin/esmeval/example_data/bgc/"	
-	csvFile 	= run['summary_file']
+
+
 	
 	#####
-	# Ensure that the outgoing folder exists:
+	# Name outgoing summary file, and ensure that the outgoing folder exists.
+	csvFile 	= run['summary_file']	
 	csvFileFold 	= folder(os.path.dirname(os.path.realpath((csvFile)))
 	
 	# 		models=['MEDUSA','NEMO'],
@@ -74,32 +78,15 @@ def testsuite_AutoAssess(run,):
 	regions = ['Surface',]
 			
 	#####
-	# Can use command line arguments to choose a model.
-	#if len(argv[1:]): models  = argv[1:]
-	#else:	models = ['MEDUSA','ERSEM','NEMO']
-    	
-    	#####
-    	# Which jobs to look at. 
-	#ERSEMjobID = 'xhonp'
-	#jobIDs={}
-	#jobIDs['ERSEM'] 	= ERSEMjobID
-	#jobIDs['NEMO'] 		= ERSEMjobID
-	#jobIDs['MEDUSA'] 	= 'iMarNet'
-	
-	#####
 	# Plot p2p for all regions/oceans, or just everything and "standard" cuts.
-	#plotallcuts = True
+	plotallcuts = False
 	
-	#####
-	# Which Year to investigate for each model.
-	# In an ideal world, they would all be the same, except that my current run is stuck in the queue.
-	#year = str(year)	
-	#years = {m:year for m in ['MEDUSA','NEMO']}
 	
 	
 
 	#####
-	# Location of data files.
+	# Location of data files is now given in the run dictionary.
+	esmvalFolder 	= folder(run['data_root'])		
 	MAREDATFolder 	= folder(esmvalFolder+"/MAREDAT/")
 	WOAFolder 	= folder(esmvalFolder+"/WOA/")
 	GEOTRACESFolder = folder(esmvalFolder+"/GEOTRACES/GEOTRACES_PostProccessed/")
@@ -107,8 +94,9 @@ def testsuite_AutoAssess(run,):
 	iFERMERDFolder  = folder(esmvalFolder+"/IFREMER-MLD/")
 	
 	#####
-	# Location of model files.	
-	MEDUSAFolder	= folder(esmvalFolder+"/MEDUSA/")
+	# Location of model files.
+		
+	MEDUSAFolder	= run['ss_annual']
 	#NEMOFolder	= folder(esmvalFolder+"NEMO/"+ jobIDs['NEMO'] +'/'+years['NEMO'] +'/'+jobIDs['NEMO'] +'_'+years['NEMO'])
 	NEMOFolder	= folder(esmvalFolder+"/NEMO/")
 	
@@ -489,9 +477,9 @@ if __name__=="__main__":
 	
 	
 	# Data locations:
-	run['ss_annual']=	'/group_workspaces/jasmin/esmeval/example_data/bgc/MEDUSA/' 
+	run['ss_annual']=	'/group_workspaces/jasmin/esmeval/example_data/bgc/NEMO/' 
 	#run['ss_daily']=	'' 
-	run['ss_monthly']=	'' 
+	#run['ss_monthly']=	'' 
 	#run['ss_seasonal']=	'/group_workspaces/jasmin/esmeval/example_data/autoassess/model_data/amzgg/amzgg.splitlev.000003' 
 	#run['ss_spatiot']=	'' 
 	run['ancil_root']=	'/project/cma/ancil' 
