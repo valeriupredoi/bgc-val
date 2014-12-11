@@ -32,8 +32,8 @@ from calendar import month_name
 
 #Specific local code:
 from UKESMpython import folder,getFileList, AutoVivification, NestedDict,AutoVivToYaml,YamlToDict
-from p2p import matchDataAndModel,makePlots,makeTargets
-
+from p2p import matchDataAndModel,makePlots,makeTargets, csvFromShelves
+#from 
 from pftnames import MaredatTypes,WOATypes,Ocean_names,getmt
 
 ###	Potential problems?
@@ -322,8 +322,11 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 					compareCoords	=True)
 
 			shelvesAV[model][name.replace(region,'')][region] = m.shelvesAV
-								
-										
+			csvFile = folder(workingDir+'/CSV')+'summary_file.csv'
+			print "attempting csvFromShelves:",m.shelves, csvFile
+			c = csvFromShelves.csvFromShelves(m.shelves, csvFile ,['check',])
+			#assert False
+			
 			#####
 			# makeTargets:
 			# Make a target diagram of all matches for this particular dataset. 

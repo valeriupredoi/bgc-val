@@ -148,6 +148,9 @@ TO DO:
 	Valnote requires an output metric.
 		It can be read it from the shelve file.
 	
+	 newSlice:
+	 	Implement a better slicing method.
+	 	ie: Three different slicing names, one for time, one for depth, one of lat/lon.
 	
 	Move target diagram faff out of testsuite:
 		made target diagrams out of a series of shelve files

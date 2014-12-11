@@ -26,12 +26,12 @@
 #
 #Standard Python modules:
 from sys import argv
-from os.path import exists
+import os
 from calendar import month_name
 
 #Specific local code:
 from UKESMpython import folder,getFileList, AutoVivification, NestedDict,AutoVivToYaml,YamlToDict
-from p2p import matchDataAndModel,makePlots,makeTargets
+from p2p import matchDataAndModel,makePlots,makeTargets, csvFromShelves
 
 from pftnames import MaredatTypes,WOATypes,Ocean_names,getmt
 
@@ -57,10 +57,15 @@ def testsuite_AutoAssess(run,):
 	
 	for m in models:
 		jobIDs  = {m:run['runid']}
-		years 	= {m:run['end_year']}	# This needs some work, at the moment it only runs the final year.
+		try:	years 	= {m:str(run['end_year'].year)}
+		except:	years 	= {m:str(run['end_year'])}	# This needs some work, at the moment it only runs the final year.
 		
-	esmvalFolder = folder(run['data_root'])	# was: "/group_workspaces/jasmin/esmeval/example_data/bgc/"	
+	esmvalFolder 	= folder(run['data_root'])	# was: "/group_workspaces/jasmin/esmeval/example_data/bgc/"	
+	csvFile 	= run['summary_file']
 	
+	#####
+	# Ensure that the outgoing folder exists:
+	csvFileFold 	= folder(os.path.dirname(os.path.realpath((csvFile)))
 	
 	# 		models=['MEDUSA','NEMO'],
 	#		year=1998,
@@ -110,7 +115,9 @@ def testsuite_AutoAssess(run,):
 	# Directory for output files:
 	postprocDir 	= folder(esmvalFolder+"/ukesm_postProcessed/")
 	imageDir	= folder('images')
-	
+
+
+				
 	
 	#####
 	# regions for large datasets. (WOA)
@@ -245,18 +252,18 @@ def testsuite_AutoAssess(run,):
 			#####
 			# Location of image Output files
 			imageFolder 	= folder(imageDir+model+'-'+jobIDs[model])
-			postprocFolder = folder(postprocDir + model+'-'+jobIDs[model]+'-'+years[model])
+			postprocFolder  = folder(postprocDir + model+'-'+jobIDs[model]+'-'+years[model])
 
 		
 			try:
-			    if not exists(av[name]['Data']['File']):
+			    if not os.path.exists(av[name]['Data']['File']):
 				print "testsuite_p2p.py:\tWARNING:\tFile does not exist", av[name]['Data']['File']
 				continue
 			except:
 				print "testsuite_p2p.py:\tWARNING:\tFile does not exist\tav[",name,"][",model,'][File]'
 				continue			    	
 			try:
-			    if not exists(av[name][model]['File']):
+			    if not os.path.exists(av[name][model]['File']):
 				print "testsuite_p2p.py:\tWARNING:\tFile does not exist", av[name][model]+'[File]'
 				continue
 			except:
@@ -298,7 +305,18 @@ def testsuite_AutoAssess(run,):
 					compareCoords	= True )
 
 			shelvesAV[model][name.replace(region,'')][region] = m.shelvesAV
-								
+			
+			#####
+			# make CSV from Shelves:
+			# Make some CSV files containing the results of the point to point plots.
+			# the option "check" allows to test if a line already exists in the output file. 
+			# Alternatives are "over write" and "append", neither are recommnended here.
+			
+			print "attempting csvFromShelves:",m.shelves, csvFile
+			c = csvFromShelves.csvFromShelves(m.shelves, csvFile ,['check',])
+			
+
+
 
 			#####
 			# makeTargets:
@@ -376,7 +394,7 @@ def testsuite_AutoAssess(run,):
 					filename,
 					legendKeys = ['name',],
 					debug=True)
-
+		
 					
 	print "Working dir:",postprocFolder
 	

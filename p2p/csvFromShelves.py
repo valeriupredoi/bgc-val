@@ -36,15 +36,26 @@ from UKESMpython import folder
 
 #####
 # Takes a shelve or a list of shelve filenames and an output file
+# This class takes a shelve file(s) from the output of the p2p analysis, and converts it into a csv file for a ValNote.
 # Doesn't do any math here.
 
 class csvFromShelves:
   def __init__(self,shelves,outFile, csvOptions = ['overwrite',]):
   	# csv options = 'append', 'overwrite', 'check'
   	print "csvFromShelves:",outFile, csvOptions
+
+	#####
+	# Build a list of shelve files to read
+  	if type(shelves) == type(['list','of','stings',]):
+  		shelves_ = []
+  		for s in shelves:shelves_.extend(glob(s)) 
+  		shelves = shelves_
+  	  	
   	if type(shelves) == type('string'):
   		shelves = glob(shelves)
   	
+  	#####
+  	# Does the out file exist? If so, load it, unless you're over writing it.
   	if os.path.exists(outFile):
 	  	f = open(outFile,'r')
 	  	txt_start = f.read()
@@ -52,19 +63,20 @@ class csvFromShelves:
 	else:
 		
 		txt_start = ''
-
-  	if len(np.intersect1d(['check','c'], csvOptions)):check = True
-  	else: check = False
-  	  	
+  	  
   	if len(np.intersect1d(['overwrite', 'o'], csvOptions)):
   		if os.path.exists(outFile): 
   			print "csvFromShelves:\tOVERWRITING",outFile
   		else:	print "csvFromShelves:\tCreating",outFile
   		txt_start = ''
-  		
-  	txt = ''
 
-  	head = 'year, name, region, newSlice, gamma, E0, correlation, distance\n'
+  	if len(np.intersect1d(['check','c'], csvOptions)):check = True
+  	else: check = False
+  	
+  	
+	#####
+	# Prepare to iterate over the  glob-ed shelve files.
+  	txt = ''
   	for fn in shelves:
   		print "Loading", fn
   		try:
@@ -80,22 +92,29 @@ class csvFromShelves:
 		except:
 			print "unable to read",fn
 			continue
-		
+		#####
+		# Create some new indices:
 		sig		= gamma > 1 and 1 or -1  
-		
 		inverseCorr = copysign(correlation, (np.ma.abs(1./correlation)-1.))
   		distance 	= np.sqrt(gamma**2 + E0**2 + inverseCorr**2)
 
-	  	columns = [year, name, region, newSlice, sig*gamma, E0, correlation, distance]
-	  	
+		#####
+		# Order to data into a string of columns
+	  	columns = [year, name, region, newSlice, sig*gamma, E0, correlation, distance]  	
 	  	line = ', '.join( [str(c) for c in columns])# + '\n'
 
-	  	#print "line:", line, str(line)
-	  	if check and txt_start.find(line) > -1:continue
-	  	
+		#####
+		# Check to see if the line already exists in the outFile
+	  	if check and txt_start.find(line) > -1:continue	  	
   		txt += line + '\n'
 
- 
+	#####
+	# Write the outFile, according to the option flags above:
+	if len(txt)==0:
+		print "No changes made", csvOptions
+		return
+
+  	head = 'year, name, region, newSlice, gamma, E0, correlation, distance\n'
 	if 'overwrite' in csvOptions:
 		f = open(outFile,'w')
 		f.write(head)
@@ -105,9 +124,8 @@ class csvFromShelves:
   		if txt_start.find(head)!=0: f.write(head)
   		f.write(txt_start)
   	
-	if len(txt)==0:
-		print "No changes made", csvOptions
 	f.write(txt)
+		
 	print "Saving",outFile
 	
 	f.close()
@@ -121,13 +139,15 @@ if __name__=="__main__":
 	outfn = folder('CSV/testing')+'test1.csv'
 	#csvFromShelves(fn, outfn,csvOptions=['append',])	
 	#csvFromShelves(fn, outfn,csvOptions=['overwrite',])
-	csvFromShelves(fn, outfn,csvOptions=['check',])				
+	csvFromShelves(fn, outfn,csvOptions=['overwrite',])				
 
 	outfn = folder('CSV/testing')+'test_all.csv'
 	csvFromShelves('/data/euryale7/scratch/ledm/ukesm_postProcessed/MEDUSA-1998/*/*.shelve',outfn, csvOptions=['check',])		
 	csvFromShelves('/data/euryale7/scratch/ledm/ukesm_postProcessed/NEMO-1998/*/*.shelve',  outfn, csvOptions=['check',])
 	 
-	
+	outfn = folder('CSV/testing')+'test_all_2.csv'
+	lists = ['/data/euryale7/scratch/ledm/ukesm_postProcessed/MEDUSA-1998/*/*.shelve','/data/euryale7/scratch/ledm/ukesm_postProcessed/NEMO-1998/*/*.shelve']
+	csvFromShelves(lists,outfn, csvOptions=['check',])		
 	
 	
 	
