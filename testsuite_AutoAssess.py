@@ -69,7 +69,7 @@ def testsuite_AutoAssess(run,):
 	#####
 	# Name outgoing summary file, and ensure that the outgoing folder exists.
 	csvFile 	= run['summary_file']	
-	csvFileFold 	= folder(os.path.dirname(os.path.realpath((csvFile)))
+	csvFileFold 	= folder(os.path.dirname(os.path.realpath((csvFile))))
 	
 	# 		models=['MEDUSA','NEMO'],
 	#		year=1998,
@@ -455,7 +455,7 @@ if __name__=="__main__":
 
 	run = {}
 	# Info about the run:
-	run['runid']=		'iMarNet' 
+	run['runid']=		'xhonp' 
 	run['run_type']=	'AMIP' 		#AMIP = forced-SST atmos-only
 	run['ocean_model']=	'NEMO'  	# Or Medusa
 
@@ -490,7 +490,7 @@ if __name__=="__main__":
 	# Specific files needed to output for AutoAssess
 	run['metrics_model_uncertainty']='amzgg_m_stdev' 
 	run['radiation_table']=		 '/home/users/simonread/dev_workspace/CMA_rev1097_sandbox/example_output/valnote_results/antia_v_amzgg/rad.txt' 	
-	run['summary_file']=		 '/home/users/simonread/dev_workspace/CMA_rev1097_sandbox/example_output/valnote_results/antia_v_amzgg/summary_global.csv' 
+	run['summary_file']=		 'CSV/summary_global.csv' 
 	run['supermean_root']=		 '/group_workspaces/jasmin/esmeval/example_data/autoassess/model_data/amzgg/supermeans/amzgga.ms2006' 
 	
 
