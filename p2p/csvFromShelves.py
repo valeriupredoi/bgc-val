@@ -40,7 +40,7 @@ from UKESMpython import folder
 # Doesn't do any math here.
 
 class csvFromShelves:
-  def __init__(self,shelves,outFile, csvOptions = ['overwrite',]):
+  def __init__(self,shelves,outFile, csvOptions = ['check',]):
   	# csv options = 'append', 'overwrite', 'check'
   	print "csvFromShelves:",outFile, csvOptions
 

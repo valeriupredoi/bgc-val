@@ -71,16 +71,14 @@ def testsuite_AutoAssess(run,):
 	csvFile 	= run['summary_file']	
 	csvFileFold 	= folder(os.path.dirname(os.path.realpath((csvFile))))
 	
-	# 		models=['MEDUSA','NEMO'],
-	#		year=1998,
-	#		ERSEMjobID='xhonp',
-	#		plotallcuts = False,
+
+	#####
+	# Which regions to look at. More regions are
 	regions = ['Surface',]
 			
 	#####
 	# Plot p2p for all regions/oceans, or just everything and "standard" cuts.
 	plotallcuts = False
-	
 	
 	
 
@@ -94,11 +92,10 @@ def testsuite_AutoAssess(run,):
 	iFERMERDFolder  = folder(esmvalFolder+"/IFREMER-MLD/")
 	
 	#####
-	# Location of model files.
-		
+	# Location of model files.	
 	MEDUSAFolder	= run['ss_annual']
 	#NEMOFolder	= folder(esmvalFolder+"NEMO/"+ jobIDs['NEMO'] +'/'+years['NEMO'] +'/'+jobIDs['NEMO'] +'_'+years['NEMO'])
-	NEMOFolder	= folder(esmvalFolder+"/NEMO/")
+	NEMOFolder	= run['ss_annual']
 	
 	# Directory for output files:
 	postprocDir 	= folder(esmvalFolder+"/ukesm_postProcessed/")
@@ -106,7 +103,6 @@ def testsuite_AutoAssess(run,):
 
 
 				
-	
 	#####
 	# regions for large datasets. (WOA)
 	# Moved into function call
@@ -454,10 +450,12 @@ if __name__=="__main__":
 	
 
 	run = {}
-	# Info about the run:
+	# Info about the run.
+	# Commented out those parts of the run dictionary that aren't needed.
+	
 	run['runid']=		'xhonp' 
-	run['run_type']=	'AMIP' 		#AMIP = forced-SST atmos-only
-	run['ocean_model']=	'NEMO'  	# Or Medusa
+	#run['run_type']=	'AMIP' 		#AMIP = forced-SST atmos-only
+	run['ocean_model']=	'NEMO'  	# Or MEDUSA
 
 	# Various start and end times:
 	#run['start']=		'1982.0' 
@@ -477,21 +475,21 @@ if __name__=="__main__":
 	
 	
 	# Data locations:
-	run['ss_annual']=	'/group_workspaces/jasmin/esmeval/example_data/bgc/NEMO/' 
+	run['ss_annual']=	'/group_workspaces/jasmin/esmeval/example_data/bgc/NEMO/'  	# Assume that there is one file per year
 	#run['ss_daily']=	'' 
-	#run['ss_monthly']=	'' 
+	#run['ss_monthly']=	'/group_workspaces/jasmin/esmeval/example_data/bgc/NEMO/'  	# Assume that there is one file per month
 	#run['ss_seasonal']=	'/group_workspaces/jasmin/esmeval/example_data/autoassess/model_data/amzgg/amzgg.splitlev.000003' 
 	#run['ss_spatiot']=	'' 
-	run['ancil_root']=	'/project/cma/ancil' 
-	run['clim_root']=	'/project/cma/clim' 
+	#run['ancil_root']=	'/project/cma/ancil' 
+	#run['clim_root']=	'/project/cma/clim' 
 	run['data_root']=	'/group_workspaces/jasmin/esmeval/example_data/bgc' 
 	
 	
 	# Specific files needed to output for AutoAssess
-	run['metrics_model_uncertainty']='amzgg_m_stdev' 
-	run['radiation_table']=		 '/home/users/simonread/dev_workspace/CMA_rev1097_sandbox/example_output/valnote_results/antia_v_amzgg/rad.txt' 	
+	#run['metrics_model_uncertainty']='amzgg_m_stdev' 
+	#run['radiation_table']=		 '/home/users/simonread/dev_workspace/CMA_rev1097_sandbox/example_output/valnote_results/antia_v_amzgg/rad.txt' 	
 	run['summary_file']=		 'CSV/summary_global.csv' 
-	run['supermean_root']=		 '/group_workspaces/jasmin/esmeval/example_data/autoassess/model_data/amzgg/supermeans/amzgga.ms2006' 
+	#run['supermean_root']=		 '/group_workspaces/jasmin/esmeval/example_data/autoassess/model_data/amzgg/supermeans/amzgga.ms2006' 
 	
 
 	

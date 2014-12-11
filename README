@@ -85,7 +85,10 @@ CONTENTS:
 
 		makeTargets.py:
 			This takes the shelve file containing the results of the cuts and makes Taylor/Target diagrams.
-
+		
+		csvFromShelves.py:
+			This takes a shelve file(s) and produces a csv file of the Target metrics.
+			
 	
 	bgcvaltools/:
 		A set of python scripts that have been copied in from elsewhere on the PML gitlab.
@@ -128,68 +131,81 @@ REQUIREMENTS:
 
 	
 TO DO:
-
-		
-	getMT, testsuite_p2p aren't great:
-		There has got to be a better way.
-		Move extraction function into getMT?
-		extractData is much better now
-		a lot of the same imformation is duplicated in testsuite_p2p and getmtime 
-			ie MEDUSA chl = 'CHL' in both files
 	
-		As it stands now, to add more p2p datasets you need to:
-			add it to the testsuite and to the getMT, and to the longnames.
+	
+	Needs Improvement.
+		Valnote output metrics need to be improved, but are okay right now.
+
+		Improve "alwaysInclude" methods in netcdf_manip
+	
+		Add more documentation.
+	
+		Sort out longnames - but ValNote doesn't care, as it only looks at a single metric.
+			Replace pftnames.getlongname with something better.
+			how about moving long_names into testsuite_p2p? - not really an option.
+	
+		
+		getMT, testsuite_p2p aren't great:
+			There has got to be a better way.
+			Move extraction function into getMT?
+			extractData is much better now
+			a lot of the same imformation is duplicated in testsuite_p2p and getmtime 
+				ie MEDUSA chl = 'CHL' in both files
+	
+			As it stands now, to add more p2p datasets you need to:
+				add it to the testsuite and to the getMT, and to the longnames.
 			
+			Move the NameTypes (ie GEOTRACESTypes) into the getmt?	
 		
-	jobID may cause trouble, as it is explicitly defined in a few places.
-	This needs to be set by Valnote/AutoAssess
-		(add consistent jobID naming to MEDUSA)
-	
-	Valnote requires an output metric.
-		It can be read it from the shelve file.
-	
-	 newSlice:
-	 	Implement a better slicing method.
-	 	ie: Three different slicing names, one for time, one for depth, one of lat/lon.
-	
-	Move target diagram faff out of testsuite:
-		made target diagrams out of a series of shelve files
-		move shelve File into its own routine?
+		jobID is explicitly defined in a few places.
+		This needs to be set by Valnote/AutoAssess
+			(add consistent jobID naming in MEDUSA)
 		
+		Different types of output data times.
+			Currently only works with annual files containing 12 months.
+			Can we run with 12 monthly files
+			or annual means 
+			possibly to be moved around when we slice.
+			
+			
+	Slicing issues:
+		 newSlice:
+		 	Implement a better slicing method.
+		 	For instance: Three different slicing names, one for time, one for depth, one of lat/lon.
 	
-	Investigate a 1D point to point validation at HOTS/BATS.
+		Move target diagram faff out of testsuite (related to newSlice)
+			made target diagrams out of a series of shelve files
+			move shelve File into its own routine?
+	
+		Make the p2p region cut more generic. 
+			Currently only works for WOA depth fields.
+		
+				
+	New things to add and test:
+		Investigate a 1D point to point validation at HOTS/BATS.
 
-	Sort out longnames.
-		Replace pftnames.getlongname with something better.
-		how about moving long_names into testsuite_p2p? - not really an option.
 
-	Improve "alwaysInclude" methods in netcdf_manip
+		P2P:
+			coarsen model precision	to match data
+			use robust statistics instead of standard.
+
+		Other grids: ORCA025, ORCA100-60
 	
-	Add more documentation.
-	
-	remaining datasets to add to p2p:
-		Add primary prodcution p2p.
-		integrated p2p
-		other takahashi data, ie air sea flux?
+		remaining datasets to add to p2p:
+			primary prodcution
+			integrated 
+			other takahashi data, like air sea flux
 	
 
-	Make the p2p region cut more generic. 
-		Currently only works for WOA depth fields.
+
 			
 
-	Move the NameTypes (ie GEOTRACESTypes) into the getmt?
+
 	
 	
-	Test code for a new grid beyond ORCA100-75.
-		ORCA025 ior ORCA100-60 ? 
 
-		ie P2P location matching assumes ORCA1 grid.
-		
-		this will be more important later when we encounter ukesm at 1/4 degree,
 
-	P2P:
-		coarsen model precision	to match data
-		use robust statistics instead of standard.
+
 	
 	
 		
