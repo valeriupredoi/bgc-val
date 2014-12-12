@@ -325,7 +325,7 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 			csvFile = folder(workingDir+'/CSV')+'summary_file.csv'
 			print "attempting csvFromShelves:",m.shelves, csvFile
 			c = csvFromShelves.csvFromShelves(m.shelves, csvFile ,['check',])
-			#assert False
+
 			
 			#####
 			# makeTargets:
