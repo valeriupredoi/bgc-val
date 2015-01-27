@@ -94,7 +94,7 @@ class matchDataAndModel:
 		self.workingDir = ukp.folder('/data/euryale7/scratch/ledm/ukesm_postProcessed/ukesm/outNetCDF/'+'/'.join([self.compType,self.dataType+self.region]) )
 	else: 	self.workingDir = workingDir	
 
-	self.matchedShelve 	= ukp.folder(self.workingDir)+self.model+'-'+self.jobID+'_'+self.year+'_'+'_'+self.dataType+'_'+self.region+'.shelve'
+	self.matchedShelve 	= ukp.folder(self.workingDir)+self.model+'-'+self.jobID+'_'+self.year+'_'+'_'+self.dataType+'_'+self.region+'_matched.shelve'
 	self.matchesShelve 	= ukp.folder(['shelves','MaredatModelMatch',])+'WOAtoORCA1.shelve'
 
 	self.workingDirTmp = 	ukp.folder(self.workingDir+'tmp')
@@ -183,7 +183,21 @@ class matchDataAndModel:
 
 		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking WOA style flat array:',self.DataFilePruned,'-->',self.DataFile1D	
 	  	convertToOneDNC(self.DataFilePruned,self.DataFile1D ,newMask=mmask, variables = self.DataVars, debug=True)		  	
+	  	
+	    elif nc.variables[self.DataVars[0]].shape in [(12, 33, 180, 360), ]: # Chl format
+		mmask = np.ones(nc.variables[self.DataVars[0]].shape)
+		
+		if self.region in ['Surface',]:	
+			mmask[:,0,:,:] = 0
+		else: assert False
+	
+		mmask +=nc.variables[self.DataVars[0]][:].mask
+		print mmask.shape
+
+		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking Chl style flat array:',self.DataFilePruned,'-->',self.DataFile1D	
+	  	convertToOneDNC(self.DataFilePruned,self.DataFile1D ,newMask=mmask, variables = self.DataVars, debug=True)		  	
 	    else:
+	    
 		print 'matchDataAndModel:\tconvertDataTo1D:\tYou need to add more file spcific regions here.', nc.variables[self.DataVars[0]].shape
 		assert False
 			
@@ -232,9 +246,11 @@ class matchDataAndModel:
 	#####
 	# Figure out which type of data this is.
 	ytype = []
+	Models = [m.upper() for m in ['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankTOM6','PlankTOM10','NEMO','IMARNET',]] # skip these to find in situ data types.
+	Models.extend(['IMARNET_' +m.upper() for m in ['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankTOM6','PlankTOM10','NEMO',]])	
 	for key in mt.keys():
-		key = key.upper()
-		if key in ['ERSEM','NEMO','MEDUSA']:continue
+		#key = key.upper()
+		if key.upper() in Models:continue
 		try:
 			if self.dataType in mt[key].keys() and key not in ytype:
 				ytype.append(key)
@@ -243,6 +259,9 @@ class matchDataAndModel:
 		ytype = ytype[0]		
 	else:
 		print "matchModelToData:\tUnable to determine data dataset type (ie, Maredat, WOA, etc...)", ytype
+		print "matchModelToData:\tYou need to add the new data dataset type informationg to getmt() in pftnames.py"		
+		print "matchModelToData:\tor remove it from the list of options for ytype"				
+		assert False
 
 	#####
 	# Check if there is any data left to match. 
@@ -260,9 +279,10 @@ class matchDataAndModel:
   	is_z 	= ncIS.variables[mt[ytype]['z']][:]
   	is_la	= ncIS.variables[mt[ytype]['lat']][:]
 	is_lo 	= ncIS.variables[mt[ytype]['lon']][:]	
-	tdict = {i+1:i for i in xrange(12)}
+	tdict = {i:i for i in xrange(12)}
 	ncIS.close()	     
 
+	print "tdict:", tdict
 	#####
 	# This list could be removed by adding a check dimensionality of data after it was been pruned.	    
 	if self.dataType in ['pCO2','seawifs','Seawifs','mld_DT02', 'mld_DR003','mld_DReqDTm02','mld',]: 
@@ -305,13 +325,13 @@ class matchDataAndModel:
 		#####			
 		#Match Time	
 		try:
-			t = tdict[wt]
+			t = tdict[wt]	
 		except:
 			t = getMonthFromSecs(wt)
 			tdict[wt] = t
 			if self.debug:	print "matchModelToData:\t",i, 'Found new month:', wt, '-->',t
 
-		#####		
+		#####
 		# Add match into array
 		try:
 			tmp = self.matches[(t,z,la,lo)][0]
@@ -339,7 +359,9 @@ class matchDataAndModel:
 			s = shOpen(self.matchesShelve)		
 			s['lldict'] = lldict 
 			s.close()				
-			
+	
+	#assert False
+		
 	print "matchDataAndModel:\tSaving Shelve", self.matchedShelve	
 	s = shOpen(self.matchedShelve)
 	s['matches']  = self.matches

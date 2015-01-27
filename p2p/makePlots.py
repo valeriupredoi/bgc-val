@@ -80,11 +80,13 @@ class makePlots:
   	self.compareCoords = compareCoords
   	
 	self.mt = getmt()	
-	Models = ['ERSEM','NEMO','MEDUSA',]
-	
+	Models = [m.upper() for m in ['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankTOM6','PlankTOM10','NEMO','IMARNET',]] # skip these to find in situ data types.
+	Models.extend(['IMARNET_' +m.upper() for m in ['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankTOM6','PlankTOM10','NEMO',]])
 	ytypes = []
   	for dk in self.mt.keys():
-  		if dk.upper() in Models:continue
+  		if dk.upper() in Models:
+  			#print "
+  			continue
   		if self.name in self.mt[dk].keys():ytypes.append(dk)
   	if len(ytypes)==1:
   		self.ytype = ytypes[0]
