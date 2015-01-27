@@ -28,6 +28,7 @@
 from sys import argv
 import os
 from calendar import month_name
+import getpass
 
 #Specific local code:
 from UKESMpython import folder,getFileList, AutoVivification, NestedDict,AutoVivToYaml,YamlToDict
@@ -80,7 +81,7 @@ def testsuite_AutoAssess(run,):
 	# Plot p2p for all regions/oceans, or just everything and "standard" cuts.
 	plotallcuts = False
 	
-	
+
 
 	#####
 	# Location of data files is now given in the run dictionary.
@@ -98,7 +99,7 @@ def testsuite_AutoAssess(run,):
 	NEMOFolder	= run['ss_annual']
 	
 	# Directory for output files:
-	postprocDir 	= folder(esmvalFolder+"/ukesm_postProcessed/")
+	postprocDir 	= folder(run['LOCALDATA']+"/ukesm_postProcessed_"+getpass.getuser())
 	imageDir	= folder('images')
 
 
@@ -491,8 +492,9 @@ if __name__=="__main__":
 	run['summary_file']=		 'CSV/summary_global.csv' 
 	#run['supermean_root']=		 '/group_workspaces/jasmin/esmeval/example_data/autoassess/model_data/amzgg/supermeans/amzgga.ms2006' 
 	
-
 	
+	# This is a new one that doesn't exist in the current set up:
+	run['LOCALDATA'] = '/group_workspaces/jasmin/esmeval/example_data/bgc'
 
 
 
