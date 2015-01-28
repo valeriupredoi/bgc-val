@@ -97,7 +97,12 @@ def getmt(loadYaml=False):
 	def div1000(nc,keys):	return nc.variables[keys[0]][:]/ 1000.	
 	def applymask(nc,keys):	return np.ma.masked_where(nc.variables[keys[1]][:]==0.,nc.variables[keys[0]][:])
 	 #np.ma.masked_where(nc.variables[keys[1]][:],nc.variables[keys[0]][:])
-					
+	
+	tdicts = {	'ZeroToZero': {i  :i     for i in xrange(12)},		
+			'OneToOne':   {i+1:i+1   for i in xrange(12)},
+			'OneToZero':  {i+1:i     for i in xrange(12)},
+			'ZeroToOne':  {i  :i+1   for i in xrange(12)},			
+		}			
 	#####
 	# Models:
 	mt = AutoVivification() # match type
@@ -196,7 +201,9 @@ def getmt(loadYaml=False):
 	mt['MAREDAT']['z'] 			= 'DEPTH'
 	mt['MAREDAT']['lat'] 			= 'LATITUDE'
 	mt['MAREDAT']['lon'] 			= 'LONGITUDE'
-	mt['MAREDAT']['cal'] 			= 'standard'	
+	mt['MAREDAT']['cal'] 			= 'standard'
+	mt['MAREDAT']['tdict']			= tdicts['ZeroToZero']
+	
 	#mt['Maredat'] 				= mt['MAREDAT']
 			
 	mt['WOA']['temperature'] 		= ['t_an',]#'t_mn',
@@ -209,6 +216,7 @@ def getmt(loadYaml=False):
 	mt['WOA']['lat'] 			= 'lat'
 	mt['WOA']['lon'] 			= 'lon'
 	mt['WOA']['cal'] 			= 'standard'    
+	mt['WOA']['tdict']			= tdicts['ZeroToZero']
 			 	
 	mt['TAKAHASHI']['pCO2'] 		= ['PCO2_SW',]#'DELTA_PCO2',]	'TFLUXSW06',
 	mt['TAKAHASHI']['t'] 			= 'TIME'
@@ -216,6 +224,7 @@ def getmt(loadYaml=False):
 	mt['TAKAHASHI']['lat'] 			= 'LAT'
 	mt['TAKAHASHI']['lon'] 			= 'LON'
 	mt['TAKAHASHI']['cal'] 			= 'standard'
+	mt['TAKAHASHI']['tdict']		= tdicts['ZeroToZero']
 	#mt['intPP']['intPP']			= ['PPint',]	
 								
 	mt['GEOTRACES']['iron']			= ['Fe_D_CONC_BOTTLE',]#'Fe_D_CONC_BOTTLE_FIA','Fe_S_CONC_BOTTLE',]
@@ -224,6 +233,7 @@ def getmt(loadYaml=False):
 	mt['GEOTRACES']['lat'] 			= 'Latitude'
 	mt['GEOTRACES']['lon'] 			= 'Longitude'
 	mt['GEOTRACES']['cal'] 			= 'standard'
+	mt['GEOTRACES']['tdict']		= tdicts['OneToZero']
 		
 	mt['IFREMER']['mld']['name']		= 'mld'
 	mt['IFREMER']['mld']['vars']		= ['mld','mask']
@@ -237,7 +247,7 @@ def getmt(loadYaml=False):
 	mt['IFREMER']['lat'] 			= 'lat'
 	mt['IFREMER']['lon'] 			= 'lon'
 	mt['IFREMER']['cal'] 			= 'standard'	
-
+	mt['IFREMER']['tdict']			= tdicts['ZeroToZero']
 		
 	#mt['PP']['PP'] 		= ['PP',]
 	#'AutoVivToYaml(mt,yamlFile)

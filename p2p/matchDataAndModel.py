@@ -279,7 +279,8 @@ class matchDataAndModel:
   	is_z 	= ncIS.variables[mt[ytype]['z']][:]
   	is_la	= ncIS.variables[mt[ytype]['lat']][:]
 	is_lo 	= ncIS.variables[mt[ytype]['lon']][:]	
-	tdict = {i:i for i in xrange(12)}
+	tdict   = mt[ytype]['tdict'] 	
+	#tdict   = {i:i for i in xrange(12)}
 	ncIS.close()	     
 
 	print "tdict:", tdict
@@ -327,6 +328,9 @@ class matchDataAndModel:
 		try:
 			t = tdict[wt]	
 		except:
+			print "matchModelToData:\tunable to find time match in pftnames, mt[x]['tdict']"
+			assert False 
+			
 			t = getMonthFromSecs(wt)
 			tdict[wt] = t
 			if self.debug:	print "matchModelToData:\t",i, 'Found new month:', wt, '-->',t
