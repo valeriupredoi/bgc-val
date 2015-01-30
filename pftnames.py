@@ -525,6 +525,8 @@ def getLongName(text):
 def fancyUnits(units,debug=False):
 	"""	Converts ascii units string into latex style formatting.
 	"""
+	units = units.replace('[','').replace(']','')
+	
   	#if units in ['mg C/m^3','mg C/m^2',]:		return 'mg C m'+r'$^{-3}$'
   	if units in ['umol/l, uM, mo/l, ug/l, ',]:	return 'mg m'+r'$^{-3}$' # silly nitrates multi units
   	if units in ['mg C/m^3',]:			return 'mg C m'+r'$^{-3}$'

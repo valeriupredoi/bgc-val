@@ -38,15 +38,14 @@ from pftnames import MaredatTypes,WOATypes,Ocean_names,getmt
 
 ###	Potential problems?
 ###		Reliance on ORCA1 grid
-from shelve import open as shOpen
 
 
-def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankTOM6','PlankTOM10'],
+
+def testsuite_ORCA025(	models=['MEDUSA',],
 			year=1998,
-			ERSEMjobID='xhonp',
+			#ERSEMjobID='xjwki',
 			plotallcuts = False,):
 
-	
 	#####
 	# Can use command line arguments to choose a model.
 	#if len(argv[1:]): models  = argv[1:]
@@ -56,13 +55,9 @@ def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankT
     	# Which jobs to look at. 
 	#ERSEMjobID = 'xhonp'
 	jobIDs={}
-	jobIDs['Diat-HadOCC'] 	= 'v1a'		
-	jobIDs['ERSEM'] 	= ERSEMjobID
-	jobIDs['HadOCC'] 	= 'v1a'
-	jobIDs['MEDUSA'] 	= 'v1'	
-	jobIDs['PlankTOM6'] 	= 'xhyyp'
-	jobIDs['PlankTOM10'] 	= 'xiokb'
-
+	#jobIDs['ERSEM'] 	= ERSEMjobID
+	#jobIDs['NEMO'] 	= ERSEMjobID
+	jobIDs['MEDUSA'] 	= 'xjwki'
 	
 	#####
 	# Plot p2p for all regions/oceans, or just everything and "standard" cuts.
@@ -72,7 +67,7 @@ def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankT
 	# Which Year to investigate for each model.
 	# In an ideal world, they would all be the same, except that my current run is stuck in the queue.
 	year = str(year)	
-	years = {m:year for m in models}
+	years = {m:year for m in ['MEDUSA','ERSEM','NEMO']}
 
 
 	
@@ -83,20 +78,8 @@ def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankT
 	GEOTRACESFolder = "/data/euryale7/scratch/ledm/GEOTRACES/GEOTRACES_PostProccessed/"
 	TakahashiFolder = "/data/euryale7/scratch/ledm/Takahashi2009_pCO2/"
 	#####
-	# Location of model files.
-	iMarNetFolder   = "/data/perseus2/scratch/ledm/iMarNet/OUTPUT_v2/"
-	
-	iMarNetFiles = {}
-	iMarNetFiles['Diat-HadOCC']	= './Diat-HadOCC_v1a/diat-hadocc_'+year+'_2D_mon.nc3'
-	iMarNetFiles['ERSEM']		= './ERSEM_v4/'+jobIDs['ERSEM']+'/ersem_'+jobIDs['ERSEM']+'_2D_'+year+'.nc'
-	iMarNetFiles['HadOCC']		= './HadOCC_v1a/hadocc_'+year+'_2D_mon.nc3'
-	iMarNetFiles['MEDUSA']		= './MEDUSA_v1/medusa_'+year+'_2D_mon.nc3'
-	iMarNetFiles['PlankTOM6']	= './PlankTOM6_v1/TOM6_xhyyp_'+year+'_mon.nc'
-	iMarNetFiles['PlankTOM10']	= './PlankTOM_v3/TOM10_xiokbo_'+year+'_mon.nc'
-	
-
-	
-	#MEDUSAFolder	= "/data/euryale7/scratch/ledm/UKESM/MEDUSA/"
+	# Location of model files.	
+	MEDUSAFolder	= "/data/euryale7/scratch/ledm/UKESM/MEDUSA-ORCA025/xjwki_postProc/1979/"
 	#ERSEMFolder	= "/data/euryale7/scratch/ledm/UKESM/ERSEM/"+ jobIDs['ERSEM']+'/'+years['ERSEM']+'/'+jobIDs['ERSEM']+'_'+years['ERSEM']
 	#NEMOFolder	= "/data/euryale7/scratch/ledm/UKESM/ERSEM/"+ jobIDs['NEMO'] +'/'+years['NEMO'] +'/'+jobIDs['NEMO'] +'_'+years['NEMO']
 	
@@ -113,6 +96,16 @@ def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankT
 	doMLD		= 0#True
 	doPCO2		= 0#True
 	
+	#####
+	# getmt
+	#mt = getmt()
+	#def getVarsFromMT(var, model):
+	#	try:	outs = mt[model][var]['vars']
+	#	except: outs = mt[model][var]
+	#	#print model,var,outs
+	#	if len(outs):return outs
+	#	return []
+		
 		
 	#####
 	# AutoVivification is a form of nested dictionary.
@@ -121,27 +114,136 @@ def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankT
 	av = AutoVivification()
 	if doCHL:
 		av['chl']['Data']['File'] 		= MAREDATFolder+"MarEDat20121001Pigments.nc"	
+		av['chl']['MEDUSA']['File'] 		= MEDUSAFolder+"xjwki_1979_CH.nc"	
 		av['chl']['Data']['Vars'] 		= ['Chlorophylla',]
-		for m in models:
-			av['chl'][m]['Vars'] 		= ['chl',]						
-			av['chl'][m]['File']		= iMarNetFolder+iMarNetFiles[m]
-		av['chl']['regions'] 			= regions
-		
+		av['chl']['MEDUSA']['Vars'] 		= ['CHL',]
+		av['chl']['regions'] 			= ['',]
+
 	if doN:
-		av['nitrate']['Data']['File'] 		=  WOAFolder+'nitrate_monthly_1deg.nc'		
-		av['nitrate']['Data']['Vars'] 		= ['n_an',] 
-		for m in models:
-			av['nitrate'][m]['Vars'] 	= ['no3',]						
-			av['nitrate'][m]['File']	= iMarNetFolder+iMarNetFiles[m]
+		av['nitrate']['Data']['File'] 		= WOAFolder+'nitrate_monthly_1deg.nc'	
+		av['nitrate']['MEDUSA']['File'] 	= MEDUSAFolder+"xjwki_1979_DIN.nc"
+		av['nitrate']['Data']['Vars'] 		= ['n_an',] 		#l+'_mn',
+		av['nitrate']['MEDUSA']['Vars'] 	= ['DIN',]									
 		av['nitrate']['regions'] 		= regions
+				
+				
+	if doMAREDAT:
+		av['diatoms']['Data']['File'] 		= MAREDATFolder+"MarEDat20120716Diatoms.nc"	
+		av['diatoms']['MEDUSA']['File'] 	= MEDUSAFolder+"medusa_bio_"+years['MEDUSA']+".nc"	
+		av['diatoms']['ERSEM']['File'] 		= ERSEMFolder+'_ERSEMphytoBm.nc'				
+		av['diatoms']['Data']['Vars'] 		= ['BIOMASS',]
+		av['diatoms']['MEDUSA']['Vars'] 	= ['PHD',]	
+		av['diatoms']['ERSEM']['Vars'] 		= ['P1c',]
+		av['diatoms']['regions'] 		= ['',]	
+	
+		av['bac']['Data']['File'] 		= MAREDATFolder+"MarEDat20120214Bacteria.nc"	
+		av['bac']['ERSEM']['File'] 		= ERSEMFolder+'_ERSEMbac.nc'			
+		av['bac']['Data']['Vars'] 		= ['BIOMASS',]
+		av['bac']['ERSEM']['Vars'] 		= ['B1c',]
+		av['bac']['regions'] 			= ['',]
+	
+		av['picophyto']['Data']['File'] 	= MAREDATFolder+"MarEDat20111206Picophytoplankton.nc"	
+		av['picophyto']['ERSEM']['File'] 	= ERSEMFolder+'_ERSEMphytoBm.nc'			
+		av['picophyto']['Data']['Vars'] 	= ['BIOMASS',]
+		av['picophyto']['ERSEM']['Vars'] 	= ['P3c',]
+		av['picophyto']['regions'] 		= ['',]	
 		
+		av['microzoo']['Data']['File'] 		= MAREDATFolder+"MarEDat20120424Microzooplankton.nc"	
+		av['microzoo']['MEDUSA']['File'] 	= MEDUSAFolder+"medusa_bio_"+years['MEDUSA']+".nc"	
+		av['microzoo']['ERSEM']['File'] 	= ERSEMFolder+'_ERSEMzoo.nc'			
+		av['microzoo']['Data']['Vars'] 		= ['BIOMASS',]
+		av['microzoo']['MEDUSA']['Vars'] 	= ['ZMI',]	
+		av['microzoo']['ERSEM']['Vars'] 	= ['Z5c',]
+		av['microzoo']['regions'] 		= ['',]	
+	
+		av['mesozoo']['Data']['File'] 		= MAREDATFolder+"MarEDat20120705Mesozooplankton.nc"	
+		av['mesozoo']['MEDUSA']['File'] 	= MEDUSAFolder+"medusa_bio_"+years['MEDUSA']+".nc"	
+		av['mesozoo']['ERSEM']['File'] 		= ERSEMFolder+'_ERSEMzoo.nc'			
+		av['mesozoo']['Data']['Vars'] 		= ['BIOMASS',]
+		av['mesozoo']['MEDUSA']['Vars'] 	= ['ZME',]	
+		av['mesozoo']['ERSEM']['Vars'] 		= ['Z4c',]
+		av['mesozoo']['regions'] 		= ['',]
+
+
+	if doPSF:
+		av['silicate']['Data']['File'] 		= WOAFolder+'silicate_monthly_1deg.nc'	
+		av['silicate']['ERSEM']['File'] 	= ERSEMFolder+'_ERSEMNuts.nc'	
+		av['silicate']['Data']['Vars'] 		= ['i_an',] 		#l+'_mn',
+		av['silicate']['ERSEM']['Vars'] 	= ['N5s',]
+		av['silicate']['regions'] 		= regions
+		av['silicate']['MEDUSA']['Vars'] 	= ['SIL',]									
+		av['silicate']['MEDUSA']['File'] 	= MEDUSAFolder+"medusa_bio_"+years['MEDUSA']+".nc"
 			
-		#av['iron']['Data']['File'] 		=  WOAFolder+'nitrate_monthly_1deg.nc'		
-		#av['iron']['Data']['Vars'] 		= ['n_an',] 
-		#for m in models:
-		#	av['iron'][m]['Vars'] 	= ['dfe',]						
-		#	av['iron'][m]['File']	= iMarNetFolder+iMarNetFiles[m]
-		#av['iron']['regions'] 		= 'Surface'
+		av['phosphate']['Data']['File'] 	= WOAFolder+'phosphate_monthly_1deg.nc'	
+		av['phosphate']['ERSEM']['File'] 	= ERSEMFolder+'_ERSEMNuts.nc'	
+		av['phosphate']['Data']['Vars'] 	= ['p_an',] 		#l+'_mn',
+		av['phosphate']['ERSEM']['Vars'] 	= ['N1p',]
+		av['phosphate']['regions'] 		= regions		
+					
+		av['iron']['Data']['File'] 		= GEOTRACESFolder+"Iron_GEOTRACES_IDP2014_Discrete_Sample_Data_ascii.nc"
+		av['iron']['MEDUSA']['File'] 		= MEDUSAFolder+"medusa_bio_"+years['MEDUSA']+".nc"	
+		av['iron']['ERSEM']['File'] 		= ERSEMFolder+'_ERSEMNuts.nc'			
+		av['iron']['Data']['Vars'] 		= ['Fe_D_CONC_BOTTLE',]
+		av['iron']['MEDUSA']['Vars'] 		= ['FER',]	
+		av['iron']['ERSEM']['Vars'] 		= ['N7f',]
+		av['iron']['regions'] 			= ['',]
+		
+	if doSalTemp:
+		av['salinity']['Data']['File'] 		= WOAFolder+'salinity_monthly_1deg.nc'	
+		av['salinity']['NEMO']['File'] 		= NEMOFolder+'_NEMO.nc'	
+		av['salinity']['Data']['Vars'] 		= ['s_an',]
+		av['salinity']['NEMO']['Vars'] 		= ['vosaline',]
+		av['salinity']['regions'] 		= regions	 
+
+		av['temperature']['Data']['File'] 	= WOAFolder+'temperature_monthly_1deg.nc'	
+		av['temperature']['NEMO']['File'] 	= NEMOFolder+'_NEMO.nc'	
+		av['temperature']['Data']['Vars'] 	= ['t_an',]	
+		av['temperature']['NEMO']['Vars'] 	= ['votemper',]
+		av['temperature']['regions'] 		= regions	
+						
+				   
+	if doMLD:	
+		av['mld']['Data']['File'] 		= "/data/euryale7/scratch/ledm/IFREMER-MLD/mld_DT02_c1m_reg2.0.nc"
+		av['mld']['NEMO']['File'] 		= NEMOFolder+'_NEMO.nc'			
+		av['mld']['Data']['Vars'] 		= ['mld','mask',]
+		av['mld']['NEMO']['Vars'] 		= ['somxl010',]	
+		av['mld']['regions'] 			= ['',]
+
+		#av['mld_DR003']['Data']['File'] 	= "/data/euryale7/scratch/ledm/IFREMER-MLD/mld_DT02_c1m_reg2.0.nc"
+		#av['mld_DR003']['NEMO']['File'] 	= NEMOFolder+'_NEMO.nc'			
+		#av['mld_DR003']['Data']['Vars'] 	= ['mld','mask',]
+		#av['mld_DR003']['NEMO']['Vars'] 	= ['somxl010',]	
+		#av['mld_DR003']['regions'] 		= ['',]
+
+		#av['mld_DReqDTm02']['Data']['File'] 	= "/data/euryale7/scratch/ledm/IFREMER-MLD/mld_DT02_c1m_reg2.0.nc"
+		#av['mld_DReqDTm02']['NEMO']['File'] 	= NEMOFolder+'_NEMO.nc'			
+		#av['mld_DReqDTm02']['Data']['Vars'] 	= ['mld','mask',]
+		#av['mld_DReqDTm02']['NEMO']['Vars'] 	= ['somxl010',]	
+		#av['mld_DReqDTm02']['regions'] 		= ['',]
+		
+	if doPCO2:
+		av['pCO2']['Data']['File'] 	= TakahashiFolder + "takahashi2009_month_flux_pCO2_2006c_noHead.nc"	
+		av['pCO2']['ERSEM']['File'] 	= ERSEMFolder+'_ERSEMMisc.nc'	
+		av['pCO2']['MEDUSA']['File'] 	= MEDUSAFolder+"medusa_bio_"+years['MEDUSA']+".nc"
+		av['pCO2']['Data']['Vars'] 	= ['PCO2_SW',] 		#l+'_mn',
+		av['pCO2']['ERSEM']['Vars'] 	= ['pCO2w',]
+		av['pCO2']['MEDUSA']['Vars'] 	= ['OCN_PCO2',]	
+		av['pCO2']['regions'] 		= ['',]
+	
+	#for var in av.keys():
+	#	for m in models: 
+	#		#keys = getVarsFromMT(var,m)
+	#		av[var][m]['Vars'] = getVarsFromMT(var,m)
+	#		#print var,m, keys, av[var][m]['Vars']
+	#		#if len(keys) and keys != av[var][m]['Vars']:print "Dont' match."
+	#assert False	
+	
+	#AutoVivToYaml(av,folder('yaml')+'P2P_Settings.yaml')	
+	#av = 0
+	#print av
+	#av = YamlToDict(folder('yaml')+'P2P_Settings.yaml',)
+	#print av.keys(), av['chl'].keys(),av['chl']['MEDUSA']
+	
 	
 	
 	#####
@@ -164,25 +266,25 @@ def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankT
 			
 			#####
 			# Location of image Output files
-			imageFolder 	= folder('images/iMarNet/'+model+'-'+jobIDs[model])
-			workingDir = folder("/data/euryale7/scratch/ledm/ukesm_postProcessed/iMarNet/"+model+'-'+jobIDs[model]+'-'+years[model])		
+			imageFolder 	= folder('images/'+model+'-'+jobIDs[model])
+			workingDir = folder("/data/euryale7/scratch/ledm/ukesm_postProcessed/"+model+'-'+jobIDs[model]+'-'+years[model])		
 
 		
 			try:
 			    if not exists(av[name]['Data']['File']):
-				print "testsuite_iMarNet.py:\tWARNING:\tFile does not exist", av[name]['Data']['File']
+				print "testsuite_p2p.py:\tWARNING:\tFile does not exist", av[name]['Data']['File']
 				continue
 			except:
-				print "testsuite_iMarNet.py:\tWARNING:\tFile does not exist\tav[",name,"][",model,'][File]'
+				print "testsuite_p2p.py:\tWARNING:\tFile does not exist\tav[",name,"][",model,'][File]'
 				continue			    	
 			try:
 			    if not exists(av[name][model]['File']):
-				print "testsuite_iMarNet.py:\tWARNING:\tFile does not exist", av[name][model]+'[File]'
+				print "testsuite_p2p.py:\tWARNING:\tFile does not exist", av[name][model]+'[File]'
 				continue
 			except:
-				print "testsuite_iMarNet.py:\tWARNING:\tFile does not exist:\tav[",name,"][",model,'][File]'
+				print "testsuite_p2p.py:\tWARNING:\tFile does not exist:\tav[",name,"][",model,'][File]'
 				continue			
-			print "\n\n\ntestsuite_iMarNet.py:\tINFO:\tRunning:",name
+			print "\n\n\ntestsuite_p2p.py:\tINFO:\tRunning:",name, av[name][model]['Vars']
 			
 			
 			#####
@@ -197,8 +299,9 @@ def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankT
 								model 		= model,
 								jobID		= jobIDs[model],
 								year		= years[model],
-								workingDir 	= folder(workingDir+name+region),
-								region 		= region)
+								workingDir 	= folder(workingDir+name),
+								region 		= region,
+								grid 		= 'ORCA025')
 							
 			#####
 			# makePlots:
@@ -210,8 +313,7 @@ def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankT
 			m = makePlots(	b.MatchedDataFile, 
 					b.MatchedModelFile, 
 					name, 
-					#model, 
-					jobID 		= 'IMARNET_'+model,
+					model, 
 					region 		= region,
 					year 		= years[model], 
 					plotallcuts	= plotallcuts, 
@@ -291,7 +393,7 @@ def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankT
 	        		
 	        		if name in surfacemetrics:
 	        		  	if newSlice == 'All':		Summary['SurfaceMetricsAll'].append(shelve)
-	        		  	if newSlice == 'Standard':	Summary['SurfaceMetricsStandard'].append(shelve)	
+	        		  	if newSlice == 'Standard':	Summary['SurfaceMetricsStandard'].append(shelve)
 	        		  		        				
 	        		for woa in ['silicate','nitrate','phosphate','salinity','temperature','iron',]:
 	        		   for ns in ['All', 'Standard']:
@@ -319,65 +421,16 @@ def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankT
 			
 			
 
-def makeCSVfile():
-	shelves = [	'/data/euryale7/scratch/ledm/ukesm_postProcessed/iMarNet/Diat-HadOCC-v1a-1998/chlSurface/chl_All_chlvsChlorophylla.shelve',
-			'/data/euryale7/scratch/ledm/ukesm_postProcessed/iMarNet/ERSEM-xhonp-1998/chlSurface/chl_All_chlvsChlorophylla.shelve',
-#			'/data/euryale7/scratch/ledm/ukesm_postProcessed/iMarNet/ERSEM-xhont-1998/chlSurface/chl_All_chlvsChlorophylla.shelve',
-			'/data/euryale7/scratch/ledm/ukesm_postProcessed/iMarNet/HadOCC-v1a-1998/chlSurface/chl_All_chlvsChlorophylla.shelve',
-			'/data/euryale7/scratch/ledm/ukesm_postProcessed/iMarNet/MEDUSA-v1-1998/chlSurface/chl_All_chlvsChlorophylla.shelve',
-			'/data/euryale7/scratch/ledm/ukesm_postProcessed/iMarNet/PlankTOM10-xiokb-1998/chlSurface/chl_All_chlvsChlorophylla.shelve',
-			'/data/euryale7/scratch/ledm/ukesm_postProcessed/iMarNet/PlankTOM6-xhyyp-1998/chlSurface/chl_All_chlvsChlorophylla.shelve',
-			]
-	mchl = {}
-	dchl = {}
-	lat = {}
-	lon = {}
-	keys = {}
-	xtime = {}
-	ytime = {}
-			
-	lengths = []
-	models = []
-	for s in shelves:
-		sh = shOpen(s)
-		m = s.replace('/data/euryale7/scratch/ledm/ukesm_postProcessed/iMarNet/','').replace('/chlSurface/chl_All_chlvsChlorophylla.shelve','')
-		models.append(m)
-		keys[m]  = sh['xkey']
-		mchl[m] = sh['datax']
-		dchl[m] = sh['datay']
-		xtime[m] = sh['x_time']
-		ytime[m] = sh['y_time']				
-		lat[m] = sh['x_lat']
-		lon[m] = sh['x_lon']		
-		if len(sh['datax']) not in lengths: lengths.append(len(sh['datax']))
-	out = 'Latitude, Longitude, month, MAREDAT CHL,'
-	units = 'degrees N, degrees E, [0=Jan 11=Dec.], mgChl/m3,'
-	models = sorted(models)
-	out  += ','.join([m for m in models]) + '\n'
-	units += ','.join(['mgChl/m3' for m in models]) + '\n'
+
 	
-	out+=units
-	if len(lengths) != 1:assert False
 	
-	for i in range(lengths[0]):
-		m = 'Diat-HadOCC-v1a-1998'
-		arrs = [lat[m][i], lon[m][i],xtime[m][i], dchl[m][i],]
-		arrs.extend([mchl[m][i] for m in models])
-		line = ','.join([str(round(a,3)) for a in arrs])
-		out+=line+'\n'
-	
-	f = open('iMarNetChl.csv','w')
-	f.write(out)
-	f.close()
 	
 if __name__=="__main__":
-	makeCSVfile()
-	
-	assert False
+
 	# Can use command line arguments to choose a model.
 	models 		= []
 	years 		= []
-	#ERSEMjobIDs 	= []
+	ERSEMjobIDs 	= []
 	
 	#####
 	# Determine command line arguments
@@ -388,11 +441,11 @@ if __name__=="__main__":
 			continue			
 		except:pass
 		
-		if a in ['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankTOM6','PlankTOM10']:
-			models.append(a)
+		if str(a).upper() in ['MEDUSA','ERSEM','NEMO']:
+			models.append(str(a).upper())
 			continue			
 		if a[:4] in ['xhon','xjez']:
-			#ERSEMjobIDs.append(a)
+			ERSEMjobIDs.append(a)
 			if 'ERSEM' not in models:models.append('ERSEM')
 			continue
 			
@@ -401,8 +454,8 @@ if __name__=="__main__":
 
 	#####
 	#Set Defaults:
-	if not len(years): 	years = ['1998',]
-	if not len(models): 	models =['PlankTOM6','Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankTOM10',]
+	if not len(years): 	years = ['1979',]
+	if not len(models): 	models = ['MEDUSA',]
 	#if not len(ERSEMjobIDs):ERSEMjobIDs = ['xhonp',]	
 
 	print "#############################"
@@ -414,7 +467,11 @@ if __name__=="__main__":
 
 	
 	for year in years:
-		testsuite_iMarNet(models = models,	year=year, ) 
+
+		testsuite_ORCA025(models = models,	year=year,)#ERSEMjobID=ERSEMjobIDs[0] ) 
+		#if len(ERSEMjobIDs)==1:continue
+		#for e in ERSEMjobIDs[1:]:
+		#	testsuite_p2p(models = ['ERSEM',],year=year,ERSEMjobID=e ) 
 	
 	print 'The end.'
 	
