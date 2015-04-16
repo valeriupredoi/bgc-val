@@ -580,7 +580,7 @@ class makePlots:
   	# This needs some work.
 	file_prefix = self.imageDir #ukp.folder(['images',self.xtype,'P2P_plots',self.year,self.name+self.region,])
 
-	file_suffix = '_'+self.xtype+'.png'
+	file_suffix = '_'+self.xtype+'_'+self.year+'.png'
 
 	if newSlice in self.months.keys():
 		filename = ukp.folder([file_prefix,'months'])+self.name+self.region+'_'+ukp.mnStr(self.months[newSlice])+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix

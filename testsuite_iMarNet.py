@@ -43,7 +43,7 @@ from shelve import open as shOpen
 
 def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankTOM6','PlankTOM10'],
 			year=1998,
-			ERSEMjobID='xhonp',
+			ERSEMjobID='xhonc',
 			plotallcuts = False,):
 
 	
@@ -320,6 +320,7 @@ def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankT
 			
 
 def makeCSVfile():
+	# this was done for the workshop.
 	shelves = [	'/data/euryale7/scratch/ledm/ukesm_postProcessed/iMarNet/Diat-HadOCC-v1a-1998/chlSurface/chl_All_chlvsChlorophylla.shelve',
 			'/data/euryale7/scratch/ledm/ukesm_postProcessed/iMarNet/ERSEM-xhonp-1998/chlSurface/chl_All_chlvsChlorophylla.shelve',
 #			'/data/euryale7/scratch/ledm/ukesm_postProcessed/iMarNet/ERSEM-xhont-1998/chlSurface/chl_All_chlvsChlorophylla.shelve',
@@ -371,9 +372,9 @@ def makeCSVfile():
 	f.close()
 	
 if __name__=="__main__":
-	makeCSVfile()
+	#makeCSVfile()
 	
-	assert False
+	#assert False
 	# Can use command line arguments to choose a model.
 	models 		= []
 	years 		= []
@@ -402,7 +403,7 @@ if __name__=="__main__":
 	#####
 	#Set Defaults:
 	if not len(years): 	years = ['1998',]
-	if not len(models): 	models =['PlankTOM6','Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankTOM10',]
+	if not len(models): 	models =['PlankTOM10','PlankTOM6','Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA',]
 	#if not len(ERSEMjobIDs):ERSEMjobIDs = ['xhonp',]	
 
 	print "#############################"

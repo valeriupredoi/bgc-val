@@ -84,7 +84,7 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 	NEMOFolder	= "/data/euryale7/scratch/ledm/UKESM/ERSEM/"+ jobIDs['NEMO'] +'/'+years['NEMO'] +'/'+jobIDs['NEMO'] +'_'+years['NEMO']
 	
 
-	regions = ['Surface',]#'100m','200m','500m',]
+	regions = ['Surface','100m','500m',]#'200m'
 	
 	#####
 	# Which analysis to run

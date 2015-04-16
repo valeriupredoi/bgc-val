@@ -72,7 +72,15 @@ def testsuite_AutoAssess(run,):
 	csvFile 	= run['summary_file']	
 	csvFileFold 	= folder(os.path.dirname(os.path.realpath((csvFile))))
 	
-
+	
+	#####
+	# Grid used to produce this run. Options are ORCA1 or ORCA025
+	grid = run['grid']
+	gridAvailable = ['ORCA1', 'ORCA025']
+	if grid not in gridAvailable:
+		print "testsuite_AutoAssess:\tWARNING:\tThis grid is not appropriate, options are ", gridAvailable
+		assert False
+		
 	#####
 	# Which regions to look at. More regions are
 	regions = ['Surface',]
@@ -270,7 +278,8 @@ def testsuite_AutoAssess(run,):
 								jobID		= jobIDs[model],
 								year		= years[model],
 								workingDir 	= folder(postprocFolder+name),
-								region 		= region)
+								region 		= region,
+								grid 		= grid)
 							
 			#####
 			# makePlots:
@@ -457,7 +466,7 @@ if __name__=="__main__":
 	run['runid']=		'xhonp' 
 	#run['run_type']=	'AMIP' 		#AMIP = forced-SST atmos-only
 	run['ocean_model']=	'NEMO'  	# Or MEDUSA
-
+	run['grid']=		'ORCA1'		# ORCA1 or ORCA025
 	# Various start and end times:
 	#run['start']=		'1982.0' 
 	#run['start_year']=	'1982.0' 
