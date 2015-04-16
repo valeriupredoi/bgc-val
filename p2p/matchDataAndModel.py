@@ -51,8 +51,7 @@ from changeNC import changeNC, AutoVivification
 
 
 #TO DO
-#	Remove ncdfView requirement
-#	This still requires the netcdf_manip library, the ncdfView code, the ORCA1bathy file
+#	This still requires the netcdf_manip library, the ORCA1bathy file
 
 class matchDataAndModel:
   """	matchDataAndModel: 
@@ -64,13 +63,14 @@ class matchDataAndModel:
   """
 
 
-  def __init__(self,DataFile,ModelFile,dataType, workingDir = '',DataVars='',ModelVars='',  model = '',jobID='', year='clim',region='',debug = True,):
+  def __init__(self,DataFile,ModelFile,dataType, workingDir = '',DataVars='',ModelVars='',  model = '',jobID='', year='clim',region='', grid='ORCA1',debug = True,):
 
 	if debug:
 		print "matchDataAndModel:\tINFO:\tStarting matchDataAndModel"
 		print "matchDataAndModel:\tINFO:\tData file:  \t",DataFile
 		print "matchDataAndModel:\tINFO:\tModel file: \t",ModelFile
-		print "matchDataAndModel:\tINFO:\tData Type:  \t",dataType	
+		print "matchDataAndModel:\tINFO:\tData Type:  \t",dataType
+			
 	self.DataFile=DataFile
 	self.ModelFile = ModelFile 
 		
@@ -93,9 +93,29 @@ class matchDataAndModel:
 	if workingDir =='':
 		self.workingDir = ukp.folder('/data/euryale7/scratch/ledm/ukesm_postProcessed/ukesm/outNetCDF/'+'/'.join([self.compType,self.dataType+self.region]) )
 	else: 	self.workingDir = workingDir	
-
-	self.matchedShelve 	= ukp.folder(self.workingDir)+self.model+'-'+self.jobID+'_'+self.year+'_'+'_'+self.dataType+'_'+self.region+'.shelve'
-	self.matchesShelve 	= ukp.folder(['shelves','MaredatModelMatch',])+'WOAtoORCA1.shelve'
+	
+	if grid.upper() in ['ORCA1',]:
+		self.grid = 'ORCA1'
+		self.ORCAfile    = "data/mesh_mask_ORCA1_75.nc"
+		
+	if grid.upper() in ['ORCA025',]:	
+		self.grid = 'ORCA025'
+		
+		#####
+		# Please add files to link to 
+		for orcafn in [ "/data/euryale7/scratch/ledm/UKESM/MEDUSA-ORCA025/mesh_mask_ORCA025_75.nc",	# PML
+				"/group_workspaces/jasmin/esmeval/example_data/bgc/mesh_mask_ORCA025_75.nc",]:	# JASMIN
+			if exists(orcafn):	self.ORCAfile  = orcafn
+		
+		try: 
+			if exists(self.ORCAfile):pass
+		except: 
+			print "matchDataAndModel:\tERROR:\tIt's not possible to load the ORCA025 grid on this machine. Please add the ORCA025 file to the orcafn list to p2p/matchDataAndModel.py"
+			assert False
+			
+		
+	self.matchedShelve 	= ukp.folder(self.workingDir)+self.model+'-'+self.jobID+'_'+self.year+'_'+'_'+self.dataType+'_'+self.region+'_matched.shelve'
+	self.matchesShelve 	= ukp.folder(['shelves','MaredatModelMatch',])+'WOAto'+self.grid+'.shelve'
 
 	self.workingDirTmp = 	ukp.folder(self.workingDir+'tmp')
 	self.DataFilePruned=	self.workingDirTmp+'Data_' +self.dataType+'_'+self.region+'_'+self.model+'-'+self.jobID+'-'+self.year+'_pruned.nc'
@@ -135,7 +155,7 @@ class matchDataAndModel:
   	""" 
   	
 	if ukp.shouldIMakeFile(self.ModelFile,self.ModelFilePruned,debug=False):
-		print "matchDataAndModel:\tpruneModelAndData:\tMaking ModelFilePruned:", self.ModelFilePruned	
+		print "matchDataAndModel:\tpruneModelAndData:\tMaking ModelFilePruned:", self.ModelFilePruned
 		p = pruneNC(self.ModelFile,self.ModelFilePruned,self.ModelVars, debug = self.debug) 	
 	else:	
 		print "matchDataAndModel:\tpruneModelAndData:\tModelFilePruned already exists:",self.ModelFilePruned
@@ -183,7 +203,21 @@ class matchDataAndModel:
 
 		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking WOA style flat array:',self.DataFilePruned,'-->',self.DataFile1D	
 	  	convertToOneDNC(self.DataFilePruned,self.DataFile1D ,newMask=mmask, variables = self.DataVars, debug=True)		  	
+	  	
+	    elif nc.variables[self.DataVars[0]].shape in [(12, 33, 180, 360), ]: # Chl format
+		mmask = np.ones(nc.variables[self.DataVars[0]].shape)
+		
+		if self.region in ['Surface',]:	
+			mmask[:,0,:,:] = 0
+		else: assert False
+	
+		mmask +=nc.variables[self.DataVars[0]][:].mask
+		print mmask.shape
+
+		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking Chl style flat array:',self.DataFilePruned,'-->',self.DataFile1D	
+	  	convertToOneDNC(self.DataFilePruned,self.DataFile1D ,newMask=mmask, variables = self.DataVars, debug=True)		  	
 	    else:
+	    
 		print 'matchDataAndModel:\tconvertDataTo1D:\tYou need to add more file spcific regions here.', nc.variables[self.DataVars[0]].shape
 		assert False
 			
@@ -232,9 +266,11 @@ class matchDataAndModel:
 	#####
 	# Figure out which type of data this is.
 	ytype = []
+	Models = [m.upper() for m in ['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankTOM6','PlankTOM10','NEMO','IMARNET',]] # skip these to find in situ data types.
+	Models.extend(['IMARNET_' +m.upper() for m in ['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankTOM6','PlankTOM10','NEMO',]])	
 	for key in mt.keys():
-		key = key.upper()
-		if key in ['ERSEM','NEMO','MEDUSA']:continue
+		#key = key.upper()
+		if key.upper() in Models:continue
 		try:
 			if self.dataType in mt[key].keys() and key not in ytype:
 				ytype.append(key)
@@ -243,6 +279,9 @@ class matchDataAndModel:
 		ytype = ytype[0]		
 	else:
 		print "matchModelToData:\tUnable to determine data dataset type (ie, Maredat, WOA, etc...)", ytype
+		print "matchModelToData:\tYou need to add the new data dataset type informationg to getmt() in pftnames.py"		
+		print "matchModelToData:\tor remove it from the list of options for ytype"				
+		assert False
 
 	#####
 	# Check if there is any data left to match. 
@@ -260,9 +299,11 @@ class matchDataAndModel:
   	is_z 	= ncIS.variables[mt[ytype]['z']][:]
   	is_la	= ncIS.variables[mt[ytype]['lat']][:]
 	is_lo 	= ncIS.variables[mt[ytype]['lon']][:]	
-	tdict = {i+1:i for i in xrange(12)}
+	tdict   = mt[ytype]['tdict'] 	
+	#tdict   = {i:i for i in xrange(12)}
 	ncIS.close()	     
 
+	print "tdict:", tdict
 	#####
 	# This list could be removed by adding a check dimensionality of data after it was been pruned.	    
 	if self.dataType in ['pCO2','seawifs','Seawifs','mld_DT02', 'mld_DR003','mld_DReqDTm02','mld',]: 
@@ -305,13 +346,16 @@ class matchDataAndModel:
 		#####			
 		#Match Time	
 		try:
-			t = tdict[wt]
+			t = tdict[wt]	
 		except:
+			print "matchModelToData:\tunable to find time match in pftnames, mt[x]['tdict']"
+			assert False 
+			
 			t = getMonthFromSecs(wt)
 			tdict[wt] = t
 			if self.debug:	print "matchModelToData:\t",i, 'Found new month:', wt, '-->',t
 
-		#####		
+		#####
 		# Add match into array
 		try:
 			tmp = self.matches[(t,z,la,lo)][0]
@@ -339,7 +383,9 @@ class matchDataAndModel:
 			s = shOpen(self.matchesShelve)		
 			s['lldict'] = lldict 
 			s.close()				
-			
+	
+	#assert False
+		
 	print "matchDataAndModel:\tSaving Shelve", self.matchedShelve	
 	s = shOpen(self.matchedShelve)
 	s['matches']  = self.matches
@@ -433,17 +479,19 @@ class matchDataAndModel:
 
   def loadMesh(self,):
       	# This won't work unless its the 1 degree grid.
-  	print "matchModelToData:\tOpened Model netcdf: ~/data/mesh_mask_ORCA1_75.nc"
-  	ncER = Dataset("data/mesh_mask_ORCA1_75.nc",'r')
+      	#f self.ORCA == "ORCA1":
+ 	print "matchModelToData:\tOpened Model netcdf mesh.", self.grid
+  	ncER = Dataset(self.ORCAfile,'r')
+  	
   	#ncER = ncdfView("data/mesh_mask_ORCA1_75.nc",Quiet=True)  	
-	self.latcc    = ncER.variables['nav_lat'][:]
-	self.loncc    = makeLonSafeArr(ncER.variables['nav_lon'][:])
-  	self.deptht   = ncER.variables['gdept_0'][:]
+	self.latcc    = ncER.variables['nav_lat'][:].squeeze()
+	self.loncc    = makeLonSafeArr(ncER.variables['nav_lon'][:]).squeeze()
+  	self.deptht   = ncER.variables['gdept_0'][:].squeeze()
 	ncER.close()
 	self._meshLoaded_ = 1
 	
   def getOrcaIndexCC(self,lat,lon,debug=True,slowMethod=False,llrange=5.):
-	""" takes a lat and long coordinate, an returns the position of the closest coordinate in the NemoERSEM (ORCA1) grid.
+	""" takes a lat and long coordinate, an returns the position of the closest coordinate in the NemoERSEM grid.
 	    uses the bathymetry file.
 	"""
 	km = 10.E20
@@ -494,12 +542,13 @@ def quadraticDistance(lon1, lat1, lon2, lat2):
 def getORCAdepth(z,depth,debug=True):
 	d = 10000.
 	best = -1
-	for i,zz in enumerate(depth):
+	for i,zz in enumerate(depth.squeeze()):
+		print i,z,zz,depth.shape
 		d2 = abs(abs(z)-abs(zz))
 		if d2<d:
 		   d=d2
 		   best = i
-	if debug: print 'depth: in situ:', z,', closest model:',depth[best], 'index:', best, 'distance:',d
+	if debug: print 'depth: in situ:', z,'index:', best, 'distance:',d,', closest model:',depth.shape, depth[best]
 	return best
 		
 def makeLonSafe(lon):

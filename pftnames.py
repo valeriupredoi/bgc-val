@@ -49,7 +49,7 @@ TAKAHASHITypes 	= ['pCO2',]
 
 GEOTRACESTypes 	= ['iron',]
 
-
+BGCmodels 	= ['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankTOM6','PlankTOM10',]
 #####
 # Get Match Type:
 #	
@@ -91,12 +91,18 @@ def getmt(loadYaml=False):
 
 	####
 	# Some functions for maniulating data:
+	def NoChange(nc,keys):	return nc.variables[keys[0]][:]
 	def N2Biomass(nc,keys):	return nc.variables[keys[0]][:]* 79.573
 	def mul1000(nc,keys):	return nc.variables[keys[0]][:]* 1000.
 	def div1000(nc,keys):	return nc.variables[keys[0]][:]/ 1000.	
 	def applymask(nc,keys):	return np.ma.masked_where(nc.variables[keys[1]][:]==0.,nc.variables[keys[0]][:])
 	 #np.ma.masked_where(nc.variables[keys[1]][:],nc.variables[keys[0]][:])
-					
+	
+	tdicts = {	'ZeroToZero': {i  :i     for i in xrange(12)},		
+			'OneToOne':   {i+1:i+1   for i in xrange(12)},
+			'OneToZero':  {i+1:i     for i in xrange(12)},
+			'ZeroToOne':  {i  :i+1   for i in xrange(12)},			
+		}			
 	#####
 	# Models:
 	mt = AutoVivification() # match type
@@ -160,6 +166,24 @@ def getmt(loadYaml=False):
 	mt['MEDUSA']['lon'] 			= 'nav_lon'
 	mt['MEDUSA']['cal'] 			= '365_day'
 	#mt['Medusa']				= mt['MEDUSA']
+
+
+
+    	mt['IMARNET']['chl']['vars']  		= ['chl',]
+    	mt['IMARNET']['chl']['name']  		= 'chl'
+	mt['IMARNET']['chl']['units'] 		= 'mg Chl/m3'
+	mt['IMARNET']['chl']['convert'] 	=  NoChange		    	
+    	mt['IMARNET']['nitrate']['vars']  	= ['no3',]
+    	mt['IMARNET']['nitrate']['name']  	= 'Nitrate'
+	mt['IMARNET']['nitrate']['units'] 	= 'mmol/m^3'
+	mt['IMARNET']['nitrate']['convert'] 	=  NoChange				
+	mt['IMARNET']['t'] 			= 'index_t'	
+	mt['IMARNET']['z'] 			= 'index_z' 
+	mt['IMARNET']['lat'] 			= 'nav_lat'
+	mt['IMARNET']['lon'] 			= 'nav_lon'
+	mt['IMARNET']['cal'] 			= '365_day'
+	for model in BGCmodels:
+		mt['IMARNET_'+model] = mt['IMARNET']
 	
 	#####
 	# Data:
@@ -177,7 +201,9 @@ def getmt(loadYaml=False):
 	mt['MAREDAT']['z'] 			= 'DEPTH'
 	mt['MAREDAT']['lat'] 			= 'LATITUDE'
 	mt['MAREDAT']['lon'] 			= 'LONGITUDE'
-	mt['MAREDAT']['cal'] 			= 'standard'	
+	mt['MAREDAT']['cal'] 			= 'standard'
+	mt['MAREDAT']['tdict']			= tdicts['ZeroToZero']
+	
 	#mt['Maredat'] 				= mt['MAREDAT']
 			
 	mt['WOA']['temperature'] 		= ['t_an',]#'t_mn',
@@ -190,6 +216,7 @@ def getmt(loadYaml=False):
 	mt['WOA']['lat'] 			= 'lat'
 	mt['WOA']['lon'] 			= 'lon'
 	mt['WOA']['cal'] 			= 'standard'    
+	mt['WOA']['tdict']			= tdicts['ZeroToZero']
 			 	
 	mt['TAKAHASHI']['pCO2'] 		= ['PCO2_SW',]#'DELTA_PCO2',]	'TFLUXSW06',
 	mt['TAKAHASHI']['t'] 			= 'TIME'
@@ -197,6 +224,7 @@ def getmt(loadYaml=False):
 	mt['TAKAHASHI']['lat'] 			= 'LAT'
 	mt['TAKAHASHI']['lon'] 			= 'LON'
 	mt['TAKAHASHI']['cal'] 			= 'standard'
+	mt['TAKAHASHI']['tdict']		= tdicts['ZeroToZero']
 	#mt['intPP']['intPP']			= ['PPint',]	
 								
 	mt['GEOTRACES']['iron']			= ['Fe_D_CONC_BOTTLE',]#'Fe_D_CONC_BOTTLE_FIA','Fe_S_CONC_BOTTLE',]
@@ -205,6 +233,7 @@ def getmt(loadYaml=False):
 	mt['GEOTRACES']['lat'] 			= 'Latitude'
 	mt['GEOTRACES']['lon'] 			= 'Longitude'
 	mt['GEOTRACES']['cal'] 			= 'standard'
+	mt['GEOTRACES']['tdict']		= tdicts['OneToZero']
 		
 	mt['IFREMER']['mld']['name']		= 'mld'
 	mt['IFREMER']['mld']['vars']		= ['mld','mask']
@@ -218,7 +247,7 @@ def getmt(loadYaml=False):
 	mt['IFREMER']['lat'] 			= 'lat'
 	mt['IFREMER']['lon'] 			= 'lon'
 	mt['IFREMER']['cal'] 			= 'standard'	
-
+	mt['IFREMER']['tdict']			= tdicts['ZeroToZero']
 		
 	#mt['PP']['PP'] 		= ['PP',]
 	#'AutoVivToYaml(mt,yamlFile)
@@ -435,7 +464,8 @@ def getLongName(text):
   	if text ==  'bac': 	return 'Bacteria'
   	if text in  ['chl','Chlorophylla',]: 
   		return 'Chlorophyll'  	
-  		
+  	if text in  ['chlSurface','ChlorophyllaSurface',]:  return 'Surface Chlorophyll'  	
+  	  		
 	if text in ['PCO2_SW', 'pCO2']:	return 'pCO2'
 
   	if text ==  'NEMO': 	return 'NEMO'  	  	
@@ -495,10 +525,12 @@ def getLongName(text):
 def fancyUnits(units,debug=False):
 	"""	Converts ascii units string into latex style formatting.
 	"""
+	units = units.replace('[','').replace(']','')
+	
   	#if units in ['mg C/m^3','mg C/m^2',]:		return 'mg C m'+r'$^{-3}$'
   	if units in ['umol/l, uM, mo/l, ug/l, ',]:	return 'mg m'+r'$^{-3}$' # silly nitrates multi units
   	if units in ['mg C/m^3',]:			return 'mg C m'+r'$^{-3}$'
-  	if units in ['mg Chl/m3','ng/L',]:		return 'mg Chl m'+r'$^{-3}$'  	
+  	if units in ['mg Chl/m3','ng/L','mgCh/m3',]:		return 'mg Chl m'+r'$^{-3}$'  	
   	if units in ['mg C/m^3/d',]:			return 'mg C m'+r'$^{-3}$/day'
   	if units in ['mg N/m^3',]:			return 'mg N m'+r'$^{-3}$'  
   	if units in ['mg P/m^3',]:			return 'mg P m'+r'$^{-3}$'

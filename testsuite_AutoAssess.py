@@ -28,6 +28,7 @@
 from sys import argv
 import os
 from calendar import month_name
+import getpass
 
 #Specific local code:
 from UKESMpython import folder,getFileList, AutoVivification, NestedDict,AutoVivToYaml,YamlToDict
@@ -71,7 +72,15 @@ def testsuite_AutoAssess(run,):
 	csvFile 	= run['summary_file']	
 	csvFileFold 	= folder(os.path.dirname(os.path.realpath((csvFile))))
 	
-
+	
+	#####
+	# Grid used to produce this run. Options are ORCA1 or ORCA025
+	grid = run['grid']
+	gridAvailable = ['ORCA1', 'ORCA025']
+	if grid not in gridAvailable:
+		print "testsuite_AutoAssess:\tWARNING:\tThis grid is not appropriate, options are ", gridAvailable
+		assert False
+		
 	#####
 	# Which regions to look at. More regions are
 	regions = ['Surface',]
@@ -80,7 +89,7 @@ def testsuite_AutoAssess(run,):
 	# Plot p2p for all regions/oceans, or just everything and "standard" cuts.
 	plotallcuts = False
 	
-	
+
 
 	#####
 	# Location of data files is now given in the run dictionary.
@@ -98,7 +107,7 @@ def testsuite_AutoAssess(run,):
 	NEMOFolder	= run['ss_annual']
 	
 	# Directory for output files:
-	postprocDir 	= folder(esmvalFolder+"/ukesm_postProcessed/")
+	postprocDir 	= folder(run['LOCALDATA']+"/ukesm_postProcessed_"+getpass.getuser())
 	imageDir	= folder('images')
 
 
@@ -269,7 +278,8 @@ def testsuite_AutoAssess(run,):
 								jobID		= jobIDs[model],
 								year		= years[model],
 								workingDir 	= folder(postprocFolder+name),
-								region 		= region)
+								region 		= region,
+								grid 		= grid)
 							
 			#####
 			# makePlots:
@@ -456,7 +466,7 @@ if __name__=="__main__":
 	run['runid']=		'xhonp' 
 	#run['run_type']=	'AMIP' 		#AMIP = forced-SST atmos-only
 	run['ocean_model']=	'NEMO'  	# Or MEDUSA
-
+	run['grid']=		'ORCA1'		# ORCA1 or ORCA025
 	# Various start and end times:
 	#run['start']=		'1982.0' 
 	#run['start_year']=	'1982.0' 
@@ -491,8 +501,9 @@ if __name__=="__main__":
 	run['summary_file']=		 'CSV/summary_global.csv' 
 	#run['supermean_root']=		 '/group_workspaces/jasmin/esmeval/example_data/autoassess/model_data/amzgg/supermeans/amzgga.ms2006' 
 	
-
 	
+	# This is a new one that doesn't exist in the current set up:
+	run['LOCALDATA'] = '/group_workspaces/jasmin/esmeval/example_data/bgc'
 
 
 

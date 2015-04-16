@@ -41,9 +41,9 @@ from pftnames import MaredatTypes,WOATypes,Ocean_names,getmt
 
 
 
-def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
+def testsuite_ORCA025(	models=['MEDUSA',],
 			year=1998,
-			ERSEMjobID='xhonp',
+			#ERSEMjobID='xjwki',
 			plotallcuts = False,):
 
 	#####
@@ -55,9 +55,9 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
     	# Which jobs to look at. 
 	#ERSEMjobID = 'xhonp'
 	jobIDs={}
-	jobIDs['ERSEM'] 	= ERSEMjobID
-	jobIDs['NEMO'] 		= ERSEMjobID
-	jobIDs['MEDUSA'] 	= 'iMarNet'
+	#jobIDs['ERSEM'] 	= ERSEMjobID
+	#jobIDs['NEMO'] 	= ERSEMjobID
+	jobIDs['MEDUSA'] 	= 'xjwki'
 	
 	#####
 	# Plot p2p for all regions/oceans, or just everything and "standard" cuts.
@@ -79,22 +79,22 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 	TakahashiFolder = "/data/euryale7/scratch/ledm/Takahashi2009_pCO2/"
 	#####
 	# Location of model files.	
-	MEDUSAFolder	= "/data/euryale7/scratch/ledm/UKESM/MEDUSA/"
-	ERSEMFolder	= "/data/euryale7/scratch/ledm/UKESM/ERSEM/"+ jobIDs['ERSEM']+'/'+years['ERSEM']+'/'+jobIDs['ERSEM']+'_'+years['ERSEM']
-	NEMOFolder	= "/data/euryale7/scratch/ledm/UKESM/ERSEM/"+ jobIDs['NEMO'] +'/'+years['NEMO'] +'/'+jobIDs['NEMO'] +'_'+years['NEMO']
+	MEDUSAFolder	= "/data/euryale7/scratch/ledm/UKESM/MEDUSA-ORCA025/xjwki_postProc/1979/"
+	#ERSEMFolder	= "/data/euryale7/scratch/ledm/UKESM/ERSEM/"+ jobIDs['ERSEM']+'/'+years['ERSEM']+'/'+jobIDs['ERSEM']+'_'+years['ERSEM']
+	#NEMOFolder	= "/data/euryale7/scratch/ledm/UKESM/ERSEM/"+ jobIDs['NEMO'] +'/'+years['NEMO'] +'/'+jobIDs['NEMO'] +'_'+years['NEMO']
 	
 
-	regions = ['Surface','100m','500m',]#'200m'
+	regions = ['Surface',]#'100m','200m','500m',]
 	
 	#####
 	# Which analysis to run
-	doCHL 		= True
-	doMAREDAT 	= True
+	doCHL 		= 0#True
+	doMAREDAT 	= 0#True
 	doN		= True
-	doPSF		= True	
-	doSalTemp	= True
-	doMLD		= True
-	doPCO2		= True
+	doPSF		= 0#True	
+	doSalTemp	= 0#True
+	doMLD		= 0#True
+	doPCO2		= 0#True
 	
 	#####
 	# getmt
@@ -114,13 +114,19 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 	av = AutoVivification()
 	if doCHL:
 		av['chl']['Data']['File'] 		= MAREDATFolder+"MarEDat20121001Pigments.nc"	
-		av['chl']['MEDUSA']['File'] 		= MEDUSAFolder+"medusa_bio_"+years['MEDUSA']+".nc"	
-		av['chl']['ERSEM']['File'] 		= ERSEMFolder+'_ERSEMMisc.nc'			
+		av['chl']['MEDUSA']['File'] 		= MEDUSAFolder+"xjwki_1979_CH.nc"	
 		av['chl']['Data']['Vars'] 		= ['Chlorophylla',]
-		av['chl']['MEDUSA']['Vars'] 		= ['CHL',]	
-		av['chl']['ERSEM']['Vars'] 		= ['chl',]
+		av['chl']['MEDUSA']['Vars'] 		= ['CHL',]
 		av['chl']['regions'] 			= ['',]
-		
+
+	if doN:
+		av['nitrate']['Data']['File'] 		= WOAFolder+'nitrate_monthly_1deg.nc'	
+		av['nitrate']['MEDUSA']['File'] 	= MEDUSAFolder+"xjwki_1979_DIN.nc"
+		av['nitrate']['Data']['Vars'] 		= ['n_an',] 		#l+'_mn',
+		av['nitrate']['MEDUSA']['Vars'] 	= ['DIN',]									
+		av['nitrate']['regions'] 		= regions
+				
+				
 	if doMAREDAT:
 		av['diatoms']['Data']['File'] 		= MAREDATFolder+"MarEDat20120716Diatoms.nc"	
 		av['diatoms']['MEDUSA']['File'] 	= MEDUSAFolder+"medusa_bio_"+years['MEDUSA']+".nc"	
@@ -158,14 +164,7 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 		av['mesozoo']['ERSEM']['Vars'] 		= ['Z4c',]
 		av['mesozoo']['regions'] 		= ['',]
 
-	if doN:
-		av['nitrate']['Data']['File'] 		= WOAFolder+'nitrate_monthly_1deg.nc'	
-		av['nitrate']['ERSEM']['File'] 		= ERSEMFolder+'_ERSEMNuts.nc'	
-		av['nitrate']['MEDUSA']['File'] 	= MEDUSAFolder+"medusa_bio_"+years['MEDUSA']+".nc"
-		av['nitrate']['Data']['Vars'] 		= ['n_an',] 		#l+'_mn',
-		av['nitrate']['ERSEM']['Vars'] 		= ['N3n','N4n',]
-		av['nitrate']['MEDUSA']['Vars'] 	= ['DIN',]									
-		av['nitrate']['regions'] 		= regions
+
 	if doPSF:
 		av['silicate']['Data']['File'] 		= WOAFolder+'silicate_monthly_1deg.nc'	
 		av['silicate']['ERSEM']['File'] 	= ERSEMFolder+'_ERSEMNuts.nc'	
@@ -285,7 +284,7 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 			except:
 				print "testsuite_p2p.py:\tWARNING:\tFile does not exist:\tav[",name,"][",model,'][File]'
 				continue			
-			print "\n\n\ntestsuite_p2p.py:\tINFO:\tRunning:",name
+			print "\n\n\ntestsuite_p2p.py:\tINFO:\tRunning:",name, av[name][model]['Vars']
 			
 			
 			#####
@@ -301,7 +300,8 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 								jobID		= jobIDs[model],
 								year		= years[model],
 								workingDir 	= folder(workingDir+name),
-								region 		= region)
+								region 		= region,
+								grid 		= 'ORCA025')
 							
 			#####
 			# makePlots:
@@ -393,7 +393,7 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 	        		
 	        		if name in surfacemetrics:
 	        		  	if newSlice == 'All':		Summary['SurfaceMetricsAll'].append(shelve)
-	        		  	if newSlice == 'Standard':	Summary['SurfaceMetricsStandard'].append(shelve)	
+	        		  	if newSlice == 'Standard':	Summary['SurfaceMetricsStandard'].append(shelve)
 	        		  		        				
 	        		for woa in ['silicate','nitrate','phosphate','salinity','temperature','iron',]:
 	        		   for ns in ['All', 'Standard']:
@@ -454,24 +454,24 @@ if __name__=="__main__":
 
 	#####
 	#Set Defaults:
-	if not len(years): 	years = ['1998',]
-	if not len(models): 	models = ['MEDUSA','ERSEM','NEMO']
-	if not len(ERSEMjobIDs):ERSEMjobIDs = ['xhonp',]	
+	if not len(years): 	years = ['1979',]
+	if not len(models): 	models = ['MEDUSA',]
+	#if not len(ERSEMjobIDs):ERSEMjobIDs = ['xhonp',]	
 
 	print "#############################"
 	print "__main__ arguments: "
 	print "models:        ",models
 	print "year:          ",years
-	print "ERSEM jobID:   ",ERSEMjobIDs
+	#print "ERSEM jobID:   ",ERSEMjobIDs
 	print "#############################"
 
 	
 	for year in years:
 
-		testsuite_p2p(models = models,	year=year,ERSEMjobID=ERSEMjobIDs[0] ) 
-		if len(ERSEMjobIDs)==1:continue
-		for e in ERSEMjobIDs[1:]:
-			testsuite_p2p(models = ['ERSEM',],year=year,ERSEMjobID=e ) 
+		testsuite_ORCA025(models = models,	year=year,)#ERSEMjobID=ERSEMjobIDs[0] ) 
+		#if len(ERSEMjobIDs)==1:continue
+		#for e in ERSEMjobIDs[1:]:
+		#	testsuite_p2p(models = ['ERSEM',],year=year,ERSEMjobID=e ) 
 	
 	print 'The end.'
 	
