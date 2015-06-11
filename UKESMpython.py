@@ -542,16 +542,21 @@ def robinPlotQuad(lons, lats, data1,data2,filename,titles=['',''],title='',lon0=
 	
 		
 
-def histPlot(datax, datay,  filename, Title='', labelx='',labely='',xaxislabel='', logx=False,logy=False,nbins=50,dpi=100,minNumPoints = 3):
+def histPlot(datax, datay,  filename, Title='', labelx='',labely='',xaxislabel='', logx=False,logy=False,nbins=50,dpi=100,minNumPoints = 6):
 #	try:import seaborn as sb
 #	except:pass
 	
-	print "UKESMpython:\thistplot:\t preparing", Title, datax.size, datay.size
+
 	fig = pyplot.figure()		
 	ax = pyplot.subplot(111)
-	xmin =  np.ma.min([np.ma.min(datax),np.ma.min(datay)])
-	xmax =  np.ma.max([np.ma.max(datax),np.ma.max(datay)])
-	
+	xmin =  np.ma.min([np.ma.min(datax),np.ma.min(datay)])#*0.9
+	xmax =  np.ma.max([np.ma.max(datax),np.ma.max(datay)])#*1.1
+	if xmin<0:	xmin=xmin*1.1
+	if xmin>0:	xmin=xmin*0.9
+	if xmax<0:	xmax=xmax*0.9
+	if xmax>0:	xmax=xmax*1.1	
+		
+	print "UKESMpython:\thistplot:\t preparing", Title, datax.size, datay.size, (xmin, '-->',xmax)#, datax,datay
 	if xmin*xmax <= 0.:
 		logx=False
 		print "UKESMpython:\thistPlot:\tx value below zero, can not run log scale.", xmin, '\t',labelx,'(x):', np.ma.min(datax), '\t',labely,'(y):', np.ma.min(datay)
@@ -563,8 +568,8 @@ def histPlot(datax, datay,  filename, Title='', labelx='',labely='',xaxislabel='
 
 	
 	if logx:
-		n, bins, patchesx = pyplot.hist(datax,  histtype='stepfilled', bins=10**np.linspace(np.log10(xmin), np.log10(xmax), nbins),range=[xmin,xmax])
-		n, bins, patchesy = pyplot.hist(datay,  histtype='stepfilled', bins=10**np.linspace(np.log10(xmin), np.log10(xmax), nbins),range=[xmin,xmax])
+		n, bins, patchesx = pyplot.hist(datax,  histtype='stepfilled', bins=10.**np.linspace(np.log10(xmin), np.log10(xmax), nbins),range=[xmin,xmax])
+		n, bins, patchesy = pyplot.hist(datay,  histtype='stepfilled', bins=10.**np.linspace(np.log10(xmin), np.log10(xmax), nbins),range=[xmin,xmax])
 	else: 
 		n, bins, patchesx = pyplot.hist(datax,  bins=np.linspace(xmin, xmax, nbins), histtype='stepfilled',range=[xmin,xmax] )
 		n, bins, patchesy = pyplot.hist(datay,  bins=np.linspace(xmin, xmax, nbins), histtype='stepfilled',range=[xmin,xmax])
@@ -590,14 +595,19 @@ def histPlot(datax, datay,  filename, Title='', labelx='',labely='',xaxislabel='
 	pyplot.close()	
 
 
-def histsPlot(datax, datay,  filename, Title='', labelx='',labely='',xaxislabel='', logx=False,logy=False,nbins=50,dpi=100,minNumPoints = 3):
+def histsPlot(datax, datay,  filename, Title='', labelx='',labely='',xaxislabel='', logx=False,logy=False,nbins=50,dpi=100,minNumPoints = 6):
 
-	print "UKESMpython:\thistplot:\t preparing", Title, datax.size, datay.size
+
 	fig = pyplot.figure()		
 	ax = pyplot.subplot(311)
 	fig.set_size_inches(8,14)	
 	xmin =  np.ma.min([np.ma.min(datax),np.ma.min(datay)])
 	xmax =  np.ma.max([np.ma.max(datax),np.ma.max(datay)])
+	if xmin<0:	xmin=xmin*1.1
+	if xmin>0:	xmin=xmin*0.9
+	if xmax<0:	xmax=xmax*0.9
+	if xmax>0:	xmax=xmax*1.1		
+	print "UKESMpython:\thistsPlot:\t preparing", Title, datax.size, datay.size, (xmin,'-->',xmax)
 	
 	if xmin*xmax <= 0.:
 		logx=False
@@ -605,13 +615,13 @@ def histsPlot(datax, datay,  filename, Title='', labelx='',labely='',xaxislabel=
 	
 	
 	if datax.size < minNumPoints and datay.size < minNumPoints:
-		print "UKESMpython:\thistPlot:\tThere aren't enough points for a sensible dataplot: ", datax.size
+		print "UKESMpython:\thistsPlot:\tThere aren't enough points for a sensible dataplot: ", datax.size
 		return		
 
 	
 	if logx:
-		n, bins, patchesx = pyplot.hist(datax,  histtype='stepfilled', bins=10**np.linspace(np.log10(xmin), np.log10(xmax), nbins),range=[xmin,xmax])
-		n, bins, patchesy = pyplot.hist(datay,  histtype='stepfilled', bins=10**np.linspace(np.log10(xmin), np.log10(xmax), nbins),range=[xmin,xmax])
+		n, bins, patchesx = pyplot.hist(datax,  histtype='stepfilled', bins=10.**np.linspace(np.log10(xmin), np.log10(xmax), nbins),range=[xmin,xmax])
+		n, bins, patchesy = pyplot.hist(datay,  histtype='stepfilled', bins=10.**np.linspace(np.log10(xmin), np.log10(xmax), nbins),range=[xmin,xmax])
 	else: 
 		n, bins, patchesx = pyplot.hist(datax,  bins=np.linspace(xmin, xmax, nbins), histtype='stepfilled',range=[xmin,xmax] )
 		n, bins, patchesy = pyplot.hist(datay,  bins=np.linspace(xmin, xmax, nbins), histtype='stepfilled',range=[xmin,xmax])
@@ -955,7 +965,8 @@ def makeMask(name,newSlice, xt,xz,xy,xx,xd):
 			ymin = xd.min()
 			ymax = scoreatpercentile(xd,99)	
 		print  "makeMask:\t",newSlice,ymin,ymax
-		return  np.ma.masked_outside(xd,ymin, ymax).mask		
+		return  np.ma.masked_outside(xd,ymin, ymax).mask
+				
 	months = {month_name[i+1]:i for i in xrange(0,12) }
 	if newSlice in months.keys():
 		print "masking a month:",newSlice,xt[0], xt[-1]

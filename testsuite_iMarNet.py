@@ -40,10 +40,12 @@ from pftnames import MaredatTypes,WOATypes,Ocean_names,getmt
 ###		Reliance on ORCA1 grid
 from shelve import open as shOpen
 
+# Will not run this code in MO.
+from ncdfView import ncdfView
 
 def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankTOM6','PlankTOM10'],
 			year=1998,
-			ERSEMjobID='xhonc',
+			#ERSEMjobID='xhonc',
 			plotallcuts = False,):
 
 	
@@ -57,7 +59,7 @@ def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankT
 	#ERSEMjobID = 'xhonp'
 	jobIDs={}
 	jobIDs['Diat-HadOCC'] 	= 'v1a'		
-	jobIDs['ERSEM'] 	= ERSEMjobID
+	jobIDs['ERSEM'] 	= 'xhonc'
 	jobIDs['HadOCC'] 	= 'v1a'
 	jobIDs['MEDUSA'] 	= 'v1'	
 	jobIDs['PlankTOM6'] 	= 'xhyyp'
@@ -80,6 +82,7 @@ def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankT
 	# Location of data files.
 	MAREDATFolder 	= "/data/perseus2/scratch/ledm/MAREDAT/MAREDAT/"
 	WOAFolder 	= "/data/euryale7/scratch/ledm/WOA/"	
+	LesterFolder 	= "/data/euryale7/scratch/ledm/LestersReportData/"		
 	GEOTRACESFolder = "/data/euryale7/scratch/ledm/GEOTRACES/GEOTRACES_PostProccessed/"
 	TakahashiFolder = "/data/euryale7/scratch/ledm/Takahashi2009_pCO2/"
 	#####
@@ -106,23 +109,35 @@ def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankT
 	#####
 	# Which analysis to run
 	doCHL 		= 0#True
-	doMAREDAT 	= 0#True
-	doN		= True
-	doPSF		= 0#True	
-	doSalTemp	= 0#True
-	doMLD		= 0#True
+	doN		= 0#True
+	doP		= 0#False
+	doSi		= 0#True
+	doFe		= 0#True		
 	doPCO2		= 0#True
-	
-		
+	doIntPP		= True
+
+	#doPSF		= 0#True	
+	#doSalTemp	= 0#True
+	#doMLD		= 0#True
+			
 	#####
 	# AutoVivification is a form of nested dictionary.
 	# we use av here to determine which files to analyse and which fields in those files.
 	# Region is added, because some WOA files are huges and my desktop can not run the p2p analysis of that data.
+	modelSkips = {	'Diat-HadOCC':	[],
+			'ERSEM':	[],
+			'HadOCC':	[],
+			'MEDUSA':	[],
+			'PlankTOM6':	[],
+			'PlankTOM10':	[],
+		}
+		
 	av = AutoVivification()
 	if doCHL:
 		av['chl']['Data']['File'] 		= MAREDATFolder+"MarEDat20121001Pigments.nc"	
 		av['chl']['Data']['Vars'] 		= ['Chlorophylla',]
 		for m in models:
+			if 'chl' in modelSkips[m]:continue
 			av['chl'][m]['Vars'] 		= ['chl',]						
 			av['chl'][m]['File']		= iMarNetFolder+iMarNetFiles[m]
 		av['chl']['regions'] 			= regions
@@ -131,18 +146,84 @@ def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankT
 		av['nitrate']['Data']['File'] 		=  WOAFolder+'nitrate_monthly_1deg.nc'		
 		av['nitrate']['Data']['Vars'] 		= ['n_an',] 
 		for m in models:
+			if 'chl' in modelSkips[m]:continue		
 			av['nitrate'][m]['Vars'] 	= ['no3',]						
 			av['nitrate'][m]['File']	= iMarNetFolder+iMarNetFiles[m]
 		av['nitrate']['regions'] 		= regions
+
+	if doP:
+		av['phosphate']['Data']['File'] 	=  WOAFolder+'phosphate_monthly_1deg.nc'		
+		av['phosphate']['Data']['Vars'] 	= ['p_an',] 
+		for m in models:
+			if 'chl' in modelSkips[m]:continue		
+			av['phosphate'][m]['Vars'] 	= ['po4',]						
+			av['phosphate'][m]['File']	= iMarNetFolder+iMarNetFiles[m]
+		av['nitrate']['regions'] 		= regions
+				
+	if doSi:
+		av['silicate']['Data']['File'] 		=  WOAFolder+'silicate_monthly_1deg.nc'		
+		av['silicate']['Data']['Vars'] 		= ['i_an',] 
+		for m in models:
+			if 'chl' in modelSkips[m]:continue
+			av['silicate'][m]['Vars'] 	= ['si',]
+			av['silicate'][m]['File']	= iMarNetFolder+iMarNetFiles[m]
+		av['silicate']['regions'] 		= regions
 		
-			
-		#av['iron']['Data']['File'] 		=  WOAFolder+'nitrate_monthly_1deg.nc'		
-		#av['iron']['Data']['Vars'] 		= ['n_an',] 
-		#for m in models:
-		#	av['iron'][m]['Vars'] 	= ['dfe',]						
-		#	av['iron'][m]['File']	= iMarNetFolder+iMarNetFiles[m]
-		#av['iron']['regions'] 		= 'Surface'
+	if doIntPP:
+		av['intpp']['Data']['File'] 	=  LesterFolder+'PPint_1deg.nc'		
+		av['intpp']['Data']['Vars'] 	= ['PPint',]
+		#av['pp']['Data']['File'] 	=  MAREDATFolder+'PP100108.nc'		
+		#av['pp']['Data']['Vars'] 	= ['PP',] 
+			 
+		for m in models:
+			av['intpp'][m]['Vars'] 	= ['intpp',]						
+			av['intpp'][m]['File']	= iMarNetFolder+iMarNetFiles[m]
+		av['intpp']['regions'] 		= regions
+		
+	if doFe:
+					
+		av['iron']['Data']['File'] 	=  GEOTRACESFolder+"Iron_GEOTRACES_IDP2014_Discrete_Sample_Data_ascii.nc"
+		av['iron']['Data']['Vars'] 	= ['Fe_D_CONC_BOTTLE',] 
+		for m in models:
+			av['iron'][m]['Vars'] 	= ['dfe',]						
+			av['iron'][m]['File']	= iMarNetFolder+iMarNetFiles[m]
+		av['iron']['regions'] 		= ['',]
 	
+	if doPCO2:
+		av['pCO2']['Data']['File'] 	=  TakahashiFolder+'takahashi2009_month_flux_pCO2_2006c_noHead.nc'		
+		av['pCO2']['Data']['Vars'] 	= ['PCO2_SW',] 
+		for m in models:
+			av['pCO2'][m]['Vars'] 	= ['spco2',]						
+			av['pCO2'][m]['File']	= iMarNetFolder+iMarNetFiles[m]
+		av['pCO2']['regions'] 		=  ['',]
+			
+
+				
+	
+	
+	#####
+	# Run a quick test of the AV fields.	
+	print "Performing test of AV dict:"
+	for model in models:
+		nctmp = ncdfView(iMarNetFolder+iMarNetFiles[m], Quiet=True)
+		for name in sorted(av.keys()):	
+		  for k in av[name][m]['Vars']: 
+		  	if k in nctmp.variables.keys():continue
+		  	print "WARNING:", k, 'not in ', model, av[name][m]['File']
+
+	for name in sorted(av.keys()):
+		try:	
+			#print 'opening:', av[name]['Data']['File']
+			nctmp = ncdfView(av[name]['Data']['File'], Quiet=True)
+		except: 
+			print 'Warning:', name ,"['Data']['File'] doesn't exist"
+			continue
+
+		for k in av[name]['Data']['Vars']: 
+		  	if k in nctmp.variables.keys():continue
+		  	print "WARNING:", k, 'not in ', name, 	av[name]['Data']['File']
+		    
+		    
 	
 	#####
 	# Start analysis here:
@@ -150,6 +231,7 @@ def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankT
 	
 	for model in models:
 		for name in sorted(av.keys()):
+		
 		    for region in av[name]['regions']:
 			#####
 			# Do some checks to make sure that the files all exist:

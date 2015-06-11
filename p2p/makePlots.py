@@ -43,6 +43,7 @@ import numpy as np
 
 #local imports
 from bgcvaltools.StatsDiagram import StatsDiagram
+from bgcvaltools.robust import StatsDiagram as robustStatsDiagram
 import UKESMpython as ukp 
 from pftnames import getLongName, AutoVivification, getmt,fancyUnits
 #from pftnames import MaredatTypes,IFREMERTypes,WOATypes,GEOTRACESTypes
@@ -172,9 +173,14 @@ class makePlots:
 	  	print 'plotWithSlices:\tlisting plotpairs:\tY', yk,': self.mt[',self.ytype,'][',self.name,']'	 
 		plotpairs.append((xk,yk))
 		print xk,yk,self.xtype,self.ytype,self.name
-		try:fn = newSlice+'_'+xk+'vs'+yk
+
+		if type(newSlice) in [type(['a','b',]),type(('a','b',))]:	
+			ns = ''.join(newSlice)
+		else: 	ns = newSlice	
+				
+		try:fn = ns+'_'+xk+'vs'+yk
 	  	except:
-	  		print "ERROR:\tcan\'t add ",newSlice,xk,yk, 'together as strings. the problem is probably in your mt dictionary in pftnames.'
+	  		print "ERROR:\tcan\'t add ",newSlice,ns,xk,yk, 'together as strings. the problem is probably in your mt dictionary in pftnames.'
 			assert False
 			
 		#####
@@ -184,10 +190,7 @@ class makePlots:
 			plotsToMake+=1
 		
 		#####
-		#Does the shelve file exist?
-		if type(newSlice) in [type(['a','b',]),type(('a','b',))]:	
-			ns = ''.join(newSlice)
-		else: 	ns = newSlice			
+		#Does the shelve file exist?		
 		shelveName = self.shelveDir +self.name+'_'+ns+'_'+xk+'vs'+yk+'.shelve'
 		if ukp.shouldIMakeFile([self.xfn,self.yfn],shelveName,debug=False):
 			plotsToMake+=1
@@ -358,7 +361,9 @@ class makePlots:
 				vmin=dmin,vmax=dmax,)
 
 	# Robinson projection plots - Cartopy
-	if ukp.shouldIMakeFile([self.xfn,self.yfn],robfncartopy,debug=False):
+	makeCartopy = False	# Don't need both.	
+	if makeCartopy:
+	   if ukp.shouldIMakeFile([self.xfn,self.yfn],robfncartopy,debug=False):
 		ti1 = getLongName(self.xtype)
 		ti2 =  getLongName(self.ytype)
 		if self.name in noXYLogs or dmin*dmax <=0.:
@@ -422,7 +427,15 @@ class makePlots:
 	s['Taylor.R']	= mtaylor.R
 	s['Taylor.p']	= mtaylor.p							
 	s['Taylor.gamma']=mtaylor.gamma
-			
+	
+	mrobust = robustStatsDiagram(datax,datay,0.01)
+	print "makePlots.py:\tWARNING: robustStatsDiagram CALCULATED WITH DEFAULT PRECISION (0.01)"
+	s['robust.E0'] 	= mrobust.E0
+	s['robust.E']	= mrobust.E
+	s['robust.R']	= mrobust.R
+	s['robust.p']	= mrobust.p							
+	s['robust.gamma']=mrobust.gamma	
+		
 	s['datax'] = datax
 	s['datay'] = datay
 
@@ -549,11 +562,11 @@ class makePlots:
 		 self.plotMonths	= True
 		 self.plotdepthRanges	=0
 		 self.plotpercentiles	=0#True	
-		 self.plotLatRegions	=0
+		 self.plotLatRegions	=0# True
 		 self.plotQualityCuts	=0#True	
 		 self.plotSeas		=0#True		 
-		 self.plotOceans	= True	
-		 self.plotOceanMonths   = 0#True	
+		 self.plotOceans	= True
+		 self.plotOceanMonths   = True	
 	else: 	
 		 self.plotMonths	=0#True
 		 self.plotdepthRanges	=0#True	

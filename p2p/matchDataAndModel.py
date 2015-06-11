@@ -96,7 +96,7 @@ class matchDataAndModel:
 	
 	if grid.upper() in ['ORCA1',]:
 		self.grid = 'ORCA1'
-		self.ORCAfile    = "data/mesh_mask_ORCA1_75.nc"
+		self.gridFile    = "data/mesh_mask_ORCA1_75.nc"
 		
 	if grid.upper() in ['ORCA025',]:	
 		self.grid = 'ORCA025'
@@ -105,14 +105,30 @@ class matchDataAndModel:
 		# Please add files to link to 
 		for orcafn in [ "/data/euryale7/scratch/ledm/UKESM/MEDUSA-ORCA025/mesh_mask_ORCA025_75.nc",	# PML
 				"/group_workspaces/jasmin/esmeval/example_data/bgc/mesh_mask_ORCA025_75.nc",]:	# JASMIN
-			if exists(orcafn):	self.ORCAfile  = orcafn
+			if exists(orcafn):	self.gridFile  = orcafn
 		
 		try: 
-			if exists(self.ORCAfile):pass
+			if exists(self.gridFile):pass
 		except: 
 			print "matchDataAndModel:\tERROR:\tIt's not possible to load the ORCA025 grid on this machine. Please add the ORCA025 file to the orcafn list to p2p/matchDataAndModel.py"
 			assert False
-			
+
+	if grid in ['Flat1deg',]:	
+		self.grid = 'Flat1deg'
+		self.gridFile = 'data/Flat1deg.nc'
+		
+		#####
+		# Please add files to link to 
+		#for orcafn in [ "/data/euryale7/scratch/ledm/UKESM/MEDUSA-ORCA025/mesh_mask_ORCA025_75.nc",	# PML
+		#		"/group_workspaces/jasmin/esmeval/example_data/bgc/mesh_mask_ORCA025_75.nc",]:	# JASMIN
+		#	if exists(orcafn):	self.gridFile  = orcafn
+		
+		#try: 
+		#	if exists(self.gridFile):pass
+		#except: 
+		#	print "matchDataAndModel:\tERROR:\tIt's not possible to load the ORCA025 grid on this machine. Please add the ORCA025 file to the orcafn list to p2p/matchDataAndModel.py"
+		#	assert False
+						
 		
 	self.matchedShelve 	= ukp.folder(self.workingDir)+self.model+'-'+self.jobID+'_'+self.year+'_'+'_'+self.dataType+'_'+self.region+'_matched.shelve'
 	self.matchesShelve 	= ukp.folder(['shelves','MaredatModelMatch',])+'WOAto'+self.grid+'.shelve'
@@ -204,7 +220,7 @@ class matchDataAndModel:
 		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking WOA style flat array:',self.DataFilePruned,'-->',self.DataFile1D	
 	  	convertToOneDNC(self.DataFilePruned,self.DataFile1D ,newMask=mmask, variables = self.DataVars, debug=True)		  	
 	  	
-	    elif nc.variables[self.DataVars[0]].shape in [(12, 33, 180, 360), ]: # Chl format
+	    elif nc.variables[self.DataVars[0]].shape in [(12, 33, 180, 360), (12,1,180,360) ]: # Chl format
 		mmask = np.ones(nc.variables[self.DataVars[0]].shape)
 		
 		if self.region in ['Surface',]:	
@@ -278,9 +294,9 @@ class matchDataAndModel:
 	if len(ytype) == 1:
 		ytype = ytype[0]		
 	else:
-		print "matchModelToData:\tUnable to determine data dataset type (ie, Maredat, WOA, etc...)", ytype
+		print "matchModelToData:\tUnable to determine in situ data dataset type (ie, Maredat, WOA, Takahashi etc...)", ytype , (self.dataType)
 		print "matchModelToData:\tYou need to add the new data dataset type informationg to getmt() in pftnames.py"		
-		print "matchModelToData:\tor remove it from the list of options for ytype"				
+		print "matchModelToData:\tor remove it from the list of options for ytype"
 		assert False
 
 	#####
@@ -295,7 +311,7 @@ class matchDataAndModel:
 	zdict={}
 	tdict={}
 	print 'mt[',ytype,']:', mt[ytype]
-  	is_t	= ncIS.variables[mt[ytype]['t']][:]	
+  	is_t	= ncIS.variables[mt[ytype]['t']][:]
   	is_z 	= ncIS.variables[mt[ytype]['z']][:]
   	is_la	= ncIS.variables[mt[ytype]['lat']][:]
 	is_lo 	= ncIS.variables[mt[ytype]['lon']][:]	
@@ -305,8 +321,13 @@ class matchDataAndModel:
 
 	print "tdict:", tdict
 	#####
-	# This list could be removed by adding a check dimensionality of data after it was been pruned.	    
-	if self.dataType in ['pCO2','seawifs','Seawifs','mld_DT02', 'mld_DR003','mld_DReqDTm02','mld',]: 
+	# This list could be removed by adding a check dimensionality of data after it was been pruned.	
+	flatDataOnly =  ['pCO2','seawifs','Seawifs','mld_DT02', 'mld_DR003','mld_DReqDTm02','mld',
+			  'dms_and','dms_ara','dms_hal','dms_sim',]
+	for d in ['dms_p_and','dms_p_ara','dms_p_hal','dms_p_sim',]:
+	  for i in ['','1','2']:
+		flatDataOnly.append(d+i)
+	if self.dataType in flatDataOnly: 
   	   	is_z 	= np.ma.zeros(len(is_t))[:]
 	   	zdict = {0:0, 0.:0}  
 
@@ -348,7 +369,7 @@ class matchDataAndModel:
 		try:
 			t = tdict[wt]	
 		except:
-			print "matchModelToData:\tunable to find time match in pftnames, mt[x]['tdict']"
+			print "matchModelToData:\tunable to find time match in pftnames, mt[x]['tdict']",wt
 			assert False 
 			
 			t = getMonthFromSecs(wt)
@@ -481,7 +502,7 @@ class matchDataAndModel:
       	# This won't work unless its the 1 degree grid.
       	#f self.ORCA == "ORCA1":
  	print "matchModelToData:\tOpened Model netcdf mesh.", self.grid
-  	ncER = Dataset(self.ORCAfile,'r')
+  	ncER = Dataset(self.gridFile,'r')
   	
   	#ncER = ncdfView("data/mesh_mask_ORCA1_75.nc",Quiet=True)  	
 	self.latcc    = ncER.variables['nav_lat'][:].squeeze()

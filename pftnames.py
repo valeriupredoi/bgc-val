@@ -26,7 +26,7 @@
 
 from calendar import month_name
 from UKESMpython import AutoVivification,AutoVivToYaml,folder,YamlToDict
-from itertools import product
+#from itertools import product
 from os.path import exists
 import numpy as np
 
@@ -50,6 +50,9 @@ TAKAHASHITypes 	= ['pCO2',]
 GEOTRACESTypes 	= ['iron',]
 
 BGCmodels 	= ['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankTOM6','PlankTOM10',]
+
+months = [m for m in month_name if m]	# Because months starts at 1, and 0 is empty.
+OceanMonth_names = [o+m for o in Ocean_names for m in months]
 #####
 # Get Match Type:
 #	
@@ -157,8 +160,27 @@ def getmt(loadYaml=False):
 	mt['MEDUSA']['microzoo']['convert'] 	=  N2Biomass			
 	mt['MEDUSA']['microzoo']['units'] 	=  'mg C/m^3'
 
+
+	dmsd= {'dms_and':'anderson','dms_ara':'aranamit','dms_hal':'halloran','dms_sim':'simodach'} 
+	for dms in ['dms_and','dms_ara','dms_hal','dms_sim']:	
+		mt['MEDUSA'][dms]['name'] 	=  dmsd[dms]
+		mt['MEDUSA'][dms]['vars'] 	=  [dmsd[dms],]					
+		mt['MEDUSA'][dms]['convert'] 	=  NoChange			
+		mt['MEDUSA'][dms]['units'] 	=  'umol / m3'
+	dmsd= {'dms_p_and':'anderson','dms_p_ara':'aranamit','dms_p_hal':'halloran','dms_p_sim':'simodach'} 
+	for d in ['dms_p_sim','dms_p_and','dms_p_ara','dms_p_hal',]:	
+	  for i in ['','1','2']:
+	  	dms = d+i
+		mt['MEDUSA'][dms]['name'] 	=  dmsd[d]+i
+		mt['MEDUSA'][dms]['vars'] 	=  [dmsd[d]+i,]					
+		mt['MEDUSA'][dms]['convert'] 	=  NoChange			
+		mt['MEDUSA'][dms]['units'] 	=  'umol / m3'
+		
+
+#	mt['MEDUSA']['dms'][
+
     	mt['MEDUSA']['nitrate'] 	 	= ['DIN',]
-    	mt['MEDUSA']['pCO2']	  		= ['OCN_PCO2',]			    	
+    	mt['MEDUSA']['pCO2']	  		= ['OCN_PCO2',]		    	
     	mt['MEDUSA']['silicate']	  	= ['SIL',]			
 	mt['MEDUSA']['t'] 			= 'index_t'	
 	mt['MEDUSA']['z'] 			= 'deptht'
@@ -177,6 +199,23 @@ def getmt(loadYaml=False):
     	mt['IMARNET']['nitrate']['name']  	= 'Nitrate'
 	mt['IMARNET']['nitrate']['units'] 	= 'mmol/m^3'
 	mt['IMARNET']['nitrate']['convert'] 	=  NoChange				
+	
+    	mt['IMARNET']['pCO2']['vars']  		= ['spco2',]
+    	mt['IMARNET']['pCO2']['name']  		= 'Partial pressure pCO2'
+	mt['IMARNET']['pCO2']['units'] 		= 'uatm'
+	mt['IMARNET']['pCO2']['convert'] 	=  NoChange	
+
+    	mt['IMARNET']['intpp']['vars']  	= ['intpp',]
+    	mt['IMARNET']['intpp']['name']  	= 'Integrated Primary Production'
+	mt['IMARNET']['intpp']['units'] 	= 'gC/m2/d'
+	mt['IMARNET']['intpp']['convert'] 	=  NoChange	
+	
+
+    	mt['IMARNET']['silicate']['vars']  	= ['si',]
+    	mt['IMARNET']['silicate']['name']  	= 'Silicate'
+	mt['IMARNET']['silicate']['units'] 	= 'mmol/m^3'
+	mt['IMARNET']['silicate']['convert'] 	=  NoChange
+				
 	mt['IMARNET']['t'] 			= 'index_t'	
 	mt['IMARNET']['z'] 			= 'index_z' 
 	mt['IMARNET']['lat'] 			= 'nav_lat'
@@ -193,6 +232,7 @@ def getmt(loadYaml=False):
 	mt['MAREDAT']['picophyto'] 		= ['BIOMASS',]
 	mt['MAREDAT']['microzoo'] 		= ['BIOMASS',]
 	mt['MAREDAT']['PP'] 			= ['PP',]
+	mt['MAREDAT']['intpp'] 			= ['PPint',]	
 	mt['MAREDAT']['chl']['name']		= 'Chlorophylla'
 	mt['MAREDAT']['chl']['vars']		= ['Chlorophylla',]
 	mt['MAREDAT']['chl']['convert']		= div1000	
@@ -217,7 +257,8 @@ def getmt(loadYaml=False):
 	mt['WOA']['lon'] 			= 'lon'
 	mt['WOA']['cal'] 			= 'standard'    
 	mt['WOA']['tdict']			= tdicts['ZeroToZero']
-			 	
+	
+
 	mt['TAKAHASHI']['pCO2'] 		= ['PCO2_SW',]#'DELTA_PCO2',]	'TFLUXSW06',
 	mt['TAKAHASHI']['t'] 			= 'TIME'
 	mt['TAKAHASHI']['z'] 			= 'index_z'
@@ -248,7 +289,31 @@ def getmt(loadYaml=False):
 	mt['IFREMER']['lon'] 			= 'lon'
 	mt['IFREMER']['cal'] 			= 'standard'	
 	mt['IFREMER']['tdict']			= tdicts['ZeroToZero']
+	
+	for dms in ['dms_and','dms_ara','dms_hal','dms_sim']:	
+		mt['LANA'][dms]['name'] 	=  'lanaetal'
+		mt['LANA'][dms]['vars'] 	=  ['lanaetal',]					
+		mt['LANA'][dms]['convert'] 	=  NoChange			
+		mt['LANA'][dms]['units'] 	=  'umol / m3'
+	mt['LANA']['t'] 		= 'index_t'
+	mt['LANA']['z'] 		= 'deptht'
+	mt['LANA']['lat'] 		= 'nav_lat'
+	mt['LANA']['lon'] 		= 'nav_lon'
+	mt['LANA']['tdict']		= tdicts['OneToZero']	
+
+	for d in ['dms_p_and','dms_p_ara','dms_p_hal','dms_p_sim']:
+	  for i in ['','1','2']:
+	  	dms = d+i
+		mt['LANA_p'][dms]['name'] 	=  'DMS'
+		mt['LANA_p'][dms]['vars'] 	=  ['DMS',]					
+		mt['LANA_p'][dms]['convert'] 	=  NoChange			
+		mt['LANA_p'][dms]['units'] 	=  'nM'
 		
+	mt['LANA_p']['t'] 		= 'index_t'
+	mt['LANA_p']['z'] 		= 'deptht'
+	mt['LANA_p']['lat'] 		= 'nav_lat'
+	mt['LANA_p']['lon'] 		= 'nav_lon'
+	mt['LANA_p']['tdict']		= tdicts['ZeroToZero']	
 	#mt['PP']['PP'] 		= ['PP',]
 	#'AutoVivToYaml(mt,yamlFile)
 	return mt	
@@ -357,6 +422,49 @@ def getLongName(text):
   	if text == 'mld_DT02':		return 'MLD: Fixed Threshold Temperature '
   	if text == 'mld_DR003':		return 'MLD: Fixed Threshold Density'
   	if text == 'mld_DReqDTm02':	return 'MLD: Variable Threshold Density'  	  	
+
+ 	if text == 'anderson':		return 'DMS (Anderson)' 
+ 	if text == 'dms_and':		return 'DMS (Anderson)'
+ 	if text == 'dms_andSurface':	return 'DMS (Anderson)'
+ 	if text == 'dms_p_and':		return 'DMS (Anderson)'
+ 	if text == 'dms_p_andSurface':	return 'DMS (Anderson)'
+ 	if text == 'dms_p_and1':	return 'DMS (Anderson - all CHL)'
+ 	if text == 'dms_p_and1Surface':	return 'DMS (Anderson - all CHL)'
+ 	if text == 'dms_p_and2':	return 'DMS (Anderson - CHN only)'
+ 	if text == 'dms_p_and2Surface':	return 'DMS (Anderson - CHN only)' 	
+
+ 	if text == 'aranamit':		return 'DMS (Aranamit)' 	
+ 	if text == 'dms_ara':		return 'DMS (Aranamit)'
+ 	if text == 'dms_araSurface':	return 'DMS (Aranamit)'
+ 	if text == 'dms_p_ara':		return 'DMS (Aranamit)'
+ 	if text == 'dms_p_araSurface':	return 'DMS (Aranamit)'
+ 	if text == 'dms_p_ara1':	return 'DMS (Aranamit - all CHL)'
+ 	if text == 'dms_p_ara1Surface':	return 'DMS (Aranamit - all CHL)'
+ 	if text == 'dms_p_ara2':	return 'DMS (Aranamit - CHN only)'
+ 	if text == 'dms_p_ara2Surface':	return 'DMS (Aranamit - CHN only)' 	
+ 	 	
+ 	if text == 'halloran':		return 'DMS (Halloran)' 	
+ 	if text == 'dms_hal':		return 'DMS (Halloran)'
+ 	if text == 'dms_halSurface':	return 'DMS (Halloran)'
+ 	if text == 'dms_p_hal':		return 'DMS (Halloran)'
+ 	if text == 'dms_p_halSurface':	return 'DMS (Halloran)'
+ 	if text == 'dms_p_hal1':	return 'DMS (Halloran - all CHL)'
+ 	if text == 'dms_p_hal1Surface':	return 'DMS (Halloran - all CHL)'
+ 	if text == 'dms_p_hal2':	return 'DMS (Halloran - CHN only)'
+ 	if text == 'dms_p_hal2Surface':	return 'DMS (Halloran - CHN only)'
+ 	 	 	
+ 	if text == 'simodach':		return 'DMS (Simodach)'
+ 	if text == 'dms_sim':		return 'DMS (Simodach)'
+ 	if text == 'dms_simSurface':	return 'DMS (Simodach)'
+ 	if text == 'dms_p_sim':		return 'DMS (Simodach)'
+ 	if text == 'dms_p_simSurface':	return 'DMS (Simodach)'
+ 	if text == 'dms_p_sim1':	return 'DMS (Simodach - all CHL)'
+ 	if text == 'dms_p_sim1Surface':	return 'DMS (Simodach - all CHL)'
+ 	if text == 'dms_p_sim2':	return 'DMS (Simodach - CHN only)'
+ 	if text == 'dms_p_sim2Surface':	return 'DMS (Simodach - CHN only)'
+ 	 	 	 	
+ 	if text == 'lanaetal':		return 'DMS (Lana et al. 2011)'
+ 	if text == 'DMS':		return 'DMS pixels (Lana et al. 2011)' 	
  
   	if text == 'All':	return 'Global'
   	if text == 'Best':	return 'Best'  	
@@ -499,6 +607,10 @@ def getLongName(text):
   	if text ==  'SeawifsBM-pico': 	return 'Seawifs Picophyto. Biomass'    		  	
   	if text ==  'Seawifs-biomass': 	return 'Phytoplankton Biomass'
   	if text ==  'intPP': 	return 'WOA Integrated PP'  	  	  	
+  	if text ==  'intpp': 	return 'Integrated PP'
+  	if text ==  'intppSurface': 	return 'Integrated PP'  	
+  	if text ==  'PPint': 	return 'Integrated PP'  	
+  	if text ==  'ppint': 	return 'Integrated PP'  	
    	if text ==  'PP': 	return 'MareDat PP'
 
   	if text ==  'medusa_1998': 	return 'MEDUSA (1998)'  
@@ -511,6 +623,10 @@ def getLongName(text):
   	if text ==  'InitialConditions': return 'Initial Conditions'    
   	  		 	  	  	  	
   	if text in month_name: return text
+  	for m in month_name:
+  		t =  text.find(m)
+  		if t>0: return getLongName(text[:t]) +' '+m
+  		
   	#if text in ['picophyto','microzoo','mesozoo','diatoms', 'bac', ]:
   	#	print "need to add ",text,"to get longname"
   	print "getLongName:\tERROR:\tCould not find Longname for ",text

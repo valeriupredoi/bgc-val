@@ -34,7 +34,7 @@ from calendar import month_name
 from UKESMpython import folder,getFileList, AutoVivification, NestedDict,AutoVivToYaml,YamlToDict
 from p2p import matchDataAndModel,makePlots,makeTargets, csvFromShelves
 #from 
-from pftnames import MaredatTypes,WOATypes,Ocean_names,getmt
+from pftnames import MaredatTypes,WOATypes,Ocean_names,OceanMonth_names,getmt
 
 ###	Potential problems?
 ###		Reliance on ORCA1 grid
@@ -88,13 +88,16 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 	
 	#####
 	# Which analysis to run
-	doCHL 		= True
-	doMAREDAT 	= True
-	doN		= True
-	doPSF		= True	
-	doSalTemp	= True
-	doMLD		= True
-	doPCO2		= True
+	doCHL 		= 0#True
+	doDMS_clim	= 0#True
+	doDMS_pixels	= True
+	doDMS_pixels2	= 0#True
+	doMAREDAT 	= 0#True
+	doN		= 0#True
+	doPSF		= 0#True	
+	doSalTemp	= 0#True
+	doMLD		= 0#True
+	doPCO2		= 0#True
 	
 	#####
 	# getmt
@@ -120,7 +123,47 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 		av['chl']['MEDUSA']['Vars'] 		= ['CHL',]	
 		av['chl']['ERSEM']['Vars'] 		= ['chl',]
 		av['chl']['regions'] 			= ['',]
+	
+	if doDMS_clim:
+		dmsd= {'dms_and':'anderson','dms_ara':'aranamit','dms_hal':'halloran','dms_sim':'simodach'} 
+		for dms in ['dms_sim',]:#'dms_sim']:#'dms_and','dms_ara','dms_hal','dms_sim',]:
+			av[dms]['Data']['File'] 		= '/data/euryale7/scratch/ledm/UKESM/MEDUSA/xkrum/dms_xkrum.nc'		
+			av[dms]['MEDUSA']['File'] 		= '/data/euryale7/scratch/ledm/UKESM/MEDUSA/xkrum/dms_xkrum.nc'	
+			av[dms]['Data']['Vars'] 		= ['lanaetal',]
+			av[dms]['MEDUSA']['Vars'] 		= [dmsd[dms],]
+			av[dms]['regions'] 			= ['Surface',]	
+			av[dms]['grid'] = 'Flat1deg'
+		plotallcuts =  0#True # False#
+
+	if doDMS_pixels:
+		dmsd= {'dms_p_and':'anderson','dms_p_ara':'aranamit','dms_p_hal':'halloran','dms_p_sim':'simodach'} 
+		for dms in ['dms_p_sim','dms_p_and','dms_p_ara','dms_p_hal',]:
+			av[dms]['Data']['File'] 		= '/data/euryale7/scratch/ledm/DMS_Lana2011nc/DMSpixels.nc'		
+			av[dms]['MEDUSA']['File'] 		= '/data/euryale7/scratch/ledm/UKESM/MEDUSA/xkrum/dms_xkrum.nc'	
+			av[dms]['Data']['Vars'] 		= ['DMS',]
+			av[dms]['MEDUSA']['Vars'] 		= [dmsd[dms],]			
+			av[dms]['regions'] 			= ['Surface',]	
+			av[dms]['grid'] = 'Flat1deg'
+		plotallcuts =   0#True # False#
+
+	if doDMS_pixels2:
+		#dmsd= {'dms_p_and':'anderson','dms_p_ara':'aranamit','dms_p_hal':'halloran','dms_p_sim':'simodach'} 
+		dmsd= { 'dms_p_and1':'anderson1','dms_p_ara1':'aranamit1','dms_p_hal1':'halloran1','dms_p_sim1':'simodach1',
+			'dms_p_and2':'anderson2','dms_p_ara2':'aranamit2','dms_p_hal2':'halloran2','dms_p_sim2':'simodach2',} 
+		for d in ['dms_p_ara','dms_p_hal', 'dms_p_sim','dms_p_and',]:#
+		  for n in ['1','2']:
+		  	dms=d+n
+			av[dms]['Data']['File'] 		= '/data/euryale7/scratch/ledm/DMS_Lana2011nc/DMSpixels.nc'		
+			#av[dms]['MEDUSA']['File'] 		= '/data/euryale7/scratch/ledm/UKESM/MEDUSA/xkrum/dms_xkrum.nc'	
+			av[dms]['MEDUSA']['File'] 		= '/data/euryale7/scratch/ledm/UKESM/MEDUSA/xkrum/dms_xkrum_v2.nc'				
+			av[dms]['Data']['Vars'] 		= ['DMS',]
+			av[dms]['MEDUSA']['Vars'] 		= [dmsd[dms],]			
+			#av[dms]['MEDUSA']['Vars'] 		= dmsd[dms]
+			av[dms]['regions'] 			= ['Surface',]	
+			av[dms]['grid'] = 'Flat1deg'
+		plotallcuts =  True # False#
 		
+						
 	if doMAREDAT:
 		av['diatoms']['Data']['File'] 		= MAREDATFolder+"MarEDat20120716Diatoms.nc"	
 		av['diatoms']['MEDUSA']['File'] 	= MEDUSAFolder+"medusa_bio_"+years['MEDUSA']+".nc"	
@@ -292,6 +335,8 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 			# matchDataAndModel:
 			# Match (real) Data and Model. 
 			# Does not produce and plots.
+			try:	grid = av[name]['grid']
+			except: grid = 'ORCA1'
 			b = matchDataAndModel(av[name]['Data']['File'], 
 								av[name][model]['File'],
 								name,
@@ -301,7 +346,8 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 								jobID		= jobIDs[model],
 								year		= years[model],
 								workingDir 	= folder(workingDir+name),
-								region 		= region)
+								region 		= region,
+								grid		= grid)
 							
 			#####
 			# makePlots:
@@ -343,12 +389,29 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 			# Ocean and month targets for this particular dataset.
 			MonthShelves = []
 			OceanShelves = []
+			OceanMonthShelves = {o:[] for o in Ocean_names}
+			#print shelvesAV.keys(),m.shelvesAV.keys()
+			#assert False	    				
 			for newSlice in m.shelvesAV.keys(): 
 			   for xkey in m.shelvesAV[newSlice].keys():
 				for ykey in m.shelvesAV[newSlice][xkey].keys():        	      
 				    shelve = m.shelvesAV[newSlice][xkey][ykey]			  
 				    if newSlice in month_name: 	MonthShelves.append(shelve)
 				    if newSlice in Ocean_names:	OceanShelves.append(shelve)
+				    
+				    # This part is for Ocean + Month cuts.
+				    if type(newSlice) in [type(['a','b',]),type(('a','b',))]:newSlice= newSlice[0]+newSlice[1]
+				    if newSlice in OceanMonth_names:
+				    	#print 'Prepping Targets',newSlice,xkey,ykey
+				    	for mn in month_name:
+				    	    t = newSlice.find(mn)
+					    #print 'Prepping Targets',newSlice, mn,newSlice[:t],t
+				    	    if t>0: 
+				   	 	#print newSlice, mn,newSlice[:t],t
+				    	    	OceanMonthShelves[newSlice[:t]].append(shelve)
+			#print OceanMonthShelves
+			#assert False	    	
+				    	
 			if len(MonthShelves):	    
 			  	filename = folder(imageFolder+'/Targets/'+years[model]+'/Months')+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region+'_Months.png'
 				makeTargets(	MonthShelves, 
@@ -361,7 +424,15 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 						filename,
 						legendKeys = ['newSlice',],					
 						)
-
+			for o in OceanMonthShelves.keys():
+			    if len(OceanMonthShelves[o]):
+				filename = folder(imageFolder+'/Targets/'+years[model]+'/OceanMonths/'+o)+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region+'_'+o+'Months.png'
+				makeTargets(	OceanMonthShelves[o], 
+						filename,
+						legendKeys = ['newSlice',],					
+						)
+			#print OceanMonthShelves
+			#assert False
 		#####				
 		# Here are some fields for comparing fields in the same model
 		Summary= {}		
@@ -375,7 +446,13 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 		Summary['SurfaceMetricsAll'] = []	
 		Summary['SurfaceMetricsStandard'] = []			
 		surfacemetrics = ['chl', 'pCO2', 'nitrate',]
-							
+
+		dmsmetrics = ['dms_and','dms_ara','dms_hal','dms_sim']
+		dmspmetrics = ['dms_p_and','dms_p_ara','dms_p_hal','dms_p_sim']		
+		Summary['DMSAll'] = []
+		Summary['DMSStandard']=[]	
+		Summary['DMS_p_All'] = []
+		Summary['DMS_p_Standard']=[]								
 		for name in shelvesAV[model].keys():
 		  for region in shelvesAV[model][name].keys():
 		    for newSlice in shelvesAV[model][name][region].keys(): 
@@ -391,10 +468,18 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 	        		  	if newSlice == 'All':		Summary['WOAAll'].append(shelve)
 	        		  	if newSlice == 'Standard':	Summary['WOAStandard'].append(shelve)	
 	        		
+	        		if name in dmsmetrics:
+	        		  	if newSlice == 'All':		Summary['DMSAll'].append(shelve)
+	        		  	if newSlice == 'Standard':	Summary['DMSStandard'].append(shelve)	
+
+	        		if name in dmspmetrics:
+	        		  	if newSlice == 'All':		Summary['DMS_p_All'].append(shelve)
+	        		  	if newSlice == 'Standard':	Summary['DMS_p_Standard'].append(shelve)	
+	        		  	
 	        		if name in surfacemetrics:
 	        		  	if newSlice == 'All':		Summary['SurfaceMetricsAll'].append(shelve)
-	        		  	if newSlice == 'Standard':	Summary['SurfaceMetricsStandard'].append(shelve)	
-	        		  		        				
+	        		  	if newSlice == 'Standard':	Summary['SurfaceMetricsStandard'].append(shelve)
+	        		  		        		  		        				
 	        		for woa in ['silicate','nitrate','phosphate','salinity','temperature','iron',]:
 	        		   for ns in ['All', 'Standard']:
 	        		   	if ns == newSlice and woa == name.lower():

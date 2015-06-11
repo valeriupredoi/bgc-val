@@ -48,13 +48,13 @@ import UKESMpython as ukp
 from pftnames import AutoVivification,getLongName
 
 from bgcvaltools.StatsDiagram import TaylorDiagram, TargetDiagram,TaylorDiagramMulti
-
-
+from bgcvaltools.robust import TargetDiagram as robustTargetDiagram #, TargetDiagram,TaylorDiagramMulti
+from bgcvaltools.robust import StatsDiagram as robustStatsDiagram
 
 
 
 class makeTargets:
-  def __init__(self,matchedShelves, filename, diagramTypes=['Target','Taylor'],legendKeys = ['name', 'newSlice','xkey','ykey',],debug=True): #name='', #imageDir='',
+  def __init__(self,matchedShelves, filename, diagramTypes=['RobustTarget','Target','Taylor',],legendKeys = ['name', 'newSlice','xkey','ykey',],debug=True): #name='', #imageDir='',
 
   
   	self.matchedShelves =matchedShelves
@@ -136,13 +136,32 @@ class makeTargets:
 		G  = s['Taylor.gamma']
 		p  = s['Taylor.p']	 		
 		N  = s['N']
+		try:
+	 		rE0 = s['robust.E0' ]
+	 		rE  = s['robust.E' ]	 		
+			rR  = s['robust.R']
+			rG  = s['robust.gamma']
+			rp  = s['robust.p']
+		except:
+			print "makeTagets.py:\tWARNING: robustStatsDiagram CALCULATED WITH DEFAULT PRECISION (0.01)"
+			mrobust = robustStatsDiagram(s['datax'],s['datay'],0.01)
+			rE0 	= mrobust.E0
+			rE 	= mrobust.E
+			rR	= mrobust.R
+			rG	= mrobust.gamma					 		
+			rp	= mrobust.p
+			#s['robust.E0'] 	= mrobust.E0
+			#s['robust.E']	= mrobust.E
+			#s['robust.R']	= mrobust.R
+			#s['robust.p']	= mrobust.p							
+			#s['robust.gamma']=mrobust.gamma				
 		leg = ' - '.join([getLongName(s[i]) for i in self.legendKeys])
 
 
 								
 		s.close()
 		breaks=0
-		for func,a in product([np.isnan,np.isinf],[E0,R,G,N,p],):
+		for func,a in product([np.isnan,np.isinf],[E0,R,G,N,p,rE0,rR,rG,rp],):
 			if func(a):
 				if self.debug: print 'LoadShelves:\tWARNING:\t',a, 'is nan/inf'
 				breaks+=1
@@ -152,7 +171,12 @@ class makeTargets:
 		self.data[leg]['G'] = G
 		self.data[leg]['p'] = p
 		self.data[leg]['N'] = N
-	
+		self.data[leg]['rE0'] = rE0
+		self.data[leg]['rE'] = rE		
+		self.data[leg]['rR'] = rR
+		self.data[leg]['rG'] = rG
+		self.data[leg]['rp'] = rp
+			
 				
   def makeTitle(self,):
   	"""	MakeTitle determines how you have sliced the data.
@@ -219,12 +243,39 @@ class makeTargets:
 			    print 'Target:\t',leg,'\tGamma:',self.data[leg]['G'], '\tE0:',self.data[leg]['E0'],'\tR:',self.data[leg]['R']			    
 			    proxyArt.append(pyplot.Line2D([0],[0], linestyle="none", c=c(self.data[leg]['R']), marker = ma,markersize=9,))
 				
-
+				
 			if len(labs)<8:
 				legend = pyplot.legend(proxyArt, labs,loc=4, ncol=1, borderaxespad=0., numpoints = 1, scatterpoints=1, prop={'size':8},) 
 			else:	legend = pyplot.legend(proxyArt, labs,loc=8, ncol=2, borderaxespad=0., numpoints = 1, scatterpoints=1, prop={'size':8},) 
 	
-		
+		if t == 'RobustTarget':
+			maxes= {'rE0':-10.,  'rR':-10.,  'rG':-10.,  'rE':-10.  }
+			mins = {'rE0':10000.,'rR':10000.,'rG':10000.,'rE':10000.}
+			for l,leg in enumerate(sorted(self.data.keys())):
+			    ma = next(markercycler)
+			    try:
+			    	Target.add(self.data[leg]['rG'], self.data[leg]['rE0'],self.data[leg]['rE'],self.data[leg]['rR'], marker = ma, s=150, cmap=c, label=leg,)
+			    	#TD.add(g[i], E0[i], R[i],  marker = ma, s=150, cmap=c, label=i,)
+			    	#TD.labels(i)
+			    	
+			    except:
+			    	print 'makeDiagram:\tFirst Robust target diagram:\t', title
+			    	Target=robustTargetDiagram(self.data[leg]['rG'], self.data[leg]['rE0'],self.data[leg]['rE'],self.data[leg]['rR'],marker = ma,s=150,cmap=c, label=leg,)
+			    labs.append(leg)
+
+			    print 'Robust Target:\t',leg,'\tGamma:',self.data[leg]['rG'], '\trE0:',self.data[leg]['rE0'],'\trE:',self.data[leg]['rE'],'\trR:',self.data[leg]['rR']			    
+			    proxyArt.append(pyplot.Line2D([0],[0], linestyle="none", c=c(self.data[leg]['rR']), marker = ma,markersize=9,))
+			    
+			    for x,xx in maxes.items():
+			    	if self.data[leg][x] > xx: maxes[x]=self.data[leg][x] 
+			    for x,xx in mins.items():
+			    	if self.data[leg][x] < xx: mins[x] =self.data[leg][x] 
+
+			if len(labs)<8:
+				legend = pyplot.legend(proxyArt, labs,loc=4, ncol=1, borderaxespad=0., numpoints = 1, scatterpoints=1, prop={'size':8},) 
+			else:	legend = pyplot.legend(proxyArt, labs,loc=8, ncol=2, borderaxespad=0., numpoints = 1, scatterpoints=1, prop={'size':8},) 
+			for x,xx in maxes.items(): print 'MAX ',x,':\t',xx
+			for x,xx in mins.items():  print 'MIN ',x,':\t',xx
 		
 		if t == 'Taylor':		
 			#fig.set_size_inches(10,4)		# only if antiCorrelation = True
