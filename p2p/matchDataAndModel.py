@@ -222,7 +222,7 @@ class matchDataAndModel:
 	  	
 	    elif nc.variables[self.DataVars[0]].shape in [(12, 33, 180, 360), (12,1,180,360) ]: # Chl format
 		mmask = np.ones(nc.variables[self.DataVars[0]].shape)
-		
+		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking Chl-style flat array:',self.DataFilePruned,'-->',self.DataFile1D			
 		if self.region in ['Surface',]:	
 			mmask[:,0,:,:] = 0
 		else: assert False

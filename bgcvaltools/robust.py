@@ -93,7 +93,7 @@ class Target:
 	minL=MultipleLocator(.5)
 	majF=NullFormatter()
 	ax=subplot(111)
-	plot(0.,0.,'ko',markersize=12)
+	#plot(0.,0.,'ko',markersize=12)
 	plot([-1.,1.],[0.,0.],c='k',ls='-')
 	plot([0.,0.],[-1.,1.],c='k',ls='-')	
 	#axhline(y=0.,xmin=-1.,xmax=1.,c='k',ls='-',)

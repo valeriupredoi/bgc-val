@@ -665,7 +665,7 @@ def fancyUnits(units,debug=False):
   							return 'mmol m'+r'$^{-3}$'
 	if units in ['mmol/m^2']:			return 'mmol m'+r'$^{-2}$' 
 	#if units in ['mmol/m^3']:			return 'mmol m'+r'$^{-3}$' 	
-	if units in ['degrees Celsius', 'degreesC', 'C',]:
+	if units in ['degrees Celsius', 'degreesC', 'C', 'degC']:
 							return r'$\,^{\circ}\mathrm{C}$'
 	if units in ['psu','PSU',]:			return 'psu'
 	#if units in ['umol/l',]:			return r'$\mu$'+'mol/l'

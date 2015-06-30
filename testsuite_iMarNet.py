@@ -108,13 +108,17 @@ def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankT
 	
 	#####
 	# Which analysis to run
-	doCHL 		= 0#True
-	doN		= 0#True
-	doP		= 0#False
-	doSi		= 0#True
-	doFe		= 0#True		
-	doPCO2		= 0#True
+	doCHL 		= True
+	doN		= True
+	doSi		= True
+	doPCO2		= True
 	doIntPP		= True
+	
+	doO2		= False		# not yet implemented.
+	doDIC		= False		# What database?
+	
+	doP		= 0#True	# Phosphate is not an iMarNet value in the monthly surface field.
+	doFe		= 0#True 	# Iron is a challenge in IMarNet because we only keep surface values.
 
 	#doPSF		= 0#True	
 	#doSalTemp	= 0#True
@@ -126,7 +130,7 @@ def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankT
 	# Region is added, because some WOA files are huges and my desktop can not run the p2p analysis of that data.
 	modelSkips = {	'Diat-HadOCC':	[],
 			'ERSEM':	[],
-			'HadOCC':	[],
+			'HadOCC':	['si','pCO2'],
 			'MEDUSA':	[],
 			'PlankTOM6':	[],
 			'PlankTOM10':	[],
@@ -146,7 +150,7 @@ def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankT
 		av['nitrate']['Data']['File'] 		=  WOAFolder+'nitrate_monthly_1deg.nc'		
 		av['nitrate']['Data']['Vars'] 		= ['n_an',] 
 		for m in models:
-			if 'chl' in modelSkips[m]:continue		
+			if 'no3' in modelSkips[m]:continue		
 			av['nitrate'][m]['Vars'] 	= ['no3',]						
 			av['nitrate'][m]['File']	= iMarNetFolder+iMarNetFiles[m]
 		av['nitrate']['regions'] 		= regions
@@ -155,7 +159,7 @@ def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankT
 		av['phosphate']['Data']['File'] 	=  WOAFolder+'phosphate_monthly_1deg.nc'		
 		av['phosphate']['Data']['Vars'] 	= ['p_an',] 
 		for m in models:
-			if 'chl' in modelSkips[m]:continue		
+			if 'po4' in modelSkips[m]:continue		
 			av['phosphate'][m]['Vars'] 	= ['po4',]						
 			av['phosphate'][m]['File']	= iMarNetFolder+iMarNetFiles[m]
 		av['nitrate']['regions'] 		= regions
@@ -164,7 +168,7 @@ def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankT
 		av['silicate']['Data']['File'] 		=  WOAFolder+'silicate_monthly_1deg.nc'		
 		av['silicate']['Data']['Vars'] 		= ['i_an',] 
 		for m in models:
-			if 'chl' in modelSkips[m]:continue
+			if 'si' in modelSkips[m]:continue
 			av['silicate'][m]['Vars'] 	= ['si',]
 			av['silicate'][m]['File']	= iMarNetFolder+iMarNetFiles[m]
 		av['silicate']['regions'] 		= regions
@@ -191,8 +195,9 @@ def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankT
 	
 	if doPCO2:
 		av['pCO2']['Data']['File'] 	=  TakahashiFolder+'takahashi2009_month_flux_pCO2_2006c_noHead.nc'		
-		av['pCO2']['Data']['Vars'] 	= ['PCO2_SW',] 
+		av['pCO2']['Data']['Vars'] 	= ['PCO2_SW',] 		
 		for m in models:
+			if 'pCO2' in modelSkips[m]:continue		
 			av['pCO2'][m]['Vars'] 	= ['spco2',]						
 			av['pCO2'][m]['File']	= iMarNetFolder+iMarNetFiles[m]
 		av['pCO2']['regions'] 		=  ['',]

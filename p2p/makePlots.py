@@ -527,7 +527,7 @@ class makePlots:
 
 
   def defineSlices(self,plotallcuts):	
-	self.newSlices 		=['All','Standard',]
+	self.newSlices 		=['All','Standard','ignoreMoreArtics']
 
 	self.standardCuts = ['5-95pc','ignoreInlandSeas','OffShelf','ignoreExtraArtics','aboveZero',]	
 

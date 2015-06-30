@@ -89,8 +89,8 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 	#####
 	# Which analysis to run
 	doCHL 		= 0#True
-	doDMS_clim	= 0#True
-	doDMS_pixels	= True
+	doDMS_clim	= True
+	doDMS_pixels	= 0#True
 	doDMS_pixels2	= 0#True
 	doMAREDAT 	= 0#True
 	doN		= 0#True
@@ -126,7 +126,7 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 	
 	if doDMS_clim:
 		dmsd= {'dms_and':'anderson','dms_ara':'aranamit','dms_hal':'halloran','dms_sim':'simodach'} 
-		for dms in ['dms_sim',]:#'dms_sim']:#'dms_and','dms_ara','dms_hal','dms_sim',]:
+		for dms in ['dms_and','dms_ara','dms_hal','dms_sim',]:
 			av[dms]['Data']['File'] 		= '/data/euryale7/scratch/ledm/UKESM/MEDUSA/xkrum/dms_xkrum.nc'		
 			av[dms]['MEDUSA']['File'] 		= '/data/euryale7/scratch/ledm/UKESM/MEDUSA/xkrum/dms_xkrum.nc'	
 			av[dms]['Data']['Vars'] 		= ['lanaetal',]
@@ -161,7 +161,7 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 			#av[dms]['MEDUSA']['Vars'] 		= dmsd[dms]
 			av[dms]['regions'] 			= ['Surface',]	
 			av[dms]['grid'] = 'Flat1deg'
-		plotallcuts =  True # False#
+		plotallcuts =  0#True # False#
 		
 						
 	if doMAREDAT:
@@ -244,7 +244,6 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 		av['temperature']['Data']['Vars'] 	= ['t_an',]	
 		av['temperature']['NEMO']['Vars'] 	= ['votemper',]
 		av['temperature']['regions'] 		= regions	
-						
 				   
 	if doMLD:	
 		av['mld']['Data']['File'] 		= "/data/euryale7/scratch/ledm/IFREMER-MLD/mld_DT02_c1m_reg2.0.nc"
