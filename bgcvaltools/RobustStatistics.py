@@ -1,19 +1,16 @@
 #
-# Copyright 2014 Plymouth Marine Laboratory
+# Copyright 2014, Plymouth Marine Laboratory
 #
 # This file is part of the ukesm-validation library.
 #
 # ukesm-validation is free software: you can redistribute it and/or modify it
-# under the terms of the Lesser GNU General Public License as published
-# by the Free Software Foundation, either version 3 of the License, 
-# or (at your option) any later version. 
+# under the terms of the Revised Berkeley Software Distribution (BSD) 3-clause license. 
 
 # ukesm-validation is distributed in the hope that it will be useful, but
-# WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
-# or FITNESS FOR A PARTICULAR PURPOSE. See the Lesser GNU
-# General Public License for more details.
-# You should have received a copy of the Lesser GNU General
-# Public License along with ukesm-validation. If not, see <http://www.gnu.org/licenses/>.
+# without any warranty; without even the implied warranty of merchantability
+# or fitness for a particular purpose. See the revised BSD license for more details.
+# You should have received a copy of the revised BSD license along with ukesm-validation.
+# If not, see <http://opensource.org/licenses/BSD-3-Clause>.
 #
 # Address:
 # Plymouth Marine Laboratory
