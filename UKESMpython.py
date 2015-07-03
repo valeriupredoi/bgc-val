@@ -33,10 +33,11 @@ from mpl_toolkits.basemap import Basemap
 import cartopy.crs as ccrs
 import cartopy.io.shapereader as shapereader
 from scipy.stats.mstats import scoreatpercentile
-from scipy.stats import linregress
+from scipy.stats import linregress,mode as scimode
 from calendar import month_name
 from shelve import open as shOpen
 import socket
+from RobustStatistics import MAD
 try:import yaml 
 except: pass
 
@@ -188,7 +189,6 @@ class NestedDict(dict):
                 # *keys* is not a list or tuple.                              
                 pass
         dict.__setitem__(self, keys, value)
-        
         
         
         
@@ -539,7 +539,7 @@ def robinPlotQuad(lons, lats, data1,data2,filename,titles=['',''],title='',lon0=
 	
 		
 
-def histPlot(datax, datay,  filename, Title='', labelx='',labely='',xaxislabel='', logx=False,logy=False,nbins=50,dpi=100,minNumPoints = 6):
+def histPlot(datax, datay,  filename, Title='', labelx='',labely='',xaxislabel='', logx=False,logy=False,nbins=50,dpi=100,minNumPoints = 6, legendDict= ['mean','mode','std','median','mad']):
 #	try:import seaborn as sb
 #	except:pass
 	
@@ -574,6 +574,41 @@ def histPlot(datax, datay,  filename, Title='', labelx='',labely='',xaxislabel='
 	pyplot.setp(patchesx, 'facecolor', 'g', 'alpha', 0.5)	
 	pyplot.setp(patchesy, 'facecolor', 'b', 'alpha', 0.5)
 	
+	if len(legendDict)>0:
+		if logx: 
+			mod = scimode(np.ma.round(np.ma.log10(datax),2))[0][0]#	
+			mod = 10.**mod
+		else:	mod = scimode(np.ma.round(datax,2))[0][0]#		
+		med = np.ma.median(datax)
+		mea = np.ma.mean(datax)
+		std = np.ma.std(datax)
+		mad = MAD(datax)
+
+		txt =labelx
+		if 'mean' in legendDict: 	txt += '\n'+'   Mean:      '+str(round(mea,2))
+		if 'median' in legendDict: 	txt += '\n'+'   Median:   '+str(round(med,2))
+		if 'mode' in legendDict: 	txt += '\n'+'   Mode:      '+str(round(mod,2))
+		if 'std' in legendDict: 	txt += '\n'+'   '+r'$\sigma$'+':             '+str(round(std,2))
+		if 'mad' in legendDict: 	txt += '\n'+'   MAD:       '+str(round(mad,2))
+		
+		if logx: 
+			mody = scimode(np.ma.round(np.ma.log10(datay),2))[0][0]#
+			mody= 10.**mody
+		else:	mody= scimode(np.ma.round(datay,2))[0][0]#	
+		
+		medy = np.ma.median(datay)
+		meay = np.ma.mean(datay)
+		stdy = np.ma.std(datay)
+		mady = MAD(datay)
+							
+		txt +='\n\n'+labely
+		if 'mean' in legendDict: 	txt += '\n'+'   Mean:      '+str(round(meay,2))
+		if 'median' in legendDict: 	txt += '\n'+'   Median:   '+str(round(medy,2))
+		if 'mode' in legendDict: 	txt += '\n'+'   Mode:      '+str(round(mody,2))
+		if 'std' in legendDict: 	txt += '\n'+'   '+r'$\sigma$'+':             '+str(round(stdy,2))
+		if 'mad' in legendDict: 	txt += '\n'+'   MAD:       '+str(round(mady,2))	
+		fig.text(0.15,0.12,txt,horizontalalignment='left',verticalalignment='bottom')
+		
 	#if logx:
 	#	bins = range(xmin, xmax)
 	#	pyplot.xticks(bins, ["2^%s" % i for i in bins])
@@ -581,7 +616,9 @@ def histPlot(datax, datay,  filename, Title='', labelx='',labely='',xaxislabel='
 	
 	if logx: ax.set_xscale('log')
 	if logy: ax.set_yscale('log')
-	pyplot.legend([labelx,labely],loc='upper left')
+	leg = pyplot.legend([labelx,labely],loc='upper left')
+	leg.draw_frame(False) 
+	leg.get_frame().set_alpha(0.)	
 	
 	pyplot.title(Title)	
 	pyplot.xlabel(xaxislabel)

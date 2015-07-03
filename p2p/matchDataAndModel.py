@@ -228,7 +228,7 @@ class matchDataAndModel:
 		print mmask.shape
 
 		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking Chl style flat array:',self.DataFilePruned,'-->',self.DataFile1D	
-	  	convertToOneDNC(self.DataFilePruned,self.DataFile1D ,newMask=mmask, variables = self.DataVars, debug=True)		  	
+	  	convertToOneDNC(self.DataFilePruned,self.DataFile1D ,newMask=mmask, variables = self.DataVars, debug=True)
 	    else:
 	    
 		print 'matchDataAndModel:\tconvertDataTo1D:\tYou need to add more file spcific regions here.', nc.variables[self.DataVars[0]].shape
@@ -366,7 +366,7 @@ class matchDataAndModel:
 		try:
 			t = tdict[wt]	
 		except:
-			print "matchModelToData:\tunable to find time match in pftnames, mt[x]['tdict']",wt
+			print "matchModelToData:\tunable to find time match in pftnames, mt[x]['tdict']", wt
 			assert False 
 			
 			t = getMonthFromSecs(wt)

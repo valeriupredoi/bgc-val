@@ -130,7 +130,7 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 			av[dms]['MEDUSA']['Vars'] 		= [dmsd[dms],]
 			av[dms]['regions'] 			= ['Surface',]	
 			av[dms]['grid'] = 'Flat1deg'
-		plotallcuts =  0#True # False#
+		plotallcuts =  True # False#
 
 	if doDMS_pixels:
 		dmsd= {'dms_p_and':'anderson','dms_p_ara':'aranamit','dms_p_hal':'halloran','dms_p_sim':'simodach'} 
@@ -141,7 +141,7 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 			av[dms]['MEDUSA']['Vars'] 		= [dmsd[dms],]			
 			av[dms]['regions'] 			= ['Surface',]	
 			av[dms]['grid'] = 'Flat1deg'
-		plotallcuts =   0#True # False#
+		plotallcuts =   True # False#
 
 	if doDMS_pixels2:
 		#dmsd= {'dms_p_and':'anderson','dms_p_ara':'aranamit','dms_p_hal':'halloran','dms_p_sim':'simodach'} 

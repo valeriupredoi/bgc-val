@@ -326,7 +326,7 @@ class makePlots:
 		
 	try: title = getLongName(newSlice)+' '+getLongName(self.name+self.region)#+getLongName(self.name)
 	except:title = newSlice+' '+xkey+' vs '+ykey
-
+			
 
 	robfnxy  	= filename.replace('.png','_xyrobin.png')
 	robfnquad  	= filename.replace('.png','_robinquad.png')	
@@ -385,9 +385,19 @@ class makePlots:
 	# Simultaneous histograms plot	- single
 	if ukp.shouldIMakeFile([self.xfn,self.yfn],histfnxy,debug=False):
 		xaxislabel= getLongName(self.name)+', '+ xunits
+		labelx = self.xtype
+		labely = self.ytype
+		histtitle = title
+		histxaxis = xaxislabel
+		if self.ytype in ['LANA', 'LANA_p']:
+			labelx = getLongName(self.name)
+			labely = getLongName(self.ytype)
+			histtitle = getLongName(newSlice) +' DMS: '+labelx +' vs '+ labely
+			histxaxis = 'DMS, '+ xunits
+				
 		if self.name in noXYLogs or dmin*dmax <=0.:				
-			ukp.histPlot(datax, datay,  histfnxy, Title=title, labelx=self.xtype,labely=self.ytype,xaxislabel =xaxislabel)	
-		else:	ukp.histPlot(datax, datay,  histfnxy, Title=title, labelx=self.xtype,labely=self.ytype,xaxislabel =xaxislabel, logx = True, )
+			ukp.histPlot(datax, datay,  histfnxy, Title=histtitle, labelx=labelx,labely=labely,dpi=200,xaxislabel =histxaxis)	
+		else:	ukp.histPlot(datax, datay,  histfnxy, Title=histtitle, labelx=labelx,labely=labely,dpi=200,xaxislabel =histxaxis, logx = True, )
 
 	# Simultaneous histograms plot	- triple
 	if ukp.shouldIMakeFile([self.xfn,self.yfn],histsfnxy,debug=False):
@@ -400,10 +410,20 @@ class makePlots:
 	#####
 	# Scatter  (hexbin) plot
 	if ukp.shouldIMakeFile([self.xfn,self.yfn],filename,debug=False):		
-		gs = 50					
+		gs = 50	
+		scattitle = title
+		slabelx = labelx
+		slabely = labely	
+		if self.ytype in ['LANA', 'LANA_p']:
+			slabelx = getLongName(self.name)+' DMS, '+ xunits
+			slabely = getLongName(self.ytype)+' DMS, '+ xunits		
+			scattitle = getLongName(newSlice) +' DMS: '+getLongName(self.name) +' vs '+ getLongName(self.ytype)		
+				
+			pass
+			
 		if self.name in noXYLogs or dmin*dmax <=0.:
-			ukp.scatterPlot(datax, datay,  filename, Title=title, labelx=labelx,labely=labely, bestfitLine=True,gridsize=gs)
-		else:	ukp.scatterPlot(datax, datay,  filename, Title=title, labelx=labelx,labely=labely, bestfitLine=True,gridsize=gs,logx = True, logy=True,)
+			ukp.scatterPlot(datax, datay,  filename, Title=scattitle, labelx=slabelx,labely=slabely,dpi=200, bestfitLine=True,gridsize=gs)
+		else:	ukp.scatterPlot(datax, datay,  filename, Title=scattitle, labelx=slabelx,labely=slabely,dpi=200, bestfitLine=True,gridsize=gs,logx = True, logy=True,)
 
 	#####
 	# Save fit in a shelve file.		
@@ -524,7 +544,7 @@ class makePlots:
 
 
   def defineSlices(self,plotallcuts):	
-	self.newSlices 		=['All','Standard','ignoreMoreArtics']
+	self.newSlices 		=['All','Standard',]#'ignoreMoreArtics']
 
 	self.standardCuts = ['5-95pc','ignoreInlandSeas','OffShelf','ignoreExtraArtics','aboveZero',]	
 
@@ -563,7 +583,7 @@ class makePlots:
 		 self.plotQualityCuts	=0#True	
 		 self.plotSeas		=0#True		 
 		 self.plotOceans	= True
-		 self.plotOceanMonths   = True	
+		 self.plotOceanMonths   =0# True	
 	else: 	
 		 self.plotMonths	=0#True
 		 self.plotdepthRanges	=0#True	

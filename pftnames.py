@@ -296,7 +296,7 @@ def getmt(loadYaml=False):
 	mt['LANA']['z'] 		= 'deptht'
 	mt['LANA']['lat'] 		= 'nav_lat'
 	mt['LANA']['lon'] 		= 'nav_lon'
-	mt['LANA']['tdict']		= tdicts['OneToZero']	
+	mt['LANA']['tdict']		= tdicts['ZeroToZero']	
 
 	for d in ['dms_p_and','dms_p_ara','dms_p_hal','dms_p_sim']:
 	  for i in ['','1','2']:
@@ -335,7 +335,7 @@ def getLongName(text):
 	mt = getmt()
 	
 	noChange = ['Surface',]
-	noChange.extend(mt.keys())
+	#noChange.extend(mt.keys())
 	
 	if text in noChange:return text
 	
@@ -420,48 +420,51 @@ def getLongName(text):
   	if text == 'mld_DR003':		return 'MLD: Fixed Threshold Density'
   	if text == 'mld_DReqDTm02':	return 'MLD: Variable Threshold Density'  	  	
 
- 	if text == 'anderson':		return 'DMS (Anderson)' 
- 	if text == 'dms_and':		return 'DMS (Anderson)'
- 	if text == 'dms_andSurface':	return 'DMS (Anderson)'
- 	if text == 'dms_p_and':		return 'DMS (Anderson)'
- 	if text == 'dms_p_andSurface':	return 'DMS (Anderson)'
+ 	if text == 'anderson':		return 'Anderson et al.'
+ 	if text == 'dms_and':		return 'Anderson et al.'
+ 	if text == 'dms_andSurface':	return 'Anderson et al.'
+ 	if text == 'dms_p_and':		return 'Anderson et al.'
+ 	if text == 'dms_p_andSurface':	return 'Anderson et al.'
  	if text == 'dms_p_and1':	return 'DMS (Anderson - all CHL)'
  	if text == 'dms_p_and1Surface':	return 'DMS (Anderson - all CHL)'
  	if text == 'dms_p_and2':	return 'DMS (Anderson - CHN only)'
  	if text == 'dms_p_and2Surface':	return 'DMS (Anderson - CHN only)' 	
 
- 	if text == 'aranamit':		return 'DMS (Aranamit)' 	
- 	if text == 'dms_ara':		return 'DMS (Aranamit)'
- 	if text == 'dms_araSurface':	return 'DMS (Aranamit)'
- 	if text == 'dms_p_ara':		return 'DMS (Aranamit)'
- 	if text == 'dms_p_araSurface':	return 'DMS (Aranamit)'
+ 	if text == 'aranamit':		return 'Aranami et al.'
+ 	if text == 'dms_ara':		return 'Aranami et al.'
+ 	if text == 'dms_araSurface':	return 'Aranami et al.'
+ 	if text == 'dms_p_ara':		return 'Aranami et al.'
+ 	if text == 'dms_p_araSurface':	return 'Aranami et al.'
  	if text == 'dms_p_ara1':	return 'DMS (Aranamit - all CHL)'
  	if text == 'dms_p_ara1Surface':	return 'DMS (Aranamit - all CHL)'
  	if text == 'dms_p_ara2':	return 'DMS (Aranamit - CHN only)'
  	if text == 'dms_p_ara2Surface':	return 'DMS (Aranamit - CHN only)' 	
  	 	
- 	if text == 'halloran':		return 'DMS (Halloran)' 	
- 	if text == 'dms_hal':		return 'DMS (Halloran)'
- 	if text == 'dms_halSurface':	return 'DMS (Halloran)'
- 	if text == 'dms_p_hal':		return 'DMS (Halloran)'
- 	if text == 'dms_p_halSurface':	return 'DMS (Halloran)'
+ 	if text == 'halloran':		return 'Halloran et al.' 	
+ 	if text == 'dms_hal':		return 'Halloran et al.' 	
+ 	if text == 'dms_halSurface':	return 'Halloran et al.' 	
+ 	if text == 'dms_p_hal':		return 'Halloran et al.' 	
+ 	if text == 'dms_p_halSurface':	return 'Halloran et al.' 	
  	if text == 'dms_p_hal1':	return 'DMS (Halloran - all CHL)'
  	if text == 'dms_p_hal1Surface':	return 'DMS (Halloran - all CHL)'
  	if text == 'dms_p_hal2':	return 'DMS (Halloran - CHN only)'
  	if text == 'dms_p_hal2Surface':	return 'DMS (Halloran - CHN only)'
  	 	 	
- 	if text == 'simodach':		return 'DMS (Simodach)'
- 	if text == 'dms_sim':		return 'DMS (Simodach)'
- 	if text == 'dms_simSurface':	return 'DMS (Simodach)'
- 	if text == 'dms_p_sim':		return 'DMS (Simodach)'
- 	if text == 'dms_p_simSurface':	return 'DMS (Simodach)'
+ 	if text == 'simodach':		return 'Simo & Dach'
+ 	if text == 'dms_sim':		return 'Simo & Dach'
+ 	if text == 'dms_simSurface':	return 'Simo & Dach'
+ 	if text == 'dms_p_sim':		return 'Simo & Dach'
+ 	if text == 'dms_p_simSurface':	return 'Simo & Dach'
  	if text == 'dms_p_sim1':	return 'DMS (Simodach - all CHL)'
  	if text == 'dms_p_sim1Surface':	return 'DMS (Simodach - all CHL)'
  	if text == 'dms_p_sim2':	return 'DMS (Simodach - CHN only)'
  	if text == 'dms_p_sim2Surface':	return 'DMS (Simodach - CHN only)'
- 	 	 	 	
- 	if text == 'lanaetal':		return 'DMS (Lana et al. 2011)'
- 	if text == 'DMS':		return 'DMS pixels (Lana et al. 2011)' 	
+
+ 	if text == 'LANA':		return 'Lana et al. (extrapolated)'
+ 	if text == 'LANA_p':		return 'Lana et al. (pixels)'
+ 	 	 	 	 	
+ 	if text == 'lanaetal':		return 'DMS extrapolated (Lana et al. 2011)'
+ 	if text == 'DMS':		return 'DMS pixels (Lana et al. 2011)'
  
   	if text == 'All':	return 'Global'
   	if text == 'Best':	return 'Best'  	
@@ -639,7 +642,7 @@ def fancyUnits(units,debug=False):
 	"""	Converts ascii units string into latex style formatting.
 	"""
 	units = units.replace('[','').replace(']','')
-	
+		
   	#if units in ['mg C/m^3','mg C/m^2',]:		return 'mg C m'+r'$^{-3}$'
   	if units in ['umol/l, uM, mo/l, ug/l, ',]:	return 'mg m'+r'$^{-3}$' # silly nitrates multi units
   	if units in ['mg C/m^3',]:			return 'mg C m'+r'$^{-3}$'
@@ -651,6 +654,7 @@ def fancyUnits(units,debug=False):
   	if units in ['mmol P/m^3', ]: 			return 'mmol P m'+r'$^{-3}$'
   	if units in ['mmol C/m^3', ]: 			return 'mmol C m'+r'$^{-3}$'
   	if units in ['umol F/m^3',]:			return r'$\mu$'+'mol m'+r'$^{-3}$'
+  	if units in ['umol /m^3','umol / m3',]:		return r'$\mu$'+'mol m'+r'$^{-3}$' 
   	if units in ['mmol S/m^3', ]: 			return 'mmol S m'+r'$^{-3}$'  	
   	if units in ['mmolSi/m3', 'mmol Si/m^3', ]: 	return 'mmol Si m'+r'$^{-3}$'  	  	
   	if units in ['mmolFe/m3',]:			return 'mmol Fe m'+r'$^{-3}$'  	

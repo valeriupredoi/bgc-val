@@ -40,6 +40,7 @@ from operator import itemgetter
 from os.path import basename,exists
 from sys import argv
 from shelve import open as shOpen
+from calendar import month_name
 
 import UKESMpython as ukp
 from pftnames import AutoVivification,getLongName
@@ -154,7 +155,10 @@ class makeTargets:
 			#s['robust.gamma']=mrobust.gamma				
 		leg = ' - '.join([getLongName(s[i]) for i in self.legendKeys])
 
-
+		# order months chronologically instead of alphabetically
+		months = {month_name[i]:i for i in xrange(1,13)}
+		if leg in months.keys():
+			leg = ukp.mnStr(months[leg])+' '+leg
 								
 		s.close()
 		breaks=0
@@ -183,9 +187,48 @@ class makeTargets:
   	
   	self.xtype = ', '.join(self.xtypes.keys())
 	self.ytype = ', '.join(self.ytypes.keys())	
+	if self.ytype in ['LANA','LANA_p']:
+			#labelx = getLongName(self.name)
+			#labely = getLongName(self.ytype)
+			#histtitle = getLongName(newSlice) +' DMS: '+labelx +' vs '+ labely
+			#histxaxis = 'DMS, '+ xunits
+		title = ''
+		if len(self.names.keys()) ==1:
+			title += ', '.join([getLongName(k) for  k in self.names.keys()])
+							
+		title += ' vs '
+#		title =self.xtype + ' vs '+self.ytype+' '
+		if len(self.ykeys.keys()) ==1:
+			title += ', '.join([getLongName(k) for  k in self.ykeys.keys()])
+			
+		#if len(self.newSlices.keys()) ==1:
+		#	title = ', '.join([getLongName(k) for  k in self.newSlices.keys()]) +' '+ title
+			# ie Global
+			
+		#if len(self.names.keys()) ==1:
+		#	title += ', '+', '.join([getLongName(k) for  k in self.names.keys()])
+		
+		#if len(self.regions.keys()) ==1:
+		#	title += ', '+', '.join([getLongName(k) for  k in self.regions.keys()])
+		
+		#if len(self.ykeys.keys()) ==1:
+		#	title += ', '+', '.join([getLongName(k) for  k in self.ykeys.keys()])
+		
+		#if len(self.years.keys()) ==1:
+		#	title += ', '+ ', '.join([str(k) for  k in self.years.keys()]) 
+		print "DMS title:", title
+		return title
+
+		
 	title =self.xtype + ' Model vs '+self.ytype+' Data'
+
+	if len(self.newSlices.keys()) ==1:
+		title = ', '.join([getLongName(k) for  k in self.newSlices.keys()]) +' '+ title
+		# ie Global
+			
 	if len(self.names.keys()) ==1:
 		title += ', '+', '.join([getLongName(k) for  k in self.names.keys()])
+		
 	if len(self.regions.keys()) ==1:
 		title += ', '+', '.join([getLongName(k) for  k in self.regions.keys()])
 		
@@ -195,9 +238,9 @@ class makeTargets:
 	if len(self.years.keys()) ==1:
 		title += ', '+ ', '.join([str(k) for  k in self.years.keys()]) 
 
-	if len(self.newSlices.keys()) ==1:
-		title = ', '.join([getLongName(k) for  k in self.newSlices.keys()]) +' '+ title
-		
+
+	
+	
 	print 'makeTitle:\t',title
 	return title
 			
