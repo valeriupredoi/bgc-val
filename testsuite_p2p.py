@@ -40,7 +40,7 @@ from pftnames import MaredatTypes,WOATypes,Ocean_names,OceanMonth_names,getmt
 
 def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 			year=1998,
-			ERSEMjobID='xhonp',
+			jobID='xhonp',
 			plotallcuts = False,):
 
 	#####
@@ -52,9 +52,9 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
     	# Which jobs to look at. 
 	#ERSEMjobID = 'xhonp'
 	jobIDs={}
-	jobIDs['ERSEM'] 	= ERSEMjobID
-	jobIDs['NEMO'] 		= ERSEMjobID
-	jobIDs['MEDUSA'] 	= 'iMarNet'
+	jobIDs['ERSEM'] 	= jobID
+	jobIDs['NEMO'] 		= jobID
+	jobIDs['MEDUSA'] 	= jobID
 	
 	#####
 	# Plot p2p for all regions/oceans, or just everything and "standard" cuts.
@@ -76,18 +76,19 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 	TakahashiFolder = "/data/euryale7/scratch/ledm/Takahashi2009_pCO2/"
 	#####
 	# Location of model files.	
-	MEDUSAFolder	= "/data/euryale7/scratch/ledm/UKESM/MEDUSA/"
+	#MEDUSAFolder	= "/data/euryale7/scratch/ledm/UKESM/MEDUSA/"
+	MEDUSAFolder	= "/data/euryale7/scratch/ledm/UKESM_postProcessed/MEDUSA/outNetCDF/"+jobIDs['MEDUSA']+'-' + years['MEDUSA']+'/'
 	ERSEMFolder	= "/data/euryale7/scratch/ledm/UKESM/ERSEM/"+ jobIDs['ERSEM']+'/'+years['ERSEM']+'/'+jobIDs['ERSEM']+'_'+years['ERSEM']
-	NEMOFolder	= "/data/euryale7/scratch/ledm/UKESM/ERSEM/"+ jobIDs['NEMO'] +'/'+years['NEMO'] +'/'+jobIDs['NEMO'] +'_'+years['NEMO']
-	
+	#NEMOFolder	= "/data/euryale7/scratch/ledm/UKESM/ERSEM/"+ jobIDs['NEMO'] +'/'+years['NEMO'] +'/'+jobIDs['NEMO'] +'_'+years['NEMO']
+	NEMOFolder	= "/data/euryale7/scratch/ledm/UKESM_postProcessed/MEDUSA/outNetCDF/"+jobIDs['MEDUSA']+'-' + years['MEDUSA']+'/'	
 
 	regions = ['Surface','100m','500m',]#'200m'
 	
 	#####
 	# Which analysis to run
 	doCHL 		= 0#True
-	doDMS_clim	= True
-	doDMS_pixels	= 0#True
+	doDMS_clim	= 0#True
+	doDMS_pixels	= True
 	doDMS_pixels2	= 0#True
 	doMAREDAT 	= 0#True
 	doN		= 0#True
@@ -95,7 +96,7 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 	doSalTemp	= 0#True
 	doMLD		= 0#True
 	doPCO2		= 0#True
-	
+	doLight		= 0
 	#####
 	# getmt
 	#mt = getmt()
@@ -114,13 +115,16 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 	av = AutoVivification()
 	if doCHL:
 		av['chl']['Data']['File'] 		= MAREDATFolder+"MarEDat20121001Pigments.nc"	
-		av['chl']['MEDUSA']['File'] 		= MEDUSAFolder+"medusa_bio_"+years['MEDUSA']+".nc"	
-		av['chl']['ERSEM']['File'] 		= ERSEMFolder+'_ERSEMMisc.nc'			
+		#av['chl']['MEDUSA']['File'] 		= MEDUSAFolder+"medusa_bio_"+years['MEDUSA']+".nc"	
+		av['chl']['MEDUSA']['File'] 		= MEDUSAFolder+jobIDs['MEDUSA']+'_' + years['MEDUSA']+"_MEDUSA_bio.nc"
+		av['chl']['ERSEM']['File'] 		= ERSEMFolder+'_ERSEMMisc.nc'	
 		av['chl']['Data']['Vars'] 		= ['Chlorophylla',]
-		av['chl']['MEDUSA']['Vars'] 		= ['CHL',]	
+		av['chl']['MEDUSA']['Vars'] 		= ['CHD','CHN']	
 		av['chl']['ERSEM']['Vars'] 		= ['chl',]
 		av['chl']['regions'] 			= ['',]
-	
+		av['chl']['MEDUSA']['grid']		= 'ORCA1'		
+		av['chl']['ERSEM']['grid']		= 'ORCA1'				
+
 	if doDMS_clim:
 		dmsd= {'dms_and':'anderson','dms_ara':'aranamit','dms_hal':'halloran','dms_sim':'simodach'} 
 		for dms in ['dms_and','dms_ara','dms_hal','dms_sim',]:
@@ -129,7 +133,7 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 			av[dms]['Data']['Vars'] 		= ['lanaetal',]
 			av[dms]['MEDUSA']['Vars'] 		= [dmsd[dms],]
 			av[dms]['regions'] 			= ['Surface',]	
-			av[dms]['grid'] = 'Flat1deg'
+			av[dms]['MEDUSA']['grid'] = 'Flat1deg'
 		plotallcuts =  True # False#
 
 	if doDMS_pixels:
@@ -140,7 +144,7 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 			av[dms]['Data']['Vars'] 		= ['DMS',]
 			av[dms]['MEDUSA']['Vars'] 		= [dmsd[dms],]			
 			av[dms]['regions'] 			= ['Surface',]	
-			av[dms]['grid'] = 'Flat1deg'
+			av[dms]['MEDUSA']['grid'] = 'Flat1deg'
 		plotallcuts =   True # False#
 
 	if doDMS_pixels2:
@@ -157,7 +161,7 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 			av[dms]['MEDUSA']['Vars'] 		= [dmsd[dms],]			
 			#av[dms]['MEDUSA']['Vars'] 		= dmsd[dms]
 			av[dms]['regions'] 			= ['Surface',]	
-			av[dms]['grid'] = 'Flat1deg'
+			av[dms]['MEDUSA']['grid'] = 'Flat1deg'
 		plotallcuts =  0#True # False#
 		
 						
@@ -201,11 +205,16 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 	if doN:
 		av['nitrate']['Data']['File'] 		= WOAFolder+'nitrate_monthly_1deg.nc'	
 		av['nitrate']['ERSEM']['File'] 		= ERSEMFolder+'_ERSEMNuts.nc'	
-		av['nitrate']['MEDUSA']['File'] 	= MEDUSAFolder+"medusa_bio_"+years['MEDUSA']+".nc"
+		#av['nitrate']['MEDUSA']['File'] 	= MEDUSAFolder+"medusa_bio_"+years['MEDUSA']+".nc"
+		av['nitrate']['MEDUSA']['File'] 	= MEDUSAFolder+jobIDs['MEDUSA']+'_'+ years['MEDUSA']+"_MEDUSA_bio.nc"		
 		av['nitrate']['Data']['Vars'] 		= ['n_an',] 		#l+'_mn',
 		av['nitrate']['ERSEM']['Vars'] 		= ['N3n','N4n',]
 		av['nitrate']['MEDUSA']['Vars'] 	= ['DIN',]									
 		av['nitrate']['regions'] 		= regions
+		av['nitrate']['MEDUSA']['grid']		= 'ORCA1'		
+		av['nitrate']['ERSEM']['grid']		= 'ORCA1'				
+			
+		plotallcuts =  True # False#					
 	if doPSF:
 		av['silicate']['Data']['File'] 		= WOAFolder+'silicate_monthly_1deg.nc'	
 		av['silicate']['ERSEM']['File'] 	= ERSEMFolder+'_ERSEMNuts.nc'	
@@ -244,11 +253,23 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 				   
 	if doMLD:	
 		av['mld']['Data']['File'] 		= "/data/euryale7/scratch/ledm/IFREMER-MLD/mld_DT02_c1m_reg2.0.nc"
-		av['mld']['NEMO']['File'] 		= NEMOFolder+'_NEMO.nc'			
+		#av['mld']['NEMO']['File'] 		= NEMOFolder+'_NEMO.nc'	
+		av['mld']['NEMO']['File'] 		= NEMOFolder+jobIDs['MEDUSA']+'_'+ years['MEDUSA']+"_MEDUSA_MLD.nc"			
 		av['mld']['Data']['Vars'] 		= ['mld','mask',]
 		av['mld']['NEMO']['Vars'] 		= ['somxl010',]	
 		av['mld']['regions'] 			= ['',]
+		av['mld']['NEMO']['grid'] 		= 'ORCA1'
 
+
+	if doLight:	
+		av['irradiation']['Data']['File'] 		= "/data/euryale7/scratch/ledm/IFREMER-MLD/mld_DT02_c1m_reg2.0.nc"
+		av['irradiation']['NEMO']['File'] 		= NEMOFolder+jobIDs['MEDUSA']+'_'+ years['MEDUSA']+"_MEDUSA_Light.nc"			
+		av['irradiation']['Data']['Vars'] 		= []
+		av['irradiation']['NEMO']['Vars'] 		= ['MED_QSR',]	
+		av['irradiation']['regions'] 			= ['',]
+		av['irradiation']['NEMO']['grid'] 		= 'ORCA1'
+		
+				
 		#av['mld_DR003']['Data']['File'] 	= "/data/euryale7/scratch/ledm/IFREMER-MLD/mld_DT02_c1m_reg2.0.nc"
 		#av['mld_DR003']['NEMO']['File'] 	= NEMOFolder+'_NEMO.nc'			
 		#av['mld_DR003']['Data']['Vars'] 	= ['mld','mask',]
@@ -315,14 +336,14 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 				print "testsuite_p2p.py:\tWARNING:\tFile does not exist", av[name]['Data']['File']
 				continue
 			except:
-				print "testsuite_p2p.py:\tWARNING:\tFile does not exist\tav[",name,"][",model,'][File]'
+				print "testsuite_p2p.py:\tWARNING:\tDict entry does not exist\tav[",name,"][",model,'][File]'
 				continue			    	
 			try:
 			    if not exists(av[name][model]['File']):
 				print "testsuite_p2p.py:\tWARNING:\tFile does not exist", av[name][model]+'[File]'
 				continue
 			except:
-				print "testsuite_p2p.py:\tWARNING:\tFile does not exist:\tav[",name,"][",model,'][File]'
+				print "testsuite_p2p.py:\tWARNING:\tDict entry exist:\tav[",name,"][",model,'][File]'
 				continue			
 			print "\n\n\ntestsuite_p2p.py:\tINFO:\tRunning:",name
 			
@@ -331,7 +352,7 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 			# matchDataAndModel:
 			# Match (real) Data and Model. 
 			# Does not produce and plots.
-			try:	grid = av[name]['grid']
+			try:	grid = av[name][model]['grid']
 			except: grid = 'ORCA1'
 			b = matchDataAndModel(av[name]['Data']['File'], 
 								av[name][model]['File'],
@@ -511,7 +532,7 @@ if __name__=="__main__":
 	# Can use command line arguments to choose a model.
 	models 		= []
 	years 		= []
-	ERSEMjobIDs 	= []
+	jobIDs 		= []
 	
 	#####
 	# Determine command line arguments
@@ -521,15 +542,23 @@ if __name__=="__main__":
 			years.append(a)
 			continue			
 		except:pass
+		if a == 'clim':
+			years.append(a)
+			continue
 		
 		if str(a).upper() in ['MEDUSA','ERSEM','NEMO']:
 			models.append(str(a).upper())
 			continue			
 		if a[:4] in ['xhon','xjez']:
-			ERSEMjobIDs.append(a)
+			jobIDs.append(a)
 			if 'ERSEM' not in models:models.append('ERSEM')
 			continue
-			
+
+		if a[:4] in ['xkru',]:
+			jobIDs.append(a)
+			if 'MEDUSA' not in models:models.append('MEDUSA')
+			continue
+						
 		print "Command line argument not understood:",a
 	
 
@@ -537,22 +566,22 @@ if __name__=="__main__":
 	#Set Defaults:
 	if not len(years): 	years = ['1998',]
 	if not len(models): 	models = ['MEDUSA','ERSEM','NEMO']
-	if not len(ERSEMjobIDs):ERSEMjobIDs = ['xhonp',]	
+	if not len(jobIDs):	jobIDs = ['xhonp',]	
 
 	print "#############################"
 	print "__main__ arguments: "
 	print "models:        ",models
 	print "year:          ",years
-	print "ERSEM jobID:   ",ERSEMjobIDs
+	print "jobID:         ",jobIDs
 	print "#############################"
 
 	
 	for year in years:
 
-		testsuite_p2p(models = models,	year=year,ERSEMjobID=ERSEMjobIDs[0] ) 
-		if len(ERSEMjobIDs)==1:continue
-		for e in ERSEMjobIDs[1:]:
-			testsuite_p2p(models = ['ERSEM',],year=year,ERSEMjobID=e ) 
+		testsuite_p2p(models = models,	year=year,jobID=jobIDs[0] ) 
+		if len(jobIDs)==1:continue
+		for e in jobIDs[1:]:
+			testsuite_p2p(models = ['ERSEM',],year=year,jobIDs=e ) 
 	
 	print 'The end.'
 	

@@ -48,6 +48,8 @@ GEOTRACESTypes 	= ['iron',]
 
 BGCmodels 	= ['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankTOM6','PlankTOM10',]
 
+Seasons		= ['JFM','AMJ','JAS','OND'] 
+
 months = [m for m in month_name if m]	# Because months starts at 1, and 0 is empty.
 OceanMonth_names = [o+m for o in Ocean_names for m in months]
 #####
@@ -96,7 +98,10 @@ def getmt(loadYaml=False):
 	def mul1000(nc,keys):	return nc.variables[keys[0]][:]* 1000.
 	def div1000(nc,keys):	return nc.variables[keys[0]][:]/ 1000.	
 	def applymask(nc,keys):	return np.ma.masked_where(nc.variables[keys[1]][:]==0.,nc.variables[keys[0]][:])
-	 #np.ma.masked_where(nc.variables[keys[1]][:],nc.variables[keys[0]][:])
+	def sums(nc,keys):	
+		a = nc.variables[keys[0]][:]
+		for k in keys[1:]:a += nc.variables[k][:]
+		return a 
 	
 	tdicts = {	'ZeroToZero': {i  :i     for i in xrange(12)},		
 			'OneToOne':   {i+1:i+1   for i in xrange(12)},
@@ -136,8 +141,12 @@ def getmt(loadYaml=False):
 	mt['NEMO']['cal']			= '365_day'
 
 
+	mt['MEDUSA']['chl']['name'] 		=  'CHL'
+	mt['MEDUSA']['chl']['vars'] 		=  ['CHN','CHD']		
+	mt['MEDUSA']['chl']['convert'] 		=  sums
+	mt['MEDUSA']['chl']['units'] 		=  'mg C/m^3'
+	#mt['MEDUSA']['chl'] 			=  ['CHL',]	
 	
-	mt['MEDUSA']['chl'] 			=  ['CHL',]	
 	mt['MEDUSA']['diatoms']['name'] 	=  'PHD'
 	mt['MEDUSA']['diatoms']['vars'] 	=  ['PHD',]		
 	mt['MEDUSA']['diatoms']['convert'] 	=  N2Biomass
@@ -413,6 +422,8 @@ def getLongName(text):
   	if text ==  'i_mn': 	return 'Mean Silicate'  	
   	if text ==  'i_an': 	return 'Silicate'  
   	  	  	  	  	
+	if text == 'Seasons':   return 'Seasons'
+	if text in ['JFM','AMJ','JAS','OND',]:return text   	
   	
      	if text == 'IFREMER':	return "IFREMER"
   	if text == 'mld':		return 'Mixed Layer Depth'     	
@@ -596,6 +607,7 @@ def getLongName(text):
   	if text ==  'ERSEM-2001': return 'ERSEM (2001)'    	  	
   	if text ==  'ERSEM-HighResp': return 'ERSEM (High Respiration)'  	  	   	  	 
   	if text ==  'Maredat': 	return 'Maredat'  	  	
+  	if text ==  'MAREDAT': 	return 'Maredat'  	  	  	
 
   	if text ==  'Takahashi': 	return 'Takahashi 2009'  	  	  	
   	if text ==  'Seawifs': 		return 'Seawifs'  	  	
@@ -630,8 +642,8 @@ def getLongName(text):
   	#if text in ['picophyto','microzoo','mesozoo','diatoms', 'bac', ]:
   	#	print "need to add ",text,"to get longname"
   	print "getLongName:\tERROR:\tCould not find Longname for ",text
-
-	assert False
+	return text
+	#assert False
 
 
 	

@@ -572,17 +572,23 @@ class makePlots:
 				  'Underestimate_2sig','Overestimate_3sig','Underestimate_3sig', 
 				  'Matched','OffAxis','1-99pc',
 				  '5-95pc','0-99pc',]
+	self.Seasons		=['JFM','AMJ','JAS','OND'] 
+				 				  
 	self.OceanMonths	= sorted([i for i in product(self.Oceans,self.months)] )
 	self.OceanMonths.extend(sorted([i for i in product(['All',],self.months)]))
+	self.OceanSeasons	= sorted([i for i in product(self.Oceans,self.Seasons)] )
+	
 	
 	if plotallcuts:
-		 self.plotMonths	= True
+		 self.plotMonths	= 0#True
 		 self.plotdepthRanges	=0
 		 self.plotpercentiles	=0#True	
 		 self.plotLatRegions	=0# True
 		 self.plotQualityCuts	=0#True	
 		 self.plotSeas		=0#True		 
-		 self.plotOceans	= True
+		 self.plotOceans	=0# True
+		 self.plotSeasons	= True
+		 self.plotOceanSeasons	= True		 		 
 		 self.plotOceanMonths   =0# True	
 	else: 	
 		 self.plotMonths	=0#True
@@ -592,6 +598,8 @@ class makePlots:
 		 self.plotQualityCuts	=0#True
 		 self.plotSeas		=0#True		 
 		 self.plotOceans	=0#True	
+		 self.plotSeasons	=0# True
+		 self.plotOceanSeasons	=0# True		 
 		 self.plotOceanMonths   = 0	 	 	 
 
 	if self.plotMonths: 	 self.newSlices.extend(self.months.keys())
@@ -601,6 +609,8 @@ class makePlots:
 	if self.plotQualityCuts: self.newSlices.extend(self.QualityCuts)		
 	if self.plotSeas: 	 self.newSlices.extend(self.Seas)			
 	if self.plotOceans: 	 self.newSlices.extend(self.Oceans)
+	if self.plotSeasons: 	 self.newSlices.extend(self.Seasons)
+	if self.plotOceanSeasons:self.newSlices.extend(self.OceanSeasons)		
 	if self.plotOceanMonths: self.newSlices.extend(self.OceanMonths)
 	#print "defineSlices:\tSLICES:", 	 self.newSlices
 	
@@ -624,6 +634,8 @@ class makePlots:
 		filename = ukp.folder([file_prefix,'QualityCuts'])+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
 	elif newSlice in self.Seas:
 		filename = ukp.folder([file_prefix,'Seas'])+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
+	elif newSlice in self.Seasons:
+		filename = ukp.folder([file_prefix,'Seasons'])+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix		
 	elif newSlice in self.Oceans:
 		filename = ukp.folder([file_prefix,'Oceans'])+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
 	elif newSlice in self.OceanMonths:
@@ -632,6 +644,12 @@ class makePlots:
 		  	newSlice = ''.join(newSlice)
 		  	print '-->',newSlice	  
 		filename = ukp.folder([file_prefix,'OceanMonths'])+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
+	elif newSlice in self.OceanSeasons:
+		if type(newSlice) in [type(['a','b',]),type(('a','b',))]:
+		  	print 'getFileName:', newSlice,
+		  	newSlice = ''.join(newSlice)
+		  	print '-->',newSlice	  
+		filename = ukp.folder([file_prefix,'OceanSeasons'])+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
 	else:
 	  	print 'getFileName:', newSlice,	''.join(newSlice)  ,xkey,ykey
 	  	try:fn = newSlice+'_'+xkey+'vs'+ykey

@@ -463,6 +463,10 @@ def robinPlotQuad(lons, lats, data1,data2,filename,titles=['',''],title='',lon0=
 		if spl in [223,]:data  = np.ma.clip(data1-data2, rbmi,rbma)
 		if spl in [224,]:data  = np.ma.clip(data1/data2, rbmi,rbma)
 
+
+		if spl in [221,222,]:cmap= pyplot.cm.jet
+		if spl in [223,224,]:cmap= pyplot.cm.RdBu		
+		
 		if doLogs[i]:
 			rbmi = np.int(np.log10(rbmi))
 			rbma = np.log10(rbma)
@@ -481,12 +485,12 @@ def robinPlotQuad(lons, lats, data1,data2,filename,titles=['',''],title='',lon0=
 			bms[i].drawmeridians(np.arange(0.,420.,60.))
 								
 			if scatter:
-				if doLogs[i]:	ims.append(bms[i].scatter(x1,y1,c = np.log10(data),marker="s",alpha=0.9,linewidth='0',vmin=rbmi, vmax=rbma,))# **kwargs))
-				else:		ims.append(bms[i].scatter(x1,y1,c = data,	   marker="s",alpha=0.9,linewidth='0',vmin=rbmi, vmax=rbma,))# **kwargs))
+				if doLogs[i]:	ims.append(bms[i].scatter(x1,y1,c = np.log10(data),cmap=cmap, marker="s",alpha=0.9,linewidth='0',vmin=rbmi, vmax=rbma,))# **kwargs))
+				else:		ims.append(bms[i].scatter(x1,y1,c = data,	   cmap=cmap, marker="s",alpha=0.9,linewidth='0',vmin=rbmi, vmax=rbma,))# **kwargs))
 			else:
 				xi1,yi1,di1=mapIrregularGrid(bms[i],axs[i],lons,lats,data,lon0,xres=360,yres=180)
-				if doLogs[i]: 	ims.append( bms[i].pcolormesh(xi1,yi1,di1,cmap=pyplot.cm.jet,norm = LogNorm() ))
-				else:	  	ims.append( bms[i].pcolormesh(xi1,yi1,di1,cmap=pyplot.cm.jet))
+				if doLogs[i]: 	ims.append( bms[i].pcolormesh(xi1,yi1,di1,cmap=cmap,norm = LogNorm() ))
+				else:	  	ims.append( bms[i].pcolormesh(xi1,yi1,di1,cmap=cmap))
 
 		if maptype=='Cartopy':
 			#axs.append(fig.add_subplot(spl))
@@ -1005,6 +1009,16 @@ def makeMask(name,newSlice, xt,xz,xy,xx,xd):
 	if newSlice in months.keys():
 		print "masking a month:",newSlice,xt[0], xt[-1]
 		return np.ma.masked_where( xt != months[newSlice],nmask).mask 
+
+	if newSlice =='JFM':	
+		return np.ma.masked_where( ~(xt== months['January'])+(xt== months['February'])+(xt== months['March']),nmask).mask 
+	if newSlice =='AMJ':	
+		return np.ma.masked_where(~(xt==months['April'])+(xt==months['May'])+(xt==months['June']),nmask).mask 
+	if newSlice =='JAS':	
+		return np.ma.masked_where(~(xt==months['July'])+(xt==months['August'])+(xt==months['September']),nmask).mask 
+	if newSlice =='OND':	
+		return np.ma.masked_where(~(xt==months['October'])+(xt==months['November'])+(xt==months['December']),nmask).mask 						
+	
 	
 	if newSlice == "0.1":	return np.ma.masked_where( xd==0.1, xd).mask
 	if newSlice == "0.2":	return np.ma.masked_where( xd==0.2, xd).mask
