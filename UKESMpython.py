@@ -980,6 +980,7 @@ def makeMask(name,newSlice, xt,xz,xy,xx,xd):
 			s.close()
 		print "Bathy mask:", newSlice, nmask.sum(), 'of', len(nmask)
 		return nmask
+		
 	
 
 	if newSlice in ['1-99pc','5-95pc','0-99pc'] or newSlice in ['0-1pc','1-5pc','5-25pc','25-40pc','40-60pc','60-75pc','75-95pc','95-99pc','99-100pc',]:	  		
@@ -1039,6 +1040,10 @@ def makeMask(name,newSlice, xt,xz,xy,xx,xd):
 	if newSlice == 'SouthTropics':	return np.ma.masked_where( (xy <-23.)+(xy > -7.),nmask).mask 				
 	if newSlice == 'NorthTemperate':return np.ma.masked_where( (xy <23.)+(xy >60.),nmask).mask 			
 	if newSlice == 'SouthTemperate':return np.ma.masked_where( (xy >-23.)+(xy <-60.),nmask).mask 	
+
+	if newSlice == 'NorthHemisphere':	return np.ma.masked_where( xy < 0.,nmask).mask
+	if newSlice == 'SouthHemisphere':	return np.ma.masked_where( xy > 0.,nmask).mask	
+
 	if newSlice == 'Arctic':	return np.ma.masked_where( abs(xy) < 60.,nmask).mask
 	if newSlice == 'Antarctic':	return np.ma.masked_where( xy > -60.,nmask).mask 			
 	if newSlice == 'NorthArctic':	return np.ma.masked_where( xy < 60.,nmask).mask 														

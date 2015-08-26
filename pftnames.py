@@ -50,8 +50,12 @@ BGCmodels 	= ['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankTOM6','PlankTOM10'
 
 Seasons		= ['JFM','AMJ','JAS','OND'] 
 
+Hemispheres	=['NorthHemisphere','SouthHemisphere',]
+
 months = [m for m in month_name if m]	# Because months starts at 1, and 0 is empty.
 OceanMonth_names = [o+m for o in Ocean_names for m in months]
+OceanSeason_names = [o+s for o in Ocean_names for s in Seasons]
+HemispheresMonths = [h+m for h in Hemispheres for m in months] 	
 #####
 # Get Match Type:
 #	
@@ -562,6 +566,8 @@ def getLongName(text):
   	if text == 'ignoreMoreArtics':	return "No Arctic Oceans (60 degrees)"
   	if text == 'ignoreMidArtics':	return "No Arctic Oceans (65 degrees)"  
   	if text == 'ignoreArtics':	return "No Arctic Oceans (70 degrees)" 
+  	if text == 'NorthHemisphere':	return "North Hemisphere"
+  	if text == 'SouthHemisphere':	return "South Hemisphere"  
   	
   	if text == 'Top40m':	return "Top 40m"
   	if text == 'Top200m':	return "Top 200m"

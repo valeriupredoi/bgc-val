@@ -559,6 +559,8 @@ class makePlots:
 				  'Equatorial',  'SouthTropics','Antarctic',
 				  'NorthArctic',]
 				  #'Arctic','Tropics','Temperate']
+	self.Hemispheres	=['NorthHemisphere','SouthHemisphere',]
+				  				  
 	self.Seas		=['ignoreMediteranean','BlackSea','ignoreBlackSea',
 				  'RedSea','BalticSea','PersianGulf',
 				  'ignoreInlandSeas',]	
@@ -575,6 +577,7 @@ class makePlots:
 	self.Seasons		=['JFM','AMJ','JAS','OND'] 
 				 				  
 	self.OceanMonths	= sorted([i for i in product(self.Oceans,self.months)] )
+	self.HemispheresMonths	= sorted([i for i in product(self.Hemispheres,self.months)] )	
 	self.OceanMonths.extend(sorted([i for i in product(['All',],self.months)]))
 	self.OceanSeasons	= sorted([i for i in product(self.Oceans,self.Seasons)] )
 	
@@ -587,9 +590,11 @@ class makePlots:
 		 self.plotQualityCuts	=0#True	
 		 self.plotSeas		=0#True		 
 		 self.plotOceans	=0# True
-		 self.plotSeasons	= True
-		 self.plotOceanSeasons	= True		 		 
+		 self.plotHemispheres	= True
+		 self.plotSeasons	=0# True
+		 self.plotOceanSeasons	=0# True		 		 
 		 self.plotOceanMonths   =0# True	
+		 self.plotHemispheresMonths   =True			 
 	else: 	
 		 self.plotMonths	=0#True
 		 self.plotdepthRanges	=0#True	
@@ -598,9 +603,11 @@ class makePlots:
 		 self.plotQualityCuts	=0#True
 		 self.plotSeas		=0#True		 
 		 self.plotOceans	=0#True	
+		 self.plotHemispheres	=0		 
 		 self.plotSeasons	=0# True
 		 self.plotOceanSeasons	=0# True		 
 		 self.plotOceanMonths   = 0	 	 	 
+		 self.plotHemispheresMonths   =0			 
 
 	if self.plotMonths: 	 self.newSlices.extend(self.months.keys())
 	if self.plotdepthRanges: self.newSlices.extend(self.depthRanges)
@@ -609,9 +616,11 @@ class makePlots:
 	if self.plotQualityCuts: self.newSlices.extend(self.QualityCuts)		
 	if self.plotSeas: 	 self.newSlices.extend(self.Seas)			
 	if self.plotOceans: 	 self.newSlices.extend(self.Oceans)
+	if self.plotHemispheres: self.newSlices.extend(self.Hemispheres)	
 	if self.plotSeasons: 	 self.newSlices.extend(self.Seasons)
 	if self.plotOceanSeasons:self.newSlices.extend(self.OceanSeasons)		
 	if self.plotOceanMonths: self.newSlices.extend(self.OceanMonths)
+	if self.plotHemispheresMonths: self.newSlices.extend(self.HemispheresMonths)	
 	#print "defineSlices:\tSLICES:", 	 self.newSlices
 	
  		
@@ -638,6 +647,8 @@ class makePlots:
 		filename = ukp.folder([file_prefix,'Seasons'])+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix		
 	elif newSlice in self.Oceans:
 		filename = ukp.folder([file_prefix,'Oceans'])+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
+	elif newSlice in self.Hemispheres:
+		filename = ukp.folder([file_prefix,'Hemispheres'])+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
 	elif newSlice in self.OceanMonths:
 		if type(newSlice) in [type(['a','b',]),type(('a','b',))]:
 		  	print 'getFileName:', newSlice,
@@ -650,6 +661,12 @@ class makePlots:
 		  	newSlice = ''.join(newSlice)
 		  	print '-->',newSlice	  
 		filename = ukp.folder([file_prefix,'OceanSeasons'])+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
+	elif newSlice in self.HemispheresMonths:
+		if type(newSlice) in [type(['a','b',]),type(('a','b',))]:
+		  	print 'getFileName:', newSlice,
+		  	newSlice = ''.join(newSlice)
+		  	print '-->',newSlice	  
+		filename = ukp.folder([file_prefix,'HemispheresMonths'])+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
 	else:
 	  	print 'getFileName:', newSlice,	''.join(newSlice)  ,xkey,ykey
 	  	try:fn = newSlice+'_'+xkey+'vs'+ykey

@@ -31,7 +31,7 @@ from calendar import month_name
 from UKESMpython import folder,getFileList, AutoVivification, NestedDict,AutoVivToYaml,YamlToDict
 from p2p import matchDataAndModel,makePlots,makeTargets, csvFromShelves
 #from 
-from pftnames import MaredatTypes,WOATypes,Ocean_names,OceanMonth_names,getmt
+from pftnames import MaredatTypes,WOATypes,Ocean_names,OceanMonth_names,Seasons,Hemispheres,HemispheresMonths, OceanSeason_names,getmt
 
 ###	Potential problems?
 ###		Reliance on ORCA1 grid
@@ -87,8 +87,8 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 	#####
 	# Which analysis to run
 	doCHL 		= 0#True
-	doDMS_clim	= 0#True
-	doDMS_pixels	= True
+	doDMS_clim	= True
+	doDMS_pixels	= 0#True
 	doDMS_pixels2	= 0#True
 	doMAREDAT 	= 0#True
 	doN		= 0#True
@@ -407,6 +407,8 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 			MonthShelves = []
 			OceanShelves = []
 			OceanMonthShelves = {o:[] for o in Ocean_names}
+			OceanSeasonsShelves = {o:[] for o in Ocean_names}			
+			HemisphereMonthShelves = {o:[] for o in Hemispheres}			
 			#print shelvesAV.keys(),m.shelvesAV.keys()
 			#assert False	    				
 			for newSlice in m.shelvesAV.keys(): 
@@ -426,6 +428,23 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 				    	    if t>0: 
 				   	 	#print newSlice, mn,newSlice[:t],t
 				    	    	OceanMonthShelves[newSlice[:t]].append(shelve)
+				    if newSlice in OceanSeason_names:
+				    	#print 'Prepping Targets',newSlice,xkey,ykey
+				    	for mn in Seasons:
+				    	    t = newSlice.find(mn)
+					    #print 'Prepping Targets',newSlice, mn,newSlice[:t],t
+				    	    if t>0: 
+				   	 	#print newSlice, mn,newSlice[:t],t
+				    	    	OceanSeasonsShelves[newSlice[:t]].append(shelve)				    	    	
+				    if newSlice in HemispheresMonths:
+				    	#print 'Prepping Targets',newSlice,xkey,ykey
+				    	for mn in month_name:
+				    	    t = newSlice.find(mn)
+					    #print 'Prepping Targets',newSlice, mn,newSlice[:t],t
+				    	    if t>0: 
+				   	 	#print newSlice, mn,newSlice[:t],t
+				    	    	HemisphereMonthShelves[newSlice[:t]].append(shelve)
+				   
 			#print OceanMonthShelves
 			#assert False	    	
 				    	
@@ -448,6 +467,20 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 						filename,
 						legendKeys = ['newSlice',],					
 						)
+			for o in OceanSeasonsShelves.keys():
+			    if len(OceanSeasonsShelves[o]):
+				filename = folder(imageFolder+'/Targets/'+years[model]+'/OceanSeasons/'+o)+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region+'_'+o+'Seasons.png'
+				makeTargets(	OceanSeasonsShelves[o], 
+						filename,
+						legendKeys = ['newSlice',],					
+						)
+			for o in HemisphereMonthShelves.keys():
+			    if len(HemisphereMonthShelves[o]):
+				filename = folder(imageFolder+'/Targets/'+years[model]+'/Hemispheres/'+o)+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region+'_'+o+'Hemispheres.png'
+				makeTargets(	HemisphereMonthShelves[o], 
+						filename,
+						legendKeys = ['newSlice',],					
+						)						
 			#print OceanMonthShelves
 			#assert False
 		#####				
