@@ -237,7 +237,7 @@ class makePlots:
  	
 	print "plotWithSlices:\tINFO:\tinvestigating:",(newSlice), filename
 	if not ukp.shouldIMakeFile([self.xfn,self.yfn],self.shelveName,debug=False) \
-		and not ukp.shouldIMakeFile([self.xfn,self.yfn],filename,debug=False):return
+		and not ukp.shouldIMakeFile([self.xfn,self.yfn],filename,debug=False): return
 	
 	
 	#####
@@ -583,17 +583,17 @@ class makePlots:
 	
 	
 	if plotallcuts:
-		 self.plotMonths	= 0#True
+		 self.plotMonths	= True
 		 self.plotdepthRanges	=0
 		 self.plotpercentiles	=0#True	
 		 self.plotLatRegions	=0# True
 		 self.plotQualityCuts	=0#True	
 		 self.plotSeas		=0#True		 
-		 self.plotOceans	=0# True
+		 self.plotOceans	= True
 		 self.plotHemispheres	= True
 		 self.plotSeasons	=0# True
 		 self.plotOceanSeasons	=0# True		 		 
-		 self.plotOceanMonths   =0# True	
+		 self.plotOceanMonths   = True	
 		 self.plotHemispheresMonths   =True			 
 	else: 	
 		 self.plotMonths	=0#True

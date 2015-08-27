@@ -1,3 +1,4 @@
 from makeTargets import makeTargets
 from makePlots import makePlots
 from matchDataAndModel import matchDataAndModel
+from makePatternStatsPlots import makePatternStatsPlots

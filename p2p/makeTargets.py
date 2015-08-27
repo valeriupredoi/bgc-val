@@ -260,7 +260,9 @@ class makeTargets:
 			continue
 		    	print 'makeDiagram\t:No Plots to make'
 
-			
+		filename = self.filename.replace('.png','_'+t+'.png')
+		if not ukp.shouldIMakeFile(self.matchedShelves,filename,debug=False):continue
+					
 		fig = pyplot.figure()		
 		ax = pyplot.subplot(111, aspect='equal')
 		c = pyplot.get_cmap('jet')
@@ -356,7 +358,7 @@ class makeTargets:
 		legend.draw_frame(False) 
 		legend.get_frame().set_alpha(0.) 
 		pyplot.title(title)
-		filename = self.filename.replace('.png','_'+t+'.png')
+
 		if self.debug:print 'makeDiagram:\tsaving file:', filename 
 		pyplot.savefig(filename ,dpi=200,)
 		pyplot.close()

@@ -1,3 +1,27 @@
+#!/usr/bin/ipython 
+#
+# Copyright 2014, Plymouth Marine Laboratory
+#
+# This file is part of the ukesm-validation library.
+#
+# ukesm-validation is free software: you can redistribute it and/or modify it
+# under the terms of the Revised Berkeley Software Distribution (BSD) 3-clause license. 
+
+# ukesm-validation is distributed in the hope that it will be useful, but
+# without any warranty; without even the implied warranty of merchantability
+# or fitness for a particular purpose. See the revised BSD license for more details.
+# You should have received a copy of the revised BSD license along with ukesm-validation.
+# If not, see <http://opensource.org/licenses/BSD-3-Clause>.
+#
+# Address:
+# Plymouth Marine Laboratory
+# Prospect Place, The Hoe
+# Plymouth, PL1 3DH, UK
+#
+# Email:
+# ledm@pml.ac.uk
+#
+
 from matplotlib import pyplot
 from calendar import month_name
 from glob import glob
@@ -25,6 +49,13 @@ seasons = ['JFM','AMJ','JAS','OND',]
 #area = ncG('area')[:]
 
 
+# To run this from testsuite you'll need:
+#	move it to p2p
+#	call it with:
+#	list of shelves
+#	grid (ie flat1deg.)# only for volume field
+#	x-axis choice (ie months, oceans, etc)
+#	color choice ie, what to actually plot on each subplot
 
 def calculateArea():
 	# makes a netcdf with the areas of each pixel in the flat map.
@@ -106,15 +137,15 @@ def run(key_dmsmodels, key_xkeys,):
 	
 
 	metricslist =  { 'rgam':'Scale Ratio (Data/Reference)',
-			 'rE':'Normalised Difference Scale',
-			 'rE0':'Normalised Bias',
-			 'rR':'Spearman Correlation',
+			 'rE':'Norm. Diff. Scale',
+			 'rE0':'Norm. Bias',
+			 'rR':'Spearman Corr.',
 			 'rP':'p-value (robust)',
 			 #'rsig':'sign',
 			 'tgam':'STD Ratio (Data/Reference)',
-			 'tE':'Normalised Unbiased RMSD',
-			 'tE0':'Normalised Bias',
-			 'tR':'Pearson Correlation',
+			 'tE':'Norm. Unbiased RMSD',
+			 'tE0':'Norm. Bias',
+			 'tR':'Pearson  Corr.',
 			 'tP':'p-value (Taylor)',
 			 #'tsig':'sign',			 
 			 'N':'Number',
@@ -197,7 +228,7 @@ def run(key_dmsmodels, key_xkeys,):
 
 
 				
-	plotTypes = {	'Total_N':   ['TotalDMS','N',],
+	plotTypes = {	'Total N':   ['TotalDMS','N',],
 		#	'Total':        ['TotalDMS',],
 			'Total':   ['TotalDMS','DMS:Lana'],
 						
@@ -208,7 +239,7 @@ def run(key_dmsmodels, key_xkeys,):
 			#'Robust v Taylor Gamma':['rgam','tgam',],
 			#'Robust v Taylor E':['rE','tE',],
 			#'Robust v Taylor E0':['rE0','tE0',],
-			'LinearRegression':['b1','b0','tR',],
+			'Linear Regression':['b1','b0','tR',],
 			}
 	
 	for plotType,metrickeys in plotTypes.items():
@@ -280,7 +311,7 @@ def main():
 	#kys.extend([o + 'Months' for o in oceans])
 	#kys.extend([o + 'Seasons' for o in oceans])
 	#kys.extend([o + 'Seasons' for o in oceans])
-	kys.extend(['hemispheres',])#'OceansSeasons','OceanMonths',['seasons','months', 'oceans',
+	kys.extend(['months', 'oceans',])#'OceansSeasons','OceanMonths','hemispheres','seasons',
 	for xkeys in kys: #[,]:
 	    for dmsmodels in ['dmsmetrics', 'dmspmetrics',]: #
 		run(dmsmodels, xkeys,)

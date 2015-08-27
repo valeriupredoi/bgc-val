@@ -29,9 +29,9 @@ from calendar import month_name
 
 #Specific local code:
 from UKESMpython import folder,getFileList, AutoVivification, NestedDict,AutoVivToYaml,YamlToDict
-from p2p import matchDataAndModel,makePlots,makeTargets, csvFromShelves
+from p2p import matchDataAndModel,makePlots,makeTargets, csvFromShelves, makePatternStatsPlots
 #from 
-from pftnames import MaredatTypes,WOATypes,Ocean_names,OceanMonth_names,Seasons,Hemispheres,HemispheresMonths, OceanSeason_names,getmt
+from pftnames import MaredatTypes,WOATypes,Ocean_names,OceanMonth_names,months, Seasons,Hemispheres,HemispheresMonths, OceanSeason_names,getmt
 
 ###	Potential problems?
 ###		Reliance on ORCA1 grid
@@ -87,8 +87,8 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 	#####
 	# Which analysis to run
 	doCHL 		= 0#True
-	doDMS_clim	= True
-	doDMS_pixels	= 0#True
+	doDMS_clim	= 0#True
+	doDMS_pixels	= True
 	doDMS_pixels2	= 0#True
 	doMAREDAT 	= 0#True
 	doN		= 0#True
@@ -454,19 +454,44 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 						filename,
 						legendKeys = ['newSlice',],					
 						)
+			  	filenamebase = folder(imageFolder+'/Patterns/'+years[model]+'/'+name)+'Months-'+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region
+				makePatternStatsPlots(	{name:MonthShelves,}, # {legend, shelves}
+							'Months',	#xkeysname
+							months,#xkeysLabels=
+							filenamebase,	# filename base						
+							)						
+		
+												
 			if len(OceanShelves):	
 				filename = folder(imageFolder+'/Targets/'+years[model]+'/Oceans')+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region+'_Oceans.png'
 				makeTargets(	OceanShelves, 
 						filename,
 						legendKeys = ['newSlice',],					
 						)
-			for o in OceanMonthShelves.keys():
-			    if len(OceanMonthShelves[o]):
-				filename = folder(imageFolder+'/Targets/'+years[model]+'/OceanMonths/'+o)+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region+'_'+o+'Months.png'
-				makeTargets(	OceanMonthShelves[o], 
-						filename,
-						legendKeys = ['newSlice',],					
-						)
+		  		filenamebase = folder(imageFolder+'/Patterns/'+years[model]+'/'+name)+'Oceans-'+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region
+				makePatternStatsPlots(	{name:OceanShelves,}, # {legend, shelves}
+							'Oceans',	#xkeysname
+							Ocean_names,#xkeysLabels=
+							filenamebase,	# filename base						
+							)
+			
+			if len(OceanMonthShelves.keys()):										
+				for o in OceanMonthShelves.keys():
+				    if len(OceanMonthShelves[o]):
+					filename = folder(imageFolder+'/Targets/'+years[model]+'/OceanMonths/'+o)+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region+'_'+o+'Months.png'
+					makeTargets(	OceanMonthShelves[o], 
+							filename,
+							legendKeys = ['newSlice',],					
+							)
+				counts = [len(sh) for i,sh in OceanMonthShelves.items()]
+				if max(counts)>0:
+				  	filenamebase = folder(imageFolder+'/Patterns/'+years[model]+'/'+name)+'OceanMonths-'+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region
+					makePatternStatsPlots(	OceanMonthShelves, # {legend, shelves}
+							'Ocean Months',	#xkeysname
+							months,#xkeysLabels=
+							filenamebase,	# filename base						
+							)
+			#assert False						
 			for o in OceanSeasonsShelves.keys():
 			    if len(OceanSeasonsShelves[o]):
 				filename = folder(imageFolder+'/Targets/'+years[model]+'/OceanSeasons/'+o)+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region+'_'+o+'Seasons.png'
@@ -474,15 +499,32 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 						filename,
 						legendKeys = ['newSlice',],					
 						)
+				counts = [len(sh) for i,sh in OceanSeasonsShelves.items()]
+				if max(counts)>0:
+				  	filenamebase = folder(imageFolder+'/Patterns/'+years[model]+'/'+name)+'OceanSeasons-'+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region
+					makePatternStatsPlots(	OceanSeasonsShelves, # {legend, shelves}
+							'Ocean Seasons',	#xkeysname
+							seasons,	#xkeysLabels=
+							filenamebase,	# filename base						
+							)
+													
 			for o in HemisphereMonthShelves.keys():
 			    if len(HemisphereMonthShelves[o]):
 				filename = folder(imageFolder+'/Targets/'+years[model]+'/Hemispheres/'+o)+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region+'_'+o+'Hemispheres.png'
 				makeTargets(	HemisphereMonthShelves[o], 
 						filename,
 						legendKeys = ['newSlice',],					
-						)						
+						)
+				counts = [len(sh) for i,sh in HemisphereMonthShelves.items()]
+				if max(counts)>0:
+				  	filenamebase = folder(imageFolder+'/Patterns/'+years[model]+'/'+name)+'HemisphereMonths-'+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region
+					makePatternStatsPlots(	HemisphereMonthShelves, # {legend, shelves}
+							'Hemisphere Months',	#xkeysname
+							months,			#xkeysLabels=
+							filenamebase,		# filename base						
+							)
+																			
 			#print OceanMonthShelves
-			#assert False
 		#####				
 		# Here are some fields for comparing fields in the same model
 		Summary= {}		
@@ -502,8 +544,14 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 		Summary['DMSAll'] = []
 		Summary['DMSStandard']=[]	
 		Summary['DMS_p_All'] = []
-		Summary['DMS_p_Standard']=[]								
+		Summary['DMS_p_Standard']=[]
+
+		MonthsPatterns = {'DMS_p':{},'DMS_e':{},'Maredat':{},'WOA':{},}#'DMS_p':{},}
+		OceansPatterns = {'DMS_p':{},'DMS_e':{},'Maredat':{},'WOA':{},}#'DMS_p':{},}		
+		
 		for name in shelvesAV[model].keys():
+   		  for p in MonthsPatterns.keys(): MonthsPatterns[p][name] = []
+   		  for p in OceansPatterns.keys(): OceansPatterns[p][name] = []   		  
 		  for region in shelvesAV[model][name].keys():
 		    for newSlice in shelvesAV[model][name][region].keys(): 
 		      for xkey in shelvesAV[model][name][region][newSlice].keys():
@@ -521,11 +569,17 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 	        		if name in dmsmetrics:
 	        		  	if newSlice == 'All':		Summary['DMSAll'].append(shelve)
 	        		  	if newSlice == 'Standard':	Summary['DMSStandard'].append(shelve)	
-
+					if newSlice in Ocean_names:	OceansPatterns['DMS_e'][name].append(shelve)
+					if newSlice in months:		MonthsPatterns['DMS_e'][name].append(shelve)
+					
 	        		if name in dmspmetrics:
-	        		  	if newSlice == 'All':		Summary['DMS_p_All'].append(shelve)
-	        		  	if newSlice == 'Standard':	Summary['DMS_p_Standard'].append(shelve)	
-	        		  	
+	        		  	if newSlice == 'All':  		Summary[ 'DMS_p_All'].append(shelve)
+	        		  	if newSlice == 'Standard':	Summary[ 'DMS_p_Standard'].append(shelve)
+					if newSlice in Ocean_names:	OceansPatterns['DMS_p'][name].append(shelve)
+					if newSlice in months:		MonthsPatterns['DMS_p'][name].append(shelve)
+										
+	        		  	#Patterns['DMS_p'][name].append(shelve)
+	        		  	#if newSlice not in patternShelves: patternShelves.append(newSlice)
 	        		if name in surfacemetrics:
 	        		  	if newSlice == 'All':		Summary['SurfaceMetricsAll'].append(shelve)
 	        		  	if newSlice == 'Standard':	Summary['SurfaceMetricsStandard'].append(shelve)
@@ -542,6 +596,26 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 					filename,
 					legendKeys = ['name',],
 					debug=True)
+					
+		for k in OceansPatterns.keys():					
+			filenamebase = folder(imageFolder+'/Patterns/'+years[model]+'/OceansPatterns/')+k+'_'+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region
+			print k, OceansPatterns[k],filenamebase
+			
+			makePatternStatsPlots(	OceansPatterns[k], # {legend, shelves}
+					k,	#xkeysname
+					Ocean_names,			#xkeysLabels=
+					filenamebase,		# filename base						
+					)
+		for k in MonthsPatterns.keys():					
+			filenamebase = folder(imageFolder+'/Patterns/'+years[model]+'/MonthsPatterns/')+k+'_'+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region
+			print k, MonthsPatterns[k],filenamebase
+			makePatternStatsPlots(	
+					MonthsPatterns[k], # {legend, shelves}
+					k,	#xkeysname
+					months,			#xkeysLabels=
+					filenamebase,		# filename base						
+					)	
+																						
 		#if model=='ERSEM':
 		AutoVivToYaml(shelvesAV, folder('yaml')+'shelvesAV'+model+years[model]+jobIDs[model]+'.yaml')
 		#else:

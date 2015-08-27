@@ -475,11 +475,13 @@ def getLongName(text):
  	if text == 'dms_p_sim2':	return 'DMS (Simodach - CHN only)'
  	if text == 'dms_p_sim2Surface':	return 'DMS (Simodach - CHN only)'
 
- 	if text == 'LANA':		return 'Lana et al. (extrapolated)'
+ 	if text in ['LANA',]:		return 'Lana et al. (extrapolated)'
  	if text == 'LANA_p':		return 'Lana et al. (pixels)'
  	 	 	 	 	
  	if text == 'lanaetal':		return 'DMS extrapolated (Lana et al. 2011)'
  	if text == 'DMS':		return 'DMS pixels (Lana et al. 2011)'
+	if text == 'DMS_p':		return 'DMS (pixels)'
+	if text == 'DMS_e':		return 'DMS (extrapolated)'	
  
   	if text == 'All':	return 'Global'
   	if text == 'Best':	return 'Best'  	
@@ -554,7 +556,8 @@ def getLongName(text):
   	if text == 'ignoreInlandSeas':	return "No Inland Seas"
   	if text == 'ignoreMediteranean':return "No Mediteranean"  	
 
-
+  	if text in ['Oceans',]:		return 'Oceans'	 	  	  	  	
+  	if text in ['OceansMonths',]:		return 'Oceans Months'	 	  	  	  	  	
   	if text == 'ArcticOcean':	return "Arctic Ocean"	  		  	
   	if text == 'AntarcticOcean':	return "Antarctic Ocean" 		  	
   	if text == 'NorthAtlanticOcean':return "North Atlantic Ocean"
@@ -639,7 +642,9 @@ def getLongName(text):
   	if text in  ['CHL',]: 		return 'Chlorophyll'  
 
   	if text ==  'InitialConditions': return 'Initial Conditions'    
-  	  		 	  	  	  	
+  	  	
+  	if text in ['Months','months']:return 'Months'	 	  	  	  	
+  	
   	if text in month_name: return text
   	for m in month_name:
   		t =  text.find(m)
