@@ -90,29 +90,28 @@ class matchDataAndModel:
 	if workingDir =='':
 		self.workingDir = ukp.folder('/data/euryale7/scratch/ledm/ukesm_postProcessed/ukesm/outNetCDF/'+'/'.join([self.compType,self.dataType+self.region]) )
 	else: 	self.workingDir = workingDir	
+	self.grid = grid
+	self.gridFile = ukp.getGridFile(grid)
 	
-	if grid.upper() in ['ORCA1',]:
-		self.grid = 'ORCA1'
-		self.gridFile    = "data/mesh_mask_ORCA1_75.nc"
-		
-	if grid.upper() in ['ORCA025',]:	
-		self.grid = 'ORCA025'
-		
+	#if grid.upper() in ['ORCA1',]:
+	#	self.grid = 'ORCA1'
+	#	self.gridFile    = "data/mesh_mask_ORCA1_75.nc"
+	#if grid.upper() in ['ORCA025',]:	
+	#	self.grid = 'ORCA025'
 		#####
 		# Please add files to link to 
-		for orcafn in [ "/data/euryale7/scratch/ledm/UKESM/MEDUSA-ORCA025/mesh_mask_ORCA025_75.nc",	# PML
-				"/group_workspaces/jasmin/esmeval/example_data/bgc/mesh_mask_ORCA025_75.nc",]:	# JASMIN
-			if exists(orcafn):	self.gridFile  = orcafn
-		
-		try: 
-			if exists(self.gridFile):pass
-		except: 
-			print "matchDataAndModel:\tERROR:\tIt's not possible to load the ORCA025 grid on this machine. Please add the ORCA025 file to the orcafn list to p2p/matchDataAndModel.py"
-			assert False
-
-	if grid in ['Flat1deg',]:	
-		self.grid = 'Flat1deg'
-		self.gridFile = 'data/Flat1deg.nc'
+	#	for orcafn in [ "/data/euryale7/scratch/ledm/UKESM/MEDUSA-ORCA025/mesh_mask_ORCA025_75.nc",	# PML
+	#			"/group_workspaces/jasmin/esmeval/example_data/bgc/mesh_mask_ORCA025_75.nc",]:	# JASMIN
+	#		if exists(orcafn):	self.gridFile  = orcafn
+	#	
+	#	try: 
+	#		if exists(self.gridFile):pass
+	#	except: 
+	#		print "matchDataAndModel:\tERROR:\tIt's not possible to load the ORCA025 grid on this machine. Please add the ORCA025 file to the orcafn list to p2p/matchDataAndModel.py"
+	#		assert False
+	#if grid in ['Flat1deg',]:	
+	#	self.grid = 'Flat1deg'
+	#	self.gridFile = 'data/Flat1deg.nc'
 		
 		#####
 		# Please add files to link to 

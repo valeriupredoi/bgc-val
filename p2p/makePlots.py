@@ -64,19 +64,20 @@ noXYLogs 	= [ 'pCO2',
 
 
 class makePlots:
-  def __init__(self,matchedDataFile,matchedModelFile, name, jobID='MEDUSA',year='clim',region='', compareCoords=True,shelveDir='',imageDir='',plotallcuts=  True): #xfilename,yfilename,saveShelve=True,
+  def __init__(self,matchedDataFile,matchedModelFile, name, newSlices =['All','Standard'], jobID='MEDUSA',year='clim',region='', compareCoords=True,shelveDir='',imageDir='',): #xfilename,yfilename,saveShelve=True,
 
   
   	self.xfn =matchedModelFile
   	self.yfn =matchedDataFile  	
     	self.name = name
+    	self.newSlices = newSlices
     	self.region = region
   	self.xtype = jobID
   	self.year = year
   	self.shelveDir = shelveDir
-  	self.plotallcuts = plotallcuts
   	self.compareCoords = compareCoords
-  	
+	self.months = {month_name[i+1]:i for i in xrange(0,12) }
+	  	
 	self.mt = getmt()	
 	Models = [m.upper() for m in ['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankTOM6','PlankTOM10','NEMO','IMARNET',]] # skip these to find in situ data types.
 	Models.extend(['IMARNET_' +m.upper() for m in ['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankTOM6','PlankTOM10','NEMO',]])
@@ -118,11 +119,10 @@ class makePlots:
   	self.xnc = Dataset(self.xfn,'r')
   	self.ync = Dataset(self.yfn,'r')
 
-	if self.compareCoords: self.CompareCoords()	
-	self.defineSlices(self.plotallcuts)
+	if self.compareCoords: self.CompareCoords()
+	#self.defineSlices(self.plotallcuts)
 	
 	
-	#for nslice in self.newSlices:
 	self.plotWithSlices()
 
 	    	
@@ -544,84 +544,81 @@ class makePlots:
 
 
   def defineSlices(self,plotallcuts):	
-	self.newSlices 		=['All','Standard',]#'ignoreMoreArtics']
-
-	self.standardCuts = ['5-95pc','ignoreInlandSeas','OffShelf','ignoreExtraArtics','aboveZero',]	
-
-	self.months = {month_name[i+1]:i for i in xrange(0,12) }
-	
-	self.depthRanges	=['OffShelf','maskBelowBathy', 'OnShelf',] 
-				 # 'Depth_0-10m','Depth_10-20m','Depth_20-50m','Depth_50-100m','Depth_100-500m','Depth_500m',
-	self.percentiles	=['0-1pc','1-5pc','5-25pc',
-				  '25-40pc','40-60pc','60-75pc',
-				  '75-95pc','95-99pc','99-100pc',]
-	self.latregions		=['NorthTemperate','SouthTemperate','NorthTropics',
-				  'Equatorial',  'SouthTropics','Antarctic',
-				  'NorthArctic',]
-				  #'Arctic','Tropics','Temperate']
-	self.Hemispheres	=['NorthHemisphere','SouthHemisphere',]
-				  				  
-	self.Seas		=['ignoreMediteranean','BlackSea','ignoreBlackSea',
-				  'RedSea','BalticSea','PersianGulf',
-				  'ignoreInlandSeas',]	
-				  # 'ignoreRedSea', 'ignoreBalticSea','ignorePersianGulf',]
-	self.Oceans		=['SouthPacificOcean',  'ArcticOcean',
-				  'AntarcticOcean','NorthAtlanticOcean','SouthAtlanticOcean',
-				 'NorthPacificOcean','IndianOcean',] 
-				 #'ignoreExtraArtics','ignoreMidArtics','ignoreArtics','ignoreMoreArtics',
-
-	self.QualityCuts 	=['Overestimate','Underestimate','Overestimate_2sig',
-				  'Underestimate_2sig','Overestimate_3sig','Underestimate_3sig', 
-				  'Matched','OffAxis','1-99pc',
-				  '5-95pc','0-99pc',]
-	self.Seasons		=['JFM','AMJ','JAS','OND'] 
-				 				  
-	self.OceanMonths	= sorted([i for i in product(self.Oceans,self.months)] )
-	self.HemispheresMonths	= sorted([i for i in product(self.Hemispheres,self.months)] )	
-	self.OceanMonths.extend(sorted([i for i in product(['All',],self.months)]))
-	self.OceanSeasons	= sorted([i for i in product(self.Oceans,self.Seasons)] )
+  	"""	This code is deprecated. Moved into top loop.
+  		
+  	"""
+  	assert False
+#	self.newSlices 		=['All','Standard',]#'ignoreMoreArtics']
+#	self.standardCuts = ['5-95pc','ignoreInlandSeas','OffShelf','ignoreExtraArtics','aboveZero',]	
+#	self.depthRanges	=['OffShelf','maskBelowBathy', 'OnShelf',] 
+#				 # 'Depth_0-10m','Depth_10-20m','Depth_20-50m','Depth_50-100m','Depth_100-500m','Depth_500m',
+#	self.percentiles	=['0-1pc','1-5pc','5-25pc',
+#				  '25-40pc','40-60pc','60-75pc',
+#				  '75-95pc','95-99pc','99-100pc',]
+#	self.latregions		=['NorthTemperate','SouthTemperate','NorthTropics',
+#				  'Equatorial',  'SouthTropics','Antarctic',
+#				  'NorthArctic',]
+#				  #'Arctic','Tropics','Temperate']
+#	self.Hemispheres	=['NorthHemisphere','SouthHemisphere',]
+#	self.Seas		=['ignoreMediteranean','BlackSea','ignoreBlackSea',
+#				  'RedSea','BalticSea','PersianGulf',
+#				  'ignoreInlandSeas',]	
+#				  # 'ignoreRedSea', 'ignoreBalticSea','ignorePersianGulf',]
+#	self.Oceans		=['SouthPacificOcean',  'ArcticOcean',
+#				  'AntarcticOcean','NorthAtlanticOcean','SouthAtlanticOcean',
+#				 'NorthPacificOcean','IndianOcean',] 
+#				 #'ignoreExtraArtics','ignoreMidArtics','ignoreArtics','ignoreMoreArtics',
+#	self.QualityCuts 	=['Overestimate','Underestimate','Overestimate_2sig',
+#				  'Underestimate_2sig','Overestimate_3sig','Underestimate_3sig', 
+#				  'Matched','OffAxis','1-99pc',
+#				  '5-95pc','0-99pc',]
+#	self.Seasons		=['JFM','AMJ','JAS','OND'] 
+#	self.OceanMonths	= sorted([i for i in product(self.Oceans,self.months)] )
+#	self.HemispheresMonths	= sorted([i for i in product(self.Hemispheres,self.months)] )	
+#	self.OceanMonths.extend(sorted([i for i in product(['All',],self.months)]))
+#	self.OceanSeasons	= sorted([i for i in product(self.Oceans,self.Seasons)] )
 	
 	
-	if plotallcuts:
-		 self.plotMonths	= True
-		 self.plotdepthRanges	=0
-		 self.plotpercentiles	=0#True	
-		 self.plotLatRegions	=0# True
-		 self.plotQualityCuts	=0#True	
-		 self.plotSeas		=0#True		 
-		 self.plotOceans	= True
-		 self.plotHemispheres	= True
-		 self.plotSeasons	=0# True
-		 self.plotOceanSeasons	=0# True		 		 
-		 self.plotOceanMonths   = True	
-		 self.plotHemispheresMonths   =True			 
-	else: 	
-		 self.plotMonths	=0#True
-		 self.plotdepthRanges	=0#True	
-		 self.plotpercentiles	=0#True	
-		 self.plotLatRegions	=0#True
-		 self.plotQualityCuts	=0#True
-		 self.plotSeas		=0#True		 
-		 self.plotOceans	=0#True	
-		 self.plotHemispheres	=0		 
-		 self.plotSeasons	=0# True
-		 self.plotOceanSeasons	=0# True		 
-		 self.plotOceanMonths   = 0	 	 	 
-		 self.plotHemispheresMonths   =0			 
-
-	if self.plotMonths: 	 self.newSlices.extend(self.months.keys())
-	if self.plotdepthRanges: self.newSlices.extend(self.depthRanges)
-	if self.plotpercentiles: self.newSlices.extend(self.percentiles)
-	if self.plotLatRegions:	 self.newSlices.extend(self.latregions)	
-	if self.plotQualityCuts: self.newSlices.extend(self.QualityCuts)		
-	if self.plotSeas: 	 self.newSlices.extend(self.Seas)			
-	if self.plotOceans: 	 self.newSlices.extend(self.Oceans)
-	if self.plotHemispheres: self.newSlices.extend(self.Hemispheres)	
-	if self.plotSeasons: 	 self.newSlices.extend(self.Seasons)
-	if self.plotOceanSeasons:self.newSlices.extend(self.OceanSeasons)		
-	if self.plotOceanMonths: self.newSlices.extend(self.OceanMonths)
-	if self.plotHemispheresMonths: self.newSlices.extend(self.HemispheresMonths)	
-	#print "defineSlices:\tSLICES:", 	 self.newSlices
+#	if plotallcuts:
+#		 self.plotMonths	= True
+#		 self.plotdepthRanges	=0
+#		 self.plotpercentiles	=0#True	
+#		 self.plotLatRegions	=0# True
+#		 self.plotQualityCuts	=0#True	
+#		 self.plotSeas		=0#True		 
+#		 self.plotOceans	= True
+#		 self.plotHemispheres	=0# True
+#		 self.plotSeasons	=0# True
+#		 self.plotOceanSeasons	=0# True		 		 
+#		 self.plotOceanMonths   = 0#True	
+#		 self.plotHemispheresMonths   =True			 
+#	else: 	
+#		 self.plotMonths	=0#True
+#		 self.plotdepthRanges	=0#True	
+#		 self.plotpercentiles	=0#True	
+#		 self.plotLatRegions	=0#True
+#		 self.plotQualityCuts	=0#True
+#		 self.plotSeas		=0#True		 
+#		 self.plotOceans	=0#True	
+#		 self.plotHemispheres	=0		 
+#		 self.plotSeasons	=0# True
+#		 self.plotOceanSeasons	=0# True		 
+#		 self.plotOceanMonths   = 0	 	 	 
+#		 self.plotHemispheresMonths   =0			 
+#
+#	if self.plotMonths: 	 self.newSlices.extend(self.months.keys())
+##	if self.plotdepthRanges: self.newSlices.extend(self.depthRanges)
+#	if self.plotpercentiles: self.newSlices.extend(self.percentiles)
+#	if self.plotLatRegions:	 self.newSlices.extend(self.latregions)	
+#	if self.plotQualityCuts: self.newSlices.extend(self.QualityCuts)		
+#	if self.plotSeas: 	 self.newSlices.extend(self.Seas)			
+#	if self.plotOceans: 	 self.newSlices.extend(self.Oceans)
+#	if self.plotHemispheres: self.newSlices.extend(self.Hemispheres)	
+#	if self.plotSeasons: 	 self.newSlices.extend(self.Seasons)
+#	if self.plotOceanSeasons:self.newSlices.extend(self.OceanSeasons)		
+#	if self.plotOceanMonths: self.newSlices.extend(self.OceanMonths)
+#	if self.plotHemispheresMonths: self.newSlices.extend(self.HemispheresMonths)	
+#	#print "defineSlices:\tSLICES:", 	 self.newSlices
 	
  		
   def getFileName(self,newSlice,xkey,ykey):
@@ -630,49 +627,66 @@ class makePlots:
 	file_prefix = self.imageDir #ukp.folder(['images',self.xtype,'P2P_plots',self.year,self.name+self.region,])
 
 	file_suffix = '_'+self.xtype+'_'+self.year+'.png'
+	
+	for dictkey,dictlist in ukp.slicesDict.items():
+		if dictkey=='AllSlices':continue
+		if newSlice not in dictlist: continue
+		if type(newSlice) in [type(['a','b',]),type(('a','b',))]: 
+			newSlice = list(newSlice)
+			for i,n in enumerate(newSlice):
+			   if n in ukp.slicesDict['Months']:
+			   	newSlice[i] = ukp.mnStr(self.months[n]+1)+n
+			newSlice = ''.join(newSlice)			
+		if newSlice in ukp.slicesDict['Months']:
+			 newSlice = ukp.mnStr(self.months[newSlice]+1)+newSlice	
+		if dictkey == 'Default': dictkey=''
+		filename = ukp.folder([file_prefix,dictkey])+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
 
-	if newSlice in self.months.keys():
-		filename = ukp.folder([file_prefix,'months'])+self.name+self.region+'_'+ukp.mnStr(self.months[newSlice])+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
-	elif newSlice in self.depthRanges:
-		filename = ukp.folder([file_prefix,'DepthRanges'])+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix	  
-	elif newSlice in self.percentiles:
-		filename = ukp.folder([file_prefix,'Percentiles'])+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix	  
-	elif newSlice in self.latregions:
-		filename = ukp.folder([file_prefix,'LatRegions'])+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix	 
-	elif newSlice in self.QualityCuts:
-		filename = ukp.folder([file_prefix,'QualityCuts'])+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
-	elif newSlice in self.Seas:
-		filename = ukp.folder([file_prefix,'Seas'])+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
-	elif newSlice in self.Seasons:
-		filename = ukp.folder([file_prefix,'Seasons'])+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix		
-	elif newSlice in self.Oceans:
-		filename = ukp.folder([file_prefix,'Oceans'])+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
-	elif newSlice in self.Hemispheres:
-		filename = ukp.folder([file_prefix,'Hemispheres'])+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
-	elif newSlice in self.OceanMonths:
-		if type(newSlice) in [type(['a','b',]),type(('a','b',))]:
-		  	print 'getFileName:', newSlice,
-		  	newSlice = ''.join(newSlice)
-		  	print '-->',newSlice	  
-		filename = ukp.folder([file_prefix,'OceanMonths'])+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
-	elif newSlice in self.OceanSeasons:
-		if type(newSlice) in [type(['a','b',]),type(('a','b',))]:
-		  	print 'getFileName:', newSlice,
-		  	newSlice = ''.join(newSlice)
-		  	print '-->',newSlice	  
-		filename = ukp.folder([file_prefix,'OceanSeasons'])+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
-	elif newSlice in self.HemispheresMonths:
-		if type(newSlice) in [type(['a','b',]),type(('a','b',))]:
-		  	print 'getFileName:', newSlice,
-		  	newSlice = ''.join(newSlice)
-		  	print '-->',newSlice	  
-		filename = ukp.folder([file_prefix,'HemispheresMonths'])+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
-	else:
-	  	print 'getFileName:', newSlice,	''.join(newSlice)  ,xkey,ykey
-	  	try:fn = newSlice+'_'+xkey+'vs'+ykey
-	  	except:
-	  		print "ERROR:\tcan't add ",newSlice,xkey,ykey, 'together as strings. It breaks in getFileName, but the problem is probably in your mt dictionary in pftnames'
-		filename = file_prefix+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
+
+		
+	
+	#if newSlice in self.months.keys():
+	#	filename = ukp.folder([file_prefix,'months'])+self.name+self.region+'_'+ukp.mnStr(self.months[newSlice])+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
+	#elif newSlice in self.depthRanges:
+	#	filename = ukp.folder([file_prefix,'DepthRanges'])+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix	  
+	#elif newSlice in self.percentiles:
+	#	filename = ukp.folder([file_prefix,'Percentiles'])+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix	  
+	#elif newSlice in self.latregions:
+	#	filename = ukp.folder([file_prefix,'LatRegions'])+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix	 
+	#elif newSlice in self.QualityCuts:
+	#	filename = ukp.folder([file_prefix,'QualityCuts'])+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
+	#elif newSlice in self.Seas:
+	#	filename = ukp.folder([file_prefix,'Seas'])+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
+	#elif newSlice in self.Seasons:
+	#	filename = ukp.folder([file_prefix,'Seasons'])+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix		
+	#elif newSlice in self.Oceans:
+	#	filename = ukp.folder([file_prefix,'Oceans'])+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
+	#elif newSlice in self.Hemispheres:
+	#	filename = ukp.folder([file_prefix,'Hemispheres'])+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
+	#elif newSlice in self.OceanMonths:
+	#	if type(newSlice) in [type(['a','b',]),type(('a','b',))]:
+	#	  	print 'getFileName:', newSlice,
+	#	  	newSlice = ''.join(newSlice)
+	#	  	print '-->',newSlice	  
+	#	filename = ukp.folder([file_prefix,'OceanMonths'])+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
+	#elif newSlice in self.OceanSeasons:
+	#	if type(newSlice) in [type(['a','b',]),type(('a','b',))]:
+	#	  	print 'getFileName:', newSlice,
+	#	  	newSlice = ''.join(newSlice)
+	#	  	print '-->',newSlice	  
+	#	filename = ukp.folder([file_prefix,'OceanSeasons'])+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
+	#elif newSlice in self.HemispheresMonths:
+	#	if type(newSlice) in [type(['a','b',]),type(('a','b',))]:
+	#	  	print 'getFileName:', newSlice,
+	#	  	newSlice = ''.join(newSlice)
+	#	  	print '-->',newSlice	  
+	#	filename = ukp.folder([file_prefix,'HemispheresMonths'])+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
+	#else:
+	# 	print 'getFileName:', newSlice,	''.join(newSlice)  ,xkey,ykey
+	#  	try:fn = newSlice+'_'+xkey+'vs'+ykey
+	#  	except:
+	#  		print "ERROR:\tcan't add ",newSlice,xkey,ykey, 'together as strings. It breaks in getFileName, but the problem is probably in your mt dictionary in pftnames'
+	#	filename = file_prefix+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
 	return filename
 
 

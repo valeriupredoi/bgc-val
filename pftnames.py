@@ -56,6 +56,10 @@ months = [m for m in month_name if m]	# Because months starts at 1, and 0 is emp
 OceanMonth_names = [o+m for o in Ocean_names for m in months]
 OceanSeason_names = [o+s for o in Ocean_names for s in Seasons]
 HemispheresMonths = [h+m for h in Hemispheres for m in months] 	
+
+
+
+
 #####
 # Get Match Type:
 #	
@@ -337,8 +341,8 @@ def getmt(loadYaml=False):
 #	shelvename = workingDir + model+'-'+jobID+'-'+year+'/'+name+'_'+newslice+'_'xkey+'vs'+ykey+'.shelve'
 	#return shelve
 
-def getLongName(text):
-	print "Getting long name:",text
+def getLongName(text,debug=False):
+	if debug: print "Getting long name:",text
 	if type(text) in [type(['a','b',]),type(('a','b',))]:
 		return ' '.join([getLongName(t) for t in text])
 		#out = ''

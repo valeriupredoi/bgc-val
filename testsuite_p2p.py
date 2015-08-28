@@ -28,7 +28,7 @@ from os.path import exists
 from calendar import month_name
 
 #Specific local code:
-from UKESMpython import folder,getFileList, AutoVivification, NestedDict,AutoVivToYaml,YamlToDict
+from UKESMpython import folder,getFileList, AutoVivification, NestedDict,AutoVivToYaml,YamlToDict, slicesDict
 from p2p import matchDataAndModel,makePlots,makeTargets, csvFromShelves, makePatternStatsPlots
 #from 
 from pftnames import MaredatTypes,WOATypes,Ocean_names,OceanMonth_names,months, Seasons,Hemispheres,HemispheresMonths, OceanSeason_names,getmt
@@ -41,7 +41,7 @@ from pftnames import MaredatTypes,WOATypes,Ocean_names,OceanMonth_names,months, 
 def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 			year=1998,
 			jobID='xhonp',
-			plotallcuts = False,):
+			):
 
 	#####
 	# Can use command line arguments to choose a model.
@@ -86,8 +86,8 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 	
 	#####
 	# Which analysis to run
-	doCHL 		= 0#True
-	doDMS_clim	= 0#True
+	doCHL 		= True
+	doDMS_clim	= True
 	doDMS_pixels	= True
 	doDMS_pixels2	= 0#True
 	doMAREDAT 	= 0#True
@@ -134,7 +134,6 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 			av[dms]['MEDUSA']['Vars'] 		= [dmsd[dms],]
 			av[dms]['regions'] 			= ['Surface',]	
 			av[dms]['MEDUSA']['grid'] = 'Flat1deg'
-		plotallcuts =  True # False#
 
 	if doDMS_pixels:
 		dmsd= {'dms_p_and':'anderson','dms_p_ara':'aranamit','dms_p_hal':'halloran','dms_p_sim':'simodach'} 
@@ -145,7 +144,6 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 			av[dms]['MEDUSA']['Vars'] 		= [dmsd[dms],]			
 			av[dms]['regions'] 			= ['Surface',]	
 			av[dms]['MEDUSA']['grid'] = 'Flat1deg'
-		plotallcuts =   True # False#
 
 	if doDMS_pixels2:
 		#dmsd= {'dms_p_and':'anderson','dms_p_ara':'aranamit','dms_p_hal':'halloran','dms_p_sim':'simodach'} 
@@ -162,7 +160,6 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 			#av[dms]['MEDUSA']['Vars'] 		= dmsd[dms]
 			av[dms]['regions'] 			= ['Surface',]	
 			av[dms]['MEDUSA']['grid'] = 'Flat1deg'
-		plotallcuts =  0#True # False#
 		
 						
 	if doMAREDAT:
@@ -305,6 +302,53 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 	#av = YamlToDict(folder('yaml')+'P2P_Settings.yaml',)
 	#print av.keys(), av['chl'].keys(),av['chl']['MEDUSA']
 	
+	plotallcuts = True
+	if plotallcuts:
+		 plotMonths		=True
+		 plotdepthRanges	=0
+		 plotpercentiles	=0#True	
+		 plotLatRegions		=0# True
+		 plotQualityCuts	=0#True	
+		 plotSeas		=0#True		 
+		 plotOceans		=True
+		 plotHemispheres	=0# True
+		 plotSeasons		=0# True
+		 plotOceanSeasons	=0# True		 		 
+		 plotOceanMonths   	=0#True	
+		 plotHemispheresMonths  =True			 
+	else: 	
+		 plotMonths		=0#True
+		 plotdepthRanges	=0#True	
+		 plotpercentiles	=0#True	
+		 plotLatRegions		=0#True
+		 plotQualityCuts	=0#True
+		 plotSeas		=0#True		 
+		 plotOceans		=0#True	
+		 plotHemispheres	=0		 
+		 plotSeasons		=0# True
+		 plotOceanSeasons	=0# True		 
+		 plotOceanMonths   	=0	 	 	 
+		 plotHemispheresMonths  =0			 
+
+	newSlices = ['All', 'Standard',]	# Defaults
+	if plotMonths: 	 	newSlices.extend(slicesDict['Months'])
+	if plotdepthRanges: 	newSlices.extend(slicesDict['depthRanges'])
+	if plotpercentiles: 	newSlices.extend(slicesDict['percentiles'])
+	if plotLatRegions:	newSlices.extend(slicesDict['latregions'])	
+	if plotQualityCuts: 	newSlices.extend(slicesDict['QualityCuts'])		
+	if plotSeas: 	 	newSlices.extend(slicesDict['Seas'])			
+	if plotOceans: 	 	newSlices.extend(slicesDict['Oceans'])
+	if plotHemispheres: 	newSlices.extend(slicesDict['Hemispheres'])	
+	if plotSeasons: 	newSlices.extend(slicesDict['Seasons'])
+	if plotOceanSeasons:	newSlices.extend(slicesDict['OceanSeasons'])		
+	if plotOceanMonths: 	newSlices.extend(slicesDict['OceanMonths'])
+	if plotHemispheresMonths: newSlices.extend(slicesDict['HemispheresMonths'])	
+
+	print 'newSlices:', newSlices
+	
+	
+	
+
 	
 	
 	#####
@@ -372,14 +416,15 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 			# MakePlot runs a series of analysis, comparing every pair in DataVars and ModelVars
 			#	 under a range of different masks. For instance, only data from Antarctic Ocean, or only data from January.
 			# The makePlot produces a shelve file in workingDir containing all results of the analysis.
-			imageDir	= folder(imageFolder +'P2Pplots/'+years[model]+'/'+name+region)			
+			imageDir	= folder(imageFolder +'P2Pplots/'+years[model]+'/'+name+region)	
+			print newSlices		
 			m = makePlots(	b.MatchedDataFile, 
 					b.MatchedModelFile, 
 					name, 
-					model, 
+					#model, 
+					newSlices 	= newSlices,
 					region 		= region,
 					year 		= years[model], 
-					plotallcuts	= plotallcuts, 
 					shelveDir 	= folder(workingDir+name+region),
 					imageDir	= imageDir,
 					compareCoords	=True)
@@ -457,8 +502,9 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 			  	filenamebase = folder(imageFolder+'/Patterns/'+years[model]+'/'+name)+'Months-'+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region
 				makePatternStatsPlots(	{name:MonthShelves,}, # {legend, shelves}
 							'Months',	#xkeysname
-							months,#xkeysLabels=
-							filenamebase,	# filename base						
+							slicesDict['Months'],#xkeysLabels=
+							filenamebase,	# filename base	
+							grid	= grid,												
 							)						
 		
 												
@@ -471,8 +517,9 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 		  		filenamebase = folder(imageFolder+'/Patterns/'+years[model]+'/'+name)+'Oceans-'+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region
 				makePatternStatsPlots(	{name:OceanShelves,}, # {legend, shelves}
 							'Oceans',	#xkeysname
-							Ocean_names,#xkeysLabels=
-							filenamebase,	# filename base						
+							slicesDict['Oceans'],#xkeysLabels=
+							filenamebase,	# filename base	
+							grid	= grid,
 							)
 			
 			if len(OceanMonthShelves.keys()):										
@@ -488,8 +535,9 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 				  	filenamebase = folder(imageFolder+'/Patterns/'+years[model]+'/'+name)+'OceanMonths-'+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region
 					makePatternStatsPlots(	OceanMonthShelves, # {legend, shelves}
 							'Ocean Months',	#xkeysname
-							months,#xkeysLabels=
+							slicesDict['Months'],#xkeysLabels=
 							filenamebase,	# filename base						
+							grid	= grid,							
 							)
 			#assert False						
 			for o in OceanSeasonsShelves.keys():
@@ -504,8 +552,9 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 				  	filenamebase = folder(imageFolder+'/Patterns/'+years[model]+'/'+name)+'OceanSeasons-'+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region
 					makePatternStatsPlots(	OceanSeasonsShelves, # {legend, shelves}
 							'Ocean Seasons',	#xkeysname
-							seasons,	#xkeysLabels=
-							filenamebase,	# filename base						
+							slicesDict['Seasons'],	#xkeysLabels=
+							filenamebase,	# filename base	
+							grid	= grid,												
 							)
 													
 			for o in HemisphereMonthShelves.keys():
@@ -520,8 +569,9 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 				  	filenamebase = folder(imageFolder+'/Patterns/'+years[model]+'/'+name)+'HemisphereMonths-'+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region
 					makePatternStatsPlots(	HemisphereMonthShelves, # {legend, shelves}
 							'Hemisphere Months',	#xkeysname
-							months,			#xkeysLabels=
-							filenamebase,		# filename base						
+							slicesDict['Months'],			#xkeysLabels=
+							filenamebase,		# filename base	
+							grid	= grid,												
 							)
 																			
 			#print OceanMonthShelves

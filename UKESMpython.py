@@ -27,6 +27,7 @@ from netCDF4 import Dataset
 from os.path  import exists,getmtime
 from os import mkdir, makedirs
 from glob import glob
+from itertools import product
 import numpy as np
 from matplotlib import pyplot
 from mpl_toolkits.basemap import Basemap
@@ -191,8 +192,26 @@ class NestedDict(dict):
         dict.__setitem__(self, keys, value)
         
         
-        
-        
+def getGridFile(grid):
+	if grid.upper() in ['ORCA1',]:
+		#grid = 'ORCA1'
+		gridFile    = "data/mesh_mask_ORCA1_75.nc"		
+	if grid in ['Flat1deg',]:	
+		gridFile = 'data/Flat1deg.nc' 
+				
+	if grid.upper() in ['ORCA025',]:	
+		#####
+		# Please add files to link to 
+		for orcafn in [ "/data/euryale7/scratch/ledm/UKESM/MEDUSA-ORCA025/mesh_mask_ORCA025_75.nc",	# PML
+				"/group_workspaces/jasmin/esmeval/example_data/bgc/mesh_mask_ORCA025_75.nc",]:	# JASMIN
+			if exists(orcafn):	gridFile  = orcafn
+		try: 
+			if exists(gridFile):pass
+		except: 
+			print "UKESMpython:\tgetGridFile:\tERROR:\tIt's not possible to load the ORCA025 grid on this machine."+ \
+			      "\n\t\t\tPlease add the ORCA025 file to the orcafn getGridFile() list to UKESMpython.py"
+			assert False
+        return gridFile
 	
 def sliceA(arr,region):
 	# you should already have removed time by now.
@@ -917,6 +936,69 @@ def makeLonSafeArr(lon):
 	 return lon
 	 	 
 	assert False
+
+
+def getSlicesDict():
+	slicesDict = {}
+	standardCuts = ['5-95pc','ignoreInlandSeas','OffShelf','ignoreExtraArtics','aboveZero',]	
+	months = {month_name[i+1]:i for i in xrange(0,12) }
+	depthRanges	=['OffShelf','maskBelowBathy', 'OnShelf',] 
+				 # 'Depth_0-10m','Depth_10-20m','Depth_20-50m','Depth_50-100m','Depth_100-500m','Depth_500m',
+	percentiles	=['0-1pc','1-5pc','5-25pc',
+				  '25-40pc','40-60pc','60-75pc',
+				  '75-95pc','95-99pc','99-100pc',]
+	latregions	=['NorthTemperate','SouthTemperate','NorthTropics',
+				  'Equatorial',  'SouthTropics','Antarctic',
+				  'NorthArctic',
+				  'Arctic','Tropics','Temperate']
+	Hemispheres	=['NorthHemisphere','SouthHemisphere',]
+	Seas		=['ignoreMediteranean','BlackSea','ignoreBlackSea',
+				  'RedSea','BalticSea','PersianGulf',
+				  'ignoreInlandSeas',	
+				   'ignoreRedSea', 'ignoreBalticSea','ignorePersianGulf',]
+	Oceans		=['SouthPacificOcean',  'ArcticOcean',
+				  'AntarcticOcean','NorthAtlanticOcean','SouthAtlanticOcean',
+				 'NorthPacificOcean','IndianOcean', 
+				 ]#'ignoreExtraArtics','ignoreMidArtics','ignoreArtics','ignoreMoreArtics',]
+	QualityCuts 	=['Overestimate','Underestimate','Overestimate_2sig',
+				  'Underestimate_2sig','Overestimate_3sig','Underestimate_3sig', 
+				  'Matched','OffAxis','1-99pc',
+				  '5-95pc','0-99pc',]
+	Seasons		=['JFM','AMJ','JAS','OND'] 
+	OceanMonths	= sorted([i for i in product(Oceans,months)] )
+	HemispheresMonths	= sorted([i for i in product(Hemispheres,months)] )	
+	HemispheresSeasons	= sorted([i for i in product(Hemispheres,Seasons)] )		
+	OceanMonths.extend(sorted([i for i in product(['All',],months)]))
+	OceanSeasons	= sorted([i for i in product(Oceans,Seasons)] )
+	newSlices =['All','Standard',]
+	newSlices.extend(months.keys())
+	newSlices.extend(depthRanges)
+	newSlices.extend(percentiles)
+	newSlices.extend(latregions)	
+	newSlices.extend(QualityCuts)	
+	newSlices.extend(Seas)		
+	newSlices.extend(Oceans)
+	newSlices.extend(Hemispheres)	
+	newSlices.extend(Seasons)
+	newSlices.extend(OceanSeasons)
+	newSlices.extend(OceanMonths)
+	newSlices.extend(HemispheresMonths)
+	newSlices.extend(HemispheresSeasons)	
+
+	slicesDict['Default'] 	= ['All','Standard',]		
+	slicesDict['AllSlices'] 	= newSlices
+	slicesDict['Months'] 		= months.keys()	
+	slicesDict['Hemispheres'] 	= Hemispheres	
+	slicesDict['Oceans'] 		= Oceans	
+	slicesDict['Seasons'] 		= Seasons	
+	slicesDict['OceanMonths'] 	= OceanMonths	
+	slicesDict['OceanSeasons'] 	= OceanSeasons	
+	slicesDict['HemispheresMonths'] = HemispheresMonths							
+	slicesDict['HemispheresSeasons'] = HemispheresSeasons								
+	return slicesDict
+slicesDict = getSlicesDict()
+
+
 		      	
 def makeMask(name,newSlice, xt,xz,xy,xx,xd):	  
 	print "makePlots:\tmakeMask:\tinitialise:\t",name, '\t',newSlice
