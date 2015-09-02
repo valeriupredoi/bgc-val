@@ -67,6 +67,7 @@ class matchDataAndModel:
 		print "matchDataAndModel:\tINFO:\tData file:  \t",DataFile
 		print "matchDataAndModel:\tINFO:\tModel file: \t",ModelFile
 		print "matchDataAndModel:\tINFO:\tData Type:  \t",dataType
+		print "matchDataAndModel:\tINFO:\tGrid:  \t",grid		
 			
 	self.DataFile=DataFile
 	self.ModelFile = ModelFile 

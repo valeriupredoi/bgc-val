@@ -64,7 +64,7 @@ noXYLogs 	= [ 'pCO2',
 
 
 class makePlots:
-  def __init__(self,matchedDataFile,matchedModelFile, name, newSlices =['All','Standard'], jobID='MEDUSA',year='clim',region='', compareCoords=True,shelveDir='',imageDir='',): #xfilename,yfilename,saveShelve=True,
+  def __init__(self,matchedDataFile,matchedModelFile, name, model = 'ERSEM', jobID='xhonc',year='clim',region='', newSlices =['All','Standard'], compareCoords=True,shelveDir='',imageDir='',): #xfilename,yfilename,saveShelve=True,
 
   
   	self.xfn =matchedModelFile
@@ -72,7 +72,9 @@ class makePlots:
     	self.name = name
     	self.newSlices = newSlices
     	self.region = region
-  	self.xtype = jobID
+  	self.xtype = model  	
+  	self.model = model  	
+  	self.jobID = jobID
   	self.year = year
   	self.shelveDir = shelveDir
   	self.compareCoords = compareCoords
@@ -256,7 +258,7 @@ class makePlots:
 		  	fullmask += ukp.makeMask(self.name,n,self.yt,self.yz,self.yy,self.yx,yd).astype(int)	  
 		  	
 	elif newSlice == 'Standard':				# Standard is a shorthand for my favourite cuts.
-	  	for stanSlice in self.standardCuts: 
+	  	for stanSlice in ukp.slicesDict['StandardCuts']: 
 			if self.name in ['tempSurface','tempTransect', 'tempAll'] and stanSlice in ['aboveZero',]:continue 
 				    						
 	  		fullmask += ukp.makeMask(self.name,stanSlice,self.xt,self.xz,self.xy,self.xx,xd).astype(int)

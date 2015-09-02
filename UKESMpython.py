@@ -942,6 +942,7 @@ def getSlicesDict():
 	slicesDict = {}
 	standardCuts = ['5-95pc','ignoreInlandSeas','OffShelf','ignoreExtraArtics','aboveZero',]	
 	months = {month_name[i+1]:i for i in xrange(0,12) }
+	
 	depthRanges	=['OffShelf','maskBelowBathy', 'OnShelf',] 
 				 # 'Depth_0-10m','Depth_10-20m','Depth_20-50m','Depth_50-100m','Depth_100-500m','Depth_500m',
 	percentiles	=['0-1pc','1-5pc','5-25pc',
@@ -985,9 +986,10 @@ def getSlicesDict():
 	newSlices.extend(HemispheresMonths)
 	newSlices.extend(HemispheresSeasons)	
 
-	slicesDict['Default'] 	= ['All','Standard',]		
+	slicesDict['Default'] 		= ['All','Standard',]		
+	slicesDict['StandardCuts'] 	= standardCuts
 	slicesDict['AllSlices'] 	= newSlices
-	slicesDict['Months'] 		= months.keys()	
+	slicesDict['Months'] 		= [month_name[i+1] for i in xrange(0,12) ]
 	slicesDict['Hemispheres'] 	= Hemispheres	
 	slicesDict['Oceans'] 		= Oceans	
 	slicesDict['Seasons'] 		= Seasons	
@@ -1053,13 +1055,19 @@ def makeMask(name,newSlice, xt,xz,xy,xx,xd):
 				if  bathy[la,lo] < shelfDepth:  nmask[i]=1
 		
 			if i%100000==0:# or i==(len(xz)+1):
+			    try:
 				s = shOpen(shelveFn)		
 				s['lldict'] = lldict 
 				s.close()
+			    except:
+			    	print "makeMask:\tWARNING:\tUnable to save lldict at this time"
 		if i > 0:
+		    try:
 			s = shOpen(shelveFn)		
 			s['lldict'] = lldict 
 			s.close()
+		    except:
+		    	print "makeMask:\tWARNING:\tUnable to save lldict at this time"
 		print "Bathy mask:", newSlice, nmask.sum(), 'of', len(nmask)
 		return nmask
 		
