@@ -28,22 +28,22 @@ from os.path import exists
 from calendar import month_name
 
 #Specific local code:
-from UKESMpython import folder,getFileList, AutoVivification, NestedDict,AutoVivToYaml,YamlToDict
-from p2p import matchDataAndModel,makePlots,makeTargets, csvFromShelves
+from UKESMpython import folder,getFileList, AutoVivification, NestedDict,AutoVivToYaml,YamlToDict, slicesDict
+from p2p import matchDataAndModel,makePlots,makeTargets, csvFromShelves, makePatternStatsPlots
 #from 
-from pftnames import MaredatTypes,WOATypes,Ocean_names,getmt
+from pftnames import MaredatTypes,WOATypes,Ocean_names,OceanMonth_names,months, Seasons,Hemispheres,HemispheresMonths, OceanSeason_names,getmt
 
 ###	Potential problems?
 ###		Reliance on ORCA1 grid
 from shelve import open as shOpen
-
+import numpy as np
 # Will not run this code in MO.
 from ncdfView import ncdfView
 
 def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankTOM6','PlankTOM10'],
 			year=1998,
 			#ERSEMjobID='xhonc',
-			plotallcuts = False,):
+			plotallcuts = True,):
 
 	
 	#####
@@ -108,18 +108,61 @@ def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankT
 	doCHL 		= True
 	doN		= True
 	doSi		= True
-	doPCO2		= True
-	doIntPP		= True
-	
+	doPCO2		= 0#True
+	doIntPP		= 0#True
 	doO2		= False		# not yet implemented.
 	doDIC		= False		# What database?
-	
 	doP		= 0#True	# Phosphate is not an iMarNet value in the monthly surface field.
 	doFe		= 0#True 	# Iron is a challenge in IMarNet because we only keep surface values.
 
-	#doPSF		= 0#True	
-	#doSalTemp	= 0#True
-	#doMLD		= 0#True
+	#####
+	# Set which spatial and temporal limitations to plot.
+	#plotallcuts = True
+	if plotallcuts:
+		 plotDefaults		=True		 
+		 plotMonths		=True
+		 plotdepthRanges	=0
+		 plotpercentiles	=0#True	
+		 plotLatRegions		=0# True
+		 plotQualityCuts	=0#True	
+		 plotSeas		=0#True		 
+		 plotOceans		=True
+		 plotHemispheres	=0# True
+		 plotSeasons		=0# True
+		 plotOceanSeasons	= True		 		 
+		 plotOceanMonths   	=0#True	
+		 plotHemispheresMonths  =True			 
+	else: 	
+		 plotDefaults		=True		 	
+		 plotMonths		=0#True
+		 plotdepthRanges	=0#True	
+		 plotpercentiles	=0#True	
+		 plotLatRegions		=0#True
+		 plotQualityCuts	=0#True
+		 plotSeas		=0#True		 
+		 plotOceans		=0#True	
+		 plotHemispheres	=0		 
+		 plotSeasons		=0# True
+		 plotOceanSeasons	=0# True		 
+		 plotOceanMonths   	=0	 	 	 
+		 plotHemispheresMonths  =0			 
+
+	if plotDefaults:	newSlices = ['All', 'Standard',]# Defaults
+	else:			newSlices = []
+	if plotMonths: 	 	newSlices.extend(slicesDict['Months'])
+	if plotdepthRanges: 	newSlices.extend(slicesDict['depthRanges'])
+	if plotpercentiles: 	newSlices.extend(slicesDict['percentiles'])
+	if plotLatRegions:	newSlices.extend(slicesDict['latregions'])	
+	if plotQualityCuts: 	newSlices.extend(slicesDict['QualityCuts'])		
+	if plotSeas: 	 	newSlices.extend(slicesDict['Seas'])			
+	if plotOceans: 	 	newSlices.extend(slicesDict['Oceans'])
+	if plotHemispheres: 	newSlices.extend(slicesDict['Hemispheres'])	
+	if plotSeasons: 	newSlices.extend(slicesDict['Seasons'])
+	if plotOceanSeasons:	newSlices.extend(slicesDict['OceanSeasons'])		
+	if plotOceanMonths: 	newSlices.extend(slicesDict['OceanMonths'])
+	if plotHemispheresMonths: newSlices.extend(slicesDict['HemispheresMonths'])	
+
+
 			
 	#####
 	# AutoVivification is a form of nested dictionary.
@@ -141,6 +184,7 @@ def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankT
 			if 'chl' in modelSkips[m]:continue
 			av['chl'][m]['Vars'] 		= ['chl',]						
 			av['chl'][m]['File']		= iMarNetFolder+iMarNetFiles[m]
+			av['chl'][m]['grid']		= 'ORCA1'
 		av['chl']['regions'] 			= regions
 		
 	if doN:
@@ -150,6 +194,7 @@ def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankT
 			if 'no3' in modelSkips[m]:continue		
 			av['nitrate'][m]['Vars'] 	= ['no3',]						
 			av['nitrate'][m]['File']	= iMarNetFolder+iMarNetFiles[m]
+			av['nitrate'][m]['grid']	= 'ORCA1'
 		av['nitrate']['regions'] 		= regions
 
 	if doP:
@@ -159,6 +204,7 @@ def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankT
 			if 'po4' in modelSkips[m]:continue		
 			av['phosphate'][m]['Vars'] 	= ['po4',]						
 			av['phosphate'][m]['File']	= iMarNetFolder+iMarNetFiles[m]
+			av['phosphate'][m]['grid']	= 'ORCA1'
 		av['nitrate']['regions'] 		= regions
 				
 	if doSi:
@@ -168,6 +214,7 @@ def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankT
 			if 'si' in modelSkips[m]:continue
 			av['silicate'][m]['Vars'] 	= ['si',]
 			av['silicate'][m]['File']	= iMarNetFolder+iMarNetFiles[m]
+			av['silicate'][m]['grid']	= 'ORCA1'
 		av['silicate']['regions'] 		= regions
 		
 	if doIntPP:
@@ -179,6 +226,7 @@ def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankT
 		for m in models:
 			av['intpp'][m]['Vars'] 	= ['intpp',]						
 			av['intpp'][m]['File']	= iMarNetFolder+iMarNetFiles[m]
+			av['intpp'][m]['grid']	= 'ORCA1'
 		av['intpp']['regions'] 		= regions
 		
 	if doFe:
@@ -188,6 +236,7 @@ def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankT
 		for m in models:
 			av['iron'][m]['Vars'] 	= ['dfe',]						
 			av['iron'][m]['File']	= iMarNetFolder+iMarNetFiles[m]
+			av['iron'][m]['grid']	= 'ORCA1'
 		av['iron']['regions'] 		= ['',]
 	
 	if doPCO2:
@@ -197,6 +246,7 @@ def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankT
 			if 'pCO2' in modelSkips[m]:continue		
 			av['pCO2'][m]['Vars'] 	= ['spco2',]						
 			av['pCO2'][m]['File']	= iMarNetFolder+iMarNetFiles[m]
+			av['pCO2'][m]['grid']	= 'ORCA1'
 		av['pCO2']['regions'] 		=  ['',]
 			
 
@@ -248,8 +298,8 @@ def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankT
 			
 			#####
 			# Location of image Output files
-			imageFolder 	= folder('images/iMarNet/'+model+'-'+jobIDs[model])
-			workingDir = folder("/data/euryale7/scratch/ledm/ukesm_postProcessed/iMarNet/"+model+'-'+jobIDs[model]+'-'+years[model])		
+			imageFolder 	= folder('images/testsuite_iMarNet/'+model+'-'+jobIDs[model])
+			workingDir = folder("/data/euryale7/scratch/ledm/ukesm_postProcessed/testsuite_iMarNet/"+model+'-'+jobIDs[model]+'-'+years[model])		
 
 		
 			try:
@@ -273,6 +323,14 @@ def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankT
 			# matchDataAndModel:
 			# Match (real) Data and Model. 
 			# Does not produce and plots.
+
+			# Grid Testtry:	
+			grid = av[name][model]['grid']
+			#except: grid = 'ORCA1'
+			if grid in ['', [], {}, None]	: 
+				print "testsuite_p2p.py:\tERROR:\tgrid not found:\tav[",name,"][",model,'][grid]: ',grid
+				assert False
+			
 			b = matchDataAndModel(av[name]['Data']['File'], 
 								av[name][model]['File'],
 								name,
@@ -282,7 +340,8 @@ def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankT
 								jobID		= jobIDs[model],
 								year		= years[model],
 								workingDir 	= folder(workingDir+name+region),
-								region 		= region)
+								region 		= region,
+								grid		= grid)
 							
 			#####
 			# makePlots:
@@ -295,10 +354,12 @@ def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankT
 					b.MatchedModelFile, 
 					name, 
 					#model, 
-					jobID 		= 'IMARNET_'+model,
+					newSlices 	= newSlices,
+					jobID 		= jobIDs[model],
+					model 		= 'IMARNET_'+model,						
 					region 		= region,
 					year 		= years[model], 
-					plotallcuts	= plotallcuts, 
+					#plotallcuts	= plotallcuts, 
 					shelveDir 	= folder(workingDir+name+region),
 					imageDir	= imageDir,
 					compareCoords	=True)
@@ -325,25 +386,130 @@ def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankT
 			# Ocean and month targets for this particular dataset.
 			MonthShelves = []
 			OceanShelves = []
+			OceanMonthShelves = {o:[] for o in Ocean_names}
+			OceanSeasonsShelves = {o:[] for o in Ocean_names}			
+			HemisphereMonthShelves = {o:[] for o in Hemispheres}			
+
+
 			for newSlice in m.shelvesAV.keys(): 
 			   for xkey in m.shelvesAV[newSlice].keys():
 				for ykey in m.shelvesAV[newSlice][xkey].keys():        	      
 				    shelve = m.shelvesAV[newSlice][xkey][ykey]			  
 				    if newSlice in month_name: 	MonthShelves.append(shelve)
 				    if newSlice in Ocean_names:	OceanShelves.append(shelve)
+				    
+				    # This part is for Ocean + Month cuts.
+				    if type(newSlice) in [type(['a','b',]),type(('a','b',))]:newSlice= newSlice[0]+newSlice[1]
+				    if newSlice in OceanMonth_names:
+				    	#print 'Prepping Targets',newSlice,xkey,ykey
+				    	for mn in month_name:
+				    	    t = newSlice.find(mn)
+					    #print 'Prepping Targets',newSlice, mn,newSlice[:t],t
+				    	    if t>0: 
+				   	 	#print newSlice, mn,newSlice[:t],t
+				    	    	OceanMonthShelves[newSlice[:t]].append(shelve)
+				    if newSlice in OceanSeason_names:
+				    	#print 'Prepping Targets',newSlice,xkey,ykey
+				    	for mn in Seasons:
+				    	    t = newSlice.find(mn)
+					    #print 'Prepping Targets',newSlice, mn,newSlice[:t],t
+				    	    if t>0: 
+				   	 	#print newSlice, mn,newSlice[:t],t
+				    	    	OceanSeasonsShelves[newSlice[:t]].append(shelve)				    	    	
+				    if newSlice in HemispheresMonths:
+				    	#print 'Prepping Targets',newSlice,xkey,ykey
+				    	for mn in month_name:
+				    	    t = newSlice.find(mn)
+					    #print 'Prepping Targets',newSlice, mn,newSlice[:t],t
+				    	    if t>0: 
+				   	 	#print newSlice, mn,newSlice[:t],t
+				    	    	HemisphereMonthShelves[newSlice[:t]].append(shelve)
+			#continue	   
+			#print OceanMonthShelves
+			#assert False	    	
+				    	
 			if len(MonthShelves):	    
 			  	filename = folder(imageFolder+'/Targets/'+years[model]+'/Months')+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region+'_Months.png'
 				makeTargets(	MonthShelves, 
 						filename,
 						legendKeys = ['newSlice',],					
 						)
+			  	filenamebase = folder(imageFolder+'/Patterns/'+years[model]+'/'+name)+'Months-'+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region
+				makePatternStatsPlots(	{name:MonthShelves,}, # {legend, shelves}
+							'Months',	#xkeysname
+							slicesDict['Months'],#xkeysLabels=
+							filenamebase,	# filename base	
+							grid	= grid,												
+							)						
+		
+												
 			if len(OceanShelves):	
 				filename = folder(imageFolder+'/Targets/'+years[model]+'/Oceans')+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region+'_Oceans.png'
 				makeTargets(	OceanShelves, 
 						filename,
 						legendKeys = ['newSlice',],					
 						)
+		  		filenamebase = folder(imageFolder+'/Patterns/'+years[model]+'/'+name)+'Oceans-'+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region
+				makePatternStatsPlots(	{name:OceanShelves,}, # {legend, shelves}
+							'Oceans',	#xkeysname
+							slicesDict['Oceans'],#xkeysLabels=
+							filenamebase,	# filename base	
+							grid	= grid,
+							)
 
+			if len(OceanMonthShelves.keys()):										
+				for o in OceanMonthShelves.keys():
+				    if len(OceanMonthShelves[o]):
+					filename = folder(imageFolder+'/Targets/'+years[model]+'/OceanMonths/'+o)+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region+'_'+o+'Months.png'
+					makeTargets(	OceanMonthShelves[o], 
+							filename,
+							legendKeys = ['newSlice',],					
+							)
+				counts = [len(sh) for i,sh in OceanMonthShelves.items()]
+				if max(counts)>0:
+				  	filenamebase = folder(imageFolder+'/Patterns/'+years[model]+'/'+name)+'OceanMonths-'+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region
+					makePatternStatsPlots(	OceanMonthShelves, # {legend, shelves}
+							'Ocean Months',	#xkeysname
+							slicesDict['Months'],#xkeysLabels=
+							filenamebase,	# filename base						
+							grid	= grid,							
+							)
+			#assert False						
+			for o in OceanSeasonsShelves.keys():
+			    if len(OceanSeasonsShelves[o]):
+				filename = folder(imageFolder+'/Targets/'+years[model]+'/OceanSeasons/'+o)+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region+'_'+o+'Seasons.png'
+				makeTargets(	OceanSeasonsShelves[o], 
+						filename,
+						legendKeys = ['newSlice',],					
+						)
+				counts = [len(sh) for i,sh in OceanSeasonsShelves.items()]
+				if max(counts)>0:
+				  	filenamebase = folder(imageFolder+'/Patterns/'+years[model]+'/'+name)+'OceanSeasons-'+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region
+					makePatternStatsPlots(	OceanSeasonsShelves, # {legend, shelves}
+							'Ocean Seasons',	#xkeysname
+							slicesDict['Seasons'],	#xkeysLabels=
+							filenamebase,	# filename base	
+							grid	= grid,												
+							)
+													
+			for o in HemisphereMonthShelves.keys():
+			    if len(HemisphereMonthShelves[o]):
+				filename = folder(imageFolder+'/Targets/'+years[model]+'/Hemispheres/'+o)+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region+'_'+o+'Hemispheres.png'
+				makeTargets(	HemisphereMonthShelves[o], 
+						filename,
+						legendKeys = ['newSlice',],					
+						)
+				counts = [len(sh) for i,sh in HemisphereMonthShelves.items()]
+				if max(counts)>0:
+				  	filenamebase = folder(imageFolder+'/Patterns/'+years[model]+'/'+name)+'HemisphereMonths-'+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region
+					makePatternStatsPlots(	HemisphereMonthShelves, # {legend, shelves}
+							'Hemisphere Months',	#xkeysname
+							slicesDict['Months'],			#xkeysLabels=
+							filenamebase,		# filename base	
+							grid	= grid,												
+							)
+																			
+			#print OceanMonthShelves
 		#####				
 		# Here are some fields for comparing fields in the same model
 		Summary= {}		
@@ -358,30 +524,110 @@ def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankT
 		Summary['SurfaceMetricsStandard'] = []			
 		surfacemetrics = ['chl', 'pCO2', 'nitrate',]
 							
+		dmsmetrics = ['dms_and','dms_ara','dms_hal','dms_sim']
+		dmspmetrics = ['dms_p_and','dms_p_ara','dms_p_hal','dms_p_sim']	
+		nitrates   = ['nitrate'+ s   for s in regions]	
+		phosphates = ['phosphate'+ s for s in regions]	
+		silicates  = ['silicate'+ s  for s in regions]	
+						
+		Summary['DMSAll'] = []
+		Summary['DMSStandard']=[]	
+		Summary['DMS_p_All'] = []
+		Summary['DMS_p_Standard']=[]
+
+		PatternTypes = ['DMS_p','DMS_e','Maredat','WOA','Nitrates','Phosphates','Silicates']
+		MonthsPatterns = {p:{} for p in PatternTypes}
+		OceansPatterns = {p:{} for p in PatternTypes}	
+		
+		#'DMS_p':{},'DMS_e':{},'Maredat':{},'WOA':{},''}
+		#OceansPatterns = {'DMS_p':{},'DMS_e':{},'Maredat':{},'WOA':{},}		
+
+		for name_init in shelvesAV[model].keys():
+		    for r in av[name_init]['regions']:
+		        name =name_init+r
+			if name in MaredatTypes: 
+				OceansPatterns['Maredat'][name] = []
+			  	MonthsPatterns['Maredat'][name] = []
+			if name in WOATypes: 
+				OceansPatterns['WOA'][name] = []
+			  	MonthsPatterns['WOA'][name] = []
+			if name in dmsmetrics: 
+				OceansPatterns['DMS_e'][name] = []
+			  	MonthsPatterns['DMS_e'][name] = []
+			if name in dmspmetrics: 
+				OceansPatterns['DMS_p'][name] = []
+			  	MonthsPatterns['DMS_p'][name] = []
+
+			if name in nitrates: 
+				OceansPatterns['Nitrates'][name] = []
+			  	MonthsPatterns['Nitrates'][name] = []
+			if name in phosphates: 
+				OceansPatterns['Phosphates'][name] = []
+			  	MonthsPatterns['Phosphates'][name] = []
+			if name in silicates: 
+				OceansPatterns['Silicates'][name] = []
+			  	MonthsPatterns['Silicates'][name] = []				  	
+			
+
 		for name in shelvesAV[model].keys():
 		  for region in shelvesAV[model][name].keys():
 		    for newSlice in shelvesAV[model][name][region].keys(): 
 		      for xkey in shelvesAV[model][name][region][newSlice].keys():
 			for ykey in shelvesAV[model][name][region][newSlice][xkey].keys():        	      
 			  	shelve = shelvesAV[model][name][region][newSlice][xkey][ykey]
+			       	namer =name+region			  	
 	       		  	if newSlice == 'All':		Summary['AllAll'].append(shelve)
 	       		  	if newSlice == 'Standard':	Summary['AllStandard'].append(shelve)
-				if name in MaredatTypes:
+
+				if namer in surfacemetrics:
+				  	if newSlice == 'All':		Summary['SurfaceMetricsAll'].append(shelve)
+				  	if newSlice == 'Standard':	Summary['SurfaceMetricsStandard'].append(shelve)
+				  		       		  	
+				if namer in MaredatTypes:
 	        		  	if newSlice == 'All':		Summary['MaredatAll'].append(shelve)
 	        		  	if newSlice == 'Standard':	Summary['MaredatStandard'].append(shelve)
-	        		if name in WOATypes:
+					if newSlice in Ocean_names:	OceansPatterns['Maredat'][namer].append(shelve)
+					if newSlice in months:		MonthsPatterns['Maredat'][namer].append(shelve)
+											        		  	
+	        		if namer in WOATypes:
 	        		  	if newSlice == 'All':		Summary['WOAAll'].append(shelve)
 	        		  	if newSlice == 'Standard':	Summary['WOAStandard'].append(shelve)	
+					if newSlice in Ocean_names:	OceansPatterns['WOA'][namer].append(shelve)
+					if newSlice in months:		MonthsPatterns['WOA'][namer].append(shelve)
 	        		
-	        		if name in surfacemetrics:
-	        		  	if newSlice == 'All':		Summary['SurfaceMetricsAll'].append(shelve)
-	        		  	if newSlice == 'Standard':	Summary['SurfaceMetricsStandard'].append(shelve)	
+	        		if namer in dmsmetrics:
+	        		  	if newSlice == 'All':		Summary['DMSAll'].append(shelve)
+	        		  	if newSlice == 'Standard':	Summary['DMSStandard'].append(shelve)
+					if newSlice in Ocean_names:	OceansPatterns['DMS_e'][namer].append(shelve)
+					if newSlice in months:		MonthsPatterns['DMS_e'][namer].append(shelve)
 	        		  		        				
+	        		if namer in dmspmetrics:
+	        		  	if newSlice == 'All':  		Summary[ 'DMS_p_All'].append(shelve)
+	        		  	if newSlice == 'Standard':	Summary[ 'DMS_p_Standard'].append(shelve)
+					if newSlice in Ocean_names:	OceansPatterns['DMS_p'][namer].append(shelve)
+					if newSlice in months:		MonthsPatterns['DMS_p'][namer].append(shelve)
 	        		for woa in ['silicate','nitrate','phosphate','salinity','temperature','iron',]:
 	        		   for ns in ['All', 'Standard']:
-	        		   	if ns == newSlice and woa == name.lower():
+	        		   	if ns == newSlice and woa == namer.lower():
 	        		   		try: 	Summary[woa+ns].append(shelve)
 	        		   		except:	Summary[woa+ns]= [shelve,]
+
+				if namer in nitrates:
+					print 'loop Found nitrates:',namer, name, region, newSlice, shelve				
+					if newSlice in Ocean_names:	OceansPatterns['Nitrates'][namer].append(shelve)
+					if newSlice in months:		MonthsPatterns['Nitrates'][namer].append(shelve)	        
+																	
+				if namer in phosphates:
+					if newSlice in Ocean_names:	OceansPatterns['Phosphates'][namer].append(shelve)
+					if newSlice in months:		MonthsPatterns['Phosphates'][namer].append(shelve)	
+					
+				if namer in silicates:
+					if newSlice in Ocean_names:	OceansPatterns['Silicates'][namer].append(shelve)
+					if newSlice in months:		MonthsPatterns['Silicates'][namer].append(shelve)	
+					  	#Patterns['DMS_p'][name].append(shelve)
+					  	#if newSlice not in patternShelves: patternShelves.append(newSlice)
+	        print 'OceansPatterns:', OceansPatterns
+	        print 'MonthsPatterns:', MonthsPatterns	        
 		for k in Summary.keys():
 			filename = folder(imageFolder+'/Targets/'+years[model]+'/Summary')+model+'_'+years[model]+'_'+k+'.png'
 			
@@ -389,6 +635,32 @@ def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankT
 					filename,
 					legendKeys = ['name',],
 					debug=True)
+					
+		for k in OceansPatterns.keys():
+			print 'OceansPatterns:',k			
+			if len(OceansPatterns[k]) ==0: continue				
+			filenamebase = folder(imageFolder+'/Patterns/'+years[model]+'/OceansPatterns/')+k+'_'+model+'-'+jobIDs[model]+'_'+years[model]+'_'+region
+			print 'OceansPatterns:',k, OceansPatterns[k],filenamebase
+			
+			makePatternStatsPlots(	OceansPatterns[k], # {legend, shelves}
+					k,	#xkeysname
+					Ocean_names,			#xkeysLabels=
+					filenamebase,		# filename base	
+					grid	= grid,											
+					)
+		for k in MonthsPatterns.keys():	
+			print 'MonthsPatterns:',k
+			if len(MonthsPatterns[k]) ==0: continue										
+			filenamebase = folder(imageFolder+'/Patterns/'+years[model]+'/MonthsPatterns/')+k+'_'+model+'-'+jobIDs[model]+'_'+years[model]+'_'+region
+			print 'MonthsPatterns:',k, MonthsPatterns[k],filenamebase
+			makePatternStatsPlots(	
+					MonthsPatterns[k], # {legend, shelves}
+					k,	#xkeysname
+					months,			#xkeysLabels=
+					filenamebase,		# filename base						
+					grid	= grid,
+					)	
+																						
 		#if model=='ERSEM':
 		AutoVivToYaml(shelvesAV, folder('yaml')+'shelvesAV'+model+years[model]+jobIDs[model]+'.yaml')
 		#else:
@@ -396,10 +668,61 @@ def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankT
 
 			
 
-					
-	print "Working dir:",workingDir
+	#####
+	SouthHemispheresMonths = [(h,m) for h in ['SouthHemisphere',] for m in months] 	
+	NorthHemispheresMonths = [(h,m) for h in ['NorthHemisphere',] for m in months] 	
 	
+	# Model	Intercomparison Pattern plots
+	xaxes = {'Oceans': Ocean_names, 
+		 'Months':months, 
+		 'HemispheresMonths':HemispheresMonths,
+		 'SouthHemispheresMonths':SouthHemispheresMonths,
+		 'NorthHemispheresMonths':NorthHemispheresMonths,
+		 }
 
+	ModelIntercomparisons = {pt:{} for  pt in xaxes.keys()}
+	for pt in xaxes.keys():
+	    for name in av.keys():
+	      for r in av[name]['regions']:
+	        namer = name+r
+		ModelIntercomparisons[pt][namer] = {}
+		for model in av[name].keys():
+			if model.lower() in ['regions','data',]:continue
+			ModelIntercomparisons[pt][namer][model] = []
+
+	for model in shelvesAV.keys():
+	 for name in shelvesAV[model].keys():
+	  for region in shelvesAV[model][name].keys():
+	    for newSlice in shelvesAV[model][name][region].keys(): 
+	      for xkey in shelvesAV[model][name][region][newSlice].keys():
+		for ykey in shelvesAV[model][name][region][newSlice][xkey].keys():        	      
+		  	shelve = shelvesAV[model][name][region][newSlice][xkey][ykey]
+		       	namer =name+region	
+		       	if newSlice in NorthHemispheresMonths:
+		       		print 'NorthHemispheresMonths:', model,name,region,newSlice,xkey,ykey,shelve, [pt,namer,model]
+		       	for pt,sliceList in xaxes.items():
+		       	    if newSlice in sliceList:	ModelIntercomparisons[pt][namer][model].append(shelve) 
+	       		print 'ModelIntercomparisons loop:', model,name,region,newSlice,xkey,ykey,shelve   
+
+
+	for pt in ModelIntercomparisons.keys():
+	    for namer in ModelIntercomparisons[pt].keys():
+	    	print 'ModelIntercomparisons:',pt, namer, ModelIntercomparisons[pt][namer].keys()
+	        count = sum([len(shelves) for shelves in ModelIntercomparisons[pt][namer].values()])
+	    	if count ==0:continue
+		filenamebase = folder('images/testsuite_iMarNet/ModelIntercomparison/Patterns/'+namer)+namer+'_'+pt+'_'+str(year)
+		print 'ModelIntercomparisons:',k, ModelIntercomparisons[pt][namer],xaxes[pt],filenamebase
+		
+		if pt.find('Oceans')>-1:xaxisLabels = Ocean_names
+		else:			xaxisLabels = months
+		makePatternStatsPlots(	
+					ModelIntercomparisons[pt][namer], # {legend, shelves}
+					namer,				# xkeysname
+					xaxisLabels,			# xkeysLabels
+					filenamebase,			# filename base
+					grid	= 'ORCA1',
+					)
+	print "Working dir:",workingDir
 			
 			
 

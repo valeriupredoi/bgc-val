@@ -412,7 +412,8 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 			# matchDataAndModel:
 			# Match (real) Data and Model. 
 			# Does not produce and plots.
-			#try:	
+
+			# Grid Testtry:	
 			grid = av[name][model]['grid']
 			#except: grid = 'ORCA1'
 			if grid in ['', [], {}, None]	: 
