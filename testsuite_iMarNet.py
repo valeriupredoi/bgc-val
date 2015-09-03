@@ -106,12 +106,12 @@ def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankT
 	#####
 	# Which analysis to run
 	doCHL 		= True
-	doN		= True
-	doSi		= True
+	doN		= 0#True
+	doSi		= 0#True
 	doPCO2		= 0#True
 	doIntPP		= 0#True
-	doO2		= False		# not yet implemented.
-	doDIC		= False		# What database?
+	doO2		= 0#True		# not yet implemented.
+	doDIC		= 0#True		# What database?
 	doP		= 0#True	# Phosphate is not an iMarNet value in the monthly surface field.
 	doFe		= 0#True 	# Iron is a challenge in IMarNet because we only keep surface values.
 
