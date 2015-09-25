@@ -222,8 +222,13 @@ def getmt(loadYaml=False):
     	mt['IMARNET']['intpp']['vars']  	= ['intpp',]
     	mt['IMARNET']['intpp']['name']  	= 'Integrated Primary Production'
 	mt['IMARNET']['intpp']['units'] 	= 'gC/m2/d'
-	mt['IMARNET']['intpp']['convert'] 	=  NoChange	
-	
+	mt['IMARNET']['intpp']['convert'] 	=  mul1000	
+
+    	mt['IMARNET']['oxygen']['vars']  	= ['o_an',]
+    	mt['IMARNET']['oxygen']['name']  	= 'Dissolved Oxygen'
+	mt['IMARNET']['oxygen']['units'] 	= 'mmol/m^3'
+	mt['IMARNET']['oxygen']['convert'] 	=  NoChange	
+		
 
     	mt['IMARNET']['silicate']['vars']  	= ['si',]
     	mt['IMARNET']['silicate']['name']  	= 'Silicate'

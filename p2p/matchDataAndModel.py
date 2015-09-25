@@ -229,9 +229,18 @@ class matchDataAndModel:
 
 		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking Chl style flat array:',self.DataFilePruned,'-->',self.DataFile1D	
 	  	convertToOneDNC(self.DataFilePruned,self.DataFile1D ,newMask=mmask, variables = self.DataVars, debug=True)
+	  	
+	    elif nc.variables[self.DataVars[0]].ndim ==1:
+	    	# This kind of file is already 1D, but we wantto apply a depth cut to it?
+	    	mmask = np.ones(nc.variables[self.DataVars[0]].shape)
+	    	for i,dep in enumerate(np.abs(nc.variables['DEPTH'][:])):
+	    		if dep >20:continue # assume surface layer of 20?
+			mmask[i] = 0
+		mmask +=nc.variables[self.DataVars[0]][:].mask	
+		convertToOneDNC(self.DataFilePruned,self.DataFile1D ,newMask=mmask, variables = self.DataVars, debug=True)			    		
 	    else:
 	    
-		print 'matchDataAndModel:\tconvertDataTo1D:\tYou need to add more file spcific regions here.', nc.variables[self.DataVars[0]].shape
+		print 'matchDataAndModel:\tconvertDataTo1D:\tYou need to add more file spcific regions here.', nc.variables[self.DataVars[0]].shape, self.DataFilePruned,'-->',self.DataFile1D
 		assert False
 			
 	else:

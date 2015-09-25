@@ -105,15 +105,18 @@ def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankT
 	
 	#####
 	# Which analysis to run
-	doCHL 		= True
+	#working - 2015-09-23:
+	doCHL 		= 0#True
 	doN		= 0#True
 	doSi		= 0#True
+	
+	#in progress:
 	doPCO2		= 0#True
-	doIntPP		= 0#True
+	doIntPP		= True
 	doO2		= 0#True		# not yet implemented.
 	doDIC		= 0#True		# What database?
-	doP		= 0#True	# Phosphate is not an iMarNet value in the monthly surface field.
-	doFe		= 0#True 	# Iron is a challenge in IMarNet because we only keep surface values.
+	doP		= 0#True			# Phosphate is not an iMarNet value in the monthly surface field.
+	doFe		= 0#True 		# Iron is a challenge in IMarNet because we only keep surface values.
 
 	#####
 	# Set which spatial and temporal limitations to plot.
@@ -126,12 +129,12 @@ def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankT
 		 plotLatRegions		=0# True
 		 plotQualityCuts	=0#True	
 		 plotSeas		=0#True		 
-		 plotOceans		=True
+		 plotOceans		=0#True
 		 plotHemispheres	=0# True
 		 plotSeasons		=0# True
-		 plotOceanSeasons	= True		 		 
+		 plotOceanSeasons	=0# True		 		 
 		 plotOceanMonths   	=0#True	
-		 plotHemispheresMonths  =True			 
+		 plotHemispheresMonths  =0#True			 
 	else: 	
 		 plotDefaults		=True		 	
 		 plotMonths		=0#True
@@ -218,26 +221,33 @@ def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankT
 		av['silicate']['regions'] 		= regions
 		
 	if doIntPP:
-		av['intpp']['Data']['File'] 	=  LesterFolder+'PPint_1deg.nc'		
+		av['intpp']['Data']['File'] 	=  LesterFolder+'PPint_1deg.nc'
 		av['intpp']['Data']['Vars'] 	= ['PPint',]
-		#av['pp']['Data']['File'] 	=  MAREDATFolder+'PP100108.nc'		
-		#av['pp']['Data']['Vars'] 	= ['PP',] 
-			 
+		#av['intpp']['Data']['File'] 	=  MAREDATFolder+'PP100108.nc'
+		#av['intpp']['Data']['Vars'] 	= ['PP',]
 		for m in models:
-			av['intpp'][m]['Vars'] 	= ['intpp',]						
+			av['intpp'][m]['Vars'] 	= ['intpp',]
 			av['intpp'][m]['File']	= iMarNetFolder+iMarNetFiles[m]
 			av['intpp'][m]['grid']	= 'ORCA1'
 		av['intpp']['regions'] 		= regions
 		
-	if doFe:
+	if doO2:
+		av['oxygen']['Data']['File'] 	=  LesterFolder+"dissolved_oxygen_annual_1deg.nc"
+		av['oxygen']['Data']['Vars'] 	= ['o_an',] 
+		for m in models:
+			av['oxygen'][m]['Vars'] 	= ['o2',]						
+			av['oxygen'][m]['File']	= iMarNetFolder+iMarNetFiles[m]
+			av['oxygen'][m]['grid']	= 'ORCA1'
+		av['oxygen']['regions'] 		= ['Surface',]
 					
+	if doFe:
 		av['iron']['Data']['File'] 	=  GEOTRACESFolder+"Iron_GEOTRACES_IDP2014_Discrete_Sample_Data_ascii.nc"
 		av['iron']['Data']['Vars'] 	= ['Fe_D_CONC_BOTTLE',] 
 		for m in models:
 			av['iron'][m]['Vars'] 	= ['dfe',]						
 			av['iron'][m]['File']	= iMarNetFolder+iMarNetFiles[m]
 			av['iron'][m]['grid']	= 'ORCA1'
-		av['iron']['regions'] 		= ['',]
+		av['iron']['regions'] 		= ['Surface',]
 	
 	if doPCO2:
 		av['pCO2']['Data']['File'] 	=  TakahashiFolder+'takahashi2009_month_flux_pCO2_2006c_noHead.nc'		
@@ -249,9 +259,6 @@ def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankT
 			av['pCO2'][m]['grid']	= 'ORCA1'
 		av['pCO2']['regions'] 		=  ['',]
 			
-
-				
-	
 	
 	#####
 	# Run a quick test of the AV fields.	
