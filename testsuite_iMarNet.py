@@ -94,7 +94,13 @@ def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankT
 	iMarNetFiles['PlankTOM6']	= './PlankTOM6_v1/TOM6_xhyyp_'+year+'_mon.nc'
 	iMarNetFiles['PlankTOM10']	= './PlankTOM_v3/TOM10_xiokbo_'+year+'_mon.nc'
 	
-
+	iMarNetFilesAnnual = {}
+	iMarNetFilesAnnual['Diat-HadOCC']	= './Diat-HadOCC_v1a/diat-hadocc_'+year+'_2D_mon.nc3'
+	#iMarNetFilesAnnual['ERSEM']		= './ERSEM_v4/'+jobIDs['ERSEM']+'/ersem_'+jobIDs['ERSEM']+'_2D_'+year+'.nc'
+	#iMarNetFilesAnnual['HadOCC']		= './HadOCC_v1a/hadocc_'+year+'_2D_mon.nc3'
+	iMarNetFilesAnnual['MEDUSA']		= './MEDUSA_v1/medusa_'+year+'_2D_mon.nc3'
+	#iMarNetFilesAnnual['PlankTOM6']	= './PlankTOM6_v1/TOM6_xhyyp_'+year+'_mon.nc'
+	iMarNetFilesAnnual['PlankTOM10']	= './PlankTOM_v3/TOM10_xiokbo_'+year+'_mon.nc'
 	
 	#MEDUSAFolder	= "/data/euryale7/scratch/ledm/UKESM/MEDUSA/"
 	#ERSEMFolder	= "/data/euryale7/scratch/ledm/UKESM/ERSEM/"+ jobIDs['ERSEM']+'/'+years['ERSEM']+'/'+jobIDs['ERSEM']+'_'+years['ERSEM']
@@ -106,18 +112,19 @@ def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankT
 	#####
 	# Which analysis to run
 	#working - 2015-09-23:
-	doCHL 		= 0#True
-	doN		= 0#True
-	doSi		= 0#True
-	
-	#in progress:
-	doPCO2		= 0#True
+	doCHL 		= True
+	doN		= True
+	doSi		= True
+	doPCO2		= 0 #True
 	doIntPP		= True
-	doO2		= 0#True		# not yet implemented.
-	doDIC		= 0#True		# What database?
-	doP		= 0#True			# Phosphate is not an iMarNet value in the monthly surface field.
-	doFe		= 0#True 		# Iron is a challenge in IMarNet because we only keep surface values.
-
+	doP		= True			# Phosphate is not in all the iMarNet models. 
+		
+	#in progress:
+	doO2		= True		# not yet implemented - iMarNet didn't report monthly oxygen, only annual 3D.
+	doFe		= 0#True 		# Iron is a challenge in IMarNet because we only keep surface values, and iron file is 1D already.
+	#doDIC		= True			# What database?
+	
+	
 	#####
 	# Set which spatial and temporal limitations to plot.
 	#plotallcuts = True
@@ -129,12 +136,12 @@ def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankT
 		 plotLatRegions		=0# True
 		 plotQualityCuts	=0#True	
 		 plotSeas		=0#True		 
-		 plotOceans		=0#True
+		 plotOceans		=True
 		 plotHemispheres	=0# True
 		 plotSeasons		=0# True
 		 plotOceanSeasons	=0# True		 		 
-		 plotOceanMonths   	=0#True	
-		 plotHemispheresMonths  =0#True			 
+		 plotOceanMonths   	=True	
+		 plotHemispheresMonths  =True
 	else: 	
 		 plotDefaults		=True		 	
 		 plotMonths		=0#True
@@ -171,11 +178,11 @@ def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankT
 	# AutoVivification is a form of nested dictionary.
 	# we use av here to determine which files to analyse and which fields in those files.
 	# Region is added, because some WOA files are huges and my desktop can not run the p2p analysis of that data.
-	modelSkips = {	'Diat-HadOCC':	[],
+	modelSkips = {	'Diat-HadOCC':	['po4',],
 			'ERSEM':	[],
-			'HadOCC':	['si','pCO2'],
-			'MEDUSA':	[],
-			'PlankTOM6':	[],
+			'HadOCC':	['si','pCO2','po4',],
+			'MEDUSA':	['po4',],
+			'PlankTOM6':	['po4',],
 			'PlankTOM10':	[],
 		}
 		
@@ -208,7 +215,7 @@ def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankT
 			av['phosphate'][m]['Vars'] 	= ['po4',]						
 			av['phosphate'][m]['File']	= iMarNetFolder+iMarNetFiles[m]
 			av['phosphate'][m]['grid']	= 'ORCA1'
-		av['nitrate']['regions'] 		= regions
+		av['phosphate']['regions'] 		= regions
 				
 	if doSi:
 		av['silicate']['Data']['File'] 		=  WOAFolder+'silicate_monthly_1deg.nc'		
@@ -232,7 +239,7 @@ def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankT
 		av['intpp']['regions'] 		= regions
 		
 	if doO2:
-		av['oxygen']['Data']['File'] 	=  LesterFolder+"dissolved_oxygen_annual_1deg.nc"
+		av['oxygen']['Data']['File'] 	=  WOAFolder+'oxygen-woa13.nc'
 		av['oxygen']['Data']['Vars'] 	= ['o_an',] 
 		for m in models:
 			av['oxygen'][m]['Vars'] 	= ['o2',]						
@@ -263,12 +270,12 @@ def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankT
 	#####
 	# Run a quick test of the AV fields.	
 	print "Performing test of AV dict:"
-	for model in models:
+	for m in models:
 		nctmp = ncdfView(iMarNetFolder+iMarNetFiles[m], Quiet=True)
 		for name in sorted(av.keys()):	
 		  for k in av[name][m]['Vars']: 
 		  	if k in nctmp.variables.keys():continue
-		  	print "WARNING:", k, 'not in ', model, av[name][m]['File']
+		  	print "WARNING:", k, 'not in ', m, av[name][m]['File']
 
 	for name in sorted(av.keys()):
 		try:	
@@ -289,8 +296,12 @@ def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankT
 	shelvesAV = AutoVivification()
 	
 	for model in models:
+		#####
+		# Location of image Output files
+		imageFolder 	= folder('images/testsuite_iMarNet/'+model+'-'+jobIDs[model])
+		workingDir = folder("/data/euryale7/scratch/ledm/ukesm_postProcessed/testsuite_iMarNet/"+model+'-'+jobIDs[model]+'-'+years[model])		
+
 		for name in sorted(av.keys()):
-		
 		    for region in av[name]['regions']:
 			#####
 			# Do some checks to make sure that the files all exist:
@@ -303,10 +314,7 @@ def testsuite_iMarNet(	models=['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankT
 			region = str(region)
 			
 			
-			#####
-			# Location of image Output files
-			imageFolder 	= folder('images/testsuite_iMarNet/'+model+'-'+jobIDs[model])
-			workingDir = folder("/data/euryale7/scratch/ledm/ukesm_postProcessed/testsuite_iMarNet/"+model+'-'+jobIDs[model]+'-'+years[model])		
+	
 
 		
 			try:

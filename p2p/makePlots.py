@@ -155,9 +155,9 @@ class makePlots:
 
 	print "plotWithSlices:\txkeys:", xkeys,'\tykeys:', ykeys
 	if [{}] in [xkeys, ykeys]:
-		print "plotWithSlices:\tERROR\t This data type is not defined in pftnames.py getmt()"
-		print "plotWithSlices:\tx:\tmt[",self.xtype,"][",self.name,"] = ",  xkeys
-		print "plotWithSlices:\ty:\tmt[",self.ytype,"][",self.name,"] = ",  ykeys	
+		print "plotWithSlices:\tERROR\t This data type  is not defined in pftnames.py getmt()"
+		print "plotWithSlices:\tx:\tmt['"+self.xtype+"'\t]['"+self.name+"'] = ",  xkeys
+		print "plotWithSlices:\ty:\tmt['"+self.ytype+"'\t]['"+self.name+"'] = ",  ykeys	
 		assert False
 	
 	#####

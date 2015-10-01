@@ -27,6 +27,8 @@ from matplotlib import pyplot
 from glob import glob
 
 from bgcvaltools.StatsDiagram import rmsds
+import bgcvaltools.unbiasedSymmetricMetrics as usm
+
 import UKESMpython as ukp
 from itertools import product
 import os
@@ -155,7 +157,8 @@ class makePatternStatsPlots:
 	if totalVolume ==0.: return 0.
 	return totalConc/vol
 		
-  	
+  		
+  	  	
   def setDictionaries(self,):
   	#####
   	# setDictionaries: set up some dictionaries that are used throughout makePatternStatslots
@@ -181,7 +184,11 @@ class makePatternStatsPlots:
 			 'TotalInSitu':'Total In Situ',	 
 			 'Model:In situ':'Model / In situ ratio',			 
 			 'MeanModel': 'Weighted Model Mean',
-			 'MeanInSitu': 'Weighted InSitu Mean',				 
+			 'MeanInSitu': 'Weighted InSitu Mean',
+			 'MNFB': 'Mean norm. factor bias',
+			 'MNAFE': 'Mean norm. abs. factor error',
+			 'NMBF': 'Norm. mean bias factor',		# robust
+			 'NMAEF': 'Norm. mean abs. error factor',	# robust
 			}
 	# plot Styles: dictionary shoing Plot title and a list of things to plot in a subplot.
 	self.plotStyles = {
@@ -196,6 +203,10 @@ class makePatternStatsPlots:
 			#'Robust v Taylor E':['rE','tE',],
 			#'Robust v Taylor E0':['rE0','tE0',],
 			'Linear Regression':['b1','b0','tR',],
+			'Yu MN metrics':['MNFB', 'MNAFE'],
+			'Yu NM metrics':['NMBF', 'NMAEF'],			
+			'Yu metrics':['MNFB', 'MNAFE', 'NMBF', 'NMAEF'],
+						
 			}
 		  
 	self.keyslongname = {m:getLongName(m) for m in self.keys}
@@ -267,8 +278,14 @@ class makePatternStatsPlots:
 			
 			metrics['MeanModel'][xkey][key] = self.calcMeanConcentration(sh,key='datax')	
 			metrics['MeanInSitu'][xkey][key] = self.calcMeanConcentration(sh,key='datax')		
-						
-						
+
+			model =self.loadFromshelve(sh, 'datax')
+			obs   =self.loadFromshelve(sh, 'datay')
+			metrics['MNAFE'][xkey][key] = usm.MNAFE(model,obs)
+			metrics['MNFB' ][xkey][key] = usm.MNFB( model,obs)
+			metrics['NMAEF'][xkey][key] = usm.NMAEF(model,obs)
+			metrics['NMBF' ][xkey][key] = usm.NMBF( model,obs)									
+									
 			sh.close()
 			i+=1		
 	self.i = i

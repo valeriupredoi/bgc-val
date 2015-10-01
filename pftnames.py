@@ -40,7 +40,7 @@ Ocean_names	= ['SouthPacificOcean',  'ArcticOcean',  'AntarcticOcean','NorthAtla
 
 IFREMERTypes 	= ['mld','mld_DT02','mld_DR003','mld_DReqDTm02', ]
 
-WOATypes 	= ['silicate','nitrate','phosphate','salinity','temperature',]
+WOATypes 	= ['silicate','nitrate','phosphate','salinity','temperature','oxygen']
 
 TAKAHASHITypes 	= ['pCO2',]
 
@@ -213,7 +213,12 @@ def getmt(loadYaml=False):
     	mt['IMARNET']['nitrate']['name']  	= 'Nitrate'
 	mt['IMARNET']['nitrate']['units'] 	= 'mmol/m^3'
 	mt['IMARNET']['nitrate']['convert'] 	=  NoChange				
-	
+
+    	mt['IMARNET']['phosphate']['vars']  	= ['po4',]
+    	mt['IMARNET']['phosphate']['name']  	= 'Phosphate'
+	mt['IMARNET']['phosphate']['units'] 	= 'mmol/m^3'
+	mt['IMARNET']['phosphate']['convert'] 	=  NoChange	
+		
     	mt['IMARNET']['pCO2']['vars']  		= ['spco2',]
     	mt['IMARNET']['pCO2']['name']  		= 'Partial pressure pCO2'
 	mt['IMARNET']['pCO2']['units'] 		= 'uatm'
@@ -224,7 +229,7 @@ def getmt(loadYaml=False):
 	mt['IMARNET']['intpp']['units'] 	= 'gC/m2/d'
 	mt['IMARNET']['intpp']['convert'] 	=  mul1000	
 
-    	mt['IMARNET']['oxygen']['vars']  	= ['o_an',]
+    	mt['IMARNET']['oxygen']['vars']  	= ['o2',]
     	mt['IMARNET']['oxygen']['name']  	= 'Dissolved Oxygen'
 	mt['IMARNET']['oxygen']['units'] 	= 'mmol/m^3'
 	mt['IMARNET']['oxygen']['convert'] 	=  NoChange	
@@ -270,6 +275,7 @@ def getmt(loadYaml=False):
   	mt['WOA']['nitrate'] 			= ['n_an',]#'s_mn',  	
 	mt['WOA']['silicate'] 			= ['i_an',]#'i_mn',
 	mt['WOA']['phosphate'] 			= ['p_an',]#'p_mn',	    	  		
+	mt['WOA']['oxygen'] 			= ['o_an',]#'p_mn',	    	  			
 	mt['WOA']['t'] 				= 'index_t'
 	mt['WOA']['z'] 				= 'depth'
 	mt['WOA']['lat'] 			= 'lat'
@@ -432,6 +438,7 @@ def getLongName(text,debug=False):
   	if text ==  'n_an': 	return 'Nitrate'  
   	if text ==  'p_mn': 	return 'Mean Phosphate'  	
   	if text ==  'p_an': 	return 'Phosphate'  
+  	if text ==  'p_an': 	return 'Oxygen'    	
   	if text ==  'i_mn': 	return 'Mean Silicate'  	
   	if text ==  'i_an': 	return 'Silicate'  
   	  	  	  	  	
@@ -716,6 +723,7 @@ def fancyUnits(units,debug=False):
 		return ''
 	if units in ['uatm',]:				return r'$\mu$'+'atm'
 	if units in ['ppmv',]:				return 'ppm'	
+	if units in ['milliliters_per_liter',]:		return 'ml/l'
 	print 'fancyUnits:\tERROR:\t',units,' not found in fancyUnits.'
 	if debug:
 		assert False

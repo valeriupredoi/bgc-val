@@ -217,7 +217,7 @@ class matchDataAndModel:
 		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking WOA style flat array:',self.DataFilePruned,'-->',self.DataFile1D	
 	  	convertToOneDNC(self.DataFilePruned,self.DataFile1D ,newMask=mmask, variables = self.DataVars, debug=True)		  	
 	  	
-	    elif nc.variables[self.DataVars[0]].shape in [(12, 33, 180, 360), (12,1,180,360) ]: # Chl format
+	    elif nc.variables[self.DataVars[0]].shape in [(12, 33, 180, 360), (12,1,180,360),(12,57,180, 360) ]: # Chl format
 		mmask = np.ones(nc.variables[self.DataVars[0]].shape)
 		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking Chl-style flat array:',self.DataFilePruned,'-->',self.DataFile1D			
 		if self.region in ['Surface',]:	
