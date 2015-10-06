@@ -940,6 +940,28 @@ def makeLonSafeArr(lon):
 
 
 
+def reducesShelves(AllShelves,sliceslist=[],models=[],names=[],regions=[],):
+	"""
+	This routine takes the heavily nested shelve dictionary, and a series of requirements,
+	then returns a list of relevant dictionairies.
+	This is useful for producing a target diagram, or a patterns plot.
+	requirements is a list of models, slices, regions that are required.
+	"""
+	outArray = []
+	for model in AllShelves.keys():
+	 for name in AllShelves[model].keys():
+	  for region in AllShelves[model][name].keys():
+	    for newSlice in AllShelves[model][name][region].keys(): 
+	      for xkey in AllShelves[model][name][region][newSlice].keys():
+		for ykey in AllShelves[model][name][region][newSlice][xkey].keys():
+			if len(models) 		and model not in models:continue
+			if len(names) 		and name not in names:continue
+			if len(regions) 	and region not in regions:continue
+			if len(sliceslist) 	and newSlice not in sliceslist:continue
+		  	shelve = AllShelves[model][name][region][newSlice][xkey][ykey]			
+			outArray.append(shelve)
+	return outArray
+
 def getSlicesDict():
 	slicesDict = {}
 	standardCuts = ['5-95pc','ignoreInlandSeas','OffShelf','ignoreExtraArtics','aboveZero',]	

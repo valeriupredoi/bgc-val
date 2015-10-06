@@ -189,12 +189,15 @@ class makePatternStatsPlots:
 			 'MNAFE': 'Mean norm. abs. factor error',
 			 'NMBF': 'Norm. mean bias factor',		# robust
 			 'NMAEF': 'Norm. mean abs. error factor',	# robust
+			 'MedianModel': 'Median',
+			 'Model/obs. median':'Model Median: data median'
 			}
 	# plot Styles: dictionary shoing Plot title and a list of things to plot in a subplot.
 	self.plotStyles = {
 			'Total N':   		['TotalModel','N',],
-			'Total':   		['TotalModel','Model:In situ'],
+			#'Total':   		['TotalModel','Model:In situ'],
 			'Weighted Mean':   	['MeanModel','Model:In situ'],			
+			'Median':	   	['MedianModel','Model/obs. median'],						
 			'Robust':['rE','rE0','rR',],
 			'Taylor':['tE','tE0','tR',],
 			#'Robust v Taylor Correlation':['rR','tR',],
@@ -285,7 +288,9 @@ class makePatternStatsPlots:
 			metrics['MNFB' ][xkey][key] = usm.MNFB( model,obs)
 			metrics['NMAEF'][xkey][key] = usm.NMAEF(model,obs)
 			metrics['NMBF' ][xkey][key] = usm.NMBF( model,obs)									
-									
+				
+			metrics['MedianModel' ][xkey][key]			= np.median(model)
+			metrics['Model/obs. median' ][xkey][key]	= np.median(model/obs)
 			sh.close()
 			i+=1		
 	self.i = i
@@ -335,9 +340,10 @@ class makePatternStatsPlots:
 				linesDict['MeanInSitu'].append(metrics['MeanInSitu'][xkey][m])	
 
 			print metric,linesDict.keys(),['x'], linesDict['TotalInSitu']
-			if metric in ['TotalModel',]:	pyplot.plot(linesDict['x'],linesDict['TotalInSitu'],c='k',lw=2)	# assume in situ is the same for all
-			if metric in ['MeanModel',]:	pyplot.plot(linesDict['x'],linesDict['MeanInSitu' ],c='k',lw=2)	# assume in situ is the same for all
-			if metric in ['Model:In situ',]:pyplot.plot(linesDict['x'],np.ones_like(linesDict['x']),c='k',lw=2,label='In Situ',)	# assume in situ is the same for all
+			if metric in ['TotalModel',]:	pyplot.plot(linesDict['x'],linesDict['TotalInSitu'],c='k',lw=2, label='In Situ',)	# assume in situ is the same for all
+			if metric in ['MeanModel',]:	pyplot.plot(linesDict['x'],linesDict['MeanInSitu' ],c='k',lw=2, label='In Situ',)	# assume in situ is the same for all
+			if metric in ['Model:In situ','Model/obs. median']:
+							pyplot.plot(linesDict['x'],np.ones_like(linesDict['x']),c='k',lw=2,label='In Situ',)	# assume in situ is the same for all
 						
 			
 			for key in self.keys: 
@@ -361,11 +367,11 @@ class makePatternStatsPlots:
 	
 			for key in self.keys:
 				pyplot.plot([],[],label=self.keyslongname[key],c=self.keyscolours[key],lw=2)#s = 40,lw=0.marker=modelmarkers[m],)			    
-			if metric in ['TotalModel','MeanModel','Model:In situ','N']:
-				pyplot.plot([],[],label='In Situ',c='k',lw=2)
+			#if metric in ['TotalModel','MeanModel',]: # 'Model:In situ','N','Model/obs. median'
+			#	pyplot.plot([],[],label='In Situ',c='k',lw=2)
 		pyplot.subplots_adjust(bottom=0.20)
 
-		legend = pyplot.legend(loc='lower center', ncol=5, borderaxespad=0., numpoints = 1, scatterpoints=1, prop={'size':8},) 	
+		legend = pyplot.legend(loc='lower center', ncol=4, borderaxespad=0., numpoints = 1, scatterpoints=1, prop={'size':8},) 	
 		legend.draw_frame(False) 
 		legend.get_frame().set_alpha(0.) 
 		
