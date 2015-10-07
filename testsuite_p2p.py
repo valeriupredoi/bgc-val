@@ -23,7 +23,7 @@
 #
 
 #Standard Python modules:
-from sys import argv
+from sys import argv,exit
 from os.path import exists
 from calendar import month_name
 
@@ -55,9 +55,7 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 	jobIDs['NEMO'] 		= jobID
 	jobIDs['MEDUSA'] 	= jobID
 	
-	#####
-	# Plot p2p for all regions/oceans, or just everything and "standard" cuts.
-	#plotallcuts = True
+
 	
 	#####
 	# Which Year to investigate for each model.
@@ -73,36 +71,40 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 	WOAFolder 	= "/data/euryale7/scratch/ledm/WOA/"	
 	GEOTRACESFolder = "/data/euryale7/scratch/ledm/GEOTRACES/GEOTRACES_PostProccessed/"
 	TakahashiFolder = "/data/euryale7/scratch/ledm/Takahashi2009_pCO2/"
+	LesterFolder 	= "/data/euryale7/scratch/ledm/LestersReportData/"			
 	#####
 	# Location of model files.	
 	#MEDUSAFolder	= "/data/euryale7/scratch/ledm/UKESM/MEDUSA/"
 	MEDUSAFolder	= "/data/euryale7/scratch/ledm/UKESM_postProcessed/MEDUSA/outNetCDF/"+jobIDs['MEDUSA']+'-' + years['MEDUSA']+'/'
 	ERSEMFolder	= "/data/euryale7/scratch/ledm/UKESM/ERSEM/"+ jobIDs['ERSEM']+'/'+years['ERSEM']+'/'+jobIDs['ERSEM']+'_'+years['ERSEM']
-	#NEMOFolder	= "/data/euryale7/scratch/ledm/UKESM/ERSEM/"+ jobIDs['NEMO'] +'/'+years['NEMO'] +'/'+jobIDs['NEMO'] +'_'+years['NEMO']
-	NEMOFolder	= "/data/euryale7/scratch/ledm/UKESM_postProcessed/MEDUSA/outNetCDF/"+jobIDs['MEDUSA']+'-' + years['MEDUSA']+'/'	
+	NEMOFolder	= "/data/euryale7/scratch/ledm/UKESM/ERSEM/"+ jobIDs['NEMO'] +'/'+years['NEMO'] +'/'+jobIDs['NEMO'] +'_'+years['NEMO']
+	#NEMOFolder	= "/data/euryale7/scratch/ledm/UKESM_postProcessed/MEDUSA/outNetCDF/"+jobIDs['MEDUSA']+'-' + years['MEDUSA']+'/'	
 
-	regions = ['Surface','100m','200m','500m',]
+	regions 	= ['Surface','200m','500m',]#'100m',
 	
 	#####
 	# Which analysis to run
 	doCHL 		= True
-	doDMS_clim	= 0#True
-	doDMS_pixels	= 0#True
-	doDMS_pixels2	= 0#True
 	doMAREDAT 	= True
 	doN		= True
 	doPSF		= True	
-	doSalTemp	= 0#True
-	doMLD		= 0#True
-	doPCO2		= 0#True
-	doLight		= 0
-	
+	doPCO2		= True
+	doIntPP		= 0#True
+	doO2		= True	
+	# DMS:
+	doDMS_clim	= 0#True
+	doDMS_pixels	= 0#True
+	doDMS_pixels2	= 0#True
+	# Physics:
+	doLight		= 0#True	# no file yet
+	doSalTemp	= True
+	doMLD		= True	
 	
 
 	
 	#####
 	# Set which spatial and temporal limitations to plot.
-	plotallcuts = True
+	plotallcuts = True		# Plot p2p for all regions/oceans, or just Defaults.
 	if plotallcuts:
 		 plotDefaults		=True		 
 		 plotMonths		=True
@@ -295,6 +297,38 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 		av['iron']['regions'] 			= ['',]
 		av['iron']['MEDUSA']['grid']		= 'ORCA1'		
 		av['iron']['ERSEM']['grid']		= 'ORCA1'				
+
+	if doO2:
+		av['oxygen']['Data']['File'] 	=  WOAFolder+'oxygen-woa13.nc'
+		av['oxygen']['Data']['Vars'] 	= ['o_an',] 
+		av['oxygen']['ERSEM']['Vars'] 	= ['o2c',]						
+		av['oxygen']['ERSEM']['File']	= ERSEMFolder+'_ERSEMO2.nc'
+		av['oxygen']['ERSEM']['grid']	= 'ORCA1'
+		av['oxygen']['regions'] 	= regions
+		
+	if doPCO2:
+		av['pCO2']['Data']['File'] 	= TakahashiFolder + "takahashi2009_month_flux_pCO2_2006c_noHead.nc"	
+		av['pCO2']['ERSEM']['File'] 	= ERSEMFolder+'_ERSEMMisc.nc'	
+		av['pCO2']['MEDUSA']['File'] 	= MEDUSAFolder+"medusa_bio_"+years['MEDUSA']+".nc"
+		av['pCO2']['Data']['Vars'] 	= ['PCO2_SW',] 		#l+'_mn',
+		av['pCO2']['ERSEM']['Vars'] 	= ['pCO2w',]
+		av['pCO2']['MEDUSA']['Vars'] 	= ['OCN_PCO2',]	
+		av['pCO2']['regions'] 		= ['',]
+		av['pCO2']['ERSEM']['grid'] 	= 'ORCA1'		
+		av['pCO2']['MEDUSA']['grid']	= 'ORCA1'				
+
+
+	if doIntPP:
+		av['intpp']['Data']['File'] 	=  LesterFolder+'PPint_1deg.nc'
+		av['intpp']['Data']['Vars'] 	= ['PPint',]
+		#av['intpp']['ERSEM']['Vars'] 	= ['netPP',] This field is net, not integrated.
+		#av['intpp']['ERSEM']['File']	= ERSEMFolder+'_ERSEMMisc.nc' This file will need to be remade.
+		av['intpp']['ERSEM']['grid']	= 'ORCA1'
+		av['intpp']['regions'] 		= ['',]
+		
+
+		
+		
 					
 	if doSalTemp:
 		av['salinity']['Data']['File'] 		= WOAFolder+'salinity_monthly_1deg.nc'	
@@ -302,13 +336,14 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 		av['salinity']['Data']['Vars'] 		= ['s_an',]
 		av['salinity']['NEMO']['Vars'] 		= ['vosaline',]
 		av['salinity']['regions'] 		= regions	 
+		av['salinity']['NEMO']['grid'] 		= 'ORCA1'
 
 		av['temperature']['Data']['File'] 	= WOAFolder+'temperature_monthly_1deg.nc'	
 		av['temperature']['NEMO']['File'] 	= NEMOFolder+'_NEMO.nc'	
 		av['temperature']['Data']['Vars'] 	= ['t_an',]	
 		av['temperature']['NEMO']['Vars'] 	= ['votemper',]
 		av['temperature']['regions'] 		= regions	
-				   
+		av['temperature']['NEMO']['grid'] 	= 'ORCA1'				   
 	if doMLD:	
 		av['mld']['Data']['File'] 		= "/data/euryale7/scratch/ledm/IFREMER-MLD/mld_DT02_c1m_reg2.0.nc"
 		#av['mld']['NEMO']['File'] 		= NEMOFolder+'_NEMO.nc'	
@@ -332,22 +367,17 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 		#av['mld_DReqDTm02']['regions'] 		= ['',]
 
 	if doLight:	
-		av['irradiation']['Data']['File'] 		= "/data/euryale7/scratch/ledm/IFREMER-MLD/mld_DT02_c1m_reg2.0.nc"
+		# Light file ? 
+		#av['irradiation']['Data']['File'] 		= "/data/euryale7/scratch/ledm/IFREMER-MLD/mld_DT02_c1m_reg2.0.nc"
 		av['irradiation']['NEMO']['File'] 		= NEMOFolder+jobIDs['MEDUSA']+'_'+ years['MEDUSA']+"_MEDUSA_Light.nc"			
 		av['irradiation']['Data']['Vars'] 		= []
 		av['irradiation']['NEMO']['Vars'] 		= ['MED_QSR',]	
 		av['irradiation']['regions'] 			= ['',]
 		av['irradiation']['NEMO']['grid'] 		= 'ORCA1'
 				
-	if doPCO2:
-		av['pCO2']['Data']['File'] 	= TakahashiFolder + "takahashi2009_month_flux_pCO2_2006c_noHead.nc"	
-		av['pCO2']['ERSEM']['File'] 	= ERSEMFolder+'_ERSEMMisc.nc'	
-		av['pCO2']['MEDUSA']['File'] 	= MEDUSAFolder+"medusa_bio_"+years['MEDUSA']+".nc"
-		av['pCO2']['Data']['Vars'] 	= ['PCO2_SW',] 		#l+'_mn',
-		av['pCO2']['ERSEM']['Vars'] 	= ['pCO2w',]
-		av['pCO2']['MEDUSA']['Vars'] 	= ['OCN_PCO2',]	
-		av['pCO2']['regions'] 		= ['',]
-	
+
+		
+			
 	#for var in av.keys():
 	#	for m in models: 
 	#		#keys = getVarsFromMT(var,m)
@@ -370,30 +400,38 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 	shelvesAV = AutoVivification()
 	
 	for model in models:
+		#####
+		# Location of image Output files
+		imageFolder 	= folder('images/'+model+'-'+jobIDs[model])
+		workingDir = folder("/data/euryale7/scratch/ledm/ukesm_postProcessed/"+model+'-'+jobIDs[model]+'-'+years[model])
+				
 		for name in sorted(av.keys()):
+		    #####
+		    # Do some checks to make sure that the files all exist:
+		    print "testsuite outer loop: ",model,name#, av[name][model]
+		    try: 
+			if not isinstance(av[name][model],dict): continue
+			if len(av[name][model].keys()) ==0:continue
+		    except KeyError:
+			print "No ",name, 'in ',model
+			continue
+				
+		    #####						
 		    # Grid Testtry:	
 		    grid = av[name][model]['grid']
 		    #except: grid = 'ORCA1'
 		    if grid in ['', [], {}, None]	: 
 			print "testsuite_p2p.py:\tERROR:\tgrid not found:\tav[",name,"][",model,'][grid]: ',grid
 			assert False
+
+						
 						
 		    for region in av[name]['regions']:
-			#####
-			# Do some checks to make sure that the files all exist:
-			print model,name
-			try: 
-				if not isinstance(av[name][model],dict): continue
-			except KeyError:
-				print "No ",name, 'in ',model
-				continue	
+	
 			region = str(region)
 			
 			
-			#####
-			# Location of image Output files
-			imageFolder 	= folder('images/'+model+'-'+jobIDs[model])
-			workingDir = folder("/data/euryale7/scratch/ledm/ukesm_postProcessed/"+model+'-'+jobIDs[model]+'-'+years[model])		
+		
 
 		
 			try:
@@ -522,7 +560,7 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 						)
 			  	filenamebase = folder(imageFolder+'/Patterns/'+years[model]+'/'+name)+'Months-'+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region
 				makePatternStatsPlots(	{name:MonthShelves,}, # {legend, shelves}
-							'Months',	#xkeysname
+							name+' Months',	#xkeysname
 							slicesDict['Months'],#xkeysLabels=
 							filenamebase,	# filename base	
 							grid	= grid,												
@@ -537,7 +575,7 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 						)
 		  		filenamebase = folder(imageFolder+'/Patterns/'+years[model]+'/'+name)+'Oceans-'+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region
 				makePatternStatsPlots(	{name:OceanShelves,}, # {legend, shelves}
-							'Oceans',	#xkeysname
+							name+' Oceans',	#xkeysname
 							slicesDict['Oceans'],#xkeysLabels=
 							filenamebase,	# filename base	
 							grid	= grid,
@@ -601,17 +639,23 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 		surfacemetrics = ['chl', 'pCO2', 'nitrate',]
 		dmsmetrics = ['dms_and','dms_ara','dms_hal','dms_sim']
 		dmspmetrics = ['dms_p_and','dms_p_ara','dms_p_hal','dms_p_sim']
-		nitrates   = ['nitrate'+ s   for s in regions]	
-		phosphates = ['phosphate'+ s for s in regions]	
-		silicates  = ['silicate'+ s  for s in regions]	
-
+		#nitrates   = ['nitrate'+ s   for s in regions]	
+		#phosphates = ['phosphate'+ s for s in regions]	
+		#silicates  = ['silicate'+ s  for s in regions]	
+		#salinities   = ['salinity'+ s  for s in regions]
+		#temperatures= ['temperature'+ s  for s in regions]
+		physics = ['salinity', 'temperature','irradiation',]
+		WOA_bgc 	= ['silicate','nitrate','phosphate','oxygen']		
+		WOA_phys 	= ['salinity','temperature',]
 		PatternTypes = {'DMS_p':dmspmetrics,
 				'DMS_e':dmsmetrics,
 				'Maredat':MaredatTypes,
-				'WOA':WOATypes,
-				'Nitrates':nitrates,
-				'Phosphates':phosphates,
-				'Silicates':silicates,
+				#'WOA':WOATypes,
+				'WOA BGC':WOA_bgc,
+				'WOA physics':WOA_phys,								
+				#'Nitrates':nitrates,
+				#'Phosphates':phosphates,
+				#'Silicates':silicates,
 				'SurfaceMetrics':surfacemetrics,
 				}
 				
@@ -761,7 +805,7 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 			print 'SHMonthsPatterns:',k, SHMonthsPatterns[k],filenamebase
 			makePatternStatsPlots(	
 					SHMonthsPatterns[k], # {legend, shelves}
-					k,	#xkeysname
+					'South hemisphere '+k,	#xkeysname
 					months,			#xkeysLabels=
 					filenamebase,		# filename base						
 					grid	= grid,
@@ -772,7 +816,7 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 			print 'NHMonthsPatterns:',k, NHMonthsPatterns[k],filenamebase
 			makePatternStatsPlots(	
 					NHMonthsPatterns[k], # {legend, shelves}
-					k,	#xkeysname
+					'North hemisphere '+k,	#xkeysname
 					months,			#xkeysLabels=
 					filenamebase,		# filename base						
 					grid	= grid,
@@ -805,6 +849,10 @@ if __name__=="__main__":
 	
 	#####
 	# Determine command line arguments
+	if len(argv[1:]) <3:
+		print "Not enough arguments supplied. Please supply (in any order): \n\t1. Model name \n\t2. Job ID \n\t3. Year. "
+		exit(0)
+		
 	for a in argv[1:]:	
 		try:	
 			y = int(a)
@@ -820,7 +868,7 @@ if __name__=="__main__":
 			continue			
 		if a[:4] in ['xhon','xjez']:
 			jobIDs.append(a)
-			if 'ERSEM' not in models:models.append('ERSEM')
+			#if 'ERSEM' not in models:models.append('ERSEM')
 			continue
 
 		if a[:4] in ['xkru',]:

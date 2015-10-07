@@ -396,7 +396,7 @@ class matchDataAndModel:
 		#####			
 		#increment by 1 to save/ end, as it has finished, but i is used as a starting point.
 		i+=1
-		if i%100==0:	
+		if i%10000==0:	
 			if self.debug: print "matchModelToData:\t", i,ii,self.dataType,self.region,':\t',[wt,wz,wla,wlo] ,'--->',[t,z,la,lo]
 			
 		if i>1 and i%500000==0:

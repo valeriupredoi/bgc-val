@@ -46,14 +46,14 @@ purple = [125./256., 38./256., 205./256.]
 
 
 class makePatternStatsPlots:
-  def __init__(self,shelveDict, xkeysname, xkeys, filenamebase,grid='ORCA1',):
+  def __init__(self,shelveDict, plotTitle, xkeys, filenamebase,grid='ORCA1',):
   	"""	makePatternStatsPlots:
   		
 		Similarly to makeTargets.py, this routine produces a set of plots based on the shelves made by makePlots.py.
   		
   		It takes:
   		  shelveDict: a dictionairy showing the line label and the shelves.
-  		  xkeysname: a name for the set of points on the x-axis. ie months, oceans
+  		  plotTitle: a name for the set of points on the x-axis. ie months, oceans
   		  xkeys: are the tick lables on the x axis.
   		  filenamebase: the base name of the image to be saved.
 		  grid: which grid to be used (ORCA1, ORCA025, Flat1deg.) 
@@ -62,11 +62,11 @@ class makePatternStatsPlots:
   		
   	"""
 	#if key_self.keys =='dmspmetrics': 	self.keys = ['dms_p_and','dms_p_ara','dms_p_hal','dms_p_sim','In situ',]	
-	print "makePatternStatsPlots:\t",xkeysname,xkeys, grid
-	self.keys = shelveDict.keys()
+	self.keys = sorted(shelveDict.keys())
+	print "makePatternStatsPlots:\tSTART:\t",plotTitle,xkeys, grid, self.keys	
 	self.shelveDict = shelveDict
 
-	self.xkeysname = xkeysname
+	self.plotTitle = plotTitle
 	self.filenamebase = filenamebase
 	self.xkeys = xkeys
 	self.grid = grid
@@ -74,13 +74,13 @@ class makePatternStatsPlots:
   	self.setDictionaries()
   	
   	if not len(self.AllShelves):
-  		print "makePatternStatsPlots: Found no shelves.",xkeysname,xkeys, shelveDict 	
+  		print "makePatternStatsPlots: Found no shelves.",plotTitle,xkeys, shelveDict 	
   		return
   		
   	self.calculateVolume()
   	self.loadMetrics()
   	if not self.i:
-  		print "makePatternStatsPlots: Found no shelves.",xkeysname,xkeys,shelveDict
+  		print "makePatternStatsPlots: Found no shelves.",plotTitle,xkeys,shelveDict
   		return  	
   	self.plotMetrics()
 
@@ -185,10 +185,10 @@ class makePatternStatsPlots:
 			 'Model:In situ':'Model / In situ ratio',			 
 			 'MeanModel': 'Weighted Model Mean',
 			 'MeanInSitu': 'Weighted InSitu Mean',
-			 'MNFB': 'Mean norm. factor bias',
-			 'MNAFE': 'Mean norm. abs. factor error',
-			 'NMBF': 'Norm. mean bias factor',		# robust
-			 'NMAEF': 'Norm. mean abs. error factor',	# robust
+			 'MNFB': 	'MNFB', # 'Mean norm. factor bias',
+			 'MNAFE':  	'MNAFE',# 'Mean norm. abs. factor error',
+			 'NMBF': 	'NMBF', # 'Norm. mean bias factor',		# robust
+			 'NMAEF':	'NMAEF',# 'Norm. mean abs. error factor',	# robust
 			 'MedianModel': 'Median',
 			 'Model/obs. median':'Model Median: data median'
 			}
@@ -196,7 +196,7 @@ class makePatternStatsPlots:
 	self.plotStyles = {
 			'Total N':   		['TotalModel','N',],
 			#'Total':   		['TotalModel','Model:In situ'],
-			'Weighted Mean':   	['MeanModel','Model:In situ'],			
+			#'Weighted Mean':   	['MeanModel','Model:In situ'],			
 			'Median':	   	['MedianModel','Model/obs. median'],						
 			'Robust':['rE','rE0','rR',],
 			'Taylor':['tE','tE0','tR',],
@@ -206,9 +206,9 @@ class makePatternStatsPlots:
 			#'Robust v Taylor E':['rE','tE',],
 			#'Robust v Taylor E0':['rE0','tE0',],
 			'Linear Regression':['b1','b0','tR',],
-			'Yu MN metrics':['MNFB', 'MNAFE'],
+			#'Yu MN metrics':['MNFB', 'MNAFE'],
 			'Yu NM metrics':['NMBF', 'NMAEF'],			
-			'Yu metrics':['MNFB', 'MNAFE', 'NMBF', 'NMAEF'],
+			#'Yu metrics':['MNFB', 'MNAFE', 'NMBF', 'NMAEF'],
 						
 			}
 		  
@@ -304,13 +304,13 @@ class makePatternStatsPlots:
   	# 
   	
   	metrics = self.metrics
-	title = getLongName(self.xkeysname)
+	title = getLongName(self.plotTitle)
 		
 
 	
 	for plotType,yAxisKeys in self.plotStyles.items():
 		plotStyle = 'Lines'	
-		fn = self.filenamebase+ self.xkeysname+'_'+plotType+'.png'
+		fn = self.filenamebase+ self.plotTitle.replace(' ','')+'_'+plotType+'.png'
 		fn = fn.replace(' ', '')
 		if not ukp.shouldIMakeFile(self.AllShelves,fn,debug=False):continue		
 		#if os.path.exists(fn):continue
@@ -334,20 +334,20 @@ class makePatternStatsPlots:
 					if val in [None,]:
 						print 'Warning:','metrics[',metric,'][',xkey,'] is empty:',[m,':',val]
 						val = np.ma.masked
-					print 'plotting:\t[d,metric]:', [d,metric],'\t[o,xkey]:',[o,xkey], '\t[m,val]:',[m,val]
+					#print 'plotting:\t[d,metric]:', [d,metric],'\t[o,xkey]:',[o,xkey], '\t[m,val]:',[m,val]
 					linesDict[m].append(val)
 				linesDict['TotalInSitu'].append(metrics['TotalInSitu'][xkey][m])
 				linesDict['MeanInSitu'].append(metrics['MeanInSitu'][xkey][m])	
 
-			print metric,linesDict.keys(),['x'], linesDict['TotalInSitu']
-			if metric in ['TotalModel',]:	pyplot.plot(linesDict['x'],linesDict['TotalInSitu'],c='k',lw=2, label='In Situ',)	# assume in situ is the same for all
-			if metric in ['MeanModel',]:	pyplot.plot(linesDict['x'],linesDict['MeanInSitu' ],c='k',lw=2, label='In Situ',)	# assume in situ is the same for all
+			#print metric,linesDict.keys(),['x'], linesDict['TotalInSitu']
+			if metric in ['TotalModel',]:	pyplot.plot(linesDict['x'],linesDict['TotalInSitu'],c='k',lw=2, )	# assume in situ is the same for all
+			if metric in ['MeanModel',]:	pyplot.plot(linesDict['x'],linesDict['MeanInSitu' ],c='k',lw=2, )	# assume in situ is the same for all
 			if metric in ['Model:In situ','Model/obs. median']:
-							pyplot.plot(linesDict['x'],np.ones_like(linesDict['x']),c='k',lw=2,label='In Situ',)	# assume in situ is the same for all
+							pyplot.plot(linesDict['x'],np.ones_like(linesDict['x']),c='k',lw=2,)	# assume in situ is the same for all
 						
 			
 			for key in self.keys: 
-				print linesDict['x'],linesDict[key],self.keyscolours[key]
+				#print linesDict['x'],linesDict[key],self.keyscolours[key]
 				pyplot.plot(linesDict['x'],linesDict[key],c=self.keyscolours[key],lw=2)# s = 40,lw=0.)#marker=modelmarkers[m]
 			
 			pyplot.ylabel(self.metricsDict[metric])	
@@ -359,19 +359,22 @@ class makePatternStatsPlots:
 			
 			if d+1 == 1:	ax.set_title(plotType+' '+title)
 		
-			if metric in ['b0','rE0','tE0','tE','rO',]:
+			if metric in ['b0','rE0','tE0','tE','rO','rE','NMBF','NMAEF']:
 				pyplot.axhline(y=0.,c='k',ls='--')
 			if metric in ['b1','rgam','tgam','rR','tR',]:
 				pyplot.axhline(y=1.,c='k',ls='--')
 							
-	
+			labelCount=0
 			for key in self.keys:
 				pyplot.plot([],[],label=self.keyslongname[key],c=self.keyscolours[key],lw=2)#s = 40,lw=0.marker=modelmarkers[m],)			    
-			#if metric in ['TotalModel','MeanModel',]: # 'Model:In situ','N','Model/obs. median'
-			#	pyplot.plot([],[],label='In Situ',c='k',lw=2)
+				labelCount+=1
+			if metric in ['TotalModel','MeanModel', 'Model:In situ','N','Model/obs. median',]:
+				pyplot.plot([],[],label='In Situ',c='k',lw=2)
+				labelCount+=1				
 		pyplot.subplots_adjust(bottom=0.20)
-
-		legend = pyplot.legend(loc='lower center', ncol=4, borderaxespad=0., numpoints = 1, scatterpoints=1, prop={'size':8},) 	
+		if labelCount <=4: ncol=4
+		if labelCount>4: ncol = 3
+		legend = pyplot.legend(loc='lower center', ncol=ncol, borderaxespad=0., numpoints = 1, scatterpoints=1, prop={'size':8},) 	
 		legend.draw_frame(False) 
 		legend.get_frame().set_alpha(0.) 
 		

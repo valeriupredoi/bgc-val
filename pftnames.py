@@ -130,6 +130,7 @@ def getmt(loadYaml=False):
     	mt['ERSEM']['nitrate']  		= ['N3n',]	    	
     	mt['ERSEM']['silicate']  		= ['N5s',]	
 	mt['ERSEM']['iron'] 			= ['N7f',]
+	mt['ERSEM']['intpp'] 			= ['intpp',]	
 	mt['ERSEM']['t']			= 'index_t'	
 	mt['ERSEM']['z'] 			= 'deptht'
 	mt['ERSEM']['lat'] 			= 'nav_lat'
