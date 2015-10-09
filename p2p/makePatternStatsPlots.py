@@ -284,13 +284,17 @@ class makePatternStatsPlots:
 
 			model =self.loadFromshelve(sh, 'datax')
 			obs   =self.loadFromshelve(sh, 'datay')
-			metrics['MNAFE'][xkey][key] = usm.MNAFE(model,obs)
-			metrics['MNFB' ][xkey][key] = usm.MNFB( model,obs)
-			metrics['NMAEF'][xkey][key] = usm.NMAEF(model,obs)
-			metrics['NMBF' ][xkey][key] = usm.NMBF( model,obs)									
+			if 'MNAFE' in sh.keys():
+				for k in ['MNAFE','MNFB','NMAEF','NMBF']:
+					metrics[k][xkey][key] = self.loadFromshelve(sh,k)
+			else:
+				metrics['MNAFE'][xkey][key] = usm.MNAFE(model,obs)
+				metrics['MNFB' ][xkey][key] = usm.MNFB( model,obs)
+				metrics['NMAEF'][xkey][key] = usm.NMAEF(model,obs)
+				metrics['NMBF' ][xkey][key] = usm.NMBF( model,obs)									
 				
-			metrics['MedianModel' ][xkey][key]			= np.median(model)
-			metrics['Model/obs. median' ][xkey][key]	= np.median(model/obs)
+			metrics['MedianModel' ][xkey][key]	 = np.median(model)
+			metrics['Model/obs. median' ][xkey][key] = np.median(model/obs)
 			sh.close()
 			i+=1		
 	self.i = i

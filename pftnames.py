@@ -129,6 +129,7 @@ def getmt(loadYaml=False):
     	mt['ERSEM']['phosphate']  		= ['N1p',]	
     	mt['ERSEM']['nitrate']  		= ['N3n',]	    	
     	mt['ERSEM']['silicate']  		= ['N5s',]	
+    	mt['ERSEM']['oxygen']	  		= ['O2o',]	    	
 	mt['ERSEM']['iron'] 			= ['N7f',]
 	mt['ERSEM']['intpp'] 			= ['intpp',]	
 	mt['ERSEM']['t']			= 'index_t'	
@@ -248,7 +249,7 @@ def getmt(loadYaml=False):
 	mt['IMARNET']['cal'] 			= '365_day'
 	for model in BGCmodels:
 		mt['IMARNET_'+model] = mt['IMARNET']
-	
+		mt['iMarNet_'+model] = mt['IMARNET']
 	#####
 	# Data:
 	mt['MAREDAT']['bac'] 			= ['BIOMASS',]

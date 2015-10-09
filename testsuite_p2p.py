@@ -1,5 +1,3 @@
-#!/usr/bin/ipython 
-#
 # Copyright 2014, Plymouth Marine Laboratory
 #
 # This file is part of the ukesm-validation library.
@@ -28,444 +26,194 @@ from os.path import exists
 from calendar import month_name
 
 #Specific local code:
-from UKESMpython import folder,getFileList, AutoVivification, NestedDict,AutoVivToYaml,YamlToDict, slicesDict,reducesShelves
+from UKESMpython import folder,getFileList, AutoVivification, AutoVivToYaml,YamlToDict, slicesDict,reducesShelves
 from p2p import matchDataAndModel,makePlots,makeTargets, csvFromShelves, makePatternStatsPlots
 #from 
-from pftnames import MaredatTypes,WOATypes,Ocean_names,OceanMonth_names,months, Seasons,Hemispheres,HemispheresMonths, OceanSeason_names,getmt
+from pftnames import MaredatTypes,WOATypes,Ocean_names,OceanMonth_names,months, Seasons,Hemispheres,HemispheresMonths, OceanSeason_names#,getmt
 
 ###	Potential problems?
 ###		Reliance on ORCA1 grid
 
 
-def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
-			year=1998,
+def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
+			year='1997',
 			jobID='xhonc',
+			av = {},
+			plottingSlices = [],
+			workingDir  = '',
+			imageFolder = '',
+			noPlots = False,
 			):
 
-	#####
-	# Can use command line arguments to choose a model.
-	#if len(argv[1:]): models  = argv[1:]
-	#else:	models = ['MEDUSA','ERSEM','NEMO']
-    	
-    	#####
-    	# Which jobs to look at. 
-	#ERSEMjobID = 'xhonp'
-	jobIDs={}
-	jobIDs['ERSEM'] 	= jobID
-	jobIDs['NEMO'] 		= jobID
-	jobIDs['MEDUSA'] 	= jobID
+	"""
+	This analysis package performs the point to point analysis for a single model, for one year, for one job ID.
 	
+	Arguments:
+	    model: Model name
+	    
+	    year: year (4 digit string), doesn't need to be exact. For climatologies, we typically use 2525 or something absurd.
+	    
+	    jobID: 5 letter jobID as used on monsoon. 
+	    
+	    av:
+		The AutoVivification (av) is crucial. It controls the analysis. It locates the files. It identifies the field names in the netcdf.
+	
+		The av has a few very specific requiments in terms of structure and key words.
+		Here is an example, of ERSEM chlorophyll:
+			av['chl']['Data']['File'] 	= Observation_Filename_path_.netcdf	
+			av['chl']['Data']['Vars'] 	= ['Chlorophylla',]		
+			av['chl']['ERSEM']['File'] 	= Model_Filename_path_.netcdf
+			av['chl']['ERSEM']['Vars'] 	= ['chl',]
+			av['chl']['ERSEM']['grid']	= 'ORCA1'				
+			av['chl']['depthlevels'] 	= ['',]
+		where: 
+			'File' is the file path
+			'Vars' is the variable as it is call in the netcdf.
+			'grid' is the model grid name. These grids are linked to a grid mesh file for calculating cell volume, surface area and land masks.
+			'depthlevels' a list of depth levels. This is needed because some WOA files are huges and desktop computers may run the p2p analysis of that data.
+				depthlevels options are ['', 'Surface','100m','200m','500m',]
+				depthlevels = ['',] indicates look at no depth slicing. (Not recommended for big (>500,000 points) datasets! Don't say I didn't warn you.)
+
+	    plottingSlices:
+		plottingSlices is a list of regional, temporal, or statistical slices to be given to the analysis for plotting.
+		ie:	plottingSlices = ['All', 				# plots everything,
+					  'NorthAtlantic', 			# plots North Atlantic
+					  'February',				# plots February
+					  ('NorthAtlantic', 'February'),	# plots North Atlantic in February
+					  ]
+			plottingSlices can be made automatically with UKESMpthon.populateSlicesList()
+	    workingDir: 
+	    	workingDir is a location for the working files that are produced during the analysis. 
+	    	if no working directory is provided, the default is: ~/WorkingFiles/model-jobID-yyear
+	    		
+	    imageFolder: 
+	    	imageFolder is a location for all the images  that are produced during the analysis. 
+	    	if no working directory is provided, the default is: ~/images/model-jobID  	
+
+	    noPlots:
+	    	noPlots is a boolean value to turn off the production of images.
+	    	This can streamline the analysis routine, if plots are not needed.
+	    	
+	Returns:
+		shelvesAV:
+		another AutoVivification with the following structure:
+		shelvesAV[model][name][depthLevel][newSlice][xkey] = shelvePath
+	
+	testsuite_p2p is not the place for intercomparisons of models, years, or jobID. 
+	This can be done after calling testsuite_p2p.py, and by using the 
+
+	"""
 
 	
-	#####
-	# Which Year to investigate for each model.
-	# In an ideal world, they would all be the same, except that my current run is stuck in the queue.
-	year = str(year)	
-	years = {m:year for m in ['MEDUSA','ERSEM','NEMO']}
-
-
-	
-	#####
-	# Location of data files.
-	MAREDATFolder 	= "/data/perseus2/scratch/ledm/MAREDAT/MAREDAT/"
-	WOAFolder 	= "/data/euryale7/scratch/ledm/WOA/"	
-	GEOTRACESFolder = "/data/euryale7/scratch/ledm/GEOTRACES/GEOTRACES_PostProccessed/"
-	TakahashiFolder = "/data/euryale7/scratch/ledm/Takahashi2009_pCO2/"
-	LesterFolder 	= "/data/euryale7/scratch/ledm/LestersReportData/"			
-	#####
-	# Location of model files.	
-	#MEDUSAFolder	= "/data/euryale7/scratch/ledm/UKESM/MEDUSA/"
-	MEDUSAFolder	= "/data/euryale7/scratch/ledm/UKESM_postProcessed/MEDUSA/outNetCDF/"+jobIDs['MEDUSA']+'-' + years['MEDUSA']+'/'
-	ERSEMFolder	= "/data/euryale7/scratch/ledm/UKESM/ERSEM/"+ jobIDs['ERSEM']+'/'+years['ERSEM']+'/'+jobIDs['ERSEM']+'_'+years['ERSEM']
-	NEMOFolder	= "/data/euryale7/scratch/ledm/UKESM/ERSEM/"+ jobIDs['NEMO'] +'/'+years['NEMO'] +'/'+jobIDs['NEMO'] +'_'+years['NEMO']
-	#NEMOFolder	= "/data/euryale7/scratch/ledm/UKESM_postProcessed/MEDUSA/outNetCDF/"+jobIDs['MEDUSA']+'-' + years['MEDUSA']+'/'	
-
-	regions 	= ['Surface','200m','500m',]#'100m',
-	
-	#####
-	# Which analysis to run
-	doCHL 		= True
-	doMAREDAT 	= True
-	doN		= True
-	doPSF		= True	
-	doPCO2		= True
-	doIntPP		= 0#True
-	doO2		= True	
-	# DMS:
-	doDMS_clim	= 0#True
-	doDMS_pixels	= 0#True
-	doDMS_pixels2	= 0#True
-	# Physics:
-	doLight		= 0#True	# no file yet
-	doSalTemp	= True
-	doMLD		= True	
-	
-
-	
-	#####
-	# Set which spatial and temporal limitations to plot.
-	plotallcuts = True		# Plot p2p for all regions/oceans, or just Defaults.
-	if plotallcuts:
-		 plotDefaults		=True		 
-		 plotMonths		=True
-		 plotdepthRanges	=0
-		 plotpercentiles	=0#True	
-		 plotLatRegions		=0# True
-		 plotQualityCuts	=0#True	
-		 plotSeas		=0#True		 
-		 plotOceans		=True
-		 plotHemispheres	=0# True
-		 plotSeasons		=0# True
-		 plotOceanSeasons	=0# True		 		 
-		 plotOceanMonths   	=0#True	
-		 plotHemispheresMonths  =True			 
-	else: 	
-		 plotDefaults		=True		 	
-		 plotMonths		=0#True
-		 plotdepthRanges	=0#True	
-		 plotpercentiles	=0#True	
-		 plotLatRegions		=0#True
-		 plotQualityCuts	=0#True
-		 plotSeas		=0#True		 
-		 plotOceans		=0#True	
-		 plotHemispheres	=0		 
-		 plotSeasons		=0# True
-		 plotOceanSeasons	=0# True		 
-		 plotOceanMonths   	=0	 	 	 
-		 plotHemispheresMonths  =0			 
-
-	if plotDefaults:	newSlices = ['All', 'Standard',]# Defaults
-	else:			newSlices = []
-	if plotMonths: 	 	newSlices.extend(slicesDict['Months'])
-	if plotdepthRanges: 	newSlices.extend(slicesDict['depthRanges'])
-	if plotpercentiles: 	newSlices.extend(slicesDict['percentiles'])
-	if plotLatRegions:	newSlices.extend(slicesDict['latregions'])	
-	if plotQualityCuts: 	newSlices.extend(slicesDict['QualityCuts'])		
-	if plotSeas: 	 	newSlices.extend(slicesDict['Seas'])			
-	if plotOceans: 	 	newSlices.extend(slicesDict['Oceans'])
-	if plotHemispheres: 	newSlices.extend(slicesDict['Hemispheres'])	
-	if plotSeasons: 	newSlices.extend(slicesDict['Seasons'])
-	if plotOceanSeasons:	newSlices.extend(slicesDict['OceanSeasons'])		
-	if plotOceanMonths: 	newSlices.extend(slicesDict['OceanMonths'])
-	if plotHemispheresMonths: newSlices.extend(slicesDict['HemispheresMonths'])	
-
-
-	#####
-	# getmt
-	#mt = getmt()
-	#def getVarsFromMT(var, model):
-	#	try:	outs = mt[model][var]['vars']
-	#	except: outs = mt[model][var]
-	#	#print model,var,outs
-	#	if len(outs):return outs
-	#	return []
 		
-		
-	#####
-	# AutoVivification is a form of nested dictionary.
-	# We use AutoVivification here to determine which files to analyse and which fields in those files.
-	# Region is added, because some WOA files are huges and my desktop can not run the p2p analysis of that data.
-	av = AutoVivification()
-	if doCHL:
-		av['chl']['Data']['File'] 		= MAREDATFolder+"MarEDat20121001Pigments.nc"	
-		#av['chl']['MEDUSA']['File'] 		= MEDUSAFolder+"medusa_bio_"+years['MEDUSA']+".nc"	
-		av['chl']['MEDUSA']['File'] 		= MEDUSAFolder+jobIDs['MEDUSA']+'_' + years['MEDUSA']+"_MEDUSA_bio.nc"
-		av['chl']['ERSEM']['File'] 		= ERSEMFolder+'_ERSEMMisc.nc'	
-		av['chl']['Data']['Vars'] 		= ['Chlorophylla',]
-		av['chl']['MEDUSA']['Vars'] 		= ['CHD','CHN']	
-		av['chl']['ERSEM']['Vars'] 		= ['chl',]
-		av['chl']['regions'] 			= ['',]
-		av['chl']['MEDUSA']['grid']		= 'ORCA1'		
-		av['chl']['ERSEM']['grid']		= 'ORCA1'				
-
-	if doDMS_clim:
-		dmsd= {'dms_and':'anderson','dms_ara':'aranamit','dms_hal':'halloran','dms_sim':'simodach'} 
-		for dms in ['dms_and','dms_ara','dms_hal','dms_sim',]:
-			av[dms]['Data']['File'] 		= '/data/euryale7/scratch/ledm/UKESM/MEDUSA/xkrum/dms_xkrum.nc'		
-			av[dms]['MEDUSA']['File'] 		= '/data/euryale7/scratch/ledm/UKESM/MEDUSA/xkrum/dms_xkrum.nc'	
-			av[dms]['Data']['Vars'] 		= ['lanaetal',]
-			av[dms]['MEDUSA']['Vars'] 		= [dmsd[dms],]
-			av[dms]['regions'] 			= ['Surface',]	
-			av[dms]['MEDUSA']['grid'] 		= 'Flat1deg'
-
-	if doDMS_pixels:
-		dmsd= {'dms_p_and':'anderson','dms_p_ara':'aranamit','dms_p_hal':'halloran','dms_p_sim':'simodach'} 
-		for dms in ['dms_p_sim','dms_p_and','dms_p_ara','dms_p_hal',]:
-			av[dms]['Data']['File'] 		= '/data/euryale7/scratch/ledm/DMS_Lana2011nc/DMSpixels.nc'		
-			av[dms]['MEDUSA']['File'] 		= '/data/euryale7/scratch/ledm/UKESM/MEDUSA/xkrum/dms_xkrum.nc'	
-			av[dms]['Data']['Vars'] 		= ['DMS',]
-			av[dms]['MEDUSA']['Vars'] 		= [dmsd[dms],]			
-			av[dms]['regions'] 			= ['Surface',]	
-			av[dms]['MEDUSA']['grid'] 		= 'Flat1deg'
-
-	if doDMS_pixels2:
-		#dmsd= {'dms_p_and':'anderson','dms_p_ara':'aranamit','dms_p_hal':'halloran','dms_p_sim':'simodach'} 
-		dmsd= { 'dms_p_and1':'anderson1','dms_p_ara1':'aranamit1','dms_p_hal1':'halloran1','dms_p_sim1':'simodach1',
-			'dms_p_and2':'anderson2','dms_p_ara2':'aranamit2','dms_p_hal2':'halloran2','dms_p_sim2':'simodach2',} 
-		for d in ['dms_p_ara','dms_p_hal', 'dms_p_sim','dms_p_and',]:#
-		  for n in ['1','2']:
-		  	dms=d+n
-			av[dms]['Data']['File'] 		= '/data/euryale7/scratch/ledm/DMS_Lana2011nc/DMSpixels.nc'		
-			#av[dms]['MEDUSA']['File'] 		= '/data/euryale7/scratch/ledm/UKESM/MEDUSA/xkrum/dms_xkrum.nc'	
-			av[dms]['MEDUSA']['File'] 		= '/data/euryale7/scratch/ledm/UKESM/MEDUSA/xkrum/dms_xkrum_v2.nc'				
-			av[dms]['Data']['Vars'] 		= ['DMS',]
-			av[dms]['MEDUSA']['Vars'] 		= [dmsd[dms],]			
-			#av[dms]['MEDUSA']['Vars'] 		= dmsd[dms]
-			av[dms]['regions'] 			= ['Surface',]	
-			av[dms]['MEDUSA']['grid'] = 'Flat1deg'
-		
-						
-	if doMAREDAT:
-		av['diatoms']['Data']['File'] 		= MAREDATFolder+"MarEDat20120716Diatoms.nc"	
-		av['diatoms']['MEDUSA']['File'] 	= MEDUSAFolder+"medusa_bio_"+years['MEDUSA']+".nc"	
-		av['diatoms']['ERSEM']['File'] 		= ERSEMFolder+'_ERSEMphytoBm.nc'				
-		av['diatoms']['Data']['Vars'] 		= ['BIOMASS',]
-		av['diatoms']['MEDUSA']['Vars'] 	= ['PHD',]	
-		av['diatoms']['ERSEM']['Vars'] 		= ['P1c',]
-		av['diatoms']['regions'] 		= ['',]	
-		av['diatoms']['ERSEM']['grid']		= 'ORCA1'						
+	if len( av.keys())==0:
+		print "No autovivification nested dictionary given. - See testsuite_p2p documentation or a working example."
+		exit(0)
 	
-		av['bac']['Data']['File'] 		= MAREDATFolder+"MarEDat20120214Bacteria.nc"	
-		av['bac']['ERSEM']['File'] 		= ERSEMFolder+'_ERSEMbac.nc'			
-		av['bac']['Data']['Vars'] 		= ['BIOMASS',]
-		av['bac']['ERSEM']['Vars'] 		= ['B1c',]
-		av['bac']['regions'] 			= ['',]
-		av['bac']['ERSEM']['grid']		= 'ORCA1'						
-	
-		av['picophyto']['Data']['File'] 	= MAREDATFolder+"MarEDat20111206Picophytoplankton.nc"	
-		av['picophyto']['ERSEM']['File'] 	= ERSEMFolder+'_ERSEMphytoBm.nc'			
-		av['picophyto']['Data']['Vars'] 	= ['BIOMASS',]
-		av['picophyto']['ERSEM']['Vars'] 	= ['P3c',]
-		av['picophyto']['regions'] 		= ['',]	
-		av['picophyto']['ERSEM']['grid']		= 'ORCA1'						
+	if len( plottingSlices) ==0:
+		plottingSlices = populateSlicesList()
+		print "No plotting slices provided, using defaults",plottingSlices
+
+	# Location of processing files
+	if len( workingDir) == 0:
+		workingDir = folder("WorkingFiles/"+model+'-'+jobID+'-'+year)
+		print "No working directory provided, creating default:",workingDir
 		
-		av['microzoo']['Data']['File'] 		= MAREDATFolder+"MarEDat20120424Microzooplankton.nc"	
-		av['microzoo']['MEDUSA']['File'] 	= MEDUSAFolder+"medusa_bio_"+years['MEDUSA']+".nc"	
-		av['microzoo']['ERSEM']['File'] 	= ERSEMFolder+'_ERSEMzoo.nc'			
-		av['microzoo']['Data']['Vars'] 		= ['BIOMASS',]
-		av['microzoo']['MEDUSA']['Vars'] 	= ['ZMI',]	
-		av['microzoo']['ERSEM']['Vars'] 	= ['Z5c',]
-		av['microzoo']['regions'] 		= ['',]	
-		av['microzoo']['ERSEM']['grid']		= 'ORCA1'						
-	
-		av['mesozoo']['Data']['File'] 		= MAREDATFolder+"MarEDat20120705Mesozooplankton.nc"	
-		av['mesozoo']['MEDUSA']['File'] 	= MEDUSAFolder+"medusa_bio_"+years['MEDUSA']+".nc"	
-		av['mesozoo']['ERSEM']['File'] 		= ERSEMFolder+'_ERSEMzoo.nc'			
-		av['mesozoo']['Data']['Vars'] 		= ['BIOMASS',]
-		av['mesozoo']['MEDUSA']['Vars'] 	= ['ZME',]	
-		av['mesozoo']['ERSEM']['Vars'] 		= ['Z4c',]
-		av['mesozoo']['regions'] 		= ['',]
-		av['mesozoo']['ERSEM']['grid']		= 'ORCA1'						
-
-	if doN:
-		av['nitrate']['Data']['File'] 		= WOAFolder+'nitrate_monthly_1deg.nc'	
-		av['nitrate']['ERSEM']['File'] 		= ERSEMFolder+'_ERSEMNuts.nc'	
-		#av['nitrate']['MEDUSA']['File'] 	= MEDUSAFolder+"medusa_bio_"+years['MEDUSA']+".nc"
-		av['nitrate']['MEDUSA']['File'] 	= MEDUSAFolder+jobIDs['MEDUSA']+'_'+ years['MEDUSA']+"_MEDUSA_bio.nc"		
-		av['nitrate']['Data']['Vars'] 		= ['n_an',] 		#l+'_mn',
-		av['nitrate']['ERSEM']['Vars'] 		= ['N3n','N4n',]
-		av['nitrate']['MEDUSA']['Vars'] 	= ['DIN',]									
-		av['nitrate']['regions'] 		= regions
-		av['nitrate']['MEDUSA']['grid']		= 'ORCA1'		
-		av['nitrate']['ERSEM']['grid']		= 'ORCA1'				
-			
-	if doPSF:
-		av['silicate']['Data']['File'] 		= WOAFolder+'silicate_monthly_1deg.nc'	
-		av['silicate']['ERSEM']['File'] 	= ERSEMFolder+'_ERSEMNuts.nc'	
-		av['silicate']['Data']['Vars'] 		= ['i_an',] 		#l+'_mn',
-		av['silicate']['ERSEM']['Vars'] 	= ['N5s',]
-		av['silicate']['regions'] 		= regions
-		av['silicate']['MEDUSA']['Vars'] 	= ['SIL',]									
-		av['silicate']['MEDUSA']['File'] 	= MEDUSAFolder+"medusa_bio_"+years['MEDUSA']+".nc"
-		av['silicate']['MEDUSA']['grid']		= 'ORCA1'		
-		av['silicate']['ERSEM']['grid']		= 'ORCA1'				
-						
-		av['phosphate']['Data']['File'] 	= WOAFolder+'phosphate_monthly_1deg.nc'	
-		av['phosphate']['ERSEM']['File'] 	= ERSEMFolder+'_ERSEMNuts.nc'	
-		av['phosphate']['Data']['Vars'] 	= ['p_an',] 		#l+'_mn',
-		av['phosphate']['ERSEM']['Vars'] 	= ['N1p',]
-		av['phosphate']['regions'] 		= regions		
-		av['phosphate']['MEDUSA']['grid']		= 'ORCA1'		
-		av['phosphate']['ERSEM']['grid']		= 'ORCA1'				
-								
-		av['iron']['Data']['File'] 		= GEOTRACESFolder+"Iron_GEOTRACES_IDP2014_Discrete_Sample_Data_ascii.nc"
-		av['iron']['MEDUSA']['File'] 		= MEDUSAFolder+"medusa_bio_"+years['MEDUSA']+".nc"	
-		av['iron']['ERSEM']['File'] 		= ERSEMFolder+'_ERSEMNuts.nc'			
-		av['iron']['Data']['Vars'] 		= ['Fe_D_CONC_BOTTLE',]
-		av['iron']['MEDUSA']['Vars'] 		= ['FER',]	
-		av['iron']['ERSEM']['Vars'] 		= ['N7f',]
-		av['iron']['regions'] 			= ['',]
-		av['iron']['MEDUSA']['grid']		= 'ORCA1'		
-		av['iron']['ERSEM']['grid']		= 'ORCA1'				
-
-	if doO2:
-		av['oxygen']['Data']['File'] 	=  WOAFolder+'oxygen-woa13.nc'
-		av['oxygen']['Data']['Vars'] 	= ['o_an',] 
-		av['oxygen']['ERSEM']['Vars'] 	= ['o2c',]						
-		av['oxygen']['ERSEM']['File']	= ERSEMFolder+'_ERSEMO2.nc'
-		av['oxygen']['ERSEM']['grid']	= 'ORCA1'
-		av['oxygen']['regions'] 	= regions
-		
-	if doPCO2:
-		av['pCO2']['Data']['File'] 	= TakahashiFolder + "takahashi2009_month_flux_pCO2_2006c_noHead.nc"	
-		av['pCO2']['ERSEM']['File'] 	= ERSEMFolder+'_ERSEMMisc.nc'	
-		av['pCO2']['MEDUSA']['File'] 	= MEDUSAFolder+"medusa_bio_"+years['MEDUSA']+".nc"
-		av['pCO2']['Data']['Vars'] 	= ['PCO2_SW',] 		#l+'_mn',
-		av['pCO2']['ERSEM']['Vars'] 	= ['pCO2w',]
-		av['pCO2']['MEDUSA']['Vars'] 	= ['OCN_PCO2',]	
-		av['pCO2']['regions'] 		= ['',]
-		av['pCO2']['ERSEM']['grid'] 	= 'ORCA1'		
-		av['pCO2']['MEDUSA']['grid']	= 'ORCA1'				
+	# Location of image Output files
+	if noPlots is False:
+	    if len(imageFolder)==0:
+		imageFolder 	= folder('images/'+model+'-'+jobID)
+		print "No image directory provided, creating default:",imageFolder
 
 
-	if doIntPP:
-		av['intpp']['Data']['File'] 	=  LesterFolder+'PPint_1deg.nc'
-		av['intpp']['Data']['Vars'] 	= ['PPint',]
-		#av['intpp']['ERSEM']['Vars'] 	= ['netPP',] This field is net, not integrated.
-		#av['intpp']['ERSEM']['File']	= ERSEMFolder+'_ERSEMMisc.nc' This file will need to be remade.
-		av['intpp']['ERSEM']['grid']	= 'ORCA1'
-		av['intpp']['regions'] 		= ['',]
-		
-
-		
-		
-					
-	if doSalTemp:
-		av['salinity']['Data']['File'] 		= WOAFolder+'salinity_monthly_1deg.nc'	
-		av['salinity']['NEMO']['File'] 		= NEMOFolder+'_NEMO.nc'	
-		av['salinity']['Data']['Vars'] 		= ['s_an',]
-		av['salinity']['NEMO']['Vars'] 		= ['vosaline',]
-		av['salinity']['regions'] 		= regions	 
-		av['salinity']['NEMO']['grid'] 		= 'ORCA1'
-
-		av['temperature']['Data']['File'] 	= WOAFolder+'temperature_monthly_1deg.nc'	
-		av['temperature']['NEMO']['File'] 	= NEMOFolder+'_NEMO.nc'	
-		av['temperature']['Data']['Vars'] 	= ['t_an',]	
-		av['temperature']['NEMO']['Vars'] 	= ['votemper',]
-		av['temperature']['regions'] 		= regions	
-		av['temperature']['NEMO']['grid'] 	= 'ORCA1'				   
-	if doMLD:	
-		av['mld']['Data']['File'] 		= "/data/euryale7/scratch/ledm/IFREMER-MLD/mld_DT02_c1m_reg2.0.nc"
-		#av['mld']['NEMO']['File'] 		= NEMOFolder+'_NEMO.nc'	
-		av['mld']['NEMO']['File'] 		= NEMOFolder+jobIDs['MEDUSA']+'_'+ years['MEDUSA']+"_MEDUSA_MLD.nc"			
-		av['mld']['Data']['Vars'] 		= ['mld','mask',]
-		av['mld']['NEMO']['Vars'] 		= ['somxl010',]	
-		av['mld']['regions'] 			= ['',]
-		av['mld']['NEMO']['grid'] 		= 'ORCA1'
-
-				
-		#av['mld_DR003']['Data']['File'] 	= "/data/euryale7/scratch/ledm/IFREMER-MLD/mld_DT02_c1m_reg2.0.nc"
-		#av['mld_DR003']['NEMO']['File'] 	= NEMOFolder+'_NEMO.nc'			
-		#av['mld_DR003']['Data']['Vars'] 	= ['mld','mask',]
-		#av['mld_DR003']['NEMO']['Vars'] 	= ['somxl010',]	
-		#av['mld_DR003']['regions'] 		= ['',]
-
-		#av['mld_DReqDTm02']['Data']['File'] 	= "/data/euryale7/scratch/ledm/IFREMER-MLD/mld_DT02_c1m_reg2.0.nc"
-		#av['mld_DReqDTm02']['NEMO']['File'] 	= NEMOFolder+'_NEMO.nc'			
-		#av['mld_DReqDTm02']['Data']['Vars'] 	= ['mld','mask',]
-		#av['mld_DReqDTm02']['NEMO']['Vars'] 	= ['somxl010',]	
-		#av['mld_DReqDTm02']['regions'] 		= ['',]
-
-	if doLight:	
-		# Light file ? 
-		#av['irradiation']['Data']['File'] 		= "/data/euryale7/scratch/ledm/IFREMER-MLD/mld_DT02_c1m_reg2.0.nc"
-		av['irradiation']['NEMO']['File'] 		= NEMOFolder+jobIDs['MEDUSA']+'_'+ years['MEDUSA']+"_MEDUSA_Light.nc"			
-		av['irradiation']['Data']['Vars'] 		= []
-		av['irradiation']['NEMO']['Vars'] 		= ['MED_QSR',]	
-		av['irradiation']['regions'] 			= ['',]
-		av['irradiation']['NEMO']['grid'] 		= 'ORCA1'
-				
-
-		
-			
-	#for var in av.keys():
-	#	for m in models: 
-	#		#keys = getVarsFromMT(var,m)
-	#		av[var][m]['Vars'] = getVarsFromMT(var,m)
-	#		#print var,m, keys, av[var][m]['Vars']
-	#		#if len(keys) and keys != av[var][m]['Vars']:print "Dont' match."
-	#assert False	
-	
-	#AutoVivToYaml(av,folder('yaml')+'P2P_Settings.yaml')	
-	#av = 0
-	#print av
-	#av = YamlToDict(folder('yaml')+'P2P_Settings.yaml',)
-	#print av.keys(), av['chl'].keys(),av['chl']['MEDUSA']
-	
-
-	
-	
 	#####
 	# Start analysis here:
 	shelvesAV = AutoVivification()
-	
-	for model in models:
+			
+	for name in sorted(av.keys()):
 		#####
-		# Location of image Output files
-		imageFolder 	= folder('images/'+model+'-'+jobIDs[model])
-		workingDir = folder("/data/euryale7/scratch/ledm/ukesm_postProcessed/"+model+'-'+jobIDs[model]+'-'+years[model])
-				
-		for name in sorted(av.keys()):
-		    #####
-		    # Do some checks to make sure that the files all exist:
-		    print "testsuite outer loop: ",model,name#, av[name][model]
-		    try: 
-			if not isinstance(av[name][model],dict): continue
-			if len(av[name][model].keys()) ==0:continue
-		    except KeyError:
-			print "No ",name, 'in ',model
+		# Start with some tests of the av.
+		
+		#####
+		# Testing av for presence of model keyword
+	    	print "testsuite_p2p: \t",model,jobID, year, name#, av[name][model]
+	    	try: 
+			if not isinstance(av[name][model],dict):
+				print "testsuite_p2p: \tWARNING:", model ,' not in av', av[name].keys()
+				continue
+			if len(av[name][model].keys()) ==0:
+				print "testsuite_p2p: \tWARNING:", model ,' not in av', av[name].keys()			
+				continue
+	    	except KeyError:
+			print "testsuite_p2p: \tWARNING:\tNo ",name, 'in ',model
 			continue
-				
-		    #####						
-		    # Grid Testtry:	
-		    grid = av[name][model]['grid']
-		    #except: grid = 'ORCA1'
-		    if grid in ['', [], {}, None]	: 
+			
+		#####
+		# Testing av for presence of data keyword	
+	    	try: 
+			if not isinstance(av[name]['Data'],dict):
+				print "testsuite_p2p: \tWARNING:", 'Data' ,' not in av', av[name].keys()
+				continue
+			if len(av[name]['Data'].keys()) ==0:
+				print "testsuite_p2p: \tWARNING:", 'Data' ,' not in av', av[name].keys()			
+				continue
+	    	except KeyError:
+			print "testsuite_p2p: \tWARNING:\tNo ",'Data', 'in ',model
+			continue
+			
+
+		#####
+		# Testing av for presence of data/obs files.
+		try:
+		    if not exists(av[name]['Data']['File']):
+			print "testsuite_p2p.py:\tWARNING:\tFile does not exist", av[name]['Data']['File']
+			continue
+		except:
+			print "testsuite_p2p.py:\tWARNING:\tDict entry does not exist\tav[",name,"][",model,'][File]'
+			continue			    	
+		try:
+		    if not exists(av[name][model]['File']):
+			print "testsuite_p2p.py:\tWARNING:\tFile does not exist", av[name][model]['File']
+			continue
+		except:
+			print "testsuite_p2p.py:\tWARNING:\tDict entry does not exist:\tav[",name,"][",model,'][File] :',av[name][model]['File'] 
+			continue			
+
+
+	    	#####					
+		# Testing av for presence of grid	
+	    	grid = av[name][model]['grid']
+	    	if grid in ['', [], {}, None]	: 
 			print "testsuite_p2p.py:\tERROR:\tgrid not found:\tav[",name,"][",model,'][grid]: ',grid
 			assert False
 
-						
-						
-		    for region in av[name]['regions']:
-	
-			region = str(region)
-			
-			
-		
+	    	#####					
+		# Testing av for presence of depthLevels	
+		if len(av[name]['depthLevels']) ==0:
+				av[name]['depthLevels']=['',]
+				print "testsuite_p2p: \tWARNING: no 'depthLevels' provided in av, using defaults: ['',]"
 
-		
-			try:
-			    if not exists(av[name]['Data']['File']):
-				print "testsuite_p2p.py:\tWARNING:\tFile does not exist", av[name]['Data']['File']
-				continue
-			except:
-				print "testsuite_p2p.py:\tWARNING:\tDict entry does not exist\tav[",name,"][",model,'][File]'
-				continue			    	
-			try:
-			    if not exists(av[name][model]['File']):
-				print "testsuite_p2p.py:\tWARNING:\tFile does not exist", av[name][model]+'[File]:'
-				continue
-			except:
-				print "testsuite_p2p.py:\tWARNING:\tDict entry exist:\tav[",name,"][",model,'][File]'
-				continue			
-			print "\n\n\ntestsuite_p2p.py:\tINFO:\tRunning:",name
+		#####
+		# Made it though the initial tests. Time to start the analysis.
+		print "\n\n\ntestsuite_p2p.py:\tINFO:\tMade it though initial tests. Running:",model,jobID, year, name, av[name]['depthLevels']
+		for depthLevel in av[name]['depthLevels']:
+			depthLevel = str(depthLevel)
 			
 			
 			#####
 			# matchDataAndModel:
-			# Match (real) Data and Model. 
+			# Match observations and model. 
 			# Does not produce and plots.
-			
 			b = matchDataAndModel(av[name]['Data']['File'], 
 								av[name][model]['File'],
 								name,
 								DataVars  	= av[name]['Data']['Vars'],
 								ModelVars 	= av[name][model]['Vars'],
 								model 		= model,
-								jobID		= jobIDs[model],
-								year		= years[model],
+								jobID		= jobID,
+								year		= year,
 								workingDir 	= folder(workingDir+name),
-								region 		= region,
+								depthLevel 		= depthLevel,
 								grid		= grid)
 							
 			#####
@@ -474,366 +222,234 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 			# MakePlot runs a series of analysis, comparing every pair in DataVars and ModelVars
 			#	 under a range of different masks. For instance, only data from Antarctic Ocean, or only data from January.
 			# The makePlot produces a shelve file in workingDir containing all results of the analysis.
-			imageDir	= folder(imageFolder +'P2Pplots/'+years[model]+'/'+name+region)	
+			imageDir	= folder(imageFolder +'P2Pplots/'+year+'/'+name+depthLevel)	
 			m = makePlots(	b.MatchedDataFile, 
 					b.MatchedModelFile, 
 					name, 
-					#model, 
-					newSlices 	= newSlices,
-					jobID		= jobIDs[model],
+					newSlices 	= plottingSlices,
+					jobID		= jobID,
 					model 		= model,						
-					region 		= region,
-					year 		= years[model], 
-					shelveDir 	= folder(workingDir+name+region),
+					depthLevel 		= depthLevel,
+					year 		= year, 
+					shelveDir 	= folder(workingDir+name+depthLevel),
 					imageDir	= imageDir,
-					compareCoords	=True)
+					compareCoords	=True,
+					noPlots		= noPlots)
 
-			shelvesAV[model][name.replace(region,'')][region] = m.shelvesAV
-			csvFile = folder(workingDir+'/CSV')+'summary_file.csv'
-			print "attempting csvFromShelves:",m.shelves, csvFile
-			c = csvFromShelves.csvFromShelves(m.shelves, csvFile ,['check',])
+			shelvesAV[model][name][depthLevel] = m.shelvesAV
+			
+			#####
+			# no plots doesn't produce any plots, but does produce the list of shelves which can be used in Taylor/Target/Pattern diagrams.			
+			if noPlots: continue
+
+
+			#csvFile = folder(workingDir+'/CSV')+'summary_file.csv'
+			#print "attempting csvFromShelves:",m.shelves, csvFile
+			#c = csvFromShelves.csvFromShelves(m.shelves, csvFile ,['check',])
 
 			
 			#####
 			# makeTargets:
 			# Make a target diagram of all matches for this particular dataset. 
-			filename = folder(imageFolder+'/Targets/'+years[model]+'/AllSlices')+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region+'.png'
-			t = makeTargets(	m.shelves, 
-						filename,
-						#name=name,
-						legendKeys = ['newSlice','ykey',],
-						debug=True)
-						#imageDir='', 
-						
+			#filename = folder(imageFolder+'/Targets/'+year+'/AllSlices')+model+'-'+jobID+'_'+year+'_'+name+depthLevel+'.png'
+			#t = makeTargets(	m.shelves, 
+			#			filename,
+			#			#name=name,
+			#			legendKeys = ['newSlice','ykey',],
+			#			debug=True)
+			#			#imageDir='', 
 			
 			#####
-			# Ocean and month targets for this particular dataset.
-			MonthShelves = []
-			OceanShelves = []
-			OceanMonthShelves = {o:[] for o in Ocean_names}
-			OceanSeasonsShelves = {o:[] for o in Ocean_names}
-			HemisphereMonthShelves = {o:[] for o in Hemispheres}
-			#print shelvesAV.keys(),m.shelvesAV.keys()
-			#assert False	    				
-			for newSlice in m.shelvesAV.keys(): 
-			   for xkey in m.shelvesAV[newSlice].keys():
-				for ykey in m.shelvesAV[newSlice][xkey].keys():        	      
-				    shelve = m.shelvesAV[newSlice][xkey][ykey]			  
-				    if newSlice in month_name: 	MonthShelves.append(shelve)
-				    if newSlice in Ocean_names:	OceanShelves.append(shelve)
-				    
-				    # This part is for Ocean + Month cuts.
-				    if type(newSlice) in [type(['a','b',]),type(('a','b',))]:newSlice= newSlice[0]+newSlice[1]
-				    if newSlice in OceanMonth_names:
-				    	#print 'Prepping Targets',newSlice,xkey,ykey
-				    	for mn in month_name:
-				    	    t = newSlice.find(mn)
-					    #print 'Prepping Targets',newSlice, mn,newSlice[:t],t
-				    	    if t>0: 
-				   	 	#print newSlice, mn,newSlice[:t],t
-				    	    	OceanMonthShelves[newSlice[:t]].append(shelve)
-				    if newSlice in OceanSeason_names:
-				    	#print 'Prepping Targets',newSlice,xkey,ykey
-				    	for mn in Seasons:
-				    	    t = newSlice.find(mn)
-					    #print 'Prepping Targets',newSlice, mn,newSlice[:t],t
-				    	    if t>0: 
-				   	 	#print newSlice, mn,newSlice[:t],t
-				    	    	OceanSeasonsShelves[newSlice[:t]].append(shelve)				    	    	
-				    if newSlice in HemispheresMonths:
-				    	#print 'Prepping Targets',newSlice,xkey,ykey
-				    	for mn in month_name:
-				    	    t = newSlice.find(mn)
-					    #print 'Prepping Targets',newSlice, mn,newSlice[:t],t
-				    	    if t>0: 
-				   	 	#print newSlice, mn,newSlice[:t],t
-				    	    	HemisphereMonthShelves[newSlice[:t]].append(shelve)
-			#continue	   
-			#print OceanMonthShelves
-			#assert False	    	
-				    	
-			if len(MonthShelves):	    
-			  	filename = folder(imageFolder+'/Targets/'+years[model]+'/Months')+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region+'_Months.png'
-				makeTargets(	MonthShelves, 
-						filename,
-						legendKeys = ['newSlice',],					
-						)
-			  	filenamebase = folder(imageFolder+'/Patterns/'+years[model]+'/'+name)+'Months-'+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region
-				makePatternStatsPlots(	{name:MonthShelves,}, # {legend, shelves}
-							name+' Months',	#xkeysname
-							slicesDict['Months'],#xkeysLabels=
-							filenamebase,	# filename base	
-							grid	= grid,												
-							)						
-		
-												
-			if len(OceanShelves):	
-				filename = folder(imageFolder+'/Targets/'+years[model]+'/Oceans')+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region+'_Oceans.png'
-				makeTargets(	OceanShelves, 
-						filename,
-						legendKeys = ['newSlice',],					
-						)
-		  		filenamebase = folder(imageFolder+'/Patterns/'+years[model]+'/'+name)+'Oceans-'+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region
-				makePatternStatsPlots(	{name:OceanShelves,}, # {legend, shelves}
-							name+' Oceans',	#xkeysname
-							slicesDict['Oceans'],#xkeysLabels=
-							filenamebase,	# filename base	
-							grid	= grid,
-							)
-			
-			if len(OceanMonthShelves.keys()):										
-				for o in OceanMonthShelves.keys():
-				    if len(OceanMonthShelves[o]):
-					filename = folder(imageFolder+'/Targets/'+years[model]+'/OceanMonths/'+o)+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region+'_'+o+'Months.png'
-					makeTargets(	OceanMonthShelves[o], 
-							filename,
-							legendKeys = ['newSlice',],					
-							)
-				counts = [len(sh) for i,sh in OceanMonthShelves.items()]
-				if max(counts)>0:
-				  	filenamebase = folder(imageFolder+'/Patterns/'+years[model]+'/'+name)+'OceanMonths-'+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region
-					makePatternStatsPlots(	OceanMonthShelves, # {legend, shelves}
-							'Ocean Months',	#xkeysname
-							slicesDict['Months'],#xkeysLabels=
-							filenamebase,	# filename base						
-							grid	= grid,							
-							)
-			#assert False						
-			for o in OceanSeasonsShelves.keys():
-			    if len(OceanSeasonsShelves[o]):
-				filename = folder(imageFolder+'/Targets/'+years[model]+'/OceanSeasons/'+o)+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region+'_'+o+'Seasons.png'
-				makeTargets(	OceanSeasonsShelves[o], 
-						filename,
-						legendKeys = ['newSlice',],					
-						)
-				counts = [len(sh) for i,sh in OceanSeasonsShelves.items()]
-				if max(counts)>0:
-				  	filenamebase = folder(imageFolder+'/Patterns/'+years[model]+'/'+name)+'OceanSeasons-'+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region
-					makePatternStatsPlots(	OceanSeasonsShelves, # {legend, shelves}
-							'Ocean Seasons',	#xkeysname
-							slicesDict['Seasons'],	#xkeysLabels=
-							filenamebase,	# filename base	
-							grid	= grid,												
-							)
-													
-			for o in HemisphereMonthShelves.keys():
-			    if len(HemisphereMonthShelves[o]):
-				filename = folder(imageFolder+'/Targets/'+years[model]+'/Hemispheres/'+o)+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region+'_'+o+'Hemispheres.png'
-				makeTargets(	HemisphereMonthShelves[o], 
-						filename,
-						legendKeys = ['newSlice',],					
-						)
-				counts = [len(sh) for i,sh in HemisphereMonthShelves.items()]
-				if max(counts)>0:
-				  	filenamebase = folder(imageFolder+'/Patterns/'+years[model]+'/'+name)+'HemisphereMonths-'+model+'-'+jobIDs[model]+'_'+years[model]+'_'+name+region
-					makePatternStatsPlots(	HemisphereMonthShelves, # {legend, shelves}
-							'Hemisphere Months',	#xkeysname
-							slicesDict['Months'],			#xkeysLabels=
-							filenamebase,		# filename base	
-							grid	= grid,												
-							)
-																			
-			#print OceanMonthShelves
-		#####				
-		# Here are some fields for comparing fields in the same model
-		surfacemetrics = ['chl', 'pCO2', 'nitrate',]
-		dmsmetrics = ['dms_and','dms_ara','dms_hal','dms_sim']
-		dmspmetrics = ['dms_p_and','dms_p_ara','dms_p_hal','dms_p_sim']
-		#nitrates   = ['nitrate'+ s   for s in regions]	
-		#phosphates = ['phosphate'+ s for s in regions]	
-		#silicates  = ['silicate'+ s  for s in regions]	
-		#salinities   = ['salinity'+ s  for s in regions]
-		#temperatures= ['temperature'+ s  for s in regions]
-		physics = ['salinity', 'temperature','irradiation',]
-		WOA_bgc 	= ['silicate','nitrate','phosphate','oxygen']		
-		WOA_phys 	= ['salinity','temperature',]
-		PatternTypes = {'DMS_p':dmspmetrics,
-				'DMS_e':dmsmetrics,
-				'Maredat':MaredatTypes,
-				#'WOA':WOATypes,
-				'WOA BGC':WOA_bgc,
-				'WOA physics':WOA_phys,								
-				#'Nitrates':nitrates,
-				#'Phosphates':phosphates,
-				#'Silicates':silicates,
-				'SurfaceMetrics':surfacemetrics,
-				}
+			# Produce a set of pattern and a target plots for each of the groups here.
+			groups = {'Oceans':[],'Months':[],'Seasons':[],'NorthHemisphereMonths':[],'SouthHemisphereMonths':[]}
+			for g in groups:
+			    	groups[g] = reducesShelves(shelvesAV,  models =[model,],depthLevels = [depthLevel,], names = [name,], sliceslist =slicesDict[g])
+				print g, groups[g]
 				
-		Summary= {}		
-		Summary['MaredatAll'] = []
-		Summary['MaredatStandard'] = []			
-		Summary['WOAAll'] = []
-		Summary['WOAStandard'] = []	
-		Summary['AllAll'] = []	
-		Summary['AllStandard'] = []			
-		Summary['SurfaceMetricsAll'] = []	
-		Summary['SurfaceMetricsStandard'] = []	
-						
-		Summary['DMSAll'] = []
-		Summary['DMSStandard']=[]	
-		Summary['DMS_p_All'] = []
-		Summary['DMS_p_Standard']=[]
-						
-		MonthsPatterns = {p:{} for p in PatternTypes.keys()}
-		OceansPatterns = {p:{} for p in PatternTypes.keys()}
-		SHMonthsPatterns = {p:{} for p in PatternTypes.keys()}
-		NHMonthsPatterns = {p:{} for p in PatternTypes.keys()}
+				if len(groups[g])==0:continue 
+				 
+				#####
+				# makeTargets:
+				# Make a target diagram of the shelves of this group. 
+			  	filename = folder(imageFolder+'/Targets/'+year+'/'+name+depthLevel+'/'+g)+model+'-'+jobID+'_'+year+'_'+name+depthLevel+'_'+g+'.png'
+				makeTargets(	groups[g], 
+						filename,
+						legendKeys = ['newSlice',],					
+						)
+				#####
+				# makePattern plots:
+				# Make a pattern  diagram of all matches for this particular dataset. 
+				xkeys=''
+				for o in ['Oceans','Months']:
+					if g.find(o)>=0:  xkeys=o
+				if xkeys=='':
+					print "Could no find x axis keys!",g,'in',['Oceans','Months']
+					
+			  	filenamebase = folder(imageFolder+'/Patterns/'+year+'/'+name+depthLevel+'/'+g)+'Months-'+model+'-'+jobID+'_'+year+'_'+name+depthLevel
+				makePatternStatsPlots(	{name :groups[g],}, # {legend, shelves}
+							name+' '+g,	#xkeysname
+							slicesDict[xkeys],		#xkeysLabels=
+							filenamebase,	# filename base	
+							grid	= grid,												
+							)
+			#####
+			# After finding all the shelves, we can plot them on the same axis.				
+		  	filenamebase = folder(imageFolder+'/Patterns/'+year+'/'+name+depthLevel+'/ANSH')+'ANSH-Months-'+model+'-'+jobID+'_'+year+'_'+name+depthLevel
+		  	
+			makePatternStatsPlots(	{'North Hemisphere' :groups['NorthHemisphereMonths'],
+						 'South Hemisphere' :groups['SouthHemisphereMonths'],
+						 'Global' :	     groups['Months'], }, # {legend, shelves}
+						name+' Months',	#xkeysname
+						slicesDict['Months'],#xkeysLabels=
+						filenamebase,	# filename base	
+						grid	= grid,												
+						)
+
+		if noPlots: continue
 		#####
-		SouthHemispheresMonths = [(h,m) for h in ['SouthHemisphere',] for m in months] 
-		NorthHemispheresMonths = [(h,m) for h in ['NorthHemisphere',] for m in months]
-				  	
-			
-		Summary['AllAll'] = 	 reducesShelves(shelvesAV, models =[model,], sliceslist = ['All',])
-		Summary['AllStandard'] = reducesShelves(shelvesAV, models =[model,], sliceslist = ['Standard',])
+		# And now by depth levels:
 		
-	        for TypeListName,names in PatternTypes.items():
-		    for name in names:
-		    	print "loading shelve meta data:",TypeListName,':',name
-			SHMonthsPatterns[TypeListName][name] = reducesShelves(shelvesAV,  models =[model,],regions = ['Surface',], names = [name,], sliceslist = SouthHemispheresMonths)
-			NHMonthsPatterns[TypeListName][name] = reducesShelves(shelvesAV,  models =[model,],regions = ['Surface',], names = [name,], sliceslist = NorthHemispheresMonths)
-			
-			OceansPatterns[TypeListName][name] = reducesShelves(shelvesAV,  models =[model,],regions = ['Surface',], names = [name,], sliceslist = Ocean_names)
-			MonthsPatterns[TypeListName][name] = reducesShelves(shelvesAV,  models =[model,],regions = ['Surface',], names = [name,], sliceslist = months)
+		groups = ['Oceans','Months','Seasons',]	#'NorthHemisphereMonths':[],'SouthHemisphereMonths':[]}		
+		for g in groups:
+			if len(av[name]['depthLevels'])<=1: continue	
+			outShelves = {}
+			for dl in av[name]['depthLevels']:
+				outShelves[dl] = reducesShelves(shelvesAV,  models =[model,],depthLevels = [dl,], names = [name,], sliceslist =slicesDict[g])	
+		  	filenamebase = folder(imageFolder+'/Patterns/'+year+'/'+name+'AllDepths/')+'AllDepths-'+g+'-'+model+'-'+jobID+'_'+year+'_'+name
+			makePatternStatsPlots(	outShelves, 
+						name+' '+g,
+						slicesDict[g],		
+						filenamebase,
+						grid	= grid,												
+						)
+									
+	assert False
+			#####
+			# EVERYTHING IS GREAT UNTIL THIS POINT, THEN IT ALL GOES TITS UP .
 						
-		"""			
-		for name in shelvesAV[model].keys():
-		  for region in shelvesAV[model][name].keys():
-		    for newSlice in shelvesAV[model][name][region].keys(): 
-		      for xkey in shelvesAV[model][name][region][newSlice].keys():
-			for ykey in shelvesAV[model][name][region][newSlice][xkey].keys(): 
-			     for namer in [name, name+region]:
-			  	shelve = shelvesAV[model][name][region][newSlice][xkey][ykey]
-			       	#namer =name+region			  	
-				print 'loop:',namer, [model,name,region,newSlice,xkey,ykey], shelve
-	       		  	if newSlice == 'All':		Summary['AllAll'].append(shelve)
-	       		  	if newSlice == 'Standard':	Summary['AllStandard'].append(shelve)
 
-				if namer in surfacemetrics:
-				  	if newSlice == 'All':		Summary['SurfaceMetricsAll'].append(shelve)
-				  	if newSlice == 'Standard':	Summary['SurfaceMetricsStandard'].append(shelve)
-				  		       		  	
-				if namer in MaredatTypes:
-	        		  	if newSlice == 'All':		Summary['MaredatAll'].append(shelve)
-	        		  	if newSlice == 'Standard':	Summary['MaredatStandard'].append(shelve)
-					if newSlice in Ocean_names:	OceansPatterns['Maredat'][namer].append(shelve)
-					if newSlice in months:		MonthsPatterns['Maredat'][namer].append(shelve)
-											        		  	
-	        		if namer in WOATypes:
-	        		  	if newSlice == 'All':		Summary['WOAAll'].append(shelve)
-	        		  	if newSlice == 'Standard':	Summary['WOAStandard'].append(shelve)
-					if newSlice in Ocean_names:	OceansPatterns['WOA'][namer].append(shelve)
-					if newSlice in months:		MonthsPatterns['WOA'][namer].append(shelve)
-						        		
-	        		if namer in dmsmetrics:
-	        			print "Found ",namer,' in dmsmetrics.',newSlice	        		
-	        		  	if newSlice == 'All':		Summary['DMSAll'].append(shelve)
-	        		  	if newSlice == 'Standard':	Summary['DMSStandard'].append(shelve)
-					try:
-					  if newSlice in Ocean_names:		OceansPatterns['DMS_e'][namer].append(shelve)
-					  if newSlice in months:		MonthsPatterns['DMS_e'][namer].append(shelve)
-					  if newSlice in SouthHemispheresMonths:	SHMonthsPatterns['DMS_e'][namer].append(shelve)
-					  if newSlice in NorthHemispheresMonths:	NHMonthsPatterns['DMS_e'][namer].append(shelve)
-					except:pass
-	        		if namer in dmspmetrics:
-	        			print "Found ",namer,' in dmspmetrics.',newSlice
-	        		  	if newSlice == 'All':  		Summary[ 'DMS_p_All'].append(shelve)
-	        		  	if newSlice == 'Standard':	Summary[ 'DMS_p_Standard'].append(shelve)
-					try:	        		  	
-					  if newSlice in Ocean_names:	OceansPatterns['DMS_p'][namer].append(shelve)
-					  if newSlice in months:		MonthsPatterns['DMS_p'][namer].append(shelve)
-					  if newSlice in SouthHemispheresMonths:	SHMonthsPatterns['DMS_p'][namer].append(shelve)
-					  if newSlice in NorthHemispheresMonths:	NHMonthsPatterns['DMS_p'][namer].append(shelve)	
-					except:pass					
-	        		for woa in ['silicate','nitrate','phosphate','salinity','temperature','iron',]:
-	        		   for ns in ['All', 'Standard']:
-	        		   	if ns == newSlice and woa == namer.lower():
-	        		   		try: 	Summary[woa+ns].append(shelve)
-	        		   		except:	Summary[woa+ns]= [shelve,]
-
-				if namer in nitrates:
-					print 'loop Found nitrates:',namer, name, region, newSlice, shelve				
-					if newSlice in Ocean_names:	OceansPatterns['Nitrates'][namer].append(shelve)
-					if newSlice in months:		MonthsPatterns['Nitrates'][namer].append(shelve)	        
-																	
-				if namer in phosphates:
-					if newSlice in Ocean_names:	OceansPatterns['Phosphates'][namer].append(shelve)
-					if newSlice in months:		MonthsPatterns['Phosphates'][namer].append(shelve)	
-					
-				if namer in silicates:
-					if newSlice in Ocean_names:	OceansPatterns['Silicates'][namer].append(shelve)
-					if newSlice in months:		MonthsPatterns['Silicates'][namer].append(shelve)	
-					  	#Patterns['DMS_p'][name].append(shelve)
-					  	#if newSlice not in patternShelves: patternShelves.append(newSlice)
-		"""
+	return shelvesAV
+																			
+	#####			
+	# Here are some fields for comparing fields in the same model
+	surfacemetrics = ['chl', 'pCO2', 'nitrate',]
+	dmsmetrics = ['dms_and','dms_ara','dms_hal','dms_sim']
+	dmspmetrics = ['dms_p_and','dms_p_ara','dms_p_hal','dms_p_sim']
+	physics = ['salinity', 'temperature','irradiation',]
+	WOA_bgc 	= ['silicate','nitrate','phosphate','oxygen']	
+	WOA_phys 	= ['salinity','temperature',]
+	PatternTypes = {'DMS_p':dmspmetrics,
+			'DMS_e':dmsmetrics,
+			'Maredat':MaredatTypes,
+			#'WOA':WOATypes,
+			'WOA BGC':WOA_bgc,
+			'WOA physics':WOA_phys,					
+			#'Nitrates':nitrates,
+			#'Phosphates':phosphates,
+			#'Silicates':silicates,
+			'SurfaceMetrics':surfacemetrics,
+			}
+			
+	Summary= {}	
+	Summary['MaredatAll'] = []
+	Summary['MaredatStandard'] = []		
+	Summary['WOAAll'] = []
+	Summary['WOAStandard'] = []	
+	Summary['AllAll'] = []	
+	Summary['AllStandard'] = []		
+	Summary['SurfaceMetricsAll'] = []	
+	Summary['SurfaceMetricsStandard'] = []	
+				
+	Summary['DMSAll'] = []
+	Summary['DMSStandard']=[]	
+	Summary['DMS_p_All'] = []
+	Summary['DMS_p_Standard']=[]
+				
+	MonthsPatterns = {p:{} for p in PatternTypes.keys()}
+	OceansPatterns = {p:{} for p in PatternTypes.keys()}
+	SHMonthsPatterns = {p:{} for p in PatternTypes.keys()}
+	NHMonthsPatterns = {p:{} for p in PatternTypes.keys()}
+	#####
+	SouthHemispheresMonths = [(h,m) for h in ['SouthHemisphere',] for m in months] 
+	NorthHemispheresMonths = [(h,m) for h in ['NorthHemisphere',] for m in months]
+			  	
 		
-	        print 'OceansPatterns:', OceansPatterns
-	        print 'MonthsPatterns:', MonthsPatterns
-		for k in Summary.keys():
-			filename = folder(imageFolder+'/Targets/'+years[model]+'/Summary')+model+'_'+years[model]+'_'+k+'.png'
-			
-	  		makeTargets(Summary[k], 
-					filename,
-					legendKeys = ['name',],
-					debug=True)
-					
-		for k in OceansPatterns.keys():
-			if len(OceansPatterns[k]) ==0: continue				
-			filenamebase = folder(imageFolder+'/Patterns/'+years[model]+'/OceansPatterns/')+k+'_'+model+'-'+jobIDs[model]+'_'+years[model]+'_'+region
-			print 'OceansPatterns:',k, OceansPatterns[k],filenamebase
-			
-			makePatternStatsPlots(	OceansPatterns[k], # {legend, shelves}
-					k,	#xkeysname
-					Ocean_names,			#xkeysLabels=
-					filenamebase,		# filename base	
-					grid	= grid,											
-					)
-		for k in MonthsPatterns.keys():	
-			if len(MonthsPatterns[k]) ==0: continue										
-			filenamebase = folder(imageFolder+'/Patterns/'+years[model]+'/MonthsPatterns/')+k+'_'+model+'-'+jobIDs[model]+'_'+years[model]+'_'+region
-			print 'MonthsPatterns:',k, MonthsPatterns[k],filenamebase
-			makePatternStatsPlots(	
-					MonthsPatterns[k], # {legend, shelves}
-					k,	#xkeysname
-					months,			#xkeysLabels=
-					filenamebase,		# filename base						
-					grid	= grid,
-					)	
-
-		for k in SHMonthsPatterns.keys():	
-			if len(SHMonthsPatterns[k]) ==0: continue										
-			filenamebase = folder(imageFolder+'/Patterns/'+years[model]+'/SHMonthsPatterns/')+k+'_'+model+'-'+jobIDs[model]+'_'+years[model]+'_'+region
-			print 'SHMonthsPatterns:',k, SHMonthsPatterns[k],filenamebase
-			makePatternStatsPlots(	
-					SHMonthsPatterns[k], # {legend, shelves}
-					'South hemisphere '+k,	#xkeysname
-					months,			#xkeysLabels=
-					filenamebase,		# filename base						
-					grid	= grid,
-					)
-		for k in NHMonthsPatterns.keys():	
-			if len(NHMonthsPatterns[k]) ==0: continue										
-			filenamebase = folder(imageFolder+'/Patterns/'+years[model]+'/NHMonthsPatterns/')+k+'_'+model+'-'+jobIDs[model]+'_'+years[model]+'_'+region
-			print 'NHMonthsPatterns:',k, NHMonthsPatterns[k],filenamebase
-			makePatternStatsPlots(	
-					NHMonthsPatterns[k], # {legend, shelves}
-					'North hemisphere '+k,	#xkeysname
-					months,			#xkeysLabels=
-					filenamebase,		# filename base						
-					grid	= grid,
-					)					
-																											
-		#if model=='ERSEM':
-		AutoVivToYaml(shelvesAV, folder('yaml')+'shelvesAV'+model+years[model]+jobIDs[model]+'.yaml')
-		#else:
-		#	AutoVivToYaml(shelvesAV, folder('yaml')+'shelvesAV'+model+years[model]+'.yaml')				
-
-			
-
-					
-	print "Working dir:",workingDir
+	Summary['AllAll'] = 	 reducesShelves(shelvesAV, models =[model,], sliceslist = ['All',])
+	Summary['AllStandard'] = reducesShelves(shelvesAV, models =[model,], sliceslist = ['Standard',])
 	
+	for TypeListName,names in PatternTypes.items():
+	    for name in names:
+	    	print "loading shelve meta data:",TypeListName,':',name
+		SHMonthsPatterns[TypeListName][name] = reducesShelves(shelvesAV,  models =[model,],depthLevels = ['Surface',], names = [name,], sliceslist = SouthHemispheresMonths)
+		NHMonthsPatterns[TypeListName][name] = reducesShelves(shelvesAV,  models =[model,],depthLevels = ['Surface',], names = [name,], sliceslist = NorthHemispheresMonths)
+		
+		OceansPatterns[TypeListName][name] = reducesShelves(shelvesAV,  models =[model,],depthLevels = ['Surface',], names = [name,], sliceslist = Ocean_names)
+		MonthsPatterns[TypeListName][name] = reducesShelves(shelvesAV,  models =[model,],depthLevels = ['Surface',], names = [name,], sliceslist = months)
+				
 
+	depthLevel = ''
+	print 'OceansPatterns:', OceansPatterns
+	print 'MonthsPatterns:', MonthsPatterns
+	for k in Summary.keys():
+		filename = folder(imageFolder+'/Targets/'+year+'/Summary')+model+'_'+year+'_'+k+'.png'
+		
+	  	makeTargets(Summary[k], 
+			filename,
+			legendKeys = ['name',],
+			debug=True)
 			
+	for k in OceansPatterns.keys():
+		if len(OceansPatterns[k]) ==0: continue			
+		filenamebase = folder(imageFolder+'/Patterns/'+year+'/OceansPatterns/')+k+'_'+model+'-'+jobID+'_'+year+'_'+depthLevel
+		print 'OceansPatterns:',k, OceansPatterns[k],filenamebase
+		
+		makePatternStatsPlots(	OceansPatterns[k], # {legend, shelves}
+			k,	#xkeysname
+			Ocean_names,		#xkeysLabels=
+			filenamebase,	# filename base	
+			grid	= grid,							
+			)
+	for k in MonthsPatterns.keys():	
+		if len(MonthsPatterns[k]) ==0: continue							
+		filenamebase = folder(imageFolder+'/Patterns/'+year+'/MonthsPatterns/')+k+'_'+model+'-'+jobID+'_'+year+'_'+depthLevel
+		print 'MonthsPatterns:',k, MonthsPatterns[k],filenamebase
+		makePatternStatsPlots(	
+			MonthsPatterns[k], # {legend, shelves}
+			k,	#xkeysname
+			months,		#xkeysLabels=
+			filenamebase,	# filename base				
+			grid	= grid,
+			)	
+
+	for k in SHMonthsPatterns.keys():	
+		if len(SHMonthsPatterns[k]) ==0: continue							
+		filenamebase = folder(imageFolder+'/Patterns/'+year+'/SHMonthsPatterns/')+k+'_'+model+'-'+jobID+'_'+year+'_'+depthLevel
+		print 'SHMonthsPatterns:',k, SHMonthsPatterns[k],filenamebase
+		makePatternStatsPlots(	
+			SHMonthsPatterns[k], # {legend, shelves}
+			'South hemisphere '+k,	#xkeysname
+			months,		#xkeysLabels=
+			filenamebase,	# filename base				
+			grid	= grid,
+			)
+	for k in NHMonthsPatterns.keys():	
+		if len(NHMonthsPatterns[k]) ==0: continue							
+		filenamebase = folder(imageFolder+'/Patterns/'+year+'/NHMonthsPatterns/')+k+'_'+model+'-'+jobID+'_'+year+'_'+depthLevel
+		print 'NHMonthsPatterns:',k, NHMonthsPatterns[k],filenamebase
+		makePatternStatsPlots(	
+			NHMonthsPatterns[k], # {legend, shelves}
+			'North hemisphere '+k,	#xkeysname
+			months,		#xkeysLabels=
+			filenamebase,	# filename base				
+			grid	= grid,
+			)			
+
+	print "#####"
+	print "Finished testsuite_p2p:",model, year,jobID
+	print "working directory",workingDir
+	print "image directory:", imageFolder
+	
+	return shelvesAV		
 			
 
 
@@ -841,7 +457,8 @@ def testsuite_p2p(	models=['MEDUSA','ERSEM','NEMO'],
 	
 	
 if __name__=="__main__":
-
+	sys.exit(0)
+	
 	# Can use command line arguments to choose a model.
 	models 		= []
 	years 		= []
