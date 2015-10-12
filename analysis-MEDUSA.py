@@ -42,22 +42,32 @@ from testsuite_p2p import testsuite_p2p
 
 # 	from 
 def analysis():
+	# DMS model:
+	#model= 'MEDUSA'
+	#jobID = 'xkrum'
+	#year = 'clim'		
+	#Grid = 'ORCA1'
+	#MEDUSAFolder	= "/data/euryale7/scratch/ledm/UKESM_postProcessed/MEDUSA/outNetCDF/"+jobID+'-' + year+'/'
+
+
+	# ORCA025:
 	model= 'MEDUSA'
-	jobID = 'xkrum'
-	year = 'clim'		
+	jobID = 'xjwki'
+	year = '1979'		
+	Grid = 'ORCA025'	
+	MEDUSAFolder	= "/data/euryale7/scratch/ledm/UKESM/MEDUSA-ORCA025/"+jobID+"_postProc/"+year+"/"
 	
-	Grid = 'ORCA1'
-	
+		
 	#####
 	# Which analysis to run
-	doCHL 		= True
-	doMAREDAT 	= True
+	doCHL 		= 0#True
+	doMAREDAT 	= 0#True
 	doN		= True
-	doSi		= True	
-	doFe		= True		
-	doPCO2		= True
+	doSi		= 0#True	
+	doFe		= 0#True		
+	doPCO2		= 0#True
 	doIntPP		= 0#True
-	doO2		= True	
+	doO2		= 0#True	
 
 	#####
 	# What depth level to investigate, in the case of big 3D files (T,Sal, N,P,Si, etc)	
@@ -73,7 +83,7 @@ def analysis():
 	#####
 	# Location of model files.	
 	#MEDUSAFolder	= "/data/euryale7/scratch/ledm/UKESM/MEDUSA/"
-	MEDUSAFolder	= "/data/euryale7/scratch/ledm/UKESM_postProcessed/MEDUSA/outNetCDF/"+jobID+'-' + year+'/'
+	#MEDUSAFolder	= "/data/euryale7/scratch/ledm/UKESM_postProcessed/MEDUSA/outNetCDF/"+jobID+'-' + year+'/'
 	
 
 	#####
@@ -83,12 +93,16 @@ def analysis():
 	av = AutoVivification()
 	if doCHL:
 		av['chl']['Data']['File'] 		= MAREDATFolder+"MarEDat20121001Pigments.nc"	
-		av['chl']['MEDUSA']['File'] 		= MEDUSAFolder+jobID+'_' + year+"_MEDUSA_bio.nc"
+		if Grid == 'ORCA1':	
+			av['chl']['MEDUSA']['File'] 	= MEDUSAFolder+jobID+'_' + year+"_MEDUSA_bio.nc"
+			av['chl']['MEDUSA']['Vars'] 	= ['CHD','CHN']				
+		if Grid == 'ORCA025':
+			av['chl']['MEDUSA']['File']	= MEDUSAFolder+"xjwki_1979_CH.nc"
+			av['chl']['MEDUSA']['Vars'] 	= ['CHL',]			
 		av['chl']['Data']['Vars'] 		= ['Chlorophylla',]
-		av['chl']['MEDUSA']['Vars'] 		= ['CHD','CHN']	
-		av['chl']['depthLevels'] 			= ['',]
-		av['chl']['MEDUSA']['grid']		= Grid		
 
+		av['chl']['depthLevels'] 		= ['',]
+		av['chl']['MEDUSA']['grid']		= Grid		
 						
 	if doMAREDAT:
 		av['diatoms']['Data']['File'] 		= MAREDATFolder+"MarEDat20120716Diatoms.nc"	
@@ -109,13 +123,16 @@ def analysis():
 		av['mesozoo']['Data']['Vars'] 		= ['BIOMASS',]
 		av['mesozoo']['MEDUSA']['File'] 	= MEDUSAFolder+"medusa_bio_"+year+".nc"	
 		av['mesozoo']['MEDUSA']['Vars'] 	= ['ZME',]	
-		av['mesozoo']['MEDUSA']['grid']	= Grid		
+		av['mesozoo']['MEDUSA']['grid']		= Grid		
 		av['mesozoo']['depthLevels'] 		= ['',]
 
 	if doN:
 		av['nitrate']['Data']['File'] 		= WOAFolder+'nitrate_monthly_1deg.nc'	
 		av['nitrate']['Data']['Vars'] 		= ['n_an',] 		#l+'_mn',
-		av['nitrate']['MEDUSA']['File'] 	= MEDUSAFolder+jobID+'_'+ year+"_MEDUSA_bio.nc"		
+		if Grid == 'ORCA1':			
+			av['nitrate']['MEDUSA']['File'] = MEDUSAFolder+jobID+'_'+ year+"_MEDUSA_bio.nc"		
+		if Grid == 'ORCA025':
+			av['nitrate']['MEDUSA']['File'] = MEDUSAFolder+jobID+'_'+ year+"_DIN.nc"							
 		av['nitrate']['MEDUSA']['Vars'] 	= ['DIN',]									
 		av['nitrate']['MEDUSA']['grid']		= Grid		
 		av['nitrate']['depthLevels'] 		= depthLevels
@@ -133,7 +150,7 @@ def analysis():
 		av['iron']['MEDUSA']['File'] 		= MEDUSAFolder+"medusa_bio_"+year+".nc"	
 		av['iron']['Data']['Vars'] 		= ['Fe_D_CONC_BOTTLE',]
 		av['iron']['MEDUSA']['Vars'] 		= ['FER',]	
-		av['iron']['depthLevels'] 			= ['',]
+		av['iron']['depthLevels'] 		= ['',]
 		av['iron']['MEDUSA']['grid']		= Grid		
 
 #	if doO2:
@@ -149,7 +166,7 @@ def analysis():
 		av['pCO2']['MEDUSA']['File'] 	= MEDUSAFolder+"medusa_bio_"+year+".nc"
 		av['pCO2']['Data']['Vars'] 	= ['PCO2_SW',] 		#l+'_mn',
 		av['pCO2']['MEDUSA']['Vars'] 	= ['OCN_PCO2',]	
-		av['pCO2']['depthLevels'] 		= ['',]
+		av['pCO2']['depthLevels'] 	= ['',]
 		av['pCO2']['MEDUSA']['grid']	= Grid				
 
 
