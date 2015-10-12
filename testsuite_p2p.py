@@ -104,7 +104,13 @@ def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
 
 	"""
 
-	
+	print "#############################"
+	print "testsuite_p2p:  "
+	print "models:        ",model
+	print "year:          ",year
+	print "jobID:         ",jobID
+	print "av keys:	      ",sorted(av.keys())
+	print "#############################"	
 		
 	if len( av.keys())==0:
 		print "No autovivification nested dictionary given. - See testsuite_p2p documentation or a working example."
@@ -323,7 +329,7 @@ def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
 						grid	= grid,												
 						)
 									
-	assert False
+	#assert False
 			#####
 			# EVERYTHING IS GREAT UNTIL THIS POINT, THEN IT ALL GOES TITS UP .
 						

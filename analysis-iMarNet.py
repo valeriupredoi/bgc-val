@@ -35,7 +35,7 @@ from testsuite_p2p import testsuite_p2p
 #from UKESMpython import folder,getFileList, AutoVivification, NestedDict,AutoVivToYaml,YamlToDict, slicesDict
 #from p2p import matchDataAndModel,makePlots,makeTargets, csvFromShelves, makePatternStatsPlots
 #from 
-#from pftnames import MaredatTypes,WOATypes,Ocean_names,OceanMonth_names,months, Seasons,Hemispheres,HemispheresMonths, OceanSeason_names,getmt
+from pftnames import months, MaredatTypes,WOATypes,Ocean_names,OceanMonth_names,months, Seasons,Hemispheres,HemispheresMonths, OceanSeason_names,getmt
 
 from shelve import open as shOpen
 #import numpy as np
@@ -45,7 +45,7 @@ from ncdfView import ncdfView
 
 def analysisiMarNet():
 	
-	AllModels 		= []
+	AllModels 	= []
 	years 		= []
 	
 	#####
@@ -78,7 +78,6 @@ def analysisiMarNet():
 	
     	#####
     	# Which jobs to look at. 
-	#ERSEMjobID = 'xhonp'
 	jobIDs={}
 	jobIDs['Diat-HadOCC'] 	= 'v1a'		
 	jobIDs['ERSEM'] 	= 'xhonc'
@@ -111,14 +110,14 @@ def analysisiMarNet():
 	# Which analysis to run
 	#working - 2015-09-23:
 	doCHL 		= True
-	doN		= True
-	doSi		= True
+	doN		= 0#True
+	doSi		= 0#True
 	doPCO2		= 0 #True
-	doIntPP		= True
-	doP		= True			# Phosphate is not in all the iMarNet models. 
+	doIntPP		= 0#True
+	doP		= 0#True			# Phosphate is not in all the iMarNet models. 
 		
 	#in progress:
-	doO2		= True		# not yet implemented - iMarNet didn't report monthly oxygen, only annual 3D.
+	doO2		= 0#True		# not yet implemented - iMarNet didn't report monthly oxygen, only annual 3D.
 	doFe		= 0#True 		# Iron is a challenge in IMarNet because we only keep surface values, and iron file is 1D already.
 	#doDIC		= True			# What database?
 	
@@ -294,168 +293,7 @@ def analysisiMarNet():
 			noPlots=True)
 		
 		
-		assert False	
 	
-
-		
-
-																			
-			#print OceanMonthShelves
-		#####				
-		# Here are some fields for comparing fields in the same model
-		Summary= {}		
-		Summary['MaredatAll'] = []
-		Summary['MaredatStandard'] = []			
-		Summary['WOAAll'] = []
-		Summary['WOAStandard'] = []	
-
-		Summary['AllAll'] = []	
-		Summary['AllStandard'] = []			
-		Summary['SurfaceMetricsAll'] = []	
-		Summary['SurfaceMetricsStandard'] = []			
-		surfacemetrics = ['chl', 'pCO2', 'nitrate',]
-							
-		dmsmetrics = ['dms_and','dms_ara','dms_hal','dms_sim']
-		dmspmetrics = ['dms_p_and','dms_p_ara','dms_p_hal','dms_p_sim']	
-		nitrates   = ['nitrate'+ s   for s in depthLevels]	
-		phosphates = ['phosphate'+ s for s in depthLevels]	
-		silicates  = ['silicate'+ s  for s in depthLevels]	
-						
-		Summary['DMSAll'] = []
-		Summary['DMSStandard']=[]	
-		Summary['DMS_p_All'] = []
-		Summary['DMS_p_Standard']=[]
-
-		PatternTypes = ['DMS_p','DMS_e','Maredat','WOA','Nitrates','Phosphates','Silicates']
-		MonthsPatterns = {p:{} for p in PatternTypes}
-		OceansPatterns = {p:{} for p in PatternTypes}	
-		
-		#'DMS_p':{},'DMS_e':{},'Maredat':{},'WOA':{},''}
-		#OceansPatterns = {'DMS_p':{},'DMS_e':{},'Maredat':{},'WOA':{},}		
-
-		for name_init in shelvesAV[model].keys():
-		    for r in av[name_init]['depthLevels']:
-		        name =name_init+r
-			if name in MaredatTypes: 
-				OceansPatterns['Maredat'][name] = []
-			  	MonthsPatterns['Maredat'][name] = []
-			if name in WOATypes: 
-				OceansPatterns['WOA'][name] = []
-			  	MonthsPatterns['WOA'][name] = []
-			if name in dmsmetrics: 
-				OceansPatterns['DMS_e'][name] = []
-			  	MonthsPatterns['DMS_e'][name] = []
-			if name in dmspmetrics: 
-				OceansPatterns['DMS_p'][name] = []
-			  	MonthsPatterns['DMS_p'][name] = []
-
-			if name in nitrates: 
-				OceansPatterns['Nitrates'][name] = []
-			  	MonthsPatterns['Nitrates'][name] = []
-			if name in phosphates: 
-				OceansPatterns['Phosphates'][name] = []
-			  	MonthsPatterns['Phosphates'][name] = []
-			if name in silicates: 
-				OceansPatterns['Silicates'][name] = []
-			  	MonthsPatterns['Silicates'][name] = []				  	
-			
-
-		for name in shelvesAV[model].keys():
-		  for depthLevel in shelvesAV[model][name].keys():
-		    for newSlice in shelvesAV[model][name][depthLevel].keys(): 
-		      for xkey in shelvesAV[model][name][depthLevel][newSlice].keys():
-			for ykey in shelvesAV[model][name][depthLevel][newSlice][xkey].keys():        	      
-			  	shelve = shelvesAV[model][name][depthLevel][newSlice][xkey][ykey]
-			       	namer =name+depthLevel			  	
-	       		  	if newSlice == 'All':		Summary['AllAll'].append(shelve)
-	       		  	if newSlice == 'Standard':	Summary['AllStandard'].append(shelve)
-
-				if namer in surfacemetrics:
-				  	if newSlice == 'All':		Summary['SurfaceMetricsAll'].append(shelve)
-				  	if newSlice == 'Standard':	Summary['SurfaceMetricsStandard'].append(shelve)
-				  		       		  	
-				if namer in MaredatTypes:
-	        		  	if newSlice == 'All':		Summary['MaredatAll'].append(shelve)
-	        		  	if newSlice == 'Standard':	Summary['MaredatStandard'].append(shelve)
-					if newSlice in Ocean_names:	OceansPatterns['Maredat'][namer].append(shelve)
-					if newSlice in months:		MonthsPatterns['Maredat'][namer].append(shelve)
-											        		  	
-	        		if namer in WOATypes:
-	        		  	if newSlice == 'All':		Summary['WOAAll'].append(shelve)
-	        		  	if newSlice == 'Standard':	Summary['WOAStandard'].append(shelve)	
-					if newSlice in Ocean_names:	OceansPatterns['WOA'][namer].append(shelve)
-					if newSlice in months:		MonthsPatterns['WOA'][namer].append(shelve)
-	        		
-	        		if namer in dmsmetrics:
-	        		  	if newSlice == 'All':		Summary['DMSAll'].append(shelve)
-	        		  	if newSlice == 'Standard':	Summary['DMSStandard'].append(shelve)
-					if newSlice in Ocean_names:	OceansPatterns['DMS_e'][namer].append(shelve)
-					if newSlice in months:		MonthsPatterns['DMS_e'][namer].append(shelve)
-	        		  		        				
-	        		if namer in dmspmetrics:
-	        		  	if newSlice == 'All':  		Summary[ 'DMS_p_All'].append(shelve)
-	        		  	if newSlice == 'Standard':	Summary[ 'DMS_p_Standard'].append(shelve)
-					if newSlice in Ocean_names:	OceansPatterns['DMS_p'][namer].append(shelve)
-					if newSlice in months:		MonthsPatterns['DMS_p'][namer].append(shelve)
-	        		for woa in ['silicate','nitrate','phosphate','salinity','temperature','iron',]:
-	        		   for ns in ['All', 'Standard']:
-	        		   	if ns == newSlice and woa == namer.lower():
-	        		   		try: 	Summary[woa+ns].append(shelve)
-	        		   		except:	Summary[woa+ns]= [shelve,]
-
-				if namer in nitrates:
-					print 'loop Found nitrates:',namer, name, depthLevel, newSlice, shelve				
-					if newSlice in Ocean_names:	OceansPatterns['Nitrates'][namer].append(shelve)
-					if newSlice in months:		MonthsPatterns['Nitrates'][namer].append(shelve)	        
-																	
-				if namer in phosphates:
-					if newSlice in Ocean_names:	OceansPatterns['Phosphates'][namer].append(shelve)
-					if newSlice in months:		MonthsPatterns['Phosphates'][namer].append(shelve)	
-					
-				if namer in silicates:
-					if newSlice in Ocean_names:	OceansPatterns['Silicates'][namer].append(shelve)
-					if newSlice in months:		MonthsPatterns['Silicates'][namer].append(shelve)	
-					  	#Patterns['DMS_p'][name].append(shelve)
-					  	#if newSlice not in patternShelves: patternShelves.append(newSlice)
-	        print 'OceansPatterns:', OceansPatterns
-	        print 'MonthsPatterns:', MonthsPatterns	        
-		for k in Summary.keys():
-			filename = folder(imageFolder+'/Targets/'+years[model]+'/Summary')+model+'_'+years[model]+'_'+k+'.png'
-			
-	  		makeTargets(Summary[k], 
-					filename,
-					legendKeys = ['name',],
-					debug=True)
-					
-		for k in OceansPatterns.keys():
-			print 'OceansPatterns:',k			
-			if len(OceansPatterns[k]) ==0: continue				
-			filenamebase = folder(imageFolder+'/Patterns/'+years[model]+'/OceansPatterns/')+k+'_'+model+'-'+jobIDs[model]+'_'+years[model]+'_'+depthLevel
-			print 'OceansPatterns:',k, OceansPatterns[k],filenamebase
-			
-			makePatternStatsPlots(	OceansPatterns[k], # {legend, shelves}
-					k,	#xkeysname
-					Ocean_names,			#xkeysLabels=
-					filenamebase,		# filename base	
-					grid	= grid,											
-					)
-		for k in MonthsPatterns.keys():	
-			print 'MonthsPatterns:',k
-			if len(MonthsPatterns[k]) ==0: continue										
-			filenamebase = folder(imageFolder+'/Patterns/'+years[model]+'/MonthsPatterns/')+k+'_'+model+'-'+jobIDs[model]+'_'+years[model]+'_'+depthLevel
-			print 'MonthsPatterns:',k, MonthsPatterns[k],filenamebase
-			makePatternStatsPlots(	
-					MonthsPatterns[k], # {legend, shelves}
-					k,	#xkeysname
-					months,			#xkeysLabels=
-					filenamebase,		# filename base						
-					grid	= grid,
-					)	
-																						
-		#if model=='ERSEM':
-		AutoVivToYaml(shelvesAV, folder('yaml')+'shelvesAV'+model+years[model]+jobIDs[model]+'.yaml')
-		#else:
-		#	AutoVivToYaml(shelvesAV, folder('yaml')+'shelvesAV'+model+years[model]+'.yaml')				
 
 			
 
@@ -513,7 +351,7 @@ def analysisiMarNet():
 					filenamebase,			# filename base
 					grid	= 'ORCA1',
 					)
-	print "Working dir:",workingDir
+	#print "Working dir:",workingDir
 			
 			
 
