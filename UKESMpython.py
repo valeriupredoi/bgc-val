@@ -937,10 +937,54 @@ def makeLonSafeArr(lon):
 	 	 
 	assert False
 
+class shelveMetadata:
+   def __init__(self,model='',name='',year='',depthLevel='',newSlice='',xkey='',ykey='',shelve = ''):
+   	self.model 	= model
+   	self.name 	= name
+   	self.year 	= year   	
+   	self.depthLevel	= depthLevel
+   	self.newSlice 	= newSlice
+   	self.xkey 	= xkey   	   	   	
+   	self.ykey 	= ykey   	   	   	   	
+   	self.shelve 	= shelve   	      	
+   def __repr__(self):
+	string = ''   
+   	for a in [ self.model,self.name,self.year,self.depthLevel,self.newSlice,self.xkey,self.ykey]:
+   		string+=', '+a
+   	string+='\nshelve:'+self.shelve
+        return string
+   def __str__(self):
+	string = ''   
+   	for a in [ self.model,self.name,self.year,self.depthLevel,self.newSlice,self.xkey,self.ykey]:
+   		if len(a) ==0:continue
+   		string+='-'+a
+        return string   
+       
+        
+        
+def reducesShelves(AllShelves,models=[],names=[],years=[],depthLevels=[],sliceslist=[],):
+	"""
+	This routine takes the AllShelves dictionary of shelveMetadata then returns a list of shelves.
+	This is useful for producing a target diagram, or a patterns plot.
+	requirements is a list of models, slices, depthLevels that are required.
+	"""
+	emptySMDtype = type(shelveMetadata())
+	outArray = []
+	for shelveMD in AllShelves:
+		if type(shelveMD) != emptySMDtype:
+			print "somewhere, this is not a shelveMD:",shelveMD
+			assert False
+		
+		if len(models) 		and shelveMD.model 	not in models:	continue
+		if len(names) 		and shelveMD.name 	not in names:	continue
+		if len(years) 		and shelveMD.year 	not in years:	continue
+		if len(depthLevels) 	and shelveMD.depthLevel not in depthLevels:continue
+		if len(sliceslist) 	and shelveMD.newSlice 	not in sliceslist:continue
+		outArray.append(shelveMD.shelve)
+	return outArray		
+	
 
-
-
-def reducesShelves(AllShelves,sliceslist=[],models=[],names=[],depthLevels=[],):
+def reducesShelves_av(AllShelves,sliceslist=[],models=[],names=[],depthLevels=[],):
 	"""
 	This routine takes the heavily nested shelve dictionary, and a series of requirements,
 	then returns a list of relevant dictionairies.

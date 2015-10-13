@@ -46,7 +46,7 @@ purple = [125./256., 38./256., 205./256.]
 
 
 class makePatternStatsPlots:
-  def __init__(self,shelveDict, plotTitle, xkeys, filenamebase,grid='ORCA1',):
+  def __init__(self,shelveDict, plotTitle, xkeys, filenamebase,grid='ORCA1',xkeyinShelveFN=True):
   	"""	makePatternStatsPlots:
   		
 		Similarly to makeTargets.py, this routine produces a set of plots based on the shelves made by makePlots.py.
@@ -54,7 +54,7 @@ class makePatternStatsPlots:
   		It takes:
   		  shelveDict: a dictionairy showing the line label and the shelves.
   		  plotTitle: a name for the set of points on the x-axis. ie months, oceans
-  		  xkeys: are the tick lables on the x axis.
+  		  xkeys: are the tick lables on the x axis. Can be strings or tuple. These need to appear in the shelve filename.
   		  filenamebase: the base name of the image to be saved.
 		  grid: which grid to be used (ORCA1, ORCA025, Flat1deg.) 
 		  	the grid needs to be in UKESMpython.
@@ -70,7 +70,7 @@ class makePatternStatsPlots:
 	self.filenamebase = filenamebase
 	self.xkeys = xkeys
 	self.grid = grid
-  
+  	self.xkeyinShelveFN = xkeyinShelveFN
   	self.setDictionaries()
   	
   	if not len(self.AllShelves):
@@ -230,12 +230,12 @@ class makePatternStatsPlots:
 	# Here, we load the metrics from disk into memory.
 	# It produces a nested dictionary which is read out to make the plots.
 	#
-	
+	print 'loadMetrics'
 	metrics = {me:{} for me in self.metricsDict.keys()}
 		
 	i = 0
 	for xkey in self.xkeys:
-		#print 'first loop (xkeys):', xkey 
+	#	print 'first loop (xkeys):', xkey 
 		for me in self.metricsDict.keys(): metrics[me][xkey] = {}
 	
 		for key,shelves in self.shelveDict.items():
@@ -248,7 +248,13 @@ class makePatternStatsPlots:
 		    				    
 		    for shelve in shelves:
 			#print 'third loop (shelves):', xkey, key, shelve
-		    	if shelve.find(xkey)<0:continue
+			
+		    	if  type(xkey) ==type('string'):
+		    	  if shelve.find(xkey)<0:continue
+		    	elif type(xkey) in [type(('',)),type(['',])]:
+		    	  continues = [shelve.find(xk) for xk in xkey]
+		    	  if np.min(continues)==-1:continue
+		    	  
 		    	print "Found:",xkey,key,shelve
 		    	if not os.path.exists(shelve):
 		    		for met in self.metricsDict.keys():
@@ -331,7 +337,12 @@ class makePatternStatsPlots:
 
 				linesDict['x'].append(o)
 				linesDict['xticks'].append(o)
-				linesDict['xticklabels'].append(xkey.replace('Ocean','').replace(' ','\n').replace('North','North ').replace('South','South '))
+				if type(xkey) in [type(('',)),type(['',])]:
+					xkeystring = ' '.join(xkey)
+				else: xkeystring = str(xkey)
+				xkeystring = 	xkeystring.replace('Ocean','').replace('North','North ').replace('South','South ')#.replace(' ','\n')
+				linesDict['xticklabels'].append(xkeystring)
+
 			
 				for m, val in sorted(metrics[metric][xkey].items()):
 					#if plotStyle=='Lines':

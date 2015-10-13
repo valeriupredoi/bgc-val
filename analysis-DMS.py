@@ -29,9 +29,9 @@ from os.path import exists
 from calendar import month_name
 
 #Specific local code:
-from UKESMpython import populateSlicesList, AutoVivification,folder # ,getFileList, AutoVivification, NestedDict,AutoVivToYaml,YamlToDict, slicesDict,reducesShelves
-#from pftnames import MaredatTypes,WOATypes,Ocean_names,OceanMonth_names,months, Seasons,Hemispheres,HemispheresMonths, OceanSeason_names,getmt
-
+from UKESMpython import populateSlicesList, AutoVivification,folder,reducesShelves # ,getFileList, AutoVivification, NestedDict,AutoVivToYaml,YamlToDict, slicesDict,reducesShelves
+from pftnames import MaredatTypes,WOATypes,Ocean_names,OceanMonth_names,months, Seasons,Hemispheres,HemispheresMonths, OceanSeason_names#,getmt
+from p2p import makeTargets, makePatternStatsPlots
 from testsuite_p2p import testsuite_p2p
 #####
 # code plan:
@@ -52,7 +52,7 @@ def analysisDMS():
 	doDMS_pixels	= True
 	doDMS_pixels2	= 0#True
 	
-
+	grid = 'Flat1deg'
 	
 
 	#####
@@ -60,6 +60,7 @@ def analysisDMS():
 	# We use AutoVivification here to determine which files to analyse and which fields in those files.
 	# depthLevel is added, because some WOA files are huges and my desktop can not run the p2p analysis of that data.
 	av = AutoVivification()
+	shelvesAV = []
 	
 	if doDMS_clim:
 		dmsd= {'dms_and':'anderson','dms_ara':'aranamit','dms_hal':'halloran','dms_sim':'simodach'} 
@@ -69,7 +70,7 @@ def analysisDMS():
 			av[dms]['Data']['Vars'] 		= ['lanaetal',]
 			av[dms]['MEDUSA']['Vars'] 		= [dmsd[dms],]
 			av[dms]['depthLevels'] 			= ['Surface',]	
-			av[dms]['MEDUSA']['grid'] 		= 'Flat1deg'
+			av[dms]['MEDUSA']['grid'] 		= grid
 
 	if doDMS_pixels:
 		dmsd= {'dms_p_and':'anderson','dms_p_ara':'aranamit','dms_p_hal':'halloran','dms_p_sim':'simodach'} 
@@ -79,7 +80,7 @@ def analysisDMS():
 			av[dms]['Data']['Vars'] 		= ['DMS',]
 			av[dms]['MEDUSA']['Vars'] 		= [dmsd[dms],]			
 			av[dms]['depthLevels'] 			= ['Surface',]	
-			av[dms]['MEDUSA']['grid'] 		= 'Flat1deg'
+			av[dms]['MEDUSA']['grid'] 		= grid
 
 	if doDMS_pixels2:
 		#dmsd= {'dms_p_and':'anderson','dms_p_ara':'aranamit','dms_p_hal':'halloran','dms_p_sim':'simodach'} 
@@ -95,7 +96,7 @@ def analysisDMS():
 			av[dms]['MEDUSA']['Vars'] 		= [dmsd[dms],]			
 			#av[dms]['MEDUSA']['Vars'] 		= dmsd[dms]
 			av[dms]['depthLevels'] 			= ['Surface',]	
-			av[dms]['MEDUSA']['grid'] = 'Flat1deg'
+			av[dms]['MEDUSA']['grid'] 		= grid
 	
 	#####
 	# Set which spatial and temporal limitations to plot.	
@@ -119,14 +120,110 @@ def analysisDMS():
 	
 	workingDir = folder("/data/euryale7/scratch/ledm/ukesm_postProcessed/"+model+'-'+jobID+'-'+year)
 	imageFolder 	= folder('images/'+model+'-'+jobID)
-	shelvesAV = testsuite_p2p(
+	shelvesAV.extend(testsuite_p2p(
 		model = model,
 		jobID = jobID,
 		year  = year,
 		av = av,
 		plottingSlices= plottingSlices,
 		workingDir = workingDir,
-		imageFolder= imageFolder)
+		imageFolder= imageFolder))
+	
+	# Here are some fields for comparing fields in the same model
+	dmsmetrics = ['dms_and','dms_ara','dms_hal','dms_sim']
+	dmspmetrics = ['dms_p_and','dms_p_ara','dms_p_hal','dms_p_sim']
+	PatternTypes = {'DMS_p':dmspmetrics,
+			'DMS_e':dmsmetrics,
+			}
+			
+	Summary= {}	
+	Summary['AllAll'] = []	
+	Summary['AllStandard'] = []		
+				
+	Summary['DMSAll'] = []
+	Summary['DMSStandard']=[]	
+	Summary['DMS_p_All'] = []
+	Summary['DMS_p_Standard']=[]
+				
+	MonthsPatterns = {p:{} for p in PatternTypes.keys()}
+	OceansPatterns = {p:{} for p in PatternTypes.keys()}
+	SHMonthsPatterns = {p:{} for p in PatternTypes.keys()}
+	NHMonthsPatterns = {p:{} for p in PatternTypes.keys()}
+	#####
+	SouthHemispheresMonths = [(h,m) for h in ['SouthHemisphere',] for m in months] 
+	NorthHemispheresMonths = [(h,m) for h in ['NorthHemisphere',] for m in months]
+			  	
+		
+	Summary['AllAll'] = 	 reducesShelves(shelvesAV, models =[model,], sliceslist = ['All',])
+	Summary['AllStandard'] = reducesShelves(shelvesAV, models =[model,], sliceslist = ['Standard',])
+	
+	for TypeListName,names in PatternTypes.items():
+	    for name in names:
+	    	print "loading shelve meta data:",TypeListName,':',name
+		SHMonthsPatterns[TypeListName][name] = reducesShelves(shelvesAV,  models =[model,],depthLevels = ['Surface',], names = [name,], sliceslist = SouthHemispheresMonths)
+		NHMonthsPatterns[TypeListName][name] = reducesShelves(shelvesAV,  models =[model,],depthLevels = ['Surface',], names = [name,], sliceslist = NorthHemispheresMonths)
+		
+		OceansPatterns[TypeListName][name] = reducesShelves(shelvesAV,  models =[model,],depthLevels = ['Surface',], names = [name,], sliceslist = Ocean_names)
+		MonthsPatterns[TypeListName][name] = reducesShelves(shelvesAV,  models =[model,],depthLevels = ['Surface',], names = [name,], sliceslist = months)
+				
+
+	depthLevel = ''
+	print 'OceansPatterns:', OceansPatterns
+	print 'MonthsPatterns:', MonthsPatterns
+	for k in Summary.keys():
+		filename = folder(imageFolder+'/Targets/'+year+'/Summary')+model+'_'+year+'_'+k+'.png'
+		
+	  	makeTargets(Summary[k], 
+			filename,
+			legendKeys = ['name',],
+			debug=True)
+			
+	for k in OceansPatterns.keys():
+		if len(OceansPatterns[k]) ==0: continue			
+		filenamebase = folder(imageFolder+'/Patterns/'+year+'/OceansPatterns/')+k+'_'+model+'-'+jobID+'_'+year+'_'+depthLevel
+		print 'OceansPatterns:',k, OceansPatterns[k],filenamebase
+		
+		makePatternStatsPlots(	OceansPatterns[k], # {legend, shelves}
+			k,	#xkeysname
+			Ocean_names,		#xkeysLabels=
+			filenamebase,	# filename base	
+			grid	= grid,							
+			)
+	for k in MonthsPatterns.keys():	
+		if len(MonthsPatterns[k]) ==0: continue							
+		filenamebase = folder(imageFolder+'/Patterns/'+year+'/MonthsPatterns/')+k+'_'+model+'-'+jobID+'_'+year+'_'+depthLevel
+		print 'MonthsPatterns:',k, MonthsPatterns[k],filenamebase
+		makePatternStatsPlots(	
+			MonthsPatterns[k], # {legend, shelves}
+			k,	#xkeysname
+			months,		#xkeysLabels=
+			filenamebase,	# filename base				
+			grid	= grid,
+			)	
+
+	for k in SHMonthsPatterns.keys():	
+		if len(SHMonthsPatterns[k]) ==0: continue							
+		filenamebase = folder(imageFolder+'/Patterns/'+year+'/SHMonthsPatterns/')+k+'_'+model+'-'+jobID+'_'+year+'_'+depthLevel
+		print 'SHMonthsPatterns:',k, SHMonthsPatterns[k],filenamebase
+		makePatternStatsPlots(	
+			SHMonthsPatterns[k], # {legend, shelves}
+			'South hemisphere '+k,	#xkeysname
+			months,		#xkeysLabels=
+			filenamebase,	# filename base				
+			grid	= grid,
+			)
+	for k in NHMonthsPatterns.keys():	
+		if len(NHMonthsPatterns[k]) ==0: continue							
+		filenamebase = folder(imageFolder+'/Patterns/'+year+'/NHMonthsPatterns/')+k+'_'+model+'-'+jobID+'_'+year+'_'+depthLevel
+		print 'NHMonthsPatterns:',k, NHMonthsPatterns[k],filenamebase
+		makePatternStatsPlots(	
+			NHMonthsPatterns[k], # {legend, shelves}
+			'North hemisphere '+k,	#xkeysname
+			months,		#xkeysLabels=
+			filenamebase,	# filename base				
+			grid	= grid,
+			)			
+
 	
 	
 			

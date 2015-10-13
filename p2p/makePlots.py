@@ -179,7 +179,7 @@ class makePlots:
 	# If they both exist and and are older than the input netcdfs, the rest of this function is skipped.
 	# If one is missing, or the input files are newer than the old image, the function runs as normal.
 	# Caveat: if some image can not be made, ie the data makes the mask cover 100% of the data, then the code will run as normal (no skipping).  
-	self.shelvesAV = AutoVivification()
+	self.shelvesAV = []#AutoVivification()
 	
 	plotsToMake=0
 	for newSlice in self.newSlices:	
@@ -211,8 +211,17 @@ class makePlots:
 			plotsToMake+=1
 			
 		#####
-		# Make a list of shelve files for the target plots.
-		self.shelvesAV[newSlice][xk][yk] = shelveName				
+		# Make a list of shelve meta data, to aid post processing.
+		she = ukp.shelveMetadata(model=self.model,
+					name=self.name,
+					year=self.year,
+					depthLevel=self.depthLevel,
+					newSlice=newSlice,
+					xkey=xk,
+					ykey=yk,
+					shelve = shelveName)
+		self.shelvesAV.append(she)#shelveName						
+		#self.shelvesAV[newSlice][xk][yk] = shelveName				
 		try:	self.shelves.append(shelveName)
 		except:	self.shelves = [shelveName,]
 
@@ -318,16 +327,16 @@ class makePlots:
 	print "plotWithSlices:\tlenghts",  [len(datax),len(datay)],'x:\t',[len(nmxx),len(nmxy)],'y:\t',[len(nmxz),len(nmyx)],'z:\t',[len(nmyy),len(nmyz)]
 	if 0 in [len(datax),len(datay),len(nmxx),len(nmxy),len(nmxz),len(nmyx),len(nmyy),len(nmyz)]:
 		print 'plotWithSlices:\tWARNING:\tslice:',newSlice,'There is a zero in one of the fields.' 
-		try:	self.shelvesAV[newSlice][xk][yk] = ''			
-		except:	pass			
+		#try:	self.shelvesAV[newSlice][xk][yk] = ''			
+		#except:	pass			
 		return	
 						
 	dmin = min([datax.min(),datay.min()])
 	dmax = max([datax.max(),datay.max()])
 	if dmin == dmax: 
 		print "plotWithSlices:\tWARNING:\tminimum == maximum,\t (",dmin,' == ',dmax,')'
-		try:	self.shelvesAV[newSlice][xk][yk] = ''
-		except:	pass			
+		#try:	self.shelvesAV[newSlice][xk][yk] = ''
+		#except:	pass			
 		return
 			
 

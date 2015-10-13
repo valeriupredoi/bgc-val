@@ -144,7 +144,7 @@ def analysisiMarNet():
 	#####
 	# AutoVivification is a form of nested dictionary.
 	# we use av here to save the output shelves.
-	shelvesAV = AutoVivification()
+	shelvesAV = []#AutoVivification()
 		
 	modelSkips = {	'Diat-HadOCC':	['po4',],
 			'ERSEM':	[],
@@ -282,7 +282,8 @@ def analysisiMarNet():
 
 		#workingDir = folder("/data/euryale7/scratch/ledm/ukesm_postProcessed/"+model+'-'+jobIDs[model]+'-'+year)
 		#imageFolder 	= folder('images/testsuite_iMarNet/'+model+'-'+jobIDs[model])
-		shelvesAV[year][model] = testsuite_p2p(
+		#shelvesAV[year][model] = testsuite_p2p(		
+		shelvesAV.extend(testsuite_p2p(
 			model = 'iMarNet_'+model,
 			jobID = jobIDs[model],
 			year  = year,
@@ -290,7 +291,7 @@ def analysisiMarNet():
 			plottingSlices= plottingSlices,
 			workingDir = workingDir,
 			imageFolder= imageFolder,
-			noPlots=True)
+			noPlots=True))
 		
 		
 	

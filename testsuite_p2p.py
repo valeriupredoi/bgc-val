@@ -134,7 +134,7 @@ def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
 
 	#####
 	# Start analysis here:
-	shelvesAV = AutoVivification()
+	shelvesAV = []#AutoVivification()
 			
 	for name in sorted(av.keys()):
 		#####
@@ -242,7 +242,8 @@ def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
 					compareCoords	=True,
 					noPlots		= noPlots)
 
-			shelvesAV[model][name][depthLevel] = m.shelvesAV
+			#shelvesAV[model][name][depthLevel] = m.shelvesAV
+			shelvesAV.extend(m.shelvesAV)
 			
 			#####
 			# no plots doesn't produce any plots, but does produce the list of shelves which can be used in Taylor/Target/Pattern diagrams.			
