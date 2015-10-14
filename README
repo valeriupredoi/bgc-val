@@ -45,8 +45,8 @@ CONTENTS:
 	pftnames.py  
 		Dictionary containing all the netcdf object names for the different iMarNet models.
 		
-	testsuite.py  
-		Code to run all tests in Series
+	testsuite_p2p.py  
+		Code to run all tests in the p2p toolkit.
 		
 	UKESMpython.py
 		Toolkit containing many useful functions.

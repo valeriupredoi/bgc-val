@@ -46,7 +46,7 @@ purple = [125./256., 38./256., 205./256.]
 
 
 class makePatternStatsPlots:
-  def __init__(self,shelveDict, plotTitle, xkeys, filenamebase,grid='ORCA1',xkeyinShelveFN=True):
+  def __init__(self,shelveDict, plotTitle, xkeys, filenamebase,grid='ORCA1',):
   	"""	makePatternStatsPlots:
   		
 		Similarly to makeTargets.py, this routine produces a set of plots based on the shelves made by makePlots.py.
@@ -63,14 +63,17 @@ class makePatternStatsPlots:
   	"""
 	#if key_self.keys =='dmspmetrics': 	self.keys = ['dms_p_and','dms_p_ara','dms_p_hal','dms_p_sim','In situ',]	
 	self.keys = sorted(shelveDict.keys())
-	print "makePatternStatsPlots:\tSTART:\t",plotTitle,xkeys, grid, self.keys	
+	print "makePatternStatsPlots:"
+	print "		Title:", plotTitle
+	print "		x axis keys:",xkeys
+	print "		grid:",grid
+	print "		legend keys:", self.keys	
 	self.shelveDict = shelveDict
 
 	self.plotTitle = plotTitle
 	self.filenamebase = filenamebase
 	self.xkeys = xkeys
 	self.grid = grid
-  	self.xkeyinShelveFN = xkeyinShelveFN
   	self.setDictionaries()
   	
   	if not len(self.AllShelves):

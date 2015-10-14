@@ -141,14 +141,18 @@ def getmt(loadYaml=False):
 	mt['NEMO']['temperature'] 		= ['votemper',]	
  	mt['NEMO']['salinity'] 			= ['vosaline',]				
 	mt['NEMO']['mld'] 			= ['somxl010',]
+	mt['NEMO']['mld'] 			= ['somxl010',]	
 	mt['NEMO']['mld_DT02'] 			= ['somxl010',]
 	mt['NEMO']['mld_DR003'] 		= ['somxl010',]
-	mt['NEMO']['mld_DReqDTm02'] 		= ['somxl010',]		
+	mt['NEMO']['mld_DReqDTm02'] 		= ['somxl010',]
+	mt['NEMO']['U'] 			= ['vozocrtx',]
+	mt['NEMO']['V'] 			= ['vomecrty',]				
 	mt['NEMO']['t'] 			= 'index_t'	
 	mt['NEMO']['z'] 			= 'deptht'
 	mt['NEMO']['lat'] 			= 'nav_lat'
 	mt['NEMO']['lon'] 			= 'nav_lon'
 	mt['NEMO']['cal']			= '365_day'
+
 
 
 	mt['MEDUSA']['chl']['name'] 		=  'CHL'
@@ -316,6 +320,16 @@ def getmt(loadYaml=False):
 	mt['IFREMER']['lon'] 			= 'lon'
 	mt['IFREMER']['cal'] 			= 'standard'	
 	mt['IFREMER']['tdict']			= tdicts['ZeroToZero']
+	
+	
+	mt['DRIFTERS']['U']			= ['U',]
+	mt['DRIFTERS']['V']			= ['V',]
+	mt['DRIFTERS']['t']			= 'Time'
+	mt['DRIFTERS']['z'] 			= 'Depth'
+	mt['DRIFTERS']['lat'] 			= 'Lat'
+	mt['DRIFTERS']['lon'] 			= 'Lon'
+	mt['DRIFTERS']['cal'] 			= 'standard'
+	mt['DRIFTERS']['tdict']			= tdicts['ZeroToZero']	
 	
 	for dms in ['dms_and','dms_ara','dms_hal','dms_sim']:	
 		mt['LANA'][dms]['name'] 	=  'lanaetal'

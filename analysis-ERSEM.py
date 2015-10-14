@@ -46,19 +46,20 @@ from testsuite_p2p import testsuite_p2p
 def analysis():
 	model= 'ERSEM'
 	jobID = 'xhonc'
-	years = ['1997','1998','1999','2000']		# arbitrary year chosen for 
+	years = ['1996','1997','1998','1999','2000']		# arbitrary year chosen for 
 	grid = 'ORCA1'
 	#####
 	# Which analysis to run
 	doCHL 		= True
-	doMAREDAT 	= 0#True
+	doMAREDAT 	= True
 	doN		= 0#True
 	doP		= 0#True
 	doSi		= 0#True	
-	doFe		= 0#True
+	doO2		= 0#True	
+	doFe		= True
 	doPCO2		= 0#True
 	doIntPP		= 0#True
-	doO2		= 0#True	
+
 
 	#####
 	# Set which spatial and temporal limitations to plot.
@@ -220,17 +221,17 @@ def analysis():
 			workingDir = workingDir,
 			imageFolder= imageFolder))
 	
-	
 	#####
-	# InterAnnual
+	# InterAnnual analysis
 	for name in av.keys():
+	   for depthLevel in av[name]['depthLevels']:
 		#####
 		# Each year is a different colour.
 		yearslyShelves = {}
 		for y in years:
-			yearslyShelves[y] = reducesShelves(shelvesAV,models=[model],names=[name,],years=[y,],sliceslist=months,)
+			yearslyShelves[y] = reducesShelves(shelvesAV,models=[model],names=[name,],years=[y,],depthLevels=[depthLevel,],sliceslist=months,)
 			
-		filenamebase = folder('images/'+model+'-'+jobID+'/Patterns/Interannual/'+name)+model+jobID+name+'_'+years[0]+'-'+years[-1]
+		filenamebase = folder('images/'+model+'-'+jobID+'/Patterns/Interannual/'+name+depthLevel)+model+jobID+name+'_'+years[0]+'-'+years[-1]+depthLevel
 		makePatternStatsPlots(	
 					yearslyShelves, # {legend, shelves}
 					model+' '+name,				# title
@@ -238,8 +239,9 @@ def analysis():
 					filenamebase,				# filename base
 					grid	= grid,
 					)	
+					
 		#####			
-		# One long line showing multiple years. (looks best with up to 4 years.)
+		# One long line showing multiple years - monthly. (looks best with up to 4 years.)
 		longMonths, longShelves = [],[]
 		for y in years:
 			shelves = yearslyShelves[y]
@@ -252,17 +254,35 @@ def analysis():
 			print "len(longMonths) != len(longShelves):",len(longMonths),' != ',len(longShelves)
 			assert False
 		
-		filenamebase = folder('images/'+model+'-'+jobID+'/Patterns/Interannual/'+name)+model+jobID+name+'_'+years[0]+'-'+years[-1]+'_longtimeseries'
+		filenamebase = folder('images/'+model+'-'+jobID+'/Patterns/Interannual/'+name)+model+jobID+name+'_'+years[0]+'-'+years[-1]+depthLevel+'_longtimeseries'
 		print "makePatternStatsPlots:",{name:longShelves}, model+' '+name,	longMonths,filenamebase,grid
 		makePatternStatsPlots(	
 					{name:longShelves}, 		# {legend, shelves}
-					model+' '+name,			# title
+					model+' '+name+' ' +depthLevel,			# title
 					longMonths,			# xkeysLabels
 					filenamebase,			# filename base
 					grid	= grid,
-					xkeyinShelveFN = False,
 					)		
-			
+
+		#####			
+		# One long line showing multiple years - annual.
+		for sl in ['All','Standard']:
+			yearslyShelves = reducesShelves(shelvesAV,models=[model],names=[name,],years=years,depthLevels=[depthLevel,],sliceslist=[sl,],)	
+
+			if len(yearslyShelves) != len(years):
+				print "len(yearslyShelves) != len(years):",len(yearslyShelves),' != ',len(years)
+				assert False
+		
+			filenamebase = folder('images/'+model+'-'+jobID+'/Patterns/Interannual/'+name)+model+jobID+name+'_'+years[0]+'-'+years[-1]+depthLevel+'_annual'+sl
+			print "makePatternStatsPlots - Annual :",sl,{name:sorted(yearslyShelves)},years, model+' '+name,filenamebase,grid
+			makePatternStatsPlots(	
+						{name:sorted(yearslyShelves)}, 		# {legend, shelves}
+						model+' '+name+' ' +depthLevel,		# title
+						sorted(years),				# xkeysLabels
+						filenamebase,				# filename base
+						grid	= grid,
+						)	
+								
 if __name__=="__main__":
 	analysis()	
 	print "The end."

@@ -984,27 +984,6 @@ def reducesShelves(AllShelves,models=[],names=[],years=[],depthLevels=[],slicesl
 	return outArray		
 	
 
-def reducesShelves_av(AllShelves,sliceslist=[],models=[],names=[],depthLevels=[],):
-	"""
-	This routine takes the heavily nested shelve dictionary, and a series of requirements,
-	then returns a list of relevant dictionairies.
-	This is useful for producing a target diagram, or a patterns plot.
-	requirements is a list of models, slices, depthLevels that are required.
-	"""
-	outArray = []
-	for model in AllShelves.keys():
-	 for name in AllShelves[model].keys():
-	  for depthLevel in AllShelves[model][name].keys():
-	    for newSlice in AllShelves[model][name][depthLevel].keys(): 
-	      for xkey in AllShelves[model][name][depthLevel][newSlice].keys():
-		for ykey in AllShelves[model][name][depthLevel][newSlice][xkey].keys():
-			if len(models) 		and model not in models:continue
-			if len(names) 		and name not in names:continue
-			if len(depthLevels) 	and depthLevel not in depthLevels:continue
-			if len(sliceslist) 	and newSlice not in sliceslist:continue
-		  	shelve = AllShelves[model][name][depthLevel][newSlice][xkey][ykey]			
-			outArray.append(shelve)
-	return outArray
 
 def getSlicesDict():
 	slicesDict = {}

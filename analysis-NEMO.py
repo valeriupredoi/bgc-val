@@ -53,9 +53,11 @@ def analysis():
 	# Which analysis to run
 	# Physics:
 	doLight		= 0#True	# no file yet
-	doSal		= True
-	doTemp		= True
-	doMLD		= True	
+	doSal		= 0#True
+	doTemp		= 0#True
+	doU   		= True
+	doV   		= True		
+	doMLD		= 0#True	
 
 	#####
 	# What depth level to investigate, in the case of big 3D files (T,Sal, N,P,Si, etc)
@@ -113,6 +115,23 @@ def analysis():
 		#av['mld_DReqDTm02']['Data']['Vars'] 	= ['mld','mask',]
 		#av['mld_DReqDTm02']['NEMO']['Vars'] 	= ['somxl010',]	
 		#av['mld_DReqDTm02']['depthLevels'] 		= ['',]
+
+	if doU:	
+		av['U']['Data']['File'] 		= "/data/euryale7/scratch/ledm/Drifters/drifter_monthlymeans.nc"
+		#av['mld']['NEMO']['File'] 		= NEMOFolder+'_NEMO.nc'	
+		av['U']['NEMO']['File'] 		= NEMOFolder+'_U.nc'			
+		av['U']['Data']['Vars'] 		= ['U',]
+		av['U']['NEMO']['Vars'] 		= ['vozocrtx',]	
+		av['U']['depthLevels'] 			= ['',]
+		av['U']['NEMO']['grid'] 		= 'ORCA1'
+
+	if doV:	
+		av['V']['Data']['File'] 		= "/data/euryale7/scratch/ledm/Drifters/drifter_monthlymeans.nc"
+		av['V']['NEMO']['File'] 		= NEMOFolder+'_V.nc'			
+		av['V']['Data']['Vars'] 		= ['V',]
+		av['V']['NEMO']['Vars'] 		= ['vomecrty',]	
+		av['V']['depthLevels'] 			= ['',]
+		av['V']['NEMO']['grid'] 		= 'ORCA1'
 
 	if doLight:	
 		# Light file ? 
