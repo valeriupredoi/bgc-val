@@ -329,7 +329,7 @@ def getmt(loadYaml=False):
 	mt['DRIFTERS']['lat'] 			= 'Lat'
 	mt['DRIFTERS']['lon'] 			= 'Lon'
 	mt['DRIFTERS']['cal'] 			= 'standard'
-	mt['DRIFTERS']['tdict']			= tdicts['ZeroToZero']	
+	mt['DRIFTERS']['tdict']			= tdicts['OneToZero']	
 	
 	for dms in ['dms_and','dms_ara','dms_hal','dms_sim']:	
 		mt['LANA'][dms]['name'] 	=  'lanaetal'
