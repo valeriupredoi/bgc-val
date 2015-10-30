@@ -41,8 +41,10 @@ import numpy as np
 #local imports
 from bgcvaltools.StatsDiagram import StatsDiagram
 from bgcvaltools.robust import StatsDiagram as robustStatsDiagram
+import bgcvaltools.unbiasedSymmetricMetrics as usm
 import UKESMpython as ukp 
 from pftnames import getLongName, AutoVivification, getmt,fancyUnits
+
 #from pftnames import MaredatTypes,IFREMERTypes,WOATypes,GEOTRACESTypes
 
 #import seaborn as sb
@@ -64,14 +66,25 @@ noXYLogs 	= [ 'pCO2',
 
 
 class makePlots:
-  def __init__(self,matchedDataFile,matchedModelFile, name, model = 'ERSEM', jobID='xhonc',year='clim',region='', newSlices =['All','Standard'], compareCoords=True,shelveDir='',imageDir='',): #xfilename,yfilename,saveShelve=True,
+  def __init__(self,matchedDataFile,
+  		matchedModelFile, 
+  		name, 
+  		model = 'ERSEM', 
+  		jobID='xhonc',
+  		year='clim',
+  		depthLevel='', 
+  		newSlices =['All','Standard'], 
+  		compareCoords=True,
+  		shelveDir='',
+  		imageDir='',
+  		noPlots=False): #xfilename,yfilename,saveShelve=True,
 
   
   	self.xfn =matchedModelFile
   	self.yfn =matchedDataFile  	
     	self.name = name
     	self.newSlices = newSlices
-    	self.region = region
+    	self.depthLevel = depthLevel
   	self.xtype = model  	
   	self.model = model  	
   	self.jobID = jobID
@@ -79,8 +92,8 @@ class makePlots:
   	self.shelveDir = shelveDir
   	self.compareCoords = compareCoords
 	self.months = {month_name[i+1]:i for i in xrange(0,12) }
-	  	
-	self.mt = getmt()	
+	self.noPlots = noPlots  	
+	self.mt = getmt()
 	Models = [m.upper() for m in ['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankTOM6','PlankTOM10','NEMO','IMARNET',]] # skip these to find in situ data types.
 	Models.extend(['IMARNET_' +m.upper() for m in ['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankTOM6','PlankTOM10','NEMO',]])
 	ytypes = []
@@ -102,12 +115,12 @@ class makePlots:
 	#if self.name in GEOTRACESTypes: self.ytype = 'GEOTRACES'		
 	
 
-  	if self.shelveDir == '':self.shelveDir = ukp.folder(['shelves',self.xtype,self.year,self.ytype, 'Slices',self.name+self.region])
+  	if self.shelveDir == '':self.shelveDir = ukp.folder(['shelves',self.xtype,self.year,self.ytype, 'Slices',self.name+self.depthLevel])
   	else:			self.shelveDir = ukp.folder(self.shelveDir)		
 
 	if imageDir=='':	
 		
-		self.imageDir = ukp.folder(['images',self.xtype,'P2P_plots',self.year,self.name+self.region])
+		self.imageDir = ukp.folder(['images',self.xtype,'P2P_plots',self.year,self.name+self.depthLevel])
 		print "Using default image folder:",self.imageDir
 	else: 			self.imageDir = ukp.folder(imageDir)
 
@@ -136,7 +149,7 @@ class makePlots:
 
 
   def plotWithSlices(self):#,newSlice,):  
-	print "plotWithSlices:\txtype:",self.xtype,"\tytype:",self.ytype,"\tname:",self.name,self.region
+	print "plotWithSlices:\txtype:",self.xtype,"\tytype:",self.ytype,"\tname:",self.name,self.depthLevel
   	
 	#####
 	# Test if any of the plots exist.
@@ -166,7 +179,7 @@ class makePlots:
 	# If they both exist and and are older than the input netcdfs, the rest of this function is skipped.
 	# If one is missing, or the input files are newer than the old image, the function runs as normal.
 	# Caveat: if some image can not be made, ie the data makes the mask cover 100% of the data, then the code will run as normal (no skipping).  
-	self.shelvesAV = AutoVivification()
+	self.shelvesAV = []#AutoVivification()
 	
 	plotsToMake=0
 	for newSlice in self.newSlices:	
@@ -198,8 +211,17 @@ class makePlots:
 			plotsToMake+=1
 			
 		#####
-		# Make a list of shelve files for the target plots.
-		self.shelvesAV[newSlice][xk][yk] = shelveName				
+		# Make a list of shelve meta data, to aid post processing.
+		she = ukp.shelveMetadata(model=self.model,
+					name=self.name,
+					year=self.year,
+					depthLevel=self.depthLevel,
+					newSlice=newSlice,
+					xkey=xk,
+					ykey=yk,
+					shelve = shelveName)
+		self.shelvesAV.append(she)#shelveName						
+		#self.shelvesAV[newSlice][xk][yk] = shelveName				
 		try:	self.shelves.append(shelveName)
 		except:	self.shelves = [shelveName,]
 
@@ -305,16 +327,16 @@ class makePlots:
 	print "plotWithSlices:\tlenghts",  [len(datax),len(datay)],'x:\t',[len(nmxx),len(nmxy)],'y:\t',[len(nmxz),len(nmyx)],'z:\t',[len(nmyy),len(nmyz)]
 	if 0 in [len(datax),len(datay),len(nmxx),len(nmxy),len(nmxz),len(nmyx),len(nmyy),len(nmyz)]:
 		print 'plotWithSlices:\tWARNING:\tslice:',newSlice,'There is a zero in one of the fields.' 
-		try:	self.shelvesAV[newSlice][xk][yk] = ''			
-		except:	pass			
+		#try:	self.shelvesAV[newSlice][xk][yk] = ''			
+		#except:	pass			
 		return	
 						
 	dmin = min([datax.min(),datay.min()])
 	dmax = max([datax.max(),datay.max()])
 	if dmin == dmax: 
 		print "plotWithSlices:\tWARNING:\tminimum == maximum,\t (",dmin,' == ',dmax,')'
-		try:	self.shelvesAV[newSlice][xk][yk] = ''
-		except:	pass			
+		#try:	self.shelvesAV[newSlice][xk][yk] = ''
+		#except:	pass			
 		return
 			
 
@@ -329,7 +351,7 @@ class makePlots:
 	labelx = getLongName(self.xtype)+' '+getLongName(self.name)+', '+ xunits
 	labely = getLongName(self.ytype)+' '+getLongName(self.name)+', '+ yunits	
 		
-	try: title = getLongName(newSlice)+' '+getLongName(self.name+self.region)#+getLongName(self.name)
+	try: title = getLongName(newSlice)+' '+getLongName(self.name+self.depthLevel)#+getLongName(self.name)
 	except:title = newSlice+' '+xkey+' vs '+ykey
 			
 
@@ -339,96 +361,99 @@ class makePlots:
 	histfnxy 	= filename.replace('.png','_hist.png')
 	histsfnxy 	= filename.replace('.png','_hists.png')				
 	
-
-				
 	#####
-	# Robinson projection plots - Basemap
-	if ukp.shouldIMakeFile([self.xfn,self.yfn],robfnquad,debug=False):
-		ti1 = getLongName(self.xtype)
-		ti2 =  getLongName(self.ytype)
-		if self.name in noXYLogs or dmin*dmax <=0.:
-			doLog=False
-			cbarlabel=xunits
-		else:	
-			doLog=True
-			cbarlabel='log$_{10}$('+xunits+')'		
-		print "plotWithSlices:\tROBIN QUAD:",[ti1,ti2],False,dmin,dmax
-		ukp.robinPlotQuad(nmxx, nmxy, 
-				datax,datay,
-				robfnquad,
-				titles=[ti1,ti2],
-				title  = ' '.join([getLongName(newSlice),getLongName(self.name+self.region),self.year]),
-				cbarlabel=cbarlabel, 
-				doLog=doLog,
-				vmin=dmin,vmax=dmax,)
+	# Can turn off plots to run analysis faster.
+	if self.noPlots:
+		print "plotWithSlices:\tSkipping plots ..."
+	else:
+		#####
+		# Robinson projection plots - Basemap
+		if ukp.shouldIMakeFile([self.xfn,self.yfn],robfnquad,debug=False):
+			ti1 = getLongName(self.xtype)
+			ti2 =  getLongName(self.ytype)
+			if self.name in noXYLogs or dmin*dmax <=0.:
+				doLog=False
+				cbarlabel=xunits
+			else:	
+				doLog=True
+				cbarlabel='log$_{10}$('+xunits+')'		
+			print "plotWithSlices:\tROBIN QUAD:",[ti1,ti2],False,dmin,dmax
+			ukp.robinPlotQuad(nmxx, nmxy, 
+					datax,datay,
+					robfnquad,
+					titles=[ti1,ti2],
+					title  = ' '.join([getLongName(newSlice),getLongName(self.name+self.depthLevel),self.year]),
+					cbarlabel=cbarlabel, 
+					doLog=doLog,
+					vmin=dmin,vmax=dmax,)
 
-	# Robinson projection plots - Cartopy
-	makeCartopy = False	# Don't need both.	
-	if makeCartopy:
-	   if ukp.shouldIMakeFile([self.xfn,self.yfn],robfncartopy,debug=False):
-		ti1 = getLongName(self.xtype)
-		ti2 =  getLongName(self.ytype)
-		if self.name in noXYLogs or dmin*dmax <=0.:
-			doLog=False
-			cbarlabel=xunits
-		else:	
-			doLog=True
-			cbarlabel='log$_{10}$('+xunits+')'		
-		print "plotWithSlices:\tROBIN QUAD:",[ti1,ti2],False,dmin,dmax
-		ukp.robinPlotQuad(nmxx, nmxy, 
-				datax,datay,
-				robfncartopy,
-				titles=[ti1,ti2],
-				title  = ' '.join([getLongName(newSlice),getLongName(self.name+self.region),self.year]),
-				cbarlabel=cbarlabel, 
-				doLog=doLog,
-				vmin=dmin,vmax=dmax,
-				maptype = 'Cartopy')
+		# Robinson projection plots - Cartopy
+		makeCartopy = False	# Don't need both.	
+		if makeCartopy:
+		   if ukp.shouldIMakeFile([self.xfn,self.yfn],robfncartopy,debug=False):
+			ti1 = getLongName(self.xtype)
+			ti2 =  getLongName(self.ytype)
+			if self.name in noXYLogs or dmin*dmax <=0.:
+				doLog=False
+				cbarlabel=xunits
+			else:	
+				doLog=True
+				cbarlabel='log$_{10}$('+xunits+')'		
+			print "plotWithSlices:\tROBIN QUAD:",[ti1,ti2],False,dmin,dmax
+			ukp.robinPlotQuad(nmxx, nmxy, 
+					datax,datay,
+					robfncartopy,
+					titles=[ti1,ti2],
+					title  = ' '.join([getLongName(newSlice),getLongName(self.name+self.depthLevel),self.year]),
+					cbarlabel=cbarlabel, 
+					doLog=doLog,
+					vmin=dmin,vmax=dmax,
+					maptype = 'Cartopy')
 				
 
-	#####
-	# Simultaneous histograms plot	- single
-	if ukp.shouldIMakeFile([self.xfn,self.yfn],histfnxy,debug=False):
-		xaxislabel= getLongName(self.name)+', '+ xunits
-		labelx = self.xtype
-		labely = self.ytype
-		histtitle = title
-		histxaxis = xaxislabel
-		if self.ytype in ['LANA', 'LANA_p']:
-			labelx = getLongName(self.name)
-			labely = getLongName(self.ytype)
-			histtitle = getLongName(newSlice) +' DMS: '+labelx +' vs '+ labely
-			histxaxis = 'DMS, '+ xunits
+		#####
+		# Simultaneous histograms plot	- single
+		if ukp.shouldIMakeFile([self.xfn,self.yfn],histfnxy,debug=False):
+			xaxislabel= getLongName(self.name)+', '+ xunits
+			labelx = self.xtype
+			labely = self.ytype
+			histtitle = title
+			histxaxis = xaxislabel
+			if self.ytype in ['LANA', 'LANA_p']:
+				labelx = getLongName(self.name)
+				labely = getLongName(self.ytype)
+				histtitle = getLongName(newSlice) +' DMS: '+labelx +' vs '+ labely
+				histxaxis = 'DMS, '+ xunits
 				
-		if self.name in noXYLogs or dmin*dmax <=0.:				
-			ukp.histPlot(datax, datay,  histfnxy, Title=histtitle, labelx=labelx,labely=labely,dpi=200,xaxislabel =histxaxis)	
-		else:	ukp.histPlot(datax, datay,  histfnxy, Title=histtitle, labelx=labelx,labely=labely,dpi=200,xaxislabel =histxaxis, logx = True, )
+			if self.name in noXYLogs or dmin*dmax <=0.:				
+				ukp.histPlot(datax, datay,  histfnxy, Title=histtitle, labelx=labelx,labely=labely,dpi=200,xaxislabel =histxaxis)	
+			else:	ukp.histPlot(datax, datay,  histfnxy, Title=histtitle, labelx=labelx,labely=labely,dpi=200,xaxislabel =histxaxis, logx = True, )
 
-	# Simultaneous histograms plot	- triple
-	if ukp.shouldIMakeFile([self.xfn,self.yfn],histsfnxy,debug=False):
-		xaxislabel= getLongName(self.name)+', '+ xunits
-		if self.name in noXYLogs or dmin*dmax <=0.:				
-			ukp.histsPlot(datax, datay,  histsfnxy, Title=title, labelx=self.xtype,labely=self.ytype,xaxislabel =xaxislabel)	
-		else:	ukp.histsPlot(datax, datay,  histsfnxy, Title=title, labelx=self.xtype,labely=self.ytype,xaxislabel =xaxislabel, logx = True, )
+		# Simultaneous histograms plot	- triple
+		if ukp.shouldIMakeFile([self.xfn,self.yfn],histsfnxy,debug=False):
+			xaxislabel= getLongName(self.name)+', '+ xunits
+			if self.name in noXYLogs or dmin*dmax <=0.:				
+				ukp.histsPlot(datax, datay,  histsfnxy, Title=title, labelx=self.xtype,labely=self.ytype,xaxislabel =xaxislabel)	
+			else:	ukp.histsPlot(datax, datay,  histsfnxy, Title=title, labelx=self.xtype,labely=self.ytype,xaxislabel =xaxislabel, logx = True, )
 							
 			
-	#####
-	# Scatter  (hexbin) plot
-	if ukp.shouldIMakeFile([self.xfn,self.yfn],filename,debug=False):		
-		gs = 50	
-		scattitle = title
-		slabelx = labelx
-		slabely = labely	
-		if self.ytype in ['LANA', 'LANA_p']:
-			slabelx = getLongName(self.name)+' DMS, '+ xunits
-			slabely = getLongName(self.ytype)+' DMS, '+ xunits		
-			scattitle = getLongName(newSlice) +' DMS: '+getLongName(self.name) +' vs '+ getLongName(self.ytype)		
+		#####
+		# Scatter  (hexbin) plot
+		if ukp.shouldIMakeFile([self.xfn,self.yfn],filename,debug=False):		
+			gs = 50	
+			scattitle = title
+			slabelx = labelx
+			slabely = labely	
+			if self.ytype in ['LANA', 'LANA_p']:
+				slabelx = getLongName(self.name)+' DMS, '+ xunits
+				slabely = getLongName(self.ytype)+' DMS, '+ xunits		
+				scattitle = getLongName(newSlice) +' DMS: '+getLongName(self.name) +' vs '+ getLongName(self.ytype)		
 				
-			pass
+				pass
 			
-		if self.name in noXYLogs or dmin*dmax <=0.:
-			ukp.scatterPlot(datax, datay,  filename, Title=scattitle, labelx=slabelx,labely=slabely,dpi=200, bestfitLine=True,gridsize=gs)
-		else:	ukp.scatterPlot(datax, datay,  filename, Title=scattitle, labelx=slabelx,labely=slabely,dpi=200, bestfitLine=True,gridsize=gs,logx = True, logy=True,)
+			if self.name in noXYLogs or dmin*dmax <=0.:
+				ukp.scatterPlot(datax, datay,  filename, Title=scattitle, labelx=slabelx,labely=slabely,dpi=200, bestfitLine=True,gridsize=gs)
+			else:	ukp.scatterPlot(datax, datay,  filename, Title=scattitle, labelx=slabelx,labely=slabely,dpi=200, bestfitLine=True,gridsize=gs,logx = True, logy=True,)
 
 	#####
 	# Save fit in a shelve file.		
@@ -449,7 +474,14 @@ class makePlots:
 	s['Taylor.R']	= mtaylor.R
 	s['Taylor.p']	= mtaylor.p							
 	s['Taylor.gamma']=mtaylor.gamma
-	
+
+
+	s['MNAFE'] = usm.MNAFE(datax,datay)
+	s['MNFB' ] = usm.MNFB( datax,datay)
+	s['NMAEF'] = usm.NMAEF(datax,datay)
+	s['NMBF' ] = usm.NMBF( datax,datay)	
+			
+				
 	mrobust = robustStatsDiagram(datax,datay,0.01)
 	print "makePlots.py:\tWARNING: robustStatsDiagram CALCULATED WITH DEFAULT PRECISION (0.01)"
 	s['robust.E0'] 	= mrobust.E0
@@ -474,7 +506,8 @@ class makePlots:
 	s['labelx'] = 	labelx
 	s['labely'] = 	labely
 	s['name'] =   	self.name
-	s['region'] =   self.region	
+	s['depthLevel'] =   self.depthLevel	
+	s['region'] =   self.depthLevel		
 	s['year'] =   	self.year 
 	s['xtype'] =  	self.xtype
 	s['ytype'] =  	self.ytype
@@ -548,82 +581,6 @@ class makePlots:
 		pyplot.close()	  	
 
 
-  def defineSlices(self,plotallcuts):	
-  	"""	This code is deprecated. Moved into top loop.
-  		
-  	"""
-  	assert False
-#	self.newSlices 		=['All','Standard',]#'ignoreMoreArtics']
-#	self.standardCuts = ['5-95pc','ignoreInlandSeas','OffShelf','ignoreExtraArtics','aboveZero',]	
-#	self.depthRanges	=['OffShelf','maskBelowBathy', 'OnShelf',] 
-#				 # 'Depth_0-10m','Depth_10-20m','Depth_20-50m','Depth_50-100m','Depth_100-500m','Depth_500m',
-#	self.percentiles	=['0-1pc','1-5pc','5-25pc',
-#				  '25-40pc','40-60pc','60-75pc',
-#				  '75-95pc','95-99pc','99-100pc',]
-#	self.latregions		=['NorthTemperate','SouthTemperate','NorthTropics',
-#				  'Equatorial',  'SouthTropics','Antarctic',
-#				  'NorthArctic',]
-#				  #'Arctic','Tropics','Temperate']
-#	self.Hemispheres	=['NorthHemisphere','SouthHemisphere',]
-#	self.Seas		=['ignoreMediteranean','BlackSea','ignoreBlackSea',
-#				  'RedSea','BalticSea','PersianGulf',
-#				  'ignoreInlandSeas',]	
-#				  # 'ignoreRedSea', 'ignoreBalticSea','ignorePersianGulf',]
-#	self.Oceans		=['SouthPacificOcean',  'ArcticOcean',
-#				  'AntarcticOcean','NorthAtlanticOcean','SouthAtlanticOcean',
-#				 'NorthPacificOcean','IndianOcean',] 
-#				 #'ignoreExtraArtics','ignoreMidArtics','ignoreArtics','ignoreMoreArtics',
-#	self.QualityCuts 	=['Overestimate','Underestimate','Overestimate_2sig',
-#				  'Underestimate_2sig','Overestimate_3sig','Underestimate_3sig', 
-#				  'Matched','OffAxis','1-99pc',
-#				  '5-95pc','0-99pc',]
-#	self.Seasons		=['JFM','AMJ','JAS','OND'] 
-#	self.OceanMonths	= sorted([i for i in product(self.Oceans,self.months)] )
-#	self.HemispheresMonths	= sorted([i for i in product(self.Hemispheres,self.months)] )	
-#	self.OceanMonths.extend(sorted([i for i in product(['All',],self.months)]))
-#	self.OceanSeasons	= sorted([i for i in product(self.Oceans,self.Seasons)] )
-	
-	
-#	if plotallcuts:
-#		 self.plotMonths	= True
-#		 self.plotdepthRanges	=0
-#		 self.plotpercentiles	=0#True	
-#		 self.plotLatRegions	=0# True
-#		 self.plotQualityCuts	=0#True	
-#		 self.plotSeas		=0#True		 
-#		 self.plotOceans	= True
-#		 self.plotHemispheres	=0# True
-#		 self.plotSeasons	=0# True
-#		 self.plotOceanSeasons	=0# True		 		 
-#		 self.plotOceanMonths   = 0#True	
-#		 self.plotHemispheresMonths   =True			 
-#	else: 	
-#		 self.plotMonths	=0#True
-#		 self.plotdepthRanges	=0#True	
-#		 self.plotpercentiles	=0#True	
-#		 self.plotLatRegions	=0#True
-#		 self.plotQualityCuts	=0#True
-#		 self.plotSeas		=0#True		 
-#		 self.plotOceans	=0#True	
-#		 self.plotHemispheres	=0		 
-#		 self.plotSeasons	=0# True
-#		 self.plotOceanSeasons	=0# True		 
-#		 self.plotOceanMonths   = 0	 	 	 
-#		 self.plotHemispheresMonths   =0			 
-#
-#	if self.plotMonths: 	 self.newSlices.extend(self.months.keys())
-##	if self.plotdepthRanges: self.newSlices.extend(self.depthRanges)
-#	if self.plotpercentiles: self.newSlices.extend(self.percentiles)
-#	if self.plotLatRegions:	 self.newSlices.extend(self.latregions)	
-#	if self.plotQualityCuts: self.newSlices.extend(self.QualityCuts)		
-#	if self.plotSeas: 	 self.newSlices.extend(self.Seas)			
-#	if self.plotOceans: 	 self.newSlices.extend(self.Oceans)
-#	if self.plotHemispheres: self.newSlices.extend(self.Hemispheres)	
-#	if self.plotSeasons: 	 self.newSlices.extend(self.Seasons)
-#	if self.plotOceanSeasons:self.newSlices.extend(self.OceanSeasons)		
-#	if self.plotOceanMonths: self.newSlices.extend(self.OceanMonths)
-#	if self.plotHemispheresMonths: self.newSlices.extend(self.HemispheresMonths)	
-#	#print "defineSlices:\tSLICES:", 	 self.newSlices
 	
  		
   def getFileName(self,newSlice,xkey,ykey):
@@ -645,53 +602,8 @@ class makePlots:
 		if newSlice in ukp.slicesDict['Months']:
 			 newSlice = ukp.mnStr(self.months[newSlice]+1)+newSlice	
 		if dictkey == 'Default': dictkey=''
-		filename = ukp.folder([file_prefix,dictkey])+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
+		filename = ukp.folder([file_prefix,dictkey])+self.name+self.depthLevel+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
 
-
-		
-	
-	#if newSlice in self.months.keys():
-	#	filename = ukp.folder([file_prefix,'months'])+self.name+self.region+'_'+ukp.mnStr(self.months[newSlice])+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
-	#elif newSlice in self.depthRanges:
-	#	filename = ukp.folder([file_prefix,'DepthRanges'])+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix	  
-	#elif newSlice in self.percentiles:
-	#	filename = ukp.folder([file_prefix,'Percentiles'])+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix	  
-	#elif newSlice in self.latregions:
-	#	filename = ukp.folder([file_prefix,'LatRegions'])+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix	 
-	#elif newSlice in self.QualityCuts:
-	#	filename = ukp.folder([file_prefix,'QualityCuts'])+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
-	#elif newSlice in self.Seas:
-	#	filename = ukp.folder([file_prefix,'Seas'])+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
-	#elif newSlice in self.Seasons:
-	#	filename = ukp.folder([file_prefix,'Seasons'])+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix		
-	#elif newSlice in self.Oceans:
-	#	filename = ukp.folder([file_prefix,'Oceans'])+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
-	#elif newSlice in self.Hemispheres:
-	#	filename = ukp.folder([file_prefix,'Hemispheres'])+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
-	#elif newSlice in self.OceanMonths:
-	#	if type(newSlice) in [type(['a','b',]),type(('a','b',))]:
-	#	  	print 'getFileName:', newSlice,
-	#	  	newSlice = ''.join(newSlice)
-	#	  	print '-->',newSlice	  
-	#	filename = ukp.folder([file_prefix,'OceanMonths'])+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
-	#elif newSlice in self.OceanSeasons:
-	#	if type(newSlice) in [type(['a','b',]),type(('a','b',))]:
-	#	  	print 'getFileName:', newSlice,
-	#	  	newSlice = ''.join(newSlice)
-	#	  	print '-->',newSlice	  
-	#	filename = ukp.folder([file_prefix,'OceanSeasons'])+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
-	#elif newSlice in self.HemispheresMonths:
-	#	if type(newSlice) in [type(['a','b',]),type(('a','b',))]:
-	#	  	print 'getFileName:', newSlice,
-	#	  	newSlice = ''.join(newSlice)
-	#	  	print '-->',newSlice	  
-	#	filename = ukp.folder([file_prefix,'HemispheresMonths'])+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
-	#else:
-	# 	print 'getFileName:', newSlice,	''.join(newSlice)  ,xkey,ykey
-	#  	try:fn = newSlice+'_'+xkey+'vs'+ykey
-	#  	except:
-	#  		print "ERROR:\tcan't add ",newSlice,xkey,ykey, 'together as strings. It breaks in getFileName, but the problem is probably in your mt dictionary in pftnames'
-	#	filename = file_prefix+self.name+self.region+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
 	return filename
 
 

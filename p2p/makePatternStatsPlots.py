@@ -54,7 +54,7 @@ class makePatternStatsPlots:
   		It takes:
   		  shelveDict: a dictionairy showing the line label and the shelves.
   		  plotTitle: a name for the set of points on the x-axis. ie months, oceans
-  		  xkeys: are the tick lables on the x axis.
+  		  xkeys: are the tick lables on the x axis. Can be strings or tuple. These need to appear in the shelve filename.
   		  filenamebase: the base name of the image to be saved.
 		  grid: which grid to be used (ORCA1, ORCA025, Flat1deg.) 
 		  	the grid needs to be in UKESMpython.
@@ -63,14 +63,17 @@ class makePatternStatsPlots:
   	"""
 	#if key_self.keys =='dmspmetrics': 	self.keys = ['dms_p_and','dms_p_ara','dms_p_hal','dms_p_sim','In situ',]	
 	self.keys = sorted(shelveDict.keys())
-	print "makePatternStatsPlots:\tSTART:\t",plotTitle,xkeys, grid, self.keys	
+	print "makePatternStatsPlots:"
+	print "		Title:", plotTitle
+	print "		x axis keys:",xkeys
+	print "		grid:",grid
+	print "		legend keys:", self.keys	
 	self.shelveDict = shelveDict
 
 	self.plotTitle = plotTitle
 	self.filenamebase = filenamebase
 	self.xkeys = xkeys
 	self.grid = grid
-  
   	self.setDictionaries()
   	
   	if not len(self.AllShelves):
@@ -230,12 +233,12 @@ class makePatternStatsPlots:
 	# Here, we load the metrics from disk into memory.
 	# It produces a nested dictionary which is read out to make the plots.
 	#
-	
+	print 'loadMetrics'
 	metrics = {me:{} for me in self.metricsDict.keys()}
 		
 	i = 0
 	for xkey in self.xkeys:
-		#print 'first loop (xkeys):', xkey 
+	#	print 'first loop (xkeys):', xkey 
 		for me in self.metricsDict.keys(): metrics[me][xkey] = {}
 	
 		for key,shelves in self.shelveDict.items():
@@ -248,7 +251,13 @@ class makePatternStatsPlots:
 		    				    
 		    for shelve in shelves:
 			#print 'third loop (shelves):', xkey, key, shelve
-		    	if shelve.find(xkey)<0:continue
+			
+		    	if  type(xkey) ==type('string'):
+		    	  if shelve.find(xkey)<0:continue
+		    	elif type(xkey) in [type(('',)),type(['',])]:
+		    	  continues = [shelve.find(xk) for xk in xkey]
+		    	  if np.min(continues)==-1:continue
+		    	  
 		    	print "Found:",xkey,key,shelve
 		    	if not os.path.exists(shelve):
 		    		for met in self.metricsDict.keys():
@@ -284,13 +293,17 @@ class makePatternStatsPlots:
 
 			model =self.loadFromshelve(sh, 'datax')
 			obs   =self.loadFromshelve(sh, 'datay')
-			metrics['MNAFE'][xkey][key] = usm.MNAFE(model,obs)
-			metrics['MNFB' ][xkey][key] = usm.MNFB( model,obs)
-			metrics['NMAEF'][xkey][key] = usm.NMAEF(model,obs)
-			metrics['NMBF' ][xkey][key] = usm.NMBF( model,obs)									
+			if 'MNAFE' in sh.keys():
+				for k in ['MNAFE','MNFB','NMAEF','NMBF']:
+					metrics[k][xkey][key] = self.loadFromshelve(sh,k)
+			else:
+				metrics['MNAFE'][xkey][key] = usm.MNAFE(model,obs)
+				metrics['MNFB' ][xkey][key] = usm.MNFB( model,obs)
+				metrics['NMAEF'][xkey][key] = usm.NMAEF(model,obs)
+				metrics['NMBF' ][xkey][key] = usm.NMBF( model,obs)									
 				
-			metrics['MedianModel' ][xkey][key]			= np.median(model)
-			metrics['Model/obs. median' ][xkey][key]	= np.median(model/obs)
+			metrics['MedianModel' ][xkey][key]	 = np.median(model)
+			metrics['Model/obs. median' ][xkey][key] = np.median(model/obs)
 			sh.close()
 			i+=1		
 	self.i = i
@@ -327,7 +340,12 @@ class makePatternStatsPlots:
 
 				linesDict['x'].append(o)
 				linesDict['xticks'].append(o)
-				linesDict['xticklabels'].append(xkey.replace('Ocean','').replace(' ','\n').replace('North','North ').replace('South','South '))
+				if type(xkey) in [type(('',)),type(['',])]:
+					xkeystring = ' '.join(xkey)
+				else: xkeystring = str(xkey)
+				xkeystring = 	xkeystring.replace('Ocean','').replace('North','North ').replace('South','South ')#.replace(' ','\n')
+				linesDict['xticklabels'].append(xkeystring)
+
 			
 				for m, val in sorted(metrics[metric][xkey].items()):
 					#if plotStyle=='Lines':

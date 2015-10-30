@@ -937,66 +937,89 @@ def makeLonSafeArr(lon):
 	 	 
 	assert False
 
-
-
-
-def reducesShelves(AllShelves,sliceslist=[],models=[],names=[],regions=[],):
+class shelveMetadata:
+   def __init__(self,model='',name='',year='',depthLevel='',newSlice='',xkey='',ykey='',shelve = ''):
+   	self.model 	= model
+   	self.name 	= name
+   	self.year 	= year   	
+   	self.depthLevel	= depthLevel
+   	self.newSlice 	= newSlice
+   	self.xkey 	= xkey   	   	   	
+   	self.ykey 	= ykey   	   	   	   	
+   	self.shelve 	= shelve   	      	
+   def __repr__(self):
+	string = ''   
+   	for a in [ self.model,self.name,self.year,self.depthLevel,self.newSlice,self.xkey,self.ykey]:
+   		string+=', '+a
+   	string+='\nshelve:'+self.shelve
+        return string
+   def __str__(self):
+	string = ''   
+   	for a in [ self.model,self.name,self.year,self.depthLevel,self.newSlice,self.xkey,self.ykey]:
+   		if len(a) ==0:continue
+   		string+='-'+a
+        return string   
+       
+        
+        
+def reducesShelves(AllShelves,models=[],names=[],years=[],depthLevels=[],sliceslist=[],):
 	"""
-	This routine takes the heavily nested shelve dictionary, and a series of requirements,
-	then returns a list of relevant dictionairies.
+	This routine takes the AllShelves dictionary of shelveMetadata then returns a list of shelves.
 	This is useful for producing a target diagram, or a patterns plot.
-	requirements is a list of models, slices, regions that are required.
+	requirements is a list of models, slices, depthLevels that are required.
 	"""
+	emptySMDtype = type(shelveMetadata())
 	outArray = []
-	for model in AllShelves.keys():
-	 for name in AllShelves[model].keys():
-	  for region in AllShelves[model][name].keys():
-	    for newSlice in AllShelves[model][name][region].keys(): 
-	      for xkey in AllShelves[model][name][region][newSlice].keys():
-		for ykey in AllShelves[model][name][region][newSlice][xkey].keys():
-			if len(models) 		and model not in models:continue
-			if len(names) 		and name not in names:continue
-			if len(regions) 	and region not in regions:continue
-			if len(sliceslist) 	and newSlice not in sliceslist:continue
-		  	shelve = AllShelves[model][name][region][newSlice][xkey][ykey]			
-			outArray.append(shelve)
-	return outArray
+	for shelveMD in AllShelves:
+		if type(shelveMD) != emptySMDtype:
+			print "somewhere, this is not a shelveMD:",shelveMD
+			assert False
+		
+		if len(models) 		and shelveMD.model 	not in models:	continue
+		if len(names) 		and shelveMD.name 	not in names:	continue
+		if len(years) 		and shelveMD.year 	not in years:	continue
+		if len(depthLevels) 	and shelveMD.depthLevel not in depthLevels:continue
+		if len(sliceslist) 	and shelveMD.newSlice 	not in sliceslist:continue
+		outArray.append(shelveMD.shelve)
+	return outArray		
+	
+
 
 def getSlicesDict():
 	slicesDict = {}
 	standardCuts = ['5-95pc','ignoreInlandSeas','OffShelf','ignoreExtraArtics','aboveZero',]	
-	months = {month_name[i+1]:i for i in xrange(0,12) }
+	months = [month_name[i+1] for i in xrange(0,12) ]#{month_name[i+1]:i for i in xrange(0,12) }
 	
 	depthRanges	=['OffShelf','maskBelowBathy', 'OnShelf',] 
-				 # 'Depth_0-10m','Depth_10-20m','Depth_20-50m','Depth_50-100m','Depth_100-500m','Depth_500m',
 	percentiles	=['0-1pc','1-5pc','5-25pc',
-				  '25-40pc','40-60pc','60-75pc',
-				  '75-95pc','95-99pc','99-100pc',]
+			  '25-40pc','40-60pc','60-75pc',
+			  '75-95pc','95-99pc','99-100pc',]
 	latregions	=['NorthTemperate','SouthTemperate','NorthTropics',
-				  'Equatorial',  'SouthTropics','Antarctic',
-				  'NorthArctic',
-				  'Arctic','Tropics','Temperate']
+			  'Equatorial',  'SouthTropics','Antarctic',
+			  'NorthArctic',
+			  'Arctic','Tropics','Temperate']
 	Hemispheres	=['NorthHemisphere','SouthHemisphere',]
 	Seas		=['ignoreMediteranean','BlackSea','ignoreBlackSea',
-				  'RedSea','BalticSea','PersianGulf',
-				  'ignoreInlandSeas',	
-				   'ignoreRedSea', 'ignoreBalticSea','ignorePersianGulf',]
+			  'RedSea','BalticSea','PersianGulf',
+			  'ignoreInlandSeas',	
+			  'ignoreRedSea', 'ignoreBalticSea','ignorePersianGulf',]
 	Oceans		=['SouthPacificOcean',  'ArcticOcean',
-				  'AntarcticOcean','NorthAtlanticOcean','SouthAtlanticOcean',
-				 'NorthPacificOcean','IndianOcean', 
-				 ]#'ignoreExtraArtics','ignoreMidArtics','ignoreArtics','ignoreMoreArtics',]
+			  'AntarcticOcean','NorthAtlanticOcean','SouthAtlanticOcean',
+			  'NorthPacificOcean','IndianOcean', 
+			 ]#'ignoreExtraArtics','ignoreMidArtics','ignoreArtics','ignoreMoreArtics',]
 	QualityCuts 	=['Overestimate','Underestimate','Overestimate_2sig',
-				  'Underestimate_2sig','Overestimate_3sig','Underestimate_3sig', 
-				  'Matched','OffAxis','1-99pc',
-				  '5-95pc','0-99pc',]
+			  'Underestimate_2sig','Overestimate_3sig','Underestimate_3sig', 
+			  'Matched','OffAxis','1-99pc',
+			  '5-95pc','0-99pc',]
 	Seasons		=['JFM','AMJ','JAS','OND'] 
-	OceanMonths	= sorted([i for i in product(Oceans,months)] )
-	HemispheresMonths	= sorted([i for i in product(Hemispheres,months)] )	
-	HemispheresSeasons	= sorted([i for i in product(Hemispheres,Seasons)] )		
-	OceanMonths.extend(sorted([i for i in product(['All',],months)]))
-	OceanSeasons	= sorted([i for i in product(Oceans,Seasons)] )
+	
+	OceanMonths  		= { o: [ (o,m) for m in months] for o in Oceans}
+	OceanSeasons 		= { o: [ (o,m) for m in Seasons] for o in Oceans}	
+	HemispheresMonths  = { o: [ (o,m) for m in months] for o in Hemispheres}
+	HemispheresSeasons = { o: [ (o,m) for m in Seasons] for o in Hemispheres}	
+	
 	newSlices =['All','Standard',]
-	newSlices.extend(months.keys())
+	newSlices.extend(months)
 	newSlices.extend(depthRanges)
 	newSlices.extend(percentiles)
 	newSlices.extend(latregions)	
@@ -1009,21 +1032,70 @@ def getSlicesDict():
 	newSlices.extend(OceanMonths)
 	newSlices.extend(HemispheresMonths)
 	newSlices.extend(HemispheresSeasons)	
+	for om,keys in OceanMonths.items(): 		newSlices.extend(keys)
+	for om,keys in OceanSeasons.items(): 		newSlices.extend(keys)
+	for om,keys in HemispheresMonths.items(): 	newSlices.extend(keys)
+	for om,keys in HemispheresSeasons.items(): 	newSlices.extend(keys)
+	
 
 	slicesDict['Default'] 		= ['All','Standard',]		
 	slicesDict['StandardCuts'] 	= standardCuts
 	slicesDict['AllSlices'] 	= newSlices
-	slicesDict['Months'] 		= [month_name[i+1] for i in xrange(0,12) ]
+	slicesDict['Months'] 		= months
 	slicesDict['Hemispheres'] 	= Hemispheres	
 	slicesDict['Oceans'] 		= Oceans	
-	slicesDict['Seasons'] 		= Seasons	
-	slicesDict['OceanMonths'] 	= OceanMonths	
-	slicesDict['OceanSeasons'] 	= OceanSeasons	
-	slicesDict['HemispheresMonths'] = HemispheresMonths							
-	slicesDict['HemispheresSeasons'] = HemispheresSeasons								
+	slicesDict['Seasons'] 		= Seasons
+	
+	for om,keys in OceanMonths.items(): 		slicesDict[om+'Months' ] = keys
+	for om,keys in OceanSeasons.items(): 		slicesDict[om+'Seasons'] = keys
+	for om,keys in HemispheresMonths.items(): 	slicesDict[om+'Months' ] = keys
+	for om,keys in HemispheresSeasons.items(): 	slicesDict[om+'Seasons'] = keys
+	
 	return slicesDict
 slicesDict = getSlicesDict()
 
+
+
+def populateSlicesList(#plotallcuts = False,
+		 plotDefaults		=True,		 	
+		 plotMonths		=0,#True
+		 plotdepthRanges	=0,#True	
+		 plotpercentiles	=0,#True	
+		 plotLatRegions		=0,#True
+		 plotQualityCuts	=0,#True
+		 plotSeas		=0,#True		 
+		 plotOceans		=0,#True	
+		 plotHemispheres	=0,		 
+		 plotSeasons		=0,# True
+		 plotOceanSeasons	=0,# True		 
+		 plotOceanMonths   	=0,	 	 	 
+		 plotHemispheresMonths  =0,
+		 plotHemispheresSeasons =0,):
+				 
+
+	if plotDefaults:	newSlices = ['All', 'Standard',]# Defaults
+	else:			newSlices = []
+	if plotMonths: 	 	newSlices.extend(slicesDict['Months'])
+	if plotdepthRanges: 	newSlices.extend(slicesDict['depthRanges'])
+	if plotpercentiles: 	newSlices.extend(slicesDict['percentiles'])
+	if plotLatRegions:	newSlices.extend(slicesDict['latregions'])	
+	if plotQualityCuts: 	newSlices.extend(slicesDict['QualityCuts'])		
+	if plotSeas: 	 	newSlices.extend(slicesDict['Seas'])			
+	if plotOceans: 	 	newSlices.extend(slicesDict['Oceans'])
+	if plotHemispheres: 	newSlices.extend(slicesDict['Hemispheres'])
+	if plotSeasons: 	newSlices.extend(slicesDict['Seasons'])
+		
+	if plotOceanMonths:	
+		for o in slicesDict['Oceans']:		newSlices.extend(slicesDict[o+'Months'])				
+	if plotOceanSeasons:	
+		for o in slicesDict['Oceans']:		newSlices.extend(slicesDict[o+'Seasons'])
+	if plotHemispheresMonths:	
+		for o in slicesDict['Hemispheres']:	newSlices.extend(slicesDict[o+'Months'])		
+	if plotHemispheresSeasons:	
+		for o in slicesDict['Hemispheres']:	newSlices.extend(slicesDict[o+'Seasons'])
+		
+	
+	return newSlices
 
 		      	
 def makeMask(name,newSlice, xt,xz,xy,xx,xd):	  

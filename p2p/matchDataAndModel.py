@@ -55,12 +55,12 @@ class matchDataAndModel:
   	This code takes the real data from in situ  measurments in netcdf format and the Model data and created two 1D matched netcdfs. 
 	The 1D matched netcdfs are then used to make plots and perform statistical analysis (not in this code).
 	The first step is to produce lightweight "pruned" versions of the files, which have the unused fields stripped out.
-	Some of the datasets are too large to run this code on desktop machine, so in those cases we request a specific region, ie "Surface".
+	Some of the datasets are too large to run this code on desktop machine, so in those cases we request a specific depthLevel, ie "Surface".
 	Debug: prints more statements.
   """
 
 
-  def __init__(self,DataFile,ModelFile,dataType, workingDir = '',DataVars='',ModelVars='',  model = '',jobID='', year='clim',region='', grid='ORCA1',debug = True,):
+  def __init__(self,DataFile,ModelFile,dataType, workingDir = '',DataVars='',ModelVars='',  model = '',jobID='', year='clim',depthLevel='', grid='ORCA1',debug = True,):
 
 	if debug:
 		print "matchDataAndModel:\tINFO:\tStarting matchDataAndModel"
@@ -78,7 +78,7 @@ class matchDataAndModel:
 	self.model = model 
 	self.jobID = jobID 
 	self.year = year
-	self.region = region
+	self.depthLevel = depthLevel
 	self.debug = debug	
 		
 	self.dataType = dataType
@@ -89,7 +89,7 @@ class matchDataAndModel:
 	self.compType= 'MaredatMatched-'+self.model+'-'+self.jobID+'-'+self.year
 		
 	if workingDir =='':
-		self.workingDir = ukp.folder('/data/euryale7/scratch/ledm/ukesm_postProcessed/ukesm/outNetCDF/'+'/'.join([self.compType,self.dataType+self.region]) )
+		self.workingDir = ukp.folder('/data/euryale7/scratch/ledm/ukesm_postProcessed/ukesm/outNetCDF/'+'/'.join([self.compType,self.dataType+self.depthLevel]) )
 	else: 	self.workingDir = workingDir	
 	self.grid = grid
 	self.gridFile = ukp.getGridFile(grid)
@@ -127,12 +127,12 @@ class matchDataAndModel:
 		#	assert False
 						
 		
-	self.matchedShelve 	= ukp.folder(self.workingDir)+self.model+'-'+self.jobID+'_'+self.year+'_'+'_'+self.dataType+'_'+self.region+'_matched.shelve'
+	self.matchedShelve 	= ukp.folder(self.workingDir)+self.model+'-'+self.jobID+'_'+self.year+'_'+'_'+self.dataType+'_'+self.depthLevel+'_matched.shelve'
 	self.matchesShelve 	= ukp.folder(['shelves','MaredatModelMatch',])+'WOAto'+self.grid+'.shelve'
 
 	self.workingDirTmp = 	ukp.folder(self.workingDir+'tmp')
-	self.DataFilePruned=	self.workingDirTmp+'Data_' +self.dataType+'_'+self.region+'_'+self.model+'-'+self.jobID+'-'+self.year+'_pruned.nc'
-	self.ModelFilePruned=	self.workingDirTmp+'Model_'+self.dataType+'_'+self.region+'_'+self.model+'-'+self.jobID+'-'+self.year+'_pruned.nc'	
+	self.DataFilePruned=	self.workingDirTmp+'Data_' +self.dataType+'_'+self.depthLevel+'_'+self.model+'-'+self.jobID+'-'+self.year+'_pruned.nc'
+	self.ModelFilePruned=	self.workingDirTmp+'Model_'+self.dataType+'_'+self.depthLevel+'_'+self.model+'-'+self.jobID+'-'+self.year+'_pruned.nc'	
 	
 	self.DataFile1D  	= self.workingDirTmp + basename(self.DataFilePruned).replace('pruned.nc','1D.nc') 
 	self.maskedData1D	= self.workingDir    + basename(self.DataFile1D)
@@ -194,35 +194,37 @@ class matchDataAndModel:
 	#nc = ncdfView(self.DataFilePruned,Quiet=True)
 	nc = Dataset(self.DataFilePruned,'r')
 		
-	#WOADatas = [a+self.region for a in ['salinity','temperature','temp','sal','nitrate','phosphate','silicate',]]	   	 
+	#WOADatas = [a+self.depthLevel for a in ['salinity','temperature','temp','sal','nitrate','phosphate','silicate',]]	   	 
 	
-	if self.region in ['Surface','200m','100m','500m','1000m','Transect',]:	
+	if self.depthLevel in ['Surface','200m','100m','500m','1000m','Transect',]:	
 	    if nc.variables[self.DataVars[0]].shape in [(12, 14, 180, 360), (12, 24, 180, 360)]: # WOA format
 		mmask = np.ones(nc.variables[self.DataVars[0]].shape)
 		#####
 		# This could be rewritten to just figure out which level is closest, but a bit much effort for not a lot of gain.
 		
-		if self.region in ['Surface','200m','100m','500m','1000m',]: 
-			if self.region in ['Surface',]:	k = 0
-			if self.region == '100m': 	k = 6			
-			if self.region == '200m': 	k = 9
-			if self.region == '500m': 	k = 13
-			if self.region == '1000m': 	k = 18					
+		if self.depthLevel in ['Surface','200m','100m','500m','1000m',]: 
+			if self.depthLevel in ['Surface',]:	k = 0
+			if self.depthLevel == '100m': 	k = 6			
+			if self.depthLevel == '200m': 	k = 9
+			if self.depthLevel == '500m': 	k = 13
+			if self.depthLevel == '1000m': 	k = 18					
 			mmask[:,k,:,:] = 0
 						
-		if self.region == 'Transect':	mmask[:,:,:,200] = 0   # Pacific Transect.	
+		if self.depthLevel == 'Transect':	mmask[:,:,:,200] = 0   # Pacific Transect.	
 		mmask +=nc.variables[self.DataVars[0]][:].mask
 		print mmask.shape
 
 		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking WOA style flat array:',self.DataFilePruned,'-->',self.DataFile1D	
 	  	convertToOneDNC(self.DataFilePruned,self.DataFile1D ,newMask=mmask, variables = self.DataVars, debug=True)		  	
 	  	
-	    elif nc.variables[self.DataVars[0]].shape in [(12, 33, 180, 360), (12,1,180,360),(12,57,180, 360) ]: # Chl format
+	    elif nc.variables[self.DataVars[0]].shape in [(12, 33, 180, 360), (12,1,180,360), ]: # Chl format
 		mmask = np.ones(nc.variables[self.DataVars[0]].shape)
 		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking Chl-style flat array:',self.DataFilePruned,'-->',self.DataFile1D			
-		if self.region in ['Surface',]:	
+		if self.depthLevel in ['Surface',]:	
 			mmask[:,0,:,:] = 0
-		else: assert False
+		else: 
+			print "matchDataAndModel:\tERROR:\t Depth level not recognises. (12, 33, 180, 360), (12,1,180,360)" ,self.depthLevel		
+			assert False
 	
 		mmask +=nc.variables[self.DataVars[0]][:].mask
 		print mmask.shape
@@ -230,6 +232,26 @@ class matchDataAndModel:
 		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking Chl style flat array:',self.DataFilePruned,'-->',self.DataFile1D	
 	  	convertToOneDNC(self.DataFilePruned,self.DataFile1D ,newMask=mmask, variables = self.DataVars, debug=True)
 	  	
+	  	
+	    elif nc.variables[self.DataVars[0]].shape in [(12,57,180, 360), ]: # O2 format
+		mmask = np.ones(nc.variables[self.DataVars[0]].shape)
+		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking Oxygen-style flat array:',self.DataFilePruned,'-->',self.DataFile1D			
+		if self.depthLevel in ['Surface',]:	k = 0
+		elif self.depthLevel == '100m': 	k = 20			
+		elif self.depthLevel == '200m': 	k = 24
+		elif self.depthLevel == '500m': 	k = 36
+		elif self.depthLevel == '1000m': 	k = 46							
+		else:
+			print "matchDataAndModel:\tERROR:\t Depth level not recognises. (12,57,180, 360)" ,self.depthLevel
+			assert False
+
+		mmask[:,k,:,:] = 0		
+		mmask +=nc.variables[self.DataVars[0]][:].mask
+		print mmask.shape
+
+		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking Chl style flat array:',self.DataFilePruned,'-->',self.DataFile1D	
+	  	convertToOneDNC(self.DataFilePruned,self.DataFile1D ,newMask=mmask, variables = self.DataVars, debug=True)
+	  		  	
 	    elif nc.variables[self.DataVars[0]].ndim ==1:
 	    	# This kind of file is already 1D, but we wantto apply a depth cut to it?
 	    	mmask = np.ones(nc.variables[self.DataVars[0]].shape)
@@ -240,7 +262,7 @@ class matchDataAndModel:
 		convertToOneDNC(self.DataFilePruned,self.DataFile1D ,newMask=mmask, variables = self.DataVars, debug=True)			    		
 	    else:
 	    
-		print 'matchDataAndModel:\tconvertDataTo1D:\tYou need to add more file spcific regions here.', nc.variables[self.DataVars[0]].shape, self.DataFilePruned,'-->',self.DataFile1D
+		print 'matchDataAndModel:\tconvertDataTo1D:\tYou need to add more file spcific depthLevels here.', nc.variables[self.DataVars[0]].shape, self.DataFilePruned,'-->',self.DataFile1D
 		assert False
 			
 	else:
@@ -397,7 +419,7 @@ class matchDataAndModel:
 		#increment by 1 to save/ end, as it has finished, but i is used as a starting point.
 		i+=1
 		if i%10000==0:	
-			if self.debug: print "matchModelToData:\t", i,ii,self.dataType,self.region,':\t',[wt,wz,wla,wlo] ,'--->',[t,z,la,lo]
+			if self.debug: print "matchModelToData:\t", i,ii,self.dataType,self.depthLevel,':\t',[wt,wz,wla,wlo] ,'--->',[t,z,la,lo]
 			
 		if i>1 and i%500000==0:
 			if self.debug: print "matchModelToData:\tSaving Shelve: ", self.matchedShelve

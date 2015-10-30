@@ -129,6 +129,7 @@ def getmt(loadYaml=False):
     	mt['ERSEM']['phosphate']  		= ['N1p',]	
     	mt['ERSEM']['nitrate']  		= ['N3n',]	    	
     	mt['ERSEM']['silicate']  		= ['N5s',]	
+    	mt['ERSEM']['oxygen']	  		= ['O2o',]	    	
 	mt['ERSEM']['iron'] 			= ['N7f',]
 	mt['ERSEM']['intpp'] 			= ['intpp',]	
 	mt['ERSEM']['t']			= 'index_t'	
@@ -140,14 +141,18 @@ def getmt(loadYaml=False):
 	mt['NEMO']['temperature'] 		= ['votemper',]	
  	mt['NEMO']['salinity'] 			= ['vosaline',]				
 	mt['NEMO']['mld'] 			= ['somxl010',]
+	mt['NEMO']['mld'] 			= ['somxl010',]	
 	mt['NEMO']['mld_DT02'] 			= ['somxl010',]
 	mt['NEMO']['mld_DR003'] 		= ['somxl010',]
-	mt['NEMO']['mld_DReqDTm02'] 		= ['somxl010',]		
+	mt['NEMO']['mld_DReqDTm02'] 		= ['somxl010',]
+	mt['NEMO']['U'] 			= ['vozocrtx',]
+	mt['NEMO']['V'] 			= ['vomecrty',]				
 	mt['NEMO']['t'] 			= 'index_t'	
 	mt['NEMO']['z'] 			= 'deptht'
 	mt['NEMO']['lat'] 			= 'nav_lat'
 	mt['NEMO']['lon'] 			= 'nav_lon'
 	mt['NEMO']['cal']			= '365_day'
+
 
 
 	mt['MEDUSA']['chl']['name'] 		=  'CHL'
@@ -248,7 +253,7 @@ def getmt(loadYaml=False):
 	mt['IMARNET']['cal'] 			= '365_day'
 	for model in BGCmodels:
 		mt['IMARNET_'+model] = mt['IMARNET']
-	
+		mt['iMarNet_'+model] = mt['IMARNET']
 	#####
 	# Data:
 	mt['MAREDAT']['bac'] 			= ['BIOMASS',]
@@ -315,6 +320,16 @@ def getmt(loadYaml=False):
 	mt['IFREMER']['lon'] 			= 'lon'
 	mt['IFREMER']['cal'] 			= 'standard'	
 	mt['IFREMER']['tdict']			= tdicts['ZeroToZero']
+	
+	
+	mt['DRIFTERS']['U']			= ['U',]
+	mt['DRIFTERS']['V']			= ['V',]
+	mt['DRIFTERS']['t']			= 'Time'
+	mt['DRIFTERS']['z'] 			= 'Depth'
+	mt['DRIFTERS']['lat'] 			= 'Lat'
+	mt['DRIFTERS']['lon'] 			= 'Lon'
+	mt['DRIFTERS']['cal'] 			= 'standard'
+	mt['DRIFTERS']['tdict']			= tdicts['OneToZero']	
 	
 	for dms in ['dms_and','dms_ara','dms_hal','dms_sim']:	
 		mt['LANA'][dms]['name'] 	=  'lanaetal'
