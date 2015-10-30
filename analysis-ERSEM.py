@@ -110,10 +110,7 @@ def analysis():
 			av['chl']['Data']['Vars'] 		= ['Chlorophylla',]
 			av['chl']['ERSEM']['Vars'] 		= ['chl',]
 			av['chl']['depthLevels'] 		= ['',]
-			av['chl']['ERSEM']['grid']		= grid				
-
-
-		
+			av['chl']['ERSEM']['grid']		= grid		
 						
 		if doMAREDAT:
 			av['diatoms']['Data']['File'] 		= MAREDATFolder+"MarEDat20120716Diatoms.nc"	
@@ -165,22 +162,24 @@ def analysis():
 			av['silicate']['Data']['Vars'] 		= ['i_an',] 		#l+'_mn',
 			av['silicate']['ERSEM']['Vars'] 	= ['N5s',]
 			av['silicate']['depthLevels'] 		= depthLevels
-			av['silicate']['ERSEM']['grid']		= grid				
+			av['silicate']['ERSEM']['grid']		= grid	
+			
 		if doP:						
 			av['phosphate']['Data']['File'] 	= WOAFolder+'phosphate_monthly_1deg.nc'	
-			av['phosphate']['ERSEM']['File'] 	= ERSEMFolder+'_ERSEMNuts.nc'	
 			av['phosphate']['Data']['Vars'] 	= ['p_an',] 		#l+'_mn',
+			av['phosphate']['ERSEM']['File'] 	= ERSEMFolder+'_ERSEMNuts.nc'	
 			av['phosphate']['ERSEM']['Vars'] 	= ['N1p',]
-			av['phosphate']['depthLevels'] 		= depthLevels		
-			av['phosphate']['ERSEM']['grid']	= grid				
+			av['phosphate']['ERSEM']['grid']	= grid	
+			av['phosphate']['depthLevels'] 		= depthLevels
+			
 		if doFe:								
 			av['iron']['Data']['File'] 		= GEOTRACESFolder+"Iron_GEOTRACES_IDP2014_Discrete_Sample_Data_ascii.nc"
-			av['iron']['ERSEM']['File'] 		= ERSEMFolder+'_ERSEMNuts.nc'			
 			av['iron']['Data']['Vars'] 		= ['Fe_D_CONC_BOTTLE',]
+			av['iron']['ERSEM']['File'] 		= ERSEMFolder+'_ERSEMNuts.nc'			
 			av['iron']['ERSEM']['Vars'] 		= ['N7f',]
-			av['iron']['depthLevels'] 		= ['',]
 			av['iron']['ERSEM']['grid']		= grid				
-
+			av['iron']['depthLevels'] 		= ['',]
+			
 		if doO2:
 			av['oxygen']['Data']['File'] 	=  WOAFolder+'oxygen-woa13.nc'
 			av['oxygen']['Data']['Vars'] 	= ['o_an',] 
@@ -191,12 +190,11 @@ def analysis():
 		
 		if doPCO2:
 			av['pCO2']['Data']['File'] 	= TakahashiFolder + "takahashi2009_month_flux_pCO2_2006c_noHead.nc"	
-			av['pCO2']['ERSEM']['File'] 	= ERSEMFolder+'_ERSEMMisc.nc'	
 			av['pCO2']['Data']['Vars'] 	= ['PCO2_SW',] 		#l+'_mn',
+			av['pCO2']['ERSEM']['File'] 	= ERSEMFolder+'_ERSEMMisc.nc'	
 			av['pCO2']['ERSEM']['Vars'] 	= ['pCO2w',]
-			av['pCO2']['depthLevels'] 		= ['',]
 			av['pCO2']['ERSEM']['grid'] 	= grid		
-
+			av['pCO2']['depthLevels'] 	= ['',]
 
 		if doIntPP:
 			av['intpp']['Data']['File'] 	=  LesterFolder+'PPint_1deg.nc'
@@ -212,14 +210,16 @@ def analysis():
 		imageFolder 	= folder('images/'+model+'-'+jobID)
 
 	
-		shelvesAV.extend(testsuite_p2p(
+		shelvesAV.extend(
+		    testsuite_p2p(
 			model = model,
 			jobID = jobID,
 			year  = year,
 			av = av,
 			plottingSlices= plottingSlices,
 			workingDir = workingDir,
-			imageFolder= imageFolder))
+			imageFolder= imageFolder)
+		    )
 	
 	#####
 	# InterAnnual analysis

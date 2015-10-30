@@ -93,7 +93,7 @@ class makePlots:
   	self.compareCoords = compareCoords
 	self.months = {month_name[i+1]:i for i in xrange(0,12) }
 	self.noPlots = noPlots  	
-	self.mt = getmt()	
+	self.mt = getmt()
 	Models = [m.upper() for m in ['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankTOM6','PlankTOM10','NEMO','IMARNET',]] # skip these to find in situ data types.
 	Models.extend(['IMARNET_' +m.upper() for m in ['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankTOM6','PlankTOM10','NEMO',]])
 	ytypes = []
