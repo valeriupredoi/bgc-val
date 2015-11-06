@@ -559,7 +559,89 @@ def robinPlotQuad(lons, lats, data1,data2,filename,titles=['',''],title='',lon0=
 	pyplot.savefig(filename ,dpi=dpi)		
 	pyplot.close()
 	
+def HovPlotQuad(lats, depths, data1,data2,filename,titles=['',''],title='',lon0=0.,marble=False,drawCbar=True,cbarlabel='',doLog=False,scatter=True,dpi=100,vmin='',vmax='',):#,**kwargs):
+
+	fig = pyplot.figure()
+	fig.set_size_inches(14,8)
+	depths = np.array(depths)
+	if depths.max() * depths.min() >0. and depths.max()  >0.: depths = -depths
+	lats = np.array(lats)
+	data1 = np.ma.array(data1)
+	data2 = np.ma.array(data2)
+	axs,bms,cbs,ims = [],[],[],[]
+	doLogs = [doLog,doLog,False,True]
+	print "HovPlotQuad:\t",len(depths),len(lats),len(data1),len(data2)
+	for i,spl in enumerate([221,222,223,224]):	
+		
+		if spl in [221,222]:
+			if not vmin: vmin = data1.min()
+			if not vmax: vmax = data1.max()
+			#if 'vmin' in kwargs.keys():vmin = kwargs['vmin']
+			#if 'vmax' in kwargs.keys():vmax = kwargs['vmax']
+					
+			rbmi = min([data1.min(),data2.min(),vmin])
+			rbma = max([data1.max(),data2.max(),vmax])
+		if spl in [223,]:
+			rbma =3*np.ma.std(data1 -data2)
+			print spl,i, rbma, max(data1),max(data2)
+			rbmi = -rbma
+		if spl in [224,]:
+			rbma = 10. #max(np.ma.abs(data1 -data2))
+			rbmi = 0.1		
+				
+		if doLogs[i] and rbmi*rbma <=0.:
+			print "UKESMpython:\tHovPlotQuad: \tMasking",
+			data1 = np.ma.masked_less_equal(ma.array(data1), 0.)
+			data2 = np.ma.masked_less_equal(ma.array(data2), 0.)
+		data = ''
+		
+		if spl in [221,]:data  = np.ma.clip(data1, 	 rbmi,rbma)
+		if spl in [222,]:data  = np.ma.clip(data2, 	 rbmi,rbma)
+		if spl in [223,]:data  = np.ma.clip(data1-data2, rbmi,rbma)
+		if spl in [224,]:data  = np.ma.clip(data1/data2, rbmi,rbma)
+
+
+		if spl in [221,222,]:cmap= pyplot.cm.jet
+		if spl in [223,224,]:cmap= pyplot.cm.RdBu		
+		
+		if doLogs[i]:
+			rbmi = np.int(np.log10(rbmi))
+			rbma = np.log10(rbma)
+			if rbma > np.int(rbma): rbma+=1
+			rbma = np.int(rbma)
+
+		axs.append(fig.add_subplot(spl))
+		if doLogs[i]:	ims.append(pyplot.scatter(lats,depths, c= np.log10(data),cmap=cmap, marker="s",alpha=0.9,linewidth='0',vmin=rbmi, vmax=rbma,))
+		else:		ims.append(pyplot.scatter(lats,depths, c=          data ,cmap=cmap, marker="s",alpha=0.9,linewidth='0',vmin=rbmi, vmax=rbma,))
+			
+
+		
+		if drawCbar:
+			if spl in [221,222,223]:
+				if doLogs[i]:	cbs.append(fig.colorbar(ims[i],pad=0.05,shrink=0.5,ticks = np.linspace(rbmi,rbma,rbma-rbmi+1)))
+				else:		cbs.append(fig.colorbar(ims[i],pad=0.05,shrink=0.5,))
+			if spl in [224,]:
+				cbs.append(fig.colorbar(ims[i],pad=0.05,shrink=0.5,))
+				cbs[i].set_ticks ([-1,0,1])
+				cbs[i].set_ticklabels(['0.1','1.','10.'])
+		 	
+		 	cbs[i].set_clim(rbmi,rbma)
+
+		    	if len(cbarlabel)>0 and spl in [221,222,]: cbs[i].set_label(cbarlabel)
+		if i in [0,1]:
+			pyplot.title(titles[i])
+		if i ==2:	pyplot.title('Difference ('+titles[0]+' - '+titles[1]+')')
+		if i ==3:	pyplot.title('Quotient ('  +titles[0]+' / '+titles[1]+')')
 	
+	if title:
+		fig.text(0.5,0.975,title,horizontalalignment='center',verticalalignment='top')	
+	pyplot.tight_layout()		
+	print "UKESMpython:\tHovPlotQuad: \tSaving:" , filename
+	pyplot.savefig(filename ,dpi=dpi)		
+	pyplot.close()
+		
+	
+		
 		
 
 def histPlot(datax, datay,  filename, Title='', labelx='',labely='',xaxislabel='', logx=False,logy=False,nbins=50,dpi=100,minNumPoints = 6, legendDict= ['mean','mode','std','median','mad']):
@@ -983,7 +1065,34 @@ def reducesShelves(AllShelves,models=[],names=[],years=[],depthLevels=[],slicesl
 		outArray.append(shelveMD.shelve)
 	return outArray		
 	
+class listShelvesContents:
+   def __init__(self,AllShelves):
+	"""
+	This routine takes the AllShelves dictionary of shelveMetadata then produces lists of all components.
+	"""
+	models={}
+	names={}
+	years={}
+	depthLevels={}
+	sliceslist = {}
+	emptySMDtype = type(shelveMetadata())
+	for shelveMD in AllShelves:
+		if type(shelveMD) != emptySMDtype:
+			print "somewhere, this is not a shelveMD:",shelveMD
+			assert False
+		
+		models[shelveMD.model] 		= True
+		names[shelveMD.name] 		= True
+		years[shelveMD.year] 		= True
+		depthLevels[shelveMD.depthLevel]= True				
+		sliceslist[shelveMD.newSlice] 	= True						
 
+	self.models = models.keys()
+	self.names = names.keys()
+	self.years = years.keys()
+	self.depthLevels = depthLevels.keys()
+	self.sliceslist = sliceslist.keys()
+					
 
 def getSlicesDict():
 	slicesDict = {}

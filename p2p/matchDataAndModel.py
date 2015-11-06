@@ -196,7 +196,7 @@ class matchDataAndModel:
 		
 	#WOADatas = [a+self.depthLevel for a in ['salinity','temperature','temp','sal','nitrate','phosphate','silicate',]]	   	 
 	
-	if self.depthLevel in ['Surface','200m','100m','500m','1000m','Transect',]:	
+	if self.depthLevel in ['Surface','100m','200m','500m','1000m','Transect',]:	
 	    if nc.variables[self.DataVars[0]].shape in [(12, 14, 180, 360), (12, 24, 180, 360)]: # WOA format
 		mmask = np.ones(nc.variables[self.DataVars[0]].shape)
 		#####
@@ -210,10 +210,10 @@ class matchDataAndModel:
 			if self.depthLevel == '1000m': 	k = 18					
 			mmask[:,k,:,:] = 0
 						
-		if self.depthLevel == 'Transect':	mmask[:,:,:,200] = 0   # Pacific Transect.	
+		if self.depthLevel == 'Transect':	mmask[:,:,:,332] = 0   # Pacific Transect.	
+		if self.depthLevel == 'PTransect':	mmask[:,:,:,200] = 0   # Pacific Transect.			
 		mmask +=nc.variables[self.DataVars[0]][:].mask
-		print mmask.shape
-
+		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking mask shape:',mmask.shape		
 		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking WOA style flat array:',self.DataFilePruned,'-->',self.DataFile1D	
 	  	convertToOneDNC(self.DataFilePruned,self.DataFile1D ,newMask=mmask, variables = self.DataVars, debug=True)		  	
 	  	
@@ -225,10 +225,10 @@ class matchDataAndModel:
 		else: 
 			print "matchDataAndModel:\tERROR:\t Depth level not recognises. (12, 33, 180, 360), (12,1,180,360)" ,self.depthLevel		
 			assert False
-	
+		if self.depthLevel == 'Transect':assert 0
 		mmask +=nc.variables[self.DataVars[0]][:].mask
-		print mmask.shape
-
+		
+		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking mask shape:',mmask.shape		
 		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking Chl style flat array:',self.DataFilePruned,'-->',self.DataFile1D	
 	  	convertToOneDNC(self.DataFilePruned,self.DataFile1D ,newMask=mmask, variables = self.DataVars, debug=True)
 	  	
@@ -236,19 +236,20 @@ class matchDataAndModel:
 	    elif nc.variables[self.DataVars[0]].shape in [(12,57,180, 360), ]: # O2 format
 		mmask = np.ones(nc.variables[self.DataVars[0]].shape)
 		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking Oxygen-style flat array:',self.DataFilePruned,'-->',self.DataFile1D			
-		if self.depthLevel in ['Surface',]:	k = 0
-		elif self.depthLevel == '100m': 	k = 20			
-		elif self.depthLevel == '200m': 	k = 24
-		elif self.depthLevel == '500m': 	k = 36
-		elif self.depthLevel == '1000m': 	k = 46							
-		else:
-			print "matchDataAndModel:\tERROR:\t Depth level not recognises. (12,57,180, 360)" ,self.depthLevel
-			assert False
-
-		mmask[:,k,:,:] = 0		
-		mmask +=nc.variables[self.DataVars[0]][:].mask
-		print mmask.shape
-
+		if self.depthLevel in ['Surface','200m','100m','500m','1000m',]: 		
+			if self.depthLevel in ['Surface',]:	k = 0
+			elif self.depthLevel == '100m': 	k = 20			
+			elif self.depthLevel == '200m': 	k = 24
+			elif self.depthLevel == '500m': 	k = 36
+			elif self.depthLevel == '1000m': 	k = 46							
+			else:
+				print "matchDataAndModel:\tERROR:\t Depth level not recognises. (12,57,180, 360)" ,self.depthLevel
+				assert False
+			mmask[:,k,:,:] = 0		
+		if self.depthLevel == 'Transect':
+			mmask[:,:,:,155]  =0 
+		mmask +=nc.variables[self.DataVars[0]][:].mask				
+		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking mask shape:',mmask.shape		
 		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking Chl style flat array:',self.DataFilePruned,'-->',self.DataFile1D	
 	  	convertToOneDNC(self.DataFilePruned,self.DataFile1D ,newMask=mmask, variables = self.DataVars, debug=True)
 	  		  	

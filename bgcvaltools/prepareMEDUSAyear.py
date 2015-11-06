@@ -61,7 +61,27 @@ def run(jobID,key,runType,foldIn):
 		keys = ['DIN',]
 		finalKeys = ['DIN',]	
 		L = '_ptrc_T'
-				
+
+	if runType == 'OXY':
+		keys = ['OXY',]
+		finalKeys = ['OXY',]	
+		L = '_ptrc_T'
+
+	if runType == 'SAL':
+		keys = ['vosaline',]
+		finalKeys = ['vosaline',]	
+		L = '_grid_T'
+
+	if runType == 'TEMP':
+		keys = ['votemper',]
+		finalKeys = ['votemper',]	
+		L = '_grid_T'
+		
+	if runType == 'MLD':
+		keys = ['somxl010',]
+		finalKeys = ['somxl010',]	
+		L = '_grid_T'		
+								
 	#months = sorted(['0121', '0821','0321','0921', '0421','1021', '0521','1121', '0621','1221', '0721','1221'])
 	cal = '365_day'		
 
@@ -72,10 +92,10 @@ def run(jobID,key,runType,foldIn):
 		
 	mergedFiles = []
 	
-
-	filesIn = sorted(glob(foldIn+'/xjwkio_1m_1979*'+L+'*.nc'))
+	fns = foldIn+'/'+jobID+'*_1m_'+key+'*'+L+'*.nc'
+	filesIn = sorted(glob(fns))
 		
-	print "filesIn:"
+	print "filesIn:", fns, filesIn
 		
 	for fn in filesIn:
 	
@@ -101,23 +121,21 @@ def run(jobID,key,runType,foldIn):
 				c = changeNC(prunedfn,fileOut,av,debug=True)
 			print fileOut
 			#print prunedfn
-		if runType in ['DIN',]:fileOut = prunedfn
+		else:fileOut = prunedfn
 		
 		mergedFiles.append(fileOut)		
 		#del m
 		
 
 	
-	filenameOut = ukp.folder('/data/euryale7/scratch/ledm/UKESM/MEDUSA-ORCA025/'+jobID+'_postProc/'+key)+jobID+'_'+key+'_'+runType+'.nc'
+	filenameOut = ukp.folder('/data/euryale7/scratch/ledm/UKESM/MEDUSA/'+jobID+'_postProc/'+key)+jobID+'_'+key+'_'+runType+'.nc'
 	
 	if not ukp.shouldIMakeFile(mergedFiles,filenameOut): return		
 	
 	m = mergeNC( mergedFiles, filenameOut, finalKeys, timeAverage=False,debug=True,calendar=cal)
 
 def main():
-	jobID='xhonp'#xhono'xjeza' #
-	key ='clim'#'1894'# '2001'#'clim'#'fullClim'#'2006'#'clim'#'2001' #'1982'#'1948' #'HighResp'#'1894'#'clim'
-	runTypes= ['DIN',]#'CH','
+	runTypes= ['SAL','TEMP','MLD','OXY',]#'DIN',]#'CH','
 	#'ERSEMNuts','ERSEMphytoBm','ERSEMphytoChl','ERSEMzoo', 'ERSEMMisc','ERSEMbac']
 	#'SalTempWind','ERSEMFull','ERSEMphyto','Detritus', ]#'SalTempWind', ]# ]#]#]
 	
@@ -144,6 +162,6 @@ def main():
 	
 	for r in runTypes: 
 		#foldIn = '/data/euryale7/scratch/ledm/iMarNet/'+jobID+'/MEANS/'	
-		foldIn = '/data/euryale7/scratch/ledm/UKESM/MEDUSA-ORCA025/'+j		  					
+		foldIn = '/data/euryale7/scratch/ledm/UKESM/MEDUSA/'+jobID		  					
 		run(jobID,key,r,foldIn)
 main()	

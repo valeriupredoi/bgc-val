@@ -50,13 +50,13 @@ def analysis():
 	grid = 'ORCA1'
 	#####
 	# Which analysis to run
-	doCHL 		= True
-	doMAREDAT 	= True
+	doCHL 		= 0#True
+	doMAREDAT 	= 0#True
 	doN		= 0#True
 	doP		= 0#True
 	doSi		= 0#True	
-	doO2		= 0#True	
-	doFe		= True
+	doO2		= True	
+	doFe		= 0#True
 	doPCO2		= 0#True
 	doIntPP		= 0#True
 

@@ -110,7 +110,10 @@ def getmt(loadYaml=False):
 		a = nc.variables[keys[0]][:]
 		for k in keys[1:]:a += nc.variables[k][:]
 		return a 
-	
+	def oxconvert(nc,keys): return nc.variables[keys[0]][:] *44.661
+	# 1 ml/l = 103/22.391 = 44.661 umol/l
+	# http://ocean.ices.dk/Tools/UnitConversion.aspx
+		
 	tdicts = {	'ZeroToZero': {i  :i     for i in xrange(12)},		
 			'OneToOne':   {i+1:i+1   for i in xrange(12)},
 			'OneToZero':  {i+1:i     for i in xrange(12)},
@@ -137,6 +140,7 @@ def getmt(loadYaml=False):
 	mt['ERSEM']['lat'] 			= 'nav_lat'
 	mt['ERSEM']['lon'] 			= 'nav_lon'
 	mt['ERSEM']['cal'] 			= '365_day'
+	
 	    		    	
 	mt['NEMO']['temperature'] 		= ['votemper',]	
  	mt['NEMO']['salinity'] 			= ['vosaline',]				
@@ -165,6 +169,7 @@ def getmt(loadYaml=False):
 	mt['MEDUSA']['diatoms']['vars'] 	=  ['PHD',]		
 	mt['MEDUSA']['diatoms']['convert'] 	=  N2Biomass
 	mt['MEDUSA']['diatoms']['units'] 	=  'mg C/m^3'
+	
 	mt['MEDUSA']['iron']['name']		=  'FER'
 	mt['MEDUSA']['iron']['vars']		=  ['FER',]
 	mt['MEDUSA']['iron']['convert']		=  mul1000
@@ -202,6 +207,7 @@ def getmt(loadYaml=False):
     	mt['MEDUSA']['nitrate'] 	 	= ['DIN',]
     	mt['MEDUSA']['pCO2']	  		= ['OCN_PCO2',]		    	
     	mt['MEDUSA']['silicate']	  	= ['SIL',]			
+    	mt['MEDUSA']['oxygen']	  		= ['OXY',]			    	
 	mt['MEDUSA']['t'] 			= 'index_t'	
 	mt['MEDUSA']['z'] 			= 'deptht'
 	mt['MEDUSA']['lat'] 			= 'nav_lat'
@@ -281,7 +287,12 @@ def getmt(loadYaml=False):
   	mt['WOA']['nitrate'] 			= ['n_an',]#'s_mn',  	
 	mt['WOA']['silicate'] 			= ['i_an',]#'i_mn',
 	mt['WOA']['phosphate'] 			= ['p_an',]#'p_mn',	    	  		
-	mt['WOA']['oxygen'] 			= ['o_an',]#'p_mn',	    	  			
+	#mt['WOA']['oxygen'] 			= ['o_an',]#'p_mn',	
+    	mt['WOA']['oxygen']['vars']  		= ['o_an',]
+    	mt['WOA']['oxygen']['name']  		= 'o_an'
+	mt['WOA']['oxygen']['units'] 		= 'mmol/m^3'
+	mt['WOA']['oxygen']['convert'] 		=  oxconvert
+		    	  			
 	mt['WOA']['t'] 				= 'index_t'
 	mt['WOA']['z'] 				= 'depth'
 	mt['WOA']['lat'] 			= 'lat'
@@ -388,8 +399,8 @@ def getLongName(text,debug=False):
 	if text.lower() in firstLetterCaps:	return text.title()
 
 
-	
-  	if text == 'Transect':		return "Pacific Transect"
+  	if text == 'Transect':		return "Transect"	
+  	if text == 'PTransect':		return "Pacific Transect"
 #  	if text == 'Surface':		return "Surface"
   	if text == '100m':		return "100m deep"  	
   	if text == '200m':		return "200m deep"  	  	  	
@@ -402,7 +413,7 @@ def getLongName(text,debug=False):
 #  	if text == 'phosphate':		return "phosphate" 
 #  	if text == 'silicate':		return "silicate"   	  	  	
 	  		  	  	
-  	if text == 'temperatureTransect':	return "Pacific Transect Temperature"
+  	if text == 'temperaturePTransect':	return "Pacific Transect Temperature"
   	if text == 'temperatureSurface':	return "Surface Temperature"
   	if text == 'temperatureAll':		return "Temperature"  	
   	if text == 'temperature100m':		return "Temperature (100m deep)"  	
@@ -410,7 +421,7 @@ def getLongName(text,debug=False):
   	if text == 'temperature500m':		return "Temperature (500m deep)"  	
   	if text == 'temperature1000m':		return "Temperature (1000m deep)"  	  		  	  	
   	
-  	if text == 'salinityTransect':		return "Pacific Transect Salinity"
+  	if text == 'salinityPTransect':		return "Pacific Transect Salinity"
   	if text == 'salinitySurface':		return "Surface Salinity"
   	if text == 'salinityAll':		return "Salinity"  	
   	if text == 'salinity100m':		return "Salinity (100m deep)"  	
@@ -418,14 +429,14 @@ def getLongName(text,debug=False):
   	if text == 'salinity500m':		return "Salinity (500m deep)"  	
   	if text == 'salinity1000m':		return "Salinity (1000m deep)"  	 	  	
   	
-  	if text == 'nitrateTransect':	return "Pacific Transect Nitrate (WOA14)"
+  	if text == 'nitratePTransect':	return "Pacific Transect Nitrate (WOA14)"
   	if text == 'nitrateSurface':	return "Surface Nitrate (WOA14)"
   	if text == 'nitrateAll':	return "Nitrate (WOA14)"  	
   	if text == 'nitrate100m':	return "Nitrate (100m deep)"  	  	
   	if text == 'nitrate200m':	return "Nitrate (200m deep)"  
   	if text == 'nitrate500m':	return "Nitrate (500m deep)"  	  	
   	  		  	  	
-  	if text == 'phosphateTransect':	return "Pacific Transect Phosphate"
+  	if text == 'phosphatePTransect':	return "Pacific Transect Phosphate"
   	if text == 'phosphateSurface':	return "Surface Phosphate"
   	if text == 'phosphateAll':	return "Phosphate"  	
   	if text == 'phosphate100m':	return "Phosphate (100m deep)"  	  	
@@ -717,7 +728,7 @@ def fancyUnits(units,debug=False):
 	if units in ['ug/l','mg/m^3','ug/L',]:  	return 'mg m'+r'$^{-3}$'
 	if units in ['10^12 g Carbon year^-1',]:	return r'$10^{12}$'+' g Carbon/year'
 	if units in ['mol C/m^',]:			return 'mol C/m'+r'$^{2}$'
-  	if units in ['mmmol/m^3', 'mmol/m^3','umol/l','micromoles/l',]:
+  	if units in ['mmmol/m^3', 'mmol/m^3','umol/l','micromoles/l','mmolO2/m3']:
   							return 'mmol m'+r'$^{-3}$'
 	if units in ['mmol/m^2']:			return 'mmol m'+r'$^{-2}$' 
 	#if units in ['mmol/m^3']:			return 'mmol m'+r'$^{-3}$' 	
