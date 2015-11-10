@@ -1092,6 +1092,18 @@ class listShelvesContents:
 	self.years = years.keys()
 	self.depthLevels = depthLevels.keys()
 	self.sliceslist = sliceslist.keys()
+   def __repr__(self):
+	string = ''   
+   	for a in [ self.models,self.names,self.years,self.depthLevels,self.sliceslist]:
+   		string+=', '+' '.join(a)
+   	string+='\nshelve contents:'+self.shelve
+        return string
+   def __str__(self):
+	string = ''   
+   	for a in [ self.models,self.names,self.years,self.depthLevels,self.sliceslist]:
+   		if len(a) ==0:continue
+   		string+='-'+' '.join(a)
+        return string   
 					
 
 def getSlicesDict():
@@ -1154,7 +1166,7 @@ def getSlicesDict():
 	slicesDict['Hemispheres'] 	= Hemispheres	
 	slicesDict['Oceans'] 		= Oceans	
 	slicesDict['Seasons'] 		= Seasons
-	
+	slicesDict['depthRanges'] 	= depthRanges	
 	for om,keys in OceanMonths.items(): 		slicesDict[om+'Months' ] = keys
 	for om,keys in OceanSeasons.items(): 		slicesDict[om+'Seasons'] = keys
 	for om,keys in HemispheresMonths.items(): 	slicesDict[om+'Months' ] = keys

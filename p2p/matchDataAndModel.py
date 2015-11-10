@@ -422,7 +422,7 @@ class matchDataAndModel:
 		if i%10000==0:	
 			if self.debug: print "matchModelToData:\t", i,ii,self.dataType,self.depthLevel,':\t',[wt,wz,wla,wlo] ,'--->',[t,z,la,lo]
 			
-		if i>1 and i%500000==0:
+		if i>1 and i%1000000==0:
 			if self.debug: print "matchModelToData:\tSaving Shelve: ", self.matchedShelve
 			s = shOpen(self.matchedShelve)
 			s['matches']  = self.matches

@@ -1,0 +1,158 @@
+#
+# Copyright 2015, Plymouth Marine Laboratory
+#
+# This file is part of the ukesm-validation library.
+#
+# ukesm-validation is free software: you can redistribute it and/or modify it
+# under the terms of the Revised Berkeley Software Distribution (BSD) 3-clause license. 
+
+# ukesm-validation is distributed in the hope that it will be useful, but
+# without any warranty; without even the implied warranty of merchantability
+# or fitness for a particular purpose. See the revised BSD license for more details.
+# You should have received a copy of the revised BSD license along with ukesm-validation.
+# If not, see <http://opensource.org/licenses/BSD-3-Clause>.
+#
+# Address:
+# Plymouth Marine Laboratory
+# Prospect Place, The Hoe
+# Plymouth, PL1 3DH, UK
+#
+# Email:
+# ledm@pml.ac.uk
+#
+
+from p2p import makePatternStatsPlots
+from UKESMpython import  folder, reducesShelves,listShelvesContents
+from pftnames import months,Ocean_names
+#####
+# This is a toolkit containing a selection of ways to make patterns plots, according to the circumstances.
+
+
+def InterAnnualPatterns(shelvesAV, jobID, years,Grid):
+
+	#####
+	# InterAnnual analysis
+	allshelves = listShelvesContents(shelvesAV)
+	
+	for model in allshelves.models:
+		for name in allshelves.names:
+		    for depthLevel in allshelves.depthLevels:
+		    	print 'InterAnnual analysis:',model,name,depthLevel
+			
+			#####
+			# Each year is a different colour.
+			yearslyShelves = {}
+			for y in years:
+				yearslyShelves[y] = reducesShelves(shelvesAV,models=[model],names=[name,],years=[y,],depthLevels=[depthLevel,],sliceslist=months,)
+	
+			filenamebase = folder('images/'+model+'-'+jobID+'/Patterns/Interannual/'+name+depthLevel)+model+jobID+name+'_'+years[0]+'-'+years[-1]+depthLevel
+			makePatternStatsPlots(	
+						yearslyShelves, # {legend, shelves}
+						model+' '+name,				# title
+						months,					# xkeysLabels
+						filenamebase,				# filename base
+						grid	= Grid,
+						)	
+					
+			#####			
+			# One long line covering multiple years - monthly. (looks best with up to 4 years.)
+			longMonths, longShelves = [],[]
+			for y in years:
+				shelves = yearslyShelves[y]
+				longMonths.extend([(mn,y) for mn in months])
+				if len(shelves)==12:	longShelves.extend(shelves)
+				else: 
+					print "Shelves are not 12 long:",len(shelves)
+					continue
+					assert False
+			if len(longMonths) != len(longShelves):
+				print "len(longMonths) != len(longShelves):",len(longMonths),' != ',len(longShelves)
+				continue
+				assert False
+		
+			filenamebase = folder('images/'+model+'-'+jobID+'/Patterns/Interannual/'+name+depthLevel)+model+jobID+name+'_'+years[0]+'-'+years[-1]+depthLevel+'_longtimeseries'
+			print "makePatternStatsPlots:",{name:longShelves}, model+' '+name,	longMonths,filenamebase,Grid
+			makePatternStatsPlots(	
+						{name:longShelves}, 		# {legend, shelves}
+						model+' '+name+' ' +depthLevel,			# title
+						longMonths,			# xkeysLabels
+						filenamebase,			# filename base
+						grid	= Grid,
+						)		
+
+			#####			
+			# One long line showing multiple years - annual.
+			for sl in ['All','Standard']:
+				yearslyShelves = reducesShelves(shelvesAV,models=[model],names=[name,],years=years,depthLevels=[depthLevel,],sliceslist=[sl,],)	
+
+				if len(yearslyShelves) != len(years):
+					print "len(yearslyShelves) != len(years):",len(yearslyShelves),' != ',len(years)
+					assert False
+		
+				filenamebase = folder('images/'+model+'-'+jobID+'/Patterns/Interannual/'+name+depthLevel)+model+jobID+name+'_'+years[0]+'-'+years[-1]+depthLevel+'_annual'+sl
+				print "makePatternStatsPlots - Annual :",sl,{name:sorted(yearslyShelves)},years, model+' '+name,filenamebase,Grid
+				makePatternStatsPlots(	
+							{name:sorted(yearslyShelves)}, 		# {legend, shelves}
+							model+' '+name+' ' +depthLevel,		# title
+							sorted(years),				# xkeysLabels
+							filenamebase,				# filename base
+							grid	= Grid,
+							)
+							
+							
+
+def BGCvsPhysics(shelvesAV, jobID, Grid, physicsModel = 'NEMO' ):
+	allshelves = listShelvesContents(shelvesAV)
+	if len(allshelves.models )<2:	
+		print "BGCvsPhysics:\tNot enough models"
+
+	print allshelves
+	if physicsModel not in allshelves.models: 
+		print "BGCvsPhysics:\tNo NEMO model"
+	
+	model = allshelves.models
+	if len(model)==2:
+		model.remove('NEMO')
+		model = model[0]
+		
+	bgcnames = allshelves.names
+	for b in ['MLD','mld','temperature','salinity']:
+		try:	bgcnames.remove(b)
+		except: pass
+	print "BGCvsPhysics:\tStarting:",model, jobID, bgcnames
+	
+	for year in allshelves.years:
+	  for depthLevel in allshelves.depthLevels:
+	    for name in bgcnames:
+	      for slicekey, slices in zip(['months','oceans','SHmonths','NHmonths',],[months,Ocean_names,SouthHemispheresMonths,NorthHemispheresMonths]):
+		monthlyShelves = {}
+		monthlyShelves['MLD'] = reducesShelves(shelvesAV,models=[physicsModel,],names=['mld',],years=[year,],sliceslist= slices,)
+		monthlyShelves[name]  = reducesShelves(shelvesAV,models=allshelves.models,names=[name,],years=[year,],sliceslist= slices,depthLevels=[depthLevel,])
+		for nm in ['temperature','salinity']:
+			monthlyShelves[nm] = reducesShelves(shelvesAV,models=[physicsModel,],names=[nm,],years=[year,],depthLevels=[depthLevel,],sliceslist=slices,)		
+	
+		
+		filenamebase = folder('images/'+model+'-'+jobID+'/Patterns/'+year+'/'+name+'_vsPhysics')+model+jobID+name+'_'+year+depthLevel+'_'+slicekey
+		print "BGCvsPhysics:\t",year, model+' '+name,filenamebase,Grid
+		print "monthlyShelves:",monthlyShelves
+		
+		makePatternStatsPlots(	
+					monthlyShelves, 		# {legend, shelves}
+					model+' '+name+' ' +depthLevel +' '+ year,		# title
+					slices,				# xkeysLabels
+					filenamebase,				# filename base
+					grid	= Grid,
+					)	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+							

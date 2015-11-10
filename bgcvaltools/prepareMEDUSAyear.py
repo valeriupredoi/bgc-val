@@ -52,7 +52,7 @@ def run(jobID,key,runType,foldIn):
 	
 	baseline = ['deptht','nav_lat','nav_lon','time_counter',]
 
-	if runType == 'CH':
+	if runType == 'CHL':
 		keys = ['CHD','CHN',]
 		finalKeys = ['CHL',]	
 		L = '_ptrc_T'
@@ -105,10 +105,10 @@ def run(jobID,key,runType,foldIn):
 
 		if not exists(prunedfn):
 			m = pruneNC( fn, prunedfn, keys, debug=True)#,calendar=cal)
-		if runType == 'CH':
+		if runType == 'CHL':
 			nc = Dataset(prunedfn,'r')
 			
-			fileOut = prunedfn.replace('.nc','_chl.nc')
+			fileOut = prunedfn.replace('.nc','_CHL.nc')
 			if not exists(fileOut):
 				av = AutoVivification()
 				av['CHN']['name']='False'
@@ -130,12 +130,17 @@ def run(jobID,key,runType,foldIn):
 	
 	filenameOut = ukp.folder('/data/euryale7/scratch/ledm/UKESM/MEDUSA/'+jobID+'_postProc/'+key)+jobID+'_'+key+'_'+runType+'.nc'
 	
-	if not ukp.shouldIMakeFile(mergedFiles,filenameOut): return		
+	if  ukp.shouldIMakeFile(mergedFiles,filenameOut): 
+		m = mergeNC( mergedFiles, filenameOut, finalKeys, timeAverage=False,debug=True,calendar=cal)
 	
-	m = mergeNC( mergedFiles, filenameOut, finalKeys, timeAverage=False,debug=True,calendar=cal)
+	filenameOut = ukp.folder('/data/euryale7/scratch/ledm/UKESM/MEDUSA/'+jobID+'_postProc/'+key+'-annual')+jobID+'_'+key+'-annual'+'_'+runType+'.nc'
+	
+	if  ukp.shouldIMakeFile(mergedFiles,filenameOut): 
+		m = mergeNC( mergedFiles, filenameOut, finalKeys, timeAverage=True,debug=True,calendar=cal)
+		
 
 def main():
-	runTypes= ['SAL','TEMP','MLD','OXY',]#'DIN',]#'CH','
+	runTypes= ['SAL','TEMP','MLD','OXY','DIN','CHL',]
 	#'ERSEMNuts','ERSEMphytoBm','ERSEMphytoChl','ERSEMzoo', 'ERSEMMisc','ERSEMbac']
 	#'SalTempWind','ERSEMFull','ERSEMphyto','Detritus', ]#'SalTempWind', ]# ]#]#]
 	
