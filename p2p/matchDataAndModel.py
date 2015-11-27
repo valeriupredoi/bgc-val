@@ -1,4 +1,4 @@
-#!/usr/bin/ipython
+#!/usr/bin/ipython 
 #
 # Copyright 2014, Plymouth Marine Laboratory
 #
@@ -35,7 +35,7 @@ import numpy as np
 ######
 # local imports
 import UKESMpython as ukp 
-from pftnames import getmt
+from pftnames import getmt, CMIP5models
 
 
 #####	
@@ -60,14 +60,13 @@ class matchDataAndModel:
   """
 
 
-  def __init__(self,DataFile,ModelFile,dataType, workingDir = '',DataVars='',ModelVars='',  model = '',jobID='', year='clim',depthLevel='', grid='ORCA1',debug = True,):
+  def __init__(self,DataFile,ModelFile,dataType, workingDir = '',DataVars='',ModelVars='',  model = '',jobID='', year='clim',depthLevel='', grid='ORCA1',gridFile='',debug = True,):
 
 	if debug:
 		print "matchDataAndModel:\tINFO:\tStarting matchDataAndModel"
 		print "matchDataAndModel:\tINFO:\tData file:  \t",DataFile
 		print "matchDataAndModel:\tINFO:\tModel file: \t",ModelFile
 		print "matchDataAndModel:\tINFO:\tData Type:  \t",dataType
-		print "matchDataAndModel:\tINFO:\tGrid:  \t",grid		
 			
 	self.DataFile=DataFile
 	self.ModelFile = ModelFile 
@@ -92,8 +91,12 @@ class matchDataAndModel:
 		self.workingDir = ukp.folder('/data/euryale7/scratch/ledm/ukesm_postProcessed/ukesm/outNetCDF/'+'/'.join([self.compType,self.dataType+self.depthLevel]) )
 	else: 	self.workingDir = workingDir	
 	self.grid = grid
-	self.gridFile = ukp.getGridFile(grid)
-	
+	if gridFile =='':
+		self.gridFile = ukp.getGridFile(grid)
+	else:	self.gridFile = gridFile
+	print "matchDataAndModel:\tINFO:\tGrid:  \t",grid			
+	print "matchDataAndModel:\tINFO:\tGrid File:  \t",gridFile
+
 	#if grid.upper() in ['ORCA1',]:
 	#	self.grid = 'ORCA1'
 	#	self.gridFile    = "data/mesh_mask_ORCA1_75.nc"
@@ -128,7 +131,7 @@ class matchDataAndModel:
 						
 		
 	self.matchedShelve 	= ukp.folder(self.workingDir)+self.model+'-'+self.jobID+'_'+self.year+'_'+'_'+self.dataType+'_'+self.depthLevel+'_matched.shelve'
-	self.matchesShelve 	= ukp.folder(['shelves','MaredatModelMatch',])+'WOAto'+self.grid+'.shelve'
+	self.matchesShelve 	= ukp.folder(['shelves','ModelMatches',])+model+jobID+year+self.dataType+self.depthLevel+self.grid+'.shelve'
 
 	self.workingDirTmp = 	ukp.folder(self.workingDir+'tmp')
 	self.DataFilePruned=	self.workingDirTmp+'Data_' +self.dataType+'_'+self.depthLevel+'_'+self.model+'-'+self.jobID+'-'+self.year+'_pruned.nc'
@@ -196,7 +199,7 @@ class matchDataAndModel:
 		
 	#WOADatas = [a+self.depthLevel for a in ['salinity','temperature','temp','sal','nitrate','phosphate','silicate',]]	   	 
 	
-	if self.depthLevel in ['Surface','100m','200m','500m','1000m','Transect',]:	
+	if self.depthLevel in ['Surface','100m','200m','500m','1000m','2000m','Transect',]:	
 	    if nc.variables[self.DataVars[0]].shape in [(12, 14, 180, 360), (12, 24, 180, 360)]: # WOA format
 		mmask = np.ones(nc.variables[self.DataVars[0]].shape)
 		#####
@@ -216,7 +219,28 @@ class matchDataAndModel:
 		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking mask shape:',mmask.shape		
 		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking WOA style flat array:',self.DataFilePruned,'-->',self.DataFile1D	
 	  	convertToOneDNC(self.DataFilePruned,self.DataFile1D ,newMask=mmask, variables = self.DataVars, debug=True)		  	
+	    elif nc.variables[self.DataVars[0]].shape in [(1, 102, 180, 360),]: # WOA Oxygen
+		mmask = np.ones(nc.variables[self.DataVars[0]].shape)
+		#####
+		# This could be rewritten to just figure out which level is closest, but a bit much effort for not a lot of gain.
+		
+		if self.depthLevel in ['Surface','200m','100m','500m','1000m','2000m']: 
+			if self.depthLevel in ['Surface',]:	k = 0
+			#if self.depthLevel == '100m': 	k = 6			
+			#if self.depthLevel == '200m': 	k = 9
+			#if self.depthLevel == '500m': 	k = 13
+			#if self.depthLevel == '1000m': k = 18					
+			if self.depthLevel == '2000m': 	k = 46
+			mmask[:,k,:,:] = 0
+						
+		if self.depthLevel == 'Transect':	mmask[:,:,:,332] = 0   # Pacific Transect.	
+		if self.depthLevel == 'PTransect':	mmask[:,:,:,200] = 0   # Pacific Transect.			
+		mmask +=nc.variables[self.DataVars[0]][:].mask
+		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking mask shape:',mmask.shape		
+		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking WOA style flat array:',self.DataFilePruned,'-->',self.DataFile1D	
+	  	convertToOneDNC(self.DataFilePruned,self.DataFile1D ,newMask=mmask, variables = self.DataVars, debug=True)		  	
 	  	
+	  		  	
 	    elif nc.variables[self.DataVars[0]].shape in [(12, 33, 180, 360), (12,1,180,360), ]: # Chl format
 		mmask = np.ones(nc.variables[self.DataVars[0]].shape)
 		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking Chl-style flat array:',self.DataFilePruned,'-->',self.DataFile1D			
@@ -288,13 +312,15 @@ class matchDataAndModel:
 		maxIndex = s['maxIndex']
 		self.maremask = s['maremask']
 		self.matches = s['matches']
+		self.imatches = s['imatches']		
 		s.close()		
 		print "matchModelToData:\tOpened shelve:", self.matchedShelve
 		print "matchModelToData:\tStarting from maxindex:",maxIndex," and ",len(self.matches), " already matched. Mask:",self.maremask.sum()
 	except:
 		self.matches = {}
+		self.imatches = {}
 		maxIndex = 0
-		self.maremask = np.zeros(is_i.shape) # zero: 
+		self.maremask = np.zeros(is_i.shape) # zero array same length as in situ data.
 
 		print "matchModelToData:\tStarting from maxindex",maxIndex,"\tfinished:",len(self.matches), " already matched. Mask:",self.maremask.sum()
 		print "matchModelToData:\tCreating shelve:", self.matchedShelve
@@ -311,8 +337,9 @@ class matchDataAndModel:
 	#####
 	# Figure out which type of data this is.
 	ytype = []
-	Models = [m.upper() for m in ['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankTOM6','PlankTOM10','NEMO','IMARNET',]] # skip these to find in situ data types.
+	Models = [m.upper() for m in ['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankTOM6','PlankTOM10','NEMO','IMARNET','CMIP5',]] # skip these to find in situ data types.
 	Models.extend(['IMARNET_' +m.upper() for m in ['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankTOM6','PlankTOM10','NEMO',]])	
+	Models.extend(['CMIP5_' +m.upper() for m in CMIP5models])		
 	for key in mt.keys():
 		#key = key.upper()
 		if key.upper() in Models:continue
@@ -385,13 +412,13 @@ class matchDataAndModel:
 			 print "matchModelToData:\t",i,'New match:\tlon:',[wlo,self.loncc[la,lo]],'\tlat:',[wla,self.latcc[la,lo]],[finds,len(lldict)]
 
 		#####
-		#Match Depth	
+		#Match Depth
 		try:
 			z = zdict[wz]
 		except:	 
-			z = getORCAdepth(wz,self.deptht,debug=True)
+			z = getORCAdepth(wz,self.depthcc,debug=True)
 			zdict[wz]	= z
-			if self.debug: print "matchModelToData:\t",i, 'Found new depth:',wz,'-->',z								
+			if self.debug: print "matchModelToData:\t",i, 'Found new depth:',wz,'m-->',self.depthcc[z], ['z=',z]
 
 		#####			
 		#Match Time	
@@ -409,26 +436,49 @@ class matchDataAndModel:
 		# Add match into array
 		try:
 			tmp = self.matches[(t,z,la,lo)][0]
-			self.maremask[i] = tmp
 			self.matches[(t,z,la,lo)].append(i)
-			print "matchModelToData:\tWARNING:",i,[wt,wz,wla,wlo], '-->',(t,z,la,lo),'already matched', tmp
+			self.imatches[i] = (t,z,la,lo)
+			self.maremask[i] = tmp
+			#if self.debug: print "matchModelToData:\tWARNING:",i,[wt,wz,wla,wlo], '-->',(t,z,la,lo),'already matched', self.matches[(t,z,la,lo)]
+				#for a in self.matches[(t,z,la,lo)]:
+					#print '\t',i, a, self.imatches[a]
 		except:
+			# if this location in the model grid (t,z,la,lo) has not yet been found,
+			# self.matches gets a list of all the in situ points that match that location.
+			# Conversely, self.maremask's i-th value location of the first time it was found.
 			self.matches[(t,z,la,lo)]=[i,]
+			self.imatches[i] = (t,z,la,lo)			
 			self.maremask[i] = i
-
+			#if self.debug: print "matchModelToData:\tfirst match:",i,[wt,wz,wla,wlo], '-->',(t,z,la,lo)
+		
+		#####
+		# test match up:
+		fail=0
+		if abs(wz-self.depthcc[z]) >500.:
+			print 'depth DOESNT MATCH:',wz,self.depthcc(z)
+			fail+=1
+		if abs(wla-self.latcc[la,lo]) >2.:
+			print 'Latitude DOESNT MATCH:',wla, self.latcc[la,lo]
+			fail+=1		
+		if abs(wlo-self.loncc[la,lo]) >2.:
+			print 'Longitude DOESNT MATCH:',wlo,self.loncc[la,lo]
+			fail+=1						
+		if fail>0:assert False
+		
+		
 		#####			
 		#increment by 1 to save/ end, as it has finished, but i is used as a starting point.
 		i+=1
-		if i%10000==0:	
+		if i%10000==0:
 			if self.debug: print "matchModelToData:\t", i,ii,self.dataType,self.depthLevel,':\t',[wt,wz,wla,wlo] ,'--->',[t,z,la,lo]
 			
-		if i>1 and i%1000000==0:
+		if i>1 and i%50000000==0:
 			if self.debug: print "matchModelToData:\tSaving Shelve: ", self.matchedShelve
 			s = shOpen(self.matchedShelve)
 			s['matches']  = self.matches
 			s['maxIndex'] = i
-
-			s['maremask'] = self.maremask			
+			s['maremask'] = self.maremask	
+			s['imatches']  = self.imatches
 			s.close()
 			s = shOpen(self.matchesShelve)		
 			s['lldict'] = lldict 
@@ -439,6 +489,7 @@ class matchDataAndModel:
 	print "matchDataAndModel:\tSaving Shelve", self.matchedShelve	
 	s = shOpen(self.matchedShelve)
 	s['matches']  = self.matches
+	s['imatches']  = self.imatches	
 	s['maxIndex'] = i
 	s['maremask'] = self.maremask
 	s.close()
@@ -473,7 +524,7 @@ class matchDataAndModel:
 		print "applyMaskToData:\tapplyMaskToData:\t", "already exists:",self.maskedData1D
 		return	
 		
-	maremask = np.array([float(a) for a in self.maremask] )
+	maremask = self.maremask #np.array([int(a) for a in self.maremask] )
 		# zero shouldn't happen
 		# some number:
 			# need to take the median value of for everytime that the same number appears.
@@ -486,16 +537,32 @@ class matchDataAndModel:
 		print "applyMaskToData:\tgetMedianVal: 1d:",arr.shape,maremask.shape,'-->',
 		out = []
 		
-		for m in maremaskDict.keys():
-		    values = []
-		    for i in maremaskDict[m]:
-		    	values.append(arr[i])
-		    	
-		    out.append(np.median(values))	
+		for m in sorted(maremaskDict.keys()):
+		    out.append(np.median([arr[i] for i in maremaskDict[m] ]))	
 		arr= np.array(out).squeeze()
 		print arr.shape
 		return arr
+
+	def getMeanVal(arr):
+		print "applyMaskToData:\tgetMeanVal: 1d:",arr.shape,maremask.shape,'-->',
+		out = []
 		
+		for m in sorted(maremaskDict.keys()):
+		    out.append(np.mean([arr[i] for i in maremaskDict[m] ]))	
+		arr= np.array(out).squeeze()
+		print arr.shape
+		return arr
+
+	def getFirstVal(arr):
+		print "\napplyMaskToData:\tgetFirstVal: 1d:",arr.shape,maremask.shape,len(maremaskDict.keys()),'-->',
+		out = []
+		for m in sorted(maremaskDict.keys()):
+		    out.append(arr[maremaskDict[m]][0])	
+		    
+		arr= np.array(out).squeeze()
+		print arr.shape
+		return arr
+						
 	def applyMask(arr):
 		print "applyMask: 1d:",arr.shape,maremask.shape,'-->',
 		out = []
@@ -518,6 +585,9 @@ class matchDataAndModel:
 		if len(ncIS.variables[v][:])== len(self.maremask):
 			if self.debug: print  "matchDataAndModel:\tapplyMaskToData:AutoViv:", v ,'is getting a mask.'
 			av[v]['convert'] = getMedianVal
+			#av[v]['convert'] = getMeanVal			
+			#av[v]['convert'] = getFirstVal			
+						
 	ncIS.close()
 	
 	if self.debug: 
@@ -530,14 +600,25 @@ class matchDataAndModel:
   def loadMesh(self,):
       	# This won't work unless its the 1 degree grid.
       	#f self.ORCA == "ORCA1":
- 	print "matchModelToData:\tOpened Model netcdf mesh.", self.grid
+ 	print "matchModelToData:\tOpened Model netcdf mesh.", self.grid, '(',self.gridFile,')'
   	ncER = Dataset(self.gridFile,'r')
   	
-  	#ncER = ncdfView("data/mesh_mask_ORCA1_75.nc",Quiet=True)  	
-	self.latcc    = ncER.variables['nav_lat'][:].squeeze()
-	self.loncc    = makeLonSafeArr(ncER.variables['nav_lon'][:]).squeeze()
-  	self.deptht   = ncER.variables['gdept_0'][:].squeeze()
+  	#ncER = ncdfView("data/mesh_mask_ORCA1_75.nc",Quiet=True)
+  	if 'nav_lat' in ncER.variables.keys():	self.latcc    = ncER.variables['nav_lat'][:].squeeze()
+	elif 'lat' in ncER.variables.keys():	self.latcc    = ncER.variables['lat'][:].squeeze()
+
+  	if 'nav_lon' in ncER.variables.keys():	self.loncc    = ncER.variables['nav_lon'][:].squeeze()
+	elif 'lon' in ncER.variables.keys():	self.loncc    = ncER.variables['lon'][:].squeeze()
+
+  	if 'deptht' in ncER.variables.keys():	self.depthcc  = ncER.variables['deptht'][:].squeeze()
+	elif 'gdept_0' in ncER.variables.keys():self.depthcc  = ncER.variables['gdept_0'][:].squeeze()
+	elif 'lev' in ncER.variables.keys():	self.depthcc  = ncER.variables['lev'][:].squeeze()	
+	
+	if self.loncc.ndim ==1 and  self.loncc.shape!= self.latcc.shape:
+		self.loncc,self.latcc = np.meshgrid(self.loncc,self.latcc)
+			
 	ncER.close()
+ 	print "matchModelToData:\tloaded mesh.", self.grid, 'lat:',self.latcc.shape, 'lon:',self.loncc.shape,'depth:',self.depthcc.shape
 	self._meshLoaded_ = 1
 	
   def getOrcaIndexCC(self,lat,lon,debug=True,slowMethod=False,llrange=5.):
@@ -546,6 +627,7 @@ class matchDataAndModel:
 	"""
 	km = 10.E20
 	la_ind, lo_ind = -1,-1
+	rangeCutoff=2.
 	lat = ukp.makeLatSafe(lat)
 	lon = ukp.makeLonSafe(lon)	
 	
@@ -555,7 +637,14 @@ class matchDataAndModel:
 	(la_ind,lo_ind) =  np.unravel_index(c.argmin(),c.shape)
 
 	#km2 = abs(haversine((lon, lat), (locc,lacc)))
-	if debug: print 'location ', [la_ind,lo_ind],'(',self.latcc[la_ind,lo_ind],self.loncc[la_ind,lo_ind],') is closest to:',[lat,lon]	
+	if debug: print 'location ', [la_ind,lo_ind],'(',self.latcc[la_ind,lo_ind],self.loncc[la_ind,lo_ind],') is closest to:',[lat,lon]
+	if abs(self.latcc[la_ind,lo_ind] -lat ) > rangeCutoff and abs(self.loncc[la_ind,lo_ind] -lon ) > rangeCutoff:
+		d = myhaversine(self.loncc[la_ind,lo_ind],self.latcc[la_ind,lo_ind],lon,lat)
+		print "getOrcaIndexCC:\tERROR:\tDISTANCE IS TOO FAR:",[self.latcc[la_ind,lo_ind],'-->',  lat,], [self.loncc[la_ind,lo_ind], '-->', lon],'distance:',d
+		if d>300.:
+			#return -1,-1
+			print "distance too great:",d
+			assert False
 	return la_ind,lo_ind
 		
 
@@ -578,8 +667,8 @@ def myhaversine(lon1, lat1, lon2, lat2):
 	dlat = lat2 - lat1 
 	a = sin(dlat/2.)**2 + cos(lat1) * cos(lat2) * sin(dlon/2.)**2
 	c = 2. * asin(sqrt(a)) 
-	#km = 6367. * c
-	return c 
+	km = 6367. * c
+	return km 
 
 def quadraticDistance(lon1, lat1, lon2, lat2):
 	"""
@@ -590,14 +679,14 @@ def quadraticDistance(lon1, lat1, lon2, lat2):
 	return sqrt(dlon*dlon + dlat*dlat)
 
 def getORCAdepth(z,depth,debug=True):
-	d = 10000.
+	d = 1000.
 	best = -1
 	for i,zz in enumerate(depth.squeeze()):
-		print i,z,zz,depth.shape
 		d2 = abs(abs(z)-abs(zz))
 		if d2<d:
 		   d=d2
 		   best = i
+		   print 'getORCAdepth:',i,z,zz,depth.shape, 'best:',best
 	if debug: print 'depth: in situ:', z,'index:', best, 'distance:',d,', closest model:',depth.shape, depth[best]
 	return best
 		

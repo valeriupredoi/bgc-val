@@ -36,11 +36,20 @@ regions 	= ['Surface','200m','100m','500m','1000m','Transect','All','',]
 
 MaredatTypes 	= ['chl','diatoms','bac','mesozoo','picophyto','microzoo']
 
-Ocean_names	= ['SouthPacificOcean',  'ArcticOcean',  'AntarcticOcean','NorthAtlanticOcean','SouthAtlanticOcean', 'NorthPacificOcean','IndianOcean',]
+Ocean_names	= ['SouthPacificOcean',  'ArcticOcean',  'AntarcticOcean',
+			'NorthAtlanticOcean','SouthAtlanticOcean', 
+			'NorthPacificOcean','IndianOcean',
+			'EquatorialPacificOcean','EquatorialAtlanticOcean',]
 
 IFREMERTypes 	= ['mld','mld_DT02','mld_DR003','mld_DReqDTm02', ]
 
 WOATypes 	= ['silicate','nitrate','phosphate','salinity','temperature','oxygen']
+
+CMIP5models = [ 'MEDUSA','ERSEM','BNU-ESM', 'IPSL-CM5A-LR', 'CESM1-BGC', 'IPSL-CM5A-MR', 
+		'CMCC-CESM', 'IPSL-CM5B-LR', 'CNRM-CM5', 'MPI-ESM-LR', 
+		'GFDL-ESM2G', 'MPI-ESM-MR', 'GFDL-ESM2M', 'MRI-ESM1', 
+		'HadGEM2-CC', 'NorESM1-ME', 'HadGEM2-ES',]
+			
 
 TAKAHASHITypes 	= ['pCO2',]
 
@@ -260,6 +269,28 @@ def getmt(loadYaml=False):
 	for model in BGCmodels:
 		mt['IMARNET_'+model] = mt['IMARNET']
 		mt['iMarNet_'+model] = mt['IMARNET']
+
+	mt['CMIP5']['t'] 			= 'time'	
+	mt['CMIP5']['z'] 			= 'lev' 
+	mt['CMIP5']['lat'] 			= 'lat'
+	mt['CMIP5']['lon'] 			= 'lon'
+	mt['CMIP5']['cal'] 			= '365_day'
+    	mt['CMIP5']['oxygen']['vars']  	= ['o2',]
+    	mt['CMIP5']['oxygen']['name']  	= 'Dissolved Oxygen'
+	mt['CMIP5']['oxygen']['units'] 	= 'mmol/m^3'
+	mt['CMIP5']['oxygen']['convert'] =  NoChange	
+			
+	CMIP5models = [ 'MEDUSA','ERSEM','BNU-ESM', 'IPSL-CM5A-LR', 'CESM1-BGC', 'IPSL-CM5A-MR', 
+			'CMCC-CESM', 'IPSL-CM5B-LR', 'CNRM-CM5', 'MPI-ESM-LR', 
+			'GFDL-ESM2G', 'MPI-ESM-MR', 'GFDL-ESM2M', 'MRI-ESM1', 
+			'HadGEM2-CC', 'NorESM1-ME', 'HadGEM2-ES',]
+	for model in CMIP5models:
+		mt['CMIP5_'+model] = mt['CMIP5']
+		mt['cmip5_'+model] = mt['CMIP5']		
+	#models= ['MEDUSA','NEMO']
+	
+	
+			
 	#####
 	# Data:
 	mt['MAREDAT']['bac'] 			= ['BIOMASS',]
@@ -543,7 +574,18 @@ def getLongName(text,debug=False):
   	if text =='Depth_50-100m':	return '50m <= Depth < 100m'
   	if text =='Depth_100-500m':	return '100m <= Depth < 500m'
   	if text =='Depth_500m':		return 'Depth > 500m'  	  	
+  	if text =='Depth_1000m':	return 'Depth > 1000m'  	  	
   	
+  	if text =='Depth_0-50m':	return 'Depth <50m'
+  	if text =='Depth_50-100m':	return '50m <= Depth < 100m'
+  	if text =='Depth_100-200m':	return '100m <= Depth < 200m'
+  	if text =='Depth_200-500m':	return '200m <= Depth < 500m'
+  	if text =='Depth_500-1000m':	return '500m <= Depth < 1000m'
+  	if text =='Depth_1000-2000m':	return '1000m <= Depth < 2000m'  	
+  	if text =='Depth_2000m':	return 'Depth > 2000m'
+  	
+	
+	  	
    	if text =='maskBelowBathy':	return 'Masked Below Bathymetery' 
    	if text =='OnShelf':		return 'On Shelf'
    	if text =='OffShelf':		return 'Off Shelf'    	   	  	
@@ -607,6 +649,8 @@ def getLongName(text,debug=False):
   	if text == 'SouthAtlanticOcean':return "South Atlantic Ocean"	  		  	
   	if text == 'NorthPacificOcean':	return "North Pacific Ocean"		  	
   	if text == 'SouthPacificOcean':	return "South Pacific Ocean"	  		  	
+  	if text == 'EquatorialAtlanticOcean':	return "Equatorial Atlantic Ocean"	  		  	  	
+  	if text == 'EquatorialPacificOcean':	return "Equatorial Pacific Ocean"	  		  	  	  	  	
   	if text == 'IndianOcean':	return "Indian Ocean"
   	if text == 'ignoreExtraArtics':	return "No Arctic Oceans (50 degrees)"  	
   	if text == 'ignoreMoreArtics':	return "No Arctic Oceans (60 degrees)"
@@ -732,7 +776,7 @@ def fancyUnits(units,debug=False):
   							return 'mmol m'+r'$^{-3}$'
 	if units in ['mmol/m^2']:			return 'mmol m'+r'$^{-2}$' 
 	#if units in ['mmol/m^3']:			return 'mmol m'+r'$^{-3}$' 	
-	if units in ['degrees Celsius', 'degreesC', 'C', 'degC']:
+	if units in ['degrees Celsius', 'degreesC', 'C', 'degC', 'degrees_celsius',]:
 							return r'$\,^{\circ}\mathrm{C}$'
 	if units in ['psu','PSU',]:			return 'psu'
 	#if units in ['umol/l',]:			return r'$\mu$'+'mol/l'

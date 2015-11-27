@@ -36,7 +36,7 @@ from mergeNC import mergeNC
 """
 
 
-def run(jobID,key,runType):
+def run(jobID,key,runType,doAnnual=True):
 		
 	foldIn = '/data/euryale7/scratch/ledm/iMarNet/'+jobID+'/MEANS/'+jobID+'o_'
 
@@ -64,6 +64,11 @@ def run(jobID,key,runType):
 	if runType == 'ERSEMzoo':
 		keys = ['Z4c',	'Z5c','Z6c',]
 		L = 'P'		
+
+	if runType == 'OXY':
+		keys = ['O2o',]
+		finalKeys = ['O2o',]	
+		L = 'P'
 
 	if runType == 'ERSEMbac':
 		keys = ['B1c',]
@@ -123,17 +128,17 @@ def run(jobID,key,runType):
 			    	filesIn = ukp.getFileList([foldIn+ykey+month+'m01'+L+'.nc',])
 			    	
 				    
-		#if jobID=='xhonp' and key in ['HighResp', ]:
-		 #   filesIn = ukp.getFileList([foldIn+'189[3]'+month+'m01'+L+'.nc',])
-		    
-		print "filesIn:", filesIn
-		fileOut = ukp.folder('/tmp/outNetCDF/tmp-Clims')+basename(filesIn[0])[:-3]+'_'+key+'_'+runType+'.nc'
-		print fileOut
+			#if jobID=='xhonp' and key in ['HighResp', ]:
+			 #   filesIn = ukp.getFileList([foldIn+'189[3]'+month+'m01'+L+'.nc',])
+			    
+			print "filesIn:", filesIn
+			fileOut = ukp.folder('/tmp/outNetCDF/tmp-Clims')+basename(filesIn[0])[:-3]+'_'+key+'_'+runType+'.nc'
+			print fileOut
 		
-		mergedFiles.append(fileOut)
-		if exists(fileOut):continue
-		m = mergeNC( filesIn, fileOut, keys, timeAverage=True,debug=True,calendar=cal)
-		del m
+			mergedFiles.append(fileOut)
+			if exists(fileOut):continue
+			m = mergeNC( filesIn, fileOut, keys, timeAverage=True,debug=True,calendar=cal)
+			del m
 		
 	#if key == 'clim':
 	#	filenameOut = folder('outNetCDF/Climatologies')+jobID+'_'+key+'_'+runType+'.nc'
@@ -141,14 +146,18 @@ def run(jobID,key,runType):
 	
 	filenameOut = ukp.folder('/data/euryale7/scratch/ledm/UKESM/ERSEM/'+jobID+'/'+key)+jobID+'_'+key+'_'+runType+'.nc'
 	
-	if not ukp.shouldIMakeFile(mergedFiles,filenameOut): return		
-	
-	m = mergeNC( mergedFiles, filenameOut, keys, timeAverage=False,debug=True,calendar=cal)
+	if ukp.shouldIMakeFile(mergedFiles,filenameOut): 		
+		m = mergeNC( mergedFiles, filenameOut, keys, timeAverage=False,debug=True,calendar=cal)
+
+	if doAnnual:
+		filenameOut = ukp.folder('/data/euryale7/scratch/ledm/UKESM/ERSEM/'+jobID+'_postProc/'+key+'-annual')+jobID+'_'+key+'-annual'+'_'+runType+'.nc'	
+		if  ukp.shouldIMakeFile(mergedFiles,filenameOut): 
+			m = mergeNC( mergedFiles, filenameOut, finalKeys, timeAverage=True,debug=True,calendar=cal)
 
 def main():
 	jobID='xhonp'#xhono'xjeza' #
 	key ='clim'#'1894'# '2001'#'clim'#'fullClim'#'2006'#'clim'#'2001' #'1982'#'1948' #'HighResp'#'1894'#'clim'
-	runTypes= ['U','V',]#'ERSEMMisc','ERSEMO2','NEMO','ERSEMNuts','ERSEMphytoBm','ERSEMphytoChl','ERSEMzoo', 'ERSEMbac']
+	runTypes= ['OXY',]#'U','V',]#'ERSEMMisc','ERSEMO2','NEMO','ERSEMNuts','ERSEMphytoBm','ERSEMphytoChl','ERSEMzoo', 'ERSEMbac']
 	#'SalTempWind','ERSEMFull','ERSEMphyto','Detritus', ]#'SalTempWind', ]# ]#]#]
 		
 	try: 	

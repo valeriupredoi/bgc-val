@@ -79,9 +79,9 @@ def analysis():
 	doIntPP		= 0#True
 	doO2		= True	
 	
-	doSal		= True
-	doTemp		= True
-	doMLD		= True
+	doSal		= 0#True
+	doTemp		= 0#True
+	doMLD		= 0#True
 	
 	
 	#####
@@ -222,8 +222,8 @@ def analysis():
 						   
 		if doMLD:	
 			#if annual:	
-			if annual:	av['mld']['Data']['File'] 		= "/data/euryale7/scratch/ledm/IFREMER-MLD/mld_DT02_c1m_reg2.0.nc"
-			else:		av['mld']['Data']['File'] 		= "/data/euryale7/scratch/ledm/IFREMER-MLD/mld_DT02_c1m_reg2.0-annual.nc"
+			if annual:	av['mld']['Data']['File'] 		= "/data/euryale7/scratch/ledm/IFREMER-MLD/mld_DT02_c1m_reg2.0-annual.nc"
+			else:		av['mld']['Data']['File'] 		= "/data/euryale7/scratch/ledm/IFREMER-MLD/mld_DT02_c1m_reg2.0.nc"
 			av['mld']['Data']['Vars'] 		= ['mld','mask',]
 			av['mld']['NEMO']['File'] 		= NEMOFolder+jobID+"_"+year+'_MLD.nc'			
 			av['mld']['NEMO']['Vars'] 		= ['somxl010',]	
@@ -238,7 +238,7 @@ def analysis():
 			plottingSlices = populateSlicesList(
 				 plotDefaults		=True,	
 				 plotMonths		=0,#True,
-				 plotdepthRanges	=0,#True,
+				 plotdepthRanges	=True,
 				 plotpercentiles	=0,#True	
 				 plotLatRegions		=0,# True
 				 plotQualityCuts	=0,#True	

@@ -43,7 +43,7 @@ from bgcvaltools.StatsDiagram import StatsDiagram
 from bgcvaltools.robust import StatsDiagram as robustStatsDiagram
 import bgcvaltools.unbiasedSymmetricMetrics as usm
 import UKESMpython as ukp 
-from pftnames import getLongName, AutoVivification, getmt,fancyUnits
+from pftnames import getLongName, AutoVivification, getmt,fancyUnits,CMIP5models
 
 #from pftnames import MaredatTypes,IFREMERTypes,WOATypes,GEOTRACESTypes
 
@@ -94,8 +94,9 @@ class makePlots:
 	self.months = {month_name[i+1]:i for i in xrange(0,12) }
 	self.noPlots = noPlots  	
 	self.mt = getmt()
-	Models = [m.upper() for m in ['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankTOM6','PlankTOM10','NEMO','IMARNET',]] # skip these to find in situ data types.
-	Models.extend(['IMARNET_' +m.upper() for m in ['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankTOM6','PlankTOM10','NEMO',]])
+	Models = [m.upper() for m in ['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankTOM6','PlankTOM10','NEMO','IMARNET','CMIP5',]] # skip these to find in situ data types.
+	Models.extend(['IMARNET_' +m.upper() for m in ['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankTOM6','PlankTOM10','NEMO',]])	
+	Models.extend(['CMIP5_' +m.upper() for m in CMIP5models])
 	ytypes = []
   	for dk in self.mt.keys():
   		if dk.upper() in Models:
@@ -275,7 +276,7 @@ class makePlots:
 	
 	#####
 	# Build mask
-	fullmask = xd.mask + yd.mask + np.ma.masked_invalid(xd).mask + np.ma.masked_invalid(yd).mask
+	fullmask = xd.mask.astype(int) + yd.mask.astype(int) + np.ma.masked_invalid(xd).mask.astype(int) + np.ma.masked_invalid(yd).mask.astype(int)
 	
 	if type(newSlice) in [type(['a',]),type(('a',))]:    	# newSlice is actaully a list of multiple slices.
 	   	for n in newSlice:
@@ -579,11 +580,13 @@ class makePlots:
 
 		rects1 = pyplot.hist((dx,dy),label=[xkey,ykey],histtype='bar',bins=72/2)#,alpha=0.2)
 		pyplot.legend()
+		ax.set_yscale('log')
 
 		ax.set_title(xkey + ' and '+ykey)		
 		ax = pyplot.subplot(412)		
 		rects3 = pyplot.hist(dx - dy,bins=72,label=[xkey + ' - '+ykey])
 		pyplot.legend()
+		ax.set_yscale('log')
 
 		ax = pyplot.subplot(212)
 		pyplot.hexbin(dx, dy, bins='log',gridsize = 72, cmap=pyplot.get_cmap('gist_yarg'),mincnt=0)#extent=plotrange,

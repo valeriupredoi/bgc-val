@@ -1110,8 +1110,12 @@ def getSlicesDict():
 	slicesDict = {}
 	standardCuts = ['5-95pc','ignoreInlandSeas','OffShelf','ignoreExtraArtics','aboveZero',]	
 	months = [month_name[i+1] for i in xrange(0,12) ]#{month_name[i+1]:i for i in xrange(0,12) }
+
 	
-	depthRanges	=['OffShelf','maskBelowBathy', 'OnShelf',] 
+	
+		
+	#depthRanges	=['OffShelf','maskBelowBathy', 'OnShelf',] 
+	depthRanges	=['Depth_0-50m','Depth_50-100m','Depth_100-200m','Depth_200-500m','Depth_500-1000m','Depth_1000-2000m','Depth_2000m']
 	percentiles	=['0-1pc','1-5pc','5-25pc',
 			  '25-40pc','40-60pc','60-75pc',
 			  '75-95pc','95-99pc','99-100pc',]
@@ -1127,6 +1131,7 @@ def getSlicesDict():
 	Oceans		=['SouthPacificOcean',  'ArcticOcean',
 			  'AntarcticOcean','NorthAtlanticOcean','SouthAtlanticOcean',
 			  'NorthPacificOcean','IndianOcean', 
+			  'EquatorialPacificOcean','EquatorialAtlanticOcean',
 			 ]#'ignoreExtraArtics','ignoreMidArtics','ignoreArtics','ignoreMoreArtics',]
 	QualityCuts 	=['Overestimate','Underestimate','Overestimate_2sig',
 			  'Underestimate_2sig','Overestimate_3sig','Underestimate_3sig', 
@@ -1362,7 +1367,16 @@ def makeMask(name,newSlice, xt,xz,xy,xx,xd):
 	if newSlice == 'Depth_50-100m': return np.ma.masked_where( (abs(xz) < 50.)+(abs(xz) > 100.),nmask).mask
 	if newSlice == 'Depth_100-500m':return np.ma.masked_where( (abs(xz) < 100.)+(abs(xz) > 500.),nmask).mask
 	if newSlice == 'Depth_500m': 	return np.ma.masked_where(  abs(xz) < 500.,nmask).mask	
-
+		
+	if newSlice == 'Depth_0-50m': 	return np.ma.masked_where( abs(xz) > 50.,nmask).mask
+	if newSlice == 'Depth_50-100m': return np.ma.masked_where( (abs(xz) < 50.)+(abs(xz) > 100.),nmask).mask		
+	if newSlice == 'Depth_100-200m':return np.ma.masked_where( (abs(xz) < 100.)+(abs(xz) > 200.),nmask).mask
+	if newSlice == 'Depth_200-500m':return np.ma.masked_where( (abs(xz) < 200.)+(abs(xz) > 500.),nmask).mask	
+	if newSlice == 'Depth_500-1000m':return np.ma.masked_where( (abs(xz) < 500.)+(abs(xz) > 1000.),nmask).mask
+	if newSlice == 'Depth_1000-2000m':return np.ma.masked_where( (abs(xz) < 1000.)+(abs(xz) > 2000.),nmask).mask	
+	if newSlice == 'Depth_1000m': 	return np.ma.masked_where(  abs(xz) < 1000.,nmask).mask	
+	if newSlice == 'Depth_2000m': 	return np.ma.masked_where(  abs(xz) < 2000.,nmask).mask	
+		
 	if newSlice == 'TypicalIron': 	return np.ma.masked_where( (xd<=0.) *(xd<=4.),nmask).mask 
 	
 	if newSlice == 'BlackSea': 	
@@ -1433,12 +1447,22 @@ def makeMask(name,newSlice, xt,xz,xy,xx,xd):
 	if newSlice == 'ignoreExtraArtics':	return np.ma.masked_outside(xy,-50., 50.).mask 
 	if newSlice == 'NorthAtlanticOcean': 	return np.ma.masked_outside(makeLonSafeArr(xx), -80.,0.).mask + np.ma.masked_outside(xy, 10.,60.).mask
 	if newSlice == 'SouthAtlanticOcean':	return np.ma.masked_outside(makeLonSafeArr(xx), -65.,20.).mask + np.ma.masked_outside(xy, -50.,-10.).mask
+	if newSlice == 'EquatorialAtlanticOcean':
+		return np.ma.masked_outside(makeLonSafeArr(xx), -65.,20.).mask + np.ma.masked_outside(xy, -15.,15.).mask
 
+	
 	if newSlice == 'NorthPacificOcean':
 		mx = np.ma.masked_inside(xx,-100., 120. ).mask
 		mx += np.ma.masked_inside(xx,260., 365. ).mask		
 		mx += np.ma.masked_outside(xy,10., 60. ).mask
 		return mx
+
+	if newSlice == 'EquatorialPacificOcean':
+		mx = np.ma.masked_inside(xx,-83., 120. ).mask
+		mx += np.ma.masked_inside(xx,260., 365. ).mask		
+		mx += np.ma.masked_outside(xy,-15., 15. ).mask
+		return mx
+		
 	
 	if newSlice == 'SouthPacificOcean': 	
 		mx = np.ma.masked_inside(xx,-70., 140. ).mask

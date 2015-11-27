@@ -43,6 +43,7 @@ def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
 			workingDir  = '',
 			imageFolder = '',
 			noPlots = False,
+			gridFile=''
 			):
 
 	"""
@@ -161,7 +162,7 @@ def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
 				print "testsuite_p2p: \tWARNING:", 'Data' ,' not in av', av[name].keys()
 				continue
 			if len(av[name]['Data'].keys()) ==0:
-				print "testsuite_p2p: \tWARNING:", 'Data' ,' not in av', av[name].keys()			
+				print "testsuite_p2p: \tWARNING:", 'Data' ,' not in av', av[name].keys()	
 				continue
 	    	except KeyError:
 			print "testsuite_p2p: \tWARNING:\tNo ",'Data', 'in ',model
@@ -220,7 +221,8 @@ def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
 								year		= year,
 								workingDir 	= folder(workingDir+name),
 								depthLevel 	= depthLevel,
-								grid		= grid)
+								grid		= grid,
+								gridFile	= gridFile)
 							
 			#####
 			# makePlots:
@@ -268,7 +270,7 @@ def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
 			
 			#####
 			# Produce a set of pattern and a target plots for each of the groups here.
-			groups = {'Oceans':[],'Months':[],'Seasons':[],'NorthHemisphereMonths':[],'SouthHemisphereMonths':[]}
+			groups = {'Oceans':[],'Months':[],'Seasons':[],'NorthHemisphereMonths':[],'SouthHemisphereMonths':[],'depthRanges':[]}
 			for g in groups:
 			    	groups[g] = reducesShelves(shelvesAV,  models =[model,],depthLevels = [depthLevel,], names = [name,], sliceslist =slicesDict[g])
 				print g, groups[g]
@@ -287,7 +289,7 @@ def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
 				# makePattern plots:
 				# Make a pattern  diagram of all matches for this particular dataset. 
 				xkeys=''
-				for o in ['Oceans','Months']:
+				for o in ['Oceans','Months','depthRanges']:
 					if g.find(o)>=0:  xkeys=o
 				if xkeys=='':
 					print "Could no find x axis keys!",g,'in',['Oceans','Months']
@@ -316,7 +318,7 @@ def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
 		#####
 		# And now by depth levels:
 		
-		groups = ['Oceans','Months','Seasons',]	#'NorthHemisphereMonths':[],'SouthHemisphereMonths':[]}		
+		groups = ['Oceans','Months','Seasons','depthRanges']	#'NorthHemisphereMonths':[],'SouthHemisphereMonths':[]}		
 		for g in groups:
 			if len(av[name]['depthLevels'])<=1: continue	
 			outShelves = {}

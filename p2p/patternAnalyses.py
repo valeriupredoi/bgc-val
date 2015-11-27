@@ -21,9 +21,9 @@
 # ledm@pml.ac.uk
 #
 
-from p2p import makePatternStatsPlots
+from p2p import makePatternStatsPlots,makeTargets
 from UKESMpython import  folder, reducesShelves,listShelvesContents
-from pftnames import months,Ocean_names
+from pftnames import months,Ocean_names,SouthHemispheresMonths,NorthHemispheresMonths
 #####
 # This is a toolkit containing a selection of ways to make patterns plots, according to the circumstances.
 
@@ -113,14 +113,15 @@ def BGCvsPhysics(shelvesAV, jobID, Grid, physicsModel = 'NEMO' ):
 	model = allshelves.models
 	if len(model)==2:
 		model.remove('NEMO')
-		model = model[0]
-		
+	if len(model)==1 and type(model)==type(['a',]):
+		model = model[0]	
+
 	bgcnames = allshelves.names
 	for b in ['MLD','mld','temperature','salinity']:
 		try:	bgcnames.remove(b)
 		except: pass
+
 	print "BGCvsPhysics:\tStarting:",model, jobID, bgcnames
-	
 	for year in allshelves.years:
 	  for depthLevel in allshelves.depthLevels:
 	    for name in bgcnames:
@@ -145,7 +146,60 @@ def BGCvsPhysics(shelvesAV, jobID, Grid, physicsModel = 'NEMO' ):
 					)	
 	
 	
-	
+def onePatternAtATime(allshelves,):
+	### produces a simple pattern plot with one line. and a taylor/target lot
+	groups = {'Oceans':[],'Months':[],'Seasons':[],'NorthHemisphereMonths':[],'SouthHemisphereMonths':[],'depthRanges':[]}
+	allshelves = listShelvesContents(shelvesAV)
+	for year in allshelves.years:
+	  for name in allshelves.names:
+	    for depthLevel in allshelves.depthLevels:
+		#####
+		# Produce a set of pattern and a target plots for each of the groups here.
+		
+		for g in groups:
+		    	groups[g] = reducesShelves(shelvesAV,  models =[model,],depthLevels = [depthLevel,], names = [name,], sliceslist =slicesDict[g])
+			print g, groups[g]
+				
+			if len(groups[g])==0:continue 
+				 
+			#####
+			# makeTargets:
+			# Make a target diagram of the shelves of this group. 
+		  	filename = folder(imageFolder+'/Targets/'+year+'/'+name+depthLevel+'/'+g)+model+'-'+jobID+'_'+year+'_'+name+depthLevel+'_'+g+'.png'
+			makeTargets(	groups[g], 
+					filename,
+					legendKeys = ['newSlice',],					
+					)
+			#####
+			# makePattern plots:
+			# Make a pattern  diagram of all matches for this particular dataset. 
+			xkeys=''
+			for o in ['Oceans','Months','depthRanges']:
+				if g.find(o)>=0:  xkeys=o
+			if xkeys=='':
+				print "Could no find x axis keys!",g,'in',['Oceans','Months']
+				
+		  	filenamebase = folder(imageFolder+'/Patterns/'+year+'/'+name+depthLevel+'/'+g)+'Months-'+model+'-'+jobID+'_'+year+'_'+name+depthLevel
+			makePatternStatsPlots(	{name :groups[g],}, # {legend, shelves}
+						name+' '+g,	#xkeysname
+						slicesDict[xkeys],		#xkeysLabels=
+						filenamebase,	# filename base	
+						grid	= grid,												
+						)
+			#####
+			# After finding all the shelves, we can plot them on the same axis.				
+		  	filenamebase = folder(imageFolder+'/Patterns/'+year+'/'+name+depthLevel+'/ANSH')+'ANSH-Months-'+model+'-'+jobID+'_'+year+'_'+name+depthLevel
+		  	
+			makePatternStatsPlots(	{'North Hemisphere' :groups['NorthHemisphereMonths'],
+						 'South Hemisphere' :groups['SouthHemisphereMonths'],
+						 'Global' :	     groups['Months'], }, # {legend, shelves}
+						name+' Months',	#xkeysname
+						slicesDict['Months'],#xkeysLabels=
+						filenamebase,	# filename base	
+						grid	= grid,												
+						)
+						
+						
 	
 	
 	
