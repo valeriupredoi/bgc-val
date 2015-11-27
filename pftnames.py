@@ -479,6 +479,12 @@ def getLongName(text,debug=False):
   	if text == 'silicate100m':	return "Silicate (100m deep)"  	  	
   	if text == 'silicate200m':	return "Silicate (200m deep)"    	
   	if text == 'silicate500m':	return "Silicate (500m deep)"    	
+
+  	if text == 'AtlanticTransect':	return "Atlantic Transect"    
+  	if text == 'PacificTransect':	return "Pacific Transect"    	
+  	if text == 'SouthernTransect':	return "Southern Transect"    	
+  	if text == '10N':		return "10 degree North Transect"    	
+  	if text == '10S':		return "10 degree South Transect"    	  	  	  	  	
   	  	
   	#if text == 'nitTransect': return "Pacific Transect Nitrate (WOA40)"
   	#if text == 'nitSurface': return "Surface Nitrate (WOA40)"

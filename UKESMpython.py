@@ -392,7 +392,7 @@ def robinPlotPair(lons, lats, data1,data2,filename,titles=['',''],lon0=0.,marble
 	else:
 		xi1,yi1,di1=mapIrregularGrid(m1,ax1,lons,lats,data1,lon0,xres=360,yres=180)
 	
-		if doLog: im1 = m1.pcolormesh(xi1,yi1,di1,cmap=pyplot.cm.jet,norm = LogNorm() )
+		if doLog: im1 = m1.pcolormesh(xi1,yi1,di1,cmap=pyplot.cm.viridis,norm = LogNorm() )
 		else:	  im1 = m1.pcolormesh(xi1,yi1,di1,cmap=pyplot.cm.jet)
 
 	
@@ -423,8 +423,8 @@ def robinPlotPair(lons, lats, data1,data2,filename,titles=['',''],lon0=0.,marble
 	else:
 		xi2,yi2,di2=mapIrregularGrid(m2,ax2,lons,lats,data2,lon0,xres=360,yres=180)
 	
-		if doLog: im2 = m2.pcolormesh(xi2,yi2,di2,cmap=pyplot.cm.jet,norm = LogNorm() )
-		else:	  im2 = m2.pcolormesh(xi2,yi2,di2,cmap=pyplot.cm.jet) #shading='flat',
+		if doLog: im2 = m2.pcolormesh(xi2,yi2,di2,cmap=pyplot.cm.viridis,norm = LogNorm() )
+		else:	  im2 = m2.pcolormesh(xi2,yi2,di2,cmap=pyplot.cm.viridis) #shading='flat',
 	
 	if drawCbar:
 	    c2 = fig.colorbar(im2,pad=0.05,shrink=0.75)	
@@ -483,7 +483,7 @@ def robinPlotQuad(lons, lats, data1,data2,filename,titles=['',''],title='',lon0=
 		if spl in [224,]:data  = np.ma.clip(data1/data2, rbmi,rbma)
 
 
-		if spl in [221,222,]:cmap= pyplot.cm.jet
+		if spl in [221,222,]:cmap= pyplot.cm.viridis
 		if spl in [223,224,]:cmap= pyplot.cm.RdBu		
 		
 		if doLogs[i]:
@@ -541,7 +541,7 @@ def robinPlotQuad(lons, lats, data1,data2,filename,titles=['',''],title='',lon0=
 			#else:		ticks = np.linspace( rbmi,rbma,9)
 			#print i, spl, ticks, [rbmi,rbma]
 			
-			#pyplot.colorbar(ims[i],cmap=pyplot.cm.jet,values=[rbmi,rbma])#boundaries=[rbmi,rbma])
+			#pyplot.colorbar(ims[i],cmap=pyplot.cm.viridis,values=[rbmi,rbma])#boundaries=[rbmi,rbma])
 		 	#cbs.append(fig.colorbar(ims[i],pad=0.05,shrink=0.5))#,ticks=ticks))
 		 	
 		 	cbs[i].set_clim(rbmi,rbma)
@@ -601,7 +601,7 @@ def HovPlotQuad(lats, depths, data1,data2,filename,titles=['',''],title='',lon0=
 		if spl in [224,]:data  = np.ma.clip(data1/data2, rbmi,rbma)
 
 
-		if spl in [221,222,]:cmap= pyplot.cm.jet
+		if spl in [221,222,]:cmap= pyplot.cm.viridis
 		if spl in [223,224,]:cmap= pyplot.cm.RdBu		
 		
 		if doLogs[i]:
@@ -1138,6 +1138,7 @@ def getSlicesDict():
 			  'Matched','OffAxis','1-99pc',
 			  '5-95pc','0-99pc',]
 	Seasons		=['JFM','AMJ','JAS','OND'] 
+	Transects	= ['AtlanticTransect', 'PacificTransect','SouthernTransect','10N','10S']
 	
 	OceanMonths  		= { o: [ (o,m) for m in months] for o in Oceans}
 	OceanSeasons 		= { o: [ (o,m) for m in Seasons] for o in Oceans}	
@@ -1158,6 +1159,7 @@ def getSlicesDict():
 	newSlices.extend(OceanMonths)
 	newSlices.extend(HemispheresMonths)
 	newSlices.extend(HemispheresSeasons)	
+	newSlices.extend(Transects)		
 	for om,keys in OceanMonths.items(): 		newSlices.extend(keys)
 	for om,keys in OceanSeasons.items(): 		newSlices.extend(keys)
 	for om,keys in HemispheresMonths.items(): 	newSlices.extend(keys)
@@ -1172,6 +1174,7 @@ def getSlicesDict():
 	slicesDict['Oceans'] 		= Oceans	
 	slicesDict['Seasons'] 		= Seasons
 	slicesDict['depthRanges'] 	= depthRanges	
+	slicesDict['Transects'] 	= Transects		
 	for om,keys in OceanMonths.items(): 		slicesDict[om+'Months' ] = keys
 	for om,keys in OceanSeasons.items(): 		slicesDict[om+'Seasons'] = keys
 	for om,keys in HemispheresMonths.items(): 	slicesDict[om+'Months' ] = keys
@@ -1196,7 +1199,8 @@ def populateSlicesList(#plotallcuts = False,
 		 plotOceanSeasons	=0,# True		 
 		 plotOceanMonths   	=0,	 	 	 
 		 plotHemispheresMonths  =0,
-		 plotHemispheresSeasons =0,):
+		 plotHemispheresSeasons =0,
+		 plotTransects		=0,):
 				 
 
 	if plotDefaults:	newSlices = ['All', 'Standard',]# Defaults
@@ -1210,6 +1214,7 @@ def populateSlicesList(#plotallcuts = False,
 	if plotOceans: 	 	newSlices.extend(slicesDict['Oceans'])
 	if plotHemispheres: 	newSlices.extend(slicesDict['Hemispheres'])
 	if plotSeasons: 	newSlices.extend(slicesDict['Seasons'])
+	if plotTransects: 	newSlices.extend(slicesDict['Transects'])	
 		
 	if plotOceanMonths:	
 		for o in slicesDict['Oceans']:		newSlices.extend(slicesDict[o+'Months'])				
@@ -1355,6 +1360,13 @@ def makeMask(name,newSlice, xt,xz,xy,xx,xd):
 
 	if newSlice == 'NorthHemisphere':	return np.ma.masked_where( xy < 0.,nmask).mask
 	if newSlice == 'SouthHemisphere':	return np.ma.masked_where( xy > 0.,nmask).mask	
+
+	if newSlice == 'AtlanticTransect':	return np.ma.masked_where( (xx > -26.)+(xx<-30.),nmask).mask
+	if newSlice == 'PacificTransect':	return np.ma.masked_where( (xx > -139.)+(xx<-143.),nmask).mask
+	if newSlice == '10N':			return np.ma.masked_where( (xy >  12.)+(xy<  8.),nmask).mask
+	if newSlice == '10S':			return np.ma.masked_where( (xy >  -8.)+(xy<-12.),nmask).mask
+	if newSlice == 'SouthernTransect':	return np.ma.masked_where( (xy > -55.)+(xy<-59.),nmask).mask		
+		
 
 	if newSlice == 'Arctic':	return np.ma.masked_where( abs(xy) < 60.,nmask).mask
 	if newSlice == 'Antarctic':	return np.ma.masked_where( xy > -60.,nmask).mask 			

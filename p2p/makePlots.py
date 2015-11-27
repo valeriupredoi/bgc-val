@@ -303,13 +303,13 @@ class makePlots:
 	
 	N = len(self.xt)			
 
-
-	if fullmask.sum() >= N:
-		print "plotWithSlices:\tNew Mask,",newSlice,", covers entire dataset.",fullmask.sum(), N
+	maskcoverpc = 100.*np.clip(fullmask,0,1).sum()/float(N)
+	if maskcoverpc==0.:
+		print "plotWithSlices:\tNew Mask,",newSlice,", covers entire dataset.",maskcoverpc,'%', N
 		try:	self.shelves[newSlice][xk][yk] = ''
 		except:	pass			
 		return
-	print "plotWithSlices:\tNew Mask,",newSlice,", covers ",fullmask.sum(),' of ', N
+	print "plotWithSlices:\tNew Mask,",newSlice,", covers ",maskcoverpc,'% of ', N, 'data'
 		
 	#####
 	# Apply mask to all data.	

@@ -22,7 +22,7 @@
 #
 
 from p2p import makePatternStatsPlots,makeTargets
-from UKESMpython import  folder, reducesShelves,listShelvesContents
+from UKESMpython import  folder, reducesShelves,listShelvesContents,getSlicesDict
 from pftnames import months,Ocean_names,SouthHemispheresMonths,NorthHemispheresMonths
 #####
 # This is a toolkit containing a selection of ways to make patterns plots, according to the circumstances.
@@ -198,9 +198,44 @@ def onePatternAtATime(allshelves,):
 						filenamebase,	# filename base	
 						grid	= grid,												
 						)
+
+
 						
-						
+def modelIntercomparisonAnnual(shelvesAV,imageFolder):						
+
+	slicesDict = getSlicesDict()
+	allshelves = listShelvesContents(shelvesAV)
+	models 	= allshelves.models
+	names  	= allshelves.names
+	dls     = allshelves.depthLevels
+	years	= allshelves.years
+	plots = ['Oceans', 'depthRanges', 'Transects']
 	
+	for year in years:
+	  for name in names:
+	    for dl in dls:		
+	      for plot in plots:
+	        data={}
+		for model in models:
+			print "modelIntercomparisonAnnual:",year, name,dl,plot, model, slicesDict[plot]
+			data[model] = reducesShelves(shelvesAV,  models =[model,],depthLevels = [dl,], names = [name,], sliceslist =slicesDict[plot])		
+			
+	  	filenamebase = folder(imageFolder+'/Patterns/'+year+name+dl+'/'+plot)+'modelIntercomparisonAnnual-'+year+'_'+name+dl+plot
+		makePatternStatsPlots(	
+					data, # {legend, shelves}
+					plot,		# xkeysname
+					slicesDict[plot],		# xkeysLabels
+					filenamebase,			# filename base
+					grid	= 'Flat1deg',
+					)		
+		
+		
+		
+
+
+			
+			
+				
 	
 	
 	
