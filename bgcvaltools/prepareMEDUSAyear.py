@@ -70,18 +70,33 @@ def run(jobID,key,runType,foldIn):
 	if runType == 'SAL':
 		keys = ['vosaline',]
 		finalKeys = ['vosaline',]	
-		L = '_grid_T'
+		L = 'T'
 
 	if runType == 'TEMP':
 		keys = ['votemper',]
 		finalKeys = ['votemper',]	
-		L = '_grid_T'
+		L = 'T'
 		
 	if runType == 'MLD':
 		keys = ['somxl010',]
 		finalKeys = ['somxl010',]	
-		L = '_grid_T'		
-								
+		L = 'T'		
+
+	if runType == 'U':
+		finalKeys = ['vozocrtx',]
+		keys = finalKeys		
+		L = 'U'
+		
+	if runType == 'V':
+		finalKeys = ['vomecrty',]
+		keys = finalKeys
+		L = 'V'
+
+	if runType == 'W':
+		finalKeys = ['vovecrtz',]
+		keys = finalKeys		
+		L = 'W'		
+		 								
 	#months = sorted(['0121', '0821','0321','0921', '0421','1021', '0521','1121', '0621','1221', '0721','1221'])
 	cal = '365_day'		
 
@@ -92,7 +107,8 @@ def run(jobID,key,runType,foldIn):
 		
 	mergedFiles = []
 	
-	fns = foldIn+'/'+jobID+'*_1m_'+key+'*'+L+'*.nc'
+	#fns = foldIn+'/'+jobID+'*_1m_'+key+'*'+L+'*.nc'
+	fns = foldIn+'/'+jobID+'*_'+key+'*'+L+'.nc'	
 	filesIn = sorted(glob(fns))
 		
 	print "filesIn:", fns, filesIn
@@ -140,7 +156,7 @@ def run(jobID,key,runType,foldIn):
 		
 
 def main():
-	runTypes= ['SAL','TEMP','MLD','OXY','DIN','CHL',]
+	runTypes= ['W','U','V','SAL','TEMP','MLD',]#'OXY','DIN','CHL',]
 	#'ERSEMNuts','ERSEMphytoBm','ERSEMphytoChl','ERSEMzoo', 'ERSEMMisc','ERSEMbac']
 	#'SalTempWind','ERSEMFull','ERSEMphyto','Detritus', ]#'SalTempWind', ]# ]#]#]
 	

@@ -409,7 +409,7 @@ class matchDataAndModel:
 				assert False
 				return
 			if self.debug:
-			 print "matchModelToData:\t",i,'New match:\tlon:',[wlo,self.loncc[la,lo]],'\tlat:',[wla,self.latcc[la,lo]],[finds,len(lldict)]
+			    print "matchModelToData:\t",i,'New match:\tlon:',[wlo,self.loncc[la,lo]],'\tlat:',[wla,self.latcc[la,lo]],[finds,len(lldict)]
 
 		#####
 		#Match Depth
@@ -425,7 +425,8 @@ class matchDataAndModel:
 		try:
 			t = tdict[wt]	
 		except:
-			print "matchModelToData:\tunable to find time match in pftnames, mt[x]['tdict']", wt
+			print "matchModelToData:\tunable to find time match in pftnames, mt[",ytype,"]['tdict']", wt
+			print "tdict:",tdict
 			assert False 
 			
 			t = getMonthFromSecs(wt)

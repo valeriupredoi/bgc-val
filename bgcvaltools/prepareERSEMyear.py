@@ -67,7 +67,7 @@ def run(jobID,key,runType,doAnnual=True):
 
 	if runType == 'OXY':
 		keys = ['O2o',]
-		finalKeys = ['O2o',]	
+		keys = ['O2o',]	
 		L = 'P'
 
 	if runType == 'ERSEMbac':
@@ -94,7 +94,14 @@ def run(jobID,key,runType,doAnnual=True):
 		keys = ['vomecrty','vomeeivv']
 		L = 'V'
 		
-						
+	if runType == 'W':
+		keys = ['vovecrtz','voveeivw']
+		L = 'W'
+
+	if runType == 'MLD':
+		keys = ['somxl010',]
+		L = 'T'	
+										
 	#if runType == 'NEMOSalTempWind':
 	#	keys = ['deptht','nav_lat','nav_lon','time_counter','vosaline','votemper', 'sowindsp','sosstsst','somxl010',]
 	#	L = 'T'	
@@ -150,14 +157,14 @@ def run(jobID,key,runType,doAnnual=True):
 		m = mergeNC( mergedFiles, filenameOut, keys, timeAverage=False,debug=True,calendar=cal)
 
 	if doAnnual:
-		filenameOut = ukp.folder('/data/euryale7/scratch/ledm/UKESM/ERSEM/'+jobID+'_postProc/'+key+'-annual')+jobID+'_'+key+'-annual'+'_'+runType+'.nc'	
+		filenameOut = ukp.folder('/data/euryale7/scratch/ledm/UKESM/ERSEM/'+jobID+'/'+key+'-annual')+jobID+'_'+key+'-annual'+'_'+runType+'.nc'	
 		if  ukp.shouldIMakeFile(mergedFiles,filenameOut): 
-			m = mergeNC( mergedFiles, filenameOut, finalKeys, timeAverage=True,debug=True,calendar=cal)
+			m = mergeNC( mergedFiles, filenameOut, keys, timeAverage=True,debug=True,calendar=cal)
 
 def main():
 	jobID='xhonp'#xhono'xjeza' #
 	key ='clim'#'1894'# '2001'#'clim'#'fullClim'#'2006'#'clim'#'2001' #'1982'#'1948' #'HighResp'#'1894'#'clim'
-	runTypes= ['OXY',]#'U','V',]#'ERSEMMisc','ERSEMO2','NEMO','ERSEMNuts','ERSEMphytoBm','ERSEMphytoChl','ERSEMzoo', 'ERSEMbac']
+	runTypes= ['MLD',]#'W','V',]#'OXY','U','V','W',]#'ERSEMMisc','ERSEMO2','NEMO','ERSEMNuts','ERSEMphytoBm','ERSEMphytoChl','ERSEMzoo', 'ERSEMbac']
 	#'SalTempWind','ERSEMFull','ERSEMphyto','Detritus', ]#'SalTempWind', ]# ]#]#]
 		
 	try: 	

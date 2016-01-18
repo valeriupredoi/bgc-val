@@ -54,19 +54,19 @@ def analysis():
 	#MEDUSAFolder	= "/data/euryale7/scratch/ledm/UKESM_postProcessed/MEDUSA/outNetCDF/"+jobID+'-' + year+'/'
 
 	# ORCA1:
-	CMIP5models = [ 'HadGEM2-ES','MEDUSA','ERSEM',]
-#		'GFDL-ESM2G', 'GFDL-ESM2M', 'CESM1-BGC', 'NorESM1-ME',
-#		'MPI-ESM-MR', 'IPSL-CM5A-MR', 'MRI-ESM1', # 'HadGEM2-ES',
-#		'MPI-ESM-LR', 'HadGEM2-CC',  'IPSL-CM5A-LR',
-#		'IPSL-CM5B-LR',  'CMCC-CESM',  'CNRM-CM5', 'BNU-ESM',	# These 4 didn't make it into the A Cabre paper.
-#		]
+	CMIP5models = [ 'HadGEM2-ES','ERSEM', 'MEDUSA',
+		'GFDL-ESM2G', 'GFDL-ESM2M', 'CESM1-BGC', 'NorESM1-ME',
+		'MPI-ESM-MR', 'IPSL-CM5A-MR', 'MRI-ESM1', # 'HadGEM2-ES',
+		'MPI-ESM-LR', 'HadGEM2-CC',  'IPSL-CM5A-LR',
+		'IPSL-CM5B-LR',  'CMCC-CESM',  'CNRM-CM5', 'BNU-ESM',	# These 4 didn't make it into the A Cabre paper.
+		]
 		
 					
 	#models= ['MEDUSA','NEMO']
 	jobID = 'CMIP5'
 	years = ['2005-annual'] #'2075','2076',
 	modelGrid = 'Flat1deg'
-	CMIP5Folder_pref= "/data/euryale7/scratch/ledm/CMIP5_postProcessed/O2/"
+	CMIP5Folder= "/data/euryale7/scratch/ledm/CMIP5_postProcessed/"
 	#NEMOFolder_pref= "/data/euryale7/scratch/ledm/UKESM/MEDUSA/xkrus_postProc/"
 	annual = True
 	
@@ -81,8 +81,10 @@ def analysis():
 	doFe		= 0#True		
 	doPCO2		= 0#True
 	doIntPP		= 0#True
-	doO2		= True	
-	
+	doO2		= 0#True
+		
+	doU		= 0#True
+	doV		= True	
 	doSal		= 0#True
 	doTemp		= 0#True/data/euryale7/scratch/ledm/CMIP5_postProcessed/O2/cmip5_HadGEM2-ES_2005.nc
 	doMLD		= 0#True
@@ -98,6 +100,7 @@ def analysis():
 	MAREDATFolder 	= "/data/perseus2/scratch/ledm/MAREDAT/MAREDAT/"
 	if annual:	WOAFolder 	= "/data/euryale7/scratch/ledm/WOA/annual/"
 	else:		WOAFolder 	= "/data/euryale7/scratch/ledm/WOA/"	
+	GODASFolder	= "/data/euryale7/scratch/ledm/GODAS_postProcessed/"
 	GEOTRACESFolder = "/data/euryale7/scratch/ledm/GEOTRACES/GEOTRACES_PostProccessed/"
 	TakahashiFolder = "/data/euryale7/scratch/ledm/Takahashi2009_pCO2/"
 	LesterFolder 	= "/data/euryale7/scratch/ledm/LestersReportData/"			
@@ -108,7 +111,7 @@ def analysis():
 	    for model in CMIP5models[:]:		
 		#####
 		# Location of model files.
-		modelFolder 	= CMIP5Folder_pref+year+'/'
+		#modelFolder 	= CMIP5Folder_pref+year+'/'
 		#NEMOFolder  	= NEMOFolder_pref+year+'/'			
 		
 		#####
@@ -124,11 +127,32 @@ def analysis():
 			else:		av['oxygen']['Data']['File'] 	=  WOAFolder+'oxygen-woa13.nc'
 			av['oxygen']['Data']['Vars'] 	= ['o_an',] 
 			av['oxygen']['CMIP5_'+model]['Vars'] 	= ['o2',]
-			av['oxygen']['CMIP5_'+model]['File']	= CMIP5Folder_pref+"cmip5_"+model+"_2005.nc"
+			av['oxygen']['CMIP5_'+model]['File']	= CMIP5Folder+"O2/"+year+"/cmip5_"+model+"_2005.nc"
 			av['oxygen']['CMIP5_'+model]['grid']	= modelGrid
 			av['oxygen']['depthLevels'] 		= depthLevels
 			gridFile = av['oxygen']['CMIP5_'+model]['File']
 		
+		if doU:
+			if annual:	av['U']['Data']['File'] 	=  GODASFolder+'ucur.2005.nc'
+			else:	assert False
+			av['U']['Data']['Vars'] 	= ['uo',] 
+			av['U']['CMIP5_'+model]['Vars'] = ['uo',]
+			av['U']['CMIP5_'+model]['File']	= CMIP5Folder+"U/uo_"+model+"_2005.nc"
+			av['U']['CMIP5_'+model]['grid']	= modelGrid
+			av['U']['depthLevels'] 		= depthLevels
+			gridFile = av['U']['CMIP5_'+model]['File']
+
+		if doV:
+			if annual:	av['V']['Data']['File'] 	=  GODASFolder+'vcur.2005.nc'
+			else:	assert False
+			av['V']['Data']['Vars'] 	= ['vo',] 
+			av['V']['CMIP5_'+model]['Vars'] = ['vo',]
+			av['V']['CMIP5_'+model]['File']	= CMIP5Folder+"V/vo_"+model+"_2005.nc"
+			av['V']['CMIP5_'+model]['grid']	= modelGrid
+			av['V']['depthLevels'] 		= depthLevels
+			gridFile = av['V']['CMIP5_'+model]['File']
+			
+						
 				
 		#####
 		# Set which spatial and temporal limitations to plot.

@@ -279,7 +279,17 @@ def getmt(loadYaml=False):
     	mt['CMIP5']['oxygen']['name']  	= 'Dissolved Oxygen'
 	mt['CMIP5']['oxygen']['units'] 	= 'mmol/m^3'
 	mt['CMIP5']['oxygen']['convert'] =  NoChange	
-			
+
+    	mt['CMIP5']['U']['vars']  	= ['uo',]
+    	mt['CMIP5']['U']['name']  	= 'Zonal Velocity'
+	mt['CMIP5']['U']['units'] 	= 'm/s'
+	mt['CMIP5']['U']['convert'] 	=  NoChange
+	
+    	mt['CMIP5']['V']['vars']  	= ['vo',]
+    	mt['CMIP5']['V']['name']  	= 'Meridional Velocity'
+	mt['CMIP5']['V']['units'] 	= 'm/s'
+	mt['CMIP5']['V']['convert'] 	=  NoChange
+					
 	CMIP5models = [ 'MEDUSA','ERSEM','BNU-ESM', 'IPSL-CM5A-LR', 'CESM1-BGC', 'IPSL-CM5A-MR', 
 			'CMCC-CESM', 'IPSL-CM5B-LR', 'CNRM-CM5', 'MPI-ESM-LR', 
 			'GFDL-ESM2G', 'MPI-ESM-MR', 'GFDL-ESM2M', 'MRI-ESM1', 
@@ -364,15 +374,25 @@ def getmt(loadYaml=False):
 	mt['IFREMER']['tdict']			= tdicts['ZeroToZero']
 	
 	
-	mt['DRIFTERS']['U']			= ['U',]
-	mt['DRIFTERS']['V']			= ['V',]
-	mt['DRIFTERS']['t']			= 'Time'
-	mt['DRIFTERS']['z'] 			= 'Depth'
-	mt['DRIFTERS']['lat'] 			= 'Lat'
-	mt['DRIFTERS']['lon'] 			= 'Lon'
-	mt['DRIFTERS']['cal'] 			= 'standard'
-	mt['DRIFTERS']['tdict']			= tdicts['OneToZero']	
+#	mt['DRIFTERS']['U']			= ['U',]
+#	mt['DRIFTERS']['V']			= ['V',]
+#	mt['DRIFTERS']['t']			= 'Time'
+#	mt['DRIFTERS']['z'] 			= 'Depth'
+#	mt['DRIFTERS']['lat'] 			= 'Lat'
+#	mt['DRIFTERS']['lon'] 			= 'Lon'
+#	mt['DRIFTERS']['cal'] 			= 'standard'
+#	mt['DRIFTERS']['tdict']			= tdicts['OneToZero']	
+
+	mt['GODAS']['U']			= ['uo',]
+	mt['GODAS']['V']			= ['vo',]
+	mt['GODAS']['t']			= 'time'
+	mt['GODAS']['z'] 			= 'lev'
+	mt['GODAS']['lat'] 			= 'lat'
+	mt['GODAS']['lon'] 			= 'lon'
+	mt['GODAS']['cal'] 			= 'standard'
+	mt['GODAS']['tdict']			= tdicts['OneToZero']
 	
+		
 	for dms in ['dms_and','dms_ara','dms_hal','dms_sim']:	
 		mt['LANA'][dms]['name'] 	=  'lanaetal'
 		mt['LANA'][dms]['vars'] 	=  ['lanaetal',]					
@@ -788,6 +808,7 @@ def fancyUnits(units,debug=False):
 	#if units in ['umol/l',]:			return r'$\mu$'+'mol/l'
 	if units in ['m','meters','meter',]:		return 'm'	
 	if units in ['1/m',]:				return r'$\mathrm{m}^{-1}$'
+	if units in ['m/s',]:				return r'$\mathrm{ms}^{-1}$'	
 	#if units in ['ug/l']:			#	return 'mg m'+r'$^{-3}$'
 	if units in ['W/m^2']:				return 'W m'+r'$^{-2}$'
 	if units in ['umol/kg',]:			return r'$\mu$'+'mol kg'+r'$^{-1}$'
