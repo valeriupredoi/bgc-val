@@ -57,30 +57,27 @@ def run(jobID,key,runType,foldIn):
 		finalKeys = ['CHL',]	
 		L = '_ptrc_T'
 
-	if runType == 'DIN':
-		keys = ['DIN',]
-		finalKeys = ['DIN',]	
+	if runType in ['DIN','FER','SIL', 'OXY']:
+		keys = [runType,]
+		finalKeys = [runType,]	
 		L = '_ptrc_T'
 
-	if runType == 'OXY':
-		keys = ['OXY',]
-		finalKeys = ['OXY',]	
-		L = '_ptrc_T'
+				
 
 	if runType == 'SAL':
 		keys = ['vosaline',]
 		finalKeys = ['vosaline',]	
-		L = 'T'
+		L = 'grid_T'
 
 	if runType == 'TEMP':
 		keys = ['votemper',]
 		finalKeys = ['votemper',]	
-		L = 'T'
+		L = 'grid_T'
 		
 	if runType == 'MLD':
 		keys = ['somxl010',]
 		finalKeys = ['somxl010',]	
-		L = 'T'		
+		L = 'grid_T'		
 
 	if runType == 'U':
 		finalKeys = ['vozocrtx',]
@@ -112,9 +109,15 @@ def run(jobID,key,runType,foldIn):
 	filesIn = sorted(glob(fns))
 		
 	print "filesIn:", fns, filesIn
-		
+
+	filenameOut 	= ukp.folder('/data/euryale7/scratch/ledm/UKESM/MEDUSA/'+jobID+'_postProc/'+key)+jobID+'_'+key+'_'+runType+'.nc'
+	filenameAnnual	= ukp.folder('/data/euryale7/scratch/ledm/UKESM/MEDUSA/'+jobID+'_postProc/'+key+'-annual')+jobID+'_'+key+'-annual'+'_'+runType+'.nc'
+	if exists(filenameOut) and exists(filenameAnnual): 
+		print "Already exist:",filenameOut,'\n\tand:',filenameAnnual
+		return
+				
 	for fn in filesIn:
-	
+
 		prunedfn = ukp.folder('/tmp/outNetCDF/tmp-Clims')+basename(fn)[:-3]+'_'+key+'_'+runType+'.nc'
 		print fn, '--->', prunedfn
 		
@@ -144,19 +147,19 @@ def run(jobID,key,runType,foldIn):
 		
 
 	
-	filenameOut = ukp.folder('/data/euryale7/scratch/ledm/UKESM/MEDUSA/'+jobID+'_postProc/'+key)+jobID+'_'+key+'_'+runType+'.nc'
+
 	
 	if  ukp.shouldIMakeFile(mergedFiles,filenameOut): 
 		m = mergeNC( mergedFiles, filenameOut, finalKeys, timeAverage=False,debug=True,calendar=cal)
 	
-	filenameOut = ukp.folder('/data/euryale7/scratch/ledm/UKESM/MEDUSA/'+jobID+'_postProc/'+key+'-annual')+jobID+'_'+key+'-annual'+'_'+runType+'.nc'
+
 	
-	if  ukp.shouldIMakeFile(mergedFiles,filenameOut): 
-		m = mergeNC( mergedFiles, filenameOut, finalKeys, timeAverage=True,debug=True,calendar=cal)
+	if  ukp.shouldIMakeFile(mergedFiles,filenameAnnual): 
+		m = mergeNC( mergedFiles, filenameAnnual, finalKeys, timeAverage=True,debug=True,calendar=cal)
 		
 
 def main():
-	runTypes= ['W','U','V','SAL','TEMP','MLD',]#'OXY','DIN','CHL',]
+	runTypes= ['SAL','TEMP','MLD',]	#'OXY','DIN','CHL','SIL','FER','W','U','V',]
 	#'ERSEMNuts','ERSEMphytoBm','ERSEMphytoChl','ERSEMzoo', 'ERSEMMisc','ERSEMbac']
 	#'SalTempWind','ERSEMFull','ERSEMphyto','Detritus', ]#'SalTempWind', ]# ]#]#]
 	

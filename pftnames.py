@@ -167,10 +167,15 @@ def getmt(loadYaml=False):
 	mt['NEMO']['cal']			= '365_day'
 
 
-
+	#mt['MEDUSA']['chl']['name'] 		=  'CHL'
+	#mt['MEDUSA']['chl']['vars'] 		=  ['CHN','CHD']		
+	#mt['MEDUSA']['chl']['convert'] 		=  sums
+	#mt['MEDUSA']['chl']['units'] 		=  'mg C/m^3'
+	#mt['MEDUSA']['chl'] 			=  ['CHL',]	
+	
 	mt['MEDUSA']['chl']['name'] 		=  'CHL'
-	mt['MEDUSA']['chl']['vars'] 		=  ['CHN','CHD']		
-	mt['MEDUSA']['chl']['convert'] 		=  sums
+	mt['MEDUSA']['chl']['vars'] 		=  ['CHL',]		
+	mt['MEDUSA']['chl']['convert'] 		=  NoChange
 	mt['MEDUSA']['chl']['units'] 		=  'mg C/m^3'
 	#mt['MEDUSA']['chl'] 			=  ['CHL',]	
 	

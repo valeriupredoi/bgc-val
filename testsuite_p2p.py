@@ -83,6 +83,8 @@ def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
 					  ('NorthAtlantic', 'February'),	# plots North Atlantic in February
 					  ]
 			plottingSlices can be made automatically with UKESMpthon.populateSlicesList()
+			plottingSlices can also be added to the av:
+				av[name]['plottingSlices'] = a list of slices
 	    workingDir: 
 	    	workingDir is a location for the working files that are produced during the analysis. 
 	    	if no working directory is provided, the default is: ~/WorkingFiles/model-jobID-yyear
@@ -117,9 +119,6 @@ def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
 		print "No autovivification nested dictionary given. - See testsuite_p2p documentation or a working example."
 		exit(0)
 	
-	if len( plottingSlices) ==0:
-		plottingSlices = populateSlicesList()
-		print "No plotting slices provided, using defaults",plottingSlices
 
 	# Location of processing files
 	if len( workingDir) == 0:
@@ -230,6 +229,13 @@ def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
 			# MakePlot runs a series of analysis, comparing every pair in DataVars and ModelVars
 			#	 under a range of different masks. For instance, only data from Antarctic Ocean, or only data from January.
 			# The makePlot produces a shelve file in workingDir containing all results of the analysis.
+			if len( plottingSlices) ==0:
+				if len(av[name]['plottingSlices'])==0:
+					plottingSlices = populateSlicesList()
+					print "No plotting slices provided, using defaults",plottingSlices
+				else:	plottingSlices = av[name]['plottingSlices']
+					
+					
 			imageDir	= folder(imageFolder +'P2Pplots/'+year+'/'+name+depthLevel)	
 			m = makePlots(	b.MatchedDataFile, 
 					b.MatchedModelFile, 

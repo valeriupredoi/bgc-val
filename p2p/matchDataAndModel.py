@@ -131,8 +131,8 @@ class matchDataAndModel:
 						
 		
 	self.matchedShelve 	= ukp.folder(self.workingDir)+self.model+'-'+self.jobID+'_'+self.year+'_'+'_'+self.dataType+'_'+self.depthLevel+'_matched.shelve'
-	self.matchesShelve 	= ukp.folder(['shelves','ModelMatches',])+model+jobID+year+self.dataType+self.depthLevel+self.grid+'.shelve'
-
+	self.matchesShelve 	= ukp.folder(self.workingDir)+self.model+'-'+self.jobID+'_'+self.year+'_'+'_'+self.dataType+'_'+self.depthLevel+'_matches.shelve'
+	
 	self.workingDirTmp = 	ukp.folder(self.workingDir+'tmp')
 	self.DataFilePruned=	self.workingDirTmp+'Data_' +self.dataType+'_'+self.depthLevel+'_'+self.model+'-'+self.jobID+'-'+self.year+'_pruned.nc'
 	self.ModelFilePruned=	self.workingDirTmp+'Model_'+self.dataType+'_'+self.depthLevel+'_'+self.model+'-'+self.jobID+'-'+self.year+'_pruned.nc'	
@@ -164,8 +164,6 @@ class matchDataAndModel:
 	self._applyMaskToData_()
 
 
-
-
   def _pruneModelAndData_(self,):
    	""" This routine reduces the full 3d netcdfs by pruning the unwanted fields.
   	""" 
@@ -184,7 +182,6 @@ class matchDataAndModel:
 	 
 
 
-
   def _convertDataTo1D_(self,):
    	""" This routine reduces the In Situ data into a 1D array of data with its lat,lon,depth and time components.
   	"""
@@ -199,7 +196,7 @@ class matchDataAndModel:
 		
 	#WOADatas = [a+self.depthLevel for a in ['salinity','temperature','temp','sal','nitrate','phosphate','silicate',]]	   	 
 	
-	if self.depthLevel in ['Surface','100m','200m','500m','1000m','2000m','Transect',]:	
+	if self.depthLevel in ['Surface','100m','200m','500m','1000m','2000m','Transect','PTransect',]:	
 	    if nc.variables[self.DataVars[0]].shape in [(12, 14, 180, 360), (12, 24, 180, 360)]: # WOA format
 		mmask = np.ones(nc.variables[self.DataVars[0]].shape)
 		#####
@@ -401,16 +398,21 @@ class matchDataAndModel:
 		try:
 			la,lo = lldict[(wla,wlo)]
 		except:
-			la,lo = self.getOrcaIndexCC(wla,wlo,debug=False)
-			lldict[(wla,wlo)] = la,lo
-			finds+=1
+			la,lo = self.getOrcaIndexCC(wla,wlo,i=i,debug=False)
 			if la == lo == -1:
 				print "STRICT ERROR: Could not find, ",wla,wlo
-				assert False
-				return
+				continue
+			lldict[(wla,wlo)] = la,lo
+			finds+=1
+
 			if self.debug:
 			    print "matchModelToData:\t",i,'New match:\tlon:',[wlo,self.loncc[la,lo]],'\tlat:',[wla,self.latcc[la,lo]],[finds,len(lldict)]
 
+			if abs(self.latcc[la,lo] - wla)>90.: 
+			    print "Come again? this should never happen:",self.latcc[la,lo],  wla
+			    print "matchModelToData:\t",i,'New match:\tlon:',[wlo,self.loncc[la,lo]],'\tlat:',[wla,self.latcc[la,lo]],[finds,len(lldict)]
+			    assert False
+			    
 		#####
 		#Match Depth
 		try:
@@ -458,12 +460,13 @@ class matchDataAndModel:
 		if abs(wz-self.depthcc[z]) >500.:
 			print 'depth DOESNT MATCH:',wz,self.depthcc(z)
 			fail+=1
-		if abs(wla-self.latcc[la,lo]) >2.:
-			print 'Latitude DOESNT MATCH:',wla, self.latcc[la,lo]
-			fail+=1		
-		if abs(wlo-self.loncc[la,lo]) >2.:
-			print 'Longitude DOESNT MATCH:',wlo,self.loncc[la,lo]
-			fail+=1						
+		# These tests are already done in getOrcaIndexCC. No need to be done twice.
+		#if abs(wla-self.latcc[la,lo]) >2.:
+		#	print 'Latitude DOESNT MATCH:',wla, self.latcc[la,lo]
+		#	fail+=1		
+		#if abs(wlo-self.loncc[la,lo]) >2.:
+		#	print 'Longitude DOESNT MATCH:',wlo,self.loncc[la,lo]
+		#	fail+=1						
 		if fail>0:assert False
 		
 		
@@ -484,7 +487,7 @@ class matchDataAndModel:
 			s = shOpen(self.matchesShelve)		
 			s['lldict'] = lldict 
 			s.close()				
-	
+	maxIndex = i
 	#assert False
 		
 	print "matchDataAndModel:\tSaving Shelve", self.matchedShelve	
@@ -509,9 +512,6 @@ class matchDataAndModel:
 	print "convertModelToOneD:\tconvertModelToOneD:\tMaking 1D Model file:", self.ModelFilePruned,'-->', self.Model1D
   	convertToOneDNC(self.ModelFilePruned, self.Model1D,newMask='',debug=self.debug,dictToKeep=self.matches)
 
-
-
-	
 
 
 
@@ -622,30 +622,35 @@ class matchDataAndModel:
  	print "matchModelToData:\tloaded mesh.", self.grid, 'lat:',self.latcc.shape, 'lon:',self.loncc.shape,'depth:',self.depthcc.shape
 	self._meshLoaded_ = 1
 	
-  def getOrcaIndexCC(self,lat,lon,debug=True,slowMethod=False,llrange=5.):
+  def getOrcaIndexCC(self,lat,lon,debug=True,slowMethod=False,i=''):#llrange=5.):
 	""" takes a lat and long coordinate, an returns the position of the closest coordinate in the NemoERSEM grid.
 	    uses the bathymetry file.
 	"""
 	km = 10.E20
 	la_ind, lo_ind = -1,-1
-	rangeCutoff=2.
+	latrangeCutoff=2.
+	lonrangeCutoff=5.
 	lat = ukp.makeLatSafe(lat)
 	lon = ukp.makeLonSafe(lon)	
 	
 	if not self._meshLoaded_:self.loadMesh()
+	#if abs(lat) <70.:
 	c = (self.latcc - lat)**2 + (self.loncc - lon)**2
+	#else:   c =  myhaversineArr(lon,lat,self.loncc,self.latcc)
+		
 
 	(la_ind,lo_ind) =  np.unravel_index(c.argmin(),c.shape)
 
 	#km2 = abs(haversine((lon, lat), (locc,lacc)))
 	if debug: print 'location ', [la_ind,lo_ind],'(',self.latcc[la_ind,lo_ind],self.loncc[la_ind,lo_ind],') is closest to:',[lat,lon]
-	if abs(self.latcc[la_ind,lo_ind] -lat ) > rangeCutoff and abs(self.loncc[la_ind,lo_ind] -lon ) > rangeCutoff:
+	"""if abs(self.latcc[la_ind,lo_ind] -lat ) > latrangeCutoff or abs(self.loncc[la_ind,lo_ind] -lon ) > lonrangeCutoff:
 		d = myhaversine(self.loncc[la_ind,lo_ind],self.latcc[la_ind,lo_ind],lon,lat)
-		print "getOrcaIndexCC:\tERROR:\tDISTANCE IS TOO FAR:",[self.latcc[la_ind,lo_ind],'-->',  lat,], [self.loncc[la_ind,lo_ind], '-->', lon],'distance:',d
-		if d>300.:
-			#return -1,-1
-			print "distance too great:",d
-			assert False
+		print "getOrcaIndexCC:\t",i,"\tERROR:\tDISTANCE IS VERY FAR:",[self.latcc[la_ind,lo_ind],'-->',  lat,], [self.loncc[la_ind,lo_ind], '-->', lon],'distance:',d
+		if d>350.:
+			print "getOrcaIndexCC:\t",i,"\tdistance too great:",d, 
+			#assert False
+			return -1,-1
+	"""	
 	return la_ind,lo_ind
 		
 
@@ -670,6 +675,28 @@ def myhaversine(lon1, lat1, lon2, lat2):
 	c = 2. * asin(sqrt(a)) 
 	km = 6367. * c
 	return km 
+
+def myhaversineArr(lon1, lat1, lonarr, latarr):
+	"""
+	    Calculate the great circle distance between a point and an array 
+	    on the earth (specified in decimal degrees)
+	"""
+	kms = np.zeros(lonarr.shape)+100000. #larger than earths circumference.
+	
+	for index, lat2 in np.ndenumerate(latarr):
+		if abs(lat2-lat1) > 5.: continue	#	 minimi
+		lon2 = lonarr[index]
+		if abs(makeLonSafe(lon2)-makeLonSafe(lon1)) > 5.:continue
+		# convert decimal degrees to radians 
+		lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
+		# haversine formula 
+		dlon = lon2 - lon1 
+		dlat = lat2 - lat1 
+		a = sin(dlat/2.)**2 + cos(lat1) * cos(lat2) * sin(dlon/2.)**2
+		c = 2. * asin(sqrt(a)) 
+		kms[index]= 6367. * c 
+		
+	return np.ma.array(kms)
 
 def quadraticDistance(lon1, lat1, lon2, lat2):
 	"""

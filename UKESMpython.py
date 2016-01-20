@@ -998,10 +998,11 @@ def makeLatSafe(lat):
 	#while True:
 	if -90.<=lat<=90.:return lat
 	#print 'You can\'t have a latitude > 90 or <-90',lat
-	print "makeLatSafe:\tERROR:\tYou can\'t have a latitude > 90 or <-90", lat
 	if lat is np.ma.masked: return lat
-	return np.ma.clip(lat,-90.,90.)
-	assert False		
+	print "makeLatSafe:\tERROR:\tYou can\'t have a latitude > 90 or <-90", lat
+	assert False
+	#return np.ma.clip(lat,-90.,90.)
+	#assert False		
 	#return False
 	#if lon<=-90:lat+=360.
 	#if lon> 90:lat-=360.		
@@ -1139,6 +1140,7 @@ def getSlicesDict():
 			  '5-95pc','0-99pc',]
 	Seasons		=['JFM','AMJ','JAS','OND'] 
 	Transects	= ['AtlanticTransect', 'PacificTransect','SouthernTransect','10N','10S']
+	Misc		= ['HighLatWinter',]
 	
 	OceanMonths  		= { o: [ (o,m) for m in months] for o in Oceans}
 	OceanSeasons 		= { o: [ (o,m) for m in Seasons] for o in Oceans}	
@@ -1160,6 +1162,7 @@ def getSlicesDict():
 	newSlices.extend(HemispheresMonths)
 	newSlices.extend(HemispheresSeasons)	
 	newSlices.extend(Transects)		
+	newSlices.extend(Misc)			
 	for om,keys in OceanMonths.items(): 		newSlices.extend(keys)
 	for om,keys in OceanSeasons.items(): 		newSlices.extend(keys)
 	for om,keys in HemispheresMonths.items(): 	newSlices.extend(keys)
@@ -1175,6 +1178,7 @@ def getSlicesDict():
 	slicesDict['Seasons'] 		= Seasons
 	slicesDict['depthRanges'] 	= depthRanges	
 	slicesDict['Transects'] 	= Transects		
+	slicesDict['Misc'] 		= Misc			
 	for om,keys in OceanMonths.items(): 		slicesDict[om+'Months' ] = keys
 	for om,keys in OceanSeasons.items(): 		slicesDict[om+'Seasons'] = keys
 	for om,keys in HemispheresMonths.items(): 	slicesDict[om+'Months' ] = keys
@@ -1200,7 +1204,8 @@ def populateSlicesList(#plotallcuts = False,
 		 plotOceanMonths   	=0,	 	 	 
 		 plotHemispheresMonths  =0,
 		 plotHemispheresSeasons =0,
-		 plotTransects		=0,):
+		 plotTransects		=0,
+ 		 plotMisc		=0,):
 				 
 
 	if plotDefaults:	newSlices = ['All', 'Standard',]# Defaults
@@ -1215,6 +1220,7 @@ def populateSlicesList(#plotallcuts = False,
 	if plotHemispheres: 	newSlices.extend(slicesDict['Hemispheres'])
 	if plotSeasons: 	newSlices.extend(slicesDict['Seasons'])
 	if plotTransects: 	newSlices.extend(slicesDict['Transects'])	
+	if plotMisc: 		newSlices.extend(slicesDict['Misc'])		
 		
 	if plotOceanMonths:	
 		for o in slicesDict['Oceans']:		newSlices.extend(slicesDict[o+'Months'])				
@@ -1481,6 +1487,19 @@ def makeMask(name,newSlice, xt,xz,xy,xx,xd):
 		mx += np.ma.masked_inside(xx,290., 365. ).mask		
 		my = np.ma.masked_outside(xy,-10., -50. ).mask
 		return np.ma.masked_where( mx+my,nmask).mask 
+		
+		
+	if newSlice == 'HighLatWinter': 
+		NHwinter = np.ma.masked_where( ~((xt == months['January'])+(xt == months['February']) +(xt == months['March'])    ) ,nmask).mask
+		SHwinter = np.ma.masked_where( ~((xt == months['July'])   +(xt == months['August'])   +(xt == months['September'])) ,nmask).mask
+		print "HighLatWinter masking:\tNHwinter:", NHwinter.sum(),'SH:', SHwinter.sum(), 'of',nmask.sum()
+		
+		mnhw = np.ma.masked_where( (xy <  45.) + NHwinter ,nmask).mask
+		mshw = np.ma.masked_where( (xy > -45.) + SHwinter ,nmask).mask 
+			
+		
+		
+				
 	print "Mask region not accepted:",newSlice
 	assert False		      	
 		      		
