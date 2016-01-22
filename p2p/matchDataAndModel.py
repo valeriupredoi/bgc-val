@@ -268,8 +268,8 @@ class matchDataAndModel:
 				print "matchDataAndModel:\tERROR:\t Depth level not recognises. (12,57,180, 360)" ,self.depthLevel
 				assert False
 			mmask[:,k,:,:] = 0		
-		if self.depthLevel == 'Transect':	mmask[:,:,:,155]  =0 
-		if self.depthLevel == 'PTransect':	mmask[:,:,:,20]  =0 
+		if self.depthLevel == 'Transect':	mmask[:,:,:,155] = 0 
+		if self.depthLevel == 'PTransect':	mmask[:,:,:,20]  = 0 
 						
 		mmask +=nc.variables[self.DataVars[0]][:].mask				
 		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking mask shape:',mmask.shape		

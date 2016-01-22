@@ -348,6 +348,8 @@ def analysis_jasmin(
 				outDict[metricname] = s[key]
 				print metricname,':\t',outDict[metricname]
 	
+	print "And the output dictionary is:",outDict, "\n(still probably too big)"
+	
 		
 if __name__=="__main__":
 	analysis_jasmin()	
