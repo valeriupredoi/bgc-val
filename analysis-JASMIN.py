@@ -27,7 +27,7 @@
 from sys import argv,exit
 from os.path import exists
 from calendar import month_name
-from shelve import open as shOpen
+
 
 #Specific local code:
 from UKESMpython import populateSlicesList, AutoVivification, folder, reducesShelves,listShelvesContents,mnStr
@@ -35,7 +35,7 @@ from testsuite_p2p import testsuite_p2p
 from p2p import makePatternStatsPlots
 from p2p.patternAnalyses import InterAnnualPatterns,BGCvsPhysics
 from pftnames import months
-
+from p2p.shelveToDictionary import shelveToDictionary
 #####
 # code plan:
 #	This is a the script that calls testsuite_p2p now.
@@ -76,12 +76,15 @@ def analysis_jasmin(
 
 	MEDUSAFolder_pref= modelfolders[0]
 	NEMOFolder_pref= modelfolders[1]
+	
 	# ORCA025:
 	#model= 'MEDUSA'
 	#jobID = 'xjwki'
 	#year = '1979'		
 	#modelGrid = 'ORCA025'	
 	#MEDUSAFolder	= "/data/euryale7/scratch/ledm/UKESM/MEDUSA-ORCA025/"+jobID+"_postProc/"+year+"/"
+	
+	noPlots = False
 	
 	#####
 	# Which analysis to run
@@ -285,70 +288,22 @@ def analysis_jasmin(
 	
 			shelvesAV.extend(
 		    		testsuite_p2p(
-					model = model,
-					jobID = jobID,
-					year  = year,
-					av = av,
-					plottingSlices= [],	# set this so that testsuite_p2p reads the slice list from the av.
-					workingDir = workingDir,
-					imageFolder= imageFolder
+					model 		= model,
+					jobID 		= jobID,
+					year  		= year,
+					av 		= av,
+					plottingSlices	= [],	# set this so that testsuite_p2p reads the slice list from the av.
+					workingDir 	= workingDir,
+					imageFolder	= imageFolder,
+					noPlots		= noPlots,	# turns off plot making to save space and compute time.
 			 	)
 			)
 	
-	#	tomorrow:
-	#		look at this part of the code and extract all the useful info, then turn it into a dictionairy.
 		
 	#BGCvsPhysics(shelvesAV, jobID, modelGrid )
-		
 	#if len(years)>1: InterAnnualPatterns(shelvesAV, jobID, years,modelGrid)	# plots interannual comparison and time series.
-	
 #	def outPutForJASMIN(shelvesAV):
-	"""
-		In this code, we take the shelvesAV dictionary from the analysis-JASMIN.py,
-		and returns a dictionary 
-	"""
-	#slicesDict = getSlicesDict()
-
-	allshelves = listShelvesContents(shelvesAV)
-	models 	= allshelves.models
-	names  	= allshelves.names
-	dls     = allshelves.depthLevels
-	years	= allshelves.years
-	slices 	= allshelves.sliceslist
-	
-	outDict={}
-	openned = 0
-	for model in models:
-	  for name in names:
-	    for dl in dls:			  
-	      for year in years:
-	      	for sl in slices:
-
-			shelves = reducesShelves(shelvesAV,  models =[model,],names = [name,],depthLevels = [dl,], years=[year,], sliceslist =[sl,])
-			if len(shelves)<1: 
-			#	print metricname, 'found nothing'
-				continue
-			if len(shelves)>1: 
-			#	print metricname, ': too many', shelves
-				continue
-											
-			#if len(shelves)!=1: continue
-			
-
-			print "--------------\noutPutForJASMIN",[model,name,dl,sl],':',shelves
-			
-			s = shOpen(shelves[0])
-			openned+=1
-			for key in [	'N', 'b0', 'stdErr', 'b1', 'pValue', 'rValue',
-					'Taylor.E0', 'Taylor.E', 'Taylor.gamma',  'Taylor.R', 'Taylor.p',
-					'robust.E0', 'robust.E', 'robust.gamma',  'robust.R', 'robust.p',
-					'MNAFE', 'MNFB', 'NMAEF', 'NMBF', ]:
-				metricname = '-'.join([model,name,dl,sl,key])	
-				if len(	years)>1: metricname = year+'-'+metricname	
-				outDict[metricname] = s[key]
-				print metricname,':\t',outDict[metricname]
-	
-	print "And the output dictionary is:",outDict, "\n(still probably too big)"
+	outdict = shelveToDictionary(shelvesAV)
 	
 		
 if __name__=="__main__":
