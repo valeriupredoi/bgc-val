@@ -23,10 +23,13 @@
 
 from numpy import median,empty,logical_or,arange
 from numpy.ma import getmaskarray,getdata,masked_where
-from numpyXtns import nearest
+#from numpyXtns import nearest
 from scipy.misc import comb
 from scipy.stats.mstats import mquantiles
 from itertools import izip
+
+nearest = lambda x: x<0 and int(x-.5) or int(x+.5)
+anearest = lambda x: where(x<0,(x-.5).astype(int),(x+.5).astype(int))
 
 binomcoeff=lambda n,k:nearest(comb(n,k))
 
