@@ -28,12 +28,12 @@ from glob import glob
 
 from bgcvaltools.StatsDiagram import rmsds
 import bgcvaltools.unbiasedSymmetricMetrics as usm
+from netCDF4 import Dataset
 
 import UKESMpython as ukp
 from itertools import product
 import os
 import numpy as np
-from ncdfView import ncdfView
 from pyproj import Proj
 from shapely.geometry import shape
 from os.path import basename,exists
@@ -95,9 +95,9 @@ class makePatternStatsPlots:
 	self.gridfile = ukp.getGridFile(self.grid)
 	volumeDict = {}
 	if self.grid == 'Flat1deg': 
-		nc = ncdfView(self.gridfile,Quiet=True)
-		lat = nc('lat')[:]
-		lon = nc('lon')[:]	 
+		nc = Dataset(self.gridfile,'r')
+		lat = nc.variables['lat'][:]
+		lon = nc.variables['lon'][:]	 
 		print 'calculating volume: '	
 		for i,la in enumerate(lat): #(u'lat', u'lon')
 			co = {"type": "Polygon", "coordinates": [
@@ -117,10 +117,10 @@ class makePatternStatsPlots:
 		self.volumeDict	= volumeDict			
 		return
 	if self.grid in ['ORCA1','ORCA025']:
-		nc = ncdfView(self.gridfile,Quiet=True)	
-		pvol = nc('pvol')[0,:,:]
-		lat = nc('nav_lat')[:]
-		lon = nc('nav_lon')[:]
+		nc = Dataset(self.gridfile,'r')	
+		pvol = nc.variables['pvol'][0,:,:]
+		lat = nc.variables['nav_lat'][:]
+		lon = nc.variables['nav_lon'][:]
 		m = np.ma.array(pvol).mask + np.ma.array(lat).mask +np.ma.array(lon).mask
 		pvol = np.ma.masked_where(m,pvol).compressed()
 		lat  = np.ma.masked_where(m,lat).compressed()
