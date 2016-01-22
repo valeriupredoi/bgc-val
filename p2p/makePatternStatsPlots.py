@@ -34,7 +34,9 @@ import UKESMpython as ukp
 from itertools import product
 import os
 import numpy as np
-from pyproj import Proj
+
+try:from pyproj import Proj
+except:print "Unable to import proj"
 from shapely.geometry import shape
 from os.path import basename,exists
 from sys import argv
@@ -106,13 +108,16 @@ class makePatternStatsPlots:
 			     (0., la-0.5),
 			     (0., la+0.5)]]}
 			clon, clat = zip(*co['coordinates'][0])
-
-			pa = Proj("+proj=aea +lat_1="+str(la-0.5)+" +lat_2="+str(la+0.5)+"+lat_0="+str(la)+" +lon_0=0.5")		
-			x, y = pa(clon, clat)
-			cop = {"type": "Polygon", "coordinates": [zip(x, y)]}
-
-			volume = shape(cop).area  * 1. # Assume thickness of 1m for top layer.
-			for lo in lon: volumeDict[(round(la,3),round(lo,3))] = volume
+			
+			try:
+				pa = Proj("+proj=aea +lat_1="+str(la-0.5)+" +lat_2="+str(la+0.5)+"+lat_0="+str(la)+" +lon_0=0.5")		
+				x, y = pa(clon, clat)
+				cop = {"type": "Polygon", "coordinates": [zip(x, y)]}
+				volume = shape(cop).area  * 1. # Assume thickness of 1m for top layer.
+				for lo in lon: volumeDict[(round(la,3),round(lo,3))] = volume
+			except:
+				print "Unable to use proj",
+				for lo in lon: volumeDict[(round(la,3),round(lo,3))] = 0.
 		nc.close()
 		self.volumeDict	= volumeDict			
 		return
