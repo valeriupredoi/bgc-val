@@ -185,8 +185,8 @@ class makePlots:
 	plotsToMake=0
 	for newSlice in self.newSlices:	
 	    for xk,yk in product(xkeys,ykeys):
-	  	print 'plotWithSlices:\tlisting plotpairs:\tX', xk,': self.mt[',self.xtype,'][',self.name,']'
-	  	print 'plotWithSlices:\tlisting plotpairs:\tY', yk,': self.mt[',self.ytype,'][',self.name,']'	 
+	  	print 'plotWithSlices:\t',newSlice,'\tlisting plotpairs:\tX', xk,': self.mt[',self.xtype,'][',self.name,']'
+	  	print 'plotWithSlices:\t',newSlice,'\tlisting plotpairs:\tY', yk,': self.mt[',self.ytype,'][',self.name,']'	 
 		plotpairs.append((xk,yk))
 		print xk,yk,self.xtype,self.ytype,self.name
 

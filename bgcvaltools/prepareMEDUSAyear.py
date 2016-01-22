@@ -159,7 +159,7 @@ def run(jobID,key,runType,foldIn):
 		
 
 def main():
-	runTypes= ['SAL','TEMP','MLD',]	#'OXY','DIN','CHL','SIL','FER','W','U','V',]
+	runTypes= ['SAL','TEMP','MLD','OXY','DIN','CHL','SIL','FER','W','U','V',]
 	#'ERSEMNuts','ERSEMphytoBm','ERSEMphytoChl','ERSEMzoo', 'ERSEMMisc','ERSEMbac']
 	#'SalTempWind','ERSEMFull','ERSEMphyto','Detritus', ]#'SalTempWind', ]# ]#]#]
 	

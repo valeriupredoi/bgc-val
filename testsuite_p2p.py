@@ -231,16 +231,19 @@ def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
 			# The makePlot produces a shelve file in workingDir containing all results of the analysis.
 			if len( plottingSlices) ==0:
 				if len(av[name]['plottingSlices'])==0:
-					plottingSlices = populateSlicesList()
-					print "No plotting slices provided, using defaults",plottingSlices
-				else:	plottingSlices = av[name]['plottingSlices']
+					nplottingSlices = populateSlicesList()
+					print "No plotting slices provided, using defaults",nplottingSlices
+				else:	
 					
+					nplottingSlices = av[name]['plottingSlices']
+					print "Plotting slices provided, using ",nplottingSlices					
+			else:	nplottingSlices = plottingSlices
 					
 			imageDir	= folder(imageFolder +'P2Pplots/'+year+'/'+name+depthLevel)	
 			m = makePlots(	b.MatchedDataFile, 
 					b.MatchedModelFile, 
 					name, 
-					newSlices 	= plottingSlices,
+					newSlices 	= nplottingSlices,
 					jobID		= jobID,
 					model 		= model,						
 					depthLevel 	= depthLevel,

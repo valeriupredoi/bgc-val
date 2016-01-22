@@ -763,6 +763,8 @@ def getLongName(text,debug=False):
   	  	
   	if text in ['Months','months']:return 'Months'	 	  	  	  	
   	
+  	if text == 'HighLatWinter':	return 'High Latitude Winter'
+  	
   	if text in month_name: return text
   	for m in month_name:
   		t =  text.find(m)

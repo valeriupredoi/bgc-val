@@ -1496,7 +1496,7 @@ def makeMask(name,newSlice, xt,xz,xy,xx,xd):
 		
 		mnhw = np.ma.masked_where( (xy <  45.) + NHwinter ,nmask).mask
 		mshw = np.ma.masked_where( (xy > -45.) + SHwinter ,nmask).mask 
-			
+		return   np.ma.masked_where( mnhw*mshw,nmask).mask 
 		
 		
 				
