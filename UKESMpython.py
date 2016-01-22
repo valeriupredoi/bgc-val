@@ -38,7 +38,8 @@ from scipy.stats import linregress,mode as scimode
 from calendar import month_name
 from shelve import open as shOpen
 import socket
-from RobustStatistics import MAD
+
+from  bgcvaltools.RobustStatistics import MAD
 try:import yaml 
 except: pass
 
