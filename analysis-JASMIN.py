@@ -27,7 +27,7 @@
 from sys import argv,exit
 from os.path import exists
 from calendar import month_name
-
+from socket import gethostname
 
 #Specific local code:
 from UKESMpython import populateSlicesList, AutoVivification, folder, reducesShelves,listShelvesContents,mnStr
@@ -53,7 +53,6 @@ def analysis_jasmin(
 		jobID 	= 'xkrus',
 		years 	= ['2077'], #'2075','2076',
 		modelGrid = 'ORCA1',
-		modelfolders = ["/data/euryale7/scratch/ledm/UKESM/MEDUSA/xkrus_postProc/","/data/euryale7/scratch/ledm/UKESM/MEDUSA/xkrus_postProc/"],
 		annual 	= False,
 		analysisSuite='Default'
 		):
@@ -74,8 +73,7 @@ def analysis_jasmin(
 	#NEMOFolder_pref= "/data/euryale7/scratch/ledm/UKESM/MEDUSA/xkrus_postProc/"
 	#annual = True
 
-	MEDUSAFolder_pref= modelfolders[0]
-	NEMOFolder_pref= modelfolders[1]
+
 	
 	# ORCA025:
 	#model= 'MEDUSA'
@@ -125,21 +123,49 @@ def analysis_jasmin(
 
 	#####
 	# Location of data files.
-	MAREDATFolder 	= "/data/perseus2/scratch/ledm/MAREDAT/MAREDAT/"
-	if annual:	WOAFolder 	= "/data/euryale7/scratch/ledm/WOA/annual/"
-	else:		WOAFolder 	= "/data/euryale7/scratch/ledm/WOA/"
-	GEOTRACESFolder = "/data/euryale7/scratch/ledm/GEOTRACES/GEOTRACES_PostProccessed/"
-	TakahashiFolder = "/data/euryale7/scratch/ledm/Takahashi2009_pCO2/"
-	LesterFolder 	= "/data/euryale7/scratch/ledm/LestersReportData/"
+	#
+	if gethostname().find('pml')>-1:
+		MEDUSAFolder_pref	= "/data/euryale7/scratch/ledm/UKESM/MEDUSA/xkrus_postProc/"
+		NEMOFolder_pref		= "/data/euryale7/scratch/ledm/UKESM/MEDUSA/xkrus_postProc/"
 	
+		if annual:	WOAFolder 	= "/data/euryale7/scratch/ledm/WOA/annual/"
+		else:		WOAFolder 	= "/data/euryale7/scratch/ledm/WOA/"
+		MAREDATFolder 	= "/data/euryale7/scratch/ledm/MAREDAT/MAREDAT/"
+		GEOTRACESFolder = "/data/euryale7/scratch/ledm/GEOTRACES/GEOTRACES_PostProccessed/"
+		TakahashiFolder = "/data/euryale7/scratch/ledm/Takahashi2009_pCO2/"
+		MLDFolder	= "/data/euryale7/scratch/ledm/IFREMER-MLD/"
+		workDir		= "/data/euryale7/scratch/ledm/ukesm_postProcessed/"
+		imgDir		= folder('images')
+		
+	if gethostname().find('ceda.ac.uk')>-1:
+		esmvalFolder = "/group_workspaces/jasmin/esmeval/example_data/bgc/"
+		
+		#####
+		# Location of data files.
+		MAREDATFolder 	= folder(esmvalFolder+"/MAREDAT/")
+		if annual:	WOAFolder 	= folder(esmvalFolder+"WOA/annual")
+		else:		WOAFolder 	= folder(esmvalFolder+"WOA/")
+		WOAFolder 	= folder(esmvalFolder+"WOA/")
+		GEOTRACESFolder = folder(esmvalFolder+"GEOTRACES/GEOTRACES_PostProccessed/")
+		TakahashiFolder = folder(esmvalFolder+"Takahashi2009_pCO2/")
+		MLDFolder  	= folder(esmvalFolder+"IFREMER-MLD/")
+		
+		#####
+		# Location of model files.	
+		MEDUSAFolder_pref	= folder(esmvalFolder+"MEDUSA/")
+		NEMOFolder_pref		= folder(esmvalFolder+"NEMO/")
+	
+		# Directory for output files:
+		workDir 	= folder(esmvalFolder+"ukesm_postProcessed/")
+		imgDir		= folder('images')		
+						
 	#####
 	# Set which spatial and temporal limitations to plot.
 	transects 	= ['AtlanticTransect', 'PacificTransect',]
 	justAll		= ['All',]	# All is not a slice, it has no cut on location, time, or depth.
 	AllStandard	= ['All','Standard']	# All is not a slice, it has no cut on location, time, or depth.	
 	HighLatWinter	= ['All','HighLatWinter',]
-							
-					
+						
 	shelvesAV = []
 	for year in years:		
 		#####
@@ -272,8 +298,8 @@ def analysis_jasmin(
 						   
 		if doMLD:	
 			#if annual:	
-			if annual:	av['mld']['Data']['File'] 		= "/data/euryale7/scratch/ledm/IFREMER-MLD/mld_DT02_c1m_reg2.0-annual.nc"
-			else:		av['mld']['Data']['File'] 		= "/data/euryale7/scratch/ledm/IFREMER-MLD/mld_DT02_c1m_reg2.0.nc"
+			if annual:	av['mld']['Data']['File'] 		= MLDFolder+"mld_DT02_c1m_reg2.0-annual.nc"
+			else:		av['mld']['Data']['File'] 		= MLDFolder+"mld_DT02_c1m_reg2.0.nc"
 			av['mld']['Data']['Vars'] 		= ['mld','mask',]
 			av['mld']['NEMO']['File'] 		= NEMOFolder+jobID+"_"+year+'_MLD.nc'			
 			av['mld']['NEMO']['Vars'] 		= ['somxl010',]	
@@ -282,8 +308,8 @@ def analysis_jasmin(
 			av['mld']['plottingSlices'] 		= justAll
 		
 		for model in models:
-			workingDir = folder("/data/euryale7/scratch/ledm/ukesm_postProcessed/"+model+'-'+jobID+'-'+year)
-			imageFolder 	= folder('images/Jasmin-'+model+'-'+jobID)
+			workingDir 	= folder(workDir+model+'-'+jobID+'-'+year)
+			imageFolder 	= folder(imgDir+'/Jasmin-'+model+'-'+jobID)
 
 	
 			shelvesAV.extend(
