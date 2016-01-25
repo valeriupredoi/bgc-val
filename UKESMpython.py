@@ -49,7 +49,9 @@ except: pass
 """
 
 try:	defcmap = pyplot.cm.viridis
-except:	defcmap = pyplot.cm.jet
+except:	
+	from bgcvaltools.viridis import viridis
+	defcmap = viridis
 
 def folder(name):
 	""" This snippet takes a string, makes the folder and the string.

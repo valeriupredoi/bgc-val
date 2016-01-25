@@ -99,9 +99,19 @@ def analysis_jasmin(
 		doSal		= True
 		doTemp		= True
 		doMLD		= True
+	elif analysisSuite.lower() in ['debug',]:
+		doCHL 		= True
+		doMAREDAT 	= 0#True
+		doN		= 0#True
+		doSi		= 0#True	
+		doFe		= 0#True		
+		doPCO2		= 0#True
+		doIntPP		= 0#True
+		doO2		= 0#True	
+		doSal		= 0#True
+		doTemp		= 0#True
+		doMLD		= 0#True	
 	else:		
-		#####
-		# Which analysis to run
 		doCHL 		= 0#True
 		doMAREDAT 	= 0#True
 		doN		= 0#True
