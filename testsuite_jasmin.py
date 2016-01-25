@@ -82,8 +82,8 @@ def testsuite_jasmin(	models=['MEDUSA','NEMO'],
 	#####
 	# Location of model files.	
 	MEDUSAFolder	= folder(esmvalFolder+"MEDUSA/")
-	#NEMOFolder	= folder(esmvalFolder+"NEMO/"+ jobIDs['NEMO'] +'/'+years['NEMO'] +'/'+jobIDs['NEMO'] +'_'+years['NEMO'])
 	NEMOFolder	= folder(esmvalFolder+"NEMO/")
+	#NEMOFolder	= folder(esmvalFolder+"NEMO/"+ jobIDs['NEMO'] +'/'+years['NEMO'] +'/'+jobIDs['NEMO'] +'_'+years['NEMO'])
 	
 	# Directory for output files:
 	postprocDir 	= folder(esmvalFolder+"ukesm_postProcessed/")

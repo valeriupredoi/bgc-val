@@ -48,7 +48,8 @@ except: pass
 """	This is a catch all toolkit for the python methods and shorthands used in this code.
 """
 
-
+try:	defcmap = pyplot.cm.viridis
+except:	defcmap = pyplot.cm.jet
 
 def folder(name):
 	""" This snippet takes a string, makes the folder and the string.
@@ -393,7 +394,7 @@ def robinPlotPair(lons, lats, data1,data2,filename,titles=['',''],lon0=0.,marble
 	else:
 		xi1,yi1,di1=mapIrregularGrid(m1,ax1,lons,lats,data1,lon0,xres=360,yres=180)
 	
-		if doLog: im1 = m1.pcolormesh(xi1,yi1,di1,cmap=pyplot.cm.viridis,norm = LogNorm() )
+		if doLog: im1 = m1.pcolormesh(xi1,yi1,di1,cmap=defcmap,norm = LogNorm() )
 		else:	  im1 = m1.pcolormesh(xi1,yi1,di1,cmap=pyplot.cm.jet)
 
 	
@@ -424,8 +425,8 @@ def robinPlotPair(lons, lats, data1,data2,filename,titles=['',''],lon0=0.,marble
 	else:
 		xi2,yi2,di2=mapIrregularGrid(m2,ax2,lons,lats,data2,lon0,xres=360,yres=180)
 	
-		if doLog: im2 = m2.pcolormesh(xi2,yi2,di2,cmap=pyplot.cm.viridis,norm = LogNorm() )
-		else:	  im2 = m2.pcolormesh(xi2,yi2,di2,cmap=pyplot.cm.viridis) #shading='flat',
+		if doLog: im2 = m2.pcolormesh(xi2,yi2,di2,cmap=defcmap,norm = LogNorm() )
+		else:	  im2 = m2.pcolormesh(xi2,yi2,di2,cmap=defcmap) #shading='flat',
 	
 	if drawCbar:
 	    c2 = fig.colorbar(im2,pad=0.05,shrink=0.75)	
@@ -484,7 +485,7 @@ def robinPlotQuad(lons, lats, data1,data2,filename,titles=['',''],title='',lon0=
 		if spl in [224,]:data  = np.ma.clip(data1/data2, rbmi,rbma)
 
 
-		if spl in [221,222,]:cmap= pyplot.cm.viridis
+		if spl in [221,222,]:cmap= defcmap
 		if spl in [223,224,]:cmap= pyplot.cm.RdBu		
 		
 		if doLogs[i]:
@@ -542,7 +543,7 @@ def robinPlotQuad(lons, lats, data1,data2,filename,titles=['',''],title='',lon0=
 			#else:		ticks = np.linspace( rbmi,rbma,9)
 			#print i, spl, ticks, [rbmi,rbma]
 			
-			#pyplot.colorbar(ims[i],cmap=pyplot.cm.viridis,values=[rbmi,rbma])#boundaries=[rbmi,rbma])
+			#pyplot.colorbar(ims[i],cmap=defcmap,values=[rbmi,rbma])#boundaries=[rbmi,rbma])
 		 	#cbs.append(fig.colorbar(ims[i],pad=0.05,shrink=0.5))#,ticks=ticks))
 		 	
 		 	cbs[i].set_clim(rbmi,rbma)
@@ -602,7 +603,7 @@ def HovPlotQuad(lats, depths, data1,data2,filename,titles=['',''],title='',lon0=
 		if spl in [224,]:data  = np.ma.clip(data1/data2, rbmi,rbma)
 
 
-		if spl in [221,222,]:cmap= pyplot.cm.viridis
+		if spl in [221,222,]:cmap= defcmap
 		if spl in [223,224,]:cmap= pyplot.cm.RdBu		
 		
 		if doLogs[i]:

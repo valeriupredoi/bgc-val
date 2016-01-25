@@ -141,19 +141,19 @@ def analysis_jasmin(
 		esmvalFolder = "/group_workspaces/jasmin/esmeval/example_data/bgc/"
 		
 		#####
+		# Location of model files.	
+		MEDUSAFolder_pref	= folder(esmvalFolder+"MEDUSA/")
+		NEMOFolder_pref		= folder(esmvalFolder+"NEMO/")
+		
+		#####
 		# Location of data files.
-		MAREDATFolder 	= folder(esmvalFolder+"/MAREDAT/")
 		if annual:	WOAFolder 	= folder(esmvalFolder+"WOA/annual")
 		else:		WOAFolder 	= folder(esmvalFolder+"WOA/")
+		MAREDATFolder 	= folder(esmvalFolder+"/MAREDAT/")
 		WOAFolder 	= folder(esmvalFolder+"WOA/")
 		GEOTRACESFolder = folder(esmvalFolder+"GEOTRACES/GEOTRACES_PostProccessed/")
 		TakahashiFolder = folder(esmvalFolder+"Takahashi2009_pCO2/")
 		MLDFolder  	= folder(esmvalFolder+"IFREMER-MLD/")
-		
-		#####
-		# Location of model files.	
-		MEDUSAFolder_pref	= folder(esmvalFolder+"MEDUSA/")
-		NEMOFolder_pref		= folder(esmvalFolder+"NEMO/")
 	
 		# Directory for output files:
 		workDir 	= folder(esmvalFolder+"ukesm_postProcessed/")
@@ -162,7 +162,7 @@ def analysis_jasmin(
 	#####
 	# Set which spatial and temporal limitations to plot.
 	transects 	= ['AtlanticTransect', 'PacificTransect',]
-	justAll		= ['All',]	# All is not a slice, it has no cut on location, time, or depth.
+	justAll		= ['All',]		# All is not a slice, it has no cut on location, time, or depth.
 	AllStandard	= ['All','Standard']	# All is not a slice, it has no cut on location, time, or depth.	
 	HighLatWinter	= ['All','HighLatWinter',]
 						
