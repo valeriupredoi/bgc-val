@@ -153,7 +153,7 @@ def analysis_jasmin(
 		#####
 		# Location of model files.	
 		MEDUSAFolder_pref	= folder(esmvalFolder+"MEDUSA/")
-		NEMOFolder_pref		= folder(esmvalFolder+"NEMO/")
+		NEMOFolder_pref		= folder(esmvalFolder+"MEDUSA/")
 		
 		#####
 		# Location of data files.
