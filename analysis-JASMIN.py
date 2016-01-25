@@ -49,7 +49,7 @@ from p2p.shelveToDictionary import shelveToDictionary
 
 
 def analysis_jasmin(
-		models	= ['MEDUSA','NEMO'],
+		models	= ['NEMO'],#'MEDUSA',],
 		jobID 	= 'xkrus',
 		years 	= ['2077'], #'2075','2076',
 		modelGrid = 'ORCA1',
