@@ -49,7 +49,7 @@ from p2p.shelveToDictionary import shelveToDictionary
 
 
 def analysis_jasmin(
-		models	= ['NEMO'],#'MEDUSA',],
+		models	= ['NEMO','MEDUSA',],
 		jobID 	= 'xkrus',
 		years 	= ['2077'], #'2075','2076',
 		modelGrid = 'ORCA1',
@@ -86,7 +86,7 @@ def analysis_jasmin(
 	
 	#####
 	# Which analysis to run
-	if analysisSuite in ['Default',]:
+	if analysisSuite.lower() in ['default',]:
 		doCHL 		= True
 		doMAREDAT 	= 0#True
 		doN		= True
@@ -120,7 +120,6 @@ def analysis_jasmin(
 		doPCO2		= 0#True
 		doIntPP		= 0#True
 		doO2		= True	
-	
 		doSal		= 0#True
 		doTemp		= 0#True
 		doMLD		= 0#True
