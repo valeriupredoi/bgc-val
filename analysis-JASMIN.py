@@ -54,7 +54,7 @@ def analysis_jasmin(
 		years 	= ['2077'], #'2075','2076',
 		modelGrid = 'ORCA1',
 		annual 	= False,
-		analysisSuite='Default'
+		analysisSuite='tmp',#'Default'
 		):
 	
 	# DMS model:
@@ -112,14 +112,14 @@ def analysis_jasmin(
 		doTemp		= 0#True
 		doMLD		= 0#True	
 	else:		
-		doCHL 		= 0#True
+		doCHL 		= True
 		doMAREDAT 	= 0#True
 		doN		= 0#True
 		doSi		= 0#True	
 		doFe		= 0#True		
 		doPCO2		= 0#True
 		doIntPP		= 0#True
-		doO2		= True	
+		doO2		= 0#	
 		doSal		= 0#True
 		doTemp		= 0#True
 		doMLD		= 0#True
@@ -130,10 +130,12 @@ def analysis_jasmin(
 	#if annual:	depthLevels 	= ['',]
 	#else:		depthLevels 	= ['Transect','Surface','100m','200m','500m',]
 
+
 	#####
 	# Location of data files.
-	#
-	if gethostname().find('pml')>-1:
+	if gethostname().find('pml')>-1:	
+		print "analysis-JASMIN.py:\tBeing run at PML on ",gethostname()
+		
 		MEDUSAFolder_pref	= "/data/euryale7/scratch/ledm/UKESM/MEDUSA/xkrus_postProc/"
 		NEMOFolder_pref		= "/data/euryale7/scratch/ledm/UKESM/MEDUSA/xkrus_postProc/"
 	
@@ -147,6 +149,8 @@ def analysis_jasmin(
 		imgDir		= folder('images')
 		
 	if gethostname().find('ceda.ac.uk')>-1:
+		print "analysis-JASMIN.py:\tBeing run at CEDA on ",gethostname()
+			
 		esmvalFolder = "/group_workspaces/jasmin/esmeval/example_data/bgc/"
 		
 		#####
