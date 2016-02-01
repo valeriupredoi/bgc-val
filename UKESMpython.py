@@ -1507,3 +1507,25 @@ def makeMask(name,newSlice, xt,xz,xy,xx,xd):
 	print "Mask region not accepted:",newSlice
 	assert False		      	
 		      		
+		      		
+####
+# Some functions for maniulating data:
+def NoChange(nc,keys):	return nc.variables[keys[0]][:]
+def N2Biomass(nc,keys):	return nc.variables[keys[0]][:]* 79.573
+def mul1000(nc,keys):	return nc.variables[keys[0]][:]* 1000.
+def div1000(nc,keys):	return nc.variables[keys[0]][:]/ 1000.	
+def applymask(nc,keys):	return np.ma.masked_where(nc.variables[keys[1]][:]==0.,nc.variables[keys[0]][:])
+def sums(nc,keys):	
+	a = nc.variables[keys[0]][:]
+	for k in keys[1:]:a += nc.variables[k][:]
+	return a 
+def oxconvert(nc,keys): return nc.variables[keys[0]][:] *44.661
+# 1 ml/l = 103/22.391 = 44.661 umol/l
+# http://ocean.ices.dk/Tools/UnitConversion.aspx
+	
+tdicts = {	'ZeroToZero': {i  :i     for i in xrange(12)},		
+		'OneToOne':   {i+1:i+1   for i in xrange(12)},
+		'OneToZero':  {i+1:i     for i in xrange(12)},
+		'ZeroToOne':  {i  :i+1   for i in xrange(12)},			
+	}		      		
+		      		

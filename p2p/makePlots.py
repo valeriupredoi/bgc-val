@@ -43,7 +43,7 @@ from bgcvaltools.StatsDiagram import StatsDiagram
 from bgcvaltools.robust import StatsDiagram as robustStatsDiagram
 import bgcvaltools.unbiasedSymmetricMetrics as usm
 import UKESMpython as ukp 
-from pftnames import getLongName, AutoVivification, getmt,fancyUnits,CMIP5models
+from pftnames import getLongName, AutoVivification, fancyUnits,CMIP5models # getmt
 
 #from pftnames import MaredatTypes,IFREMERTypes,WOATypes,GEOTRACESTypes
 
@@ -69,14 +69,19 @@ class makePlots:
   def __init__(self,matchedDataFile,
   		matchedModelFile, 
   		name, 
-  		model = 'ERSEM', 
-  		jobID='xhonc',
-  		year='clim',
+  		datasource = '',
+  		model = '', 
+  		jobID='',
+  		year='',
   		depthLevel='', 
-  		newSlices =['All','Standard'], 
-  		compareCoords=True,
-  		shelveDir='',
+		modelcoords = '',
+		modeldetails = '',
+		datacoords = '',
+		datadetails = '', 
+		shelveDir='',
   		imageDir='',
+  		newSlices =['All','Standard'], 
+  		compareCoords=True,  		
   		noPlots=False): #xfilename,yfilename,saveShelve=True,
 
   
@@ -85,31 +90,43 @@ class makePlots:
     	self.name = name
     	self.newSlices = newSlices
     	self.depthLevel = depthLevel
+  	
   	self.xtype = model  	
+  	self.ytype = datasource	
+  	  	
   	self.model = model  	
   	self.jobID = jobID
   	self.year = year
   	self.shelveDir = shelveDir
   	self.compareCoords = compareCoords
 	self.months = {month_name[i+1]:i for i in xrange(0,12) }
-	self.noPlots = noPlots  	
-	self.mt = getmt()
-	Models = [m.upper() for m in ['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankTOM6','PlankTOM10','NEMO','IMARNET','CMIP5',]] # skip these to find in situ data types.
-	Models.extend(['IMARNET_' +m.upper() for m in ['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankTOM6','PlankTOM10','NEMO',]])	
-	Models.extend(['CMIP5_' +m.upper() for m in CMIP5models])
-	ytypes = []
-  	for dk in self.mt.keys():
-  		if dk.upper() in Models:
-  			#print "
-  			continue
-  		if self.name in self.mt[dk].keys():ytypes.append(dk)
-  	if len(ytypes)==1:
-  		self.ytype = ytypes[0]
-  	else:
-  	    if len(ytypes)>1:	print "ERROR:\t The same name,(",self.name,") appears in multiple datasets:",ytypes
-   	    if len(ytypes)<1:	print "ERROR:\t The name,(",self.name,") not appears in any datasets" 	
+	self.noPlots = noPlots  
+	
+	# details about coordinates and what to load.
+  	self.modelcoords	= modelcoords
+  	self.modeldetails 	= modeldetails
+  	self.datacoords 	= datacoords
+  	self.datadetails 	= datadetails
+  			
+	#self.mt = getmt()
+	#Models = [m.upper() for m in ['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankTOM6','PlankTOM10','NEMO','IMARNET','CMIP5',]] # skip these to find in situ data types.
+	#Models.extend(['IMARNET_' +m.upper() for m in ['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankTOM6','PlankTOM10','NEMO',]])	
+	#Models.extend(['CMIP5_' +m.upper() for m in CMIP5models])
+	#ytypes = []
+  	#for dk in self.mt.keys():
+  	#	if dk.upper() in Models:
+  	#		#print "
+  	#		continue
+  	#	if self.name in self.mt[dk].keys():ytypes.append(dk)
+  	#if len(ytypes)==1:
+  	#	self.ytype = ytypes[0]
+  	#else:
+  	#    if len(ytypes)>1:	print "ERROR:\t The same name,(",self.name,") appears in multiple datasets:",ytypes
+   	#    if len(ytypes)<1:	print "ERROR:\t The name,(",self.name,") not appears in any datasets" 	
 #  	    print "THis job will probably fa
-  		
+	
+
+  	
 	#if self.name in MaredatTypes:  	self.ytype = 'Maredat'
 	#if self.name in WOATypes:  	self.ytype = 'WOA'
 	#if self.name in IFREMERTypes:  	self.ytype = 'IFREMER'	
@@ -160,18 +177,21 @@ class makePlots:
 	plotpairs = [] 
 
 	
-	nx = self.mt[self.xtype][self.name]
-	if type(nx) == type(['a',]):	xkeys = self.mt[self.xtype][self.name]
-	else:				xkeys.append(self.mt[self.xtype][self.name]['name'])
-	ny = self.mt[self.ytype][self.name]
-	if type(ny) == type(['a',]):	ykeys = self.mt[self.ytype][self.name]
-	else:				ykeys.append(self.mt[self.ytype][self.name]['name'])	
+	#nx = self.mt[self.xtype][self.name]
+	
+	#if type(nx) == type(['a',]):	xkeys = self.mt[self.xtype][self.name]
+	#else:				xkeys.append(self.mt[self.xtype][self.name]['name'])
+	#ny = self.mt[self.ytype][self.name]
+	#if type(ny) == type(['a',]):	ykeys = self.mt[self.ytype][self.name]
+	#else:				ykeys.append(self.mt[self.ytype][self.name]['name'])	
+	xkeys = [self.modeldetails['name'],]
+	ykeys = [self.datadetails['name'],]	
 
 	print "plotWithSlices:\txkeys:", xkeys,'\tykeys:', ykeys
 	if [{}] in [xkeys, ykeys]:
 		print "plotWithSlices:\tERROR\t This data type  is not defined in pftnames.py getmt()"
-		print "plotWithSlices:\tx:\tmt['"+self.xtype+"'\t]['"+self.name+"'] = ",  xkeys
-		print "plotWithSlices:\ty:\tmt['"+self.ytype+"'\t]['"+self.name+"'] = ",  ykeys	
+		print "plotWithSlices:\tx:\t['"+self.xtype+"'\t]['"+self.name+"'] = ",  xkeys
+		print "plotWithSlices:\ty:\t['"+self.ytype+"'\t]['"+self.name+"'] = ",  ykeys	
 		assert False
 	
 	#####
@@ -185,8 +205,8 @@ class makePlots:
 	plotsToMake=0
 	for newSlice in self.newSlices:	
 	    for xk,yk in product(xkeys,ykeys):
-	  	print 'plotWithSlices:\t',newSlice,'\tlisting plotpairs:\tX', xk,': self.mt[',self.xtype,'][',self.name,']'
-	  	print 'plotWithSlices:\t',newSlice,'\tlisting plotpairs:\tY', yk,': self.mt[',self.ytype,'][',self.name,']'	 
+	  	print 'plotWithSlices:\t',newSlice,'\tlisting plotpairs:\tX', xk,': [',self.xtype,'][',self.name,']'
+	  	print 'plotWithSlices:\t',newSlice,'\tlisting plotpairs:\tY', yk,': [',self.ytype,'][',self.name,']'	 
 		plotpairs.append((xk,yk))
 		print xk,yk,self.xtype,self.ytype,self.name
 
@@ -235,16 +255,16 @@ class makePlots:
 	#####
 	# Load Coordinates
 	#time and depth
-	self.xt = np.ma.array(self.xnc.variables[self.mt[self.xtype]['t']][:])
-	self.yt = np.ma.array(self.ync.variables[self.mt[self.ytype]['t']][:])
-	self.xz = np.ma.array(self.xnc.variables[self.mt[self.xtype]['z']][:])
-	self.yz = np.ma.array(self.ync.variables[self.mt[self.ytype]['z']][:])
+	self.xt = np.ma.array(self.xnc.variables[self.modelcoords['t']][:])
+	self.yt = np.ma.array(self.ync.variables[self.datacoords['t']][:])
+	self.xz = np.ma.array(self.xnc.variables[self.modelcoords['z']][:])
+	self.yz = np.ma.array(self.ync.variables[self.datacoords['z']][:])
 
 	#lat and lon
-	self.xy = np.ma.array(self.xnc.variables[self.mt[self.xtype]['lat']][:])
-	self.yy = np.ma.array(self.ync.variables[self.mt[self.ytype]['lat']][:])
-	self.xx = np.ma.array(self.xnc.variables[self.mt[self.xtype]['lon']][:])
-	self.yx = np.ma.array(self.ync.variables[self.mt[self.ytype]['lon']][:])
+	self.xy = np.ma.array(self.xnc.variables[self.modelcoords['lat']][:])
+	self.yy = np.ma.array(self.ync.variables[self.datacoords['lat']][:])
+	self.xx = np.ma.array(self.xnc.variables[self.modelcoords['lon']][:])
+	self.yx = np.ma.array(self.ync.variables[self.datacoords['lon']][:])
 	
 	for newSlice in self.newSlices:	
 	    for xkey,ykey in product(xkeys,ykeys):
@@ -270,8 +290,8 @@ class makePlots:
 	
 	#####
 	# Extract remaining data (already know lat,lon,time,depth)
-	xd = extractData(self.xnc,self.mt[self.xtype][self.name],key = xkey)	
-	yd = extractData(self.ync,self.mt[self.ytype][self.name],key = ykey)
+	xd = extractData(self.xnc,self.modeldetails,key = xkey)	
+	yd = extractData(self.ync,self.datadetails, key = ykey)
  
 	
 	#####
@@ -343,10 +363,10 @@ class makePlots:
 
 	#####
 	# Prepare units, axis labels and titles.
-	try:    xunits = fancyUnits(self.mt[self.xtype][self.name]['units'])
+	try:    xunits = fancyUnits(self.modeldetails['units'])
 	except: xunits = fancyUnits(self.xnc.variables[xkey].units,debug=True)
 
-	try:   yunits = fancyUnits(self.mt[self.ytype][self.name]['units'])
+	try:   yunits = fancyUnits(self.datadetails['units'])
 	except:yunits = fancyUnits(self.ync.variables[ykey].units,debug=True)	
 
 	labelx = getLongName(self.xtype)+' '+getLongName(self.name)+', '+ xunits
@@ -551,8 +571,8 @@ class makePlots:
 	"""
 	#import seaborn as sb
 	#sb.set(style="ticks")
-	xcoords = [self.mt[self.xtype][k] for k in ['t','lat','lon','z','lon',]]
-	ycoords = [self.mt[self.ytype][k] for k in ['t','lat','lon','z','lat',]]
+	xcoords = [self.modelcoords[k] for k in ['t','lat','lon','z','lon',]]
+	ycoords = [self.datacoords[k]  for k in ['t','lat','lon','z','lat',]]
 	  	 	  	
   	for xkey,ykey in zip(xcoords,ycoords):
 	    	if xkey not in self.xnc.variables.keys():continue  	    
@@ -632,8 +652,28 @@ class makePlots:
 	return filename
 
 
+def extractData(nc, details,key = ['',]):
+  	""" 	This loads the data based on the instructions from details dictionairy.
+  		If you want to do something funking to the data before plotting it,
+  			just create a new convert function in getMT().
+  		details dict usually contains: {'name': 'Chlorophylla', 'vars':['Chlorophylla',], 'convert': ukp.div1000,'units':'ug/L'}
+  	"""
+  	
+	if isinstance(details,dict): 
+  		keys = details.keys()
+  		print "extractData: details is a dict", details
+  	else:
+  		print "extractData: details Not a dict:", mt, key
+  		return np.ma.array(nc.variables[key][:])
 
-def extractData(nc, mt,key = ['',]):
+	if 'convert' in keys and 'vars' in keys:	
+		xd = np.ma.array(details['convert'](nc,details['vars']))
+		return xd
+  	
+  	assert False
+  	
+
+def extractData_obsolute(nc, mt,key = ['',]):
   	""" 	This loads the data based on the instructions from the getMT() function.
   		If you want to do something funking to the data before plotting it,
   			just create a new convert function in getMT().

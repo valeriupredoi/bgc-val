@@ -70,9 +70,9 @@ NorthHemispheresMonths = [h+m for h in ['NorthHemisphere',] for m in months]
 
 
 #####
-# Get Match Type:
+# Get Match Type: - _obsolete now
 #	
-def getmt(loadYaml=False): 
+def getmt_obsolete(loadYaml=False): 
 	"""
 	getmt(): Get Match Type. 
 		returns a Nested Dictionary with the following structure options:
@@ -443,7 +443,7 @@ def getLongName(text,debug=False):
 		#for t in text:out+=getLongName(t)+' '
 		#return out
 	
-	mt = getmt()
+	#mt = getmt()
 	
 	noChange = ['Surface',]
 	#noChange.extend(mt.keys())

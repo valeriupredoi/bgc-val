@@ -29,7 +29,7 @@ from calendar import month_name
 from UKESMpython import folder,getFileList, AutoVivification, AutoVivToYaml,YamlToDict, slicesDict,reducesShelves
 from p2p import matchDataAndModel,makePlots,makeTargets, csvFromShelves, makePatternStatsPlots
 #from 
-from pftnames import MaredatTypes,WOATypes,Ocean_names,OceanMonth_names,months, Seasons,Hemispheres,HemispheresMonths, OceanSeason_names#,getmt
+from pftnames import MaredatTypes,WOATypes,Ocean_names,OceanMonth_names,months, Seasons,Hemispheres,HemispheresMonths, OceanSeason_names
 
 ###	Potential problems?
 ###		Reliance on ORCA1 grid
@@ -205,24 +205,29 @@ def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
 		for depthLevel in av[name]['depthLevels']:
 			depthLevel = str(depthLevel)
 			
-			
 			#####
 			# matchDataAndModel:
 			# Match observations and model. 
 			# Does not produce and plots.
-			b = matchDataAndModel(av[name]['Data']['File'], 
+			b = matchDataAndModel(			av[name]['Data']['File'], 
 								av[name][model]['File'],
-								name,
-								DataVars  	= av[name]['Data']['Vars'],
-								ModelVars 	= av[name][model]['Vars'],
-								model 		= model,
+								dataType	= name,
+					  			modelcoords 	= av[name][model]['coords'],
+					  			modeldetails 	= av[name][model]['details'],
+					  			datacoords 	= av[name]['Data']['coords'],
+					  			datadetails 	= av[name]['Data']['details'],								
+								datasource	= av[name]['Data']['source'],
+								model 		= av[name][model]['source'],
 								jobID		= jobID,
 								year		= year,
 								workingDir 	= folder(workingDir+name),
 								depthLevel 	= depthLevel,
 								grid		= grid,
-								gridFile	= gridFile)
-							
+								gridFile	= gridFile
+						)
+
+  			
+  										
 			#####
 			# makePlots:
 			# Make some plots of the point to point datasets.
@@ -244,14 +249,20 @@ def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
 					b.MatchedModelFile, 
 					name, 
 					newSlices 	= nplottingSlices,
+					model 		= av[name][model]['source'],
+					datasource	= av[name]['Data']['source'],
 					jobID		= jobID,
-					model 		= model,						
 					depthLevel 	= depthLevel,
 					year 		= year, 
+		  			modelcoords 	= av[name][model]['coords'],
+		  			modeldetails 	= av[name][model]['details'],
+		  			datacoords 	= av[name]['Data']['coords'],
+		  			datadetails 	= av[name]['Data']['details'],
 					shelveDir 	= folder(workingDir+name+depthLevel),
 					imageDir	= imageDir,
 					compareCoords	=True,
-					noPlots		= noPlots)
+					noPlots		= noPlots
+				     )
 
 			#shelvesAV[model][name][depthLevel] = m.shelvesAV
 			shelvesAV.extend(m.shelvesAV)

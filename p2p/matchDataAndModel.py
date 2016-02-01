@@ -35,7 +35,7 @@ import numpy as np
 ######
 # local imports
 import UKESMpython as ukp 
-from pftnames import getmt, CMIP5models
+from pftnames import CMIP5models
 
 
 #####	
@@ -60,7 +60,24 @@ class matchDataAndModel:
   """
 
 
-  def __init__(self,DataFile,ModelFile,dataType, workingDir = '',DataVars='',ModelVars='',  model = '',jobID='', year='clim',depthLevel='', grid='ORCA1',gridFile='',debug = True,):
+  def __init__(self,	DataFile,
+  			ModelFile, 
+  			dataType = '', 
+  			workingDir = '',
+  			modelcoords = '',
+  			modeldetails = '',
+  			datacoords = '',
+  			datadetails = '', 
+  			#DataVars = '', 
+  			#ModelVars = '',  
+  			datasource = '',
+  			model = '', 
+  			jobID = '', 
+  			year = '', 
+  			depthLevel = '', 
+  			grid = 'ORCA1', 
+  			gridFile = '', 
+  			debug = True,):
 
 	if debug:
 		print "matchDataAndModel:\tINFO:\tStarting matchDataAndModel"
@@ -68,19 +85,29 @@ class matchDataAndModel:
 		print "matchDataAndModel:\tINFO:\tModel file: \t",ModelFile
 		print "matchDataAndModel:\tINFO:\tData Type:  \t",dataType
 			
-	self.DataFile=DataFile
+	self.DataFile =DataFile
 	self.ModelFile = ModelFile 
-		
-	self.DataVars=DataVars	
-	self.ModelVars=ModelVars	
+	
+	
+	# details about coordinates and what to load.
+  	self.modelcoords	= modelcoords
+  	self.modeldetails 	= modeldetails
+  	self.datacoords 	= datacoords
+  	self.datadetails 	= datadetails
 
+	self.DataVars		= self.datadetails['vars']		
+	self.ModelVars		= self.modeldetails['vars']	
+	
+	# meta data:
+	self.dataType = dataType
+	self.datasource = datasource
 	self.model = model 
 	self.jobID = jobID 
 	self.year = year
 	self.depthLevel = depthLevel
 	self.debug = debug	
 		
-	self.dataType = dataType
+
 	self._meshLoaded_ = False
 	
 	if debug: print  "matchDataAndModel:\tINFO:\t",self.dataType, '\tModelfile:', self.ModelFile
@@ -331,27 +358,24 @@ class matchDataAndModel:
 	except:
 		lldict={}
 	finds = 0	
-	mt = getmt()
 	
 	#####
 	# Figure out which type of data this is.
-	ytype = []
-	Models = [m.upper() for m in ['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankTOM6','PlankTOM10','NEMO','IMARNET','CMIP5',]] # skip these to find in situ data types.
-	Models.extend(['IMARNET_' +m.upper() for m in ['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankTOM6','PlankTOM10','NEMO',]])	
-	Models.extend(['CMIP5_' +m.upper() for m in CMIP5models])		
-	for key in mt.keys():
-		#key = key.upper()
-		if key.upper() in Models:continue
-		try:
-			if self.dataType in mt[key].keys() and key not in ytype:
-				ytype.append(key)
-		except:pass
-	if len(ytype) == 1:
-		ytype = ytype[0]		
-	else:
-		print "matchModelToData:\tUnable to determine in situ data dataset type (ie, Maredat, WOA, Takahashi etc...)", ytype , (self.dataType)
+	#self.ytype = []
+	#Models = [m.upper() for m in ['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankTOM6','PlankTOM10','NEMO','IMARNET','CMIP5',]] # skip these to find in situ data types.
+	#Models.extend(['IMARNET_' +m.upper() for m in ['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankTOM6','PlankTOM10','NEMO',]])	
+	#Models.extend(['CMIP5_' +m.upper() for m in CMIP5models])		
+	#for key in mt.keys():
+	#	#key = key.upper()
+	#	if key.upper() in Models:continue
+	#	try:
+	#		if self.dataType in mt[key].keys() and key not in self.ytype:
+	#			self.ytype.append(key)
+	#	except:pass
+	if not self.datasource:
+		print "matchModelToData:\tUnable to determine in situ data dataset type (ie, Maredat, WOA, Takahashi etc...)", self.datasource
 		print "matchModelToData:\tYou need to add the new data dataset type informationg to getmt() in pftnames.py"		
-		print "matchModelToData:\tor remove it from the list of options for ytype"
+		print "matchModelToData:\tor remove it from the list of options for dataType"
 		assert False
 
 	#####
@@ -365,12 +389,11 @@ class matchDataAndModel:
 	#if maxIndex+1 <len(is_i):
 	zdict={}
 	tdict={}
-	print 'mt[',ytype,']:', mt[ytype]
-  	is_t	= ncIS.variables[mt[ytype]['t']][:]
-  	is_z 	= ncIS.variables[mt[ytype]['z']][:]
-  	is_la	= ncIS.variables[mt[ytype]['lat']][:]
-	is_lo 	= ncIS.variables[mt[ytype]['lon']][:]	
-	tdict   = mt[ytype]['tdict'] 	
+  	is_t	= ncIS.variables[self.datacoords['t']][:]
+  	is_z 	= ncIS.variables[self.datacoords['z']][:]
+  	is_la	= ncIS.variables[self.datacoords['lat']][:]
+	is_lo 	= ncIS.variables[self.datacoords['lon']][:]	
+	tdict   = self.datacoords['tdict']
 	#tdict   = {i:i for i in xrange(12)}
 	ncIS.close()	     
 
@@ -382,6 +405,7 @@ class matchDataAndModel:
 	for d in ['dms_p_and','dms_p_ara','dms_p_hal','dms_p_sim',]:
 	  for i in ['','1','2']:
 		flatDataOnly.append(d+i)
+		
 	if self.dataType in flatDataOnly: 
   	   	is_z 	= np.ma.zeros(len(is_t))[:]
 	   	zdict = {0:0, 0.:0}  
@@ -429,7 +453,7 @@ class matchDataAndModel:
 		try:
 			t = tdict[wt]	
 		except:
-			print "matchModelToData:\tunable to find time match in pftnames, mt[",ytype,"]['tdict']", wt
+			print "matchModelToData:\tunable to find time match in pftnames, mt[",self.dataType,"]['tdict']", wt
 			print "tdict:",tdict
 			assert False 
 			

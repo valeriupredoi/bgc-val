@@ -30,7 +30,7 @@ from calendar import month_name
 from socket import gethostname
 
 #Specific local code:
-from UKESMpython import populateSlicesList, AutoVivification, folder, reducesShelves,listShelvesContents,mnStr
+import UKESMpython as ukp
 from testsuite_p2p import testsuite_p2p
 from p2p import makePatternStatsPlots
 from p2p.patternAnalyses import InterAnnualPatterns,BGCvsPhysics
@@ -133,7 +133,7 @@ def analysis_jasmin(
 
 	#####
 	# Location of data files.
-	if gethostname().find('pml')>-1:	
+	if gethostname().find('pmpc')>-1:	
 		print "analysis-JASMIN.py:\tBeing run at PML on ",gethostname()
 		
 		MEDUSAFolder_pref	= "/data/euryale7/scratch/ledm/UKESM/MEDUSA/xkrus_postProc/"
@@ -146,7 +146,7 @@ def analysis_jasmin(
 		TakahashiFolder = "/data/euryale7/scratch/ledm/Takahashi2009_pCO2/"
 		MLDFolder	= "/data/euryale7/scratch/ledm/IFREMER-MLD/"
 		workDir		= "/data/euryale7/scratch/ledm/ukesm_postProcessed/"
-		imgDir		= folder('images')
+		imgDir		= ukp.folder('images')
 		
 	if gethostname().find('ceda.ac.uk')>-1:
 		print "analysis-JASMIN.py:\tBeing run at CEDA on ",gethostname()
@@ -155,22 +155,22 @@ def analysis_jasmin(
 		
 		#####
 		# Location of model files.	
-		MEDUSAFolder_pref	= folder(esmvalFolder+"MEDUSA/")
-		NEMOFolder_pref		= folder(esmvalFolder+"MEDUSA/")
+		MEDUSAFolder_pref	= ukp.folder(esmvalFolder+"MEDUSA/")
+		NEMOFolder_pref		= ukp.folder(esmvalFolder+"MEDUSA/")
 		
 		#####
 		# Location of data files.
-		if annual:	WOAFolder 	= folder(esmvalFolder+"WOA/annual")
-		else:		WOAFolder 	= folder(esmvalFolder+"WOA/")
-		MAREDATFolder 	= folder(esmvalFolder+"/MAREDAT/")
-		WOAFolder 	= folder(esmvalFolder+"WOA/")
-		GEOTRACESFolder = folder(esmvalFolder+"GEOTRACES/GEOTRACES_PostProccessed/")
-		TakahashiFolder = folder(esmvalFolder+"Takahashi2009_pCO2/")
-		MLDFolder  	= folder(esmvalFolder+"IFREMER-MLD/")
+		if annual:	WOAFolder 	= ukp.folder(esmvalFolder+"WOA/annual")
+		else:		WOAFolder 	= ukp.folder(esmvalFolder+"WOA/")
+		MAREDATFolder 	= ukp.folder(esmvalFolder+"/MAREDAT/")
+		WOAFolder 	= ukp.folder(esmvalFolder+"WOA/")
+		GEOTRACESFolder = ukp.folder(esmvalFolder+"GEOTRACES/GEOTRACES_PostProccessed/")
+		TakahashiFolder = ukp.folder(esmvalFolder+"Takahashi2009_pCO2/")
+		MLDFolder  	= ukp.folder(esmvalFolder+"IFREMER-MLD/")
 	
 		# Directory for output files:
-		workDir 	= folder(esmvalFolder+"ukesm_postProcessed/")
-		imgDir		= folder('images')		
+		workDir 	= ukp.folder(esmvalFolder+"ukesm_postProcessed/")
+		imgDir		= ukp.folder('images')		
 						
 	#####
 	# Set which spatial and temporal limitations to plot.
@@ -180,6 +180,11 @@ def analysis_jasmin(
 	HighLatWinter	= ['All','HighLatWinter',]
 						
 	shelvesAV = []
+	
+	medusaCoords 	= {'t':'index_t', 'z':'deptht', 'lat': 'nav_lat', 'lon': 'nav_lon', 'cal': '365_day',}
+	maredatCoords 	= {'t':'index_t', 'z':'DEPTH', 'lat': 'LATITUDE', 'lon': 'LONGITUDE', 'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
+		
+	
 	for year in years:		
 		#####
 		# Location of model files.
@@ -190,16 +195,25 @@ def analysis_jasmin(
 		# AutoVivification is a form of nested dictionary.
 		# We use AutoVivification here to determine which files to analyse and which fields in those files.
 		# depthLevel is added, because some WOA files are huges and my desktop can not run the p2p analysis of that data.
-		av = AutoVivification()
+		av = ukp.AutoVivification()
 		if doCHL:
 			av['chl']['Data']['File'] 		= MAREDATFolder+"MarEDat20121001Pigments.nc"	
 			if modelGrid == 'ORCA1':	
 				av['chl']['MEDUSA']['File'] 	= MEDUSAFolder+jobID+'_' + year+"_CHL.nc"
-				av['chl']['MEDUSA']['Vars'] 	= ['CHL',]#['CHD','CHN']				
+				#av['chl']['MEDUSA']['Vars'] 	= ['CHL',]#['CHD','CHN']
 			if modelGrid == 'ORCA025':
 				av['chl']['MEDUSA']['File']	= MEDUSAFolder+"xjwki_1979_CH.nc"
-				av['chl']['MEDUSA']['Vars'] 	= ['CHL',]			
-			av['chl']['Data']['Vars'] 		= ['Chlorophylla',]
+				#av['chl']['MEDUSA']['Vars'] 	= ['CHL',]			
+			#av['chl']['Data']['Vars'] 		= ['Chlorophylla',]
+			
+			av['chl']['Data']['coords'] 		= maredatCoords
+			av['chl']['MEDUSA']['coords']		= medusaCoords
+			
+			av['chl']['MEDUSA']['details']		= {'name': 'CHL', 'vars':['CHL',], 'convert': ukp.NoChange,'units':'mg C/m^3'}			
+			av['chl']['Data']['details']		= {'name': 'Chlorophylla', 'vars':['Chlorophylla',], 'convert': ukp.div1000,'units':'ug/L'}			
+
+			av['chl']['Data']['source'] 		= 'MAREDAT'
+			av['chl']['MEDUSA']['source']		= 'MEDUSA'
 
 			av['chl']['depthLevels'] 		= ['',]
 			av['chl']['MEDUSA']['grid']		= modelGrid		
@@ -321,8 +335,8 @@ def analysis_jasmin(
 			av['mld']['plottingSlices'] 		= justAll
 		
 		for model in models:
-			workingDir 	= folder(workDir+model+'-'+jobID+'-'+year)
-			imageFolder 	= folder(imgDir+'/Jasmin-'+model+'-'+jobID)
+			workingDir 	= ukp.folder(workDir+model+'-'+jobID+'-'+year)
+			imageFolder 	= ukp.folder(imgDir+'/Jasmin-'+model+'-'+jobID)
 
 	
 			shelvesAV.extend(
