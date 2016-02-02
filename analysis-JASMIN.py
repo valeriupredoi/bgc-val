@@ -112,14 +112,14 @@ def analysis_jasmin(
 		doTemp		= 0#True
 		doMLD		= 0#True	
 	else:		
-		doCHL 		= True
+		doCHL 		= 0#True
 		doMAREDAT 	= 0#True
-		doN		= 0#True
+		doN		= True
 		doSi		= 0#True	
-		doFe		= 0#True		
+		doFe		= 0#True
 		doPCO2		= 0#True
 		doIntPP		= 0#True
-		doO2		= 0#	
+		doO2		= 0#True	
 		doSal		= 0#True
 		doTemp		= 0#True
 		doMLD		= 0#True
@@ -181,9 +181,11 @@ def analysis_jasmin(
 						
 	shelvesAV = []
 	
-	medusaCoords 	= {'t':'index_t', 'z':'deptht', 'lat': 'nav_lat', 'lon': 'nav_lon', 'cal': '365_day',}
-	maredatCoords 	= {'t':'index_t', 'z':'DEPTH', 'lat': 'LATITUDE', 'lon': 'LONGITUDE', 'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
-		
+	medusaCoords 	= {'t':'index_t', 'z':'deptht', 'lat': 'nav_lat',  'lon': 'nav_lon',   'cal': '365_day',}	# model doesn't need time dict.
+	maredatCoords 	= {'t':'index_t', 'z':'DEPTH',  'lat': 'LATITUDE', 'lon': 'LONGITUDE', 'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
+	woaCoords 	= {'t':'index_t', 'z':'depth',  'lat': 'lat', 	   'lon': 'lon',       'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}		
+	
+	
 	
 	for year in years:		
 		#####
@@ -198,13 +200,8 @@ def analysis_jasmin(
 		av = ukp.AutoVivification()
 		if doCHL:
 			av['chl']['Data']['File'] 		= MAREDATFolder+"MarEDat20121001Pigments.nc"	
-			if modelGrid == 'ORCA1':	
-				av['chl']['MEDUSA']['File'] 	= MEDUSAFolder+jobID+'_' + year+"_CHL.nc"
-				#av['chl']['MEDUSA']['Vars'] 	= ['CHL',]#['CHD','CHN']
-			if modelGrid == 'ORCA025':
-				av['chl']['MEDUSA']['File']	= MEDUSAFolder+"xjwki_1979_CH.nc"
-				#av['chl']['MEDUSA']['Vars'] 	= ['CHL',]			
-			#av['chl']['Data']['Vars'] 		= ['Chlorophylla',]
+			if modelGrid == 'ORCA1':	av['chl']['MEDUSA']['File'] 	= MEDUSAFolder+jobID+'_' + year+"_CHL.nc"
+			if modelGrid == 'ORCA025':	av['chl']['MEDUSA']['File']	= MEDUSAFolder+"xjwki_1979_CH.nc"
 			
 			av['chl']['Data']['coords'] 		= maredatCoords
 			av['chl']['MEDUSA']['coords']		= medusaCoords
@@ -221,10 +218,13 @@ def analysis_jasmin(
 			
 						
 		if doMAREDAT:
+			assert 0 # Untested
+			
 			av['diatoms']['Data']['File'] 		= MAREDATFolder+"MarEDat20120716Diatoms.nc"	
 			av['diatoms']['MEDUSA']['File'] 	= MEDUSAFolder+jobID+'_' + year+"_???.nc"
-			av['diatoms']['Data']['Vars'] 		= ['BIOMASS',]
-			av['diatoms']['MEDUSA']['Vars'] 	= ['PHD',]	
+			#av['diatoms']['Data']['Vars'] 		= ['BIOMASS',]
+			#av['diatoms']['MEDUSA']['Vars'] 	= ['PHD',]	
+			
 			av['diatoms']['depthLevels'] 		= ['',]	
 			av['diatoms']['MEDUSA']['grid']		= modelGrid						
 			av['diatoms']['plottingSlices']		= justAll
@@ -247,43 +247,82 @@ def analysis_jasmin(
 			
 		if doN:
 			av['nitrate']['Data']['File'] 		= WOAFolder+'nitrate_monthly_1deg.nc'	
-			av['nitrate']['Data']['Vars'] 		= ['n_an',] 		#l+'_mn',
-			if modelGrid == 'ORCA1':			
-				av['nitrate']['MEDUSA']['File'] = MEDUSAFolder+jobID+'_' + year+"_DIN.nc"	
-			if modelGrid == 'ORCA025':
-				av['nitrate']['MEDUSA']['File'] = MEDUSAFolder+jobID+'_'+ year+"_DIN.nc"							
-			av['nitrate']['MEDUSA']['Vars'] 	= ['DIN',]									
+			if modelGrid == 'ORCA1':	av['nitrate']['MEDUSA']['File'] = MEDUSAFolder+jobID+'_' + year+"_DIN.nc"	
+			if modelGrid == 'ORCA025':	av['nitrate']['MEDUSA']['File'] = MEDUSAFolder+jobID+'_'+ year+"_DIN.nc"							
+			
 			av['nitrate']['MEDUSA']['grid']		= modelGrid		
-			av['nitrate']['depthLevels'] 		= ['Surface','Transect','PTransect']
+			av['nitrate']['depthLevels'] 		= ['Surface','Transect','PTransect','SOTransect',]
 			av['nitrate']['plottingSlices'] 	= HighLatWinter
+			
+			av['nitrate']['Data']['coords'] 	= woaCoords
+			av['nitrate']['MEDUSA']['coords']	= medusaCoords
+			
+			av['nitrate']['Data']['source'] 	= 'WOA'
+			av['nitrate']['MEDUSA']['source']	= 'MEDUSA'			
+	
+			av['nitrate']['MEDUSA']['details']	= {'name': 'nitrate', 'vars':['DIN',], 'convert': ukp.NoChange,}			
+			av['nitrate']['Data']['details']	= {'name': 'nitrate', 'vars':['n_an',], 'convert': ukp.NoChange,}	# no units?
+
 						
 		if doSi:
+			
 			av['silicate']['Data']['File'] 		= WOAFolder+'silicate_monthly_1deg.nc'	
-			av['silicate']['Data']['Vars'] 		= ['i_an',] 		#l+'_mn',
-			av['silicate']['MEDUSA']['Vars'] 	= ['SIL',]									
 			av['silicate']['MEDUSA']['File'] 	= MEDUSAFolder+jobID+'_' + year+"_SIL.nc"
-			av['silicate']['MEDUSA']['grid']	= modelGrid		
+			
+			av['silicate']['MEDUSA']['grid']		= modelGrid		
 			av['silicate']['depthLevels'] 		= ['Surface','Transect','PTransect']
 			av['silicate']['plottingSlices'] 	= HighLatWinter
-									
-		if doFe:							
+			
+			av['silicate']['Data']['coords'] 	= woaCoords
+			av['silicate']['MEDUSA']['coords']	= medusaCoords
+			
+			av['silicate']['Data']['source'] 	= 'WOA'
+			av['silicate']['MEDUSA']['source']	= 'MEDUSA'			
+	
+			av['silicate']['MEDUSA']['details']	= {'name': 'silicate', 'vars':['SIL',], 'convert': ukp.NoChange,}			
+			av['silicate']['Data']['details']	= {'name': 'silicate', 'vars':['i_an',], 'convert': ukp.NoChange,}	# no units?
+			
+						
+		if doFe:	
 			av['iron']['Data']['File'] 		= GEOTRACESFolder+"Iron_GEOTRACES_IDP2014_Discrete_Sample_Data_ascii.nc"
 			av['iron']['MEDUSA']['File'] 		= MEDUSAFolder+jobID+'_' + year+"_FER.nc"	
-			av['iron']['Data']['Vars'] 		= ['Fe_D_CONC_BOTTLE',]
-			av['iron']['MEDUSA']['Vars'] 		= ['FER',]	
+			
 			av['iron']['depthLevels'] 		= ['',]
 			av['iron']['MEDUSA']['grid']		= modelGrid		
 			av['iron']['plottingSlices']		= justAll
 			
+			av['iron']['Data']['coords'] 	= {'t': 'MONTH','z':'DEPTH','lat':'Latitude','lon':'Longitude','cal':'standard','tdict': ukp.tdicts['OneToZero']}
+			av['iron']['MEDUSA']['coords']	= medusaCoords
+	
+			
+			av['iron']['Data']['source'] 	= 'GEOTRACES'
+			av['iron']['MEDUSA']['source']	= 'MEDUSA'			
+	
+			av['iron']['MEDUSA']['details']	= {'name': 'iron', 'vars':['FER',], 'convert': ukp.mul1000,'units':'umol F/m^3'}			
+			av['iron']['Data']['details']	= {'name': 'iron', 'vars':['Fe_D_CONC_BOTTLE',], 'convert': ukp.NoChange,}	# no units?
+
+				
+			
+			
 		if doO2:
 			if annual:	av['oxygen']['Data']['File'] 	=  WOAFolder+'woa13_all_o00_01.nc'
 			else:		av['oxygen']['Data']['File'] 	=  WOAFolder+'oxygen-woa13.nc'
-			av['oxygen']['Data']['Vars'] 	= ['o_an',] 
-			av['oxygen']['MEDUSA']['Vars'] 	= ['OXY',]
 			av['oxygen']['MEDUSA']['File']	= MEDUSAFolder+jobID+"_"+year+"_OXY.nc"
-			av['oxygen']['MEDUSA']['grid']	= modelGrid
-			av['oxygen']['depthLevels'] 	= ['Surface','Transect','PTransect']
-			av['oxygen']['plottingSlices'] 	= justAll
+			
+			av['oxygen']['MEDUSA']['grid']		= modelGrid		
+			av['oxygen']['depthLevels'] 		= ['Surface','Transect','PTransect']
+			av['oxygen']['plottingSlices'] 		= HighLatWinter
+			
+			av['oxygen']['Data']['coords'] 		= woaCoords
+			av['oxygen']['MEDUSA']['coords']	= medusaCoords
+			
+			av['oxygen']['Data']['source'] 		= 'WOA'
+			av['oxygen']['MEDUSA']['source']	= 'MEDUSA'			
+	
+			av['oxygen']['MEDUSA']['details']	= {'name': 'oxygen', 'vars':['OXY',], 'convert': ukp.NoChange,}			
+			av['oxygen']['Data']['details']		= {'name': 'oxygen', 'vars':['o_an',], 'convert': ukp.oxconvert,'units':'mmol/m^3'}
+			
+			
 					
 #		#if doPCO2:
 #			av['pCO2']['Data']['File'] 	= TakahashiFolder + "takahashi2009_month_flux_pCO2_2006c_noHead.nc"	
@@ -306,33 +345,59 @@ def analysis_jasmin(
 		if doSal:
 			if annual:	av['salinity']['Data']['File'] 		= WOAFolder+'woa13_decav_s00_01v2.nc'	
 			else:		av['salinity']['Data']['File'] 		= WOAFolder+'salinity_monthly_1deg.nc'	
-			av['salinity']['Data']['Vars'] 		= ['s_an',]
 			av['salinity']['NEMO']['File'] 		= NEMOFolder+jobID+"_"+year+'_SAL.nc'	
-			av['salinity']['NEMO']['Vars'] 		= ['vosaline',]
+
 			av['salinity']['NEMO']['grid'] 		= modelGrid
 			av['salinity']['depthLevels'] 		= ['Surface','Transect','PTransect']	 
 			av['salinity']['plottingSlices'] 	= justAll
-		
+			
+			av['salinity']['Data']['coords'] 	= woaCoords
+			av['salinity']['NEMO']['coords']	= medusaCoords
+			av['salinity']['Data']['source'] 	= 'WOA'
+			av['salinity']['NEMO']['source']	= 'MEDUSA'			
+	
+			av['salinity']['NEMO']['details']	= {'name': 'salinity', 'vars':['vosaline',], 'convert': ukp.NoChange,}			
+			av['salinity']['Data']['details']	= {'name': 'salinity', 'vars':['s_an',], 'convert': ukp.NoChange,}	# no units?
+			
+					
 		if doTemp:
 			if annual:	av['temperature']['Data']['File'] 	= WOAFolder+'woa13_decav_t00_01v2.nc'	
 			else:		av['temperature']['Data']['File'] 	= WOAFolder+'temperature_monthly_1deg.nc'	
-			av['temperature']['Data']['Vars'] 	= ['t_an',]	
 			av['temperature']['NEMO']['File'] 	= NEMOFolder+jobID+"_"+year+'_TEMP.nc'	
-			av['temperature']['NEMO']['Vars'] 	= ['votemper',]
+
 			av['temperature']['NEMO']['grid'] 	= modelGrid	
 			av['temperature']['depthLevels'] 	= ['Surface','Transect','PTransect']	
 			av['temperature']['plottingSlices'] 	= justAll
+
+			av['temperature']['Data']['coords'] 	= woaCoords
+			av['temperature']['NEMO']['coords']	= medusaCoords
+			av['temperature']['Data']['source'] 	= 'WOA'
+			av['temperature']['NEMO']['source']	= 'MEDUSA'			
+	
+			av['temperature']['NEMO']['details']	= {'name': 'temperature', 'vars':['votemper',], 'convert': ukp.NoChange,}			
+			av['temperature']['Data']['details']	= {'name': 'temperature', 'vars':['t_an',], 'convert': ukp.NoChange,}	# no units?
+			
+			
+
 						   
-		if doMLD:	
-			#if annual:	
+		if doMLD:
 			if annual:	av['mld']['Data']['File'] 		= MLDFolder+"mld_DT02_c1m_reg2.0-annual.nc"
 			else:		av['mld']['Data']['File'] 		= MLDFolder+"mld_DT02_c1m_reg2.0.nc"
-			av['mld']['Data']['Vars'] 		= ['mld','mask',]
-			av['mld']['NEMO']['File'] 		= NEMOFolder+jobID+"_"+year+'_MLD.nc'			
-			av['mld']['NEMO']['Vars'] 		= ['somxl010',]	
+			av['mld']['NEMO']['File'] 		= NEMOFolder+jobID+"_"+year+'_MLD.nc'	
+					
 			av['mld']['NEMO']['grid'] 		= modelGrid
 			av['mld']['depthLevels'] 		= ['',]
 			av['mld']['plottingSlices'] 		= justAll
+
+			av['mld']['Data']['coords'] 	= {'t':'index_t', 'z':'index_z','lat':'lat','lon':'lon','cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
+			av['mld']['NEMO']['coords']	= medusaCoords
+			av['mld']['Data']['source'] 	= 'WOA'
+			av['mld']['NEMO']['source']	= 'IFREMER'			
+	
+			av['mld']['NEMO']['details']	= {'name': 'mld', 'vars':['somxl010',], 'convert': ukp.NoChange,'units':'m'}			
+			av['mld']['Data']['details']	= {'name': 'mld', 'vars':['mld','mask',], 'convert': ukp.applymask,'units':'m'}	# no units?
+			
+			
 		
 		for model in models:
 			workingDir 	= ukp.folder(workDir+model+'-'+jobID+'-'+year)

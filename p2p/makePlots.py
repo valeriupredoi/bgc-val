@@ -324,7 +324,7 @@ class makePlots:
 	N = len(self.xt)			
 
 	maskcoverpc = 100.*np.clip(fullmask,0,1).sum()/float(N)
-	if maskcoverpc==0.:
+	if maskcoverpc==100.:
 		print "plotWithSlices:\tNew Mask,",newSlice,", covers entire dataset.",maskcoverpc,'%', N
 		try:	self.shelves[newSlice][xk][yk] = ''
 		except:	pass			
@@ -363,12 +363,23 @@ class makePlots:
 
 	#####
 	# Prepare units, axis labels and titles.
-	try:    xunits = fancyUnits(self.modeldetails['units'])
-	except: xunits = fancyUnits(self.xnc.variables[xkey].units,debug=True)
+	if 'units' in self.modeldetails.keys():
+		 xunits = fancyUnits(self.modeldetails['units'])
+	else:
+		try:    xunits = fancyUnits(self.xnc.variables[self.modeldetails['vars'][0]].units,debug=True)
+		except: 
+			print "plotWithSlices:\tWARNING:\tno units provided for model ",self.modeldetails['name'],'in details dictionairy'
+			xunits = ''
 
-	try:   yunits = fancyUnits(self.datadetails['units'])
-	except:yunits = fancyUnits(self.ync.variables[ykey].units,debug=True)	
-
+	if 'units' in self.datadetails.keys():
+		 yunits = fancyUnits(self.datadetails['units'])	
+	else:
+		try:   yunits = fancyUnits(self.ync.variables[self.datadetails['vars'][0]].units,debug=True)	
+		except:
+			print "plotWithSlices:\tWARNING:\tno units provided for data ",self.datadetails['name'],'in details dictionairy'
+			yunits = ''
+			
+	
 	labelx = getLongName(self.xtype)+' '+getLongName(self.name)+', '+ xunits
 	labely = getLongName(self.ytype)+' '+getLongName(self.name)+', '+ yunits	
 		
