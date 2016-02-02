@@ -96,6 +96,7 @@ def getmt_obsolete(loadYaml=False):
 			mt[ModelName or Data source][variable name][vars] = [list of variables to combine in the convert function]
 			mt[ModelName or Data source][variable name][new units] = 'mg m^-3' or whatever. (preferable from fancyUnits, below)
 	"""
+	assert False
 	
 	#####
 	# Try to open a yaml file. 
