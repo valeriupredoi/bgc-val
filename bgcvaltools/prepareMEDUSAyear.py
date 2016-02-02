@@ -57,7 +57,7 @@ def run(jobID,key,runType,foldIn):
 		finalKeys = ['CHL',]	
 		L = '_ptrc_T'
 
-	if runType in ['DIN','FER','SIL', 'OXY']:
+	if runType in ['DIN','FER','SIL', 'OXY', 'PHD', 'ZMI','ZME',]:
 		keys = [runType,]
 		finalKeys = [runType,]	
 		L = '_ptrc_T'
@@ -159,7 +159,7 @@ def run(jobID,key,runType,foldIn):
 		
 
 def main():
-	runTypes= ['SAL','TEMP','MLD','OXY','DIN','CHL','SIL','FER','W','U','V',]
+	runTypes= ['PHD', 'ZMI','ZME', 'SAL','TEMP','MLD','OXY','DIN','CHL','SIL','FER','W','U','V',]
 	
 	#'ERSEMNuts','ERSEMphytoBm','ERSEMphytoChl','ERSEMzoo', 'ERSEMMisc','ERSEMbac']
 	#'SalTempWind','ERSEMFull','ERSEMphyto','Detritus', ]#'SalTempWind', ]# ]#]#]

@@ -54,7 +54,8 @@ def analysis_jasmin(
 		years 	= ['2077'], #'2075','2076',
 		modelGrid = 'ORCA1',
 		annual 	= False,
-		analysisSuite='tmp',#'Default'
+		noPlots = False,
+		analysisSuite='bio',
 		):
 	
 	# DMS model:
@@ -82,13 +83,16 @@ def analysis_jasmin(
 	#modelGrid = 'ORCA025'	
 	#MEDUSAFolder	= "/data/euryale7/scratch/ledm/UKESM/MEDUSA-ORCA025/"+jobID+"_postProc/"+year+"/"
 	
-	noPlots = False
+	
 	
 	#####
 	# Which analysis to run
+	
 	if analysisSuite.lower() in ['default',]:
 		doCHL 		= True
-		doMAREDAT 	= 0#True
+		doDiatoms	= 0#True
+		doMicrozoo	= 0#True
+		doMesozoo	= 0#True
 		doN		= True
 		doSi		= True	
 		doFe		= True		
@@ -101,7 +105,9 @@ def analysis_jasmin(
 		doMLD		= True
 	elif analysisSuite.lower() in ['debug',]:
 		doCHL 		= True
-		doMAREDAT 	= 0#True
+		doDiatoms	= 0#True
+		doMicrozoo	= 0#True
+		doMesozoo	= 0#True		
 		doN		= 0#True
 		doSi		= 0#True	
 		doFe		= 0#True		
@@ -110,10 +116,26 @@ def analysis_jasmin(
 		doO2		= 0#True	
 		doSal		= 0#True
 		doTemp		= 0#True
-		doMLD		= 0#True	
+		doMLD		= 0#True
+	elif analysisSuite.lower() in ['bio',]:
+		doCHL 		= True
+		doDiatoms	= True
+		doMicrozoo	= True
+		doMesozoo	= True		
+		doN		= 0#True
+		doSi		= 0#True	
+		doFe		= 0#True		
+		doPCO2		= 0#True
+		doIntPP		= 0#True
+		doO2		= 0#True	
+		doSal		= 0#True
+		doTemp		= 0#True
+		doMLD		= 0#True			
 	else:		
 		doCHL 		= 0#True
-		doMAREDAT 	= 0#True
+		doDiatoms	= 0#True
+		doMicrozoo	= 0#True
+		doMesozoo	= 0#True
 		doN		= True
 		doSi		= 0#True	
 		doFe		= 0#True
@@ -123,11 +145,14 @@ def analysis_jasmin(
 		doSal		= 0#True
 		doTemp		= 0#True
 		doMLD		= 0#True
+
 	
 	
 	#####
 	# What depth level to investigate, in the case of big 3D files (T,Sal, N,P,Si, etc)	
-	#if annual:	depthLevels 	= ['',]
+	if annual:	
+		print "Error: annual data not yet tested."
+		assert False#depthLevels 	= ['',]
 	#else:		depthLevels 	= ['Transect','Surface','100m','200m','500m',]
 
 
@@ -179,13 +204,11 @@ def analysis_jasmin(
 	AllStandard	= ['All','Standard']	# All is not a slice, it has no cut on location, time, or depth.	
 	HighLatWinter	= ['All','HighLatWinter',]
 						
-	shelvesAV = []
-	
 	medusaCoords 	= {'t':'index_t', 'z':'deptht', 'lat': 'nav_lat',  'lon': 'nav_lon',   'cal': '365_day',}	# model doesn't need time dict.
 	maredatCoords 	= {'t':'index_t', 'z':'DEPTH',  'lat': 'LATITUDE', 'lon': 'LONGITUDE', 'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
 	woaCoords 	= {'t':'index_t', 'z':'depth',  'lat': 'lat', 	   'lon': 'lon',       'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}		
 	
-	
+	shelvesAV = []	
 	
 	for year in years:		
 		#####
@@ -214,36 +237,65 @@ def analysis_jasmin(
 
 			av['chl']['depthLevels'] 		= ['',]
 			av['chl']['MEDUSA']['grid']		= modelGrid		
-			av['chl']['plottingSlices'] 		= justAll
-			
+			av['chl']['plottingSlices'] 		= AllStandard
+
 						
-		if doMAREDAT:
-			assert 0 # Untested
-			
+		if doDiatoms:
 			av['diatoms']['Data']['File'] 		= MAREDATFolder+"MarEDat20120716Diatoms.nc"	
-			av['diatoms']['MEDUSA']['File'] 	= MEDUSAFolder+jobID+'_' + year+"_???.nc"
-			#av['diatoms']['Data']['Vars'] 		= ['BIOMASS',]
-			#av['diatoms']['MEDUSA']['Vars'] 	= ['PHD',]	
+			av['diatoms']['MEDUSA']['File'] 	= MEDUSAFolder+jobID+'_' + year+"_PHD.nc"
 			
 			av['diatoms']['depthLevels'] 		= ['',]	
 			av['diatoms']['MEDUSA']['grid']		= modelGrid						
-			av['diatoms']['plottingSlices']		= justAll
-					
+			av['diatoms']['plottingSlices']		= AllStandard
+
+			av['diatoms']['Data']['coords'] 	= maredatCoords
+			av['diatoms']['MEDUSA']['coords']	= medusaCoords
+
+			av['diatoms']['MEDUSA']['details']	= {'name': 'diatoms', 'vars':['PHD',],     'convert': ukp.N2Biomass,'units': 'mg C/m^3'}						
+			av['diatoms']['Data']['details']	= {'name': 'diatoms', 'vars':['BIOMASS',], 'convert': ukp.NoChange,'units':'mg C/m^3'}			
+
+			av['diatoms']['Data']['source'] 	= 'MAREDAT'
+			av['diatoms']['MEDUSA']['source']	= 'MEDUSA'
+
+			
+		if doMicrozoo:
 			av['microzoo']['Data']['File'] 		= MAREDATFolder+"MarEDat20120424Microzooplankton.nc"	
-			av['microzoo']['Data']['Vars'] 		= ['BIOMASS',]
-			av['microzoo']['MEDUSA']['File'] 	= MEDUSAFolder+"medusa_bio_"+year+".nc"	
-			av['microzoo']['MEDUSA']['Vars'] 	= ['ZMI',]	
+			av['microzoo']['MEDUSA']['File'] 	= MEDUSAFolder+jobID+'_' + year+"_ZMI.nc"	
+			
 			av['microzoo']['MEDUSA']['grid']	= modelGrid		
 			av['microzoo']['depthLevels'] 		= ['',]	
-			av['microzoo']['plottingSlices'] 	= justAll
-				
+			av['microzoo']['plottingSlices'] 	= AllStandard
+
+			
+			av['microzoo']['Data']['coords'] 	= maredatCoords
+			av['microzoo']['MEDUSA']['coords']	= medusaCoords
+			
+			av['microzoo']['MEDUSA']['details']	= {'name': 'microzoo', 'vars':['ZMI',],     'convert': ukp.N2Biomass,'units': 'mg C/m^3'}			
+			av['microzoo']['Data']['details']	= {'name': 'microzoo', 'vars':['BIOMASS',], 'convert': ukp.NoChange,'units':'mg C/m^3'}			
+
+			av['microzoo']['Data']['source'] 	= 'MAREDAT'
+			av['microzoo']['MEDUSA']['source']	= 'MEDUSA'
+			
+			
+		if doMesozoo:
+						
 			av['mesozoo']['Data']['File'] 		= MAREDATFolder+"MarEDat20120705Mesozooplankton.nc"	
-			av['mesozoo']['Data']['Vars'] 		= ['BIOMASS',]
-			av['mesozoo']['MEDUSA']['File'] 	= MEDUSAFolder+"medusa_bio_"+year+".nc"	
-			av['mesozoo']['MEDUSA']['Vars'] 	= ['ZME',]	
+			av['mesozoo']['MEDUSA']['File'] 	= MEDUSAFolder+jobID+'_' + year+"_ZME.nc"	
+
 			av['mesozoo']['MEDUSA']['grid']		= modelGrid		
 			av['mesozoo']['depthLevels'] 		= ['',]
-			av['mesozoo']['plottingSlices'] 	= justAll
+			av['mesozoo']['plottingSlices'] 	= AllStandard
+
+			av['mesozoo']['Data']['coords'] 	= maredatCoords
+			av['mesozoo']['MEDUSA']['coords']	= medusaCoords
+			
+			av['mesozoo']['MEDUSA']['details']	= {'name': 'mesozoo', 'vars':['ZME',],     'convert': ukp.N2Biomass,'units': 'mg C/m^3'}			
+			av['mesozoo']['Data']['details']	= {'name': 'mesozoo', 'vars':['BIOMASS',], 'convert': ukp.NoChange,'units':'mg C/m^3'}			
+
+			av['mesozoo']['Data']['source'] 	= 'MAREDAT'
+			av['mesozoo']['MEDUSA']['source']	= 'MEDUSA'
+			
+			
 			
 		if doN:
 			av['nitrate']['Data']['File'] 		= WOAFolder+'nitrate_monthly_1deg.nc'	

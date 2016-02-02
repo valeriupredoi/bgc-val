@@ -672,9 +672,9 @@ def extractData(nc, details,key = ['',]):
   	
 	if isinstance(details,dict): 
   		keys = details.keys()
-  		print "extractData: details is a dict", details
+  		print "extractData: details is a dict", details.keys()
   	else:
-  		print "extractData: details Not a dict:", mt, key
+  		print "extractData: details Not a dict:", details
   		return np.ma.array(nc.variables[key][:])
 
 	if 'convert' in keys and 'vars' in keys:	
