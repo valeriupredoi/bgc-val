@@ -991,6 +991,66 @@ def getOrcaIndexCC(lat,lon, latcc, loncc, debug=True,slowMethod=False,llrange=5.
 
 	if debug: print 'location ', [la_ind,lo_ind],'(',latcc[la_ind,lo_ind],loncc[la_ind,lo_ind],') is closest to:',[lat,lon]	
 	return la_ind,lo_ind
+
+
+def getORCAdepth(z,depth,debug=True):
+	""" Calculate closest depth. Returns an index
+	"""
+	d = 1000.
+	best = -1
+	for i,zz in enumerate(depth.squeeze()):
+		d2 = abs(abs(z)-abs(zz))
+		if d2<d:
+		   d=d2
+		   best = i
+		   print 'getORCAdepth:',i,z,zz,depth.shape, 'best:',best
+	if debug: print 'depth: in situ:', z,'index:', best, 'distance:',d,', closest model:',depth.shape, depth[best]
+	return best
+
+def getclosestlon(x,lons,debug=True):
+	"""	Code to locate the closets longitude coordinate for transects. 
+		Only works for 1D longitude arrays
+		Returns an index
+	"""
+	d = 1000.
+	best = -1
+	if lons.ndim >1: 
+		print "getclosestlon:\tFATAL:\tThis code only works for 1D longitude arrays"
+		assert False
+	x = makeLonSafe(x)
+	lons = makeLonSafeArr(lons)
+	
+	for i,xx in enumerate(lons.squeeze()):
+		d2 = abs(x-xx)
+		if d2<d:
+		   d=d2
+		   best = i
+		   print 'getORCAdepth:',i,x,xx,lons.shape, 'best:',best
+	if debug: print 'lons: in situ:', x,'index:', best, 'distance:',d,', closest model:',lons.shape, lons[best]
+	return best
+	
+def getclosestlat(x,lats,debug=True):
+	"""	Code to locate the closets latitute coordinate for transects. 
+		Only works for 1D latitute arrays
+		Returns an index
+	"""
+	d = 1000.
+	best = -1
+	if lats.ndim >1: 
+		print "getclosestlon:\tFATAL:\tThis code only works for 1D latitute arrays"
+		assert False
+	
+	for i,xx in enumerate(lats.squeeze()):
+		d2 = abs(x-xx)
+		if d2<d:
+		   d=d2
+		   best = i
+		   print 'getORCAdepth:',i,x,xx,lats.shape, 'best:',best
+	if debug: print 'lats: in situ:', x,'index:', best, 'distance:',d,', closest model:',lats.shape, lats[best]
+	return best
+	
+	
+	
 	
 def makeLonSafe(lon):
 	while True:
@@ -1528,4 +1588,30 @@ tdicts = {	'ZeroToZero': {i  :i     for i in xrange(12)},
 		'OneToZero':  {i+1:i     for i in xrange(12)},
 		'ZeroToOne':  {i  :i+1   for i in xrange(12)},			
 	}		      		
+
+def extractData(nc, details,key = ['',]):
+  	""" 	This loads the data based on the instructions from details dictionairy.
+  		If you want to do something funking to the data before plotting it,
+  			just create a new convert function in getMT().
+  		details dict usually contains: {'name': 'Chlorophylla', 'vars':['Chlorophylla',], 'convert': ukp.div1000,'units':'ug/L'}
+  	"""
+  	
+	if isinstance(details,dict): 
+  		keys = details.keys()
+  		print "extractData: details is a dict", details.keys()
+  	elif len(key) and key in nc.variables.keys():
+  		print "extractData: details Not a dict:", details,'but, the key is valid:',key
+  		return np.ma.array(nc.variables[key][:])  	
+ 		
+	if 'convert' in keys and 'vars' in keys:	
+		xd = np.ma.array(details['convert'](nc,details['vars']))
+		return xd
+  	
+  	print "extractData:\t you shouldn't get here", details, key
+  	assert False
+  	
+  	
+  	
+  	
+		      		
 		      		

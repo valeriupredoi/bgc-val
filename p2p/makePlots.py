@@ -290,8 +290,8 @@ class makePlots:
 	
 	#####
 	# Extract remaining data (already know lat,lon,time,depth)
-	xd = extractData(self.xnc,self.modeldetails,key = xkey)	
-	yd = extractData(self.ync,self.datadetails, key = ykey)
+	xd = ukp.extractData(self.xnc,self.modeldetails,key = xkey)	
+	yd = ukp.extractData(self.ync,self.datadetails, key = ykey)
  
 	
 	#####
@@ -663,48 +663,7 @@ class makePlots:
 	return filename
 
 
-def extractData(nc, details,key = ['',]):
-  	""" 	This loads the data based on the instructions from details dictionairy.
-  		If you want to do something funking to the data before plotting it,
-  			just create a new convert function in getMT().
-  		details dict usually contains: {'name': 'Chlorophylla', 'vars':['Chlorophylla',], 'convert': ukp.div1000,'units':'ug/L'}
-  	"""
-  	
-	if isinstance(details,dict): 
-  		keys = details.keys()
-  		print "extractData: details is a dict", details.keys()
-  	else:
-  		print "extractData: details Not a dict:", details
-  		return np.ma.array(nc.variables[key][:])
 
-	if 'convert' in keys and 'vars' in keys:	
-		xd = np.ma.array(details['convert'](nc,details['vars']))
-		return xd
-  	
-  	assert False
-  	
-
-def extractData_obsolute(nc, mt,key = ['',]):
-  	""" 	This loads the data based on the instructions from the getMT() function.
-  		If you want to do something funking to the data before plotting it,
-  			just create a new convert function in getMT().
-  	"""
-  	
-	if isinstance(mt,dict): 
-  		mtkeys = mt.keys()
-  		print "extractData: MT is a dict", mtkeys
-  	else:
-  		print "extractData: mt Not a dict:", mt, key
-  		return np.ma.array(nc.variables[key][:])
-
-	if 'convert' in mtkeys and 'vars' in mtkeys:		
-		xd = np.ma.array(mt['convert'](nc,mt['vars']))
-		return xd
-  	
-  	assert False
-  	print "extractData: Extracting data:\tinit:",mt
- 
-  	
 
 
 		
