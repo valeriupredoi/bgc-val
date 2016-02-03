@@ -32,7 +32,7 @@ from socket import gethostname
 #Specific local code:
 import UKESMpython as ukp
 from testsuite_p2p import testsuite_p2p
-from p2p import makePatternStatsPlots
+from p2p import makePatternStatsPlots, testsuite_p2p
 from p2p.patternAnalyses import InterAnnualPatterns,BGCvsPhysics
 from pftnames import months
 from p2p.shelveToDictionary import shelveToDictionary
