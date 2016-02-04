@@ -32,17 +32,17 @@ import timeseriesTools as tst
 def trafficlights(ax,xlims, bands,labels=[]):
 	if len(bands) != 6: print "wrong number of bands to traffic light."
 
-	ax.fill_between(xlims,bands[0], bands[1] ,color='r', alpha = 0.2)		
-	ax.fill_between(xlims,bands[1] ,bands[2] ,color='DarkOrange', alpha = 0.2)				
-	ax.fill_between(xlims,bands[2] ,bands[3] ,color='g', alpha = 0.2)
-	ax.fill_between(xlims,bands[3] ,bands[4] ,color='DarkOrange', alpha = 0.2)
-	ax.fill_between(xlims,bands[4] ,bands[5] ,color='r', alpha = 0.2)	
+	ax.fill_between(xlims,bands[0], bands[1] ,color='r', 		alpha = 0.2)		
+	ax.fill_between(xlims,bands[1] ,bands[2] ,color='DarkOrange', 	alpha = 0.2)				
+	ax.fill_between(xlims,bands[2] ,bands[3] ,color='g', 		alpha = 0.2)
+	ax.fill_between(xlims,bands[3] ,bands[4] ,color='DarkOrange', 	alpha = 0.2)
+	ax.fill_between(xlims,bands[4] ,bands[5] ,color='r', 		alpha = 0.2)	
 	
 	if len(labels)==5:
 		patch4 = mpatches.Patch(color='r', 		alpha = 0.2,label=labels[4])
-		patch3 = mpatches.Patch(color='DarkOrange', alpha = 0.2,label=labels[3])
+		patch3 = mpatches.Patch(color='DarkOrange', 	alpha = 0.2,label=labels[3])
 		patch2 = mpatches.Patch(color='g', 		alpha = 0.2,label=labels[2])
-		patch1 = mpatches.Patch(color='DarkOrange', alpha = 0.2,label=labels[1])
+		patch1 = mpatches.Patch(color='DarkOrange', 	alpha = 0.2,label=labels[1])
 		patch0 = mpatches.Patch(color='r', 		alpha = 0.2,label=labels[0])		
 		handles = [patch4,patch3,patch2,patch1,patch0,]
 		pyplot.legend(handles=handles)
@@ -64,46 +64,83 @@ def trafficlightsPlots(
 	ax = fig.add_subplot(211)	
 	pyplot.plot(times,arr)
 	pyplot.xlim(xlims)	
+	pyplot.title(title)	
+
+	if len(dataslice):
+		#pyplot.axhline(y=np.ma.mean(dataslice),c='k',ls='-',lw=2,alpha=0.5)
+		pyplot.axhline(y=np.ma.median(dataslice),c='k',ls='-',lw=1,)#alpha=0.5)	
+		pc1 = np.array([np.percentile(dataslice,25.) for i in xlims]) 
+		pc2 = np.array([np.percentile(dataslice,35.) for i in xlims])
+		pc3 = np.array([np.percentile(dataslice,45.) for i in xlims])
+		pc4 = np.array([np.percentile(dataslice,55.) for i in xlims])
+		pc5 = np.array([np.percentile(dataslice,65.) for i in xlims])
+		pc6 = np.array([np.percentile(dataslice,75.) for i in xlims])
+		labels = ['25-35 pc','35-45 pc','45-55 pc','55-65 pc','65-75 pc',]
+		ax = trafficlights(ax,xlims, [pc1,pc2,pc3,pc4,pc5,pc6],labels=labels)
+
 	
 
-	pc1 = np.array([np.percentile(dataslice,25.) for i in xlims]) 
-	pc2 = np.array([np.percentile(dataslice,35.) for i in xlims])
-	pc3 = np.array([np.percentile(dataslice,45.) for i in xlims])
-	pc4 = np.array([np.percentile(dataslice,55.)  for i in xlims])		
-	pc5 = np.array([np.percentile(dataslice,65.) for i in xlims])
-	pc6 = np.array([np.percentile(dataslice,75.) for i in xlims]) 
-	labels = ['25-35 pc','35-45 pc','45-55 pc','55-65 pc','65-75 pc',] 
-	ax = trafficlights(ax,xlims, [pc1,pc2,pc3,pc4,pc5,pc6],labels=labels)
-
-	
-	pyplot.title(title)
-	
-
-	
 	
 	ax = fig.add_subplot(212)
 	newt,cusum = tst.calcCuSum(times,arr)
 	
-	pyplot.plot(newt,cusum/np.mean(arr))
-	pyplot.title('Cumulative sum / in situ mean')
+	if len(dataslice):
+		pyplot.plot(newt,cusum/np.ma.median(dataslice))
+		pyplot.title('Cumulative sum / in situ media')		
+	else:
+		pyplot.plot(newt,cusum)		
+		pyplot.title('Cumulative sum')
+		
 	pyplot.xlim(xlims)	
 	pyplot.axhline(y=0.,c='k',ls='-',lw=2,alpha=0.5)
 	
+	if len(dataslice):
+		m25 = np.array([-0.25 for i in xlims]) 
+		m15 = np.array([-0.15 for i in xlims])
+		m05 = np.array([-0.05 for i in xlims])
+		p05 = np.array([0.05  for i in xlims])		
+		p15 = np.array([0.15 for i in xlims])
+		p25 = np.array([0.25 for i in xlims]) 
+		ax = trafficlights(ax,xlims, [m25,m15,m05,p05,p15,p25])
+	
+	print "UKESMpython:\tscatterPlot:\tSaving:" , filename
+	pyplot.savefig(filename )
+	pyplot.close()	
 
-	m25 = np.array([-0.25 for i in xlims]) 
-	m15 = np.array([-0.15 for i in xlims])
-	m05 = np.array([-0.05 for i in xlims])
-	p05 = np.array([0.05  for i in xlims])		
-	p15 = np.array([0.15 for i in xlims])
-	p25 = np.array([0.25 for i in xlims]) 
 
-	ax = trafficlights(ax,xlims, [m25,m15,m05,p05,p15,p25])
+def trafficlightsPlot(
+		times, 			# model times (in floats)
+		arr,			# model time series
+		dataslice,		# in situ data distribution
+		title 	='',
+		filename='',
+	):
+
+	xlims= [times[0],times[-1]]
 	
+	fig = pyplot.figure()
 	
+	ax = fig.add_subplot(111)	
+	pyplot.plot(times,arr)
+	pyplot.xlim(xlims)	
+	pyplot.title(title)	
+
+	if len(dataslice):
+		#pyplot.axhline(y=np.ma.mean(dataslice),c='k',ls='-',lw=2,alpha=0.5)
+		pyplot.axhline(y=np.ma.median(dataslice),c='k',ls='-',lw=1,)#alpha=0.5)	
+		pc1 = np.array([np.percentile(dataslice,25.) for i in xlims]) 
+		pc2 = np.array([np.percentile(dataslice,35.) for i in xlims])
+		pc3 = np.array([np.percentile(dataslice,45.) for i in xlims])
+		pc4 = np.array([np.percentile(dataslice,55.) for i in xlims])
+		pc5 = np.array([np.percentile(dataslice,65.) for i in xlims])
+		pc6 = np.array([np.percentile(dataslice,75.) for i in xlims])
+		labels = ['25-35 pc','35-45 pc','45-55 pc','55-65 pc','65-75 pc',]
+		ax = trafficlights(ax,xlims, [pc1,pc2,pc3,pc4,pc5,pc6],labels=labels)
 	
-		
 	print "UKESMpython:\tscatterPlot:\tSaving:" , filename
 	pyplot.savefig(filename )
 	pyplot.close()	
 	
+	
+		
 		

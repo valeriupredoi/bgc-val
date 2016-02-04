@@ -217,7 +217,7 @@ def getGridFile(grid):
 			assert False
         return gridFile
 	
-def sliceA(arr,region):
+def sliceA_obsolete(arr,region):
 	# you should already have removed time by now.
 	#assume time 0.
 	#if region == 'DeepestWetCells':return getDeepestWetCells(arr)

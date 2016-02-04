@@ -31,39 +31,27 @@ import UKESMpython as ukp
 
 
 
-def getTimeAndData(fn, coords,details, layer='Surface',region = 'Global'):
-	if type(nc) == type('filename'):
-		nc = Dataset(nc,'r')
-	
-	ts = getTimes(nc,coords)
-	
-	if layer in ['Surface','100m','200m','500m','1000m','2000m',]:
-		data = getHorizontalSlice(nc,coords,details,layer)
-	if layer == 'depthIntergrated':
-		data = getDepthIntegrated(nc,coords,details,layer)
-	
-	if region !='Global':
-		print "Not ready for non-global cuts"
-	return ts,data		
+#def getTimeAndData(fn, coords,details, layer='Surface',region = 'Global'):
+#	###
+#	# mostly unused
+#	if type(nc) == type('filename'):
+#		nc = Dataset(nc,'r')
+#	
+#	ts = getTimes(nc,coords)
+#	
+#	if layer in ['Surface','100m','200m','500m','1000m','2000m',]:
+#		data = getHorizontalSlice(nc,coords,details,layer)
+#	if layer == 'depthIntergrated':
+#		data = getDepthIntegrated(nc,coords,details,layer)
+#	if layer == 'Surface - 1000m':
+#		data = getHorizontalSlice(nc,coords,details,'Surface')
+#		data = data - getHorizontalSlice(nc,coords,details,'1000m',)
+#	if region !='Global':
+#		print "Not ready for non-global cuts"
+#	return ts,data		
+#
 
 
-
-def getMeanSurfaceChl(fn,coords,details):
-	# this needs to be combined with the tools from elsewhere.
-	nc = Dataset(fn,'r')
-	ts = getTimes(nc,coords)
-	d = getHorizontalSlice(nc,coords,details,depthLevel='Surface')
-	
-	return ts.mean(), d.mean()
-	
-def getMedianSurfaceChl(fn,coords,details):
-	# this needs to be combined with the tools from elsewhere.
-	nc = Dataset(fn,'r')
-	ts = getTimes(nc,coords)
-	d = getHorizontalSlice(nc,coords,details,depthLevel='Surface')
-	
-	return ts.mean(), np.ma.median(d)	
-	
 def getTimes(nc, coords):
 	if type(nc) == type('filename'):
 		nc = Dataset(nc,'r')
@@ -71,30 +59,71 @@ def getTimes(nc, coords):
 	ts = np.array([float(dt.year) + dt.dayofyr/365. for dt in dtimes])
 	return ts
 
+
 def loadData(nc,details):
 	if type(nc) == type('filename'):
 		nc = Dataset(nc,'r')
 	return ukp.extractData(nc,details)[:]
+
 	
-def getHorizontalSlice(nc,coords,details,depthLevel,data = ''):
+def getHorizontalSlice(nc,coords,details,layer,data = ''):
 	if type(nc) == type('filename'):
 		nc = Dataset(nc,'r')
 		
-	if depthLevel in ['Surface','100m','200m','500m','1000m','2000m',]:	
-		if depthLevel == 'Surface':	z = 0.
-		if depthLevel == '100m': 	z = 100.			
-		if depthLevel == '200m': 	z = 200.
-		if depthLevel == '500m': 	z = 500.
-		if depthLevel == '1000m': 	z = 1000.
-		if depthLevel == '2000m': 	z = 2000.
+	if layer in ['Surface','100m','200m','300m','500m','1000m','2000m',]:	
+		if layer == 'Surface':	z = 0.
+		if layer == '100m': 	z = 100.			
+		if layer == '200m': 	z = 200.
+		if layer == '300m': 	z = 300.		
+		if layer == '500m': 	z = 500.
+		if layer == '1000m': 	z = 1000.
+		if layer == '2000m': 	z = 2000.
+		k =  ukp.getORCAdepth(z,nc.variables[coords['z']][:],debug=True)
+		if data =='': 
+			return ukp.extractData(nc,details)[:,k,:,:]
+		return data[:,k,:,:]
+			
+	elif layer in  ['Surface - 1000m', 'Surface - 300m']:
+		if layer == 'Surface - 300m':  	z = 300.
+		if layer == 'Surface - 1000m': 	z = 1000.
+		k_surf =  ukp.getORCAdepth(0., nc.variables[coords['z']][:],debug=True)
+		k_low  =  ukp.getORCAdepth(z , nc.variables[coords['z']][:],debug=True)
+		print "getHorizontalSlice:\t",layer,"surface:",k_surf,'-->',k_low
+		if data =='': 
+			return ukp.extractData(nc,details)[:,k_surf,:,:] - ukp.extractData(nc,details)[:,k_low,:,:]
+		return data[:,k_surf,:,:] - data[:,k_low,:,:]
+
+	elif layer.lower() == 'depthint':
+		assert 0		
+#		return getDepthIntegrated(nc,coords,details,layer)
 	else:
 		assert 0
-	k =  ukp.getORCAdepth(z,nc.variables[coords['z']][:],debug=True)
-	if data =='': return ukp.extractData(nc,details)[:,k,:,:]
-	return data[:,k,:,:]
 
-def getDepthIntegrated(nc,coords,details,depthLevel):
 
+
+def applyRegionMask(nc,coords,details, region, layer = '',data = ''):
+	if type(nc) == type('filename'):
+		nc = Dataset(nc,'r')
+	if data == '': data = ukp.extractData(nc,details)
+	if region in ['Global','All']:return data
+
+	#xt = 	
+	#xz = 
+	#xy =
+	#xx = 
+	#xd = 
+	m = ukp.makeMask(details['name'],region, xt,xz,xy,xx,xd)
+	return np.ma.masked_where(m,data).compressed()
+	
+	
+		
+
+def getDepthIntegrated(nc,coords,details,layer,data):
+	if type(nc) == type('filename'):
+		nc = Dataset(nc,'r')
+	if data == '': data = ukp.extractData(nc,details)
+	
+	
 	return []
 
 
