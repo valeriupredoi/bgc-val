@@ -65,12 +65,28 @@ def loadData(nc,details):
 		nc = Dataset(nc,'r')
 	return ukp.extractData(nc,details)[:]
 
+
+def ApplyDepthSlice(arr,k):
+	if arr.ndim == 4: return arr[:,k,:,:]
+	if arr.ndim == 3: return arr[k,:,:]
+	if arr.ndim == 2: return arr	
 	
 def getHorizontalSlice(nc,coords,details,layer,data = ''):
 	if type(nc) == type('filename'):
 		nc = Dataset(nc,'r')
-		
+	
+	if coords['z'] == '' or coords['z'] not in nc.variables.keys():
+		print "getHorizontalSlice:\tNo depth field in",details['name']
+		if data =='': 	data = ukp.extractData(nc,details)
+		return data
+				
+	if len(nc.variables[coords['z']][:]) ==1 and layer in ['Surface',]:
+		print "getHorizontalSlice:\tNo depth field only 1 value",details['name']	
+		if data =='': 	data = ukp.extractData(nc,details)
+		return ApplyDepthSlice(data, 0)
+	
 	if layer in ['Surface','100m','200m','300m','500m','1000m','2000m',]:	
+	
 		if layer == 'Surface':	z = 0.
 		if layer == '100m': 	z = 100.			
 		if layer == '200m': 	z = 200.
@@ -79,9 +95,9 @@ def getHorizontalSlice(nc,coords,details,layer,data = ''):
 		if layer == '1000m': 	z = 1000.
 		if layer == '2000m': 	z = 2000.
 		k =  ukp.getORCAdepth(z,nc.variables[coords['z']][:],debug=True)
-		if data =='': 
-			return ukp.extractData(nc,details)[:,k,:,:]
-		return data[:,k,:,:]
+		if data =='': 	data = ukp.extractData(nc,details)
+		print "getHorizontalSlice:\tSpecific depth field requested",details['name'], layer,[k],nc.variables[coords['z']][k], data.shape
+		return ApplyDepthSlice(data, k)
 			
 	elif layer in  ['Surface - 1000m', 'Surface - 300m']:
 		if layer == 'Surface - 300m':  	z = 300.
@@ -90,8 +106,8 @@ def getHorizontalSlice(nc,coords,details,layer,data = ''):
 		k_low  =  ukp.getORCAdepth(z , nc.variables[coords['z']][:],debug=True)
 		print "getHorizontalSlice:\t",layer,"surface:",k_surf,'-->',k_low
 		if data =='': 
-			return ukp.extractData(nc,details)[:,k_surf,:,:] - ukp.extractData(nc,details)[:,k_low,:,:]
-		return data[:,k_surf,:,:] - data[:,k_low,:,:]
+			return ApplyDepthSlice(ukp.extractData(nc,details),k_surf) - ApplyDepthSlice(ukp.extractData(nc,details),k_low)
+		return ApplyDepthSlice(data, k_surf) - ApplyDepthSlice(data, k_low)
 
 	elif layer.lower() == 'depthint':
 		assert 0		

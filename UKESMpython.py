@@ -1003,8 +1003,8 @@ def getORCAdepth(z,depth,debug=True):
 		if d2<d:
 		   d=d2
 		   best = i
-		   print 'getORCAdepth:',i,z,zz,depth.shape, 'best:',best
-	if debug: print 'depth: in situ:', z,'index:', best, 'distance:',d,', closest model:',depth.shape, depth[best]
+		   print 'UKESMPython.getORCAdepth:',i,z,zz,depth.shape, 'best:',best
+	if debug: print 'UKESMPython.getORCAdepth:\tdepth: in situ:', z,'index:', best, 'distance:',d,', closest model:',depth.shape, depth[best]
 	return best
 
 def getclosestlon(x,lons,debug=True):

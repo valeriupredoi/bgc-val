@@ -28,7 +28,7 @@ from sys import argv,exit
 from os.path import exists
 from calendar import month_name
 from socket import gethostname
-
+from netCDF4 import Dataset
 from glob import glob
 
 
@@ -106,7 +106,8 @@ def analysis_timeseries(jobID = "u-ab671",
 		MLDFolder	= "/data/euryale7/scratch/ledm/IFREMER-MLD/"
 		workDir		= "/data/euryale7/scratch/ledm/ukesm_postProcessed/"
 		imgDir		= ukp.folder('images')
-		
+		eORCAgrid 	= '/data/euryale7/scratch/ledm/UKESM/MEDUSA/mesh_mask_eORCA1_wrk.nc'
+		GlodapDir	= "/data/euryale7/backup/ledm/Observations/GLODAP/"
 	if gethostname().find('ceda.ac.uk')>-1:
 		print "analysis-JASMIN.py:\tBeing run at CEDA on ",gethostname()
 			
@@ -139,12 +140,16 @@ def analysis_timeseries(jobID = "u-ab671",
 	doN		= True
 	doSi		= True
 	doO2		= True
-	doIntPP		= False
+	doAlk		= True
+	doDIC		= True
+	doAirSeaFlux	= True	
+	doIntPP_Lester	= 0#True
+	doIntPP_OSU	= True
 	
 	medusaCoords 	= {'t':'time_counter', 'z':'deptht', 'lat': 'nav_lat',  'lon': 'nav_lon',   'cal': '365_day',}	# model doesn't need time dict.
 	maredatCoords 	= {'t':'index_t', 'z':'DEPTH',  'lat': 'LATITUDE', 'lon': 'LONGITUDE', 'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
 	woaCoords 	= {'t':'index_t', 'z':'depth',  'lat': 'lat', 	   'lon': 'lon',       'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}	
-	
+	glodapCoords	= {'t':'index_t', 'z':'depth',  'lat': 'latitude', 'lon': 'longitude', 'cal': 'standard','tdict':[] }
 		
 	av = ukp.AutoVivification()	
 	if doChl:
@@ -166,7 +171,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['model']		= 'MEDUSA'
 
 		av[name]['modelgrid']		= 'eORCA1'
-		av[name]['gridFile']		= '/data/euryale7/scratch/ledm/UKESM/MEDUSA/mesh_mask_eORCA1_wrk.nc'
+		av[name]['gridFile']		= eORCAgrid
 
 
 	if doN:
@@ -188,7 +193,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['model']		= 'MEDUSA'
 
 		av[name]['modelgrid']		= 'eORCA1'
-		av[name]['gridFile']		= '/data/euryale7/scratch/ledm/UKESM/MEDUSA/mesh_mask_eORCA1_wrk.nc'
+		av[name]['gridFile']		= eORCAgrid
 
 	if doSi:
 
@@ -210,7 +215,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['model']		= 'MEDUSA'
 
 		av[name]['modelgrid']		= 'eORCA1'
-		av[name]['gridFile']		= '/data/euryale7/scratch/ledm/UKESM/MEDUSA/mesh_mask_eORCA1_wrk.nc'
+		av[name]['gridFile']		= eORCAgrid
 		
 	
 	if doO2:
@@ -232,35 +237,168 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['model']		= 'MEDUSA'
 
 		av[name]['modelgrid']		= 'eORCA1'
-		av[name]['gridFile']		= '/data/euryale7/scratch/ledm/UKESM/MEDUSA/mesh_mask_eORCA1_wrk.nc'
-			
+		av[name]['gridFile']		= eORCAgrid
 			
 
-	if doIntPP:
+	if doAlk:
+		name = 'Alkalinity'
+		av[name]['modelFiles']  	= sorted(glob("/data/euryale7/scratch/ledm/UKESM/MEDUSA/"+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
+		av[name]['dataFile'] 		=  GlodapDir+'Alk.nc'
+				
+		av[name]['modelcoords'] 	= medusaCoords 	
+		av[name]['datacoords'] 		= glodapCoords
+	
+		av[name]['modeldetails'] 	= {'name': 'Alkalinity', 'vars':['ALK',], 'convert': ukp.NoChange,}
+		av[name]['datadetails']  	= {'name': 'Alkalinity', 'vars':['Alk',], 'convert': ukp.NoChange,}
+	
+		av[name]['layers'] 		= ['Surface','100m','200m','Surface - 300m',]
+		av[name]['regions'] 		= ['Global',]#'NorthAtlantic']
+		av[name]['metrics']		= ['mean','median', ]
+
+		av[name]['datasource'] 		= 'GLODAP'
+		av[name]['model']		= 'MEDUSA'
+
+		av[name]['modelgrid']		= 'eORCA1'
+		av[name]['gridFile']		= eORCAgrid
+					
+
+
+	if doAirSeaFlux:
+	
+		nc = Dataset(eORCAgrid,'r')
+		area = nc.variables['e1t'][:]*nc.variables['e2t'][:]
+		nc.close()
+		def eOrcaTotal(nc,keys):
+			factor = 365. / 1.E9
+			arr = nc.variables[keys[0]][:].squeeze()
+			if arr.ndim ==3:
+				for i in np.arange(arr.shape[0]):
+					arr[i] = arr[i]*area
+			elif arr.ndim ==2: arr = arr*area
+			else: assert 0
+			return arr * factor
+					
+			
+		name = 'AirSeaFluxCO2'
+		av[name]['modelFiles']  	= sorted(glob("/data/euryale7/scratch/ledm/UKESM/MEDUSA/"+jobID+"/"+jobID+"o_1y_*_diad_T.nc"))
+		av[name]['dataFile'] 		=  ''
+				
+		av[name]['modelcoords'] 	= medusaCoords 	
+		av[name]['datacoords'] 		= []
+	
+		av[name]['modeldetails'] 	= {'name': 'AirSeaFluxCO2', 'vars':['CO2FLUX',], 'convert': eOrcaTotal,'units':'ton C/yr'}
+		av[name]['datadetails']  	= []
+	
+		av[name]['layers'] 		= ['Surface',]
+		av[name]['regions'] 		= ['Global',]#'NorthAtlantic']
+		av[name]['metrics']		= ['sum',]
+
+		av[name]['datasource'] 		= ''
+		av[name]['model']		= 'MEDUSA'
+
+		av[name]['modelgrid']		= 'eORCA1'
+		av[name]['gridFile']		= eORCAgrid
+					
+
+										
+					
+
+	if doIntPP_Lester:
 		#def NoChange(nc,keys):	return nc.variables[keys[0]][:]		
 		
-		#def depthInt(nc,keys):
-			#sum(nc.variables[keys[0]] * 5.	
-		name = 'IntegratedPrimaryProduction'
-		av[name]['modelFiles']  	= sorted(glob("/data/euryale7/scratch/ledm/UKESM/MEDUSA/"+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
-		av[name]['dataFile'] 		= "/data/euryale7/scratch/ledm/MAREDAT/MAREDAT/"+"MarEDat20121001Pigments.nc"	
+		def medusadepthInt(nc,keys):
+			return (nc.variables[keys[0]][:]+ nc.variables[keys[1]][:])* 6.625 * 12.011 / 1000.	
+		name = 'IntegratedPrimaryProduction_1x1'
+		av[name]['modelFiles']  	= sorted(glob("/data/euryale7/scratch/ledm/UKESM/MEDUSA/"+jobID+"/"+jobID+"o_1y_*_diad_T.nc"))
+		av[name]['dataFile'] 		= "/data/euryale7/backup/ledm/Observations/LestersReportData/PPint_1deg.nc"
+
+#	#		av['intpp']['Data']['File'] 	=  LesterFolder+'PPint_1deg.nc'
+#	#		av['intpp']['Data']['Vars'] 	= ['PPint',]
+
 				
 		av[name]['modelcoords'] 	= medusaCoords 	
 		av[name]['datacoords'] 		= maredatCoords
 	
-		av[name]['modeldetails'] 	= {'name': 'Chlorophylla', 'vars':['CHN','CHD'], 'convert': ukp.sums,'units':'mg C/m^3'}
-		av[name]['datadetails']  	= {'name': 'Chlorophylla', 'vars':['Chlorophylla',], 'convert': ukp.div1000,'units':'ug/L'}
+		av[name]['modeldetails'] 	= {'name': 'IntPP', 'vars':['PRN' ,'PRD'], 'convert': medusadepthInt,'units':'mg C/m^3'}
+		#av[name]['datadetails']  	= {'name': 'IntPP', 'vars':['Chlorophylla',], 'convert': ukp.div1000,'units':'ug/L'}
+		av[name]['datadetails']  	= {'name': 'IntPP', 'vars':['PPint',], 'convert': ukp.div1000,'units':'[ug/L/d'}		
+
 	
-		av[name]['layers'] 		= ['Surface','100m','200m','Surface - 1000m','Surface - 300m',]#'depthint']
+		av[name]['layers'] 		= ['Surface',]#'100m','200m','Surface - 1000m','Surface - 300m',]#'depthint']
 		av[name]['regions'] 		= ['Global',]#'NorthAtlantic']
-		av[name]['metrics']		= ['mean','median', ]
+		av[name]['metrics']		= ['mean','median', 'sum' ]
 
 		av[name]['datasource'] 		= 'MAREDAT'
 		av[name]['model']		= 'MEDUSA'
 
 		av[name]['modelgrid']		= 'eORCA1'
-		av[name]['gridFile']		= '/data/euryale7/scratch/ledm/UKESM/MEDUSA/mesh_mask_eORCA1_wrk.nc'
+		av[name]['gridFile']		= eORCAgrid
 		
+	if doIntPP_OSU:
+		nc = Dataset(eORCAgrid,'r')
+		area = nc.variables['e1t'][:]*nc.variables['e2t'][:]
+		nc.close()
+		def medusadepthInt(nc,keys):
+			#	 mmolN/m2/d        [mg C /m2/d]   [mgC/m2/yr] [gC/m2/yr]     Gt/m2/yr
+			factor = 1.		* 6.625 * 12.011 * 365.	      / 1000.   /     1E15
+			arr = (nc.variables[keys[0]][:]+ nc.variables[keys[1]][:]).squeeze()*factor
+			if arr.ndim ==3:
+				for i in np.arange(arr.shape[0]):
+					arr[i] = arr[i]*area
+			elif arr.ndim ==2: arr = arr*area
+			else: assert 0
+			return arr
+			
+		
+				
+		name = 'IntegratedPrimaryProduction_OSU'
+		av[name]['modelFiles']  	= sorted(glob("/data/euryale7/scratch/ledm/UKESM/MEDUSA/"+jobID+"/"+jobID+"o_1y_*_diad_T.nc"))
+		av[name]['dataFile'] 		= "/data/euryale7/scratch/ledm/OSU/standard_VGPM.SeaWIFS.global.nc"
+
+		av[name]['modelcoords'] 	= medusaCoords 	
+		av[name]['datacoords'] 		= glodapCoords
+
+
+
+		nc = Dataset(av[name]['dataFile'] ,'r')
+		lats = nc.variables['latitude'][:]
+		osuareas = np.zeros((1080, 2160))
+		osuarea = (111100. / 6.)**2. # area of a pixel at equator. in m2
+		for a in np.arange(1080):osuareas[a] = np.ones((2160,))*osuarea*np.cos(np.deg2rad(lats[a]))
+		
+		
+		def osuconvert(nc,keys):
+			arr = nc.variables[keys[0]][:,:,:] 
+			tlen = arr.shape[0]
+			
+			arr  = arr.sum(0)/tlen * 365.	/ 1000. /     1E15
+			if arr.ndim ==3:
+				for i in np.arange(arr.shape[0]):
+					arr[i] = arr[i]*osuarea
+			elif arr.ndim ==2: arr = arr*osuarea
+			else: assert 0
+			return arr
+						
+			
+
+	
+		av[name]['modeldetails'] 	= {'name': 'IntPP', 'vars':['PRN' ,'PRD'], 'convert': medusadepthInt,'units':'gC/yr'}
+		#av[name]['datadetails']  	= {'name': 'IntPP', 'vars':['Chlorophylla',], 'convert': ukp.div1000,'units':'ug/L'}
+		av[name]['datadetails']  	= {'name': 'IntPP', 'vars':['NPP',], 'convert': osuconvert,'units':'gC/yr'}
+
+	
+		av[name]['layers'] 		= ['Surface',]#'100m','200m','Surface - 1000m','Surface - 300m',]#'depthint']
+		av[name]['regions'] 		= ['Global',]#'NorthAtlantic']
+		av[name]['metrics']		= ['sum', ]
+
+		av[name]['datasource'] 		= 'OSU'
+		av[name]['model']		= 'MEDUSA'
+
+		av[name]['modelgrid']		= 'eORCA1'
+		av[name]['gridFile']		= eORCAgrid
+		
+			
+
 		
 	shelvedir 	= ukp.folder('shelves/timeseries/'+jobID)
 	imagedir	 = ukp.folder('images/timeseries/'+jobID)

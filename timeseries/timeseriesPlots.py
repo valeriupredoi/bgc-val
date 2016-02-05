@@ -112,8 +112,10 @@ def trafficlightsPlot(
 		times, 			# model times (in floats)
 		arr,			# model time series
 		dataslice,		# in situ data distribution
+		metric  = '',
 		title 	='',
 		filename='',
+		units = '',
 	):
 
 	xlims= [times[0],times[-1]]
@@ -125,7 +127,7 @@ def trafficlightsPlot(
 	pyplot.xlim(xlims)	
 	pyplot.title(title)	
 
-	if len(dataslice):
+	if len(dataslice) and metric != 'sum':
 		#pyplot.axhline(y=np.ma.mean(dataslice),c='k',ls='-',lw=2,alpha=0.5)
 		pyplot.axhline(y=np.ma.median(dataslice),c='k',ls='-',lw=1,)#alpha=0.5)	
 		pc1 = np.array([np.percentile(dataslice,25.) for i in xlims]) 
@@ -136,6 +138,9 @@ def trafficlightsPlot(
 		pc6 = np.array([np.percentile(dataslice,75.) for i in xlims])
 		labels = ['25-35 pc','35-45 pc','45-55 pc','55-65 pc','65-75 pc',]
 		ax = trafficlights(ax,xlims, [pc1,pc2,pc3,pc4,pc5,pc6],labels=labels)
+	if len(dataslice) and metric == 'sum':
+		pyplot.axhline(y=np.ma.sum(dataslice),c='k',ls='-',lw=1,)#alpha=0.5)		
+		
 	
 	print "UKESMpython:\tscatterPlot:\tSaving:" , filename
 	pyplot.savefig(filename )
