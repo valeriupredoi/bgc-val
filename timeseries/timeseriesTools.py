@@ -24,10 +24,11 @@
 
 import numpy as np
 from netCDF4 import Dataset,num2date
+import os 
 
 #Specific local code:
 import UKESMpython as ukp
-
+from convertToOneDNC import convertToOneDNC
 
 
 
@@ -132,7 +133,89 @@ def applyRegionMask(nc,coords,details, region, layer = '',data = ''):
 	return np.ma.masked_where(m,data).compressed()
 	
 	
+	
+	
+class DataLoader:
+  def __init__(self,fn,nc,coords,details, regions = ['Global',], layers = ['Surface',],data = ''):
+  	self.fn = fn
+	if type(nc) == type('filename'):
+		nc = Dataset(nc,'r')  
+  	self.nc 	= nc
+  	self.coords 	= coords
+  	self.details 	= details
+  	self.regions 	= regions
+  	self.layers 	= layers
+	if data == '': data = ukp.extractData(nc,self.details)  	
+  	self.Fulldata 	= data
+	
+	for r in self.regions:
+		if r in ['Global','All']:  continue
+		tmpname = ukp.folder('tmp/')+os.path.basename(self.fn).replace('.nc','-'+self.details['name']+'.nc')
+		if ukp.shouldIMakeFile(self.fn,tmpname,):
+			c = convertToOneDNC(self.fn, tmpname, variables=self.details['vars'], debug=True)
+		self.loadXYZArrays(tmpname)
+		break
+
+	self.run()
+	
+  def run(self):
+  	self.load = {}
+  	for region in self.regions:
+  	    for layer in self.layers:  	
+  	    	if region in  ['Global','All']:
+   			self.load[(region,layer)] =  getHorizontalSlice(self.nc,self.coords,self.details,layer,data = self.Fulldata)
+		else:
+   			self.load[(region,layer)] =  self.applyRegionMask(region,layer)
 		
+		
+  def loadXYZArrays(self,fn1d):
+  	"""	This code loads the lat, lon, depth arrays.
+  		For masking.
+  	"""
+  	nc1d = Dataset(fn1d,'r')
+  	
+	self.t = np.ma.array(nc1d.variables[self.coords['t']][:])
+	self.z = np.ma.array(nc1d.variables[self.coords['z']][:])
+	self.z_index = np.ma.array(nc1d.variables['index_z'][:])
+	#lat and lon
+	self.y = np.ma.array(nc1d.variables[self.coords['lat']][:])
+	self.x = np.ma.array(nc1d.variables[self.coords['lon']][:])
+	
+	self.d = np.ma.array(ukp.extractData(nc1d,self.details)[:])
+
+	self.m = self.d.mask + self.z.mask + self.t.mask + self.y.mask + self.x.mask
+  	nc1d.close()
+  	return
+  
+  def applyRegionMask(self,region,layer):
+  	"""	This code loads the lat, lon, depth arrays.
+  		For masking.
+  	""" 
+  	mask = self.m
+  	
+	if layer in ['Surface','100m','200m','300m','500m','1000m','2000m',]:	
+		if layer == 'Surface':	z = 0.
+		if layer == '100m': 	z = 100.			
+		if layer == '200m': 	z = 200.
+		if layer == '300m': 	z = 300.		
+		if layer == '500m': 	z = 500.
+		if layer == '1000m': 	z = 1000.
+		if layer == '2000m': 	z = 2000.
+		k =  ukp.getORCAdepth(z,self.nc.variables[self.coords['z']][:],debug=True)
+		mask += np.ma.masked_where(self.z_index!=k,self.z).mask
+		z = np.ma.masked_where(mask,self.z).compressed()
+		y = np.ma.masked_where(mask,self.y).compressed()
+		x = np.ma.masked_where(mask,self.x).compressed()
+		t = np.ma.masked_where(mask,self.t).compressed()
+		d = np.ma.masked_where(mask,self.d).compressed()
+		m = ukp.makeMask(self.details['name'],region, t,z,y,x,d)
+		return np.ma.masked_where(m,d).compressed()
+	else:
+  		assert 0
+  		
+  		
+  	
+  	return 	
 
 def getDepthIntegrated(nc,coords,details,layer,data):
 	if type(nc) == type('filename'):

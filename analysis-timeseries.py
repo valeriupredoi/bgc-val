@@ -137,14 +137,14 @@ def analysis_timeseries(jobID = "u-ab671",
 
 
 	doChl		= True
-	doN		= True
-	doSi		= True
-	doO2		= True
-	doAlk		= True
-	doDIC		= True
-	doAirSeaFlux	= True	
+	doN		= 0#True
+	doSi		= 0#True
+	doO2		= 0#True
+	doAlk		= 0#True
+	doDIC		= 0#True
+	doAirSeaFlux	= 0#True	
 	doIntPP_Lester	= 0#True
-	doIntPP_OSU	= True
+	doIntPP_OSU	= 0#True
 	
 	medusaCoords 	= {'t':'time_counter', 'z':'deptht', 'lat': 'nav_lat',  'lon': 'nav_lon',   'cal': '365_day',}	# model doesn't need time dict.
 	maredatCoords 	= {'t':'index_t', 'z':'DEPTH',  'lat': 'LATITUDE', 'lon': 'LONGITUDE', 'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
@@ -163,8 +163,8 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modeldetails'] 	= {'name': 'Chlorophylla', 'vars':['CHN','CHD'], 'convert': ukp.sums,'units':'mg C/m^3'}
 		av[name]['datadetails']  	= {'name': 'Chlorophylla', 'vars':['Chlorophylla',], 'convert': ukp.div1000,'units':'ug/L'}
 	
-		av[name]['layers'] 		= ['Surface','100m','200m','Surface - 1000m','Surface - 300m',]#'depthint']
-		av[name]['regions'] 		= ['Global',]#'NorthAtlantic']
+		av[name]['layers'] 		= ['Surface','100m','200m',]#'Surface - 1000m','Surface - 300m',]#'depthint']
+		av[name]['regions'] 		= ['Global','NorthAtlanticOcean',]
 		av[name]['metrics']		= ['mean','median', ]
 
 		av[name]['datasource'] 		= 'MAREDAT'
