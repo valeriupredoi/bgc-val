@@ -72,6 +72,11 @@ def ApplyDepthSlice(arr,k):
 	if arr.ndim == 3: return arr[k,:,:]
 	if arr.ndim == 2: return arr	
 	
+def ApplyDepthrange(arr,k1,k2):
+	if arr.ndim == 4: return arr[:,k1:k2,:,:]
+	if arr.ndim == 3: return arr[k1:k2,:,:]
+	if arr.ndim == 2: return arr
+		
 def getHorizontalSlice(nc,coords,details,layer,data = ''):
 	if type(nc) == type('filename'):
 		nc = Dataset(nc,'r')
@@ -95,7 +100,7 @@ def getHorizontalSlice(nc,coords,details,layer,data = ''):
 		if layer == '500m': 	z = 500.
 		if layer == '1000m': 	z = 1000.
 		if layer == '2000m': 	z = 2000.
-		k =  ukp.getORCAdepth(z,nc.variables[coords['z']][:],debug=True)
+		k =  ukp.getORCAdepth(z,nc.variables[coords['z']][:],debug=False)
 		if data =='': 	data = ukp.extractData(nc,details)
 		print "getHorizontalSlice:\tSpecific depth field requested",details['name'], layer,[k],nc.variables[coords['z']][k], data.shape
 		return ApplyDepthSlice(data, k)
@@ -103,13 +108,22 @@ def getHorizontalSlice(nc,coords,details,layer,data = ''):
 	elif layer in  ['Surface - 1000m', 'Surface - 300m']:
 		if layer == 'Surface - 300m':  	z = 300.
 		if layer == 'Surface - 1000m': 	z = 1000.
-		k_surf =  ukp.getORCAdepth(0., nc.variables[coords['z']][:],debug=True)
-		k_low  =  ukp.getORCAdepth(z , nc.variables[coords['z']][:],debug=True)
+		k_surf =  ukp.getORCAdepth(0., nc.variables[coords['z']][:],debug=False)
+		k_low  =  ukp.getORCAdepth(z , nc.variables[coords['z']][:],debug=False)
 		print "getHorizontalSlice:\t",layer,"surface:",k_surf,'-->',k_low
 		if data =='': 
 			return ApplyDepthSlice(ukp.extractData(nc,details),k_surf) - ApplyDepthSlice(ukp.extractData(nc,details),k_low)
 		return ApplyDepthSlice(data, k_surf) - ApplyDepthSlice(data, k_low)
-
+		
+	elif layer in  ['Surface to 100m', 'Surface to 300m']:
+		if layer == 'Surface to 300m':  z = 300.
+		if layer == 'Surface to 100m': 	z = 100.
+		k_surf =  ukp.getORCAdepth(0., nc.variables[coords['z']][:],debug=False)
+		k_low  =  ukp.getORCAdepth(z , nc.variables[coords['z']][:],debug=False)
+		print "getHorizontalSlice:\t",layer,"surface:",k_surf,'-->',k_low
+		if data =='': 
+			return ApplyDepthrange(ukp.extractData(nc,details),k_surf,k_low)
+		return ApplyDepthrange(data, k_surf,k_low)
 	elif layer.lower() == 'depthint':
 		assert 0		
 #		return getDepthIntegrated(nc,coords,details,layer)
@@ -118,25 +132,187 @@ def getHorizontalSlice(nc,coords,details,layer,data = ''):
 
 
 
-def applyRegionMask(nc,coords,details, region, layer = '',data = ''):
-	if type(nc) == type('filename'):
-		nc = Dataset(nc,'r')
-	if data == '': data = ukp.extractData(nc,details)
-	if region in ['Global','All']:return data
 
-	#xt = 	
-	#xz = 
-	#xy =
-	#xx = 
-	#xd = 
-	m = ukp.makeMask(details['name'],region, xt,xz,xy,xx,xd)
-	return np.ma.masked_where(m,data).compressed()
-	
-	
-	
 	
 class DataLoader:
   def __init__(self,fn,nc,coords,details, regions = ['Global',], layers = ['Surface',],data = ''):
+  	self.fn = fn
+	if type(nc) == type('filename'):
+		nc = Dataset(fn,'r')  
+  	self.nc 	= nc
+  	self.coords 	= coords
+  	self.details 	= details
+  	self.regions 	= regions
+  	self.layers 	= layers
+	if data == '': data = ukp.extractData(nc,self.details)  	
+  	self.Fulldata 	= data
+  	self.__lay__ 	= ''
+	self.run()
+	
+  def run(self):
+  	self.load = {}
+    	for layer in self.layers:  	
+  	    for region in self.regions:
+  	    	if region in  ['Global','All']:
+  	    		dat = self.__getlayerDat__(layer)
+  	    		
+   			self.load[(region,layer)] =  dat
+   			print "Loading Global Data", (region,layer), dat.min(),dat.max(),dat.mean()
+   			#getHorizontalSlice(self.nc,self.coords,self.details,layer,data = self.Fulldata)
+		else:
+   			self.load[(region,layer)] =  self.createDataArray(region,layer)
+   			
+  def __getlayerDat__(self,layer):
+  	""" Minimise quick load and save to minuimise disk-reading time.
+  	"""
+  	if self.__lay__ == layer:
+  		return self.__layDat__
+  	else:
+  		 self.__layDat__ = np.ma.array(getHorizontalSlice(self.nc,self.coords,self.details,layer,data = self.Fulldata))
+  		 self.__lay__ = layer
+  		 return self.__layDat__
+  		 
+  	
+  def createDataArray(self,region,layer):
+  	print 'createDataArray',self.details['name'],region,layer
+  	
+  	lat = self.nc.variables[self.coords['lat']][:]
+  	lon = self.nc.variables[self.coords['lon']][:]
+  	
+  	dat = self.__getlayerDat__(layer)
+  	#dat = np.ma.array(getHorizontalSlice(self.nc,self.coords,self.details,layer,data = self.Fulldata))
+  	
+  	arr = []
+  	if region == 'SouthernHemisphere':	regionlims  = {'lat_min':-90.,'lat_max': 0.,'lon_min':-360.,'lon_max':360.}
+  	if region == 'NorthernHemisphere':	regionlims  = {'lat_min':  0.,'lat_max':90.,'lon_min':-360.,'lon_max':360.}  	
+  	
+	if region == 'NorthAtlanticOcean': 	regionlims  = {'lat_min':  10.,'lat_max': 60.,'lon_min':-80.,'lon_max':10.}
+	if region == 'SouthAtlanticOcean': 	regionlims  = {'lat_min': -50.,'lat_max':-10.,'lon_min':-65.,'lon_max':20.}	
+
+	if region == 'EquatorialAtlanticOcean': regionlims  = {'lat_min': -15.,'lat_max': 15.,'lon_min':-65.,'lon_max':20.}	
+	
+		
+		
+"""  	for index,v in ukp.maenumerate(dat):
+  		if lat.ndim == 2:  
+  			(t,z,y,x) 	= index
+  			la = lat[y,x]  			
+  		if lat.ndim == 1:  (t,y,x) 	= index  		
+  		  	la = lon[y]
+  			work in progress here.
+  			la = lat[y,x]
+  			if la<regionlims['lat_min']:continue
+  			if la>regionlims['lat_max']:continue  	
+  			
+  			lo = lon[y,x]  			
+  			if lo<regionlims['lon_min']:continue
+  			if lo>regionlims['lon_max']:continue
+  			
+  			if np.ma.is_masked(v):continue  
+  			if v > 1E20:continue    						
+  			arr.append(v)"""
+  	
+  	if lat.ndim == 2:
+   	    if dat.ndim==4:
+  		for (t,z,y,x),v in ukp.maenumerate(dat):
+  			la = lat[y,x]
+  			if la<regionlims['lat_min']:continue
+  			if la>regionlims['lat_max']:continue  	
+  			
+  			lo = lon[y,x]  			
+  			if lo<regionlims['lon_min']:continue
+  			if lo>regionlims['lon_max']:continue
+  			
+  			if np.ma.is_masked(v):continue  
+  			if v > 1E20:continue    						
+  			arr.append(v)
+   	    if dat.ndim==3:
+  		for (t,y,x),v in ukp.maenumerate(dat):
+  			la = lat[y,x]
+  			if la<regionlims['lat_min']:continue
+  			if la>regionlims['lat_max']:continue  	
+  			
+  			lo = lon[y,x]  			
+  			if lo<regionlims['lon_min']:continue
+  			if lo>regionlims['lon_max']:continue
+  			if np.ma.is_masked(v):continue  
+  			if v > 1E20:continue    						  						
+  			arr.append(v)
+
+  	if lat.ndim == 1:
+   	    if dat.ndim==4:
+  		for (t,z,y,x),v in ukp.maenumerate(dat):
+  			la = lat[y]
+  			if la<regionlims['lat_min']:continue
+  			if la>regionlims['lat_max']:continue  	
+  			lo = lon[x]  
+  			if lo<regionlims['lon_min']:continue
+  			if lo>regionlims['lon_max']:continue
+  			if np.ma.is_masked(v):continue
+  			if v > 1E20:continue    						  			
+  			arr.append(v)
+   	    if dat.ndim==3:
+  		for (t,y,x),v in ukp.maenumerate(dat):
+  			la = lat[y]
+  			if la<regionlims['lat_min']:continue
+  			if la>regionlims['lat_max']:continue  	
+  			lo = lon[x]  			
+  			if lo<regionlims['lon_min']:continue
+  			if lo>regionlims['lon_max']:continue
+  			if np.ma.is_masked(v):continue
+  			if v > 1E20:continue    						  			
+  			arr.append(v)
+  	arr = np.ma.array(arr)	
+  	np.ma.masked_where(arr>1E30,arr).compressed()
+  	return arr
+  	
+  	
+  	
+  
+ 		
+ 		
+  	
+
+def getDepthIntegrated(nc,coords,details,layer,data):
+	if type(nc) == type('filename'):
+		nc = Dataset(nc,'r')
+	if data == '': data = ukp.extractData(nc,details)
+	
+	
+	return []
+
+
+
+def calcCuSum(times,arr):
+	newt,cusum = [],[]
+	
+	c = 0.
+	for i,ti in enumerate(times):
+		if i==0:continue
+		t0 = times[i-1]
+		t= t0 + (ti-t0)/2.
+		c += arr[i] - arr[i-1]
+		newt.append(t)
+		cusum.append(c)
+
+	return newt,cusum
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+class DataLoader_1Darrays:
+  def __init__(self,fn,nc,coords,details, regions = ['Global',], layers = ['Surface',],data = ''):
+  	assert False
   	self.fn = fn
 	if type(nc) == type('filename'):
 		nc = Dataset(nc,'r')  
@@ -185,7 +361,6 @@ class DataLoader:
 
 	self.m = self.d.mask + self.z.mask + self.t.mask + self.y.mask + self.x.mask
   	nc1d.close()
-  	return
   
   def applyRegionMask(self,region,layer):
   	"""	This code loads the lat, lon, depth arrays.
@@ -201,7 +376,7 @@ class DataLoader:
 		if layer == '500m': 	z = 500.
 		if layer == '1000m': 	z = 1000.
 		if layer == '2000m': 	z = 2000.
-		k =  ukp.getORCAdepth(z,self.nc.variables[self.coords['z']][:],debug=True)
+		k =  ukp.getORCAdepth(z,self.nc.variables[self.coords['z']][:],debug=False)
 		mask += np.ma.masked_where(self.z_index!=k,self.z).mask
 		z = np.ma.masked_where(mask,self.z).compressed()
 		y = np.ma.masked_where(mask,self.y).compressed()
@@ -214,32 +389,3 @@ class DataLoader:
   		assert 0
   		
   		
-  	
-  	return 	
-
-def getDepthIntegrated(nc,coords,details,layer,data):
-	if type(nc) == type('filename'):
-		nc = Dataset(nc,'r')
-	if data == '': data = ukp.extractData(nc,details)
-	
-	
-	return []
-
-
-
-def calcCuSum(times,arr):
-	newt,cusum = [],[]
-	
-	c = 0.
-	for i,ti in enumerate(times):
-		if i==0:continue
-		t0 = times[i-1]
-		t= t0 + (ti-t0)/2.
-		c += arr[i] - arr[i-1]
-		newt.append(t)
-		cusum.append(c)
-
-	return newt,cusum
-	
-	
-	

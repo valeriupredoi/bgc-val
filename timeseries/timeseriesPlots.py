@@ -118,6 +118,9 @@ def trafficlightsPlot(
 		units = '',
 	):
 
+	if len(times) ==0 or len(arr) == 0:
+		print "trafficlightsPlot:\tWARNING:\tdata or time arrays are empty.",len(times),len(arr),title
+		return
 	xlims= [times[0],times[-1]]
 	
 	fig = pyplot.figure()
@@ -128,6 +131,7 @@ def trafficlightsPlot(
 	pyplot.title(title)	
 
 	if len(dataslice) and metric != 'sum':
+		
 		#pyplot.axhline(y=np.ma.mean(dataslice),c='k',ls='-',lw=2,alpha=0.5)
 		pyplot.axhline(y=np.ma.median(dataslice),c='k',ls='-',lw=1,)#alpha=0.5)	
 		pc1 = np.array([np.percentile(dataslice,25.) for i in xlims]) 

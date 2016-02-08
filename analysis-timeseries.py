@@ -95,8 +95,8 @@ def analysis_timeseries(jobID = "u-ab671",
 	if gethostname().find('pmpc')>-1:	
 		print "analysis-JASMIN.py:\tBeing run at PML on ",gethostname()
 		
-		MEDUSAFolder_pref	= "/data/euryale7/scratch/ledm/UKESM/MEDUSA/xkrus_postProc/"
-		NEMOFolder_pref		= "/data/euryale7/scratch/ledm/UKESM/MEDUSA/xkrus_postProc/"
+		MEDUSAFolder_pref	= "/data/euryale7/scratch/ledm/UKESM/MEDUSA/"
+		NEMOFolder_pref		= "/data/euryale7/scratch/ledm/UKESM/MEDUSA/"
 	
 		if annual:	WOAFolder 	= "/data/euryale7/scratch/ledm/WOA/annual/"
 		else:		WOAFolder 	= "/data/euryale7/scratch/ledm/WOA/"
@@ -136,7 +136,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		
 
 
-	doChl		= True
+	doChl		= 0#True
 	doN		= 0#True
 	doSi		= 0#True
 	doO2		= 0#True
@@ -145,16 +145,22 @@ def analysis_timeseries(jobID = "u-ab671",
 	doAirSeaFlux	= 0#True	
 	doIntPP_Lester	= 0#True
 	doIntPP_OSU	= 0#True
+
+	doT		= True
+	doS		= True
+	doMLD		= 0#True
 	
 	medusaCoords 	= {'t':'time_counter', 'z':'deptht', 'lat': 'nav_lat',  'lon': 'nav_lon',   'cal': '365_day',}	# model doesn't need time dict.
 	maredatCoords 	= {'t':'index_t', 'z':'DEPTH',  'lat': 'LATITUDE', 'lon': 'LONGITUDE', 'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
 	woaCoords 	= {'t':'index_t', 'z':'depth',  'lat': 'lat', 	   'lon': 'lon',       'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}	
 	glodapCoords	= {'t':'index_t', 'z':'depth',  'lat': 'latitude', 'lon': 'longitude', 'cal': 'standard','tdict':[] }
+	mldCoords	= {'t':'index_t', 'z':'index_z','lat':'lat','lon':'lon','cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
+	regions 	= ['Global','NorthAtlanticOcean','SouthAtlanticOcean',]
+	av = ukp.AutoVivification()
 		
-	av = ukp.AutoVivification()	
 	if doChl:
 		name = 'Chlorophyll'
-		av[name]['modelFiles']  	= sorted(glob("/data/euryale7/scratch/ledm/UKESM/MEDUSA/"+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
+		av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
 		av[name]['dataFile'] 		= MAREDATFolder+"MarEDat20121001Pigments.nc"	
 				
 		av[name]['modelcoords'] 	= medusaCoords 	
@@ -164,7 +170,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['datadetails']  	= {'name': 'Chlorophylla', 'vars':['Chlorophylla',], 'convert': ukp.div1000,'units':'ug/L'}
 	
 		av[name]['layers'] 		= ['Surface','100m','200m',]#'Surface - 1000m','Surface - 300m',]#'depthint']
-		av[name]['regions'] 		= ['Global','NorthAtlanticOcean',]
+		av[name]['regions'] 		= ['SouthernHemisphere','NorthernHemisphere','Global',	'NorthAtlanticOcean','SouthAtlanticOcean','EquatorialAtlanticOcean']
 		av[name]['metrics']		= ['mean','median', ]
 
 		av[name]['datasource'] 		= 'MAREDAT'
@@ -176,7 +182,7 @@ def analysis_timeseries(jobID = "u-ab671",
 
 	if doN:
 		name = 'Nitrate'
-		av[name]['modelFiles']  	= sorted(glob("/data/euryale7/scratch/ledm/UKESM/MEDUSA/"+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
+		av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
 		av[name]['dataFile'] 		=  WOAFolder+'nitrate_monthly_1deg.nc'
 				
 		av[name]['modelcoords'] 	= medusaCoords 	
@@ -186,7 +192,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['datadetails']  	= {'name': 'nitrate', 'vars':['n_an',], 'convert': ukp.NoChange,}
 	
 		av[name]['layers'] 		= ['Surface','100m','200m','Surface - 300m',]
-		av[name]['regions'] 		= ['Global',]#'NorthAtlantic']
+		av[name]['regions'] 		= ['Global','NorthAtlanticOcean','SouthAtlanticOcean',]#'NorthAtlantic']
 		av[name]['metrics']		= ['mean','median', ]
 
 		av[name]['datasource'] 		= 'WOA'
@@ -198,7 +204,7 @@ def analysis_timeseries(jobID = "u-ab671",
 	if doSi:
 
 		name = 'Silicate'
-		av[name]['modelFiles']  	= sorted(glob("/data/euryale7/scratch/ledm/UKESM/MEDUSA/"+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
+		av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
 		av[name]['dataFile'] 		=  WOAFolder+'silicate_monthly_1deg.nc'
 				
 		av[name]['modelcoords'] 	= medusaCoords 	
@@ -208,7 +214,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['datadetails']  	= {'name': 'silicate', 'vars':['i_an',], 'convert': ukp.NoChange,}
 	
 		av[name]['layers'] 		= ['Surface','100m','200m','Surface - 300m',]
-		av[name]['regions'] 		= ['Global',]#'NorthAtlantic']
+		av[name]['regions'] 		= regions
 		av[name]['metrics']		= ['mean','median', ]
 
 		av[name]['datasource'] 		= 'WOA'
@@ -220,7 +226,7 @@ def analysis_timeseries(jobID = "u-ab671",
 	
 	if doO2:
 		name = 'Oxygen'
-		av[name]['modelFiles']  	= sorted(glob("/data/euryale7/scratch/ledm/UKESM/MEDUSA/"+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
+		av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
 		av[name]['dataFile'] 		=  WOAFolder+'oxygen-woa13.nc'
 				
 		av[name]['modelcoords'] 	= medusaCoords 	
@@ -230,7 +236,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['datadetails']  	= {'name': 'oxygen', 'vars':['o_an',], 'convert': ukp.oxconvert,'units':'mmol/m^3'}
 	
 		av[name]['layers'] 		= ['Surface','100m','200m','Surface - 300m',]
-		av[name]['regions'] 		= ['Global',]#'NorthAtlantic']
+		av[name]['regions'] 		= regions
 		av[name]['metrics']		= ['mean','median', ]
 
 		av[name]['datasource'] 		= 'WOA'
@@ -242,7 +248,7 @@ def analysis_timeseries(jobID = "u-ab671",
 
 	if doAlk:
 		name = 'Alkalinity'
-		av[name]['modelFiles']  	= sorted(glob("/data/euryale7/scratch/ledm/UKESM/MEDUSA/"+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
+		av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
 		av[name]['dataFile'] 		=  GlodapDir+'Alk.nc'
 				
 		av[name]['modelcoords'] 	= medusaCoords 	
@@ -252,7 +258,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['datadetails']  	= {'name': 'Alkalinity', 'vars':['Alk',], 'convert': ukp.NoChange,}
 	
 		av[name]['layers'] 		= ['Surface','100m','200m','Surface - 300m',]
-		av[name]['regions'] 		= ['Global',]#'NorthAtlantic']
+		av[name]['regions'] 		= regions
 		av[name]['metrics']		= ['mean','median', ]
 
 		av[name]['datasource'] 		= 'GLODAP'
@@ -280,7 +286,7 @@ def analysis_timeseries(jobID = "u-ab671",
 					
 			
 		name = 'AirSeaFluxCO2'
-		av[name]['modelFiles']  	= sorted(glob("/data/euryale7/scratch/ledm/UKESM/MEDUSA/"+jobID+"/"+jobID+"o_1y_*_diad_T.nc"))
+		av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_diad_T.nc"))
 		av[name]['dataFile'] 		=  ''
 				
 		av[name]['modelcoords'] 	= medusaCoords 	
@@ -290,7 +296,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['datadetails']  	= []
 	
 		av[name]['layers'] 		= ['Surface',]
-		av[name]['regions'] 		= ['Global',]#'NorthAtlantic']
+		av[name]['regions'] 		= regions
 		av[name]['metrics']		= ['sum',]
 
 		av[name]['datasource'] 		= ''
@@ -309,7 +315,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		def medusadepthInt(nc,keys):
 			return (nc.variables[keys[0]][:]+ nc.variables[keys[1]][:])* 6.625 * 12.011 / 1000.	
 		name = 'IntegratedPrimaryProduction_1x1'
-		av[name]['modelFiles']  	= sorted(glob("/data/euryale7/scratch/ledm/UKESM/MEDUSA/"+jobID+"/"+jobID+"o_1y_*_diad_T.nc"))
+		av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_diad_T.nc"))
 		av[name]['dataFile'] 		= "/data/euryale7/backup/ledm/Observations/LestersReportData/PPint_1deg.nc"
 
 #	#		av['intpp']['Data']['File'] 	=  LesterFolder+'PPint_1deg.nc'
@@ -325,7 +331,7 @@ def analysis_timeseries(jobID = "u-ab671",
 
 	
 		av[name]['layers'] 		= ['Surface',]#'100m','200m','Surface - 1000m','Surface - 300m',]#'depthint']
-		av[name]['regions'] 		= ['Global',]#'NorthAtlantic']
+		av[name]['regions'] 		= regions
 		av[name]['metrics']		= ['mean','median', 'sum' ]
 
 		av[name]['datasource'] 		= 'MAREDAT'
@@ -352,7 +358,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		
 				
 		name = 'IntegratedPrimaryProduction_OSU'
-		av[name]['modelFiles']  	= sorted(glob("/data/euryale7/scratch/ledm/UKESM/MEDUSA/"+jobID+"/"+jobID+"o_1y_*_diad_T.nc"))
+		av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_diad_T.nc"))
 		av[name]['dataFile'] 		= "/data/euryale7/scratch/ledm/OSU/standard_VGPM.SeaWIFS.global.nc"
 
 		av[name]['modelcoords'] 	= medusaCoords 	
@@ -388,7 +394,7 @@ def analysis_timeseries(jobID = "u-ab671",
 
 	
 		av[name]['layers'] 		= ['Surface',]#'100m','200m','Surface - 1000m','Surface - 300m',]#'depthint']
-		av[name]['regions'] 		= ['Global',]#'NorthAtlantic']
+		av[name]['regions'] 		= regions
 		av[name]['metrics']		= ['sum', ]
 
 		av[name]['datasource'] 		= 'OSU'
@@ -397,7 +403,76 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= eORCAgrid
 		
+	if doT:
+		name = 'Temperature'
+		av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_grid_T.nc"))
+		av[name]['dataFile'] 		= WOAFolder+'temperature_monthly_1deg.nc'	
+				
+		av[name]['modelcoords'] 	= medusaCoords 	
+		av[name]['datacoords'] 		= woaCoords
+	
+		av[name]['modeldetails'] 	= {'name': 'temperature', 'vars':['votemper',], 'convert': ukp.NoChange,}
+		av[name]['datadetails']  	= {'name': 'temperature', 'vars':['t_an',], 'convert': ukp.NoChange,}
+	
+		av[name]['layers'] 		= ['Surface',]#'Surface - 1000m','Surface - 300m',]#'depthint']
+		av[name]['regions'] 		= ['SouthernHemisphere','NorthernHemisphere','Global',	'NorthAtlanticOcean','SouthAtlanticOcean','EquatorialAtlanticOcean']
+		av[name]['metrics']		= ['mean','median', ]
+
+		av[name]['datasource'] 		= 'WOA'
+		av[name]['model']		= 'NEMO'
+
+		av[name]['modelgrid']		= 'eORCA1'
+		av[name]['gridFile']		= eORCAgrid
+
+					
+	if doS:
+		name = 'salinity'
+		av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_grid_T.nc"))
+		av[name]['dataFile'] 		= WOAFolder+'salinity_monthly_1deg.nc'	
+				
+		av[name]['modelcoords'] 	= medusaCoords 	
+		av[name]['datacoords'] 		= woaCoords
+	
+		av[name]['modeldetails'] 	= {'name': 'salinity', 'vars':['vosaline',], 'convert': ukp.NoChange,}	
+		av[name]['datadetails']  	= {'name': 'salinity', 'vars':['s_an',], 'convert': ukp.NoChange,}
+	
+		av[name]['layers'] 		= ['Surface',]#'Surface - 1000m','Surface - 300m',]#'depthint']
+		av[name]['regions'] 		= ['SouthernHemisphere','NorthernHemisphere','Global',	'NorthAtlanticOcean','SouthAtlanticOcean','EquatorialAtlanticOcean']
+		av[name]['metrics']		= ['mean','median', ]
+
+		av[name]['datasource'] 		= 'WOA'
+		av[name]['model']		= 'NEMO'
+
+		av[name]['modelgrid']		= 'eORCA1'
+		av[name]['gridFile']		= eORCAgrid
+
+	if doMLD:
+		
+		def mldapplymask(nc,keys):
+			return np.ma.masked_where(np.tile(nc.variables[keys[1]][:],(12,1,1))==0.,nc.variables[keys[0]][:])	
 			
+		name = 'salinity'
+		av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_grid_T.nc"))
+		av[name]['dataFile'] 		= MLDFolder+"mld_DT02_c1m_reg2.0.nc"	
+				
+		av[name]['modelcoords'] 	= medusaCoords 	
+		av[name]['datacoords'] 		= mldCoords
+	
+		av[name]['modeldetails'] 	= {'name': 'mld', 'vars':['somxl010',], 'convert': ukp.NoChange,'units':'m'}	
+		av[name]['datadetails']  	= {'name': 'mld', 'vars':['mld','mask',], 'convert': mldapplymask,'units':'m'}
+	
+		av[name]['layers'] 		= ['Surface',]#'Surface - 1000m','Surface - 300m',]#'depthint']
+		av[name]['regions'] 		= ['SouthernHemisphere','NorthernHemisphere','Global',	'NorthAtlanticOcean','SouthAtlanticOcean','EquatorialAtlanticOcean']
+		av[name]['metrics']		= ['mean','median', ]
+
+		av[name]['datasource'] 		= 'IFREMER'
+		av[name]['model']		= 'NEMO'
+
+		av[name]['modelgrid']		= 'eORCA1'
+		av[name]['gridFile']		= eORCAgrid
+		
+			
+				
 
 		
 	shelvedir 	= ukp.folder('shelves/timeseries/'+jobID)

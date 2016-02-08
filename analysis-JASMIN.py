@@ -407,7 +407,7 @@ def analysis_jasmin(
 			av['salinity']['Data']['coords'] 	= woaCoords
 			av['salinity']['NEMO']['coords']	= medusaCoords
 			av['salinity']['Data']['source'] 	= 'WOA'
-			av['salinity']['NEMO']['source']	= 'MEDUSA'			
+			av['salinity']['NEMO']['source']	= 'NEMO'			
 	
 			av['salinity']['NEMO']['details']	= {'name': 'salinity', 'vars':['vosaline',], 'convert': ukp.NoChange,}			
 			av['salinity']['Data']['details']	= {'name': 'salinity', 'vars':['s_an',], 'convert': ukp.NoChange,}	# no units?
@@ -425,7 +425,7 @@ def analysis_jasmin(
 			av['temperature']['Data']['coords'] 	= woaCoords
 			av['temperature']['NEMO']['coords']	= medusaCoords
 			av['temperature']['Data']['source'] 	= 'WOA'
-			av['temperature']['NEMO']['source']	= 'MEDUSA'			
+			av['temperature']['NEMO']['source']	= 'NEMO'			
 	
 			av['temperature']['NEMO']['details']	= {'name': 'temperature', 'vars':['votemper',], 'convert': ukp.NoChange,}			
 			av['temperature']['Data']['details']	= {'name': 'temperature', 'vars':['t_an',], 'convert': ukp.NoChange,}	# no units?
@@ -444,8 +444,8 @@ def analysis_jasmin(
 
 			av['mld']['Data']['coords'] 	= {'t':'index_t', 'z':'index_z','lat':'lat','lon':'lon','cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
 			av['mld']['NEMO']['coords']	= medusaCoords
-			av['mld']['Data']['source'] 	= 'WOA'
-			av['mld']['NEMO']['source']	= 'IFREMER'			
+			av['mld']['Data']['source'] 	= 'IFREMER'
+			av['mld']['NEMO']['source']	= 'NEMO'			
 	
 			av['mld']['NEMO']['details']	= {'name': 'mld', 'vars':['somxl010',], 'convert': ukp.NoChange,'units':'m'}			
 			av['mld']['Data']['details']	= {'name': 'mld', 'vars':['mld','mask',], 'convert': ukp.applymask,'units':'m'}	# no units?

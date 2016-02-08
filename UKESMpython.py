@@ -27,7 +27,7 @@ from netCDF4 import Dataset
 from os.path  import exists,getmtime
 from os import mkdir, makedirs
 from glob import glob
-from itertools import product
+from itertools import product,izip
 import numpy as np
 from matplotlib import pyplot
 from mpl_toolkits.basemap import Basemap
@@ -104,6 +104,18 @@ def makeThisSafe(arr,log=False,debug = True, key='',noSqueeze=False):
 		
 	return arr
 
+
+
+def maenumerate(marr):
+	"""	Masked assary enumerate command based on numpy.ndenumerate, which iterates a list of (index, value) for n-dimensional arrays.
+		This version ignores masked values.
+	"""
+	
+    	mask = ~marr.mask.ravel()
+    	for i, m in izip(np.ndenumerate(marr), mask):
+        	if m: yield i
+        
+        
 
 class AutoVivification(dict):
     """Implementation of perl's autovivification feature.
@@ -1003,7 +1015,7 @@ def getORCAdepth(z,depth,debug=True):
 		if d2<d:
 		   d=d2
 		   best = i
-		   print 'UKESMPython.getORCAdepth:',i,z,zz,depth.shape, 'best:',best
+		   if debug: print 'UKESMPython.getORCAdepth:',i,z,zz,depth.shape, 'best:',best
 	if debug: print 'UKESMPython.getORCAdepth:\tdepth: in situ:', z,'index:', best, 'distance:',d,', closest model:',depth.shape, depth[best]
 	return best
 
