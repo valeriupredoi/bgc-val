@@ -1611,6 +1611,7 @@ def extractData(nc, details,key = ['',]):
 	if isinstance(details,dict): 
   		keys = details.keys()
   		print "extractData: details is a dict", details.keys()
+  		
   	elif len(key) and key in nc.variables.keys():
   		print "extractData: details Not a dict:", details,'but, the key is valid:',key
   		return np.ma.array(nc.variables[key][:])  	

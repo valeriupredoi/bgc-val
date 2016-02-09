@@ -136,19 +136,19 @@ def analysis_timeseries(jobID = "u-ab671",
 		
 
 
-	doChl		= 0#True
-	doN		= 0#True
-	doSi		= 0#True
-	doO2		= 0#True
-	doAlk		= 0#True
-	doDIC		= 0#True
+	doChl		= True
+	doN		= True
+	doSi		= True
+	doO2		= True
+	doAlk		= True
+	doDIC		= True
 	doAirSeaFlux	= 0#True	
 	doIntPP_Lester	= 0#True
-	doIntPP_OSU	= 0#True
+	doIntPP_OSU	= True
 
 	doT		= True
 	doS		= True
-	doMLD		= 0#True
+	doMLD		= True
 	
 	medusaCoords 	= {'t':'time_counter', 'z':'deptht', 'lat': 'nav_lat',  'lon': 'nav_lon',   'cal': '365_day',}	# model doesn't need time dict.
 	maredatCoords 	= {'t':'index_t', 'z':'DEPTH',  'lat': 'LATITUDE', 'lon': 'LONGITUDE', 'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
@@ -169,7 +169,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modeldetails'] 	= {'name': 'Chlorophylla', 'vars':['CHN','CHD'], 'convert': ukp.sums,'units':'mg C/m^3'}
 		av[name]['datadetails']  	= {'name': 'Chlorophylla', 'vars':['Chlorophylla',], 'convert': ukp.div1000,'units':'ug/L'}
 	
-		av[name]['layers'] 		= ['Surface','100m','200m',]#'Surface - 1000m','Surface - 300m',]#'depthint']
+		av[name]['layers'] 		= ['Surface','100m','200m','Surface to 100m', 'Surface to 300m']#'Surface - 1000m','Surface - 300m',]#'depthint']
 		av[name]['regions'] 		= ['SouthernHemisphere','NorthernHemisphere','Global',	'NorthAtlanticOcean','SouthAtlanticOcean','EquatorialAtlanticOcean']
 		av[name]['metrics']		= ['mean','median', ]
 
@@ -191,8 +191,8 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modeldetails'] 	= {'name': 'nitrate', 'vars':['DIN',], 'convert': ukp.NoChange,}
 		av[name]['datadetails']  	= {'name': 'nitrate', 'vars':['n_an',], 'convert': ukp.NoChange,}
 	
-		av[name]['layers'] 		= ['Surface','100m','200m','Surface - 300m',]
-		av[name]['regions'] 		= ['Global','NorthAtlanticOcean','SouthAtlanticOcean',]#'NorthAtlantic']
+		av[name]['layers'] 		= ['Surface','100m','300m','1000m',]#'Surface - 300m',]
+		av[name]['regions'] 		= ['Global',]#'NorthAtlanticOcean','SouthAtlanticOcean',]#'NorthAtlantic']
 		av[name]['metrics']		= ['mean','median', ]
 
 		av[name]['datasource'] 		= 'WOA'
@@ -213,7 +213,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modeldetails'] 	= {'name': 'silicate', 'vars':['SIL',], 'convert': ukp.NoChange,}
 		av[name]['datadetails']  	= {'name': 'silicate', 'vars':['i_an',], 'convert': ukp.NoChange,}
 	
-		av[name]['layers'] 		= ['Surface','100m','200m','Surface - 300m',]
+		av[name]['layers'] 		=  ['Surface','100m','300m','1000m',]
 		av[name]['regions'] 		= regions
 		av[name]['metrics']		= ['mean','median', ]
 
@@ -235,7 +235,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modeldetails'] 	= {'name': 'oxygen', 'vars':['OXY',], 'convert': ukp.NoChange,}	
 		av[name]['datadetails']  	= {'name': 'oxygen', 'vars':['o_an',], 'convert': ukp.oxconvert,'units':'mmol/m^3'}
 	
-		av[name]['layers'] 		= ['Surface','100m','200m','Surface - 300m',]
+		av[name]['layers'] 		= ['Surface','100m','300m','1000m',]
 		av[name]['regions'] 		= regions
 		av[name]['metrics']		= ['mean','median', ]
 
@@ -257,7 +257,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modeldetails'] 	= {'name': 'Alkalinity', 'vars':['ALK',], 'convert': ukp.NoChange,}
 		av[name]['datadetails']  	= {'name': 'Alkalinity', 'vars':['Alk',], 'convert': ukp.NoChange,}
 	
-		av[name]['layers'] 		= ['Surface','100m','200m','Surface - 300m',]
+		av[name]['layers'] 		=  ['Surface','100m','300m','1000m',]
 		av[name]['regions'] 		= regions
 		av[name]['metrics']		= ['mean','median', ]
 
@@ -394,7 +394,7 @@ def analysis_timeseries(jobID = "u-ab671",
 
 	
 		av[name]['layers'] 		= ['Surface',]#'100m','200m','Surface - 1000m','Surface - 300m',]#'depthint']
-		av[name]['regions'] 		= regions
+		av[name]['regions'] 		= ['SouthernHemisphere','NorthernHemisphere','Global',	'NorthAtlanticOcean','SouthAtlanticOcean','EquatorialAtlanticOcean']
 		av[name]['metrics']		= ['sum', ]
 
 		av[name]['datasource'] 		= 'OSU'
@@ -449,16 +449,17 @@ def analysis_timeseries(jobID = "u-ab671",
 	if doMLD:
 		
 		def mldapplymask(nc,keys):
-			return np.ma.masked_where(np.tile(nc.variables[keys[1]][:],(12,1,1))==0.,nc.variables[keys[0]][:])	
+			mld = nc.variables[keys[0]][:]
+			return np.ma.masked_where((np.tile(nc.variables[keys[1]][:],(12,1,1))==0.)+mld.mask+(mld==1.E9),mld)	
 			
-		name = 'salinity'
+		name = 'MLD'
 		av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_grid_T.nc"))
 		av[name]['dataFile'] 		= MLDFolder+"mld_DT02_c1m_reg2.0.nc"	
 				
 		av[name]['modelcoords'] 	= medusaCoords 	
 		av[name]['datacoords'] 		= mldCoords
 	
-		av[name]['modeldetails'] 	= {'name': 'mld', 'vars':['somxl010',], 'convert': ukp.NoChange,'units':'m'}	
+		av[name]['modeldetails'] 	= {'name': 'mld', 'vars':['somxl010',],   'convert': ukp.NoChange,'units':'m'}	
 		av[name]['datadetails']  	= {'name': 'mld', 'vars':['mld','mask',], 'convert': mldapplymask,'units':'m'}
 	
 		av[name]['layers'] 		= ['Surface',]#'Surface - 1000m','Surface - 300m',]#'depthint']

@@ -23,8 +23,10 @@
 # ledm@pml.ac.uk
 
 from matplotlib import pyplot
+from matplotlib.colors import LogNorm
 import matplotlib.patches as mpatches
-
+from mpl_toolkits.basemap import Basemap
+import cartopy
 import numpy as np 
 
 import timeseriesTools as tst
@@ -149,7 +151,104 @@ def trafficlightsPlot(
 	print "UKESMpython:\tscatterPlot:\tSaving:" , filename
 	pyplot.savefig(filename )
 	pyplot.close()	
+
+
+def regrid(data,lat,lon):
+    	nX = np.arange(-179.5,180.5,0.25)
+    	nY = np.arange( -89.5, 90.5,0.25)
+    	if lat.ndim ==1:
+    		oldLon, oldLat = np.meshgrid(lon,lat) 
+    	else:
+    		   oldLon, oldLat = lon,lat		
+    	newLon, newLat = np.meshgrid(nX,nY)
+    	
+    	crojp1 = cartopy.crs.PlateCarree(central_longitude=0.0, ) #central_latitude=300.0)
+    	crojp2 = cartopy.crs.PlateCarree(central_longitude=0.0, ) #central_latitude=300.0)
+
+    	a = cartopy.img_transform.regrid(data,
+    			     source_x_coords=oldLon,
+                             source_y_coords=oldLat,
+                             source_cs=crojp1,
+                             target_proj=crojp2,
+                             target_x_points=newLon,
+                             target_y_points=newLat
+                             )
+       # print 'newregid shape:',a.shape                     
+	return crojp2, a, newLon,newLat
 	
 	
+	
+def makemapplot(fig,ax,lons,lats,data,title, zrange=[-100,100],lon0=0.,drawCbar=True,cbarlabel='',doLog=False,):
+
+	
+	lons = np.array(lons)
+	lats = np.array(lats)
+	data = np.ma.array(data)	
+	
+	
+	
+	if doLog and zrange[0]*zrange[1] <=0.:
+		print "makemapplot: \tMasking"
+		data = np.ma.masked_less_equal(ma.array(data), 0.)
+	
+	print data.min(),lats.min(),lons.min(), data.shape,lats.shape,lons.shape
+			
+	crojp2, data, newLon,newLat = regrid(data,lats,lons)
+
+	if doLog:
+		im = ax.pcolormesh(newLon, newLat,data, transform=cartopy.crs.PlateCarree(),norm=LogNorm(vmin=zrange[0],vmax=zrange[1]),)
+	else:	
+		im = ax.pcolormesh(newLon, newLat,data, transform=cartopy.crs.PlateCarree(),vmin=zrange[0],vmax=zrange[1])
+	
+	ax.add_feature(cartopy.feature.LAND,  facecolor='0.85')	
+
+
+	
+	if drawCbar:
+	    c1 = fig.colorbar(im,pad=0.05,shrink=0.75)
+	    if len(cbarlabel)>0: c1.set_label(cbarlabel)
+
+	pyplot.title(title)
+
+
+	ax.set_axis_off()
+	pyplot.axis('off')
+	ax.axis('off')
+		
+	
+		
+	return fig, ax
+	
+
+def mapPlotPair(lons1, lats1, data1,lons2,lats2,data2,filename,titles=['',''],lon0=0.,drawCbar=True,cbarlabel='',doLog=False,dpi=100,):#**kwargs):
+
+	fig = pyplot.figure()
+
+	fig.set_size_inches(10,10)
+
+	
+	lons1 = np.array(lons1)
+	lats1 = np.array(lats1)
+	data1 = np.ma.array(data1)
+	
+	lons2 = np.array(lons2)
+	lats2 = np.array(lats2)
+	data2 = np.ma.array(data2)
+	
+	rbmi = min([data1.min(),data2.min()])
+	rbma = max([data1.max(),data2.max()])		
+	
+	if rbmi * rbma >0. and rbma/rbmi > 100.: doLog=True
+	ax1 = pyplot.subplot(211,projection=cartopy.crs.PlateCarree(central_longitude=0.0, ))
+		
+	fig,ax1 = makemapplot(fig,ax1,lons1,lats1,data1,titles[0], zrange=[rbmi,rbma],lon0=0.,drawCbar=True,cbarlabel='',doLog=doLog,)
+
+	ax2 = pyplot.subplot(212,projection=cartopy.crs.PlateCarree(central_longitude=0.0, ))	
+	fig,ax2 = makemapplot(fig,ax2,lons2,lats2,data2,titles[1], zrange=[rbmi,rbma],lon0=0.,drawCbar=True,cbarlabel='',doLog=doLog,)
+	
+		
+	print "timeseriespots.py:\tmapPlotPair: \tSaving:" , filename
+	pyplot.savefig(filename ,dpi=dpi)		
+	pyplot.close()
 		
 		

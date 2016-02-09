@@ -144,7 +144,7 @@ class DataLoader:
   	self.details 	= details
   	self.regions 	= regions
   	self.layers 	= layers
-	if data == '': data = ukp.extractData(nc,self.details)  	
+	if data == '': data = ukp.extractData(nc,self.details)
   	self.Fulldata 	= data
   	self.__lay__ 	= ''
 	self.run()
@@ -177,7 +177,7 @@ class DataLoader:
   	print 'createDataArray',self.details['name'],region,layer
   	
   	lat = self.nc.variables[self.coords['lat']][:]
-  	lon = self.nc.variables[self.coords['lon']][:]
+  	lon = ukp.makeLonSafeArr(self.nc.variables[self.coords['lon']][:]) # makes sure it's between +/-180
   	
   	dat = self.__getlayerDat__(layer)
   	#dat = np.ma.array(getHorizontalSlice(self.nc,self.coords,self.details,layer,data = self.Fulldata))
@@ -191,79 +191,65 @@ class DataLoader:
 
 	if region == 'EquatorialAtlanticOcean': regionlims  = {'lat_min': -15.,'lat_max': 15.,'lon_min':-65.,'lon_max':20.}	
 	
-		
-		
-"""  	for index,v in ukp.maenumerate(dat):
-  		if lat.ndim == 2:  
-  			(t,z,y,x) 	= index
-  			la = lat[y,x]  			
-  		if lat.ndim == 1:  (t,y,x) 	= index  		
-  		  	la = lon[y]
-  			work in progress here.
-  			la = lat[y,x]
+	if dat.ndim == 2:	dat =dat[None,:,:]
+	
+	dims =   self.nc.variables[self.details['vars'][0]].dimensions
+  	print 'createDataArray',self.details['name'],region,layer, dims	
+	
+	if dims[-1].lower() in ['lon','longitude','lonbnd','nav_lon','x'] and dims[-2].lower() in ['lat','latitude','latbnd','nav_lat','y']:
+	    # dims order is [t,z,y,x] or [t,y,x] or [z,y,x]
+  	    print 'createDataArray',self.details['name'],region,layer, "Sensible dimsions order:",dims		
+ 	    for index,v in ukp.maenumerate(dat):
+  			try:	(t,z,y,x) 	= index
+  			except: (t,y,x) 	= index 
+ 			
+  			try:	la = lat[y,x]  			
+  			except:	la = lat[y]
+  			
   			if la<regionlims['lat_min']:continue
   			if la>regionlims['lat_max']:continue  	
   			
-  			lo = lon[y,x]  			
+  			try:	lo = lon[y,x]  			
+  			except:	lo = lon[x]  			
+  			
   			if lo<regionlims['lon_min']:continue
   			if lo>regionlims['lon_max']:continue
   			
-  			if np.ma.is_masked(v):continue  
-  			if v > 1E20:continue    						
-  			arr.append(v)"""
-  	
-  	if lat.ndim == 2:
-   	    if dat.ndim==4:
-  		for (t,z,y,x),v in ukp.maenumerate(dat):
-  			la = lat[y,x]
-  			if la<regionlims['lat_min']:continue
-  			if la>regionlims['lat_max']:continue  	
-  			
-  			lo = lon[y,x]  			
-  			if lo<regionlims['lon_min']:continue
-  			if lo>regionlims['lon_max']:continue
-  			
-  			if np.ma.is_masked(v):continue  
-  			if v > 1E20:continue    						
-  			arr.append(v)
-   	    if dat.ndim==3:
-  		for (t,y,x),v in ukp.maenumerate(dat):
-  			la = lat[y,x]
-  			if la<regionlims['lat_min']:continue
-  			if la>regionlims['lat_max']:continue  	
-  			
-  			lo = lon[y,x]  			
-  			if lo<regionlims['lon_min']:continue
-  			if lo>regionlims['lon_max']:continue
-  			if np.ma.is_masked(v):continue  
-  			if v > 1E20:continue    						  						
+  			#if np.ma.is_masked(v):continue  
+  			#if v > 1E20:continue    						
   			arr.append(v)
 
-  	if lat.ndim == 1:
-   	    if dat.ndim==4:
-  		for (t,z,y,x),v in ukp.maenumerate(dat):
-  			la = lat[y]
+	elif dims[-2].lower() in ['lon','longitude','lonbnd','nav_lon','x'] and dims[-1].lower() in ['lat','latitude','latbnd','nav_lat','y']:
+  	    print 'createDataArray',self.details['name'],region,layer, "Ridiculous dimsions order:",dims				
+ 	    for index,v in ukp.maenumerate(dat):
+  			try:	(t,z,x,y) 	= index
+  			except: (t,x,y) 	= index 
+ 			
+  			try:	la = lat[y,x]  			
+  			except:	la = lat[y]
+  			
   			if la<regionlims['lat_min']:continue
   			if la>regionlims['lat_max']:continue  	
-  			lo = lon[x]  
+  			
+  			try:	lo = lon[y,x]  			
+  			except:	lo = lon[x]  			
+  			
   			if lo<regionlims['lon_min']:continue
   			if lo>regionlims['lon_max']:continue
-  			if np.ma.is_masked(v):continue
-  			if v > 1E20:continue    						  			
+  			
+  			#if np.ma.is_masked(v):continue  
+  			#if v > 1E20:continue    						
   			arr.append(v)
-   	    if dat.ndim==3:
-  		for (t,y,x),v in ukp.maenumerate(dat):
-  			la = lat[y]
-  			if la<regionlims['lat_min']:continue
-  			if la>regionlims['lat_max']:continue  	
-  			lo = lon[x]  			
-  			if lo<regionlims['lon_min']:continue
-  			if lo>regionlims['lon_max']:continue
-  			if np.ma.is_masked(v):continue
-  			if v > 1E20:continue    						  			
-  			arr.append(v)
-  	arr = np.ma.array(arr)	
-  	np.ma.masked_where(arr>1E30,arr).compressed()
+  	else:
+  		print "Unknown dimensions order", dims
+  		assert False	
+  			
+  	arr = np.ma.masked_invalid(np.ma.array(arr))
+  	arr = np.ma.masked_where((arr>1E20) + arr.mask,arr).compressed()
+	#print arr.min(), arr.max(),arr.mean(),arr.shape  	
+  	#if arr.mean()>40. or arr.max()>100.:
+  	#	print arr.min(), arr.max(),arr.mean(),arr.shape
+  	#	assert 0
   	return arr
   	
   	
