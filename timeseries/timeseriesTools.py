@@ -71,6 +71,7 @@ def ApplyDepthSlice(arr,k):
 	if arr.ndim == 4: return arr[:,k,:,:]
 	if arr.ndim == 3: return arr[k,:,:]
 	if arr.ndim == 2: return arr	
+	if arr.ndim == 1: return arr	
 	
 def ApplyDepthrange(arr,k1,k2):
 	if arr.ndim == 4: return arr[:,k1:k2,:,:]
@@ -90,6 +91,14 @@ def getHorizontalSlice(nc,coords,details,layer,data = ''):
 		print "getHorizontalSlice:\tNo depth field only 1 value",details['name']	
 		if data =='': 	data = ukp.extractData(nc,details)
 		return ApplyDepthSlice(data, 0)
+
+	if len(nc.dimensions.keys()) == 1 and layer in ['Surface',]:
+		print "getHorizontalSlice:\tOne D file",details['name']	
+		if data =='': 	data = ukp.extractData(nc,details)
+		data = np.ma.masked_where(nc.variables[coords['z']][:]>0,data)
+		return data
+		#return ApplyDepthSlice(data, 0)
+		
 	
 	if layer in ['Surface','100m','200m','300m','500m','1000m','2000m',]:	
 	
@@ -153,6 +162,7 @@ class DataLoader:
   	self.load = {}
     	for layer in self.layers:  	
   	    for region in self.regions:
+  	    
   	    	if region in  ['Global','All']:
   	    		dat = self.__getlayerDat__(layer)
   	    		
@@ -161,7 +171,7 @@ class DataLoader:
    			#getHorizontalSlice(self.nc,self.coords,self.details,layer,data = self.Fulldata)
 		else:
    			self.load[(region,layer)] =  self.createDataArray(region,layer)
-   			
+  		print "DataLoader:\tLoaded",region, layer, len(self.load[(region,layer)])
   def __getlayerDat__(self,layer):
   	""" Minimise quick load and save to minuimise disk-reading time.
   	"""
@@ -190,13 +200,24 @@ class DataLoader:
 	if region == 'SouthAtlanticOcean': 	regionlims  = {'lat_min': -50.,'lat_max':-10.,'lon_min':-65.,'lon_max':20.}	
 
 	if region == 'EquatorialAtlanticOcean': regionlims  = {'lat_min': -15.,'lat_max': 15.,'lon_min':-65.,'lon_max':20.}	
+
+	# from ocean assess:
+	if region == 'Atlantic': 		regionlims  = {'lat_min': -90.,'lat_max': 70.,'lon_min':-100.,'lon_max':50.}	
+	if region == 'Arctic': 			regionlims  = {'lat_min': 70.,'lat_max': 90.,'lon_min':-360.,'lon_max':360.}	
+	if region == 'nino3': 			regionlims  = {'lat_min': -5.,'lat_max': 5., 'lon_min':-150.,'lon_max':-90.}	
+	if region == 'nino3.4': 		regionlims  = {'lat_min': -5.,'lat_max': 5.,'lon_min':-170.,'lon_max':-120.}	
+	if region == 'atl_spg': 		regionlims  = {'lat_min': 45.,'lat_max': 65.,'lon_min':-40.,'lon_max':20.}	
+	if region == 'ne_atl': 			regionlims  = {'lat_min': 45.,'lat_max': 75.,'lon_min':-40.,'lon_max':20.}					
+	if region == 'persian': 		regionlims  = {'lat_min': 20.,'lat_max': 35.,'lon_min':40.,'lon_max':57.}	
+
+
 	
 	if dat.ndim == 2:	dat =dat[None,:,:]
 	
 	dims =   self.nc.variables[self.details['vars'][0]].dimensions
-  	print 'createDataArray',self.details['name'],region,layer, dims	
-	
-	if dims[-1].lower() in ['lon','longitude','lonbnd','nav_lon','x'] and dims[-2].lower() in ['lat','latitude','latbnd','nav_lat','y']:
+  	print 'createDataArray',self.details['name'],region,layer, dims	, regionlims, len(dat),dat.shape
+	if dat.ndim > 2:
+	  if dims[-1].lower() in ['lon','longitude','lonbnd','nav_lon','x'] and dims[-2].lower() in ['lat','latitude','latbnd','nav_lat','y']:
 	    # dims order is [t,z,y,x] or [t,y,x] or [z,y,x]
   	    print 'createDataArray',self.details['name'],region,layer, "Sensible dimsions order:",dims		
  	    for index,v in ukp.maenumerate(dat):
@@ -219,7 +240,7 @@ class DataLoader:
   			#if v > 1E20:continue    						
   			arr.append(v)
 
-	elif dims[-2].lower() in ['lon','longitude','lonbnd','nav_lon','x'] and dims[-1].lower() in ['lat','latitude','latbnd','nav_lat','y']:
+	  elif dims[-2].lower() in ['lon','longitude','lonbnd','nav_lon','x'] and dims[-1].lower() in ['lat','latitude','latbnd','nav_lat','y']:
   	    print 'createDataArray',self.details['name'],region,layer, "Ridiculous dimsions order:",dims				
  	    for index,v in ukp.maenumerate(dat):
   			try:	(t,z,x,y) 	= index
@@ -240,10 +261,33 @@ class DataLoader:
   			#if np.ma.is_masked(v):continue  
   			#if v > 1E20:continue    						
   			arr.append(v)
+  	  else:
+  		print "Unknown dimensions order", dims
+  		assert False	  			
+  	elif dat.ndim == 1:
+   	  if dims[0] == 'index':
+  	    print 'createDataArray',self.details['name'],region,layer, "1 D data:",dims,dat.shape
+ 	    for i,v in enumerate(dat):
+  			la = lat[i]  			
+ 			print i,v,la  			
+  			if la<regionlims['lat_min']:continue
+  			if la>regionlims['lat_max']:continue  	
+  			
+  			lo = lon[i]  			
+  			
+  			if lo<regionlims['lon_min']:continue
+  			if lo>regionlims['lon_max']:continue
+  			
+  			#if np.ma.is_masked(v):continue  
+  			#if v > 1E20:continue    						
+  			arr.append(v)  		
+  	
+  	  else:
+  		print "Unknown dimensions order", dims
+  		assert False	  	
   	else:
   		print "Unknown dimensions order", dims
   		assert False	
-  			
   	arr = np.ma.masked_invalid(np.ma.array(arr))
   	arr = np.ma.masked_where((arr>1E20) + arr.mask,arr).compressed()
 	#print arr.min(), arr.max(),arr.mean(),arr.shape  	

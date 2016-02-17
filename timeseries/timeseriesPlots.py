@@ -123,6 +123,10 @@ def trafficlightsPlot(
 	if len(times) ==0 or len(arr) == 0:
 		print "trafficlightsPlot:\tWARNING:\tdata or time arrays are empty.",len(times),len(arr),title
 		return
+	if np.ma.is_masked(arr):
+		print "trafficlightsPlot:\tWARNING:\tdata arrays is masked",len(times),len(arr),title
+		return
+				
 	xlims= [times[0],times[-1]]
 	
 	fig = pyplot.figure()
@@ -136,17 +140,19 @@ def trafficlightsPlot(
 		
 		#pyplot.axhline(y=np.ma.mean(dataslice),c='k',ls='-',lw=2,alpha=0.5)
 		pyplot.axhline(y=np.ma.median(dataslice),c='k',ls='-',lw=1,)#alpha=0.5)	
-		pc1 = np.array([np.percentile(dataslice,25.) for i in xlims]) 
-		pc2 = np.array([np.percentile(dataslice,35.) for i in xlims])
+		pc1 = np.array([np.percentile(dataslice,20.) for i in xlims]) 
+		pc2 = np.array([np.percentile(dataslice,30.) for i in xlims])
 		pc3 = np.array([np.percentile(dataslice,45.) for i in xlims])
-		pc4 = np.array([np.percentile(dataslice,55.) for i in xlims])
-		pc5 = np.array([np.percentile(dataslice,65.) for i in xlims])
-		pc6 = np.array([np.percentile(dataslice,75.) for i in xlims])
-		labels = ['25-35 pc','35-45 pc','45-55 pc','55-65 pc','65-75 pc',]
-		ax = trafficlights(ax,xlims, [pc1,pc2,pc3,pc4,pc5,pc6],labels=labels)
+		pc4 = np.array([np.percentile(dataslice,60.) for i in xlims])
+		pc5 = np.array([np.percentile(dataslice,70.) for i in xlims])
+		pc6 = np.array([np.percentile(dataslice,80.) for i in xlims])
+		labels = ['20-30 pc','30-40 pc','40-60 pc','60-70 pc','70-80 pc',]
+		pcs = [pc1,pc2,pc3,pc4,pc5,pc6]
+		ax = trafficlights(ax,xlims, pcs ,labels=labels)
 	if len(dataslice) and metric == 'sum':
-		pyplot.axhline(y=np.ma.sum(dataslice),c='k',ls='-',lw=1,)#alpha=0.5)		
 		
+		pyplot.axhline(y=np.ma.sum(dataslice),c='k',ls='-',lw=1,label ='data'+str(np.ma.sum(dataslice)))#alpha=0.5)		
+		pyplot.legend()
 	
 	print "UKESMpython:\tscatterPlot:\tSaving:" , filename
 	pyplot.savefig(filename )
@@ -192,13 +198,19 @@ def makemapplot(fig,ax,lons,lats,data,title, zrange=[-100,100],lon0=0.,drawCbar=
 		data = np.ma.masked_less_equal(ma.array(data), 0.)
 	
 	print data.min(),lats.min(),lons.min(), data.shape,lats.shape,lons.shape
-			
-	crojp2, data, newLon,newLat = regrid(data,lats,lons)
+	
+	if data.ndim ==1:
+		if doLog:
+			im = ax.scatter(lons, lats,c=data, lw=0,marker='s', transform=cartopy.crs.PlateCarree(),norm=LogNorm())#vmin=zrange[0],vmax=zrange[1]),)
+		else:	
+			im = ax.scatter(lons, lats,c=data, lw=0,marker='s',transform=cartopy.crs.PlateCarree(),)#vmin=zrange[0],vmax=zrange[1])	
+	else:
+		crojp2, data, newLon,newLat = regrid(data,lats,lons)
 
-	if doLog:
-		im = ax.pcolormesh(newLon, newLat,data, transform=cartopy.crs.PlateCarree(),norm=LogNorm(vmin=zrange[0],vmax=zrange[1]),)
-	else:	
-		im = ax.pcolormesh(newLon, newLat,data, transform=cartopy.crs.PlateCarree(),vmin=zrange[0],vmax=zrange[1])
+		if doLog:
+			im = ax.pcolormesh(newLon, newLat,data, transform=cartopy.crs.PlateCarree(),norm=LogNorm(vmin=zrange[0],vmax=zrange[1]),)
+		else:	
+			im = ax.pcolormesh(newLon, newLat,data, transform=cartopy.crs.PlateCarree(),vmin=zrange[0],vmax=zrange[1])
 	
 	ax.add_feature(cartopy.feature.LAND,  facecolor='0.85')	
 

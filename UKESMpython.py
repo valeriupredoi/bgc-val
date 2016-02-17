@@ -1586,6 +1586,8 @@ def NoChange(nc,keys):	return nc.variables[keys[0]][:]
 def N2Biomass(nc,keys):	return nc.variables[keys[0]][:]* 79.573
 def mul1000(nc,keys):	return nc.variables[keys[0]][:]* 1000.
 def div1000(nc,keys):	return nc.variables[keys[0]][:]/ 1000.	
+def div1e6(nc,keys):	return nc.variables[keys[0]][:]/ 1.e6	
+
 def applymask(nc,keys):	return np.ma.masked_where(nc.variables[keys[1]][:]==0.,nc.variables[keys[0]][:])
 def sums(nc,keys):	
 	a = nc.variables[keys[0]][:]
