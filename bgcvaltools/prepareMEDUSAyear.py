@@ -34,11 +34,11 @@ from netCDF4 import Dataset
 from changeNC import changeNC,AutoVivification
 from mergeNC import mergeNC
 from pruneNC import pruneNC
-"""	The goal of this code is to have a simple way to make climatology code.
+"""	The goal of this code is to have a simple way to make climatology dataset.
 """
 
 
-def run(jobID,key,runType,foldIn):
+def setup(jobID,key,runType,foldIn,foldOut):
 
 	try:		    
 		float(key)
@@ -46,52 +46,43 @@ def run(jobID,key,runType,foldIn):
 		print "Key is a specific year:", key
 		years = [key,]
 	except:	
-		assert false
+		assert False
 		#yearKey=False
 		#years = [str(y) for y in np.arange(1997,2008)]
 	
 	baseline = ['deptht','nav_lat','nav_lon','time_counter',]
 
-	if runType == 'CHL':
-		keys = ['CHD','CHN',]
-		finalKeys = ['CHL',]	
-		L = '_ptrc_T'
 
 	if runType in ['DIN','FER','SIL', 'OXY', 'PHD', 'ZMI','ZME',]:
 		keys = [runType,]
-		finalKeys = [runType,]	
 		L = '_ptrc_T'
 
-				
+	if runType == 'CHL':
+		keys = ['CHD','CHN',]
+		L = '_ptrc_T'
 
 	if runType == 'SAL':
 		keys = ['vosaline',]
-		finalKeys = ['vosaline',]	
 		L = 'grid_T'
 
 	if runType == 'TEMP':
 		keys = ['votemper',]
-		finalKeys = ['votemper',]	
 		L = 'grid_T'
 		
 	if runType == 'MLD':
 		keys = ['somxl010',]
-		finalKeys = ['somxl010',]	
 		L = 'grid_T'		
 
 	if runType == 'U':
-		finalKeys = ['vozocrtx',]
-		keys = finalKeys		
+		keys = ['vozocrtx',]
 		L = 'U'
 		
 	if runType == 'V':
-		finalKeys = ['vomecrty',]
-		keys = finalKeys
+		keys = ['vomecrty',]
 		L = 'V'
 
 	if runType == 'W':
-		finalKeys = ['vovecrtz',]
-		keys = finalKeys		
+		keys = ['vovecrtz',]
 		L = 'W'		
 		 								
 	#months = sorted(['0121', '0821','0321','0921', '0421','1021', '0521','1121', '0621','1221', '0721','1221'])
@@ -109,9 +100,15 @@ def run(jobID,key,runType,foldIn):
 	filesIn = sorted(glob(fns))
 		
 	print "filesIn:", fns, filesIn
+	filenameOut 	= ukp.folder(foldOut+key)+jobID+'_'+key+'_'+runType+'.nc'	
+	run(jobID,key,keys,runType,filesIn,foldOut)
+	
+def run(jobID,key,keys,runType,filesIn,filenameOut):
 
-	filenameOut 	= ukp.folder('/data/euryale7/scratch/ledm/UKESM/MEDUSA/'+jobID+'_postProc/'+key)+jobID+'_'+key+'_'+runType+'.nc'
-	filenameAnnual	= ukp.folder('/data/euryale7/scratch/ledm/UKESM/MEDUSA/'+jobID+'_postProc/'+key+'-annual')+jobID+'_'+key+'-annual'+'_'+runType+'.nc'
+	#filenameOut 	= ukp.folder(foldOut+key)+jobID+'_'+key+'_'+runType+'.nc'
+	#ukp.folder(foldOut+key+'-annual')+jobID+'_'+key+'-annual'+'_'+runType+'.nc'
+	filenameAnnual	= filenameOut.replace(key,key+'-annual')
+
 	if exists(filenameOut) and exists(filenameAnnual): 
 		print "Already exist:",filenameOut,'\n\tand:',filenameAnnual
 		return
@@ -120,7 +117,6 @@ def run(jobID,key,runType,foldIn):
 
 		prunedfn = ukp.folder('/tmp/outNetCDF/tmp-Clims')+basename(fn)[:-3]+'_'+key+'_'+runType+'.nc'
 		print fn, '--->', prunedfn
-		
 
 		if not exists(prunedfn):
 			m = pruneNC( fn, prunedfn, keys, debug=True)#,calendar=cal)
@@ -143,19 +139,16 @@ def run(jobID,key,runType,foldIn):
 		else:fileOut = prunedfn
 		
 		mergedFiles.append(fileOut)		
-		#del m
 		
-
-	
-
-	
+	if runType == 'CHL':	 keys = ['CHL',]
+		
 	if  ukp.shouldIMakeFile(mergedFiles,filenameOut): 
-		m = mergeNC( mergedFiles, filenameOut, finalKeys, timeAverage=False,debug=True,calendar=cal)
+		m = mergeNC( mergedFiles, filenameOut, keys, timeAverage=False,debug=True,calendar=cal)
 	
 
 	
 	if  ukp.shouldIMakeFile(mergedFiles,filenameAnnual): 
-		m = mergeNC( mergedFiles, filenameAnnual, finalKeys, timeAverage=True,debug=True,calendar=cal)
+		m = mergeNC( mergedFiles, filenameAnnual, keys, timeAverage=True,debug=True,calendar=cal)
 		
 
 def main():
@@ -163,8 +156,6 @@ def main():
 	
 	#'ERSEMNuts','ERSEMphytoBm','ERSEMphytoChl','ERSEMzoo', 'ERSEMMisc','ERSEMbac']
 	#'SalTempWind','ERSEMFull','ERSEMphyto','Detritus', ]#'SalTempWind', ]# ]#]#]
-	
-
 			
 	try: 	
 		jobID = argv[1]
@@ -178,15 +169,18 @@ def main():
 		for j in jobs:
 		  for r in runTypes:
 			#foldIn = '/data/euryale7/scratch/ledm/iMarNet/'+j+'/MEANS/'		  
-			foldIn = '/data/euryale7/scratch/ledm/UKESM/MEDUSA-ORCA025/'+j		  			
-		  	run(j,key,r,foldIn)
+			foldIn = '/data/euryale7/scratch/ledm/UKESM/MEDUSA-ORCA025/'+j
+			foldOut= ukp.folder('/data/euryale7/scratch/ledm/UKESM/MEDUSA/'+j+'_postProc/')
+		  	run(j,key,r,foldIn,foldOut)
 		return
-		
-
-
+	
+	
 	
 	for r in runTypes: 
 		#foldIn = '/data/euryale7/scratch/ledm/iMarNet/'+jobID+'/MEANS/'	
 		foldIn = '/data/euryale7/scratch/ledm/UKESM/MEDUSA/'+jobID		  					
-		run(jobID,key,r,foldIn)
-main()	
+		foldOut= ukp.folder('/data/euryale7/scratch/ledm/UKESM/MEDUSA/'+jobID+'_postProc/')
+		setup(jobID,key,r,foldIn,foldOut)
+if __name__=="__main__":
+	main()
+	
