@@ -39,8 +39,6 @@ README:
 	
 CONTENTS:
 
-	analysis.py  
-		Global plotting class that other plotting tools inherit.
 
 	pftnames.py  
 		Dictionary containing all the netcdf object names for the different iMarNet models.
@@ -99,7 +97,16 @@ CONTENTS:
 		StatsDiagram.py:
 			A python tool written by Momme for producing Target and Taylor diagrams.
 
+	timeseries/:
+		Contains all the tools needed to do the time series analysis.
+		timeseriesAnalysis.py  
+		timeseriesPlots.py  
+		timeseriesTools.py
 		
+		Launched by analysis-timeseries.py
+		
+		
+			
 				
 REQUIREMENTS:
 	Python libraries

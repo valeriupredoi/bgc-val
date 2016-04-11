@@ -109,6 +109,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		imgDir		= ukp.folder('images')
 		eORCAgrid 	= '/data/euryale7/scratch/ledm/UKESM/MEDUSA/mesh_mask_eORCA1_wrk.nc'
 		GlodapDir	= "/data/euryale7/backup/ledm/Observations/GLODAP/"
+		
 	if gethostname().find('ceda.ac.uk')>-1:
 		print "analysis-JASMIN.py:\tBeing run at CEDA on ",gethostname()
 			
@@ -133,7 +134,22 @@ def analysis_timeseries(jobID = "u-ab671",
 		workDir 	= ukp.folder(esmvalFolder+"ukesm_postProcessed/")
 		imgDir		= ukp.folder('images')	
 		
+	if gethostname().find('NOC')>-1:	
+		print "analysis-JASMIN.py:\tBeing run at NOC on ",gethostname()
 		
+		MEDUSAFolder_pref	= "/data/euryale7/scratch/ledm/UKESM/MEDUSA/"
+		NEMOFolder_pref		= "/data/euryale7/scratch/ledm/UKESM/MEDUSA/"
+	
+		if annual:	WOAFolder 	= "/data/euryale7/scratch/ledm/WOA/annual/"
+		else:		WOAFolder 	= "/data/euryale7/scratch/ledm/WOA/"
+		MAREDATFolder 	= "/data/euryale7/scratch/ledm/MAREDAT/MAREDAT/"
+		GEOTRACESFolder = "/data/euryale7/scratch/ledm/GEOTRACES/GEOTRACES_PostProccessed/"
+		TakahashiFolder = "/data/euryale7/scratch/ledm/Takahashi2009_pCO2/"
+		MLDFolder	= "/data/euryale7/scratch/ledm/IFREMER-MLD/"
+		workDir		= "/data/euryale7/scratch/ledm/ukesm_postProcessed/"
+		imgDir		= ukp.folder('images')
+		eORCAgrid 	= '/data/euryale7/scratch/ledm/UKESM/MEDUSA/mesh_mask_eORCA1_wrk.nc'
+		GlodapDir	= "/data/euryale7/backup/ledm/Observations/GLODAP/"		
 		
 
 
@@ -142,13 +158,13 @@ def analysis_timeseries(jobID = "u-ab671",
 	doSi		= True
 	doO2		= True
 	doAlk		= True
-	doDIC		= 0#True
-	doAirSeaFlux	= 0#True	
-	doIntPP_Lester	= 0#True
-	doIntPP_OSU	= 0#True
+	doDIC		= True
+	doAirSeaFlux	= True	
+	doIntPP_Lester	= True
+	doIntPP_OSU	= True
 
-	doT		= 0#True
-	doS		= 0#True
+	doT		= True
+	doS		= True
 	doMLD		= 0#True
 	
 	medusaCoords 	= {'t':'time_counter', 'z':'deptht', 'lat': 'nav_lat',  'lon': 'nav_lon',   'cal': '365_day',}	# model doesn't need time dict.
@@ -158,11 +174,14 @@ def analysis_timeseries(jobID = "u-ab671",
 	glodapCoords	= {'t':'index_t', 'z':'depth',  'lat': 'latitude', 'lon': 'longitude', 'cal': 'standard','tdict':[] }
 	mldCoords	= {'t':'index_t', 'z':'index_z','lat':'lat','lon':'lon','cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
 	#regions 	= ['Global','NorthAtlanticOcean','SouthAtlanticOcean',]
-	allRegions	= ['Global','SouthernHemisphere','NorthernHemisphere',
+	oldRegions	= ['Global','SouthernHemisphere','NorthernHemisphere',
 			  'NorthAtlanticOcean','SouthAtlanticOcean','EquatorialAtlanticOcean',
 			  'Atlantic','Arctic','nino3','nino3.4','atl_spg','ne_atl','persian']
-	keyRegions 	=  ['Global','SouthernHemisphere','NorthernHemisphere',]
-	
+	shortRegions 	= ['Global','SouthernHemisphere','NorthernHemisphere',]
+
+  	AndyRegions 	= ['SouthernOcean','NorthernSubpolarAtlantic','NorthernSubpolarPacific','Arctic','SouthRemainder','NorthRemainder']
+  	allRegions = AndyRegions	
+  	keyRegions = AndyRegions	  	
 	av = ukp.AutoVivification()
 		
 	if doChl:
@@ -470,8 +489,8 @@ def analysis_timeseries(jobID = "u-ab671",
 		def mldapplymask(nc,keys):
 			mld = nc.variables[keys[0]][:]
 			return np.ma.masked_where((np.tile(nc.variables[keys[1]][:],(12,1,1))==0.)+mld.mask+(mld==1.E9),mld)	
-		nc = Datasaet(eORCAgrid,'r')
-		depth = nc('nav_lev')[:]#
+		nc = Dataset(eORCAgrid,'r')
+		depth = nc.variables['nav_lev'][:]#
 		nc.close()
 		
 	#	depth10 = x

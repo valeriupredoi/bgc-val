@@ -423,8 +423,6 @@ def analysis_jasmin(
 			av['temperature']['NEMO']['details']	= {'name': 'temperature', 'vars':['votemper',], 'convert': ukp.NoChange,}			
 			av['temperature']['Data']['details']	= {'name': 'temperature', 'vars':['t_an',], 'convert': ukp.NoChange,}	# no units?
 			
-			
-
 						   
 		if doMLD:
 			if annual:	av['mld']['Data']['File'] 		= MLDFolder+"mld_DT02_c1m_reg2.0-annual.nc"
@@ -442,7 +440,6 @@ def analysis_jasmin(
 	
 			av['mld']['NEMO']['details']	= {'name': 'mld', 'vars':['somxl010',], 'convert': ukp.NoChange,'units':'m'}			
 			av['mld']['Data']['details']	= {'name': 'mld', 'vars':['mld','mask',], 'convert': ukp.applymask,'units':'m'}	# no units?
-			
 			
 		
 		for model in models:

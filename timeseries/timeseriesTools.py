@@ -203,12 +203,25 @@ class DataLoader:
 
 	# from ocean assess:
 	if region == 'Atlantic': 		regionlims  = {'lat_min': -90.,'lat_max': 70.,'lon_min':-100.,'lon_max':50.}	
-	if region == 'Arctic': 			regionlims  = {'lat_min': 70.,'lat_max': 90.,'lon_min':-360.,'lon_max':360.}	
+	if region == 'Arctic_OA':		regionlims  = {'lat_min': 70.,'lat_max': 90.,'lon_min':-360.,'lon_max':360.}	
 	if region == 'nino3': 			regionlims  = {'lat_min': -5.,'lat_max': 5., 'lon_min':-150.,'lon_max':-90.}	
 	if region == 'nino3.4': 		regionlims  = {'lat_min': -5.,'lat_max': 5.,'lon_min':-170.,'lon_max':-120.}	
 	if region == 'atl_spg': 		regionlims  = {'lat_min': 45.,'lat_max': 65.,'lon_min':-40.,'lon_max':20.}	
 	if region == 'ne_atl': 			regionlims  = {'lat_min': 45.,'lat_max': 75.,'lon_min':-40.,'lon_max':20.}					
 	if region == 'persian': 		regionlims  = {'lat_min': 20.,'lat_max': 35.,'lon_min':40.,'lon_max':57.}	
+
+	# Andy's requests:
+  	if region == 'SouthernOcean':		regionlims  = {'lat_min':-90.,'lat_max': -40.,'lon_min':-360.,'lon_max':360.}	
+  	if region == 'NorthernSubpolarAtlantic':regionlims  = {'lat_min': 40.,'lat_max':  60.,'lon_min': -80.,'lon_max': 10.}	
+  	if region == 'NorthernSubpolarPacific':	
+  		regionlims  = {'lat_min': 40.,'lat_max':  60.,'lon_min':-360.,'lon_max':360.}	
+  		print "timeseriesTools.py:\tcreateDataArray():\tERROR This is wrong",region
+  		assert 0
+  	if region == 'Arctic':			regionlims  = {'lat_min': 60.,'lat_max':  90.,'lon_min':-360.,'lon_max':360.}	
+  	if region == 'SouthRemainder':		regionlims  = {'lat_min':-40.,'lat_max': -10.,'lon_min':-360.,'lon_max':360.}	
+  	if region == 'NorthRemainder':		regionlims  = {'lat_min': 10.,'lat_max':  40.,'lon_min':-360.,'lon_max':360.}	  	
+  	  	  	  	
+
 
 
 	
