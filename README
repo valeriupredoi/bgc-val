@@ -26,14 +26,16 @@ README:
 	Some analysis tools for UKESM - MEDUSA/ERSEM/NEMO 
 	The bulk of the tools were written for the ERSEM model, then subsequently patched for performing analsysis of MEDUSA (or other iMarNet Models).
 	
-	There are two categories of analysis done here:
+	There are three categories of analysis done here:
 		1. Emergent property analysis
-		2. Model vs data point to point comparison 
+		2. Model vs data point to point comparison
+		3. Time series analysis
 
 	The key files that do all the leg work are:
 		    testsuite_emergence.py
 		    testsuite_p2p.py
-		    testsuite_jasmin.py
+		    analysis_JASMIN.py
+		    analysis-timeseries.py
 	They both run a selection of analsyes.
 	
 	
