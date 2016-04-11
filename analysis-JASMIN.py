@@ -162,8 +162,8 @@ def analysis_jasmin(
 	if gethostname().find('pmpc')>-1:	
 		print "analysis-JASMIN.py:\tBeing run at PML on ",gethostname()
 		
-		MEDUSAFolder_pref	= "/data/euryale7/scratch/ledm/UKESM/MEDUSA/xkrus_postProc/"
-		NEMOFolder_pref		= "/data/euryale7/scratch/ledm/UKESM/MEDUSA/xkrus_postProc/"
+		MEDUSAFolder_pref	= "/data/euryale7/scratch/ledm/UKESM/MEDUSA/"+jobID+"_postProc/"
+		NEMOFolder_pref		= "/data/euryale7/scratch/ledm/UKESM/MEDUSA/"+jobID+"_postProc/"
 	
 		if annual:	WOAFolder 	= "/data/euryale7/scratch/ledm/WOA/annual/"
 		else:		WOAFolder 	= "/data/euryale7/scratch/ledm/WOA/"
@@ -267,7 +267,6 @@ def analysis_jasmin(
 			av['microzoo']['depthLevels'] 		= ['',]	
 			av['microzoo']['plottingSlices'] 	= AllStandard
 
-			
 			av['microzoo']['Data']['coords'] 	= maredatCoords
 			av['microzoo']['MEDUSA']['coords']	= medusaCoords
 			
@@ -279,7 +278,6 @@ def analysis_jasmin(
 			
 			
 		if doMesozoo:
-						
 			av['mesozoo']['Data']['File'] 		= MAREDATFolder+"MarEDat20120705Mesozooplankton.nc"	
 			av['mesozoo']['MEDUSA']['File'] 	= MEDUSAFolder+jobID+'_' + year+"_ZME.nc"	
 
@@ -295,7 +293,6 @@ def analysis_jasmin(
 
 			av['mesozoo']['Data']['source'] 	= 'MAREDAT'
 			av['mesozoo']['MEDUSA']['source']	= 'MEDUSA'
-			
 			
 			
 		if doN:
@@ -318,7 +315,6 @@ def analysis_jasmin(
 
 						
 		if doSi:
-			
 			av['silicate']['Data']['File'] 		= WOAFolder+'silicate_monthly_1deg.nc'	
 			av['silicate']['MEDUSA']['File'] 	= MEDUSAFolder+jobID+'_' + year+"_SIL.nc"
 			
@@ -354,8 +350,6 @@ def analysis_jasmin(
 			av['iron']['MEDUSA']['details']	= {'name': 'iron', 'vars':['FER',], 'convert': ukp.mul1000,'units':'umol F/m^3'}			
 			av['iron']['Data']['details']	= {'name': 'iron', 'vars':['Fe_D_CONC_BOTTLE',], 'convert': ukp.NoChange,}	# no units?
 
-				
-			
 			
 		if doO2:
 			if annual:	av['oxygen']['Data']['File'] 	=  WOAFolder+'woa13_all_o00_01.nc'
@@ -374,7 +368,6 @@ def analysis_jasmin(
 	
 			av['oxygen']['MEDUSA']['details']	= {'name': 'oxygen', 'vars':['OXY',], 'convert': ukp.NoChange,}			
 			av['oxygen']['Data']['details']		= {'name': 'oxygen', 'vars':['o_an',], 'convert': ukp.oxconvert,'units':'mmol/m^3'}
-			
 			
 					
 #		#if doPCO2:
@@ -456,7 +449,6 @@ def analysis_jasmin(
 			workingDir 	= ukp.folder(workDir+model+'-'+jobID+'-'+year)
 			imageFolder 	= ukp.folder(imgDir+'/Jasmin-'+model+'-'+jobID)
 
-	
 			shelvesAV.extend(
 		    		testsuite_p2p(
 					model 		= model,
