@@ -216,7 +216,7 @@ class DataLoader:
   	if region == 'NorthernSubpolarPacific':	
   		regionlims  = {'lat_min': 40.,'lat_max':  60.,'lon_min':-360.,'lon_max':360.}	
   		print "timeseriesTools.py:\tcreateDataArray():\tERROR This is wrong",region
-  		assert 0
+  		#assert 0
   	if region == 'Arctic':			regionlims  = {'lat_min': 60.,'lat_max':  90.,'lon_min':-360.,'lon_max':360.}	
   	if region == 'SouthRemainder':		regionlims  = {'lat_min':-40.,'lat_max': -10.,'lon_min':-360.,'lon_max':360.}	
   	if region == 'NorthRemainder':		regionlims  = {'lat_min': 10.,'lat_max':  40.,'lon_min':-360.,'lon_max':360.}	  	

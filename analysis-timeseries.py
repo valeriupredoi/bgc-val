@@ -92,7 +92,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		#7. ((PRN + PRD) *  6.625 * 12.011 / 1e3) for integrated primary production (compare with the OSU data products) 
 	#####
 	# Location of data files.
-	annual = 0
+	annual = True
 	if gethostname().find('pmpc')>-1:	
 		print "analysis-JASMIN.py:\tBeing run at PML on ",gethostname()
 		
@@ -134,13 +134,13 @@ def analysis_timeseries(jobID = "u-ab671",
 		workDir 	= ukp.folder(esmvalFolder+"ukesm_postProcessed/")
 		imgDir		= ukp.folder('images')	
 		
-	if gethostname().find('NOC')>-1:	
+	if gethostname().find('charybdis')>-1:	
 		print "analysis-JASMIN.py:\tBeing run at NOC on ",gethostname()
 		
-		MEDUSAFolder_pref	= "/data/euryale7/scratch/ledm/UKESM/MEDUSA/"
-		NEMOFolder_pref		= "/data/euryale7/scratch/ledm/UKESM/MEDUSA/"
+		MEDUSAFolder_pref	= "/home/jpp1m13/Documents/WORKING/UKESM/Compar_Atm_forcings/netcdf_files/"
+		NEMOFolder_pref		="/home/jpp1m13/Documents/WORKING/UKESM/Compar_Atm_forcings/netcdf_files/" 
 	
-		if annual:	WOAFolder 	= "/data/euryale7/scratch/ledm/WOA/annual/"
+		if annual:	WOAFolder 	= "/home/jpp1m13/Documents/WORKING/UKESM/Compar_Atm_forcings/netcdf_files/"
 		else:		WOAFolder 	= "/data/euryale7/scratch/ledm/WOA/"
 		MAREDATFolder 	= "/data/euryale7/scratch/ledm/MAREDAT/MAREDAT/"
 		GEOTRACESFolder = "/data/euryale7/scratch/ledm/GEOTRACES/GEOTRACES_PostProccessed/"
@@ -155,16 +155,16 @@ def analysis_timeseries(jobID = "u-ab671",
 
 	doChl		= 0#True
 	doN		= True
-	doSi		= True
-	doO2		= True
-	doAlk		= True
-	doDIC		= True
-	doAirSeaFlux	= True	
-	doIntPP_Lester	= True
-	doIntPP_OSU	= True
+	doSi		= 0#True
+	doO2		= 0#True
+	doAlk		= 0#True
+	doDIC		= 0#True
+	doAirSeaFlux	= 0#True	
+	doIntPP_Lester	= 0#True
+	doIntPP_OSU	= 0#True
 
-	doT		= True
-	doS		= True
+	doT		= 0#True
+	doS		= 0#True
 	doMLD		= 0#True
 	
 	medusaCoords 	= {'t':'time_counter', 'z':'deptht', 'lat': 'nav_lat',  'lon': 'nav_lon',   'cal': '365_day',}	# model doesn't need time dict.
@@ -186,7 +186,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		
 	if doChl:
 		name = 'Chlorophyll'
-		av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
+		av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+"/"+jobID+"o_1y_*_ptrc_T.nc"))
 		av[name]['dataFile'] 		= MAREDATFolder+"MarEDat20121001Pigments.nc"	
 				
 		av[name]['modelcoords'] 	= medusaCoords 	
@@ -579,6 +579,7 @@ def analysis_timeseries(jobID = "u-ab671",
 if __name__=="__main__":	
 	#analysis_timeseries(jobID = "u-ab671")		
 	analysis_timeseries(jobID = "u-ab749")			
+	#analysis_timeseries(jobID = "u-ab963")			
 	
 	
 	
