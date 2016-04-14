@@ -69,7 +69,7 @@ def analysis_timeseries(jobID = "u-ab671",
 	#####	
 	# BGC switches:
 	doChl		= 0#True
-	doN		= True
+	doN		= 0#True
 	doSi		= 0#True
 	doO2		= 0#True
 	doAlk		= 0#True
@@ -77,7 +77,8 @@ def analysis_timeseries(jobID = "u-ab671",
 	doAirSeaFlux	= 0#True	
 	doIntPP_Lester	= 0#True
 	doIntPP_OSU	= 0#True
-
+	doExportRatio   = True
+	
 	#####	
 	# Physics switches:
 	doT		= 0#True
@@ -245,7 +246,10 @@ def analysis_timeseries(jobID = "u-ab671",
   	#		model and data source: 	the name of source of the model/data (for plotting)
   	#		model grid: 	the model grid, usually eORCA1
   	#		the model grid file: 	the file path for the model mesh file (contains cell area/volume/masks, etc)
-  	
+  	#
+  	#	Note that the analysis can be run with just the model, it doesn't require a data file.
+  	#	If so, just set to data file to an empty string:
+  	#		av[name]['dataFile']  = ''
   	
 	av = ukp.AutoVivification()
 	if doChl:
@@ -504,6 +508,37 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= eORCAgrid
+
+
+	if doExportRatio:
+		
+		def calcExportRatio(nc,keys):
+			a = (nc.variables['SDT__100'][:] +nc.variables['FDT__100'][:])/ (nc.variables['PRD'][:] +nc.variables['PRN'][:] )
+			a = np.ma.masked_where(a>1.01, a)
+			return 	a
+			
+		name = 'exportRatio'
+		av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_diad_T.nc"))
+		av[name]['dataFile'] 		= ""
+
+				
+		av[name]['modelcoords'] 	= medusaCoords 	
+		av[name]['datacoords'] 		= maredatCoords
+	
+		av[name]['modeldetails'] 	= {'name': 'exportRatio', 'vars':['SDT__100','FDT__100' ,'PRD','PRN',], 'convert': calcExportRatio,'units':''}
+		av[name]['datadetails']  	= {'name':'','units':'',}
+	
+		av[name]['layers'] 		= ['Surface',]#'100m','200m','Surface - 1000m','Surface - 300m',]#'depthint']
+		av[name]['regions'] 		= keyRegions
+		av[name]['metrics']		= ['mean','median',]
+
+		av[name]['datasource'] 		= ''
+		av[name]['model']		= 'MEDUSA'
+
+		av[name]['modelgrid']		= 'eORCA1'
+		av[name]['gridFile']		= eORCAgrid		
+
+
 		
 	if doT:
 		name = 'Temperature'
@@ -649,7 +684,7 @@ def analysis_timeseries(jobID = "u-ab671",
 
 if __name__=="__main__":	
 	#analysis_timeseries(jobID = "u-ab671")		
-	analysis_timeseries(jobID = "u-ab749")			
+	analysis_timeseries(jobID = "u-ab749",clean=1)			
 	#analysis_timeseries(jobID = "u-ab963")			
 	
 	

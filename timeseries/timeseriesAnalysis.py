@@ -248,16 +248,22 @@ class timeseriesAnalysis:
   	modellat = ukp.extractData(mnc,[],key=self.modelcoords['lat'])
   	modellon = ukp.extractData(mnc,[],key=self.modelcoords['lon']) 
   	
-
-  	dnc = Dataset(self.dataFile,'r')
-  	datadata =  tst.getHorizontalSlice(dnc,self.datacoords,self.datadetails,layer,data = '').squeeze()
-  	datalat = ukp.extractData(dnc,[],key=self.datacoords['lat'])
-  	datalon = ukp.extractData(dnc,[],key=self.datacoords['lon']) 
+	if self.dataFile:
+	  	dnc = Dataset(self.dataFile,'r')
+  		datadata =  tst.getHorizontalSlice(dnc,self.datacoords,self.datadetails,layer,data = '').squeeze()
+  		datalat = ukp.extractData(dnc,[],key=self.datacoords['lat'])
+  		datalon = ukp.extractData(dnc,[],key=self.datacoords['lon']) 
+		
+	else:
+		datadata = np.ma.array([-1000,],mask=[True,])
+		datalat  = np.ma.array([-1000,],mask=[True,])
+		datalon  = np.ma.array([-1000,],mask=[True,])
 
 	if modeldata.ndim ==4:   modeldata=modeldata.mean(0)
-	if modeldata.ndim ==3:   modeldata=modeldata.mean(0)
+	if modeldata.ndim ==3:   modeldata=modeldata.mean(0)  	
 	if datadata.ndim ==4:   datadata=datadata.mean(0)
-	if datadata.ndim ==3:   datadata=datadata.mean(0)	
+	if datadata.ndim ==3:   datadata=datadata.mean(0)  
+	
 	
 	titles = [' '.join([self.model,'('+self.jobID+')',layer,self.modeldetails['name']]),
 		  ' '.join([self.datasource,layer,self.datadetails['name']])]
@@ -299,8 +305,10 @@ class timeseriesAnalysis:
 			
     	    mapfilename = ukp.folder('images/timeseries/'+self.jobID+'/'+self.dataType)+'_'.join(['map',self.jobID,self.dataType,l,])+'.png'
     	    if ukp.shouldIMakeFile([self.shelvefn,self.shelvefn_insitu],mapfilename,debug=False):
+    	    	#try:
 	    	    self.mapplots( l, mapfilename)
-  
+		#except:
+		#	print "unable to make map plots"  
 	
 
 			
