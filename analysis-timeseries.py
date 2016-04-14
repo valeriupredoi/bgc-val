@@ -110,12 +110,13 @@ def analysis_timeseries(jobID = "u-ab671",
 	#	Charybdis (Julien's machine at NOCS)
 	#
 	# Feel free to add other macihines onto this list, if need be.
+	machinelocation = ''
 	
 	#####
 	# PML
 	if gethostname().find('pmpc')>-1:	
-		print "analysis-JASMIN.py:\tBeing run at PML on ",gethostname()
-		
+		print "analysis-timeseries.py:\tBeing run at PML on ",gethostname()
+		machinelocation = 'PML'
 		MEDUSAFolder_pref	= "/data/euryale7/scratch/ledm/UKESM/MEDUSA/"
 		NEMOFolder_pref		= "/data/euryale7/scratch/ledm/UKESM/MEDUSA/"
 	
@@ -133,8 +134,9 @@ def analysis_timeseries(jobID = "u-ab671",
 	#####
 	# JASMIN		
 	if gethostname().find('ceda.ac.uk')>-1:
-		print "analysis-JASMIN.py:\tBeing run at CEDA on ",gethostname()
-			
+		print "analysis-timeseries.py:\tBeing run at CEDA on ",gethostname()
+		machinelocation = 'JASMIN'	
+				
 		esmvalFolder = "/group_workspaces/jasmin/esmeval/example_data/bgc/"
 		
 		#####
@@ -159,7 +161,8 @@ def analysis_timeseries(jobID = "u-ab671",
 	#####
 	# NOC		
 	if gethostname().find('charybdis')>-1:	
-		print "analysis-JASMIN.py:\tBeing run at NOC on ",gethostname()
+		print "analysis-timeseries.py:\tBeing run at NOC on ",gethostname()
+		machinelocation = 'NOC'
 		
 		MEDUSAFolder_pref	= "/home/jpp1m13/Documents/WORKING/UKESM/Compar_Atm_forcings/netcdf_files/"
 		NEMOFolder_pref		="/home/jpp1m13/Documents/WORKING/UKESM/Compar_Atm_forcings/netcdf_files/" 
@@ -174,8 +177,13 @@ def analysis_timeseries(jobID = "u-ab671",
 		imgDir		= ukp.folder('images')
 		eORCAgrid 	= '/data/euryale7/scratch/ledm/UKESM/MEDUSA/mesh_mask_eORCA1_wrk.nc'
 		GlodapDir	= "/data/euryale7/backup/ledm/Observations/GLODAP/"		
-		
 
+	#####
+	# Unable to find location of files/data.	
+	if not machinelocation:
+		print "analysis-timeseries.py:\tFATAL:\tWas unable to determine location of host: ",gethostname()
+		assert False
+		
 
 
 	#####
