@@ -73,11 +73,11 @@ def analysis_timeseries(jobID = "u-ab671",
 	doSi		= 0#True
 	doO2		= 0#True
 	doAlk		= 0#True
-	doDIC		= 0#True
+	doDIC		= True
 	doAirSeaFlux	= 0#True	
 	doIntPP_Lester	= 0#True
 	doIntPP_OSU	= 0#True
-	doExportRatio   = True
+	doExportRatio   = 0#True
 	
 	#####	
 	# Physics switches:
@@ -123,15 +123,18 @@ def analysis_timeseries(jobID = "u-ab671",
 	
 		if annual:	WOAFolder 	= "/data/euryale7/scratch/ledm/WOA/annual/"
 		else:		WOAFolder 	= "/data/euryale7/scratch/ledm/WOA/"
-		MAREDATFolder 	= "/data/euryale7/scratch/ledm/MAREDAT/MAREDAT/"
-		GEOTRACESFolder = "/data/euryale7/scratch/ledm/GEOTRACES/GEOTRACES_PostProccessed/"
-		TakahashiFolder = "/data/euryale7/scratch/ledm/Takahashi2009_pCO2/"
-		MLDFolder	= "/data/euryale7/scratch/ledm/IFREMER-MLD/"
-		workDir		= "/data/euryale7/scratch/ledm/ukesm_postProcessed/"
-		imgDir		= ukp.folder('images')
+		
+		ObsFolder = "/data/euryale7/backup/ledm/Observations/"
+		MAREDATFolder 	= ObsFolder+"/MAREDAT/MAREDAT/"
+		GEOTRACESFolder = ObsFolder+"/GEOTRACES/GEOTRACES_PostProccessed/"
+		TakahashiFolder = ObsFolder+"/Takahashi2009_pCO2/"
+		MLDFolder	= ObsFolder+"/IFREMER-MLD/"
+		LesterFolder	= ObsFolder+"/LestersReportData/"
+		GlodapDir	= ObsFolder+"/GLODAP/"
+		GLODAPv2Dir	= ObsFolder+"/GLODAPv2/GLODAPv2_Mapped_Climatologies/"
+		
 		eORCAgrid 	= '/data/euryale7/scratch/ledm/UKESM/MEDUSA/mesh_mask_eORCA1_wrk.nc'
-		GlodapDir	= "/data/euryale7/backup/ledm/Observations/GLODAP/"
-
+				
 	#####
 	# JASMIN		
 	if gethostname().find('ceda.ac.uk')>-1:
@@ -155,9 +158,6 @@ def analysis_timeseries(jobID = "u-ab671",
 		TakahashiFolder = ukp.folder(esmvalFolder+"Takahashi2009_pCO2/")
 		MLDFolder  	= ukp.folder(esmvalFolder+"IFREMER-MLD/")
 	
-		# Directory for output files:
-		workDir 	= ukp.folder(esmvalFolder+"ukesm_postProcessed/")
-		imgDir		= ukp.folder('images')	
 
 	#####
 	# NOC		
@@ -174,8 +174,6 @@ def analysis_timeseries(jobID = "u-ab671",
 		GEOTRACESFolder = "/data/euryale7/scratch/ledm/GEOTRACES/GEOTRACES_PostProccessed/"
 		TakahashiFolder = "/data/euryale7/scratch/ledm/Takahashi2009_pCO2/"
 		MLDFolder	= "/data/euryale7/scratch/ledm/IFREMER-MLD/"
-		workDir		= "/data/euryale7/scratch/ledm/ukesm_postProcessed/"
-		imgDir		= ukp.folder('images')
 		eORCAgrid 	= '/data/euryale7/scratch/ledm/UKESM/MEDUSA/mesh_mask_eORCA1_wrk.nc'
 		GlodapDir	= "/data/euryale7/backup/ledm/Observations/GLODAP/"		
 
@@ -203,6 +201,7 @@ def analysis_timeseries(jobID = "u-ab671",
 	takahashiCoords	= {'t':'index_t', 'z':'index_z',  'lat': 'LAT', 'lon': 'LON', 'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}	
 	woaCoords 	= {'t':'index_t', 'z':'depth',  'lat': 'lat', 	   'lon': 'lon',       'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}	
 	glodapCoords	= {'t':'index_t', 'z':'depth',  'lat': 'latitude', 'lon': 'longitude', 'cal': 'standard','tdict':[] }
+	glodapv2Coords	= {'t':'time',    'z':'Pressure','lat':'lat',      'lon':'lon',        'cal': '',        'tdict':{0:0,} }
 	mldCoords	= {'t':'index_t', 'z':'index_z','lat':'lat','lon':'lon','cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
 
 
@@ -218,6 +217,7 @@ def analysis_timeseries(jobID = "u-ab671",
 	shortRegions 	= ['Global','SouthernHemisphere','NorthernHemisphere',]
   	AndyRegions 	= ['SouthernOcean','NorthernSubpolarAtlantic','NorthernSubpolarPacific','Arctic','SouthRemainder','NorthRemainder', 'Global']
  
+ 	debugRegions	= ['Global','Arctic',]
   	allRegions 	= AndyRegions	
   	keyRegions 	= AndyRegions	  	
   	
@@ -338,7 +338,28 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= eORCAgrid
-			
+	
+	if doDIC:
+	
+		name = 'DIC'
+		av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_198*_ptrc_T.nc"))
+		av[name]['dataFile'] 		= GLODAPv2Dir+'GLODAPv2.tco2.nc'
+				
+		av[name]['modelcoords'] 	= medusaCoords 	
+		av[name]['datacoords'] 		= glodapv2Coords
+	
+		av[name]['modeldetails'] 	= {'name': 'DIC', 'vars':['DIC',],  'convert': ukp.NoChange,'units':'mmol-C/m3'}
+		av[name]['datadetails']  	= {'name': 'DIC', 'vars':['tco2',], 'convert': ukp.NoChange,'units':'micro-mol kg-1'}
+	
+		av[name]['layers'] 		=  ['Surface',]#'100m','300m','1000m',]
+		av[name]['regions'] 		= keyRegions
+		av[name]['metrics']		= ['mean','median', ]
+
+		av[name]['datasource'] 		= 'GLODAP'
+		av[name]['model']		= 'MEDUSA'
+
+		av[name]['modelgrid']		= 'eORCA1'
+		av[name]['gridFile']		= eORCAgrid		
 
 	if doAlk:
 		name = 'Alkalinity'
@@ -421,10 +442,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			return (nc.variables[keys[0]][:]+ nc.variables[keys[1]][:])* 6.625 * 12.011 / 1000.	
 		name = 'IntegratedPrimaryProduction_1x1'
 		av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_diad_T.nc"))
-		av[name]['dataFile'] 		= "/data/euryale7/backup/ledm/Observations/LestersReportData/PPint_1deg.nc"
-
-#	#		av['intpp']['Data']['File'] 	=  LesterFolder+'PPint_1deg.nc'
-#	#		av['intpp']['Data']['Vars'] 	= ['PPint',]
+		av[name]['dataFile'] 		= LesterFolder+"/PPint_1deg.nc"
 
 				
 		av[name]['modelcoords'] 	= medusaCoords 	
@@ -684,7 +702,7 @@ def analysis_timeseries(jobID = "u-ab671",
 
 if __name__=="__main__":	
 	#analysis_timeseries(jobID = "u-ab671")		
-	analysis_timeseries(jobID = "u-ab749",clean=1)			
+	analysis_timeseries(jobID = "u-ab749",)#clean=1)			
 	#analysis_timeseries(jobID = "u-ab963")			
 	
 	
