@@ -210,16 +210,18 @@ def analysis_timeseries(jobID = "u-ab671",
 	# Some lists of region.
 	# This are pre-made lists of regions that can be investigated.
 	# Note that each analysis below can be given its own set of regions.	
-	regions 	= ['Global','NorthAtlanticOcean','SouthAtlanticOcean',]
-	oldRegions	= ['Global','SouthernHemisphere','NorthernHemisphere',
-			  'NorthAtlanticOcean','SouthAtlanticOcean','EquatorialAtlanticOcean',
-			  'Atlantic','Arctic','nino3','nino3.4','atl_spg','ne_atl','persian']
-	shortRegions 	= ['Global','SouthernHemisphere','NorthernHemisphere',]
-  	AndyRegions 	= ['SouthernOcean','NorthernSubpolarAtlantic','NorthernSubpolarPacific','Arctic','SouthRemainder','NorthRemainder', 'Global']
+#	regions 	= ['Global','NorthAtlanticOcean','SouthAtlanticOcean',]
+#	oldRegions	= ['Global','SouthernHemisphere','NorthernHemisphere',
+#			  'NorthAtlanticOcean','SouthAtlanticOcean','EquatorialAtlanticOcean',
+#			  'Atlantic','Arctic','nino3','nino3.4','atl_spg','ne_atl','persian']
+	#shortRegions 	= ['Global','SouthernHemisphere','NorthernHemisphere',]
+  	#AndyRegions 	= ['SouthernOcean','NorthernSubpolarAtlantic','NorthernSubpolarPacific','Arctic','SouthRemainder','NorthRemainder', 'Global']
  
- 	debugRegions	= ['Global','Arctic',]
-  	allRegions 	= AndyRegions	
-  	keyRegions 	= AndyRegions	  	
+	# need to add:  ,'SouthRemainder','NorthRemainder', 
+ 	debugRegions	= ['Remainder','ArcticOcean','NorthernSubpolarAtlantic','NorthernSubpolarPacific','Global','ignoreInlandSeas','SouthernOcean',]
+ 	
+  	allRegions 	= debugRegions	
+  	keyRegions 	= debugRegions	  	
   	
   	
   	
@@ -352,7 +354,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['datadetails']  	= {'name': 'DIC', 'vars':['tco2',], 'convert': ukp.NoChange,'units':'micro-mol kg-1'}
 	
 		av[name]['layers'] 		=  ['Surface',]#'100m','300m','1000m',]
-		av[name]['regions'] 		= keyRegions
+		av[name]['regions'] 		= debugRegions
 		av[name]['metrics']		= ['mean','median', ]
 
 		av[name]['datasource'] 		= 'GLODAP'

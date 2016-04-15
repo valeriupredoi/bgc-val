@@ -1320,7 +1320,7 @@ def makeMask(name,newSlice, xt,xz,xy,xx,xd):
 		print "makeMask:\tSlice", newSlice, "requires both datasets, and you should never see this"
 		assert False
 
-  	if newSlice == 'All': 		
+  	if newSlice in ['All', 'Global']: 		
  # 		return
   		m = np.zeros(len(xd))		
   		for a in [xt,xz,xy,xx,xd]:
@@ -1533,8 +1533,9 @@ def makeMask(name,newSlice, xt,xz,xy,xx,xd):
 		my = np.ma.masked_outside(xy, -50.,30.).mask
 		if newSlice == 'IndianOcean':return np.ma.masked_where( mx+my,nmask).mask 
 
+	if newSlice == 'SouthernOcean': 	return np.ma.masked_where(  xy >-40.,nmask).mask 
 	if newSlice == 'AntarcticOcean': 	return np.ma.masked_where(  xy >-50.,nmask).mask 
-	if newSlice == 'ArcticOcean': 		return np.ma.masked_where(  xy < 60.,nmask).mask 
+	#if newSlice == 'ArcticOcean': 		return np.ma.masked_where(  xy < 60.,nmask).mask 
 	if newSlice == 'ignoreArtics':		return np.ma.masked_outside(xy,-70., 70.).mask
 	if newSlice == 'ignoreMidArtics':	return np.ma.masked_outside(xy,-65., 65.).mask
 	if newSlice == 'ignoreMoreArtics':	return np.ma.masked_outside(xy,-60., 60.).mask
@@ -1544,6 +1545,30 @@ def makeMask(name,newSlice, xt,xz,xy,xx,xd):
 	if newSlice == 'EquatorialAtlanticOcean':
 		return np.ma.masked_outside(makeLonSafeArr(xx), -65.,20.).mask + np.ma.masked_outside(xy, -15.,15.).mask
 
+	if newSlice == 'ArcticOcean': 	
+		mx = np.ma.masked_where(  xy < 60.,nmask).mask 
+		mx+= np.ma.masked_inside(xx, -45., 15.).mask * np.ma.masked_inside(xy, 50.,80.).mask
+		
+		return np.ma.masked_where( mx,nmask).mask 
+
+	if newSlice == 'NorthernSubpolarAtlantic':
+		mx = np.ma.masked_outside(xx,-80., -3. ).mask
+		mx += np.ma.masked_outside(xy,40., 60. ).mask
+		return mx	
+
+	if newSlice == 'NorthernSubpolarPacific':
+		mx = np.ma.masked_inside(xx,-100., 120. ).mask
+		mx += np.ma.masked_inside(xx,260., 365. ).mask		
+		mx += np.ma.masked_outside(xy,40., 60. ).mask
+		return np.ma.masked_where( mx,nmask).mask 		
+
+	if newSlice == 'Remainder':
+		mx = np.ma.masked_inside(xy,-10., 10. ).mask
+		mx += np.ma.masked_outside(abs(xy),-40., 40. ).mask		
+		return np.ma.masked_where( mx,nmask).mask 		
+
+  
+  					
 	
 	if newSlice == 'NorthPacificOcean':
 		mx = np.ma.masked_inside(xx,-100., 120. ).mask

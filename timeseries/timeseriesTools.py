@@ -153,6 +153,8 @@ class DataLoader:
   	self.details 	= details
   	self.regions 	= regions
   	self.layers 	= layers
+  	self.oneDDataLoaded= False
+  	
 	if data == '': data = ukp.extractData(nc,self.details)
   	self.Fulldata 	= data
   	self.__lay__ 	= ''
@@ -198,64 +200,96 @@ class DataLoader:
   	
   	print 'createDataArray',self.details['name'],region,layer
   	
+  	if not self.oneDDataLoaded: self.createOneDDataArray(layer)
+
+  	
+  	  	
+  	m = ukp.makeMask(self.details['name'],region, 
+  				self.oneDData['arr_t'],
+  				self.oneDData['arr_z'],
+  				self.oneDData['arr_lat'],
+  				self.oneDData['arr_lon'],
+  				self.oneDData['arr'],)
+
+  	return 	np.ma.masked_where(m,self.oneDData['arr']), \
+  		np.ma.masked_where(m,self.oneDData['arr_t']),\
+  		np.ma.masked_where(m,self.oneDData['arr_z']),\
+  		np.ma.masked_where(m,self.oneDData['arr_lat']),\
+  		np.ma.masked_where(m,self.oneDData['arr_lon'])
+  		  		  		  		
+  	
   	#dat = np.ma.array(getHorizontalSlice(self.nc,self.coords,self.details,layer,data = self.Fulldata))
   	
-  	if region == 'Global':			regionlims  = {'lat_min':-100.,'lat_max': 100.,'lon_min':-360.,'lon_max':360.}
-  	if region == 'All':			regionlims  = {'lat_min':-100.,'lat_max': 100.,'lon_min':-360.,'lon_max':360.}  	
-
-  	if region == 'SouthernHemisphere':	regionlims  = {'lat_min':-90.,'lat_max': 0.,'lon_min':-360.,'lon_max':360.}
-  	if region == 'NorthernHemisphere':	regionlims  = {'lat_min':  0.,'lat_max':90.,'lon_min':-360.,'lon_max':360.}  	
+#  #	if region == 'Global':			regionlims  = {'lat_min':-100.,'lat_max': 100.,'lon_min':-360.,'lon_max':360.}
+#  #	if region == 'All':			regionlims  = {'lat_min':-100.,'lat_max': 100.,'lon_min':-360.,'lon_max':360.}  	
+#
+ # 	if region == 'SouthernHemisphere':	regionlims  = {'lat_min':-90.,'lat_max': 0.,'lon_min':-360.,'lon_max':360.}
+#  	if region == 'NorthernHemisphere':	regionlims  = {'lat_min':  0.,'lat_max':90.,'lon_min':-360.,'lon_max':360.}  	
   	
-	if region == 'NorthAtlanticOcean': 	regionlims  = {'lat_min':  10.,'lat_max': 60.,'lon_min':-80.,'lon_max':10.}
-	if region == 'SouthAtlanticOcean': 	regionlims  = {'lat_min': -50.,'lat_max':-10.,'lon_min':-65.,'lon_max':20.}	
+#	if region == 'NorthAtlanticOcean': 	regionlims  = {'lat_min':  10.,'lat_max': 60.,'lon_min':-80.,'lon_max':10.}
+#	if region == 'SouthAtlanticOcean': 	regionlims  = {'lat_min': -50.,'lat_max':-10.,'lon_min':-65.,'lon_max':20.}	
 
-	if region == 'EquatorialAtlanticOcean': regionlims  = {'lat_min': -15.,'lat_max': 15.,'lon_min':-65.,'lon_max':20.}	
+#	if region == 'EquatorialAtlanticOcean': regionlims  = {'lat_min': -15.,'lat_max': 15.,'lon_min':-65.,'lon_max':20.}	
 
-	# from ocean assess:
-	if region == 'Atlantic': 		regionlims  = {'lat_min': -90.,'lat_max': 70.,'lon_min':-100.,'lon_max':50.}	
-	if region == 'Arctic_OA':		regionlims  = {'lat_min': 70.,'lat_max': 90.,'lon_min':-360.,'lon_max':360.}	
-	if region == 'nino3': 			regionlims  = {'lat_min': -5.,'lat_max': 5., 'lon_min':-150.,'lon_max':-90.}	
-	if region == 'nino3.4': 		regionlims  = {'lat_min': -5.,'lat_max': 5.,'lon_min':-170.,'lon_max':-120.}	
-	if region == 'atl_spg': 		regionlims  = {'lat_min': 45.,'lat_max': 65.,'lon_min':-40.,'lon_max':20.}	
-	if region == 'ne_atl': 			regionlims  = {'lat_min': 45.,'lat_max': 75.,'lon_min':-40.,'lon_max':20.}					
-	if region == 'persian': 		regionlims  = {'lat_min': 20.,'lat_max': 35.,'lon_min':40.,'lon_max':57.}	
+#	# from ocean assess:
+#	if region == 'Atlantic': 		regionlims  = {'lat_min': -90.,'lat_max': 70.,'lon_min':-100.,'lon_max':50.}	
+#	if region == 'Arctic_OA':		regionlims  = {'lat_min': 70.,'lat_max': 90.,'lon_min':-360.,'lon_max':360.}	
+#	if region == 'nino3': 			regionlims  = {'lat_min': -5.,'lat_max': 5., 'lon_min':-150.,'lon_max':-90.}	
+#	if region == 'nino3.4': 		regionlims  = {'lat_min': -5.,'lat_max': 5.,'lon_min':-170.,'lon_max':-120.}	
+#	if region == 'atl_spg': 		regionlims  = {'lat_min': 45.,'lat_max': 65.,'lon_min':-40.,'lon_max':20.}	
+#	if region == 'ne_atl': 			regionlims  = {'lat_min': 45.,'lat_max': 75.,'lon_min':-40.,'lon_max':20.}					
+#	if region == 'persian': 		regionlims  = {'lat_min': 20.,'lat_max': 35.,'lon_min':40.,'lon_max':57.}	
+#
+#	# Andy's requests:
+ # 	if region == 'SouthernOcean':		regionlims  = {'lat_min':-90.,'lat_max': -40.,'lon_min':-360.,'lon_max':360.}	
+  #	if region == 'NorthernSubpolarAtlantic':regionlims  = {'lat_min': 40.,'lat_max':  60.,'lon_min': -80.,'lon_max': -3.}
+  #	if region == 'NorthernSubpolarPacific':	
+  #		regionlims  = {'lat_min': 40.,'lat_max':  60.,'lon_min':-360.,'lon_max':360.}	
+  #		print "timeseriesTools.py:\tcreateDataArray():\tERROR This is wrong",region
+  #		#assert 0
+  #	if region == 'Arctic':			regionlims  = {'lat_min': 60.,'lat_max':  90.,'lon_min':-360.,'lon_max':360.}	
+  #	if region == 'SouthRemainder':		regionlims  = {'lat_min':-40.,'lat_max': -10.,'lon_min':-360.,'lon_max':360.}	
+  #	if region == 'NorthRemainder':		regionlims  = {'lat_min': 10.,'lat_max':  40.,'lon_min':-360.,'lon_max':360.}	  	
+  #	  	  	  	
 
-	# Andy's requests:
-  	if region == 'SouthernOcean':		regionlims  = {'lat_min':-90.,'lat_max': -40.,'lon_min':-360.,'lon_max':360.}	
-  	if region == 'NorthernSubpolarAtlantic':regionlims  = {'lat_min': 40.,'lat_max':  60.,'lon_min': -80.,'lon_max': -3.}
-  	if region == 'NorthernSubpolarPacific':	
-  		regionlims  = {'lat_min': 40.,'lat_max':  60.,'lon_min':-360.,'lon_max':360.}	
-  		print "timeseriesTools.py:\tcreateDataArray():\tERROR This is wrong",region
-  		#assert 0
-  	if region == 'Arctic':			regionlims  = {'lat_min': 60.,'lat_max':  90.,'lon_min':-360.,'lon_max':360.}	
-  	if region == 'SouthRemainder':		regionlims  = {'lat_min':-40.,'lat_max': -10.,'lon_min':-360.,'lon_max':360.}	
-  	if region == 'NorthRemainder':		regionlims  = {'lat_min': 10.,'lat_max':  40.,'lon_min':-360.,'lon_max':360.}	  	
-  	  	  	  	
+  def createOneDDataArray(self,layer):
+  	""" 	This is a very simple routine that takes a layer and makes a series of 1D arrays containing points.
+  		These output 1D arrays are then passed to UKESMpython.py's makemasks toolkit.
+  		
+  	"""
 
-
+	#####
+	# load lat, lon and data.
   	lat = self.nc.variables[self.coords['lat']][:]
   	lon = ukp.makeLonSafeArr(self.nc.variables[self.coords['lon']][:]) # makes sure it's between +/-180
+	dims =   self.nc.variables[self.details['vars'][0]].dimensions
   	
   	dat = self.__getlayerDat__(layer)
 	if dat.ndim == 2:	dat =dat[None,:,:]
 
-	
-	
+		
 	#####
-	# Output Arrays?
+	# Create Temporary Output Arrays.
   	arr 	= []
   	arr_lat = []
   	arr_lon = []
   	arr_t 	= []  	  		
   	arr_z 	= []  	
-  	
-	dims =   self.nc.variables[self.details['vars'][0]].dimensions
-  	#print 'createDataArray',self.details['name'],region,layer, dims	, regionlims, len(dat),dat.shape
+
+
+	latnames = ['lat','latitude','latbnd','nav_lat','y',u'lat',]
+	lonnames = ['lon','longitude','lonbnd','nav_lon','x',u'lon',]
+	
+	print dims, dat.ndim, dims[-1].lower(), dims[-2].lower(), latnames, lonnames
+
+	####
+	# Different data has differnt shapes, and order or dimensions, this takes those differences into account.
 	if dat.ndim > 2:
-	  if dims[-1].lower() in ['lon','longitude','lonbnd','nav_lon','x'] and dims[-2].lower() in ['lat','latitude','latbnd','nav_lat','y']:
-	    # dims order is [t,z,y,x] or [t,y,x] or [z,y,x]
-  	    print 'createDataArray',self.details['name'],region,layer, "Sensible dimsions order:",dims		
+	  if dims[-2].lower() in latnames and dims[-1].lower() in lonnames:
+	  
+  	    print 'createDataArray',self.details['name'],layer, "Sensible dimsions order:",dims		
  	    for index,v in ukp.maenumerate(dat):
+
   			try:	(t,z,y,x) 	= index
   			except: 
   				(t,y,x) 	= index 
@@ -263,15 +297,8 @@ class DataLoader:
  			
   			try:	la = lat[y,x]  			
   			except:	la = lat[y]
-
-  			if la<regionlims['lat_min']:continue
-  			if la>regionlims['lat_max']:continue  	
-  			
   			try:	lo = lon[y,x]  			
   			except:	lo = lon[x]  			
-  			
-  			if lo<regionlims['lon_min']:continue
-  			if lo>regionlims['lon_max']:continue
   			
   			arr.append(v)
   			arr_t.append(t)
@@ -279,8 +306,9 @@ class DataLoader:
   			arr_lat.append(la)
   			arr_lon.append(lo)
   			  			  			  			
-	  elif dims[-2].lower() in ['lon','longitude','lonbnd','nav_lon','x'] and dims[-1].lower() in ['lat','latitude','latbnd','nav_lat','y']:
-  	    print 'createDataArray',self.details['name'],region,layer, "Ridiculous dimsions order:",dims				
+	  elif dims[-2].lower() in lonnames and dims[-1].lower() in latnames:
+	  
+  	    print 'createDataArray',self.details['name'],layer, "Ridiculous dimsions order:",dims				
  	    for index,v in ukp.maenumerate(dat):
   			try:	(t,z,x,y) 	= index
   			except: 
@@ -289,18 +317,9 @@ class DataLoader:
  			
   			try:	la = lat[y,x]  			
   			except:	la = lat[y]
-  			
-  			if la<regionlims['lat_min']:continue
-  			if la>regionlims['lat_max']:continue  	
-  			
   			try:	lo = lon[y,x]  			
   			except:	lo = lon[x]  			
   			
-  			if lo<regionlims['lon_min']:continue
-  			if lo>regionlims['lon_max']:continue
-  			
-  			#if np.ma.is_masked(v):continue  
-  			#if v > 1E20:continue    						
   			arr.append(v)
   			arr_t.append(t)
   			arr_z.append(z)
@@ -309,51 +328,44 @@ class DataLoader:
   			  			
   	  else:
   		print "Unknown dimensions order", dims
-  		assert False	  			
+  		assert False	
+  		  			
   	elif dat.ndim == 1:
    	  if dims[0] == 'index':
-  	    print 'createDataArray',self.details['name'],region,layer, "1 D data:",dims,dat.shape
+  	    print 'createDataArray',self.details['name'],layer, "1 D data:",dims,dat.shape
  	    for i,v in enumerate(dat):
   			la = lat[i]  			
-  			if la<regionlims['lat_min']:continue
-  			if la>regionlims['lat_max']:continue  	
-  			
   			lo = lon[i]  			
   			
-  			if lo<regionlims['lon_min']:continue
-  			if lo>regionlims['lon_max']:continue
-  			
-  			#if np.ma.is_masked(v):continue  
-  			#if v > 1E20:continue    						
   			arr.append(v)  	
   			arr_t.append(0)
   			arr_z.append(0)
   			arr_lat.append(la)
   			arr_lon.append(lo)
-  			  				
-  	
   	  else:
   		print "Unknown dimensions order", dims
   		assert False	  	
   	else:
   		print "Unknown dimensions order", dims
-  		assert False	
-  	arr = np.ma.array(arr)
-  	#print 'createDataArray:',arr.min(),arr.mean(),arr.max(),arr, len(arr)
+  		assert False
+  			
 
   	arr = np.ma.masked_invalid(np.ma.array(arr))
   	mask = np.ma.masked_where((arr>1E20) + arr.mask,arr).mask
   	
-  	arr_lat = np.ma.masked_where(mask,arr_lat).compressed()
-  	arr_lon = np.ma.masked_where(mask,arr_lon).compressed()
-  	arr_z   = np.ma.masked_where(mask,arr_z  ).compressed() 	
-  	arr_t   = np.ma.masked_where(mask,arr_t  ).compressed()
-  	arr     = np.ma.masked_where(mask,arr    ).compressed()
+  	self.oneDData={}
+  	self.oneDData['arr_lat'] = np.ma.masked_where(mask,arr_lat).compressed()
+  	self.oneDData['arr_lon'] = np.ma.masked_where(mask,arr_lon).compressed()
+  	self.oneDData['arr_z']   = np.ma.masked_where(mask,arr_z  ).compressed() 	
+  	self.oneDData['arr_t']   = np.ma.masked_where(mask,arr_t  ).compressed()
+  	self.oneDData['arr']     = np.ma.masked_where(mask,arr    ).compressed()
 
+	self.oneDDataLoaded=True
+	
   	#print 'createDataArray:',arr.min(),arr.mean(),arr.max(),arr, len(arr)  	
   	#print 'createDataArray:',region, arr_lat.min(),arr_lat.mean(),arr_lat.max(),arr_lat, len(arr_lat)  	  	
   	#print 'createDataArray:',region, arr_lon.min(),arr_lon.mean(),arr_lon.max(),arr_lon, len(arr_lon)  	  	  	
-  	return arr, arr_t,arr_z,arr_lat,arr_lon
+  	#return arr, arr_t,arr_z,arr_lat,arr_lon
   	
   	
   	
