@@ -340,6 +340,29 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= eORCAgrid
+
+
+	if doOMZ:
+		name = 'Oxygen'
+		av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
+		av[name]['dataFile'] 		=  WOAFolder+'oxygen-woa13.nc'
+				
+		av[name]['modelcoords'] 	= medusaCoords 	
+		av[name]['datacoords'] 		= woaCoords
+	
+		av[name]['modeldetails'] 	= {'name': 'oxygen', 'vars':['OXY',], 'convert': ukp.NoChange,}	
+		av[name]['datadetails']  	= {'name': 'oxygen', 'vars':['o_an',], 'convert': ukp.oxconvert,'units':'mmol/m^3'}
+	
+		av[name]['layers'] 		= ['Surface','100m','300m','1000m',]
+		av[name]['regions'] 		= keyRegions
+		av[name]['metrics']		= ['sum', ]
+
+		av[name]['datasource'] 		= 'WOA'
+		av[name]['model']		= 'MEDUSA'
+
+		av[name]['modelgrid']		= 'eORCA1'
+		av[name]['gridFile']		= eORCAgrid
+
 	
 	if doDIC:
 	

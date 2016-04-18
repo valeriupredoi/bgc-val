@@ -66,10 +66,10 @@ class timeseriesAnalysis:
 		
 	
 	if debug: print "timeseriesAnalysis:\t init."	
-	self.modelFiles 	= modelFiles 
+	self.modelFiles 	= modelFiles 		
 	self.dataFile		= dataFile
 	self.dataType		= dataType
-	self.modelcoords 	= modelcoords
+	self.modelcoords 	= modelcoords		
 	self.modeldetails 	= modeldetails
 	self.datacoords 	= datacoords
 	self.datadetails 	= datadetails						
