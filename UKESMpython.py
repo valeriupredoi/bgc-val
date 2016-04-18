@@ -1553,10 +1553,9 @@ def makeMask(name,newSlice, xt,xz,xy,xx,xd):
 		return np.ma.masked_where( mx,nmask).mask 
 
 	if newSlice == 'NorthernSubpolarAtlantic':
-		mx = np.ma.masked_outside(xx,-80., -3. ).mask
-		mx += np.ma.masked_outside(xy,40., 60. ).mask
-		mx -= np.ma.masked_inside(xx, -45., 15.).mask * np.ma.masked_inside(xy, 50.,80.).mask
-		return mx	
+		mx = np.int(np.ma.masked_outside(xx,-80., -3. ).mask + np.ma.masked_outside(xy,40., 60. ).mask)
+		mx *= np.int(np.ma.masked_outside(xx, -45., 15.).mask + np.ma.masked_outside(xy, 60.,80.).mask)
+		return np.bool(mx)	
 
 	if newSlice == 'NorthernSubpolarPacific':
 		mx = np.ma.masked_inside(xx,-100., 120. ).mask
