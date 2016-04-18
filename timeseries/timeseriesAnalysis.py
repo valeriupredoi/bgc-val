@@ -25,6 +25,7 @@
 import numpy as np
 from shelve import open as shOpen
 from netCDF4 import Dataset,num2date
+import os
 
 #Specific local code:
 import UKESMpython as ukp
@@ -58,6 +59,12 @@ class timeseriesAnalysis:
 		clean		= True,
 		debug		= True,
 		):
+		
+	#####
+	#	This is the class that does most of the legwork.
+	#	First we save all the initialisation settings as class attributes.
+		
+	
 	if debug: print "timeseriesAnalysis:\t init."	
 	self.modelFiles 	= modelFiles 
 	self.dataFile		= dataFile
@@ -81,13 +88,17 @@ class timeseriesAnalysis:
 		
   	self.shelvefn 		= ukp.folder(self.workingDir)+'_'.join([self.jobID,self.dataType,])+'.shelve'
 	self.shelvefn_insitu	= ukp.folder(self.workingDir)+'_'.join([self.jobID,self.dataType,])+'_insitu.shelve'
+
+	#####
+	# Load Data file	
+ 	self.loadData()
 	
-  	if self.dataFile: 
-  		self.loadData()
-	else:
-		self.dataD = {}
-	#assert False
+	#####
+	# Load Model File
   	self.loadModel()  	
+
+	#####
+	# Make the plots:
   	self.makePlots()
   	
   	
@@ -178,7 +189,19 @@ class timeseriesAnalysis:
 
 
   def loadData(self):
+  	
 	if self.debug: print "timeseriesAnalysis:\t loadData.",self.dataFile		
+	
+  	if not self.dataFile: 
+ 		if self.debug: print "timeseriesAnalysis:\t No data File provided:",self.dataFile		 		
+		self.dataD = {}
+		return
+
+  	if not os.path.exists(self.dataFile): 
+ 		if self.debug: print "timeseriesAnalysis:\tWARNING:\t No such data File:",self.dataFile		 
+		self.dataD = {}
+		return
+				
 	###############
 	# load and calculate the real data info
 	try:
@@ -221,9 +244,14 @@ class timeseriesAnalysis:
 	
 	for r in self.regions:
 	    for l in self.layers:
-	    	dataD[(r,l)] = dl.load[(r,l,)]	#.compressed() # no need to compress as this is done in tools.
+	    	dataD[(r,l)] = dl.load[(r,l,)]	
+	    	dataD[(r,l,'lat')] = dl.load[(r,l,'lat')]		    	
+	    	dataD[(r,l,'lon')] = dl.load[(r,l,'lon')]
 		if len(dataD[(r,l)])==0:
-			dataD[(r,l)]  = np.ma.array([-999,],mask=[True,])	    	
+			dataD[(r,l)]  = np.ma.array([-999,],mask=[True,])	
+			dataD[(r,l,'lat')]  = np.ma.array([-999,],mask=[True,])	    	
+			dataD[(r,l,'lon')]  = np.ma.array([-999,],mask=[True,])	    	
+									    	
     		print "timeseriesAnalysis:\t loadData,\tloading ",(r,l),  dataD[(r,l)].min(),  dataD[(r,l)].max(),  dataD[(r,l)].mean()
     		
 	###############
@@ -232,7 +260,7 @@ class timeseriesAnalysis:
 	sh = shOpen(self.shelvefn_insitu)
 	sh['dataD'] 	= dataD
 	sh.close()
-	
+	 	
 	self.dataD = dataD
 
 
@@ -244,20 +272,27 @@ class timeseriesAnalysis:
   	"""	Makes a surface plot of model vs data. 
   	"""	
   	mnc = Dataset(self.modelFiles[-1],'r')
+  	
   	modeldata =  tst.getHorizontalSlice(mnc,self.modelcoords,self.modeldetails,layer,data = '').squeeze()
   	modellat = ukp.extractData(mnc,[],key=self.modelcoords['lat'])
   	modellon = ukp.extractData(mnc,[],key=self.modelcoords['lon']) 
   	
-
-  	dnc = Dataset(self.dataFile,'r')
-  	datadata =  tst.getHorizontalSlice(dnc,self.datacoords,self.datadetails,layer,data = '').squeeze()
-  	datalat = ukp.extractData(dnc,[],key=self.datacoords['lat'])
-  	datalon = ukp.extractData(dnc,[],key=self.datacoords['lon']) 
+	if self.dataFile:
+	  	dnc = Dataset(self.dataFile,'r')
+  		datadata =  tst.getHorizontalSlice(dnc,self.datacoords,self.datadetails,layer,data = '').squeeze()
+  		datalat = ukp.extractData(dnc,[],key=self.datacoords['lat'])
+  		datalon = ukp.extractData(dnc,[],key=self.datacoords['lon']) 
+		
+	else:
+		datadata = np.ma.array([-1000,],mask=[True,])
+		datalat  = np.ma.array([-1000,],mask=[True,])
+		datalon  = np.ma.array([-1000,],mask=[True,])
 
 	if modeldata.ndim ==4:   modeldata=modeldata.mean(0)
-	if modeldata.ndim ==3:   modeldata=modeldata.mean(0)
+	if modeldata.ndim ==3:   modeldata=modeldata.mean(0)  	
 	if datadata.ndim ==4:   datadata=datadata.mean(0)
-	if datadata.ndim ==3:   datadata=datadata.mean(0)	
+	if datadata.ndim ==3:   datadata=datadata.mean(0)  
+	
 	
 	titles = [' '.join([self.model,'('+self.jobID+')',layer,self.modeldetails['name']]),
 		  ' '.join([self.datasource,layer,self.datadetails['name']])]
@@ -268,7 +303,40 @@ class timeseriesAnalysis:
   			lon0=0.,drawCbar=True,cbarlabel='',dpi=100,)
   	
 
+  def mapplotsRegionsLayers(self, region,layer,filename):
+  	"""	Makes a surface plot of model vs data. 
+  	"""	
+  	(r,l) = (region,layer)
 
+  	modeldata =  self.dataD[(r,l,)]
+  	modellat = self.dataD[(r,l,'lat')]
+  	modellon = self.dataD[(r,l,'lon')]
+
+  	print "mapplotsRegionsLayers:\t",r,l, "model contains",len(modeldata),'model data'
+  	print "mapplotsRegionsLayers:\t",r,l, "model lat:",modellat.min(),modellat.mean(),modellat.max()
+  	print "mapplotsRegionsLayers:\t",r,l, "model lon:",modellon.min(),modellon.mean(),modellon.max() 
+  	  	
+	if self.dataFile:
+	  	dnc = Dataset(self.dataFile,'r')
+  		datadata =  tst.getHorizontalSlice(dnc,self.datacoords,self.datadetails,layer,data = '').squeeze()
+  		datalat = ukp.extractData(dnc,[],key=self.datacoords['lat'])
+  		datalon = ukp.extractData(dnc,[],key=self.datacoords['lon']) 
+		
+	else:
+		datadata = np.ma.array([-1000,],mask=[True,])
+		datalat  = np.ma.array([-1000,],mask=[True,])
+		datalon  = np.ma.array([-1000,],mask=[True,])
+  	print "mapplotsRegionsLayers:\t",r,l, "contains",len(datadata),'in situ data'
+  	print "mapplotsRegionsLayers:\t",r,l, "data lat:",datalat.min(),datalat.mean(),datalat.max()
+  	print "mapplotsRegionsLayers:\t",r,l, "data lon:",datalon.min(),datalon.mean(),datalon.max() 	
+	
+	titles = [' '.join([self.model,'('+self.jobID+')',layer,self.modeldetails['name']]),
+		  ' '.join([self.datasource,layer,self.datadetails['name']])]
+  	tsp.mapPlotPair(modellon, modellat, modeldata,
+  			datalon,datalat,datadata,
+  			filename,
+  			titles	= titles,
+  			lon0=0.,drawCbar=True,cbarlabel='',dpi=100,)
 
 	
   def makePlots(self):
@@ -300,10 +368,12 @@ class timeseriesAnalysis:
     	    mapfilename = ukp.folder('images/timeseries/'+self.jobID+'/'+self.dataType)+'_'.join(['map',self.jobID,self.dataType,l,])+'.png'
     	    if ukp.shouldIMakeFile([self.shelvefn,self.shelvefn_insitu],mapfilename,debug=False):
 	    	    self.mapplots( l, mapfilename)
-  
 	
 
-			
+    	    mapfilename = ukp.folder('images/timeseries/'+self.jobID+'/'+self.dataType)+'_'.join(['map',self.jobID,self.dataType,l,r,])+'.png'
+    	    if ukp.shouldIMakeFile([self.shelvefn,self.shelvefn_insitu],mapfilename,debug=False):
+	    	    self.mapplotsRegionsLayers( r,l, mapfilename)
+				
 			
 			
 			

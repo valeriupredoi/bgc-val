@@ -231,6 +231,27 @@ def makemapplot(fig,ax,lons,lats,data,title, zrange=[-100,100],lon0=0.,drawCbar=
 		
 	return fig, ax
 	
+def mapPlotSingle(lons1, lats1, data1,filename,titles=['',],lon0=0.,drawCbar=True,cbarlabel='',doLog=False,dpi=100,):#**kwargs):
+
+	fig = pyplot.figure()
+	fig.set_size_inches(10,6)
+	
+	lons1 = np.array(lons1)
+	lats1 = np.array(lats1)
+	data1 = np.ma.array(data1)
+	
+	rbmi = data1.min()
+	rbma = data1.max()
+	
+	if rbmi * rbma >0. and rbma/rbmi > 100.: doLog=True
+	ax1 = pyplot.subplot(111,projection=cartopy.crs.PlateCarree(central_longitude=0.0, ))
+		
+	fig,ax1 = makemapplot(fig,ax1,lons1,lats1,data1,titles[0], zrange=[rbmi,rbma],lon0=0.,drawCbar=True,cbarlabel='',doLog=doLog,)
+	ax1.set_extent([-180.,180.,-90.,90.])
+	print "mapPlotSingle.py:\tmapPlotPair: \tSaving:" , filename
+	pyplot.savefig(filename ,dpi=dpi)		
+	pyplot.close()
+	
 
 def mapPlotPair(lons1, lats1, data1,lons2,lats2,data2,filename,titles=['',''],lon0=0.,drawCbar=True,cbarlabel='',doLog=False,dpi=100,):#**kwargs):
 
@@ -254,9 +275,13 @@ def mapPlotPair(lons1, lats1, data1,lons2,lats2,data2,filename,titles=['',''],lo
 	ax1 = pyplot.subplot(211,projection=cartopy.crs.PlateCarree(central_longitude=0.0, ))
 		
 	fig,ax1 = makemapplot(fig,ax1,lons1,lats1,data1,titles[0], zrange=[rbmi,rbma],lon0=0.,drawCbar=True,cbarlabel='',doLog=doLog,)
+	
 
 	ax2 = pyplot.subplot(212,projection=cartopy.crs.PlateCarree(central_longitude=0.0, ))	
-	fig,ax2 = makemapplot(fig,ax2,lons2,lats2,data2,titles[1], zrange=[rbmi,rbma],lon0=0.,drawCbar=True,cbarlabel='',doLog=doLog,)
+	try:fig,ax2 = makemapplot(fig,ax2,lons2,lats2,data2,titles[1], zrange=[rbmi,rbma],lon0=0.,drawCbar=True,cbarlabel='',doLog=doLog,)
+	except: 
+		mapPlotSingle(lons1, lats1, data1,filename,titles=titles,lon0=lon0,drawCbar=drawCbar,cbarlabel=cbarlabel,doLog=doLog,dpi=dpi)
+		return
 	
 		
 	print "timeseriespots.py:\tmapPlotPair: \tSaving:" , filename

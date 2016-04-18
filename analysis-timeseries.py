@@ -23,23 +23,23 @@
 # ledm@pml.ac.uk
 #
 
-#Standard Python modules:
+
+#####	
+# Load Standard Python modules:
 from sys import argv,exit
 from os.path import exists
 from calendar import month_name
 from socket import gethostname
 from netCDF4 import Dataset
 from glob import glob
-
-
-
 from scipy.interpolate import interp1d
 import numpy as np
 
 
-#Specific local code:
+#####	
+# Load specific local code:
 import UKESMpython as ukp
-from timeseries import timeseriesAnalysis#trafficlightsPlots, getMeanSurfaceChl,getHorizontalSlice
+from timeseries import timeseriesAnalysis
 
 
 
@@ -48,71 +48,99 @@ from timeseries import timeseriesAnalysis#trafficlightsPlots, getMeanSurfaceChl,
 
 def analysis_timeseries(jobID = "u-ab671",
 			clean = 0,
+			annual = True,
 			):
 
 	"""
 		The role of this code is to produce time series analysis.
+		The jobID is the monsoon/UM job id and it looks for files with a specific format
+		
+		The clean flag allows you to start the analysis without loading previous data.
+		
+		The annual flag means that we look at annual (True) or monthly (False) data.
 		
 	"""	
 
+	#####
+	# Switches:
+	# These are some booleans that allow us to choose which analysis to run. 
+	# I hope that they have sensible enough names.
 	
-	#doIntPP = True
-	#if doIntPP:
-	# code plan:
-	# for each metric.
+	#####	
+	# BGC switches:
+	doChl		= 0#True
+	doN		= 0#True
+	doSi		= 0#True
+	doO2		= 0#True
+	doAlk		= 0#True
+	doDIC		= True
+	doAirSeaFlux	= 0#True	
+	doIntPP_Lester	= 0#True
+	doIntPP_OSU	= 0#True
+	doExportRatio   = 0#True
+	
+	#####	
+	# Physics switches:
+	doT		= 0#True
+	doS		= 0#True
+	doMLD		= 0#True
+		
 
-	#	for each model file:
-	#	for r in regions:	
-	#		iterate over a list of analysis	
-	#		extract mean, depth int, etc for each region.
-	#		do it monthly, then annual.
-	#		Save it into a 
-	#	load data
-	#	for r in regions:
-	#		iterate over a list of analysis
-	#		produce a distribution of values.
-	#		do it monthly, then annual.	
-	#		
-
-	#jobID = "u-ab671"
+	#####
+	# Location of images directory
+	# the imagedir is where the analysis images will be saved.
+	imagedir	 = ukp.folder('images/timeseries/'+jobID)
+	
+	#####
+	# Location of shelves folder
+	# The shelve directory is where the intermediate processing files are saved in python's shelve format.
+	# This allows us to put away a python open to be re-opened later.
+	# This means that we can interupt the analysis without loosing lots of data and processing time, 
+	# or we can append new simulation years to the end of the analysis without starting from scratch each time.
+	shelvedir 	= ukp.folder('shelves/timeseries/'+jobID)
 
 	
 
-		#1. DIN at surface, 100m, 300m and 1000m (vs. "nitrate" in WOA)
-		#2. SIL at surface, 100m, 300m and 1000m (vs. "silicate" in WOA)
-		#3. OXY at surface, 100m, 300m and 1000m (vs. "dissolved oxygen" in WOA; note the units aren't the same)
-		#4. DIC at surface, 100m, 300m and 1000m (vs. pre-industrial version in GLODAP [*])
-		#5. ALK at surface, 100m, 300m and 1000m (vs. "total alkalinity" in GLODAP [*])
-
-		#Here I reckon simply reproducing the format (geographical maps of fields and differences from observations) 
-		#	and analysis (regional averages and average differences from observations) would be a good start.
-
-
-		#6. (CHN+CHD) at surface (compare with an appropriate chlorophyll product)
-		#7. ((PRN + PRD) *  6.625 * 12.011 / 1e3) for integrated primary production (compare with the OSU data products) 
 	#####
 	# Location of data files.
-	annual = 0
+	# The first thing that this function does is to check which machine it is being run. 
+	# This is we can run the same code on multiple machines withouht having to make many copies of this file.
+	# So far, this has been run on the following machines:
+	#	PML
+	#	JASMIN
+	#	Charybdis (Julien's machine at NOCS)
+	#
+	# Feel free to add other macihines onto this list, if need be.
+	machinelocation = ''
+	
+	#####
+	# PML
 	if gethostname().find('pmpc')>-1:	
-		print "analysis-JASMIN.py:\tBeing run at PML on ",gethostname()
-		
+		print "analysis-timeseries.py:\tBeing run at PML on ",gethostname()
+		machinelocation = 'PML'
 		MEDUSAFolder_pref	= "/data/euryale7/scratch/ledm/UKESM/MEDUSA/"
 		NEMOFolder_pref		= "/data/euryale7/scratch/ledm/UKESM/MEDUSA/"
 	
 		if annual:	WOAFolder 	= "/data/euryale7/scratch/ledm/WOA/annual/"
 		else:		WOAFolder 	= "/data/euryale7/scratch/ledm/WOA/"
-		MAREDATFolder 	= "/data/euryale7/scratch/ledm/MAREDAT/MAREDAT/"
-		GEOTRACESFolder = "/data/euryale7/scratch/ledm/GEOTRACES/GEOTRACES_PostProccessed/"
-		TakahashiFolder = "/data/euryale7/scratch/ledm/Takahashi2009_pCO2/"
-		MLDFolder	= "/data/euryale7/scratch/ledm/IFREMER-MLD/"
-		workDir		= "/data/euryale7/scratch/ledm/ukesm_postProcessed/"
-		imgDir		= ukp.folder('images')
-		eORCAgrid 	= '/data/euryale7/scratch/ledm/UKESM/MEDUSA/mesh_mask_eORCA1_wrk.nc'
-		GlodapDir	= "/data/euryale7/backup/ledm/Observations/GLODAP/"
 		
+		ObsFolder = "/data/euryale7/backup/ledm/Observations/"
+		MAREDATFolder 	= ObsFolder+"/MAREDAT/MAREDAT/"
+		GEOTRACESFolder = ObsFolder+"/GEOTRACES/GEOTRACES_PostProccessed/"
+		TakahashiFolder = ObsFolder+"/Takahashi2009_pCO2/"
+		MLDFolder	= ObsFolder+"/IFREMER-MLD/"
+		LesterFolder	= ObsFolder+"/LestersReportData/"
+		GlodapDir	= ObsFolder+"/GLODAP/"
+		GLODAPv2Dir	= ObsFolder+"/GLODAPv2/GLODAPv2_Mapped_Climatologies/"
+		
+		eORCAgrid 	= '/data/euryale7/scratch/ledm/UKESM/MEDUSA/mesh_mask_eORCA1_wrk.nc'
+				
+	#####
+	# JASMIN		
 	if gethostname().find('ceda.ac.uk')>-1:
-		print "analysis-JASMIN.py:\tBeing run at CEDA on ",gethostname()
-			
+		print "analysis-timeseries.py:\tBeing run at CEDA on ",gethostname()
+		machinelocation = 'JASMIN'	
+				
 		esmvalFolder = "/group_workspaces/jasmin/esmeval/example_data/bgc/"
 		
 		#####
@@ -130,63 +158,105 @@ def analysis_timeseries(jobID = "u-ab671",
 		TakahashiFolder = ukp.folder(esmvalFolder+"Takahashi2009_pCO2/")
 		MLDFolder  	= ukp.folder(esmvalFolder+"IFREMER-MLD/")
 	
-		# Directory for output files:
-		workDir 	= ukp.folder(esmvalFolder+"ukesm_postProcessed/")
-		imgDir		= ukp.folder('images')	
+
+	#####
+	# NOC		
+	if gethostname().find('charybdis')>-1:	
+		print "analysis-timeseries.py:\tBeing run at NOC on ",gethostname()
+		machinelocation = 'NOC'
 		
-	if gethostname().find('NOC')>-1:	
-		print "analysis-JASMIN.py:\tBeing run at NOC on ",gethostname()
-		
-		MEDUSAFolder_pref	= "/data/euryale7/scratch/ledm/UKESM/MEDUSA/"
-		NEMOFolder_pref		= "/data/euryale7/scratch/ledm/UKESM/MEDUSA/"
+		MEDUSAFolder_pref	= "/home/jpp1m13/Documents/WORKING/UKESM/Compar_Atm_forcings/netcdf_files/"
+		NEMOFolder_pref		="/home/jpp1m13/Documents/WORKING/UKESM/Compar_Atm_forcings/netcdf_files/" 
 	
-		if annual:	WOAFolder 	= "/data/euryale7/scratch/ledm/WOA/annual/"
+		if annual:	WOAFolder 	= "/home/jpp1m13/Documents/WORKING/UKESM/Compar_Atm_forcings/netcdf_files/"
 		else:		WOAFolder 	= "/data/euryale7/scratch/ledm/WOA/"
 		MAREDATFolder 	= "/data/euryale7/scratch/ledm/MAREDAT/MAREDAT/"
 		GEOTRACESFolder = "/data/euryale7/scratch/ledm/GEOTRACES/GEOTRACES_PostProccessed/"
 		TakahashiFolder = "/data/euryale7/scratch/ledm/Takahashi2009_pCO2/"
 		MLDFolder	= "/data/euryale7/scratch/ledm/IFREMER-MLD/"
-		workDir		= "/data/euryale7/scratch/ledm/ukesm_postProcessed/"
-		imgDir		= ukp.folder('images')
 		eORCAgrid 	= '/data/euryale7/scratch/ledm/UKESM/MEDUSA/mesh_mask_eORCA1_wrk.nc'
 		GlodapDir	= "/data/euryale7/backup/ledm/Observations/GLODAP/"		
+
+	#####
+	# Unable to find location of files/data.	
+	if not machinelocation:
+		print "analysis-timeseries.py:\tFATAL:\tWas unable to determine location of host: ",gethostname()
+		assert False
 		
 
 
-	doChl		= 0#True
-	doN		= True
-	doSi		= True
-	doO2		= True
-	doAlk		= True
-	doDIC		= True
-	doAirSeaFlux	= True	
-	doIntPP_Lester	= True
-	doIntPP_OSU	= True
-
-	doT		= True
-	doS		= True
-	doMLD		= 0#True
+	#####
+	# Coordinate dictionairy
+	# These are python dictionairies, one for each data source and model.
+	# This is because each data provider seems to use a different set of standard names for dimensions and time.
+	# The 'tdict' field is short for "time-dictionary". 
+	#	This is a dictionary who's indices are the values on the netcdf time dimension.
+	#	The tdict indices point to a month number in python numbering (ie January = 0)
+	# 	An example would be, if a netcdf uses the middle day of the month as it's time value:
+	#		tdict = {15:0, 45:1 ...}	
+	
 	
 	medusaCoords 	= {'t':'time_counter', 'z':'deptht', 'lat': 'nav_lat',  'lon': 'nav_lon',   'cal': '365_day',}	# model doesn't need time dict.
 	maredatCoords 	= {'t':'index_t', 'z':'DEPTH',  'lat': 'LATITUDE', 'lon': 'LONGITUDE', 'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
 	takahashiCoords	= {'t':'index_t', 'z':'index_z',  'lat': 'LAT', 'lon': 'LON', 'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}	
 	woaCoords 	= {'t':'index_t', 'z':'depth',  'lat': 'lat', 	   'lon': 'lon',       'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}	
 	glodapCoords	= {'t':'index_t', 'z':'depth',  'lat': 'latitude', 'lon': 'longitude', 'cal': 'standard','tdict':[] }
+	glodapv2Coords	= {'t':'time',    'z':'Pressure','lat':'lat',      'lon':'lon',        'cal': '',        'tdict':{0:0,} }
 	mldCoords	= {'t':'index_t', 'z':'index_z','lat':'lat','lon':'lon','cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
-	#regions 	= ['Global','NorthAtlanticOcean','SouthAtlanticOcean',]
-	oldRegions	= ['Global','SouthernHemisphere','NorthernHemisphere',
-			  'NorthAtlanticOcean','SouthAtlanticOcean','EquatorialAtlanticOcean',
-			  'Atlantic','Arctic','nino3','nino3.4','atl_spg','ne_atl','persian']
-	shortRegions 	= ['Global','SouthernHemisphere','NorthernHemisphere',]
 
-  	AndyRegions 	= ['SouthernOcean','NorthernSubpolarAtlantic','NorthernSubpolarPacific','Arctic','SouthRemainder','NorthRemainder']
-  	allRegions = AndyRegions	
-  	keyRegions = AndyRegions	  	
+
+
+	#####
+	# Some lists of region.
+	# This are pre-made lists of regions that can be investigated.
+	# Note that each analysis below can be given its own set of regions.	
+#	regions 	= ['Global','NorthAtlanticOcean','SouthAtlanticOcean',]
+#	oldRegions	= ['Global','SouthernHemisphere','NorthernHemisphere',
+#			  'NorthAtlanticOcean','SouthAtlanticOcean','EquatorialAtlanticOcean',
+#			  'Atlantic','Arctic','nino3','nino3.4','atl_spg','ne_atl','persian']
+	#shortRegions 	= ['Global','SouthernHemisphere','NorthernHemisphere',]
+  	#AndyRegions 	= ['SouthernOcean','NorthernSubpolarAtlantic','NorthernSubpolarPacific','Arctic','SouthRemainder','NorthRemainder', 'Global']
+ 
+	# need to add:  ,'SouthRemainder','NorthRemainder', 
+ 	debugRegions	= ['Remainder','ArcticOcean','NorthernSubpolarAtlantic','NorthernSubpolarPacific','Global','ignoreInlandSeas','SouthernOcean',]
+ 	
+  	allRegions 	= debugRegions	
+  	keyRegions 	= debugRegions	  	
+  	
+  	
+  	
+  	
+  	#####
+  	# The analysis settings:
+  	# Below here is a list of analysis settings.
+  	# The settings are passed to timeseriesAnalysis using a nested dictionary (called an autovivification, here).
+  	# 
+  	# These analysis were switched on or off at the start of the function.
+  	# Each analysis requires:
+  	#	model files
+  	#	data files
+  	#	model and data coordinate dictionaries, (defines above)
+  	#	model and data details (a set of instructions of what to analyse:
+  	#		name: 		field name
+  	#		vars:		variable names in the netcdf
+  	#		convert: 	a function to manipuate the data (ie change units, or add two fields together.
+  	#				There are some standard ones in UKESMPython.py, but you can write your own here.
+  	#		units: 		the units after the convert function has been applied.
+  	#		layers:		which vertical layers to look at (ie, surface, 100m etc...)
+  	#		regions:	which regions to look at. Can be speficied here, or use a pre-defined list (from above)
+  	#		metrics:	what metric to look at:  mean, median or sum
+  	#		model and data source: 	the name of source of the model/data (for plotting)
+  	#		model grid: 	the model grid, usually eORCA1
+  	#		the model grid file: 	the file path for the model mesh file (contains cell area/volume/masks, etc)
+  	#
+  	#	Note that the analysis can be run with just the model, it doesn't require a data file.
+  	#	If so, just set to data file to an empty string:
+  	#		av[name]['dataFile']  = ''
+  	
 	av = ukp.AutoVivification()
-		
 	if doChl:
 		name = 'Chlorophyll'
-		av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
+		av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+"/"+jobID+"o_1y_*_ptrc_T.nc"))
 		av[name]['dataFile'] 		= MAREDATFolder+"MarEDat20121001Pigments.nc"	
 				
 		av[name]['modelcoords'] 	= medusaCoords 	
@@ -270,7 +340,28 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= eORCAgrid
-			
+	
+	if doDIC:
+	
+		name = 'DIC'
+		av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_198*_ptrc_T.nc"))
+		av[name]['dataFile'] 		= GLODAPv2Dir+'GLODAPv2.tco2.nc'
+				
+		av[name]['modelcoords'] 	= medusaCoords 	
+		av[name]['datacoords'] 		= glodapv2Coords
+	
+		av[name]['modeldetails'] 	= {'name': 'DIC', 'vars':['DIC',],  'convert': ukp.NoChange,'units':'mmol-C/m3'}
+		av[name]['datadetails']  	= {'name': 'DIC', 'vars':['tco2',], 'convert': ukp.NoChange,'units':'micro-mol kg-1'}
+	
+		av[name]['layers'] 		=  ['Surface',]#'100m','300m','1000m',]
+		av[name]['regions'] 		= debugRegions
+		av[name]['metrics']		= ['mean','median', ]
+
+		av[name]['datasource'] 		= 'GLODAP'
+		av[name]['model']		= 'MEDUSA'
+
+		av[name]['modelgrid']		= 'eORCA1'
+		av[name]['gridFile']		= eORCAgrid		
 
 	if doAlk:
 		name = 'Alkalinity'
@@ -353,10 +444,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			return (nc.variables[keys[0]][:]+ nc.variables[keys[1]][:])* 6.625 * 12.011 / 1000.	
 		name = 'IntegratedPrimaryProduction_1x1'
 		av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_diad_T.nc"))
-		av[name]['dataFile'] 		= "/data/euryale7/backup/ledm/Observations/LestersReportData/PPint_1deg.nc"
-
-#	#		av['intpp']['Data']['File'] 	=  LesterFolder+'PPint_1deg.nc'
-#	#		av['intpp']['Data']['Vars'] 	= ['PPint',]
+		av[name]['dataFile'] 		= LesterFolder+"/PPint_1deg.nc"
 
 				
 		av[name]['modelcoords'] 	= medusaCoords 	
@@ -440,6 +528,37 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= eORCAgrid
+
+
+	if doExportRatio:
+		
+		def calcExportRatio(nc,keys):
+			a = (nc.variables['SDT__100'][:] +nc.variables['FDT__100'][:])/ (nc.variables['PRD'][:] +nc.variables['PRN'][:] )
+			a = np.ma.masked_where(a>1.01, a)
+			return 	a
+			
+		name = 'exportRatio'
+		av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_diad_T.nc"))
+		av[name]['dataFile'] 		= ""
+
+				
+		av[name]['modelcoords'] 	= medusaCoords 	
+		av[name]['datacoords'] 		= maredatCoords
+	
+		av[name]['modeldetails'] 	= {'name': 'exportRatio', 'vars':['SDT__100','FDT__100' ,'PRD','PRN',], 'convert': calcExportRatio,'units':''}
+		av[name]['datadetails']  	= {'name':'','units':'',}
+	
+		av[name]['layers'] 		= ['Surface',]#'100m','200m','Surface - 1000m','Surface - 300m',]#'depthint']
+		av[name]['regions'] 		= keyRegions
+		av[name]['metrics']		= ['mean','median',]
+
+		av[name]['datasource'] 		= ''
+		av[name]['model']		= 'MEDUSA'
+
+		av[name]['modelgrid']		= 'eORCA1'
+		av[name]['gridFile']		= eORCAgrid		
+
+
 		
 	if doT:
 		name = 'Temperature'
@@ -546,13 +665,20 @@ def analysis_timeseries(jobID = "u-ab671",
 			
 				
 
-		
-	shelvedir 	= ukp.folder('shelves/timeseries/'+jobID)
-	imagedir	 = ukp.folder('images/timeseries/'+jobID)
+  	#####
+  	# Calling timeseriesAnalysis
+	# This is where the above settings is passed to timeseriesAnalysis, for the actual work to begin.
+	# We loop over all fiels in the first layer dictionary in the autovificiation, av.
+	#	
+	# Once the timeseriesAnalysis has completed, we save all the output shelves in a dictionairy.
+	# At the moment, this dictioary is not used, but we could for instance open the shelve to highlight specific data,
+	#	(ie, andy asked to produce a table showing the final year of data.
 	
 	shelves = {}
 	shelves_insitu={}
 	for name in av.keys():
+		print "------------------------------------------------------------------"	
+		print "analysis-Timeseries.py:\tBeginning to call timeseriesAnalysis for ", name
 		tsa = timeseriesAnalysis(
 			av[name]['modelFiles'], 
 			av[name]['dataFile'],
@@ -578,7 +704,8 @@ def analysis_timeseries(jobID = "u-ab671",
 
 if __name__=="__main__":	
 	#analysis_timeseries(jobID = "u-ab671")		
-	analysis_timeseries(jobID = "u-ab749")			
+	analysis_timeseries(jobID = "u-ab749",)#clean=1)			
+	#analysis_timeseries(jobID = "u-ab963")			
 	
 	
 	
