@@ -1563,6 +1563,7 @@ def makeMask(name,newSlice, xt,xz,xy,xx,xd):
 		return np.ma.masked_where( mx,nmask).mask 		
 
 	if newSlice == 'Remainder':
+		mx = 
 		mx = np.ma.masked_inside(xy,-10., 10. ).mask
 		mx += np.ma.masked_outside(abs(xy),-40., 40. ).mask		
 		return np.ma.masked_where( mx,nmask).mask 		
