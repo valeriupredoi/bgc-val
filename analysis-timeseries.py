@@ -218,7 +218,7 @@ def analysis_timeseries(jobID = "u-ab671",
   	#AndyRegions 	= ['SouthernOcean','NorthernSubpolarAtlantic','NorthernSubpolarPacific','Arctic','SouthRemainder','NorthRemainder', 'Global']
  
 	# need to add:  ,'SouthRemainder','NorthRemainder', 
- 	debugRegions	= ['Remainder','ArcticOcean','NorthernSubpolarAtlantic','NorthernSubpolarPacific','Global','ignoreInlandSeas','SouthernOcean',]
+ 	debugRegions	= ['Equator10', 'Remainder','ArcticOcean','NorthernSubpolarAtlantic','NorthernSubpolarPacific','Global','ignoreInlandSeas','SouthernOcean',]
  	
   	allRegions 	= debugRegions	
   	keyRegions 	= debugRegions	  	
