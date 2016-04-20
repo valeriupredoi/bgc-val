@@ -74,6 +74,7 @@ def analysis_timeseries(jobID = "u-ab671",
 	doO2		= 0#True
 	doAlk		= 0#True
 	doDIC		= True
+	doOMZ		= 0#True
 	doAirSeaFlux	= 0#True	
 	doIntPP_Lester	= 0#True
 	doIntPP_OSU	= 0#True
@@ -218,12 +219,14 @@ def analysis_timeseries(jobID = "u-ab671",
   	#AndyRegions 	= ['SouthernOcean','NorthernSubpolarAtlantic','NorthernSubpolarPacific','Arctic','SouthRemainder','NorthRemainder', 'Global']
  
 	# need to add:  ,'SouthRemainder','NorthRemainder', 
- 	debugRegions	= ['Equator10', 'Remainder','ArcticOcean','NorthernSubpolarAtlantic','NorthernSubpolarPacific','Global','ignoreInlandSeas','SouthernOcean',]
+ 	debugRegions	= ['Global','Equator10', 'Remainder','ArcticOcean','NorthernSubpolarAtlantic','NorthernSubpolarPacific','ignoreInlandSeas','SouthernOcean',]
  	
   	allRegions 	= debugRegions	
   	keyRegions 	= debugRegions	  	
   	
-  	
+	#alllayers = range(40)
+	alllayers = [0,2,5,10,15,20,25,30,35,40,45,50,55,60,70,]#80,]
+	alllayers.append('Surface')  	
   	
   	
   	#####
@@ -343,9 +346,15 @@ def analysis_timeseries(jobID = "u-ab671",
 
 
 	if doOMZ:
+		# Here we calculate the volume of the OMZ, where the O2 concentration is below 20.
+		nc = Dataset(eORCAGRID,'r')
+
+	
+
 		name = 'Oxygen'
-		av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
-		av[name]['dataFile'] 		=  WOAFolder+'oxygen-woa13.nc'
+		if annual:
+			av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
+			av[name]['dataFile'] 		=  WOAFolder+'oxygen-woa13.nc'
 				
 		av[name]['modelcoords'] 	= medusaCoords 	
 		av[name]['datacoords'] 		= woaCoords
@@ -353,7 +362,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modeldetails'] 	= {'name': 'oxygen', 'vars':['OXY',], 'convert': ukp.NoChange,}	
 		av[name]['datadetails']  	= {'name': 'oxygen', 'vars':['o_an',], 'convert': ukp.oxconvert,'units':'mmol/m^3'}
 	
-		av[name]['layers'] 		= ['Surface','100m','300m','1000m',]
+		av[name]['layers'] 		= ['Surface',] #'100m','300m','1000m',]
 		av[name]['regions'] 		= keyRegions
 		av[name]['metrics']		= ['sum', ]
 
@@ -367,7 +376,7 @@ def analysis_timeseries(jobID = "u-ab671",
 	if doDIC:
 	
 		name = 'DIC'
-		av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_198*_ptrc_T.nc"))
+		av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
 		av[name]['dataFile'] 		= GLODAPv2Dir+'GLODAPv2.tco2.nc'
 				
 		av[name]['modelcoords'] 	= medusaCoords 	
@@ -376,7 +385,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modeldetails'] 	= {'name': 'DIC', 'vars':['DIC',],  'convert': ukp.NoChange,'units':'mmol-C/m3'}
 		av[name]['datadetails']  	= {'name': 'DIC', 'vars':['tco2',], 'convert': ukp.NoChange,'units':'micro-mol kg-1'}
 	
-		av[name]['layers'] 		=  ['Surface',]#'100m','300m','1000m',]
+		av[name]['layers'] 		=  alllayers
 		av[name]['regions'] 		= debugRegions
 		av[name]['metrics']		= ['mean','median', ]
 

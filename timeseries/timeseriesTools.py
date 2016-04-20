@@ -82,16 +82,24 @@ def getHorizontalSlice(nc,coords,details,layer,data = ''):
 	if type(nc) == type('filename'):
 		nc = Dataset(nc,'r')
 	
+	#####
+	# In the case that there is no depth field provided, or the depth field is not the netcdf.
+	# We just attempt to extract the data. 
+	# This is useful
 	if coords['z'] == '' or coords['z'] not in nc.variables.keys():
 		print "getHorizontalSlice:\tNo depth field in",details['name']
 		if data =='': 	data = ukp.extractData(nc,details)
 		return data
 				
+	####
+	#
 	if len(nc.variables[coords['z']][:]) ==1 and layer in ['Surface',]:
 		print "getHorizontalSlice:\tNo depth field only 1 value",details['name']	
 		if data =='': 	data = ukp.extractData(nc,details)
 		return ApplyDepthSlice(data, 0)
 
+	#####
+	# This is when there is only one dimension in the data/model file.
 	if len(nc.dimensions.keys()) == 1 and layer in ['Surface',]:
 		print "getHorizontalSlice:\tOne D file",details['name']	
 		if data =='': 	data = ukp.extractData(nc,details)
@@ -133,11 +141,28 @@ def getHorizontalSlice(nc,coords,details,layer,data = ''):
 		if data =='': 
 			return ApplyDepthrange(ukp.extractData(nc,details),k_surf,k_low)
 		return ApplyDepthrange(data, k_surf,k_low)
-	elif layer.lower() == 'depthint':
-		assert 0		
-#		return getDepthIntegrated(nc,coords,details,layer)
-	else:
+	elif layer == 'depthint':
+		print "getHorizontalSlice\t:ERROR:\tDepth in should be done in the extractData phase by passing a function in the details dictionary."
 		assert 0
+
+
+	if type(layer) in [type(0),]:
+		k = layer
+		try:	z = nc.variables[coords['z']][k]
+		except:	return []
+		if data =='': 	data = ukp.extractData(nc,details)				
+		print "getHorizontalSlice:\tSpecific depth level requested",details['name'], layer,nc.variables[coords['z']][k], data.shape	
+		
+		return ApplyDepthSlice(data, k)	
+			
+	if layer in nc.variables[coords['z']][:]:
+		k =  ukp.getORCAdepth(z,nc.variables[coords['z']][:],debug=False)
+		if data =='': 	data = ukp.extractData(nc,details)		
+		print "getHorizontalSlice:\tSpecific depth requested",details['name'], layer,nc.variables[coords['z']][k], data.shape	
+		return ApplyDepthSlice(data, k)	
+			
+	print "getHorizontalSlice\t:ERROR:\tunrecoginised layer instructions",layer, coords
+	assert 0
 
 
 
@@ -153,7 +178,6 @@ class DataLoader:
   	self.details 	= details
   	self.regions 	= regions
   	self.layers 	= layers
-  	self.oneDDataLoaded= False
   	
 	if data == '': data = ukp.extractData(nc,self.details)
   	self.Fulldata 	= data
@@ -183,26 +207,26 @@ class DataLoader:
   		print "DataLoader:\tLoaded",region, layer, len(self.load[(region,layer)])
   		
   def __getlayerDat__(self,layer):
-  	""" Minimise quick load and save to minuimise disk-reading time.
+  	""" Minimise quick load and save to minimise disk-reading time.
   	"""
   	if self.__lay__ == layer:
   		return self.__layDat__
   	else:
   		 self.__layDat__ = np.ma.array(getHorizontalSlice(self.nc,self.coords,self.details,layer,data = self.Fulldata))
+  		 print "DataLoader:\tgetlayerDat:",layer
   		 self.__lay__ = layer
   		 return self.__layDat__
   		 
   	
   def createDataArray(self,region,layer):
   	"""	
-  		This confusing mess create
+  		This creates a set of 1D arrays of the dat and 4D coordinates for the required region.
+  		The leg work is done in UKESMpython.py: makeMask()
   	"""
   	
   	print 'createDataArray',self.details['name'],region,layer
   	
-  	if not self.oneDDataLoaded: self.createOneDDataArray(layer)
-
-  	
+  	self.createOneDDataArray(layer)
   	  	
   	m = ukp.makeMask(self.details['name'],region, 
   				self.oneDData['arr_t'],
@@ -211,51 +235,16 @@ class DataLoader:
   				self.oneDData['arr_lon'],
   				self.oneDData['arr'],)
 
-  	return 	np.ma.masked_where(m,self.oneDData['arr']), \
+  	return 	np.ma.masked_where(m,self.oneDData['arr']),\
   		np.ma.masked_where(m,self.oneDData['arr_t']),\
   		np.ma.masked_where(m,self.oneDData['arr_z']),\
   		np.ma.masked_where(m,self.oneDData['arr_lat']),\
   		np.ma.masked_where(m,self.oneDData['arr_lon'])
   		  		  		  		
   	
-  	#dat = np.ma.array(getHorizontalSlice(self.nc,self.coords,self.details,layer,data = self.Fulldata))
-  	
-#  #	if region == 'Global':			regionlims  = {'lat_min':-100.,'lat_max': 100.,'lon_min':-360.,'lon_max':360.}
-#  #	if region == 'All':			regionlims  = {'lat_min':-100.,'lat_max': 100.,'lon_min':-360.,'lon_max':360.}  	
-#
- # 	if region == 'SouthernHemisphere':	regionlims  = {'lat_min':-90.,'lat_max': 0.,'lon_min':-360.,'lon_max':360.}
-#  	if region == 'NorthernHemisphere':	regionlims  = {'lat_min':  0.,'lat_max':90.,'lon_min':-360.,'lon_max':360.}  	
-  	
-#	if region == 'NorthAtlanticOcean': 	regionlims  = {'lat_min':  10.,'lat_max': 60.,'lon_min':-80.,'lon_max':10.}
-#	if region == 'SouthAtlanticOcean': 	regionlims  = {'lat_min': -50.,'lat_max':-10.,'lon_min':-65.,'lon_max':20.}	
-
-#	if region == 'EquatorialAtlanticOcean': regionlims  = {'lat_min': -15.,'lat_max': 15.,'lon_min':-65.,'lon_max':20.}	
-
-#	# from ocean assess:
-#	if region == 'Atlantic': 		regionlims  = {'lat_min': -90.,'lat_max': 70.,'lon_min':-100.,'lon_max':50.}	
-#	if region == 'Arctic_OA':		regionlims  = {'lat_min': 70.,'lat_max': 90.,'lon_min':-360.,'lon_max':360.}	
-#	if region == 'nino3': 			regionlims  = {'lat_min': -5.,'lat_max': 5., 'lon_min':-150.,'lon_max':-90.}	
-#	if region == 'nino3.4': 		regionlims  = {'lat_min': -5.,'lat_max': 5.,'lon_min':-170.,'lon_max':-120.}	
-#	if region == 'atl_spg': 		regionlims  = {'lat_min': 45.,'lat_max': 65.,'lon_min':-40.,'lon_max':20.}	
-#	if region == 'ne_atl': 			regionlims  = {'lat_min': 45.,'lat_max': 75.,'lon_min':-40.,'lon_max':20.}					
-#	if region == 'persian': 		regionlims  = {'lat_min': 20.,'lat_max': 35.,'lon_min':40.,'lon_max':57.}	
-#
-#	# Andy's requests:
- # 	if region == 'SouthernOcean':		regionlims  = {'lat_min':-90.,'lat_max': -40.,'lon_min':-360.,'lon_max':360.}	
-  #	if region == 'NorthernSubpolarAtlantic':regionlims  = {'lat_min': 40.,'lat_max':  60.,'lon_min': -80.,'lon_max': -3.}
-  #	if region == 'NorthernSubpolarPacific':	
-  #		regionlims  = {'lat_min': 40.,'lat_max':  60.,'lon_min':-360.,'lon_max':360.}	
-  #		print "timeseriesTools.py:\tcreateDataArray():\tERROR This is wrong",region
-  #		#assert 0
-  #	if region == 'Arctic':			regionlims  = {'lat_min': 60.,'lat_max':  90.,'lon_min':-360.,'lon_max':360.}	
-  #	if region == 'SouthRemainder':		regionlims  = {'lat_min':-40.,'lat_max': -10.,'lon_min':-360.,'lon_max':360.}	
-  #	if region == 'NorthRemainder':		regionlims  = {'lat_min': 10.,'lat_max':  40.,'lon_min':-360.,'lon_max':360.}	  	
-  #	  	  	  	
-
   def createOneDDataArray(self,layer):
-  	""" 	This is a very simple routine that takes a layer and makes a series of 1D arrays containing points.
+  	""" 	This is a relatively simple routine that takes a layer and makes a series of 1D arrays containing points.
   		These output 1D arrays are then passed to UKESMpython.py's makemasks toolkit.
-  		
   	"""
 
 	#####
@@ -267,7 +256,9 @@ class DataLoader:
   	dat = self.__getlayerDat__(layer)
 	if dat.ndim == 2:	dat =dat[None,:,:]
 
-		
+	if len(dat) == 0:
+		a = np.ma.array([-999,],mask=[True,])
+		return a,a,a,a,a
 	#####
 	# Create Temporary Output Arrays.
   	arr 	= []
@@ -280,14 +271,13 @@ class DataLoader:
 	latnames = ['lat','latitude','latbnd','nav_lat','y',u'lat',]
 	lonnames = ['lon','longitude','lonbnd','nav_lon','x',u'lon',]
 	
-	print dims, dat.ndim, dims[-1].lower(), dims[-2].lower(), latnames, lonnames
 
 	####
 	# Different data has differnt shapes, and order or dimensions, this takes those differences into account.
 	if dat.ndim > 2:
 	  if dims[-2].lower() in latnames and dims[-1].lower() in lonnames:
 	  
-  	    print 'createDataArray',self.details['name'],layer, "Sensible dimsions order:",dims		
+  	    #print 'createDataArray',self.details['name'],layer, "Sensible dimsions order:",dims		
  	    for index,v in ukp.maenumerate(dat):
 
   			try:	(t,z,y,x) 	= index
@@ -308,7 +298,7 @@ class DataLoader:
   			  			  			  			
 	  elif dims[-2].lower() in lonnames and dims[-1].lower() in latnames:
 	  
-  	    print 'createDataArray',self.details['name'],layer, "Ridiculous dimsions order:",dims				
+  	    #print 'createDataArray',self.details['name'],layer, "Ridiculous dimsions order:",dims				
  	    for index,v in ukp.maenumerate(dat):
   			try:	(t,z,x,y) 	= index
   			except: 
@@ -360,7 +350,6 @@ class DataLoader:
   	self.oneDData['arr_t']   = np.ma.masked_where(mask,arr_t  ).compressed()
   	self.oneDData['arr']     = np.ma.masked_where(mask,arr    ).compressed()
 
-	self.oneDDataLoaded=True
 	
   	#print 'createDataArray:',arr.min(),arr.mean(),arr.max(),arr, len(arr)  	
   	#print 'createDataArray:',region, arr_lat.min(),arr_lat.mean(),arr_lat.max(),arr_lat, len(arr_lat)  	  	
@@ -374,13 +363,6 @@ class DataLoader:
  		
   	
 
-def getDepthIntegrated(nc,coords,details,layer,data):
-	if type(nc) == type('filename'):
-		nc = Dataset(nc,'r')
-	if data == '': data = ukp.extractData(nc,details)
-	
-	
-	return []
 
 
 

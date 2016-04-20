@@ -144,38 +144,76 @@ class timeseriesAnalysis:
 	    	    		readFiles = []
 	    	except: pass
 
+	#####
+	# Summarise checks
+	if self.debug:	
+		print "loadModel:post checks:"
+		#print "modeldataD:",modeldataD
+		print "shelveFn:",self.shelvefn
+		print "readFiles:",readFiles
+
+	
 	###############
 	# Load files, and calculate fields.
 	openedFiles = 0					
 	for fn in self.modelFiles:
 		if fn in readFiles:continue
-		print "loading ",fn
-		
+		print "loadModel:\tloading new file:",fn,
 		nc = Dataset(fn,'r')
-		#modeldata = tst.loadData(nc, self.modeldetails)
 		ts = tst.getTimes(nc,self.modelcoords)
-		print "Debugging DataLoader:",self.modelcoords,self.modeldetails, self.regions, self.layers
+		meantime = np.mean(ts)
+		print "\ttime:",meantime
+		
 		DL = tst.DataLoader(fn,nc,self.modelcoords,self.modeldetails, regions = self.regions, layers = self.layers,)
 		
-		
-		for r in self.regions:
-		    for l in self.layers:
-
+	
+		for l in self.layers:		
+	 	    counts =0		
+		    for r in self.regions:
+		    	
+		    	#####
+		    	# Check wherether you can skip loading this metric,region,layer
+			skip = True
+			for m in self.metrics:
+				if skip == False:continue
+				try: 
+					a = modeldataD[(r,l,m)][meantime]
+					print "Already created ",int(meantime),':\t',(r,l,m),'\t=',a
+				except: 
+					skip = False
+					print "Need to create ",int(meantime),':\t',(r,l,m)
+			if skip: continue
+			
+		    	#####
+		    	# can't skip it, need to load it.
 			layerdata = DL.load[(r,l)]
 			if len(layerdata)==0:
 				layerdata  = np.ma.array([-999,],mask=[True,])
 		  	for m in self.metrics:
-		  		print "Loaded metric:", int(np.mean(ts)),'\t',[(r,l,m)], '\t',np.ma.mean(layerdata)
-				if m == 'mean':   	modeldataD[(r,l,m)][np.mean(ts)] = np.ma.mean(layerdata)
-				if m == 'median':   	modeldataD[(r,l,m)][np.mean(ts)] = np.ma.median(layerdata)
-				if m == 'sum':   	modeldataD[(r,l,m)][np.mean(ts)] = np.ma.sum(layerdata)				
-				#if m[:2] in ['percentiles','pc',]:
-				#	for pc in [10,20,30,40,60,70,80,90]: 
-				#		modeldataD[(r,l,m)][np.mean(ts)]
-		readFiles.append(fn)
-		openedFiles+=1
+		  		try:
+		  			a = modeldataD[(r,l,m)][meantime]
+		  			continue
+		  		except:pass
+				if m == 'mean':   	modeldataD[(r,l,m)][meantime] = np.ma.mean(layerdata)
+				if m == 'median':   	modeldataD[(r,l,m)][meantime] = np.ma.median(layerdata)
+				if m == 'sum':   	modeldataD[(r,l,m)][meantime] = np.ma.sum(layerdata)
+		  		print "Loaded metric:", int(meantime),'\t',[(r,l,m)], '\t',modeldataD[(r,l,m)][meantime]
+				counts+=1
+						
+		readFiles.append(fn)		
+		openedFiles+=1			
+
+
 		nc.close()
-		
+		if openedFiles:
+			print "Saving shelve:", self.shelvefn, '\tread', len(readFiles)				
+			sh = shOpen(self.shelvefn)
+			sh['readFiles']		= readFiles
+			sh['modeldata'] 	= modeldataD
+			sh.close()
+			openedFiles=0	
+		#self.modeldataD = modeldataD			
+  		#if len(readFiles)>1: self.makePlots()		
 	if openedFiles:
 		print "Saving shelve:", self.shelvefn, '\tread', len(readFiles)				
 		sh = shOpen(self.shelvefn)
@@ -294,8 +332,8 @@ class timeseriesAnalysis:
 	if datadata.ndim ==3:   datadata=datadata.mean(0)  
 	
 	
-	titles = [' '.join([self.model,'('+self.jobID+')',layer,self.modeldetails['name']]),
-		  ' '.join([self.datasource,layer,self.datadetails['name']])]
+	titles = [' '.join([self.model,'('+self.jobID+')',str(layer),self.modeldetails['name']]),
+		  ' '.join([self.datasource,str(layer),self.datadetails['name']])]
   	tsp.mapPlotPair(modellon, modellat, modeldata,
   			datalon,datalat,datadata,
   			filename,
@@ -330,8 +368,8 @@ class timeseriesAnalysis:
   	print "mapplotsRegionsLayers:\t",r,l, "data lat:",datalat.min(),datalat.mean(),datalat.max()
   	print "mapplotsRegionsLayers:\t",r,l, "data lon:",datalon.min(),datalon.mean(),datalon.max() 	
 	
-	titles = [' '.join([self.model,'('+self.jobID+')',layer,self.modeldetails['name']]),
-		  ' '.join([self.datasource,layer,self.datadetails['name']])]
+	titles = [' '.join([self.model,'('+self.jobID+')',str(layer),self.modeldetails['name']]),
+		  ' '.join([self.datasource,str(layer),self.datadetails['name']])]
   	tsp.mapPlotPair(modellon, modellat, modeldata,
   			datalon,datalat,datadata,
   			filename,
@@ -339,11 +377,78 @@ class timeseriesAnalysis:
   			lon0=0.,drawCbar=True,cbarlabel='',dpi=100,)
 
 	
+	
   def makePlots(self):
 	if self.debug: print "timeseriesAnalysis:\t makePlots."		  
+
+
+	#####
+	# Hovmoeller plots
+	for r in self.regions:
+	    for m in self.metrics: 
+	   
+	   	#####
+	   	# Load data layers:
+
+		data = {}
+		modeldata = {}
+		
+	  	for l in self.layers:
+	  		if type(l) == type('str'):continue	# no strings, only layers.
+			#####
+			# Test for presence/absence of in situ data.
+			try:	dataslice = self.dataD[(r,l)]	  
+			except:	dataslice = []
+			try:	dataslice = dataslice.compressed()
+			except:	pass
+			
+			if m == 'mean': 	data[l] = dataslice.mean()
+			if m == 'median': 	data[l] = np.median(dataslice)
+			
+			modeldata[l] = self.modeldataD[(r,l,m)]
+			print "loading hov data: model",l, r,m
+		#####
+		# check that multiple layers were requested.
+		if len(data)<1: continue
+		
+
+		#####
+		# create a dictionary of model depths and layers.
+	  	mnc = Dataset(self.modelFiles[-1],'r')		
+		modelZcoords = {i:z for i,z in enumerate(mnc.variables[self.modelcoords['z']][:])}
+	  	mnc.close()  	
+
+		if self.dataFile:
+		  	dnc = Dataset(self.dataFile,'r')	
+		  	dataZcoords = {i:z for i,z in enumerate(dnc.variables[self.datacoords['z']][:])}
+		  	dnc.close()  	
+		else: 	dataZcoords = {}
+		
+	    	hovfilename = ukp.folder('images/timeseries/'+self.jobID+'/'+self.dataType)+'_'.join(['hov',self.jobID,self.dataType,r,m,])+'.png'
+	    	
+		title = ' '.join([r,m,self.dataType])
+		tsp.hovmoellerPlot(modeldata,data,hovfilename, modelZcoords = modelZcoords, dataZcoords= dataZcoords, title = title,)		
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	#####
+	# Trafficlight and map plots:
 	for r in self.regions:
 	  for l in self.layers:
+
+	    #####
+	    # Don't make pictures for each integer or float layer, only the ones that are strings. 
+	    if type(l) in [type(0),type(0.)]:continue
+	    
 	    #####
 	    # Test for presence/absence of in situ data.
     	    try:	dataslice = self.dataD[(r,l)]	  
@@ -358,19 +463,19 @@ class timeseriesAnalysis:
 
 		times = sorted(modeldataDict.keys())
 		modeldata = [modeldataDict[t] for t in times]
-		filename = ukp.folder('images/timeseries/'+self.jobID+'/'+self.dataType)+'_'.join(['trafficlight',self.jobID,self.dataType,r,l,m,])+'.png'
-		title = ' '.join([r,l,m,self.dataType])
+		filename = ukp.folder('images/timeseries/'+self.jobID+'/'+self.dataType)+'_'.join(['trafficlight',self.jobID,self.dataType,r,str(l),m,])+'.png'
+		title = ' '.join([r,str(l),m,self.dataType])
 		tsp.trafficlightsPlot(times,modeldata,dataslice,metric = m, title = title,filename=filename)		
 		
 		#filename = ukp.folder('images/timeseries/'+self.jobID)+'_'.join([self.jobID,self.dataType,r,l,m,])+'_trafficlights.png'		
 		#tsp.trafficlightsPlots(times,modeldata,dataslice,title = title,filename=filename)
 			
-    	    mapfilename = ukp.folder('images/timeseries/'+self.jobID+'/'+self.dataType)+'_'.join(['map',self.jobID,self.dataType,l,])+'.png'
+    	    mapfilename = ukp.folder('images/timeseries/'+self.jobID+'/'+self.dataType)+'_'.join(['map',self.jobID,self.dataType,str(l),])+'.png'
     	    if ukp.shouldIMakeFile([self.shelvefn,self.shelvefn_insitu],mapfilename,debug=False):
 	    	    self.mapplots( l, mapfilename)
 	
 
-    	    mapfilename = ukp.folder('images/timeseries/'+self.jobID+'/'+self.dataType)+'_'.join(['map',self.jobID,self.dataType,l,r,])+'.png'
+    	    mapfilename = ukp.folder('images/timeseries/'+self.jobID+'/'+self.dataType)+'_'.join(['map',self.jobID,self.dataType,str(l),r,])+'.png'
     	    if ukp.shouldIMakeFile([self.shelvefn,self.shelvefn_insitu],mapfilename,debug=False):
 	    	    self.mapplotsRegionsLayers( r,l, mapfilename)
 				

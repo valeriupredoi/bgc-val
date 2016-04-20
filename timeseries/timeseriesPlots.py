@@ -22,7 +22,8 @@
 # Email:
 # ledm@pml.ac.uk
 
-from matplotlib import pyplot
+from matplotlib import pyplot, gridspec
+
 from matplotlib.colors import LogNorm
 import matplotlib.patches as mpatches
 from mpl_toolkits.basemap import Basemap
@@ -49,6 +50,11 @@ def trafficlights(ax,xlims, bands,labels=[]):
 		handles = [patch4,patch3,patch2,patch1,patch0,]
 		pyplot.legend(handles=handles)
 	return ax
+
+def greyband(ax,xaxis, bands,labels=[]):
+	ax.fill_between(xaxis,bands[0], bands[1] ,color='k', 	alpha = 0.05)
+	return ax
+
 	
 	
 def trafficlightsPlots(
@@ -79,9 +85,13 @@ def trafficlightsPlots(
 		pc6 = np.array([np.percentile(dataslice,75.) for i in xlims])
 		labels = ['25-35 pc','35-45 pc','45-55 pc','55-65 pc','65-75 pc',]
 		ax = trafficlights(ax,xlims, [pc1,pc2,pc3,pc4,pc5,pc6],labels=labels)
-
-	
-
+		
+		pcmin 	= np.array([dataslice.min() for i in xlims]) 
+		pcmax 	= np.array([dataslice.min() for i in xlims]) 	
+		
+		ax  	= greyband(ax,xlims, [pcmin,pc1],)
+		ax  	= greyband(ax,xlims, [pc6,pcmax],)
+				
 	
 	ax = fig.add_subplot(212)
 	newt,cusum = tst.calcCuSum(times,arr)
@@ -140,15 +150,21 @@ def trafficlightsPlot(
 		
 		#pyplot.axhline(y=np.ma.mean(dataslice),c='k',ls='-',lw=2,alpha=0.5)
 		pyplot.axhline(y=np.ma.median(dataslice),c='k',ls='-',lw=1,)#alpha=0.5)	
+		pcmin 	= np.array([dataslice.min() for i in xlims]) 
 		pc1 = np.array([np.percentile(dataslice,20.) for i in xlims]) 
 		pc2 = np.array([np.percentile(dataslice,30.) for i in xlims])
 		pc3 = np.array([np.percentile(dataslice,45.) for i in xlims])
 		pc4 = np.array([np.percentile(dataslice,60.) for i in xlims])
 		pc5 = np.array([np.percentile(dataslice,70.) for i in xlims])
 		pc6 = np.array([np.percentile(dataslice,80.) for i in xlims])
+		pcmax 	= np.array([dataslice.max() for i in xlims])
+						
 		labels = ['20-30 pc','30-40 pc','40-60 pc','60-70 pc','70-80 pc',]
 		pcs = [pc1,pc2,pc3,pc4,pc5,pc6]
 		ax = trafficlights(ax,xlims, pcs ,labels=labels)
+		ax  	= greyband(ax,xlims, [pcmin,pc1],)
+		ax  	= greyband(ax,xlims, [pc6,pcmax],)
+				
 	if len(dataslice) and metric == 'sum':
 		
 		pyplot.axhline(y=np.ma.sum(dataslice),c='k',ls='-',lw=1,label ='data'+str(np.ma.sum(dataslice)))#alpha=0.5)		
@@ -288,4 +304,128 @@ def mapPlotPair(lons1, lats1, data1,lons2,lats2,data2,filename,titles=['',''],lo
 	pyplot.savefig(filename ,dpi=dpi)		
 	pyplot.close()
 		
+
+def hovmoellerAxis(fig,ax,title,xaxis,yaxis,data,vmin='',vmax=''):
+	yaxis = np.array(yaxis)
+	if yaxis.min()*yaxis.max() <=0.:
+		if yaxis.mean()<0:yaxis = np.clip(yaxis,-10000.,-0.1)
+			
+	if vmin==vmax=='':	p=pyplot.pcolormesh(xaxis,yaxis,data,)
+	else:			p=pyplot.pcolormesh(xaxis,yaxis,data,vmin=vmin,vmax=vmax,)
+	pyplot.title(title)
+	#ax.set_yscale("log", nonposy='clip')
+	ax.set_yscale('symlog')
+	
+def zaxisfromCC(arr):
+	"""
+		This function creates a 1D array for the depth axis.
+		It assumes that the z axis given is cell centered (cc) depth, it adds a zero to the start
+		and takes the mid point between the cc depths.
+		It then converts the array into negative values.
+	"""
+	arr = np.array(arr)
+	zarr = list((arr[1:]+arr[:-1])/2.)
+	zarr.insert(0,0.)
+	zarr.append(arr[-1])	
+	print arr,zarr
+	return -1.*np.abs(np.array(zarr))
 		
+def taxisfromCC(arr):
+	"""
+		This function creates a 1D array for the time axis.
+		It assumes that the x axis given is cell centered (cc), 
+		it adds a starting time to the start and takes the mid point between the cc depths.
+		It then converts the array into negative values.
+	"""
+	arr = np.array(arr)
+	diff = np.mean(np.abs(arr[1:]-arr[:-1]))/2.
+	zarr = list((arr[1:]+arr[:-1])/2.)
+	zarr.insert(0,arr[0]-diff)
+	zarr.append(arr[-1]+diff)	
+	print arr,zarr
+	return np.array(zarr)
+	
+
+def hovmoellerPlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords= {}, title = '',dpi=100):	
+	#####
+	# creating model data dictionairies
+	md = []
+	times = []
+	yaxis = []
+	
+	for l in modelZcoords:
+		if l not in modeldata.keys():continue
+		yaxis.append(modelZcoords[l])
+
+		times = sorted(modeldata[l].keys())
+		try:	md.append(np.array([modeldata[l][t][0] for t in times]))
+		except:	md.append(np.array([modeldata[l][t] for t in times]))
+		
+	md = np.ma.array(md)#
+	md = md.squeeze()
+	times = taxisfromCC(np.array(times))
+	yaxis = zaxisfromCC(yaxis)
+	print "hovmoellerPlot:", title, md.shape,md.mean(),times.shape,yaxis.shape
+	
+	#####
+	# creating data data dictionairies
+	dd = []
+	dxaxis= []
+	dyaxis = []
+	
+	for l in dataZcoords:
+		if l not in dataslice.keys():continue
+		dyaxis.append(dataZcoords[l])
+		dd.append([dataslice[l],])
+		
+	dd = np.ma.array(dd)#.squeeze()
+	dxaxis = np.array([0,1,])
+	dyaxis = zaxisfromCC(dyaxis)
+	print "hovmoellerPlot:", title, dd.shape,dd.mean(),dxaxis.shape,dyaxis.shape
+	
+	
+	######
+	# Locate min/max colours
+	rbmi = min([md.min(),dd.min(),])
+	rbma = max([md.max(),dd.max(),])
+	
+	######
+	# Locate min/max depths
+	zmi = min([dyaxis.min(),yaxis.min(),])
+	zma = max([dyaxis.max(),yaxis.max(),])	
+	
+	#####
+	# Start drawing
+	# Grid spec allows you to make un-even shaped subplots.
+	# here we want the in situ data to be much narrower.
+	fig = pyplot.figure()	
+	fig.set_size_inches(10,6)
+	gs = gridspec.GridSpec(1, 2, width_ratios=[1, 12]) 
+
+	#####
+	# Data  subplot
+	ax1 = pyplot.subplot(gs[0])
+	hovmoellerAxis(fig,ax1,'Data',dxaxis,dyaxis,dd,vmin=rbmi,vmax=rbma)
+	pyplot.ylim([zmi,zma])
+	ax1.get_xaxis().set_ticks([])
+	pyplot.ylabel('Depth')
+
+	#####
+	# model subplot
+	ax2 = pyplot.subplot(gs[1])
+	hovmoellerAxis(fig,ax2,'Model: '+title,times,yaxis,md)
+	pyplot.xlim([times.min(),times.max()])
+	pyplot.ylim([zmi,zma])	
+	pyplot.colorbar()
+	ax2.yaxis.set_ticklabels([])
+	pyplot.xlabel('Year')
+
+	pyplot.tight_layout()			
+	print "hovmoellerPlot.py: \tSaving:" , filename
+	pyplot.savefig(filename ,dpi=dpi)		
+	pyplot.close()	
+	
+	
+	
+	
+			
