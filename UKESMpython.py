@@ -1513,6 +1513,10 @@ def makeMask(name,newSlice, xt,xz,xy,xx,xd,debug=False):
 		my = np.ma.masked_inside(xy, 22.3, 32.1).mask				
 		return np.ma.masked_where( mx*my,nmask).mask 										
 		
+	if newSlice == 'ignoreCaspian':
+		mx = np.ma.masked_inside(xx,45.0,  55.0).mask * np.ma.masked_inside(xy, 35., 48.).mask 	# caspian
+		return np.ma.masked_where( mx,nmask).mask 
+		
 	if newSlice == 'ignoreMediteranean':
 		mx  = np.ma.masked_inside(xx, -5.8, 42.5).mask #E
 		my  = np.ma.masked_inside(xy, 30., 43.).mask	#N			
@@ -1528,6 +1532,7 @@ def makeMask(name,newSlice, xt,xz,xy,xx,xd,debug=False):
 		mx += np.ma.masked_inside(xx, 25.9, 41.7).mask * np.ma.masked_inside(xy, 39.8,48.1).mask		
 		mx += np.ma.masked_inside(xx, -5.8, 42.5).mask * np.ma.masked_inside(xy, 30., 43.).mask
 		mx += np.ma.masked_inside(xx, 0.0,  20.0).mask * np.ma.masked_inside(xy, 32., 47.).mask 
+		mx += np.ma.masked_inside(xx,45.0,  55.0).mask * np.ma.masked_inside(xy, 35., 48.).mask 	# caspian
 		if newSlice == 'ignoreInlandSeas':return np.ma.masked_where( mx,nmask).mask 		
 		mx += np.ma.masked_outside(xx, 25.,100.).mask
 		my = np.ma.masked_outside(xy, -50.,30.).mask
