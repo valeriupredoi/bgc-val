@@ -69,12 +69,12 @@ def analysis_timeseries(jobID = "u-ab671",
 	#####	
 	# BGC switches:
 	doChl		= 0#True
-	doN		= 0#True
+	doN		= True
 	doSi		= True
 	doO2		= True
 	doAlk		= True
 	doDIC		= True
-	doOMZ		= True
+	doOMZ		= 0#True
 	doAirSeaFlux	= 0#True	
 	doIntPP_Lester	= 0#True
 	doIntPP_OSU	= 0#True
@@ -82,8 +82,8 @@ def analysis_timeseries(jobID = "u-ab671",
 	
 	#####	
 	# Physics switches:
-	doT		= True
-	doS		= True
+	doT		= 0#True
+	doS		= 0#True
 	doMLD		= 0#True
 		
 
@@ -307,8 +307,9 @@ def analysis_timeseries(jobID = "u-ab671",
 	if doSi:
 
 		name = 'Silicate'
-		av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
-		av[name]['dataFile'] 		=  WOAFolder+'silicate_monthly_1deg.nc'
+		if annual:	
+			av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
+			av[name]['dataFile'] 		=  WOAFolder+'woa13_all_i00_01.nc'
 				
 		av[name]['modelcoords'] 	= medusaCoords 	
 		av[name]['datacoords'] 		= woaCoords
@@ -357,10 +358,12 @@ def analysis_timeseries(jobID = "u-ab671",
 
 	if doOMZ:
 		# Here we calculate the volume of the OMZ, where the O2 concentration is below 20.
-		nc = Dataset(eORCAGRID,'r')
+		nc = Dataset(eORCAgrid,'r')
 
 	
 
+		assert 0 
+		# not ready yet
 		name = 'Oxygen'
 		if annual:
 			av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
@@ -615,8 +618,8 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modeldetails'] 	= {'name': 'temperature', 'vars':['votemper',], 'convert': ukp.NoChange,}
 		av[name]['datadetails']  	= {'name': 'temperature', 'vars':['t_an',], 'convert': ukp.NoChange,}
 	
-		av[name]['layers'] 		= ['Surface',]#'Surface - 1000m','Surface - 300m',]#'depthint']
-		av[name]['regions'] 		= keyRegions
+		av[name]['layers'] 		=  alllayers
+		av[name]['regions'] 		= debugRegions	
 		av[name]['metrics']		= ['mean','median', ]
 
 		av[name]['datasource'] 		= 'WOA'
@@ -636,9 +639,9 @@ def analysis_timeseries(jobID = "u-ab671",
 	
 		av[name]['modeldetails'] 	= {'name': 'salinity', 'vars':['vosaline',], 'convert': ukp.NoChange,}	
 		av[name]['datadetails']  	= {'name': 'salinity', 'vars':['s_an',], 'convert': ukp.NoChange,}
-	
-		av[name]['layers'] 		= ['Surface',]#'Surface - 1000m','Surface - 300m',]#'depthint']
-		av[name]['regions'] 		= keyRegions
+
+		av[name]['layers'] 		=  alllayers
+		av[name]['regions'] 		= debugRegions		
 		av[name]['metrics']		= ['mean','median', ]
 
 		av[name]['datasource'] 		= 'WOA'

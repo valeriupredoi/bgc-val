@@ -225,9 +225,9 @@ def makemapplot(fig,ax,lons,lats,data,title, zrange=[-100,100],lon0=0.,drawCbar=
 	
 	if data.ndim ==1:
 		if doLog:
-			im = ax.scatter(lons, lats,c=data, lw=0,marker='s', transform=cartopy.crs.PlateCarree(),norm=LogNorm())#vmin=zrange[0],vmax=zrange[1]),)
+			im = ax.scatter(lons, lats,c=data, lw=0,marker='s', transform=cartopy.crs.PlateCarree(),norm=LogNorm(),vmin=zrange[0],vmax=zrange[1])
 		else:	
-			im = ax.scatter(lons, lats,c=data, lw=0,marker='s',transform=cartopy.crs.PlateCarree(),)#vmin=zrange[0],vmax=zrange[1])	
+			im = ax.scatter(lons, lats,c=data, lw=0,marker='s',transform=cartopy.crs.PlateCarree(),vmin=zrange[0],vmax=zrange[1])
 	else:
 		crojp2, data, newLon,newLat = regrid(data,lats,lons)
 
