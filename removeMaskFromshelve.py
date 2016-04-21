@@ -3,11 +3,21 @@
 # Untested!
 
 from shelve import open as shopen
-sh = shopen(fn)
+from glob import glob
 
-modeldata = sh['modeldata']
+def removeFromShelves(fn,removeRegions):
+	print 'removing:',removeRegions, 'from', fn
+	sh = shopen(fn)
+	modeldata = sh['modeldata']
+
+	for [(r,l,m)] in modeldata.keys():
+		if r in removeRegions: print modeldata(modeldata[(r,l,m)]) , 'will be deleted'
+
+	sh['modeldata'] = modeldata
+	sh.close()
 
 removeRegions = ['ignoreInlandSeas',]
 
-for [(r,l,m)] in modeldata.keys():
-	if r in removeRegions: print modeldata(modeldata[(r,l,m)]) , 'will be deleted'
+for fn in glob('shelves/timeseries/u-ab749/u-ab749_*'):
+	if fn.find('insitu')>-1:continue
+	removeFromShelves(fn,removeRegions)
