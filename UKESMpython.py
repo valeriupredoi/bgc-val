@@ -1311,8 +1311,8 @@ def populateSlicesList(#plotallcuts = False,
 	return newSlices
 
 		      	
-def makeMask(name,newSlice, xt,xz,xy,xx,xd):	  
-	print "makeMask:\tmakeMask:\tinitialise:\t",name, '\t',newSlice
+def makeMask(name,newSlice, xt,xz,xy,xx,xd,debug=False):	  
+	if debug:print "makeMask:\tmakeMask:\tinitialise:\t",name, '\t',newSlice
 		
 	if newSlice in ['OffAxis', 'Overestimate','Underestimate','Matched', 
 			'Overestimate_2sig','Underestimate_2sig', 

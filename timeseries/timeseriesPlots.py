@@ -29,8 +29,16 @@ import matplotlib.patches as mpatches
 from mpl_toolkits.basemap import Basemap
 import cartopy
 import numpy as np 
+from scipy import interpolate 
 
 import timeseriesTools as tst
+
+try:	defcmap = pyplot.cm.viridis
+except:	
+	from bgcvaltools.viridis import viridis
+	defcmap = viridis
+	
+	
 
 def trafficlights(ax,xlims, bands,labels=[]):
 	if len(bands) != 6: print "wrong number of bands to traffic light."
@@ -264,7 +272,7 @@ def mapPlotSingle(lons1, lats1, data1,filename,titles=['',],lon0=0.,drawCbar=Tru
 		
 	fig,ax1 = makemapplot(fig,ax1,lons1,lats1,data1,titles[0], zrange=[rbmi,rbma],lon0=0.,drawCbar=True,cbarlabel='',doLog=doLog,)
 	ax1.set_extent([-180.,180.,-90.,90.])
-	print "mapPlotSingle.py:\tmapPlotPair: \tSaving:" , filename
+	print "mapPlotSingle.py:\tSaving:" , filename
 	pyplot.savefig(filename ,dpi=dpi)		
 	pyplot.close()
 	
@@ -291,27 +299,27 @@ def mapPlotPair(lons1, lats1, data1,lons2,lats2,data2,filename,titles=['',''],lo
 	ax1 = pyplot.subplot(211,projection=cartopy.crs.PlateCarree(central_longitude=0.0, ))
 		
 	fig,ax1 = makemapplot(fig,ax1,lons1,lats1,data1,titles[0], zrange=[rbmi,rbma],lon0=0.,drawCbar=True,cbarlabel='',doLog=doLog,)
-	
+	ax1.set_extent([-180.,180.,-90.,90.])	
 
 	ax2 = pyplot.subplot(212,projection=cartopy.crs.PlateCarree(central_longitude=0.0, ))	
 	try:fig,ax2 = makemapplot(fig,ax2,lons2,lats2,data2,titles[1], zrange=[rbmi,rbma],lon0=0.,drawCbar=True,cbarlabel='',doLog=doLog,)
 	except: 
 		mapPlotSingle(lons1, lats1, data1,filename,titles=titles,lon0=lon0,drawCbar=drawCbar,cbarlabel=cbarlabel,doLog=doLog,dpi=dpi)
 		return
-	
+	ax2.set_extent([-180.,180.,-90.,90.])	
 		
-	print "timeseriespots.py:\tmapPlotPair: \tSaving:" , filename
+	print "mapPlotPair: \tSaving:" , filename
 	pyplot.savefig(filename ,dpi=dpi)		
 	pyplot.close()
 		
 
-def hovmoellerAxis(fig,ax,title,xaxis,yaxis,data,vmin='',vmax=''):
+def hovmoellerAxis(fig,ax,title,xaxis,yaxis,data,vmin='',vmax='',cmap = defcmap ):
 	yaxis = np.array(yaxis)
 	if yaxis.min()*yaxis.max() <=0.:
 		if yaxis.mean()<0:yaxis = np.clip(yaxis,-10000.,-0.1)
 			
-	if vmin==vmax=='':	p=pyplot.pcolormesh(xaxis,yaxis,data,)
-	else:			p=pyplot.pcolormesh(xaxis,yaxis,data,vmin=vmin,vmax=vmax,)
+	if vmin==vmax=='':	p=pyplot.pcolormesh(xaxis,yaxis,data,cmap = cmap)
+	else:			p=pyplot.pcolormesh(xaxis,yaxis,data,vmin=vmin,vmax=vmax,cmap = cmap)
 	pyplot.title(title)
 	#ax.set_yscale("log", nonposy='clip')
 	ax.set_yscale('symlog')
@@ -346,41 +354,44 @@ def taxisfromCC(arr):
 	return np.array(zarr)
 	
 
-def hovmoellerPlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords= {}, title = '',dpi=100):	
+def hovmoellerPlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords= {}, title = '',dpi=100,diff=True):	
 	#####
 	# creating model data dictionairies
 	md = []
-	times = []
-	yaxis = []
+	times_cc = []
+	yaxis_cc = []
 	
 	for l in modelZcoords:
 		if l not in modeldata.keys():continue
-		yaxis.append(modelZcoords[l])
+		yaxis_cc.append(modelZcoords[l])
 
-		times = sorted(modeldata[l].keys())
-		try:	md.append(np.array([modeldata[l][t][0] for t in times]))
-		except:	md.append(np.array([modeldata[l][t] for t in times]))
+		times_cc = sorted(modeldata[l].keys())
+		try:	md.append(np.array([modeldata[l][t][0] for t in times_cc]))
+		except:	md.append(np.array([modeldata[l][t] for t in times_cc]))
 		
 	md = np.ma.array(md)#
 	md = md.squeeze()
-	times = taxisfromCC(np.array(times))
-	yaxis = zaxisfromCC(yaxis)
+	times = taxisfromCC(np.array(times_cc))
+	yaxis = zaxisfromCC(yaxis_cc)
 	print "hovmoellerPlot:", title, md.shape,md.mean(),times.shape,yaxis.shape
 	
 	#####
 	# creating data data dictionairies
 	dd = []
 	dxaxis= []
-	dyaxis = []
+	dyaxis_cc = []
 	
 	for l in dataZcoords:
 		if l not in dataslice.keys():continue
-		dyaxis.append(dataZcoords[l])
+		dyaxis_cc.append(dataZcoords[l])
+		print 'preparing data for hov:',l,dataZcoords[l], dataslice[l]
 		dd.append([dataslice[l],])
 		
 	dd = np.ma.array(dd)#.squeeze()
+	dyaxis_cc = np.array(dyaxis_cc)
+		
 	dxaxis = np.array([0,1,])
-	dyaxis = zaxisfromCC(dyaxis)
+	dyaxis = zaxisfromCC(dyaxis_cc)
 	print "hovmoellerPlot:", title, dd.shape,dd.mean(),dxaxis.shape,dyaxis.shape
 	
 	
@@ -394,6 +405,32 @@ def hovmoellerPlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords=
 	zmi = min([dyaxis.min(),yaxis.min(),])
 	zma = max([dyaxis.max(),yaxis.max(),])	
 	
+	
+
+	if diff:
+		#####
+		# diff:
+		# If the diff key is true, this subtracts the data from the model, it also changes the colour scheme.
+		# First step is to perform the interpollartion.
+		f = interpolate.interp1d(dyaxis_cc, dd.squeeze(), kind='linear')
+		newData = f(np.ma.clip(yaxis_cc,dyaxis_cc.min(),dyaxis_cc.max()))	
+
+		###
+		# subtract data from model:		
+		for i,t in enumerate(times_cc):
+			md[:,i] = md[:,i] -  newData
+	
+		####
+		# change plot ranges, title, colorscale
+		ax2max = max([abs(md.max()),abs(md.min()),])
+		ax2min = - ax2max
+		cmapax2 = pyplot.cm.bwr
+		title = 'Model - Data: '+title		
+	else:
+		ax2max	= rbma
+		ax2min	= rbmi
+		cmapax2 = defcmap
+		title = 'Model: '+title
 	#####
 	# Start drawing
 	# Grid spec allows you to make un-even shaped subplots.
@@ -409,11 +446,12 @@ def hovmoellerPlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords=
 	pyplot.ylim([zmi,zma])
 	ax1.get_xaxis().set_ticks([])
 	pyplot.ylabel('Depth')
+	if diff: pyplot.colorbar()
 
 	#####
 	# model subplot
 	ax2 = pyplot.subplot(gs[1])
-	hovmoellerAxis(fig,ax2,'Model: '+title,times,yaxis,md)
+	hovmoellerAxis(fig,ax2,title,times,yaxis,md,vmin=ax2min,vmax=ax2max,cmap = cmapax2)
 	pyplot.xlim([times.min(),times.max()])
 	pyplot.ylim([zmi,zma])	
 	pyplot.colorbar()

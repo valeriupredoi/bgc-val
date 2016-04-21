@@ -274,7 +274,7 @@ class timeseriesAnalysis:
 	print "timeseriesAnalysis:\t loadData,\tloading ",self.dataFile
 	#nc = Dataset(self.dataFile,'r')
 	#data = tst.loadData(nc, self.datadetails)
-				
+			
 	
 	###############
 	# Loading data for each region.
@@ -320,7 +320,6 @@ class timeseriesAnalysis:
   		datadata =  tst.getHorizontalSlice(dnc,self.datacoords,self.datadetails,layer,data = '').squeeze()
   		datalat = ukp.extractData(dnc,[],key=self.datacoords['lat'])
   		datalon = ukp.extractData(dnc,[],key=self.datacoords['lon']) 
-		
 	else:
 		datadata = np.ma.array([-1000,],mask=[True,])
 		datalat  = np.ma.array([-1000,],mask=[True,])
@@ -341,46 +340,76 @@ class timeseriesAnalysis:
   			lon0=0.,drawCbar=True,cbarlabel='',dpi=100,)
   	
 
-  def mapplotsRegionsLayers(self, region,layer,filename):
-  	"""	Makes a surface plot of model vs data. 
-  	"""	
-  	(r,l) = (region,layer)
+  def mapplotsRegionsLayers(self,):
+  
+  	"""	Makes a map plot of model vs data for each string-named layer (not numbered layers). 
+  	"""
+  	newlayers = [l for l in self.layers if type(l) not in [type(0),type(0.) ]]
+	mDL = tst.DataLoader(self.modelFiles[-1],'',self.modelcoords,self.modeldetails, regions = self.regions, layers = newlayers,)
+	for r in self.regions:
+	  for l in self.layers:	
+		if type(l) in [type(0),type(0.)]:continue
+ 		mapfilename = ukp.folder('images/timeseries/'+self.jobID+'/'+self.dataType)+'_'.join(['map',self.jobID,self.dataType,str(l),r,])+'.png'
+   		modeldata	= mDL.load[(r,l)]
+   		modellat	= mDL.load[(r,l,'lat')]
+   		modellon	= mDL.load[(r,l,'lon')]
+		  	
 
-  	modeldata =  self.dataD[(r,l,)]
-  	modellat = self.dataD[(r,l,'lat')]
-  	modellon = self.dataD[(r,l,'lon')]
-
-  	print "mapplotsRegionsLayers:\t",r,l, "model contains",len(modeldata),'model data'
-  	print "mapplotsRegionsLayers:\t",r,l, "model lat:",modellat.min(),modellat.mean(),modellat.max()
-  	print "mapplotsRegionsLayers:\t",r,l, "model lon:",modellon.min(),modellon.mean(),modellon.max() 
+	  	print "mapplotsRegionsLayers:\t",r,l, "model contains",len(modeldata),'model data'
+	  	print "mapplotsRegionsLayers:\t",r,l, "model lat:",modellat.min(),modellat.mean(),modellat.max()
+	  	print "mapplotsRegionsLayers:\t",r,l, "model lon:",modellon.min(),modellon.mean(),modellon.max() 
   	  	
-	if self.dataFile:
-	  	dnc = Dataset(self.dataFile,'r')
-  		datadata =  tst.getHorizontalSlice(dnc,self.datacoords,self.datadetails,layer,data = '').squeeze()
-  		datalat = ukp.extractData(dnc,[],key=self.datacoords['lat'])
-  		datalon = ukp.extractData(dnc,[],key=self.datacoords['lon']) 
-		
-	else:
-		datadata = np.ma.array([-1000,],mask=[True,])
-		datalat  = np.ma.array([-1000,],mask=[True,])
-		datalon  = np.ma.array([-1000,],mask=[True,])
-  	print "mapplotsRegionsLayers:\t",r,l, "contains",len(datadata),'in situ data'
-  	print "mapplotsRegionsLayers:\t",r,l, "data lat:",datalat.min(),datalat.mean(),datalat.max()
-  	print "mapplotsRegionsLayers:\t",r,l, "data lon:",datalon.min(),datalon.mean(),datalon.max() 	
+		if self.dataFile:
+		    	datadata	= self.dataD[(r,l)] 
+		    	datalat		= self.dataD[(r,l,'lat')]
+		    	datalon		= self.dataD[(r,l,'lon')]
+		    	
+		else:
+			datadata = np.ma.array([-1000,],mask=[True,])
+			datalat  = np.ma.array([-1000,],mask=[True,])
+			datalon  = np.ma.array([-1000,],mask=[True,])
+
+	  	print "mapplotsRegionsLayers:\t",r,l, "contains",len(datadata),'in situ data'
+	  	print "mapplotsRegionsLayers:\t",r,l, "data lat:",len(datalat),datalat.min(),datalat.mean(),datalat.max()
+	  	print "mapplotsRegionsLayers:\t",r,l, "data lon:",len(datalon),datalon.min(),datalon.mean(),datalon.max() 	
 	
-	titles = [' '.join([self.model,'('+self.jobID+')',str(layer),self.modeldetails['name']]),
-		  ' '.join([self.datasource,str(layer),self.datadetails['name']])]
-  	tsp.mapPlotPair(modellon, modellat, modeldata,
-  			datalon,datalat,datadata,
-  			filename,
-  			titles	= titles,
-  			lon0=0.,drawCbar=True,cbarlabel='',dpi=100,)
+		titles = [' '.join([self.model,'('+self.jobID+')',str(l),self.modeldetails['name']]),
+			  ' '.join([self.datasource,str(l),self.datadetails['name']])]
+			  
+	  	tsp.mapPlotPair(modellon, modellat, modeldata,
+	  			datalon,datalat,datadata,
+	  			mapfilename,
+	  			titles	= titles,
+	  			lon0=0.,drawCbar=True,cbarlabel='',dpi=100,)
 
 	
 	
   def makePlots(self):
 	if self.debug: print "timeseriesAnalysis:\t makePlots."		  
 
+	#####
+	# map plots:
+	#for r in self.regions:
+	#  for l in self.layers:
+	# 	if type(l) in [type(0),type(0.)]:continue
+    	#    	mapfilename = ukp.folder('images/timeseries/'+self.jobID+'/'+self.dataType)+'_'.join(['map',self.jobID,self.dataType,str(l),])+'.png'
+    	#    	if ukp.shouldIMakeFile([self.shelvefn,self.shelvefn_insitu],mapfilename,debug=False):
+	#    		self.mapplots( l, mapfilename)
+	
+
+	#####
+	# map plots for specific regions:	
+	runmapplots=False
+	for r in self.regions:
+	  for l in self.layers:	
+ 		if runmapplots:continue
+		if type(l) in [type(0),type(0.)]:continue
+ 		mapfilename = ukp.folder('images/timeseries/'+self.jobID+'/'+self.dataType)+'_'.join(['map',self.jobID,self.dataType,str(l),r,])+'.png'
+		if ukp.shouldIMakeFile(self.modelFiles[-1],mapfilename,debug=False):runmapplots = True
+ 	if runmapplots:
+		self.mapplotsRegionsLayers() 
+				
+				
 
 	#####
 	# Hovmoeller plots
@@ -389,7 +418,6 @@ class timeseriesAnalysis:
 	   
 	   	#####
 	   	# Load data layers:
-
 		data = {}
 		modeldata = {}
 		
@@ -397,20 +425,23 @@ class timeseriesAnalysis:
 	  		if type(l) == type('str'):continue	# no strings, only layers.
 			#####
 			# Test for presence/absence of in situ data.
-			try:	dataslice = self.dataD[(r,l)]	  
-			except:	dataslice = []
-			try:	dataslice = dataslice.compressed()
-			except:	pass
-			
-			if m == 'mean': 	data[l] = dataslice.mean()
-			if m == 'median': 	data[l] = np.median(dataslice)
+			try:	
+				dataslice = self.dataD[(r,l)]	  
+				dataslice = dataslice.compressed()				
+			except:	dataslice = np.ma.array([-1000],mask=[True,])
+
+			#print "loading hov data: data",l, r,m, len(dataslice)
+						
+			if m == 'mean': data[l] = np.ma.mean(dataslice)
+			if m == 'median':
+				try: 	data[l] = np.ma.median(dataslice)
+				except:	data[l] = np.ma.array([-1000],mask=[True,])
 			
 			modeldata[l] = self.modeldataD[(r,l,m)]
-			print "loading hov data: model",l, r,m
+			#print "loading hov data: model",l, r,m
 		#####
 		# check that multiple layers were requested.
 		if len(data)<1: continue
-		
 
 		#####
 		# create a dictionary of model depths and layers.
@@ -423,28 +454,20 @@ class timeseriesAnalysis:
 		  	dataZcoords = {i:z for i,z in enumerate(dnc.variables[self.datacoords['z']][:])}
 		  	dnc.close()  	
 		else: 	dataZcoords = {}
-		
+
+		title = ' '.join([r,m,self.dataType])		
 	    	hovfilename = ukp.folder('images/timeseries/'+self.jobID+'/'+self.dataType)+'_'.join(['hov',self.jobID,self.dataType,r,m,])+'.png'
-	    	
-		title = ' '.join([r,m,self.dataType])
-		tsp.hovmoellerPlot(modeldata,data,hovfilename, modelZcoords = modelZcoords, dataZcoords= dataZcoords, title = title,)		
+		tsp.hovmoellerPlot(modeldata,data,hovfilename, modelZcoords = modelZcoords, dataZcoords= dataZcoords, title = title,diff=False)		
 	
-	
-	
-	
-	
-	
-	
-	
-	
+	    	hovfilename = ukp.folder('images/timeseries/'+self.jobID+'/'+self.dataType)+'_'.join(['hov',self.jobID,self.dataType,r,m,])+'-diff.png'
+		tsp.hovmoellerPlot(modeldata,data,hovfilename, modelZcoords = modelZcoords, dataZcoords= dataZcoords, title = title,diff=True)		
 	
 	
 	
 	#####
-	# Trafficlight and map plots:
+	# Trafficlight plots:
 	for r in self.regions:
 	  for l in self.layers:
-
 	    #####
 	    # Don't make pictures for each integer or float layer, only the ones that are strings. 
 	    if type(l) in [type(0),type(0.)]:continue
@@ -456,8 +479,6 @@ class timeseriesAnalysis:
     	    try:	dataslice = dataslice.compressed()
     	    except:	pass
     	    
-
-
 	    for m in self.metrics:  
 	    	modeldataDict = self.modeldataD[(r,l,m)]
 
@@ -467,18 +488,8 @@ class timeseriesAnalysis:
 		title = ' '.join([r,str(l),m,self.dataType])
 		tsp.trafficlightsPlot(times,modeldata,dataslice,metric = m, title = title,filename=filename)		
 		
-		#filename = ukp.folder('images/timeseries/'+self.jobID)+'_'.join([self.jobID,self.dataType,r,l,m,])+'_trafficlights.png'		
-		#tsp.trafficlightsPlots(times,modeldata,dataslice,title = title,filename=filename)
-			
-    	    mapfilename = ukp.folder('images/timeseries/'+self.jobID+'/'+self.dataType)+'_'.join(['map',self.jobID,self.dataType,str(l),])+'.png'
-    	    if ukp.shouldIMakeFile([self.shelvefn,self.shelvefn_insitu],mapfilename,debug=False):
-	    	    self.mapplots( l, mapfilename)
-	
 
-    	    mapfilename = ukp.folder('images/timeseries/'+self.jobID+'/'+self.dataType)+'_'.join(['map',self.jobID,self.dataType,str(l),r,])+'.png'
-    	    if ukp.shouldIMakeFile([self.shelvefn,self.shelvefn_insitu],mapfilename,debug=False):
-	    	    self.mapplotsRegionsLayers( r,l, mapfilename)
-				
+
 			
 			
 			
