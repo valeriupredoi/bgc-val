@@ -409,6 +409,9 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['gridFile']		= eORCAgrid		
 
 	if doAlk:
+		def convertmeqm3TOumolkg(nc,keys):
+			return nc.variables[keys[0]][:]* 1.027
+		
 		name = 'Alkalinity'
 		av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
 		av[name]['dataFile'] 		=  GlodapDir+'Alk.nc'
@@ -417,7 +420,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['datacoords'] 		= glodapCoords
 	
 		av[name]['modeldetails'] 	= {'name': 'Alkalinity', 'vars':['ALK',], 'convert': ukp.NoChange,}
-		av[name]['datadetails']  	= {'name': 'Alkalinity', 'vars':['Alk',], 'convert': ukp.NoChange,}
+		av[name]['datadetails']  	= {'name': 'Alkalinity', 'vars':['Alk',], 'convert': convertmeqm3TOumolkg,}
 	
 	#	av[name]['layers'] 		=  ['Surface','100m','300m','1000m',]
 	#	av[name]['regions'] 		= keyRegions
@@ -609,8 +612,9 @@ def analysis_timeseries(jobID = "u-ab671",
 		
 	if doT:
 		name = 'Temperature'
-		av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_grid_T.nc"))
-		av[name]['dataFile'] 		= WOAFolder+'temperature_monthly_1deg.nc'	
+		if annual:		
+			av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_grid_T.nc"))
+			av[name]['dataFile'] 		= WOAFolder+'woa13_decav_t00_01v2.nc'
 				
 		av[name]['modelcoords'] 	= medusaCoords 	
 		av[name]['datacoords'] 		= woaCoords
@@ -631,8 +635,9 @@ def analysis_timeseries(jobID = "u-ab671",
 					
 	if doS:
 		name = 'salinity'
-		av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_grid_T.nc"))
-		av[name]['dataFile'] 		= WOAFolder+'salinity_monthly_1deg.nc'	
+		if annual:
+			av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_grid_T.nc"))
+			av[name]['dataFile'] 		= WOAFolder+'woa13_decav_s00_01v2.nc'
 				
 		av[name]['modelcoords'] 	= medusaCoords 	
 		av[name]['datacoords'] 		= woaCoords

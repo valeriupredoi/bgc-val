@@ -8,15 +8,20 @@ from glob import glob
 def removeFromShelves(fn,removeRegions):
 	print 'removing:',removeRegions, 'from', fn
 	sh = shopen(fn)
+	
 	modeldata = sh['modeldata']
-
-	for [(r,l,m)] in modeldata.keys():
-		if r in removeRegions: print modeldata(modeldata[(r,l,m)]) , 'will be deleted'
+	
+	for key in modeldata.keys():
+		try: (r,l,m) = key
+		except:continue
+		if r in removeRegions: 
+			print 'modeldata[',(r,l,m),'] will be deleted'
+                        del modeldata[(r,l,m)] 
 
 	sh['modeldata'] = modeldata
 	sh.close()
 
-removeRegions = ['ignoreInlandSeas',]
+removeRegions = ['Remainder',]	#'ignoreInlandSeas',
 
 for fn in glob('shelves/timeseries/u-ab749/u-ab749_*'):
 	if fn.find('insitu')>-1:continue
