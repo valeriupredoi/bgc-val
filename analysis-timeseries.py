@@ -34,7 +34,7 @@ from netCDF4 import Dataset
 from glob import glob
 from scipy.interpolate import interp1d
 import numpy as np
-
+import os
 
 #####	
 # Load specific local code:
@@ -49,6 +49,7 @@ from timeseries import timeseriesAnalysis
 def analysis_timeseries(jobID = "u-ab671",
 			clean = 0,
 			annual = True,
+			strictFileCheck = True,
 			):
 
 	"""
@@ -59,6 +60,8 @@ def analysis_timeseries(jobID = "u-ab671",
 		
 		The annual flag means that we look at annual (True) or monthly (False) data.
 		
+		The strictFileCheck switch checks that the data/model netcdf files exist.
+			It fails if the switch is on and the files no not exist.
 	"""	
 
 	#####
@@ -82,8 +85,8 @@ def analysis_timeseries(jobID = "u-ab671",
 	
 	#####	
 	# Physics switches:
-	doT		= 0#True
-	doS		= 0#True
+	doT		= True
+	doS		= True
 	doMLD		= 0#True
 		
 
@@ -142,12 +145,12 @@ def analysis_timeseries(jobID = "u-ab671",
 		print "analysis-timeseries.py:\tBeing run at CEDA on ",gethostname()
 		machinelocation = 'JASMIN'	
 				
-		esmvalFolder = "/group_workspaces/jasmin/esmeval/example_data/bgc/"
-		
+		ObsFolder 	= "/group_workspaces/jasmin/esmeval/example_data/bgc/"
+		esmvalFolder 	= "/group_workspaces/jasmin/esmeval/data/"		
 		#####
 		# Location of model files.	
-		MEDUSAFolder_pref	= ukp.folder(esmvalFolder+"MEDUSA/")
-		NEMOFolder_pref		= ukp.folder(esmvalFolder+"MEDUSA/")
+		MEDUSAFolder_pref	= ukp.folder(esmvalFolder+jobID)
+		NEMOFolder_pref		= ukp.folder(esmvalFolder+jobID)
 		
 		#####
 		# Location of data files.
@@ -344,8 +347,9 @@ def analysis_timeseries(jobID = "u-ab671",
 	
 	if doO2:
 		name = 'Oxygen'
-		av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
-		av[name]['dataFile'] 		=  WOAFolder+'oxygen-woa13.nc'
+		if annual:
+			av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
+			av[name]['dataFile'] 		=  WOAFolder+'woa13_all_o00_01.nc'
 				
 		av[name]['modelcoords'] 	= medusaCoords 	
 		av[name]['datacoords'] 		= woaCoords
@@ -742,6 +746,22 @@ def analysis_timeseries(jobID = "u-ab671",
 	for name in av.keys():
 		print "------------------------------------------------------------------"	
 		print "analysis-Timeseries.py:\tBeginning to call timeseriesAnalysis for ", name
+
+		if len(av[name]['modelFiles']) == 0:
+			print "analysis-Timeseries.py:\tWARNING:\tmodel files are not found:",av[name]['modelFiles'] 
+			if strictFileCheck: assert 0		
+
+		modelfilesexists = [os.path.exists(f) for f in av[name]['modelFiles'] ]
+		if False in modelfilesexists:
+			print "analysis-Timeseries.py:\tWARNING:\tnot model files do not all exist:",av[name]['modelFiles'] 
+			if strictFileCheck: assert 0
+			
+			
+		if av[name]['dataFile']!='':
+		   if not os.path.exists(av[name]['dataFile']):
+			print "analysis-Timeseries.py:\tWARNING:\tdata file is not found:",av[name]['dataFile']
+			if strictFileCheck: assert 0
+			
 		tsa = timeseriesAnalysis(
 			av[name]['modelFiles'], 
 			av[name]['dataFile'],
