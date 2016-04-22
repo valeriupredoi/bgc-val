@@ -153,12 +153,23 @@ def analysis_timeseries(jobID = "u-ab671",
 		# Location of data files.
 		if annual:	WOAFolder 	= ukp.folder(esmvalFolder+"WOA/annual")
 		else:		WOAFolder 	= ukp.folder(esmvalFolder+"WOA/")
-		MAREDATFolder 	= ukp.folder(esmvalFolder+"/MAREDAT/")
-		WOAFolder 	= ukp.folder(esmvalFolder+"WOA/")
-		GEOTRACESFolder = ukp.folder(esmvalFolder+"GEOTRACES/GEOTRACES_PostProccessed/")
-		TakahashiFolder = ukp.folder(esmvalFolder+"Takahashi2009_pCO2/")
-		MLDFolder  	= ukp.folder(esmvalFolder+"IFREMER-MLD/")
-	
+		#MAREDATFolder 	= ukp.folder(esmvalFolder+"/MAREDAT/")
+		#WOAFolder 	= ukp.folder(esmvalFolder+"WOA/")
+		#GEOTRACESFolder = ukp.folder(esmvalFolder+"GEOTRACES/GEOTRACES_PostProccessed/")
+		#TakahashiFolder = ukp.folder(esmvalFolder+"Takahashi2009_pCO2/")
+		#MLDFolder  	= ukp.folder(esmvalFolder+"IFREMER-MLD/")
+		
+		ObsFolder = esmvalFolder
+		MAREDATFolder 	= ObsFolder+"/MAREDAT/MAREDAT/"
+		GEOTRACESFolder = ObsFolder+"/GEOTRACES/GEOTRACES_PostProccessed/"
+		TakahashiFolder = ObsFolder+"/Takahashi2009_pCO2/"
+		MLDFolder	= ObsFolder+"/IFREMER-MLD/"
+		LesterFolder	= ObsFolder+"/LestersReportData/"
+		GlodapDir	= ObsFolder+"/GLODAP/"
+		GLODAPv2Dir	= ObsFolder+"/GLODAPv2/GLODAPv2_Mapped_Climatologies/"
+		
+		
+		eORCAgrid 	= '/group_workspaces/jasmin/esmeval/example_data/bgc/mesh_mask_eORCA1_wrk.nc'
 
 	#####
 	# NOC		
