@@ -154,15 +154,14 @@ def analysis_timeseries(jobID = "u-ab671",
 		
 		#####
 		# Location of data files.
-		if annual:	WOAFolder 	= ukp.folder(esmvalFolder+"WOA/annual")
-		else:		WOAFolder 	= ukp.folder(esmvalFolder+"WOA/")
+		if annual:	WOAFolder 	= ukp.folder(ObsFolder+"WOA/annual")
+		else:		WOAFolder 	= ukp.folder(ObsFolder+"WOA/")
 		#MAREDATFolder 	= ukp.folder(esmvalFolder+"/MAREDAT/")
 		#WOAFolder 	= ukp.folder(esmvalFolder+"WOA/")
 		#GEOTRACESFolder = ukp.folder(esmvalFolder+"GEOTRACES/GEOTRACES_PostProccessed/")
 		#TakahashiFolder = ukp.folder(esmvalFolder+"Takahashi2009_pCO2/")
 		#MLDFolder  	= ukp.folder(esmvalFolder+"IFREMER-MLD/")
 		
-		ObsFolder = esmvalFolder
 		MAREDATFolder 	= ObsFolder+"/MAREDAT/MAREDAT/"
 		GEOTRACESFolder = ObsFolder+"/GEOTRACES/GEOTRACES_PostProccessed/"
 		TakahashiFolder = ObsFolder+"/Takahashi2009_pCO2/"
