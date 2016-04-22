@@ -149,8 +149,8 @@ def analysis_timeseries(jobID = "u-ab671",
 		esmvalFolder 	= "/group_workspaces/jasmin/esmeval/data/"		
 		#####
 		# Location of model files.	
-		MEDUSAFolder_pref	= ukp.folder(esmvalFolder+jobID)
-		NEMOFolder_pref		= ukp.folder(esmvalFolder+jobID)
+		MEDUSAFolder_pref	= ukp.folder(esmvalFolder)
+		NEMOFolder_pref		= ukp.folder(esmvalFolder)
 		
 		#####
 		# Location of data files.
