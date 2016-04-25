@@ -70,23 +70,24 @@ def analysis_timeseries(jobID = "u-ab671",
 	
 	#####	
 	# BGC switches:
-	doChl		= 0#True	# CCI Chlorophyll
-	doN		= True		# WOA Nitrate
-	doSi		= True		# WOA Siliate
-	doO2		= True		# WOA Oxygen
-	doAlk		= True		# Glodap Alkalinity
-	doDIC		= True		# Globap tCO2
+	doChl_CCI	= True		# CCI Chlorophyll	
+	doChl_pig	= True		# Chlorophyll from pigments (MAREDAT)
+	doN		= 0#True		# WOA Nitrate
+	doSi		= 0#True		# WOA Siliate
+	doO2		= 0#True		# WOA Oxygen
+	doAlk		= 0#True		# Glodap Alkalinity
+	doDIC		= 0#True		# Globap tCO2
 	doOMZ		= 0#True	# work in progress
-	doAirSeaFlux	= True		# work in progress
-	doIntPP_iMarNet	= True		# Integrated primpary production from iMarNEt
-	doIntPP_OSU	= True		# OSU Integrated primpary production	
-	doExportRatio   = True		# Export ratio (no data)
+	doAirSeaFlux	= 0#True		# work in progress
+	doIntPP_iMarNet	= 0#True		# Integrated primpary production from iMarNEt
+	doIntPP_OSU	= 0#True		# OSU Integrated primpary production	
+	doExportRatio   = 0#True		# Export ratio (no data)
 	
 	#####	
 	# Physics switches:
-	doT		= True		# WOA Temperature
-	doS		= True		# WOA Salinity
-	doMLD		= True		# iFERMER Mixed Layer Depth
+	doT		= 0#True		# WOA Temperature
+	doS		= 0#True		# WOA Salinity
+	doMLD		= 0#True		# iFERMER Mixed Layer Depth
 		
 
 	#####
@@ -135,7 +136,8 @@ def analysis_timeseries(jobID = "u-ab671",
 		iMarNetFolder	= ObsFolder+"/LestersReportData/"
 		GlodapDir	= ObsFolder+"/GLODAP/"
 		GLODAPv2Dir	= ObsFolder+"/GLODAPv2/GLODAPv2_Mapped_Climatologies/"
-		
+		OSUDir		= ObsFolder+"OSU/"
+		CCIDir		= ObsFolder+"CCI/"
 		eORCAgrid 	= '/data/euryale7/scratch/ledm/UKESM/MEDUSA/mesh_mask_eORCA1_wrk.nc'
 				
 	#####
@@ -163,7 +165,8 @@ def analysis_timeseries(jobID = "u-ab671",
 		iMarNetFolder	= ObsFolder+"/LestersReportData/"
 		GlodapDir	= ObsFolder+"/GLODAP/"
 		GLODAPv2Dir	= ObsFolder+"/GLODAPv2/GLODAPv2_Mapped_Climatologies/"
-		
+		OSUDir		= ObsFolder+"OSU/"
+				
 		
 		eORCAgrid 	= '/group_workspaces/jasmin/esmeval/example_data/bgc/mesh_mask_eORCA1_wrk.nc'
 
@@ -208,12 +211,12 @@ def analysis_timeseries(jobID = "u-ab671",
 	
 	medusaCoords 	= {'t':'time_counter', 'z':'deptht', 'lat': 'nav_lat',  'lon': 'nav_lon',   'cal': '365_day',}	# model doesn't need time dict.
 	maredatCoords 	= {'t':'index_t', 'z':'DEPTH',  'lat': 'LATITUDE', 'lon': 'LONGITUDE', 'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
-	takahashiCoords	= {'t':'index_t', 'z':'index_z',  'lat': 'LAT', 'lon': 'LON', 'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}	
+	takahashiCoords	= {'t':'index_t', 'z':'index_z','lat': 'LAT', 'lon': 'LON', 'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}	
 	woaCoords 	= {'t':'index_t', 'z':'depth',  'lat': 'lat', 	   'lon': 'lon',       'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}	
 	glodapCoords	= {'t':'index_t', 'z':'depth',  'lat': 'latitude', 'lon': 'longitude', 'cal': 'standard','tdict':[] }
 	glodapv2Coords	= {'t':'time',    'z':'Pressure','lat':'lat',      'lon':'lon',        'cal': '',        'tdict':{0:0,} }
-	mldCoords	= {'t':'index_t', 'z':'index_z','lat':'lat','lon':'lon','cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
-
+	mldCoords	= {'t':'index_t', 'z':'index_z','lat':'lat','lon': 'lon','cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
+	cciCoords	= {'t':'index_t', 'z':'index_z','lat': 'lat',      'lon': 'lon', 'cal': 'standard','tdict':['ZeroToZero'] }
 
 
 	#####
@@ -265,9 +268,9 @@ def analysis_timeseries(jobID = "u-ab671",
   	#		av[name]['dataFile']  = ''
   	
 	av = ukp.AutoVivification()
-	if doChl:
-		name = 'Chlorophyll'
-		av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+"/"+jobID+"o_1y_*_ptrc_T.nc"))
+	if doChl_pig:
+		name = 'Chlorophyll_pig'
+		av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
 		av[name]['dataFile'] 		= MAREDATFolder+"MarEDat20121001Pigments.nc"	
 				
 		av[name]['modelcoords'] 	= medusaCoords 	
@@ -285,6 +288,37 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= eORCAgrid
+
+
+	if doChl_CCI:
+		name = 'Chlorophyll_cci'
+		if annual:
+			av[name]['modelFiles']  = sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
+			av[name]['dataFile'] 	= CCIDir+"ESACCI-OC-L3S-OC_PRODUCTS-CLIMATOLOGY-16Y_MONTHLY_1degree_GEO_PML_OC4v6_QAA-annual-fv2.0.nc"	
+			print MEDUSAFolder_pref+"/"+jobID+"o_1y_*_ptrc_T.nc"
+		else:
+			av[name]['modelFiles']  = sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1m_*_ptrc_T.nc"))
+			av[name]['dataFile'] 	= CCIDir+'ESACCI-OC-L3S-OC_PRODUCTS-CLIMATOLOGY-16Y_MONTHLY_1degree_GEO_PML_OC4v6_QAA-all-fv2.0.nc'
+			
+		av[name]['modelcoords'] 	= medusaCoords 	
+		av[name]['datacoords'] 		= cciCoords
+	
+		av[name]['modeldetails'] 	= {'name': name, 'vars':['CHN','CHD'], 'convert': ukp.sums,'units':'mg C/m^3'}
+		av[name]['datadetails']  	= {'name': name, 'vars':['chlor_a',], 'convert':  ukp.NoChange,'units':'mg C/m^3'}
+	
+		av[name]['layers'] 		= ['Surface',] 	# CCI is surface only, it's a satellite product.
+		av[name]['regions'] 		= allRegions 
+		av[name]['metrics']		= ['mean','median', ]
+
+		av[name]['datasource'] 		= 'CCI'
+		av[name]['model']		= 'MEDUSA'
+
+		av[name]['modelgrid']		= 'eORCA1'
+		av[name]['gridFile']		= eORCAgrid
+		
+
+
+
 
 
 	if doN:
@@ -516,7 +550,7 @@ def analysis_timeseries(jobID = "u-ab671",
 	
 		av[name]['layers'] 		= ['Surface',]#'100m','200m','Surface - 1000m','Surface - 300m',]#'depthint']
 		av[name]['regions'] 		= keyRegions
-		av[name]['metrics']		= ['mean','median', 'sum' ]
+		av[name]['metrics']		= ['mean','median', ]#'sum' ]
 
 		av[name]['datasource'] 		= 'MAREDAT'
 		av[name]['model']		= 'MEDUSA'
@@ -544,7 +578,7 @@ def analysis_timeseries(jobID = "u-ab671",
 				
 		name = 'IntegratedPrimaryProduction_OSU'
 		av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_diad_T.nc"))
-		av[name]['dataFile'] 		= "/data/euryale7/scratch/ledm/OSU/standard_VGPM.SeaWIFS.global.nc"
+		av[name]['dataFile'] 		= OSUDir +"/standard_VGPM.SeaWIFS.global.nc"
 
 		av[name]['modelcoords'] 	= medusaCoords 	
 		av[name]['datacoords'] 		= glodapCoords
