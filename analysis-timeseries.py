@@ -67,27 +67,26 @@ def analysis_timeseries(jobID = "u-ab671",
 	#####
 	# Switches:
 	# These are some booleans that allow us to choose which analysis to run. 
-	# I hope that they have sensible enough names.
 	
 	#####	
 	# BGC switches:
-	doChl		= 0#True
-	doN		= True
-	doSi		= True
-	doO2		= True
-	doAlk		= True
-	doDIC		= True
-	doOMZ		= 0#True
-	doAirSeaFlux	= 0#True	
-	doIntPP_Lester	= 0#True
-	doIntPP_OSU	= 0#True
-	doExportRatio   = True
+	doChl		= 0#True	# CCI Chlorophyll
+	doN		= True		# WOA Nitrate
+	doSi		= True		# WOA Siliate
+	doO2		= True		# WOA Oxygen
+	doAlk		= True		# Glodap Alkalinity
+	doDIC		= True		# Globap tCO2
+	doOMZ		= 0#True	# work in progress
+	doAirSeaFlux	= True		# work in progress
+	doIntPP_iMarNet	= True		# Integrated primpary production from iMarNEt
+	doIntPP_OSU	= True		# OSU Integrated primpary production	
+	doExportRatio   = True		# Export ratio (no data)
 	
 	#####	
 	# Physics switches:
-	doT		= True
-	doS		= True
-	doMLD		= 0#True
+	doT		= True		# WOA Temperature
+	doS		= True		# WOA Salinity
+	doMLD		= True		# iFERMER Mixed Layer Depth
 		
 
 	#####
@@ -133,7 +132,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		GEOTRACESFolder = ObsFolder+"/GEOTRACES/GEOTRACES_PostProccessed/"
 		TakahashiFolder = ObsFolder+"/Takahashi2009_pCO2/"
 		MLDFolder	= ObsFolder+"/IFREMER-MLD/"
-		LesterFolder	= ObsFolder+"/LestersReportData/"
+		iMarNetFolder	= ObsFolder+"/LestersReportData/"
 		GlodapDir	= ObsFolder+"/GLODAP/"
 		GLODAPv2Dir	= ObsFolder+"/GLODAPv2/GLODAPv2_Mapped_Climatologies/"
 		
@@ -156,17 +155,12 @@ def analysis_timeseries(jobID = "u-ab671",
 		# Location of data files.
 		if annual:	WOAFolder 	= ukp.folder(ObsFolder+"WOA/annual")
 		else:		WOAFolder 	= ukp.folder(ObsFolder+"WOA/")
-		#MAREDATFolder 	= ukp.folder(esmvalFolder+"/MAREDAT/")
-		#WOAFolder 	= ukp.folder(esmvalFolder+"WOA/")
-		#GEOTRACESFolder = ukp.folder(esmvalFolder+"GEOTRACES/GEOTRACES_PostProccessed/")
-		#TakahashiFolder = ukp.folder(esmvalFolder+"Takahashi2009_pCO2/")
-		#MLDFolder  	= ukp.folder(esmvalFolder+"IFREMER-MLD/")
 		
 		MAREDATFolder 	= ObsFolder+"/MAREDAT/MAREDAT/"
 		GEOTRACESFolder = ObsFolder+"/GEOTRACES/GEOTRACES_PostProccessed/"
 		TakahashiFolder = ObsFolder+"/Takahashi2009_pCO2/"
 		MLDFolder	= ObsFolder+"/IFREMER-MLD/"
-		LesterFolder	= ObsFolder+"/LestersReportData/"
+		iMarNetFolder	= ObsFolder+"/LestersReportData/"
 		GlodapDir	= ObsFolder+"/GLODAP/"
 		GLODAPv2Dir	= ObsFolder+"/GLODAPv2/GLODAPv2_Mapped_Climatologies/"
 		
@@ -184,12 +178,14 @@ def analysis_timeseries(jobID = "u-ab671",
 	
 		if annual:	WOAFolder 	= "/home/jpp1m13/Documents/WORKING/UKESM/Compar_Atm_forcings/netcdf_files/"
 		else:		WOAFolder 	= "/data/euryale7/scratch/ledm/WOA/"
-		MAREDATFolder 	= "/data/euryale7/scratch/ledm/MAREDAT/MAREDAT/"
-		GEOTRACESFolder = "/data/euryale7/scratch/ledm/GEOTRACES/GEOTRACES_PostProccessed/"
-		TakahashiFolder = "/data/euryale7/scratch/ledm/Takahashi2009_pCO2/"
-		MLDFolder	= "/data/euryale7/scratch/ledm/IFREMER-MLD/"
-		eORCAgrid 	= '/data/euryale7/scratch/ledm/UKESM/MEDUSA/mesh_mask_eORCA1_wrk.nc'
-		GlodapDir	= "/data/euryale7/backup/ledm/Observations/GLODAP/"		
+		
+		MAREDATFolder 	= ObsFolder+"/MAREDAT/MAREDAT/"
+		GEOTRACESFolder = ObsFolder+"/GEOTRACES/GEOTRACES_PostProccessed/"
+		TakahashiFolder = ObsFolder+"/Takahashi2009_pCO2/"
+		MLDFolder	= ObsFolder+"/IFREMER-MLD/"
+		iMarNetFolder	= ObsFolder+"/LestersReportData/"
+		GlodapDir	= ObsFolder+"/GLODAP/"
+		GLODAPv2Dir	= ObsFolder+"/GLODAPv2/GLODAPv2_Mapped_Climatologies/"		
 
 	#####
 	# Unable to find location of files/data.	
@@ -231,11 +227,10 @@ def analysis_timeseries(jobID = "u-ab671",
 	#shortRegions 	= ['Global','SouthernHemisphere','NorthernHemisphere',]
   	#AndyRegions 	= ['SouthernOcean','NorthernSubpolarAtlantic','NorthernSubpolarPacific','Arctic','SouthRemainder','NorthRemainder', 'Global']
  
-	# need to add:  ,'SouthRemainder','NorthRemainder', 
- 	debugRegions	= ['Global','Equator10', 'Remainder','ArcticOcean','NorthernSubpolarAtlantic','NorthernSubpolarPacific','ignoreInlandSeas','SouthernOcean',]
+ 	allRegions	= ['Global','Equator10', 'Remainder','ArcticOcean','NorthernSubpolarAtlantic','NorthernSubpolarPacific','ignoreInlandSeas','SouthernOcean',]
  	
-  	allRegions 	= debugRegions	
-  	keyRegions 	= debugRegions	  	
+  	allRegions 	= allRegions	
+  	keyRegions 	= allRegions	  	
   	
 	#alllayers = range(40)
 	alllayers = [0,2,5,10,15,20,25,30,35,40,45,50,55,60,70,]#80,]
@@ -305,7 +300,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['datadetails']  	= {'name': 'nitrate', 'vars':['n_an',], 'convert': ukp.NoChange,}
 	
 		av[name]['layers'] 		=  alllayers
-		av[name]['regions'] 		= debugRegions
+		av[name]['regions'] 		= allRegions
 		
 		#av[name]['layers'] 		= ['Surface','300m',]#'1000m',]#'Surface - 300m',]'100m',
 		#av[name]['regions'] 		= allRegions#['Global',]#'NorthAtlanticOcean','SouthAtlanticOcean',]#'NorthAtlantic']
@@ -331,7 +326,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['datadetails']  	= {'name': 'silicate', 'vars':['i_an',], 'convert': ukp.NoChange,}
 		
 		av[name]['layers'] 		=  alllayers
-		av[name]['regions'] 		= debugRegions
+		av[name]['regions'] 		= allRegions
 			
 		#av[name]['layers'] 		=  ['Surface','100m','300m','1000m',]
 		#av[name]['regions'] 		= keyRegions
@@ -357,7 +352,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['datadetails']  	= {'name': 'oxygen', 'vars':['o_an',], 'convert': ukp.oxconvert,'units':'mmol/m^3'}
 
 		av[name]['layers'] 		=  alllayers
-		av[name]['regions'] 		= debugRegions
+		av[name]['regions'] 		= allRegions
 			
 #		av[name]['layers'] 		= ['Surface','100m','300m','1000m',]#
 	#	av[name]['regions'] 		= keyRegions
@@ -413,7 +408,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['datadetails']  	= {'name': 'DIC', 'vars':['tco2',], 'convert': ukp.NoChange,'units':'micro-mol kg-1'}
 	
 		av[name]['layers'] 		=  alllayers
-		av[name]['regions'] 		= debugRegions
+		av[name]['regions'] 		= allRegions
 		av[name]['metrics']		= ['mean','median', ]
 
 		av[name]['datasource'] 		= 'GLODAP'
@@ -439,7 +434,7 @@ def analysis_timeseries(jobID = "u-ab671",
 	#	av[name]['layers'] 		=  ['Surface','100m','300m','1000m',]
 	#	av[name]['regions'] 		= keyRegions
 		av[name]['layers'] 		=  alllayers
-		av[name]['regions'] 		= debugRegions		
+		av[name]['regions'] 		= allRegions		
 		av[name]['metrics']		= ['mean','median', ]
 
 		av[name]['datasource'] 		= 'GLODAP'
@@ -501,14 +496,14 @@ def analysis_timeseries(jobID = "u-ab671",
 										
 					
 
-	if doIntPP_Lester:
+	if doIntPP_iMarNet:
 		#def NoChange(nc,keys):	return nc.variables[keys[0]][:]		
 		
 		def medusadepthInt(nc,keys):
 			return (nc.variables[keys[0]][:]+ nc.variables[keys[1]][:])* 6.625 * 12.011 / 1000.	
 		name = 'IntegratedPrimaryProduction_1x1'
 		av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_diad_T.nc"))
-		av[name]['dataFile'] 		= LesterFolder+"/PPint_1deg.nc"
+		av[name]['dataFile'] 		= iMarNetFolder+"/PPint_1deg.nc"
 
 				
 		av[name]['modelcoords'] 	= medusaCoords 	
@@ -637,7 +632,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['datadetails']  	= {'name': 'temperature', 'vars':['t_an',], 'convert': ukp.NoChange,}
 	
 		av[name]['layers'] 		=  alllayers
-		av[name]['regions'] 		= debugRegions	
+		av[name]['regions'] 		= allRegions	
 		av[name]['metrics']		= ['mean','median', ]
 
 		av[name]['datasource'] 		= 'WOA'
@@ -660,7 +655,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['datadetails']  	= {'name': 'salinity', 'vars':['s_an',], 'convert': ukp.NoChange,}
 
 		av[name]['layers'] 		=  alllayers
-		av[name]['regions'] 		= debugRegions		
+		av[name]['regions'] 		= allRegions		
 		av[name]['metrics']		= ['mean','median', ]
 
 		av[name]['datasource'] 		= 'WOA'
