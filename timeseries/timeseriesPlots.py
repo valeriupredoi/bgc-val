@@ -371,6 +371,7 @@ def hovmoellerPlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords=
 		
 	md = np.ma.array(md)#
 	md = md.squeeze()
+	md = np.ma.masked_where(np.ma.masked_invalid(md).mask + md.mask, md)
 	times = taxisfromCC(np.array(times_cc))
 	yaxis = zaxisfromCC(yaxis_cc)
 	print "hovmoellerPlot:", title, md.shape,md.mean(),times.shape,yaxis.shape
@@ -388,6 +389,7 @@ def hovmoellerPlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords=
 		dd.append([dataslice[l],])
 		
 	dd = np.ma.array(dd)#.squeeze()
+	dd = np.ma.masked_where(np.ma.masked_invalid(dd).mask + dd.mask, dd)	
 	dyaxis_cc = np.array(dyaxis_cc)
 		
 	dxaxis = np.array([0,1,])
