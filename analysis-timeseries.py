@@ -71,22 +71,22 @@ def analysis_timeseries(jobID = "u-ab671",
 	#####	
 	# BGC switches:
 	doChl_CCI	= True			# CCI Chlorophyll	
-	doChl_pig	= 0#True		# Chlorophyll from pigments (MAREDAT)
-	doN		= 0#True		# WOA Nitrate
-	doSi		= 0#True		# WOA Siliate
-	doO2		= 0#True		# WOA Oxygen
-	doAlk		= 0#True		# Glodap Alkalinity
-	doDIC		= 0#True		# Globap tCO2
+	doChl_pig	= True		# Chlorophyll from pigments (MAREDAT)
+	doN		= True		# WOA Nitrate
+	doSi		= True		# WOA Siliate
+	doO2		= True		# WOA Oxygen
+	doAlk		= True		# Glodap Alkalinity
+	doDIC		= True		# Globap tCO2
 	doOMZ		= 0#True	# work in progress
 	doAirSeaFlux	= True		# work in progress
-	doIntPP_iMarNet	= 0#True		# Integrated primpary production from iMarNEt
-	doIntPP_OSU	= 0#True		# OSU Integrated primpary production	
-	doExportRatio   = 0#True		# Export ratio (no data)
+	doIntPP_iMarNet	= True		# Integrated primpary production from iMarNEt
+	doIntPP_OSU	= True		# OSU Integrated primpary production	
+	doExportRatio   = True		# Export ratio (no data)
 	
 	#####	
 	# Physics switches:
-	doT		= 0#True		# WOA Temperature
-	doS		= 0#True		# WOA Salinity
+	doT		= True		# WOA Temperature
+	doS		= True		# WOA Salinity
 	doMLD		= 0#True	# iFERMER Mixed Layer Depth - work in prgress
 		
 
