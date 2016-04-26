@@ -70,23 +70,23 @@ def analysis_timeseries(jobID = "u-ab671",
 	
 	#####	
 	# BGC switches:
-	doChl_CCI	= 0#True		# CCI Chlorophyll	
+	doChl_CCI	= True			# CCI Chlorophyll	
 	doChl_pig	= 0#True		# Chlorophyll from pigments (MAREDAT)
-	doN		= True		# WOA Nitrate
-	doSi		= True		# WOA Siliate
+	doN		= 0#True		# WOA Nitrate
+	doSi		= 0#True		# WOA Siliate
 	doO2		= 0#True		# WOA Oxygen
 	doAlk		= 0#True		# Glodap Alkalinity
 	doDIC		= 0#True		# Globap tCO2
 	doOMZ		= 0#True	# work in progress
-	doAirSeaFlux	= 0#True		# work in progress
+	doAirSeaFlux	= True		# work in progress
 	doIntPP_iMarNet	= 0#True		# Integrated primpary production from iMarNEt
 	doIntPP_OSU	= 0#True		# OSU Integrated primpary production	
 	doExportRatio   = 0#True		# Export ratio (no data)
 	
 	#####	
 	# Physics switches:
-	doT		= True		# WOA Temperature
-	doS		= True		# WOA Salinity
+	doT		= 0#True		# WOA Temperature
+	doS		= 0#True		# WOA Salinity
 	doMLD		= 0#True	# iFERMER Mixed Layer Depth - work in prgress
 		
 
@@ -498,24 +498,24 @@ def analysis_timeseries(jobID = "u-ab671",
 		area = nc.variables['e1t'][:]*nc.variables['e2t'][:]
 		nc.close()
 		def eOrcaTotal(nc,keys):
-			factor = 365. / 1.E9
-			arr = nc.variables[keys[0]][:].squeeze()
-			if arr.ndim ==3:
-				for i in np.arange(arr.shape[0]):
-					arr[i] = arr[i]*area
-			elif arr.ndim ==2: arr = arr*area
-			else: assert 0
+			factor = 365. *12000. #/ 1.E12
+			arr = nc.variables[keys[0]][:].squeeze()	# mmolC/m2/d
+			#if arr.ndim ==3:
+			#	for i in np.arange(arr.shape[0]):
+			#		arr[i] = arr[i]*area
+			#elif arr.ndim ==2: arr = arr*area
+			#else: assert 0
 			return arr * factor
 					
 		def takaTotal(nc,keys):
 			
-			factor = 1.E12*1.E12/1.E18 # for GT/year
+			factor = 1.E12 #*1.E12/1.E18 # for GT/year
 			#factor = 1.E12*1.E12/1.E18 # for GT/year			
 			arr = nc.variables['TFLUXSW06'][:].squeeze()	# 10^12 g Carbon year^-1
-			area = nc.variables['AREA_MKM2'][:].squeeze() 	# 10^6 km^2
+			#area = nc.variables['AREA_MKM2'][:].squeeze() 	# 10^6 km^2
 			
-			arr = arr*area #* 1.E24 	# converts area into m^2
-			print arr.sum(), arr.sum()*factor
+			#arr = arr*area #* 1.E24 	# converts area into m^2
+			#print arr.sum(), arr.sum()*factor
 			return arr * factor
 			# area 10^6 km^2
 			# flux:  10^15 g Carbon month^-1. (GT)/m2/month
@@ -533,12 +533,12 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modelcoords'] 	= medusaCoords 	
 		av[name]['datacoords'] 		= takahashiCoords
 	
-		av[name]['modeldetails'] 	= {'name': 'AirSeaFluxCO2', 'vars':['CO2FLUX',], 'convert': eOrcaTotal,'units':'ton C/yr'}
-		av[name]['datadetails']  	= {'name': 'AirSeaFluxCO2', 'vars':['TFLUXSW06','AREA_MKM2'], 'convert': takaTotal,'units':'ton C/yr'}
+		av[name]['modeldetails'] 	= {'name': 'AirSeaFluxCO2', 'vars':['CO2FLUX',], 'convert': eOrcaTotal,'units':'g C/m2/yr'}
+		av[name]['datadetails']  	= {'name': 'AirSeaFluxCO2', 'vars':['TFLUXSW06','AREA_MKM2'], 'convert': takaTotal,'units':'g C/m2/yr'}
 	
 		av[name]['layers'] 		= ['Surface',]
 		av[name]['regions'] 		= keyRegions
-		av[name]['metrics']		= ['sum',]
+		av[name]['metrics']		= ['mean','median',]
 
 		av[name]['datasource'] 		= ''
 		av[name]['model']		= 'MEDUSA'
@@ -600,7 +600,9 @@ def analysis_timeseries(jobID = "u-ab671",
 		if annual:
 			av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_diad_T.nc"))
 			av[name]['dataFile'] 		= OSUDir +"/standard_VGPM.SeaWIFS.global.average.nc"
-
+#		else:
+#			print "" 
+			
 		av[name]['modelcoords'] 	= medusaCoords 	
 		av[name]['datacoords'] 		= glodapCoords
 
@@ -652,7 +654,8 @@ def analysis_timeseries(jobID = "u-ab671",
 			return 	a
 			
 		name = 'exportRatio'
-		av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_diad_T.nc"))
+		if annual:	av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_diad_T.nc"))
+		else:		av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1m_*_diad_T.nc"))
 		av[name]['dataFile'] 		= ""
 
 				
@@ -840,8 +843,8 @@ def analysis_timeseries(jobID = "u-ab671",
 		shelves_insitu[name] = tsa.shelvefn_insitu
 
 if __name__=="__main__":	
-	analysis_timeseries(jobID = "xkrus",clean=1,annual = False)		
-	#analysis_timeseries(jobID = "u-ab749",)#clean=1)			
+	#analysis_timeseries(jobID = "xkrus",clean=1,annual = False)		
+	analysis_timeseries(jobID = "u-ab749",)#clean=1)			
 	#analysis_timeseries(jobID = "u-ab963")			
 	
 	

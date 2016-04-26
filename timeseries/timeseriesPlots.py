@@ -59,7 +59,7 @@ def trafficlights(ax,xlims, bands,labels=[]):
 		pyplot.legend(handles=handles)
 	return ax
 
-def greyband(ax,xaxis, bands,labels=[]):
+def drawgreyband(ax,xaxis, bands,labels=[]):
 	ax.fill_between(xaxis,bands[0], bands[1] ,color='k', 	alpha = 0.05)
 	return ax
 
@@ -71,6 +71,7 @@ def trafficlightsPlots(
 		dataslice,		# in situ data distribution
 		title 	='',
 		filename='',
+		greyband = False,
 	):
 
 	xlims= [times[0],times[-1]]
@@ -96,9 +97,9 @@ def trafficlightsPlots(
 		
 		pcmin 	= np.array([dataslice.min() for i in xlims]) 
 		pcmax 	= np.array([dataslice.min() for i in xlims]) 	
-		
-		ax  	= greyband(ax,xlims, [pcmin,pc1],)
-		ax  	= greyband(ax,xlims, [pc6,pcmax],)
+		if greyband:
+			ax  	= drawgreyband(ax,xlims, [pcmin,pc1],)
+			ax  	= drawgreyband(ax,xlims, [pc6,pcmax],)
 				
 	
 	ax = fig.add_subplot(212)
@@ -136,6 +137,7 @@ def trafficlightsPlot(
 		title 	='',
 		filename='',
 		units = '',
+		greyband = False		
 	):
 
 	if len(times) ==0 or len(arr) == 0:
@@ -170,8 +172,9 @@ def trafficlightsPlot(
 		labels = ['20-30 pc','30-40 pc','40-60 pc','60-70 pc','70-80 pc',]
 		pcs = [pc1,pc2,pc3,pc4,pc5,pc6]
 		ax = trafficlights(ax,xlims, pcs ,labels=labels)
-		ax  	= greyband(ax,xlims, [pcmin,pc1],)
-		ax  	= greyband(ax,xlims, [pc6,pcmax],)
+		if greyband:
+			ax  	= drawgreyband(ax,xlims, [pcmin,pc1],)
+			ax  	= drawgreyband(ax,xlims, [pc6,pcmax],)
 				
 	if len(dataslice) and metric == 'sum':
 		

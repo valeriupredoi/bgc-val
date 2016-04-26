@@ -212,8 +212,6 @@ class timeseriesAnalysis:
 			sh['modeldata'] 	= modeldataD
 			sh.close()
 			openedFiles=0	
-		#self.modeldataD = modeldataD			
-  		#if len(readFiles)>1: self.makePlots()		
 	if openedFiles:
 		print "Saving shelve:", self.shelvefn, '\tread', len(readFiles)				
 		sh = shOpen(self.shelvefn)
@@ -436,10 +434,12 @@ class timeseriesAnalysis:
 
 		times = sorted(modeldataDict.keys())
 		modeldata = [modeldataDict[t] for t in times]
-		filename = ukp.folder('images/timeseries/'+self.jobID+'/'+self.dataType)+'_'.join(['trafficlight',self.jobID,self.dataType,r,str(l),m,])+'.png'
 		title = ' '.join([r,str(l),m,self.dataType])
-		tsp.trafficlightsPlot(times,modeldata,dataslice,metric = m, title = title,filename=filename)		
-		
+		filename = ukp.folder('images/timeseries/'+self.jobID+'/'+self.dataType)+'_'.join(['trafficlight',self.jobID,self.dataType,r,str(l),m,])+'.png'
+		tsp.trafficlightsPlot(times,modeldata,dataslice,metric = m, title = title,filename=filename,greyband=False)
+				
+		filename = ukp.folder('images/timeseries/'+self.jobID+'/'+self.dataType)+'_'.join(['trafficlight',self.jobID,self.dataType,r,str(l),m,])+'-grey.png'
+		tsp.trafficlightsPlot(times,modeldata,dataslice,metric = m, title = title,filename=filename,greyband=True)		
 
 
 			
