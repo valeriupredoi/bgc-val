@@ -72,21 +72,21 @@ def analysis_timeseries(jobID = "u-ab671",
 	# BGC switches:
 	doChl_CCI	= 0#True		# CCI Chlorophyll	
 	doChl_pig	= 0#True		# Chlorophyll from pigments (MAREDAT)
-	doN		= 0#True		# WOA Nitrate
-	doSi		= 0#True		# WOA Siliate
+	doN		= True		# WOA Nitrate
+	doSi		= True		# WOA Siliate
 	doO2		= 0#True		# WOA Oxygen
 	doAlk		= 0#True		# Glodap Alkalinity
 	doDIC		= 0#True		# Globap tCO2
 	doOMZ		= 0#True	# work in progress
-	doAirSeaFlux	= True		# work in progress
+	doAirSeaFlux	= 0#True		# work in progress
 	doIntPP_iMarNet	= 0#True		# Integrated primpary production from iMarNEt
 	doIntPP_OSU	= 0#True		# OSU Integrated primpary production	
 	doExportRatio   = 0#True		# Export ratio (no data)
 	
 	#####	
 	# Physics switches:
-	doT		= 0#True		# WOA Temperature
-	doS		= 0#True		# WOA Salinity
+	doT		= True		# WOA Temperature
+	doS		= True		# WOA Salinity
 	doMLD		= 0#True	# iFERMER Mixed Layer Depth - work in prgress
 		
 
@@ -334,6 +334,9 @@ def analysis_timeseries(jobID = "u-ab671",
 		if annual:
 			av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
 			av[name]['dataFile'] 		=  WOAFolder+'/woa13_all_n00_01.nc'
+		else:
+			av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1m_*_ptrc_T.nc"))
+			av[name]['dataFile'] 		=  WOAFolder+'/nitrate_monthly_1deg.nc'
 				
 		av[name]['modelcoords'] 	= medusaCoords 	
 		av[name]['datacoords'] 		= woaCoords
@@ -359,8 +362,10 @@ def analysis_timeseries(jobID = "u-ab671",
 		name = 'Silicate'
 		if annual:	
 			av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
-			av[name]['dataFile'] 		=  WOAFolder+'woa13_all_i00_01.nc'
-				
+			av[name]['dataFile'] 		= WOAFolder+'woa13_all_i00_01.nc'
+		else:
+			av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1m_*_ptrc_T.nc"))
+			av[name]['dataFile'] 		= WOAFolder+'wsilicate_monthly_1deg.nc'
 		av[name]['modelcoords'] 	= medusaCoords 	
 		av[name]['datacoords'] 		= woaCoords
 	
@@ -517,8 +522,13 @@ def analysis_timeseries(jobID = "u-ab671",
 
 			
 		name = 'AirSeaFluxCO2'
-		av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_diad_T.nc"))
-		av[name]['dataFile'] 		=  TakahashiFolder+'takahashi2009_month_flux_pCO2_2006c_noHead.nc'
+		if annual:
+			av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_diad_T.nc"))
+			av[name]['dataFile'] 		=  TakahashiFolder+'takahashi2009_month_flux_pCO2_2006c_noHead.nc'			
+		else:	
+			print "Air Sea Flux CO2 monthly not implemented"
+			assert 0
+			#av[name]['dataFile'] 		=  TakahashiFolder+'takahashi2009_month_flux_pCO2_2006c_noHead.nc'
 				
 		av[name]['modelcoords'] 	= medusaCoords 	
 		av[name]['datacoords'] 		= takahashiCoords
@@ -669,7 +679,9 @@ def analysis_timeseries(jobID = "u-ab671",
 		if annual:		
 			av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_grid_T.nc"))
 			av[name]['dataFile'] 		= WOAFolder+'woa13_decav_t00_01v2.nc'
-				
+		else:
+			av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1m_*_grid_T.nc"))
+			av[name]['dataFile'] 		= WOAFolder+'temperature_monthly_1deg.nc'
 		av[name]['modelcoords'] 	= medusaCoords 	
 		av[name]['datacoords'] 		= woaCoords
 	
@@ -692,7 +704,10 @@ def analysis_timeseries(jobID = "u-ab671",
 		if annual:
 			av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_grid_T.nc"))
 			av[name]['dataFile'] 		= WOAFolder+'woa13_decav_s00_01v2.nc'
-				
+		else:
+			av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1m_*_grid_T.nc"))
+			av[name]['dataFile'] 		= WOAFolder+'salinity_monthly_1deg.nc'
+			
 		av[name]['modelcoords'] 	= medusaCoords 	
 		av[name]['datacoords'] 		= woaCoords
 	
