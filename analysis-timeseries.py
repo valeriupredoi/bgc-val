@@ -70,15 +70,15 @@ def analysis_timeseries(jobID = "u-ab671",
 	
 	#####	
 	# BGC switches:
-	doChl_CCI	= True		# CCI Chlorophyll	
-	doChl_pig	= True		# Chlorophyll from pigments (MAREDAT)
+	doChl_CCI	= 0#True		# CCI Chlorophyll	
+	doChl_pig	= 0#True		# Chlorophyll from pigments (MAREDAT)
 	doN		= 0#True		# WOA Nitrate
 	doSi		= 0#True		# WOA Siliate
 	doO2		= 0#True		# WOA Oxygen
 	doAlk		= 0#True		# Glodap Alkalinity
 	doDIC		= 0#True		# Globap tCO2
 	doOMZ		= 0#True	# work in progress
-	doAirSeaFlux	= 0#True		# work in progress
+	doAirSeaFlux	= True		# work in progress
 	doIntPP_iMarNet	= 0#True		# Integrated primpary production from iMarNEt
 	doIntPP_OSU	= 0#True		# OSU Integrated primpary production	
 	doExportRatio   = 0#True		# Export ratio (no data)
@@ -87,7 +87,7 @@ def analysis_timeseries(jobID = "u-ab671",
 	# Physics switches:
 	doT		= 0#True		# WOA Temperature
 	doS		= 0#True		# WOA Salinity
-	doMLD		= 0#True		# iFERMER Mixed Layer Depth
+	doMLD		= 0#True	# iFERMER Mixed Layer Depth - work in prgress
 		
 
 	#####
@@ -138,7 +138,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		GLODAPv2Dir	= ObsFolder+"/GLODAPv2/GLODAPv2_Mapped_Climatologies/"
 		OSUDir		= ObsFolder+"OSU/"
 		CCIDir		= ObsFolder+"CCI/"
-		eORCAgrid 	= '/data/euryale7/scratch/ledm/UKESM/MEDUSA/mesh_mask_eORCA1_wrk.nc'
+		orcaGridfn 	= '/data/euryale7/scratch/ledm/UKESM/MEDUSA/mesh_mask_eORCA1_wrk.nc'
 				
 	#####
 	# JASMIN		
@@ -167,8 +167,12 @@ def analysis_timeseries(jobID = "u-ab671",
 		GLODAPv2Dir	= ObsFolder+"/GLODAPv2/GLODAPv2_Mapped_Climatologies/"
 		OSUDir		= ObsFolder+"OSU/"
 				
-		
-		eORCAgrid 	= '/group_workspaces/jasmin/esmeval/example_data/bgc/mesh_mask_eORCA1_wrk.nc'
+		if jobID in ["xkrus",]:
+			# Old school ORCA1 grid
+			orcaGridfn 	='/group_workspaces/jasmin/esmeval/example_data/bgc/mesh_mask_ORCA1_75.nc'
+		else:
+			# New eORCA1 grid		
+			orcaGridfn 	= '/group_workspaces/jasmin/esmeval/example_data/bgc/mesh_mask_eORCA1_wrk.nc'
 
 	#####
 	# NOC		
@@ -287,11 +291,15 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['model']		= 'MEDUSA'
 
 		av[name]['modelgrid']		= 'eORCA1'
-		av[name]['gridFile']		= eORCAgrid
+		av[name]['gridFile']		= orcaGridfn
 
 
 	if doChl_CCI:
+	
 		name = 'Chlorophyll_cci'
+		#####
+		# Not that this is the 1 degree resolution dataset, but higher resolution data are also available.
+		
 		if annual:
 			av[name]['modelFiles']  = sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
 			av[name]['dataFile'] 	= CCIDir+"ESACCI-OC-L3S-OC_PRODUCTS-CLIMATOLOGY-16Y_MONTHLY_1degree_GEO_PML_OC4v6_QAA-annual-fv2.0.nc"	
@@ -314,7 +322,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['model']		= 'MEDUSA'
 
 		av[name]['modelgrid']		= 'eORCA1'
-		av[name]['gridFile']		= eORCAgrid
+		av[name]['gridFile']		= orcaGridfn
 		
 
 
@@ -344,7 +352,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['model']		= 'MEDUSA'
 
 		av[name]['modelgrid']		= 'eORCA1'
-		av[name]['gridFile']		= eORCAgrid
+		av[name]['gridFile']		= orcaGridfn
 
 	if doSi:
 
@@ -370,7 +378,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['model']		= 'MEDUSA'
 
 		av[name]['modelgrid']		= 'eORCA1'
-		av[name]['gridFile']		= eORCAgrid
+		av[name]['gridFile']		= orcaGridfn
 		
 	
 	if doO2:
@@ -396,12 +404,12 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['model']		= 'MEDUSA'
 
 		av[name]['modelgrid']		= 'eORCA1'
-		av[name]['gridFile']		= eORCAgrid
+		av[name]['gridFile']		= orcaGridfn
 
 
 	if doOMZ:
 		# Here we calculate the volume of the OMZ, where the O2 concentration is below 20.
-		nc = Dataset(eORCAgrid,'r')
+		nc = Dataset(orcaGridfn,'r')
 
 	
 
@@ -426,7 +434,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['model']		= 'MEDUSA'
 
 		av[name]['modelgrid']		= 'eORCA1'
-		av[name]['gridFile']		= eORCAgrid
+		av[name]['gridFile']		= orcaGridfn
 
 	
 	if doDIC:
@@ -449,7 +457,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['model']		= 'MEDUSA'
 
 		av[name]['modelgrid']		= 'eORCA1'
-		av[name]['gridFile']		= eORCAgrid		
+		av[name]['gridFile']		= orcaGridfn		
 
 	if doAlk:
 		def convertmeqm3TOumolkg(nc,keys):
@@ -475,13 +483,13 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['model']		= 'MEDUSA'
 
 		av[name]['modelgrid']		= 'eORCA1'
-		av[name]['gridFile']		= eORCAgrid
+		av[name]['gridFile']		= orcaGridfn
 					
 
 
 	if doAirSeaFlux:
 	
-		nc = Dataset(eORCAgrid,'r')
+		nc = Dataset(orcaGridfn,'r')
 		area = nc.variables['e1t'][:]*nc.variables['e2t'][:]
 		nc.close()
 		def eOrcaTotal(nc,keys):
@@ -496,13 +504,15 @@ def analysis_timeseries(jobID = "u-ab671",
 					
 		def takaTotal(nc,keys):
 			
-			factor = 1.E12
-			arr = nc.variables[keys[0]][:].squeeze()
-			area = nc.variables[keys[1]][:].squeeze()
-			arr = arr*area
+			factor = 1.E12*1.E12/1.E18 # for GT/year
+			#factor = 1.E12*1.E12/1.E18 # for GT/year			
+			arr = nc.variables['TFLUXSW06'][:].squeeze()	# 10^12 g Carbon year^-1
+			area = nc.variables['AREA_MKM2'][:].squeeze() 	# 10^6 km^2
+			
+			arr = arr*area #* 1.E24 	# converts area into m^2
 			print arr.sum(), arr.sum()*factor
 			return arr * factor
-			# area 10^6 km^2			
+			# area 10^6 km^2
 			# flux:  10^15 g Carbon month^-1. (GT)/m2/month
 
 			
@@ -524,7 +534,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['model']		= 'MEDUSA'
 
 		av[name]['modelgrid']		= 'eORCA1'
-		av[name]['gridFile']		= eORCAgrid
+		av[name]['gridFile']		= orcaGridfn
 					
 
 										
@@ -556,11 +566,11 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['model']		= 'MEDUSA'
 
 		av[name]['modelgrid']		= 'eORCA1'
-		av[name]['gridFile']		= eORCAgrid
+		av[name]['gridFile']		= orcaGridfn
 		
 		
 	if doIntPP_OSU:
-		nc = Dataset(eORCAgrid,'r')
+		nc = Dataset(orcaGridfn,'r')
 		area = nc.variables['e1t'][:]*nc.variables['e2t'][:]
 		nc.close()
 		def medusadepthInt(nc,keys):
@@ -577,8 +587,9 @@ def analysis_timeseries(jobID = "u-ab671",
 		
 				
 		name = 'IntegratedPrimaryProduction_OSU'
-		av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_diad_T.nc"))
-		av[name]['dataFile'] 		= OSUDir +"/standard_VGPM.SeaWIFS.global.nc"
+		if annual:
+			av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_diad_T.nc"))
+			av[name]['dataFile'] 		= OSUDir +"/standard_VGPM.SeaWIFS.global.average.nc"
 
 		av[name]['modelcoords'] 	= medusaCoords 	
 		av[name]['datacoords'] 		= glodapCoords
@@ -614,13 +625,13 @@ def analysis_timeseries(jobID = "u-ab671",
 	
 		av[name]['layers'] 		= ['Surface',]#'100m','200m','Surface - 1000m','Surface - 300m',]#'depthint']
 		av[name]['regions'] 		= keyRegions
-		av[name]['metrics']		= ['sum', ]
+		av[name]['metrics']		= ['sum', 'mean','median',]
 
 		av[name]['datasource'] 		= 'OSU'
 		av[name]['model']		= 'MEDUSA'
 
 		av[name]['modelgrid']		= 'eORCA1'
-		av[name]['gridFile']		= eORCAgrid
+		av[name]['gridFile']		= orcaGridfn
 
 
 	if doExportRatio:
@@ -649,7 +660,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['model']		= 'MEDUSA'
 
 		av[name]['modelgrid']		= 'eORCA1'
-		av[name]['gridFile']		= eORCAgrid		
+		av[name]['gridFile']		= orcaGridfn		
 
 
 		
@@ -673,7 +684,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['model']		= 'NEMO'
 
 		av[name]['modelgrid']		= 'eORCA1'
-		av[name]['gridFile']		= eORCAgrid
+		av[name]['gridFile']		= orcaGridfn
 
 					
 	if doS:
@@ -696,14 +707,14 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['model']		= 'NEMO'
 
 		av[name]['modelgrid']		= 'eORCA1'
-		av[name]['gridFile']		= eORCAgrid
+		av[name]['gridFile']		= orcaGridfn
 
 	if doMLD:
 		
 		def mldapplymask(nc,keys):
 			mld = nc.variables[keys[0]][:]
 			return np.ma.masked_where((np.tile(nc.variables[keys[1]][:],(12,1,1))==0.)+mld.mask+(mld==1.E9),mld)	
-		nc = Dataset(eORCAgrid,'r')
+		nc = Dataset(orcaGridfn,'r')
 		depth = nc.variables['nav_lev'][:]#
 		nc.close()
 		
@@ -755,7 +766,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['model']		= 'NEMO'
 
 		av[name]['modelgrid']		= 'eORCA1'
-		av[name]['gridFile']		= eORCAgrid
+		av[name]['gridFile']		= orcaGridfn
 		
 			
 				
@@ -814,8 +825,8 @@ def analysis_timeseries(jobID = "u-ab671",
 		shelves_insitu[name] = tsa.shelvefn_insitu
 
 if __name__=="__main__":	
-	#analysis_timeseries(jobID = "u-ab671")		
-	analysis_timeseries(jobID = "u-ab749",)#clean=1)			
+	analysis_timeseries(jobID = "xkrus",clean=1,annual = False)		
+	#analysis_timeseries(jobID = "u-ab749",)#clean=1)			
 	#analysis_timeseries(jobID = "u-ab963")			
 	
 	
