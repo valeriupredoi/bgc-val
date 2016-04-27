@@ -26,7 +26,7 @@ from os.path import exists
 from calendar import month_name
 
 #Specific local code:
-from UKESMpython import folder,getFileList, AutoVivification, AutoVivToYaml,YamlToDict, slicesDict,reducesShelves
+import UKESMpython as ukp
 from p2p import matchDataAndModel,makePlots,makeTargets, csvFromShelves, makePatternStatsPlots
 #from 
 from pftnames import MaredatTypes,WOATypes,Ocean_names,OceanMonth_names,months, Seasons,Hemispheres,HemispheresMonths, OceanSeason_names
@@ -43,7 +43,8 @@ def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
 			workingDir  = '',
 			imageFolder = '',
 			noPlots = False,
-			gridFile=''
+			gridFile='',
+			annual = ''
 			):
 
 	"""
@@ -122,13 +123,13 @@ def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
 
 	# Location of processing files
 	if len( workingDir) == 0:
-		workingDir = folder("WorkingFiles/"+model+'-'+jobID+'-'+year)
+		workingDir = ukp.folder("WorkingFiles/"+model+'-'+jobID+'-'+year)
 		print "No working directory provided, creating default:",workingDir
 		
 	# Location of image Output files
 	if noPlots is False:
 	    if len(imageFolder)==0:
-		imageFolder 	= folder('images/'+model+'-'+jobID)
+		imageFolder 	= ukp.folder('images/'+jobID)
 		print "No image directory provided, creating default:",imageFolder
 
 
@@ -220,7 +221,7 @@ def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
 								model 		= av[name][model]['source'],
 								jobID		= jobID,
 								year		= year,
-								workingDir 	= folder(workingDir+name),
+								workingDir 	= ukp.folder(workingDir+name),
 								depthLevel 	= depthLevel,
 								grid		= grid,
 								gridFile	= gridFile
@@ -236,7 +237,7 @@ def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
 			# The makePlot produces a shelve file in workingDir containing all results of the analysis.
 			if len( plottingSlices) ==0:
 				if len(av[name]['plottingSlices'])==0:
-					nplottingSlices = populateSlicesList()
+					nplottingSlices = ukp.populateSlicesList()
 					print "No plotting slices provided, using defaults",nplottingSlices
 				else:	
 					
@@ -244,7 +245,7 @@ def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
 					print "Plotting slices provided, using ",nplottingSlices					
 			else:	nplottingSlices = plottingSlices
 					
-			imageDir	= folder(imageFolder +'P2Pplots/'+year+'/'+name+depthLevel)	
+			imageDir	= ukp.folder(imageFolder +'P2Pplots/'+year+'/'+name+depthLevel)	
 			m = makePlots(	b.MatchedDataFile, 
 					b.MatchedModelFile, 
 					name, 
@@ -258,7 +259,7 @@ def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
 		  			modeldetails 	= av[name][model]['details'],
 		  			datacoords 	= av[name]['Data']['coords'],
 		  			datadetails 	= av[name]['Data']['details'],
-					shelveDir 	= folder(workingDir+name+depthLevel),
+					shelveDir 	= ukp.folder(workingDir+name+depthLevel),
 					imageDir	= imageDir,
 					compareCoords	=True,
 					noPlots		= noPlots
@@ -272,7 +273,7 @@ def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
 			if noPlots: continue
 
 
-			#csvFile = folder(workingDir+'/CSV')+'summary_file.csv'
+			#csvFile = ukp.folder(workingDir+'/CSV')+'summary_file.csv'
 			#print "attempting csvFromShelves:",m.shelves, csvFile
 			#c = csvFromShelves.csvFromShelves(m.shelves, csvFile ,['check',])
 
@@ -280,7 +281,7 @@ def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
 			#####
 			# makeTargets:
 			# Make a target diagram of all matches for this particular dataset. 
-			#filename = folder(imageFolder+'/Targets/'+year+'/AllSlices')+model+'-'+jobID+'_'+year+'_'+name+depthLevel+'.png'
+			#filename = ukp.folder(imageFolder+'/Targets/'+year+'/AllSlices')+model+'-'+jobID+'_'+year+'_'+name+depthLevel+'.png'
 			#t = makeTargets(	m.shelves, 
 			#			filename,
 			#			#name=name,
@@ -290,9 +291,10 @@ def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
 			
 			#####
 			# Produce a set of pattern and a target plots for each of the groups here.
-			groups = {'Oceans':[],'Months':[],'Seasons':[],'NorthHemisphereMonths':[],'SouthHemisphereMonths':[],'depthRanges':[]}
+			if annual:	groups = {'Oceans':[],'depthRanges':[]}
+			else:		groups = {'Oceans':[],'Months':[],'Seasons':[],'NorthHemisphereMonths':[],'SouthHemisphereMonths':[],'depthRanges':[]}
 			for g in groups:
-			    	groups[g] = reducesShelves(shelvesAV,  models =[model,],depthLevels = [depthLevel,], names = [name,], sliceslist =slicesDict[g])
+			    	groups[g] = ukp.reducesShelves(shelvesAV,  models =[model,],depthLevels = [depthLevel,], names = [name,], sliceslist =ukp.slicesDict[g])
 				print g, groups[g]
 				
 				if len(groups[g])==0:continue 
@@ -300,7 +302,7 @@ def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
 				#####
 				# makeTargets:
 				# Make a target diagram of the shelves of this group. 
-			  	filename = folder(imageFolder+'/Targets/'+year+'/'+name+depthLevel+'/'+g)+model+'-'+jobID+'_'+year+'_'+name+depthLevel+'_'+g+'.png'
+			  	filename = ukp.folder(imageFolder+'/Targets/'+year+'/'+name+depthLevel+'/'+g)+model+'-'+jobID+'_'+year+'_'+name+depthLevel+'_'+g+'.png'
 				makeTargets(	groups[g], 
 						filename,
 						legendKeys = ['newSlice',],					
@@ -314,40 +316,41 @@ def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
 				if xkeys=='':
 					print "Could no find x axis keys!",g,'in',['Oceans','Months']
 					
-			  	filenamebase = folder(imageFolder+'/Patterns/'+year+'/'+name+depthLevel+'/'+g)+'Months-'+model+'-'+jobID+'_'+year+'_'+name+depthLevel
+			  	filenamebase = ukp.folder(imageFolder+'/Patterns/'+year+'/'+name+depthLevel+'/'+g)+'Months-'+model+'-'+jobID+'_'+year+'_'+name+depthLevel
 				makePatternStatsPlots(	{name :groups[g],}, # {legend, shelves}
 							name+' '+g,	#xkeysname
-							slicesDict[xkeys],		#xkeysLabels=
+							ukp.slicesDict[xkeys],		#xkeysLabels=
 							filenamebase,	# filename base	
 							grid	= grid,												
 							)
-			#####
-			# After finding all the shelves, we can plot them on the same axis.				
-		  	filenamebase = folder(imageFolder+'/Patterns/'+year+'/'+name+depthLevel+'/ANSH')+'ANSH-Months-'+model+'-'+jobID+'_'+year+'_'+name+depthLevel
-		  	
-			makePatternStatsPlots(	{'North Hemisphere' :groups['NorthHemisphereMonths'],
-						 'South Hemisphere' :groups['SouthHemisphereMonths'],
-						 'Global' :	     groups['Months'], }, # {legend, shelves}
-						name+' Months',	#xkeysname
-						slicesDict['Months'],#xkeysLabels=
-						filenamebase,	# filename base	
-						grid	= grid,												
-						)
+			if not annual:
+				#####
+				# After finding all the shelves, we can plot them on the same axis.				
+			  	filenamebase = ukp.folder(imageFolder+'/Patterns/'+year+'/'+name+depthLevel+'/ANSH')+'ANSH-Months-'+model+'-'+jobID+'_'+year+'_'+name+depthLevel
+			  	
+				makePatternStatsPlots(	{'North Hemisphere' :groups['NorthHemisphereMonths'],
+							 'South Hemisphere' :groups['SouthHemisphereMonths'],
+							 'Global' :	     groups['Months'], }, # {legend, shelves}
+							name+' Months',	#xkeysname
+							ukp.slicesDict['Months'],#xkeysLabels=
+							filenamebase,	# filename base	
+							grid	= grid,												
+							)
 
 		if noPlots: continue
 		#####
 		# And now by depth levels:
-		
-		groups = ['Oceans','Months','Seasons','depthRanges']	#'NorthHemisphereMonths':[],'SouthHemisphereMonths':[]}		
+		if annual:	groups = ['Oceans','depthRanges']
+		else:		groups = ['Oceans','Months','Seasons','depthRanges']	#'NorthHemisphereMonths':[],'SouthHemisphereMonths':[]}		
 		for g in groups:
 			if len(av[name]['depthLevels'])<=1: continue	
 			outShelves = {}
 			for dl in av[name]['depthLevels']:
-				outShelves[dl] = reducesShelves(shelvesAV,  models =[model,],depthLevels = [dl,], names = [name,], sliceslist =slicesDict[g])	
-		  	filenamebase = folder(imageFolder+'/Patterns/'+year+'/'+name+'AllDepths/')+'AllDepths-'+g+'-'+model+'-'+jobID+'_'+year+'_'+name
+				outShelves[dl] = ukp.reducesShelves(shelvesAV,  models =[model,],depthLevels = [dl,], names = [name,], sliceslist =ukp.slicesDict[g])	
+		  	filenamebase = ukp.folder(imageFolder+'/Patterns/'+year+'/'+name+'AllDepths/')+'AllDepths-'+g+'-'+model+'-'+jobID+'_'+year+'_'+name
 			makePatternStatsPlots(	outShelves, 
 						name+' '+g,
-						slicesDict[g],		
+						ukp.slicesDict[g],		
 						filenamebase,
 						grid	= grid,												
 						)

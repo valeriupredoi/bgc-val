@@ -166,7 +166,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		GlodapDir	= ObsFolder+"/GLODAP/"
 		GLODAPv2Dir	= ObsFolder+"/GLODAPv2/GLODAPv2_Mapped_Climatologies/"
 		OSUDir		= ObsFolder+"OSU/"
-				
+		CCIDir		= ObsFolder+"CCI/"				
 		if jobID in ["xkrus",]:
 			# Old school ORCA1 grid
 			orcaGridfn 	='/group_workspaces/jasmin/esmeval/example_data/bgc/mesh_mask_ORCA1_75.nc'
