@@ -838,8 +838,10 @@ def analysis_timeseries(jobID = "u-ab671",
 		shelves_insitu[name] = tsa.shelvefn_insitu
 
 if __name__=="__main__":	
-	#analysis_timeseries(jobID = "xkrus",clean=1,annual = False)		
-	analysis_timeseries(jobID = "u-ab749",)#clean=1)			
+	try:	jobID = argv[1]
+	except:	
+		jobID = "u-ab749"
+	analysis_timeseries(jobID =jobID,)#clean=1)			
 	#analysis_timeseries(jobID = "u-ab963")			
 	
 	
