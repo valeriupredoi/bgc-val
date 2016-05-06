@@ -93,7 +93,7 @@ def analysis_timeseries(jobID = "u-ab671",
 	#####
 	# Location of images directory
 	# the imagedir is where the analysis images will be saved.
-	imagedir	 = ukp.folder('images/timeseries/'+jobID)
+	imagedir	 = ukp.folder('images/'+jobID+'/timeseries')
 	
 	#####
 	# Location of shelves folder
