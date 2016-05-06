@@ -71,22 +71,22 @@ def analysis_timeseries(jobID = "u-ab671",
 	#####	
 	# BGC switches:
 	doChl_CCI	= True			# CCI Chlorophyll	
-	doChl_pig	= True		# Chlorophyll from pigments (MAREDAT)
-	doN		= True		# WOA Nitrate
-	doSi		= True		# WOA Siliate
-	doO2		= True		# WOA Oxygen
-	doAlk		= True		# Glodap Alkalinity
-	doDIC		= True		# Globap tCO2
-	doOMZ		= 0#True	# work in progress
-	doAirSeaFlux	= True		# work in progress
-	doIntPP_iMarNet	= True		# Integrated primpary production from iMarNEt
-	doIntPP_OSU	= True		# OSU Integrated primpary production	
-	doExportRatio   = True		# Export ratio (no data)
+	doChl_pig	= True			# Chlorophyll from pigments (MAREDAT)
+	doN		= True			# WOA Nitrate
+	doSi		= True			# WOA Siliate
+	doO2		= True			# WOA Oxygen
+	doAlk		= True			# Glodap Alkalinity
+	doDIC		= True			# Globap tCO2
+	doOMZ		= 0#True		# work in progress
+	doAirSeaFlux	= True			# work in progress
+	doIntPP_iMarNet	= True			# Integrated primpary production from iMarNEt
+	doIntPP_OSU	= True			# OSU Integrated primpary production	
+	doExportRatio   = True			# Export ratio (no data)
 	
 	#####	
 	# Physics switches:
-	doT		= True		# WOA Temperature
-	doS		= True		# WOA Salinity
+	doT		= True			# WOA Temperature
+	doS		= True			# WOA Salinity
 	doMLD		= 0#True	# iFERMER Mixed Layer Depth - work in prgress
 		
 
@@ -239,10 +239,11 @@ def analysis_timeseries(jobID = "u-ab671",
   	allRegions 	= allRegions	
   	keyRegions 	= allRegions	  	
   	
-	#alllayers = range(40)
-	alllayers = [0,2,5,10,15,20,25,30,35,40,45,50,55,60,70,]#80,]
-	alllayers.append('Surface')  	
+	alllayers = ['Surface',]
+#'	alllayers = [0,2,5,10,15,20,25,30,35,40,45,50,55,60,70,]#80,]
+#	alllayers.append('Surface')  	
   	
+	standardmetrics = ['mean','median', '10pc','20pc','30pc','40pc','50pc','60pc','70pc','80pc','90pc','min','max']
   	
   	#####
   	# The analysis settings:
@@ -283,9 +284,9 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modeldetails'] 	= {'name': 'Chlorophylla', 'vars':['CHN','CHD'], 'convert': ukp.sums,'units':'mg C/m^3'}
 		av[name]['datadetails']  	= {'name': 'Chlorophylla', 'vars':['Chlorophylla',], 'convert': ukp.div1000,'units':'ug/L'}
 	
-		av[name]['layers'] 		= ['Surface',]#'100m','200m','Surface to 100m', 'Surface to 300m']#'Surface - 1000m','Surface - 300m',]#'depthint']
-		av[name]['regions'] 		= allRegions #['SouthernHemisphere','NorthernHemisphere','Global',	'NorthAtlanticOcean','SouthAtlanticOcean','EquatorialAtlanticOcean']
-		av[name]['metrics']		= ['mean','median', ]
+		av[name]['layers'] 		= alllayers
+		av[name]['regions'] 		= allRegions 
+		av[name]['metrics']		= standardmetrics
 
 		av[name]['datasource'] 		= 'MAREDAT'
 		av[name]['model']		= 'MEDUSA'
@@ -316,7 +317,7 @@ def analysis_timeseries(jobID = "u-ab671",
 	
 		av[name]['layers'] 		= ['Surface',] 	# CCI is surface only, it's a satellite product.
 		av[name]['regions'] 		= allRegions 
-		av[name]['metrics']		= ['mean','median', ]
+		av[name]['metrics']		= standardmetrics	#['mean','median', ]
 
 		av[name]['datasource'] 		= 'CCI'
 		av[name]['model']		= 'MEDUSA'
@@ -341,15 +342,15 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modelcoords'] 	= medusaCoords 	
 		av[name]['datacoords'] 		= woaCoords
 	
-		av[name]['modeldetails'] 	= {'name': 'nitrate', 'vars':['DIN',], 'convert': ukp.NoChange,}
-		av[name]['datadetails']  	= {'name': 'nitrate', 'vars':['n_an',], 'convert': ukp.NoChange,}
+		av[name]['modeldetails'] 	= {'name': 'nitrate', 'vars':['DIN',], 'convert': ukp.NoChange,'units':'mmol N/m^3'}
+		av[name]['datadetails']  	= {'name': 'nitrate', 'vars':['n_an',], 'convert': ukp.NoChange,'units':'mmol N/m^3'}
 	
 		av[name]['layers'] 		=  alllayers
 		av[name]['regions'] 		= allRegions
 		
 		#av[name]['layers'] 		= ['Surface','300m',]#'1000m',]#'Surface - 300m',]'100m',
 		#av[name]['regions'] 		= allRegions#['Global',]#'NorthAtlanticOcean','SouthAtlanticOcean',]#'NorthAtlantic']
-		av[name]['metrics']		= ['mean','median', ]
+		av[name]['metrics']		= standardmetrics #['mean','median', ]
 
 		av[name]['datasource'] 		= 'WOA'
 		av[name]['model']		= 'MEDUSA'
@@ -369,15 +370,12 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modelcoords'] 	= medusaCoords 	
 		av[name]['datacoords'] 		= woaCoords
 	
-		av[name]['modeldetails'] 	= {'name': 'silicate', 'vars':['SIL',], 'convert': ukp.NoChange,}
-		av[name]['datadetails']  	= {'name': 'silicate', 'vars':['i_an',], 'convert': ukp.NoChange,}
+		av[name]['modeldetails'] 	= {'name': 'silicate', 'vars':['SIL',],  'convert': ukp.NoChange,'units':'mmol Si/m^3'}
+		av[name]['datadetails']  	= {'name': 'silicate', 'vars':['i_an',], 'convert': ukp.NoChange,'units':'mmol Si/m^3'}
 		
 		av[name]['layers'] 		=  alllayers
 		av[name]['regions'] 		= allRegions
-			
-		#av[name]['layers'] 		=  ['Surface','100m','300m','1000m',]
-		#av[name]['regions'] 		= keyRegions
-		av[name]['metrics']		= ['mean','median', ]
+		av[name]['metrics']		= standardmetrics
 
 		av[name]['datasource'] 		= 'WOA'
 		av[name]['model']		= 'MEDUSA'
@@ -395,15 +393,12 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modelcoords'] 	= medusaCoords 	
 		av[name]['datacoords'] 		= woaCoords
 	
-		av[name]['modeldetails'] 	= {'name': 'oxygen', 'vars':['OXY',], 'convert': ukp.NoChange,}	
-		av[name]['datadetails']  	= {'name': 'oxygen', 'vars':['o_an',], 'convert': ukp.oxconvert,'units':'mmol/m^3'}
+		av[name]['modeldetails'] 	= {'name': 'oxygen', 'vars':['OXY',], 'convert': ukp.NoChange,'units':'mmol O2/m^3'}	
+		av[name]['datadetails']  	= {'name': 'oxygen', 'vars':['o_an',], 'convert': ukp.oxconvert,'units':'mmol O2/m^3'}
 
 		av[name]['layers'] 		=  alllayers
 		av[name]['regions'] 		= allRegions
-			
-#		av[name]['layers'] 		= ['Surface','100m','300m','1000m',]#
-	#	av[name]['regions'] 		= keyRegions
-		av[name]['metrics']		= ['mean','median', ]
+		av[name]['metrics']		= standardmetrics
 
 		av[name]['datasource'] 		= 'WOA'
 		av[name]['model']		= 'MEDUSA'
@@ -451,12 +446,12 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modelcoords'] 	= medusaCoords 	
 		av[name]['datacoords'] 		= glodapv2Coords
 	
-		av[name]['modeldetails'] 	= {'name': 'DIC', 'vars':['DIC',],  'convert': ukp.NoChange,'units':'mmol-C/m3'}
+		av[name]['modeldetails'] 	= {'name': 'DIC', 'vars':['DIC',],  'convert': ukp.NoChange,'units':'mmol C/m^3'}
 		av[name]['datadetails']  	= {'name': 'DIC', 'vars':['tco2',], 'convert': ukp.NoChange,'units':'micro-mol kg-1'}
 	
 		av[name]['layers'] 		=  alllayers
 		av[name]['regions'] 		= allRegions
-		av[name]['metrics']		= ['mean','median', ]
+		av[name]['metrics']		= standardmetrics
 
 		av[name]['datasource'] 		= 'GLODAP'
 		av[name]['model']		= 'MEDUSA'
@@ -475,14 +470,14 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modelcoords'] 	= medusaCoords 	
 		av[name]['datacoords'] 		= glodapCoords
 	
-		av[name]['modeldetails'] 	= {'name': 'Alkalinity', 'vars':['ALK',], 'convert': ukp.NoChange,}
-		av[name]['datadetails']  	= {'name': 'Alkalinity', 'vars':['Alk',], 'convert': convertmeqm3TOumolkg,}
+		av[name]['modeldetails'] 	= {'name': 'Alkalinity', 'vars':['ALK',], 'convert': ukp.NoChange,'units':'meq/m^3',}
+		av[name]['datadetails']  	= {'name': 'Alkalinity', 'vars':['Alk',], 'convert': convertmeqm3TOumolkg,'units':'meq/m^3',}
 	
 	#	av[name]['layers'] 		=  ['Surface','100m','300m','1000m',]
 	#	av[name]['regions'] 		= keyRegions
 		av[name]['layers'] 		=  alllayers
 		av[name]['regions'] 		= allRegions		
-		av[name]['metrics']		= ['mean','median', ]
+		av[name]['metrics']		= standardmetrics
 
 		av[name]['datasource'] 		= 'GLODAP'
 		av[name]['model']		= 'MEDUSA'
@@ -538,7 +533,7 @@ def analysis_timeseries(jobID = "u-ab671",
 	
 		av[name]['layers'] 		= ['Surface',]
 		av[name]['regions'] 		= keyRegions
-		av[name]['metrics']		= ['mean','median',]
+		av[name]['metrics']		= standardmetrics
 
 		av[name]['datasource'] 		= ''
 		av[name]['model']		= 'MEDUSA'
@@ -570,7 +565,7 @@ def analysis_timeseries(jobID = "u-ab671",
 	
 		av[name]['layers'] 		= ['Surface',]#'100m','200m','Surface - 1000m','Surface - 300m',]#'depthint']
 		av[name]['regions'] 		= keyRegions
-		av[name]['metrics']		= ['mean','median', ]#'sum' ]
+		av[name]['metrics']		= standardmetrics
 
 		av[name]['datasource'] 		= 'MAREDAT'
 		av[name]['model']		= 'MEDUSA'
@@ -637,7 +632,7 @@ def analysis_timeseries(jobID = "u-ab671",
 	
 		av[name]['layers'] 		= ['Surface',]#'100m','200m','Surface - 1000m','Surface - 300m',]#'depthint']
 		av[name]['regions'] 		= keyRegions
-		av[name]['metrics']		= ['sum', 'mean','median',]
+		av[name]['metrics']		= standardmetrics
 
 		av[name]['datasource'] 		= 'OSU'
 		av[name]['model']		= 'MEDUSA'
@@ -667,7 +662,7 @@ def analysis_timeseries(jobID = "u-ab671",
 	
 		av[name]['layers'] 		= ['Surface',]#'100m','200m','Surface - 1000m','Surface - 300m',]#'depthint']
 		av[name]['regions'] 		= keyRegions
-		av[name]['metrics']		= ['mean','median',]
+		av[name]['metrics']		= standardmetrics
 
 		av[name]['datasource'] 		= ''
 		av[name]['model']		= 'MEDUSA'
@@ -688,12 +683,12 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modelcoords'] 	= medusaCoords 	
 		av[name]['datacoords'] 		= woaCoords
 	
-		av[name]['modeldetails'] 	= {'name': 'temperature', 'vars':['votemper',], 'convert': ukp.NoChange,}
-		av[name]['datadetails']  	= {'name': 'temperature', 'vars':['t_an',], 'convert': ukp.NoChange,}
+		av[name]['modeldetails'] 	= {'name': 'temperature', 'vars':['votemper',], 'convert': ukp.NoChange,'units':'degrees C'}
+		av[name]['datadetails']  	= {'name': 'temperature', 'vars':['t_an',], 'convert': ukp.NoChange,'units':'degrees C'}
 	
 		av[name]['layers'] 		=  alllayers
 		av[name]['regions'] 		= allRegions	
-		av[name]['metrics']		= ['mean','median', ]
+		av[name]['metrics']		= standardmetrics
 
 		av[name]['datasource'] 		= 'WOA'
 		av[name]['model']		= 'NEMO'
@@ -714,12 +709,12 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modelcoords'] 	= medusaCoords 	
 		av[name]['datacoords'] 		= woaCoords
 	
-		av[name]['modeldetails'] 	= {'name': 'salinity', 'vars':['vosaline',], 'convert': ukp.NoChange,}	
-		av[name]['datadetails']  	= {'name': 'salinity', 'vars':['s_an',], 'convert': ukp.NoChange,}
+		av[name]['modeldetails'] 	= {'name': 'salinity', 'vars':['vosaline',], 'convert': ukp.NoChange,'units':'PSU'}	
+		av[name]['datadetails']  	= {'name': 'salinity', 'vars':['s_an',], 'convert': ukp.NoChange,'units':'PSU'}
 
 		av[name]['layers'] 		=  alllayers
 		av[name]['regions'] 		= allRegions		
-		av[name]['metrics']		= ['mean','median', ]
+		av[name]['metrics']		= standardmetrics
 
 		av[name]['datasource'] 		= 'WOA'
 		av[name]['model']		= 'NEMO'
@@ -778,7 +773,7 @@ def analysis_timeseries(jobID = "u-ab671",
 	
 		av[name]['layers'] 		= ['Surface',]#'Surface - 1000m','Surface - 300m',]#'depthint']
 		av[name]['regions'] 		= keyRegions
-		av[name]['metrics']		= ['mean','median', ]
+		av[name]['metrics']		= standardmetrics
 
 		av[name]['datasource'] 		= 'IFREMER'
 		av[name]['model']		= 'NEMO'

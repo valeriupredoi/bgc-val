@@ -189,6 +189,8 @@ class timeseriesAnalysis:
 			layerdata = DL.load[(r,l)]
 			if len(layerdata)==0:
 				layerdata  = np.ma.array([-999,],mask=[True,])
+			if type(layerdata) == type(np.ma.array([1,-999,],mask=[False, True,])):
+				layerdata = layerdata.compressed()
 		  	for m in self.metrics:
 		  		try:
 		  			a = modeldataD[(r,l,m)][meantime]
@@ -197,6 +199,12 @@ class timeseriesAnalysis:
 				if m == 'mean':   	modeldataD[(r,l,m)][meantime] = np.ma.mean(layerdata)
 				if m == 'median':   	modeldataD[(r,l,m)][meantime] = np.ma.median(layerdata)
 				if m == 'sum':   	modeldataD[(r,l,m)][meantime] = np.ma.sum(layerdata)
+				if m == 'min':   	modeldataD[(r,l,m)][meantime] = np.ma.min(layerdata)
+				if m == 'max':   	modeldataD[(r,l,m)][meantime] = np.ma.max(layerdata)
+				if m.find('pc')>-1:
+					pc = int(m.replace('pc',''))
+					modeldataD[(r,l,m)][meantime] = np.percentile(layerdata,pc)
+					
 		  		print "Loaded metric:", int(meantime),'\t',[(r,l,m)], '\t',modeldataD[(r,l,m)][meantime]
 				counts+=1
 						
@@ -350,43 +358,92 @@ class timeseriesAnalysis:
   def makePlots(self):
 	if self.debug: print "timeseriesAnalysis:\t makePlots."		  
 
-	#####
-	# map plots for specific regions:	
-	runmapplots=False
-	for r in self.regions:
-	  	for l in self.layers:	
-	 		if runmapplots:continue
-			if type(l) in [type(0),type(0.)]:continue
-	 		mapfilename = ukp.folder('images/timeseries/'+self.jobID+'/'+self.dataType)+'_'.join(['map',self.jobID,self.dataType,str(l),r,])+'.png'
-			if ukp.shouldIMakeFile(self.modelFiles[-1],mapfilename,debug=False):runmapplots = True
- 	if runmapplots:
-		self.mapplotsRegionsLayers() 
+
 				
+
+
+			
+	
+	#####
+	# Trafficlight plots:
+	for r in self.regions:
+	    for l in self.layers:
+		#####
+		# Don't make pictures for each integer or float layer, only the ones that are strings. 
+		if type(l) in [type(0),type(0.)]:continue
+		    
+		#####
+		# Test for presence/absence of in situ data.
+	    	try:	dataslice = self.dataD[(r,l)]	  
+	    	except:	dataslice = []
+	    	try:	dataslice = dataslice.compressed()
+	    	except:	pass
+
+		#####
+		# Percentiles plots.
+  	    	if '20pc' not in self.metrics: continue
+		modeldataDict	= {}
+		timesDict	= {}
+		for m in self.metrics:
+			timesDict[m] 	 = sorted(self.modeldataD[(r,l,m)].keys())
+		    	modeldataDict[m] = [self.modeldataD[(r,l,m)][t] for t in timesDict[m]]
+						    	
+		title = ' '.join([r,str(l),self.datasource, self.dataType])
+		filename = ukp.folder('images/timeseries/'+self.jobID+'/'+self.dataType)+'_'.join(['percentiles',self.jobID,self.dataType,r,str(l),'percentiles',])+'.png'
+		tsp.percentilesPlot(timesDict,modeldataDict,dataslice,title = title,filename=filename,units =self.modeldetails['units'])					    	
+		
+		  	    
+	    #for m in self.metrics:  
+#	    	continue
+#	    	if m in ['mean','median',]:#'min','max']:
+#			modeldataDict = self.modeldataD[(r,l,m)]
+#
+#			times = sorted(modeldataDict.keys())
+#			modeldata = [modeldataDict[t] for t in times]
+#			title = ' '.join([r,str(l),m,self.dataType])
+#			filename = ukp.folder('images/timeseries/'+self.jobID+'/'+self.dataType)+'_'.join(['trafficlight',self.jobID,self.dataType,r,str(l),m,])+'.png'
+#			tsp.trafficlightsPlot(times,modeldata,dataslice,metric = m, title = title,filename=filename,greyband=False)
+#				
+#			filename = ukp.folder('images/timeseries/'+self.jobID+'/'+self.dataType)+'_'.join(['trafficlight',self.jobID,self.dataType,r,str(l),m,])+'-grey.png'
+#			tsp.trafficlightsPlot(times,modeldata,dataslice,metric = m, title = title,filename=filename,greyband=True)		
+
 
 	#####
 	# Hovmoeller plots
 	for r in self.regions:
 	    for m in self.metrics: 
-	   
+	    	if m not in ['mean','median',]:continue
 	   	#####
 	   	# Load data layers:
 		data = {}
 		modeldata = {}
-		
 	  	for l in self.layers:
+	  		#print "Hovmoeller plots:",r,m,l
+	  		
 	  		if type(l) == type('str'):continue	# no strings, only numbered layers.
 			#####
 			# Test for presence/absence of in situ data.
 			try:	
 				dataslice = self.dataD[(r,l)]	  
 				dataslice = dataslice.compressed()				
-			except:	dataslice = np.ma.array([-1000],mask=[True,])
+			except:	dataslice = np.ma.array([-1000,],mask=[True,])
 						
-			if m == 'mean': data[l] = np.ma.mean(dataslice)
-			if m == 'median':
+			if m == 'mean': 
+				try:	data[l] = np.ma.mean(dataslice)
+				except:	data[l] = np.ma.array([-1000,],mask=[True,])				
+			elif m == 'median':
 				try: 	data[l] = np.ma.median(dataslice)
-				except:	data[l] = np.ma.array([-1000],mask=[True,])
+				except:	data[l] = np.ma.array([-1000,],mask=[True,])
+			elif m == 'min': 
+				try: 	data[l] = np.ma.min(dataslice)
+				except:	data[l] = np.ma.array([-1000,],mask=[True,])
+			elif m == 'max':
+				try:	data[l] = np.ma.max(dataslice)
+				except:	data[l] = np.ma.array([-1000,],mask=[True,])				
+			else: continue		
 			
+			#print "makePlots:\tHovmoeller plots:",r,m,l,'modeldata',self.modeldataD[(r,l,m)]
+			#print "makePlots:\tHovmoeller plots:",r,m,l,'data',data[l]			
 			modeldata[l] = self.modeldataD[(r,l,m)]
 
 		#####
@@ -412,35 +469,18 @@ class timeseriesAnalysis:
 	    	hovfilename = ukp.folder('images/timeseries/'+self.jobID+'/'+self.dataType)+'_'.join(['hov',self.jobID,self.dataType,r,m,])+'-diff.png'
 		tsp.hovmoellerPlot(modeldata,data,hovfilename, modelZcoords = modelZcoords, dataZcoords= dataZcoords, title = title,diff=True)		
 	
-	
-	
+
 	#####
-	# Trafficlight plots:
+	# map plots for specific regions:	
+	runmapplots=False
 	for r in self.regions:
-	  for l in self.layers:
-	    #####
-	    # Don't make pictures for each integer or float layer, only the ones that are strings. 
-	    if type(l) in [type(0),type(0.)]:continue
-	    
-	    #####
-	    # Test for presence/absence of in situ data.
-    	    try:	dataslice = self.dataD[(r,l)]	  
-    	    except:	dataslice = []
-    	    try:	dataslice = dataslice.compressed()
-    	    except:	pass
-    	    
-	    for m in self.metrics:  
-	    	modeldataDict = self.modeldataD[(r,l,m)]
-
-		times = sorted(modeldataDict.keys())
-		modeldata = [modeldataDict[t] for t in times]
-		title = ' '.join([r,str(l),m,self.dataType])
-		filename = ukp.folder('images/timeseries/'+self.jobID+'/'+self.dataType)+'_'.join(['trafficlight',self.jobID,self.dataType,r,str(l),m,])+'.png'
-		tsp.trafficlightsPlot(times,modeldata,dataslice,metric = m, title = title,filename=filename,greyband=False)
-				
-		filename = ukp.folder('images/timeseries/'+self.jobID+'/'+self.dataType)+'_'.join(['trafficlight',self.jobID,self.dataType,r,str(l),m,])+'-grey.png'
-		tsp.trafficlightsPlot(times,modeldata,dataslice,metric = m, title = title,filename=filename,greyband=True)		
-
+	  	for l in self.layers:	
+	 		if runmapplots:continue
+			if type(l) in [type(0),type(0.)]:continue
+	 		mapfilename = ukp.folder('images/timeseries/'+self.jobID+'/'+self.dataType)+'_'.join(['map',self.jobID,self.dataType,str(l),r,])+'.png'
+			if ukp.shouldIMakeFile(self.modelFiles[-1],mapfilename,debug=False):runmapplots = True
+ 	if runmapplots:
+		self.mapplotsRegionsLayers() 		
 
 			
 			

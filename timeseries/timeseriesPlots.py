@@ -40,7 +40,7 @@ except:
 	
 	
 
-def trafficlights(ax,xlims, bands,labels=[]):
+def trafficlights(ax,xlims, bands,labels=[],drawlegend=True):
 	if len(bands) != 6: print "wrong number of bands to traffic light."
 
 	ax.fill_between(xlims,bands[0], bands[1] ,color='r', 		alpha = 0.2)		
@@ -56,7 +56,7 @@ def trafficlights(ax,xlims, bands,labels=[]):
 		patch1 = mpatches.Patch(color='DarkOrange', 	alpha = 0.2,label=labels[1])
 		patch0 = mpatches.Patch(color='r', 		alpha = 0.2,label=labels[0])		
 		handles = [patch4,patch3,patch2,patch1,patch0,]
-		pyplot.legend(handles=handles)
+		if drawlegend: pyplot.legend(handles=handles)
 	return ax
 
 def drawgreyband(ax,xaxis, bands,labels=[]):
@@ -124,9 +124,153 @@ def trafficlightsPlots(
 		p25 = np.array([0.25 for i in xlims]) 
 		ax = trafficlights(ax,xlims, [m25,m15,m05,p05,p15,p25])
 	
-	print "UKESMpython:\tscatterPlot:\tSaving:" , filename
+	print "UKESMpython:\ttrafficlightsPlots:\tSaving:" , filename
 	pyplot.savefig(filename )
 	pyplot.close()	
+
+
+def percentilesPlot(
+		timesDict,		# model times dict
+		modeldataDict,		# model data dictionairy
+		dataslice,		# in situ data distribution
+		title 	='',
+		filename='',
+		units = '',		
+		greyband= True,
+		dolog=True
+	):
+	
+	metrics = sorted(timesDict.keys())
+
+	#####
+	# Determine the x axis and y axis corners.	
+	mint = np.min(timesDict[metrics[0]])
+	maxt = np.max(timesDict[metrics[0]])
+	miny = np.min(modeldataDict['min'])
+	maxy = np.max(modeldataDict['max'])
+	for m in metrics:
+		if np.min(timesDict[m]) < mint: mint = np.min(timesDict[m])
+		if np.max(timesDict[m]) > maxt: maxt = np.max(timesDict[m])
+		if np.min(modeldataDict[m]) < miny: miny = np.min(modeldataDict[m])
+		if np.max(modeldataDict[m]) > maxy: maxy = np.max(modeldataDict[m])
+	if len(dataslice):	
+		try:	dataslice = dataslice.compressed()
+		except:	pass
+		if np.min(dataslice) < miny: miny = np.min(dataslice)
+		if np.max(dataslice) > maxy: maxy = np.max(dataslice)			
+	xlims= [mint,maxt]
+	ylims= [miny,maxy]
+
+	if dolog and ylims[0] *ylims[-1] <=0.:
+		print "zero (or less) in ylims", ylims,
+		smallestNonZeroModel = getSmallestAboveZero(modeldataDict['min'])
+		smallestNonZeroData = getSmallestAboveZero(dataslice)
+		ylims[0] = getSmallestAboveZero([smallestNonZeroModel, smallestNonZeroData])
+		print "new ylims:",ylims
+		#assert 0
+		
+	if np.max(ylims)/np.min(ylims)>20.:	
+		#####
+		# log
+		ylims[0] = ylims[0]*0.6
+		ylims[1] = ylims[1]*1.4	
+	else:	#####
+		# not log
+		diff = abs(ylims[1] - ylims[0])
+		ylims[0] = ylims[0]-diff/20.
+		ylims[1] = ylims[1]+diff/20.	
+			
+	#####
+	# Make, resize and divide the figure into an uneven grid/
+	fig = pyplot.figure()
+	fig.set_size_inches(10,6)
+	gs = gridspec.GridSpec(1, 2, width_ratios=[1, 12], wspace=0.0, hspace=0.0) 		
+	
+	#####
+	# Data plot to the left.
+	axd = pyplot.subplot(gs[0])	
+	if len(dataslice):
+
+		
+		pc1 = np.clip(np.array([np.percentile(dataslice,20.) for i in xlims]),ylims[0],ylims[1])
+		pc2 = np.clip(np.array([np.percentile(dataslice,30.) for i in xlims]),ylims[0],ylims[1])
+		pc3 = np.clip(np.array([np.percentile(dataslice,40.) for i in xlims]),ylims[0],ylims[1])
+		pc4 = np.clip(np.array([np.percentile(dataslice,60.) for i in xlims]),ylims[0],ylims[1])
+		pc5 = np.clip(np.array([np.percentile(dataslice,70.) for i in xlims]),ylims[0],ylims[1])
+		pc6 = np.clip(np.array([np.percentile(dataslice,80.) for i in xlims]),ylims[0],ylims[1])
+		labels = ['20-30 pc','30-40 pc','40-60 pc','60-70 pc','70-80 pc',]
+		axd = trafficlights(axd,xlims, [pc1,pc2,pc3,pc4,pc5,pc6],labels=labels,drawlegend=False)
+
+		axd.axhline(y=np.ma.mean(dataslice),  c='k',ls='--',lw=1.5,)
+		axd.axhline(y=np.ma.median(dataslice),c='k',ls='-', lw=1.5,)#alpha=0.5)	
+				
+		pcmin 	= np.clip(np.array([dataslice.min() for i in xlims]),ylims[0],ylims[1])
+		pcmax 	= np.clip(np.array([dataslice.max() for i in xlims]),ylims[0],ylims[1])
+		if greyband:
+			axd  	= drawgreyband(axd,xlims, [pcmin,pc1],)
+			axd  	= drawgreyband(axd,xlims, [pc6,pcmax],)
+		pyplot.title('Data')	
+		pyplot.ylabel(units)
+		
+			
+	#####
+	# Model plot to the right.	
+	axm = pyplot.subplot(gs[1])	
+
+	pyplot.plot(timesDict[m],np.clip(modeldataDict['mean'],  ylims[0],ylims[1]),'k--',lw=1,label='mean')
+	pyplot.plot(timesDict[m],np.clip(modeldataDict['median'],ylims[0],ylims[1]),'k-', lw=1,label='median')	
+			
+	legend = pyplot.legend(loc='lower center',  numpoints = 1, ncol=2, prop={'size':12}) 
+	legend.draw_frame(False) 
+	legend.get_frame().set_alpha(0.)
+		
+	
+	labels = ['20-30 pc','30-40 pc','40-60 pc','60-70 pc','70-80 pc',]	
+	trafficarray = [np.clip(modeldataDict[m],ylims[0],ylims[1]) for m in ['20pc','30pc','40pc','60pc','70pc','80pc']]
+	axm = trafficlights(axm,timesDict['min'], trafficarray,labels=labels,drawlegend=False)		
+
+	if greyband:
+		axm  	= drawgreyband(axm,timesDict['min'], [np.clip(modeldataDict[m],ylims[0],ylims[1]) for m in ['min','20pc']],)
+		axm  	= drawgreyband(axm,timesDict['min'], [np.clip(modeldataDict[m],ylims[0],ylims[1]) for m in ['80pc','max']],)				
+
+
+	#yticks = list(axm.get_xticks())
+	#ytickLabels = list(axm.get_yticklabels())
+
+	
+	axm.set_xlim(xlims)	
+	axm.set_title(title)	
+
+
+					
+	axm.set_ylim(ylims)	
+	axd.set_ylim(ylims)
+
+	if np.max(ylims)/np.min(ylims)>20.:
+		axm.set_yscale('log')	
+		axd.set_yscale('log')
+
+	axm.get_yaxis().set_ticklabels([])			
+	axd.get_xaxis().set_ticks([])	
+	
+		
+	ytickLabels	= ['min', '20pc','30pc','40pc','60pc','70pc','80pc','max']
+	yticks = np.clip([ modeldataDict[m][-1]	for m in ytickLabels],ylims[0],ylims[1])
+	axm.set_yticks(yticks)
+	axm.set_yticklabels(ytickLabels,fontsize=10)
+	axm.yaxis.tick_right()		
+
+	
+	print "UKESMpython:\tpercentilesPlot:\tSaving:" , filename
+	pyplot.savefig(filename )
+	pyplot.close()	
+
+
+def getSmallestAboveZero(arr):
+	arr = np.array(arr)
+	return np.ma.masked_where(arr<=0.,arr).min()
+	
+
 
 
 def trafficlightsPlot(
@@ -316,11 +460,13 @@ def mapPlotPair(lons1, lats1, data1,lons2,lats2,data2,filename,titles=['',''],lo
 	pyplot.close()
 		
 
-def hovmoellerAxis(fig,ax,title,xaxis,yaxis,data,vmin='',vmax='',cmap = defcmap ):
+def hovmoellerAxis(fig,ax,title,xaxis,yaxis,data,vmin='',vmax='',cmap = defcmap ,debug = False):
 	yaxis = np.array(yaxis)
 	if yaxis.min()*yaxis.max() <=0.:
 		if yaxis.mean()<0:yaxis = np.clip(yaxis,-10000.,-0.1)
-			
+	if debug:	print "hovmoellerAxis:\txaxis:",xaxis,"\tyaxis:",yaxis,"\tdata:",data
+	if debug:	print "hovmoellerAxis:\txaxis:",xaxis.shape,"\tyaxis:",yaxis.shape,"\tdata:",data.shape	
+	
 	if vmin==vmax=='':	p=pyplot.pcolormesh(xaxis,yaxis,data,cmap = cmap)
 	else:			p=pyplot.pcolormesh(xaxis,yaxis,data,vmin=vmin,vmax=vmax,cmap = cmap)
 	pyplot.title(title)
@@ -338,7 +484,7 @@ def zaxisfromCC(arr):
 	zarr = list((arr[1:]+arr[:-1])/2.)
 	zarr.insert(0,0.)
 	zarr.append(arr[-1])	
-	print arr,zarr
+	#print arr,zarr
 	return -1.*np.abs(np.array(zarr))
 		
 def taxisfromCC(arr):
@@ -353,7 +499,7 @@ def taxisfromCC(arr):
 	zarr = list((arr[1:]+arr[:-1])/2.)
 	zarr.insert(0,arr[0]-diff)
 	zarr.append(arr[-1]+diff)	
-	print arr,zarr
+	#print arr,zarr
 	return np.array(zarr)
 	
 
@@ -377,7 +523,7 @@ def hovmoellerPlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords=
 	md = np.ma.masked_where(np.ma.masked_invalid(md).mask + md.mask, md)
 	times = taxisfromCC(np.array(times_cc))
 	yaxis = zaxisfromCC(yaxis_cc)
-	print "hovmoellerPlot:", title, md.shape,md.mean(),times.shape,yaxis.shape
+	print "hovmoellerPlot:", title, md.shape,md.mean(),times.shape,yaxis.shape #, times, yaxis
 	
 	#####
 	# creating data data dictionairies
@@ -389,15 +535,29 @@ def hovmoellerPlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords=
 		if l not in dataslice.keys():continue
 		dyaxis_cc.append(dataZcoords[l])
 		print 'preparing data for hov:',l,dataZcoords[l], dataslice[l]
-		dd.append([dataslice[l],])
-		
+		dd.append([np.ma.array(dataslice[l]),])
 	dd = np.ma.array(dd)#.squeeze()
 	dd = np.ma.masked_where(np.ma.masked_invalid(dd).mask + dd.mask, dd)	
 	dyaxis_cc = np.array(dyaxis_cc)
 		
+	
+	#####
+	# A hack to defuse an unusal bug that occurs when all layers of the data set are masked.
+	while len(dd.shape)> 2:
+		if dd.shape[-1] == 1:
+			dd = dd[:,:,0]
+		if len(dd.shape) >2 and dd.shape[-1] !=1: 
+			print "Something very strange is happenning with this array:", dd
+			assert False
+		
+
 	dxaxis = np.array([0,1,])
 	dyaxis = zaxisfromCC(dyaxis_cc)
-	print "hovmoellerPlot:", title, dd.shape,dd.mean(),dxaxis.shape,dyaxis.shape
+	print "hovmoellerPlot: - data:", title, dd.shape,dd.mean(),dxaxis.shape,dyaxis.shape
+	
+ 	if len(dd.squeeze().compressed())!=0 and diff: 
+		print "hovmoellerPlot:\tWARNNG: Data entire masked, can not take difference of entirely masked data."
+		return
 	
 	
 	######
@@ -416,13 +576,18 @@ def hovmoellerPlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords=
 		#####
 		# diff:
 		# If the diff key is true, this subtracts the data from the model, it also changes the colour scheme.
-		# First step is to perform the interpollartion.
+		
+		if len(dd.squeeze().compressed())!=0:
+			print "hovmoellerPlot:\tWARNNG: Data entire masked, can not take difference of entirely masked data."
+			return
+		# First step is to perform the interpollartion.		
 		f = interpolate.interp1d(dyaxis_cc, dd.squeeze(), kind='linear')
 		newData = f(np.ma.clip(yaxis_cc,dyaxis_cc.min(),dyaxis_cc.max()))	
 
 		###
 		# subtract data from model:		
 		for i,t in enumerate(times_cc):
+			
 			md[:,i] = md[:,i] -  newData
 	
 		####
@@ -446,12 +611,15 @@ def hovmoellerPlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords=
 
 	#####
 	# Data  subplot
+	
 	ax1 = pyplot.subplot(gs[0])
-	hovmoellerAxis(fig,ax1,'Data',dxaxis,dyaxis,dd,vmin=rbmi,vmax=rbma)
+	if len(dd.squeeze().compressed())!=0:
+		hovmoellerAxis(fig,ax1,'Data',dxaxis,dyaxis,dd,vmin=rbmi,vmax=rbma)
+		if diff: pyplot.colorbar()		
 	pyplot.ylim([zmi,zma])
 	ax1.get_xaxis().set_ticks([])
 	pyplot.ylabel('Depth')
-	if diff: pyplot.colorbar()
+
 
 	#####
 	# model subplot
