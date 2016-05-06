@@ -2,15 +2,15 @@
 #
 # Copyright 2014, Plymouth Marine Laboratory
 #
-# This file is part of the ukesm-validation library.
+# This file is part of the bgc-val library.
 #
-# ukesm-validation is free software: you can redistribute it and/or modify it
+# bgc-val is free software: you can redistribute it and/or modify it
 # under the terms of the Revised Berkeley Software Distribution (BSD) 3-clause license. 
 
-# ukesm-validation is distributed in the hope that it will be useful, but
+# bgc-val is distributed in the hope that it will be useful, but
 # without any warranty; without even the implied warranty of merchantability
 # or fitness for a particular purpose. See the revised BSD license for more details.
-# You should have received a copy of the revised BSD license along with ukesm-validation.
+# You should have received a copy of the revised BSD license along with bgc-val.
 # If not, see <http://opensource.org/licenses/BSD-3-Clause>.
 #
 # Address:
@@ -290,8 +290,8 @@ class makePlots:
 	
 	#####
 	# Extract remaining data (already know lat,lon,time,depth)
-	xd = extractData(self.xnc,self.modeldetails,key = xkey)	
-	yd = extractData(self.ync,self.datadetails, key = ykey)
+	xd = ukp.extractData(self.xnc,self.modeldetails,key = xkey)	
+	yd = ukp.extractData(self.ync,self.datadetails, key = ykey)
  
 	
 	#####
@@ -663,48 +663,7 @@ class makePlots:
 	return filename
 
 
-def extractData(nc, details,key = ['',]):
-  	""" 	This loads the data based on the instructions from details dictionairy.
-  		If you want to do something funking to the data before plotting it,
-  			just create a new convert function in getMT().
-  		details dict usually contains: {'name': 'Chlorophylla', 'vars':['Chlorophylla',], 'convert': ukp.div1000,'units':'ug/L'}
-  	"""
-  	
-	if isinstance(details,dict): 
-  		keys = details.keys()
-  		print "extractData: details is a dict", details.keys()
-  	else:
-  		print "extractData: details Not a dict:", details
-  		return np.ma.array(nc.variables[key][:])
 
-	if 'convert' in keys and 'vars' in keys:	
-		xd = np.ma.array(details['convert'](nc,details['vars']))
-		return xd
-  	
-  	assert False
-  	
-
-def extractData_obsolute(nc, mt,key = ['',]):
-  	""" 	This loads the data based on the instructions from the getMT() function.
-  		If you want to do something funking to the data before plotting it,
-  			just create a new convert function in getMT().
-  	"""
-  	
-	if isinstance(mt,dict): 
-  		mtkeys = mt.keys()
-  		print "extractData: MT is a dict", mtkeys
-  	else:
-  		print "extractData: mt Not a dict:", mt, key
-  		return np.ma.array(nc.variables[key][:])
-
-	if 'convert' in mtkeys and 'vars' in mtkeys:		
-		xd = np.ma.array(mt['convert'](nc,mt['vars']))
-		return xd
-  	
-  	assert False
-  	print "extractData: Extracting data:\tinit:",mt
- 
-  	
 
 
 		

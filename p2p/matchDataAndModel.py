@@ -2,15 +2,15 @@
 #
 # Copyright 2014, Plymouth Marine Laboratory
 #
-# This file is part of the ukesm-validation library.
+# This file is part of the bgc-val library.
 #
-# ukesm-validation is free software: you can redistribute it and/or modify it
+# bgc-val is free software: you can redistribute it and/or modify it
 # under the terms of the Revised Berkeley Software Distribution (BSD) 3-clause license. 
 
-# ukesm-validation is distributed in the hope that it will be useful, but
+# bgc-val is distributed in the hope that it will be useful, but
 # without any warranty; without even the implied warranty of merchantability
 # or fitness for a particular purpose. See the revised BSD license for more details.
-# You should have received a copy of the revised BSD license along with ukesm-validation.
+# You should have received a copy of the revised BSD license along with bgc-val.
 # If not, see <http://opensource.org/licenses/BSD-3-Clause>.
 #
 # Address:
@@ -241,7 +241,7 @@ class matchDataAndModel:
 		if self.depthLevel == '1000m': 	z = 1000.
 		if self.depthLevel == '2000m': 	z = 2000.
 						
-		k =  getORCAdepth(np.abs(z),np.abs(nc.variables[self.datacoords['z']][:]),debug=True)
+		k =  ukp.getORCAdepth(np.abs(z),np.abs(nc.variables[self.datacoords['z']][:]),debug=True)
 		mmask[:,k,:,:] = 0
 		
 	elif self.depthLevel in ['Transect','PTransect',]:
@@ -249,7 +249,7 @@ class matchDataAndModel:
 		if self.depthLevel == 'Transect':	x = -28.
 		if self.depthLevel == 'PTransect': 	x = 200.
 						
-		k =  getclosestlon(x,nc.variables[self.datacoords['lon']][:],debug=True)
+		k =  ukp.getclosestlon(x,nc.variables[self.datacoords['lon']][:],debug=True)
 		if mmask.ndim == 4:	mmask[:,:,:,k] = 0
 		if mmask.ndim == 3:	mmask[:,:,k] = 0							
 
@@ -258,7 +258,7 @@ class matchDataAndModel:
 		if self.depthLevel == 'SOTransect':	y = -60.
 		if self.depthLevel == 'Equator':	y =   0.
 				
-		k =  getclosestlat(y,nc.variables[self.datacoords['lat']][:],debug=True)
+		k =  ukp.getclosestlat(y,nc.variables[self.datacoords['lat']][:],debug=True)
 		if mmask.ndim == 4:	mmask[:,:,k,:] = 0
 		if mmask.ndim == 3:	mmask[:,k,:] = 0						
 		
@@ -271,224 +271,8 @@ class matchDataAndModel:
 
   	nc.close()
   	
-  	return
   		
 	
-	assert False
-	
-	if self.depthLevel in ['Surface','100m','200m','500m','1000m','2000m','Transect','PTransect',]:	
-	    if nc.variables[self.DataVars[0]].shape in [(12, 14, 180, 360), (12, 24, 180, 360)]: # WOA format
-		mmask = np.ones(nc.variables[self.DataVars[0]].shape)
-		#####
-		# This could be rewritten to just figure out which level is closest, but a bit much effort for not a lot of gain.
-		
-		if self.depthLevel in ['Surface','200m','100m','500m','1000m',]: 
-			if self.depthLevel in ['Surface',]:	k = 0
-			if self.depthLevel == '100m': 	k = 6			
-			if self.depthLevel == '200m': 	k = 9
-			if self.depthLevel == '500m': 	k = 13
-			if self.depthLevel == '1000m': 	k = 18					
-			mmask[:,k,:,:] = 0
-						
-		if self.depthLevel == 'Transect':	mmask[:,:,:,332] = 0   # Pacific Transect.	
-		if self.depthLevel == 'PTransect':	mmask[:,:,:,200] = 0   # Pacific Transect.			
-		mmask +=nc.variables[self.DataVars[0]][:].mask
-		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking mask shape:',mmask.shape		
-		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking WOA style flat array:',self.DataFilePruned,'-->',self.DataFile1D	
-	  	convertToOneDNC(self.DataFilePruned,self.DataFile1D ,newMask=mmask, variables = self.DataVars, debug=True)		  	
-	    elif nc.variables[self.DataVars[0]].shape in [(1, 102, 180, 360),]: # WOA Oxygen
-		mmask = np.ones(nc.variables[self.DataVars[0]].shape)
-		#####
-		# This could be rewritten to just figure out which level is closest, but a bit much effort for not a lot of gain.
-		
-		if self.depthLevel in ['Surface','200m','100m','500m','1000m','2000m']: 
-			if self.depthLevel in ['Surface',]:	k = 0
-			#if self.depthLevel == '100m': 	k = 6			
-			#if self.depthLevel == '200m': 	k = 9
-			#if self.depthLevel == '500m': 	k = 13
-			#if self.depthLevel == '1000m': k = 18					
-			if self.depthLevel == '2000m': 	k = 46
-			mmask[:,k,:,:] = 0
-						
-		if self.depthLevel == 'Transect':	mmask[:,:,:,332] = 0   # Pacific Transect.	
-		if self.depthLevel == 'PTransect':	mmask[:,:,:,200] = 0   # Pacific Transect.			
-		mmask +=nc.variables[self.DataVars[0]][:].mask
-		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking mask shape:',mmask.shape		
-		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking WOA style flat array:',self.DataFilePruned,'-->',self.DataFile1D	
-	  	convertToOneDNC(self.DataFilePruned,self.DataFile1D ,newMask=mmask, variables = self.DataVars, debug=True)		  	
-	  	
-	  		  	
-	    elif nc.variables[self.DataVars[0]].shape in [(12, 33, 180, 360), (12,1,180,360), ]: # Chl format
-		mmask = np.ones(nc.variables[self.DataVars[0]].shape)
-		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking Chl-style flat array:',self.DataFilePruned,'-->',self.DataFile1D			
-		if self.depthLevel in ['Surface',]:	
-			mmask[:,0,:,:] = 0
-		else: 
-			print "matchDataAndModel:\tERROR:\t Depth level not recognises. (12, 33, 180, 360), (12,1,180,360)" ,self.depthLevel		
-			assert False
-		if self.depthLevel == 'Transect':assert 0
-		if self.depthLevel == 'PTransect':assert 0		
-		mmask +=nc.variables[self.DataVars[0]][:].mask
-		
-		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking mask shape:',mmask.shape		
-		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking Chl style flat array:',self.DataFilePruned,'-->',self.DataFile1D	
-	  	convertToOneDNC(self.DataFilePruned,self.DataFile1D ,newMask=mmask, variables = self.DataVars, debug=True)
-	  	
-	  	
-	    elif nc.variables[self.DataVars[0]].shape in [(12,57,180, 360), ]: # O2 format
-		mmask = np.ones(nc.variables[self.DataVars[0]].shape)
-		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking Oxygen-style flat array:',self.DataFilePruned,'-->',self.DataFile1D			
-		if self.depthLevel in ['Surface','200m','100m','500m','1000m',]: 		
-			if self.depthLevel in ['Surface',]:	k = 0
-			elif self.depthLevel == '100m': 	k = 20			
-			elif self.depthLevel == '200m': 	k = 24
-			elif self.depthLevel == '500m': 	k = 36
-			elif self.depthLevel == '1000m': 	k = 46							
-			else:
-				print "matchDataAndModel:\tERROR:\t Depth level not recognises. (12,57,180, 360)" ,self.depthLevel
-				assert False
-			mmask[:,k,:,:] = 0		
-		if self.depthLevel == 'Transect':	mmask[:,:,:,155] = 0 
-		if self.depthLevel == 'PTransect':	mmask[:,:,:,20]  = 0 
-						
-		mmask +=nc.variables[self.DataVars[0]][:].mask				
-		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking mask shape:',mmask.shape		
-		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking Chl style flat array:',self.DataFilePruned,'-->',self.DataFile1D	
-	  	convertToOneDNC(self.DataFilePruned,self.DataFile1D ,newMask=mmask, variables = self.DataVars, debug=True)
-	  		  	
-	    elif nc.variables[self.DataVars[0]].ndim ==1:
-	    	# This kind of file is already 1D, but we wantto apply a depth cut to it?
-	    	mmask = np.ones(nc.variables[self.DataVars[0]].shape)
-	    	for i,dep in enumerate(np.abs(nc.variables['DEPTH'][:])):
-	    		if dep >20:continue # assume surface layer of 20?
-			mmask[i] = 0
-		mmask +=nc.variables[self.DataVars[0]][:].mask	
-		convertToOneDNC(self.DataFilePruned,self.DataFile1D ,newMask=mmask, variables = self.DataVars, debug=True)			    		
-	    else:
-	    
-		print 'matchDataAndModel:\tconvertDataTo1D:\tYou need to add more file spcific depthLevels here.', nc.variables[self.DataVars[0]].shape, self.DataFilePruned,'-->',self.DataFile1D
-		assert False
-			
-	else:
-		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking',self.DataFilePruned,'-->',self.DataFile1D
-	  	if len(self.DataVars):	convertToOneDNC(self.DataFilePruned, self.DataFile1D, debug=True, variables = self.DataVars)
-	  	else:			convertToOneDNC(self.DataFilePruned, self.DataFile1D, debug=True)
-  	nc.close()	
-  	
-  def _convertDataTo1D_obsolete_(self,):
-   	""" This routine reduces the In Situ data into a 1D array of data with its lat,lon,depth and time components.
-  	"""
-		
-	if not ukp.shouldIMakeFile(self.DataFilePruned,self.DataFile1D,debug=False):
-		print "matchDataAndModel:\tconvertDataTo1D:\talready exists: (DataFile1D):\t",self.DataFile1D
-		return
-
-	print "matchDataAndModel:\tconvertDataTo1D:\topening DataFilePruned:\t",self.DataFilePruned		
-	#nc = ncdfView(self.DataFilePruned,Quiet=True)
-	nc = Dataset(self.DataFilePruned,'r')
-		
-	#WOADatas = [a+self.depthLevel for a in ['salinity','temperature','temp','sal','nitrate','phosphate','silicate',]]	   	 
-	
-	if self.depthLevel in ['Surface','100m','200m','500m','1000m','2000m','Transect','PTransect',]:	
-	    if nc.variables[self.DataVars[0]].shape in [(12, 14, 180, 360), (12, 24, 180, 360)]: # WOA format
-		mmask = np.ones(nc.variables[self.DataVars[0]].shape)
-		#####
-		# This could be rewritten to just figure out which level is closest, but a bit much effort for not a lot of gain.
-		
-		if self.depthLevel in ['Surface','200m','100m','500m','1000m',]: 
-			if self.depthLevel in ['Surface',]:	k = 0
-			if self.depthLevel == '100m': 	k = 6			
-			if self.depthLevel == '200m': 	k = 9
-			if self.depthLevel == '500m': 	k = 13
-			if self.depthLevel == '1000m': 	k = 18					
-			mmask[:,k,:,:] = 0
-						
-		if self.depthLevel == 'Transect':	mmask[:,:,:,332] = 0   # Pacific Transect.	
-		if self.depthLevel == 'PTransect':	mmask[:,:,:,200] = 0   # Pacific Transect.			
-		mmask +=nc.variables[self.DataVars[0]][:].mask
-		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking mask shape:',mmask.shape		
-		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking WOA style flat array:',self.DataFilePruned,'-->',self.DataFile1D	
-	  	convertToOneDNC(self.DataFilePruned,self.DataFile1D ,newMask=mmask, variables = self.DataVars, debug=True)		  	
-	    elif nc.variables[self.DataVars[0]].shape in [(1, 102, 180, 360),]: # WOA Oxygen
-		mmask = np.ones(nc.variables[self.DataVars[0]].shape)
-		#####
-		# This could be rewritten to just figure out which level is closest, but a bit much effort for not a lot of gain.
-		
-		if self.depthLevel in ['Surface','200m','100m','500m','1000m','2000m']: 
-			if self.depthLevel in ['Surface',]:	k = 0
-			#if self.depthLevel == '100m': 	k = 6			
-			#if self.depthLevel == '200m': 	k = 9
-			#if self.depthLevel == '500m': 	k = 13
-			#if self.depthLevel == '1000m': k = 18					
-			if self.depthLevel == '2000m': 	k = 46
-			mmask[:,k,:,:] = 0
-						
-		if self.depthLevel == 'Transect':	mmask[:,:,:,332] = 0   # Pacific Transect.	
-		if self.depthLevel == 'PTransect':	mmask[:,:,:,200] = 0   # Pacific Transect.			
-		mmask +=nc.variables[self.DataVars[0]][:].mask
-		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking mask shape:',mmask.shape		
-		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking WOA style flat array:',self.DataFilePruned,'-->',self.DataFile1D	
-	  	convertToOneDNC(self.DataFilePruned,self.DataFile1D ,newMask=mmask, variables = self.DataVars, debug=True)		  	
-	  	
-	  		  	
-	    elif nc.variables[self.DataVars[0]].shape in [(12, 33, 180, 360), (12,1,180,360), ]: # Chl format
-		mmask = np.ones(nc.variables[self.DataVars[0]].shape)
-		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking Chl-style flat array:',self.DataFilePruned,'-->',self.DataFile1D			
-		if self.depthLevel in ['Surface',]:	
-			mmask[:,0,:,:] = 0
-		else: 
-			print "matchDataAndModel:\tERROR:\t Depth level not recognises. (12, 33, 180, 360), (12,1,180,360)" ,self.depthLevel		
-			assert False
-		if self.depthLevel == 'Transect':assert 0
-		if self.depthLevel == 'PTransect':assert 0		
-		mmask +=nc.variables[self.DataVars[0]][:].mask
-		
-		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking mask shape:',mmask.shape		
-		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking Chl style flat array:',self.DataFilePruned,'-->',self.DataFile1D	
-	  	convertToOneDNC(self.DataFilePruned,self.DataFile1D ,newMask=mmask, variables = self.DataVars, debug=True)
-	  	
-	  	
-	    elif nc.variables[self.DataVars[0]].shape in [(12,57,180, 360), ]: # O2 format
-		mmask = np.ones(nc.variables[self.DataVars[0]].shape)
-		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking Oxygen-style flat array:',self.DataFilePruned,'-->',self.DataFile1D			
-		if self.depthLevel in ['Surface','200m','100m','500m','1000m',]: 		
-			if self.depthLevel in ['Surface',]:	k = 0
-			elif self.depthLevel == '100m': 	k = 20			
-			elif self.depthLevel == '200m': 	k = 24
-			elif self.depthLevel == '500m': 	k = 36
-			elif self.depthLevel == '1000m': 	k = 46							
-			else:
-				print "matchDataAndModel:\tERROR:\t Depth level not recognises. (12,57,180, 360)" ,self.depthLevel
-				assert False
-			mmask[:,k,:,:] = 0		
-		if self.depthLevel == 'Transect':	mmask[:,:,:,155] = 0 
-		if self.depthLevel == 'PTransect':	mmask[:,:,:,20]  = 0 
-						
-		mmask +=nc.variables[self.DataVars[0]][:].mask				
-		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking mask shape:',mmask.shape		
-		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking Chl style flat array:',self.DataFilePruned,'-->',self.DataFile1D	
-	  	convertToOneDNC(self.DataFilePruned,self.DataFile1D ,newMask=mmask, variables = self.DataVars, debug=True)
-	  		  	
-	    elif nc.variables[self.DataVars[0]].ndim ==1:
-	    	# This kind of file is already 1D, but we wantto apply a depth cut to it?
-	    	mmask = np.ones(nc.variables[self.DataVars[0]].shape)
-	    	for i,dep in enumerate(np.abs(nc.variables['DEPTH'][:])):
-	    		if dep >20:continue # assume surface layer of 20?
-			mmask[i] = 0
-		mmask +=nc.variables[self.DataVars[0]][:].mask	
-		convertToOneDNC(self.DataFilePruned,self.DataFile1D ,newMask=mmask, variables = self.DataVars, debug=True)			    		
-	    else:
-	    
-		print 'matchDataAndModel:\tconvertDataTo1D:\tYou need to add more file spcific depthLevels here.', nc.variables[self.DataVars[0]].shape, self.DataFilePruned,'-->',self.DataFile1D
-		assert False
-			
-	else:
-		print 'matchDataAndModel:\tconvertDataTo1D:\tMaking',self.DataFilePruned,'-->',self.DataFile1D
-	  	if len(self.DataVars):	convertToOneDNC(self.DataFilePruned, self.DataFile1D, debug=True, variables = self.DataVars)
-	  	else:			convertToOneDNC(self.DataFilePruned, self.DataFile1D, debug=True)
-  	nc.close()	
-  	
-		
 	
 		
   	
@@ -610,7 +394,7 @@ class matchDataAndModel:
 		try:
 			z = zdict[wz]
 		except:	 
-			z = getORCAdepth(wz,self.depthcc,debug=True)
+			z = ukp.getORCAdepth(wz,self.depthcc,debug=True)
 			zdict[wz]	= z
 			if self.debug: print "matchModelToData:\t",i, 'Found new depth:',wz,'m-->',self.depthcc[z], ['z=',z]
 
@@ -898,58 +682,6 @@ def quadraticDistance(lon1, lat1, lon2, lat2):
 	dlat = lat2 - lat1 
 	return sqrt(dlon*dlon + dlat*dlat)
 
-def getORCAdepth(z,depth,debug=True):
-	d = 1000.
-	best = -1
-	for i,zz in enumerate(depth.squeeze()):
-		d2 = abs(abs(z)-abs(zz))
-		if d2<d:
-		   d=d2
-		   best = i
-		   print 'getORCAdepth:',i,z,zz,depth.shape, 'best:',best
-	if debug: print 'depth: in situ:', z,'index:', best, 'distance:',d,', closest model:',depth.shape, depth[best]
-	return best
-
-def getclosestlon(x,lons,debug=True):
-	"""	Code to locate the closets longitude coordinate for transects. 
-		Only works for 1D longitude arrays
-	"""
-	d = 1000.
-	best = -1
-	if lons.ndim >1: 
-		print "getclosestlon:\tFATAL:\tThis code only works for 1D longitude arrays"
-		assert False
-	x = makeLonSafe(x)
-	lons = makeLonSafeArr(lons)
-	
-	for i,xx in enumerate(lons.squeeze()):
-		d2 = abs(x-xx)
-		if d2<d:
-		   d=d2
-		   best = i
-		   print 'getORCAdepth:',i,x,xx,lons.shape, 'best:',best
-	if debug: print 'lons: in situ:', x,'index:', best, 'distance:',d,', closest model:',lons.shape, lons[best]
-	return best
-	
-def getclosestlat(x,lats,debug=True):
-	"""	Code to locate the closets latitute coordinate for transects. 
-		Only works for 1D latitute arrays
-	"""
-	d = 1000.
-	best = -1
-	if lats.ndim >1: 
-		print "getclosestlon:\tFATAL:\tThis code only works for 1D latitute arrays"
-		assert False
-	
-	for i,xx in enumerate(lats.squeeze()):
-		d2 = abs(x-xx)
-		if d2<d:
-		   d=d2
-		   best = i
-		   print 'getORCAdepth:',i,x,xx,lats.shape, 'best:',best
-	if debug: print 'lats: in situ:', x,'index:', best, 'distance:',d,', closest model:',lats.shape, lats[best]
-	return best
-	
 	
 			
 def makeLonSafe(lon):

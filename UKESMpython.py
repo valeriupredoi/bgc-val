@@ -1,15 +1,15 @@
 #
 # Copyright 2014, Plymouth Marine Laboratory
 #
-# This file is part of the ukesm-validation library.
+# This file is part of the bgc-val library.
 #
-# ukesm-validation is free software: you can redistribute it and/or modify it
+# bgc-val is free software: you can redistribute it and/or modify it
 # under the terms of the Revised Berkeley Software Distribution (BSD) 3-clause license. 
 
-# ukesm-validation is distributed in the hope that it will be useful, but
+# bgc-val is distributed in the hope that it will be useful, but
 # without any warranty; without even the implied warranty of merchantability
 # or fitness for a particular purpose. See the revised BSD license for more details.
-# You should have received a copy of the revised BSD license along with ukesm-validation.
+# You should have received a copy of the revised BSD license along with bgc-val.
 # If not, see <http://opensource.org/licenses/BSD-3-Clause>.
 #
 # Address:
@@ -27,7 +27,7 @@ from netCDF4 import Dataset
 from os.path  import exists,getmtime
 from os import mkdir, makedirs
 from glob import glob
-from itertools import product
+from itertools import product,izip
 import numpy as np
 from matplotlib import pyplot
 from mpl_toolkits.basemap import Basemap
@@ -104,6 +104,18 @@ def makeThisSafe(arr,log=False,debug = True, key='',noSqueeze=False):
 		
 	return arr
 
+
+
+def maenumerate(marr):
+	"""	Masked assary enumerate command based on numpy.ndenumerate, which iterates a list of (index, value) for n-dimensional arrays.
+		This version ignores masked values.
+	"""
+	
+    	mask = ~marr.mask.ravel()
+    	for i, m in izip(np.ndenumerate(marr), mask):
+        	if m: yield i
+        
+        
 
 class AutoVivification(dict):
     """Implementation of perl's autovivification feature.
@@ -217,7 +229,7 @@ def getGridFile(grid):
 			assert False
         return gridFile
 	
-def sliceA(arr,region):
+def sliceA_obsolete(arr,region):
 	# you should already have removed time by now.
 	#assume time 0.
 	#if region == 'DeepestWetCells':return getDeepestWetCells(arr)
@@ -991,6 +1003,66 @@ def getOrcaIndexCC(lat,lon, latcc, loncc, debug=True,slowMethod=False,llrange=5.
 
 	if debug: print 'location ', [la_ind,lo_ind],'(',latcc[la_ind,lo_ind],loncc[la_ind,lo_ind],') is closest to:',[lat,lon]	
 	return la_ind,lo_ind
+
+
+def getORCAdepth(z,depth,debug=True):
+	""" Calculate closest depth. Returns an index
+	"""
+	d = 1000.
+	best = -1
+	for i,zz in enumerate(depth.squeeze()):
+		d2 = abs(abs(z)-abs(zz))
+		if d2<d:
+		   d=d2
+		   best = i
+		   if debug: print 'UKESMPython.getORCAdepth:',i,z,zz,depth.shape, 'best:',best
+	if debug: print 'UKESMPython.getORCAdepth:\tdepth: in situ:', z,'index:', best, 'distance:',d,', closest model:',depth.shape, depth[best]
+	return best
+
+def getclosestlon(x,lons,debug=True):
+	"""	Code to locate the closets longitude coordinate for transects. 
+		Only works for 1D longitude arrays
+		Returns an index
+	"""
+	d = 1000.
+	best = -1
+	if lons.ndim >1: 
+		print "getclosestlon:\tFATAL:\tThis code only works for 1D longitude arrays"
+		assert False
+	x = makeLonSafe(x)
+	lons = makeLonSafeArr(lons)
+	
+	for i,xx in enumerate(lons.squeeze()):
+		d2 = abs(x-xx)
+		if d2<d:
+		   d=d2
+		   best = i
+		   print 'getORCAdepth:',i,x,xx,lons.shape, 'best:',best
+	if debug: print 'lons: in situ:', x,'index:', best, 'distance:',d,', closest model:',lons.shape, lons[best]
+	return best
+	
+def getclosestlat(x,lats,debug=True):
+	"""	Code to locate the closets latitute coordinate for transects. 
+		Only works for 1D latitute arrays
+		Returns an index
+	"""
+	d = 1000.
+	best = -1
+	if lats.ndim >1: 
+		print "getclosestlon:\tFATAL:\tThis code only works for 1D latitute arrays"
+		assert False
+	
+	for i,xx in enumerate(lats.squeeze()):
+		d2 = abs(x-xx)
+		if d2<d:
+		   d=d2
+		   best = i
+		   print 'getORCAdepth:',i,x,xx,lats.shape, 'best:',best
+	if debug: print 'lats: in situ:', x,'index:', best, 'distance:',d,', closest model:',lats.shape, lats[best]
+	return best
+	
+	
+	
 	
 def makeLonSafe(lon):
 	while True:
@@ -1239,8 +1311,8 @@ def populateSlicesList(#plotallcuts = False,
 	return newSlices
 
 		      	
-def makeMask(name,newSlice, xt,xz,xy,xx,xd):	  
-	print "makePlots:\tmakeMask:\tinitialise:\t",name, '\t',newSlice
+def makeMask(name,newSlice, xt,xz,xy,xx,xd,debug=False):	  
+	if debug:print "makeMask:\tmakeMask:\tinitialise:\t",name, '\t',newSlice
 		
 	if newSlice in ['OffAxis', 'Overestimate','Underestimate','Matched', 
 			'Overestimate_2sig','Underestimate_2sig', 
@@ -1248,7 +1320,7 @@ def makeMask(name,newSlice, xt,xz,xy,xx,xd):
 		print "makeMask:\tSlice", newSlice, "requires both datasets, and you should never see this"
 		assert False
 
-  	if newSlice == 'All': 		
+  	if newSlice in ['All', 'Global']: 		
  # 		return
   		m = np.zeros(len(xd))		
   		for a in [xt,xz,xy,xx,xd]:
@@ -1441,6 +1513,10 @@ def makeMask(name,newSlice, xt,xz,xy,xx,xd):
 		my = np.ma.masked_inside(xy, 22.3, 32.1).mask				
 		return np.ma.masked_where( mx*my,nmask).mask 										
 		
+	if newSlice == 'ignoreCaspian':
+		mx = np.ma.masked_inside(xx,45.0,  55.0).mask * np.ma.masked_inside(xy, 35., 48.).mask 	# caspian
+		return np.ma.masked_where( mx,nmask).mask 
+		
 	if newSlice == 'ignoreMediteranean':
 		mx  = np.ma.masked_inside(xx, -5.8, 42.5).mask #E
 		my  = np.ma.masked_inside(xy, 30., 43.).mask	#N			
@@ -1456,13 +1532,15 @@ def makeMask(name,newSlice, xt,xz,xy,xx,xd):
 		mx += np.ma.masked_inside(xx, 25.9, 41.7).mask * np.ma.masked_inside(xy, 39.8,48.1).mask		
 		mx += np.ma.masked_inside(xx, -5.8, 42.5).mask * np.ma.masked_inside(xy, 30., 43.).mask
 		mx += np.ma.masked_inside(xx, 0.0,  20.0).mask * np.ma.masked_inside(xy, 32., 47.).mask 
+		mx += np.ma.masked_inside(xx,45.0,  55.0).mask * np.ma.masked_inside(xy, 35., 48.).mask 	# caspian
 		if newSlice == 'ignoreInlandSeas':return np.ma.masked_where( mx,nmask).mask 		
 		mx += np.ma.masked_outside(xx, 25.,100.).mask
 		my = np.ma.masked_outside(xy, -50.,30.).mask
 		if newSlice == 'IndianOcean':return np.ma.masked_where( mx+my,nmask).mask 
 
+	if newSlice == 'SouthernOcean': 	return np.ma.masked_where(  xy >-40.,nmask).mask 
 	if newSlice == 'AntarcticOcean': 	return np.ma.masked_where(  xy >-50.,nmask).mask 
-	if newSlice == 'ArcticOcean': 		return np.ma.masked_where(  xy < 60.,nmask).mask 
+	#if newSlice == 'ArcticOcean': 		return np.ma.masked_where(  xy < 60.,nmask).mask 
 	if newSlice == 'ignoreArtics':		return np.ma.masked_outside(xy,-70., 70.).mask
 	if newSlice == 'ignoreMidArtics':	return np.ma.masked_outside(xy,-65., 65.).mask
 	if newSlice == 'ignoreMoreArtics':	return np.ma.masked_outside(xy,-60., 60.).mask
@@ -1470,8 +1548,38 @@ def makeMask(name,newSlice, xt,xz,xy,xx,xd):
 	if newSlice == 'NorthAtlanticOcean': 	return np.ma.masked_outside(makeLonSafeArr(xx), -80.,0.).mask + np.ma.masked_outside(xy, 10.,60.).mask
 	if newSlice == 'SouthAtlanticOcean':	return np.ma.masked_outside(makeLonSafeArr(xx), -65.,20.).mask + np.ma.masked_outside(xy, -50.,-10.).mask
 	if newSlice == 'EquatorialAtlanticOcean':
+	
 		return np.ma.masked_outside(makeLonSafeArr(xx), -65.,20.).mask + np.ma.masked_outside(xy, -15.,15.).mask
 
+	if newSlice == 'ArcticOcean': 	
+		mx = np.ma.masked_where(  xy < 60.,nmask).mask 
+		mx+= np.ma.masked_inside(xx, -45., 15.).mask * np.ma.masked_inside(xy, 50.,80.).mask
+		
+		return np.ma.masked_where( mx,nmask).mask 
+
+	if newSlice == 'NorthernSubpolarAtlantic':
+		mx = np.ma.masked_outside(xx,-80., -3. ).mask + np.ma.masked_outside(xy,40., 60. ).mask
+		mx *= np.ma.masked_outside(xx, -45., 15.).mask + np.ma.masked_outside(xy, 60.,80.).mask
+		return mx	
+
+	if newSlice == 'NorthernSubpolarPacific':
+		mx = np.ma.masked_inside(xx,-100., 120. ).mask
+		mx += np.ma.masked_inside(xx,260., 365. ).mask		
+		mx += np.ma.masked_outside(xy,40., 60. ).mask
+		return np.ma.masked_where( mx,nmask).mask 		
+
+	if newSlice == 'Remainder':
+		mx = makeMask(name,'ignoreInlandSeas', xt,xz,xy,xx,xd)
+		mx += np.ma.masked_inside(xy,-10., 10. ).mask
+		mx += np.ma.masked_outside(abs(xy),-40., 40. ).mask		
+		return np.ma.masked_where( mx,nmask).mask 		
+
+ 	if newSlice == 'Equator10':
+		mx = makeMask(name,'ignoreInlandSeas', xt,xz,xy,xx,xd)
+                mx += np.ma.masked_outside(xy,-10., 10. ).mask
+                return mx 
+ 
+  					
 	
 	if newSlice == 'NorthPacificOcean':
 		mx = np.ma.masked_inside(xx,-100., 120. ).mask
@@ -1514,6 +1622,8 @@ def NoChange(nc,keys):	return nc.variables[keys[0]][:]
 def N2Biomass(nc,keys):	return nc.variables[keys[0]][:]* 79.573
 def mul1000(nc,keys):	return nc.variables[keys[0]][:]* 1000.
 def div1000(nc,keys):	return nc.variables[keys[0]][:]/ 1000.	
+def div1e6(nc,keys):	return nc.variables[keys[0]][:]/ 1.e6	
+
 def applymask(nc,keys):	return np.ma.masked_where(nc.variables[keys[1]][:]==0.,nc.variables[keys[0]][:])
 def sums(nc,keys):	
 	a = nc.variables[keys[0]][:]
@@ -1528,4 +1638,31 @@ tdicts = {	'ZeroToZero': {i  :i     for i in xrange(12)},
 		'OneToZero':  {i+1:i     for i in xrange(12)},
 		'ZeroToOne':  {i  :i+1   for i in xrange(12)},			
 	}		      		
+
+def extractData(nc, details,key = ['',]):
+  	""" 	This loads the data based on the instructions from details dictionairy.
+  		If you want to do something funking to the data before plotting it,
+  			just create a new convert function in getMT().
+  		details dict usually contains: {'name': 'Chlorophylla', 'vars':['Chlorophylla',], 'convert': ukp.div1000,'units':'ug/L'}
+  	"""
+  	
+	if isinstance(details,dict): 
+  		keys = details.keys()
+  		print "extractData: details is a dict", details.keys()
+  		
+  	elif len(key) and key in nc.variables.keys():
+  		print "extractData: details Not a dict:", details,'but, the key is valid:',key
+  		return np.ma.array(nc.variables[key][:])  	
+ 		
+	if 'convert' in keys and 'vars' in keys:	
+		xd = np.ma.array(details['convert'](nc,details['vars']))
+		return xd
+  	
+  	print "extractData:\t you shouldn't get here", details, key
+  	assert False
+  	
+  	
+  	
+  	
+		      		
 		      		
