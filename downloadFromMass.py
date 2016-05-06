@@ -1,4 +1,4 @@
-#!/usr/bin/ipython 
+#!/usr/bin/python 
 
 #
 # Copyright 2015, Plymouth Marine Laboratory
@@ -25,8 +25,7 @@
 from sys import argv 
 import subprocess
 from socket import gethostname
-from UKESMpython import folder
-
+import os
 
 
 
@@ -44,6 +43,10 @@ def downloadMass(jobID,):
 	if machine.find('mass')>-1:
 		outfolder	= "/group_workspaces/jasmin/esmeval/data/"
 		outputFold = folder(outfolder+jobID)	
+		if not os.path.exists(outputFold):
+			print "Making ",outputFold
+    			os.makedirs(outputFold)
+
 		
 	if machine.find('mass') <0 and "anymachine" not in argv:
 		print "Are you running this on the correct machine?"
