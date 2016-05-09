@@ -222,22 +222,28 @@ def analysis_jasmin(
 	if gethostname().find('ceda.ac.uk')>-1:
 		print "analysis-JASMIN.py:\tBeing run at CEDA on ",gethostname()
 			
-		esmvalFolder = "/group_workspaces/jasmin/esmeval/example_data/bgc/"
-		
+		ObsFolder 	= "/group_workspaces/jasmin/esmeval/example_data/bgc/"
+		esmvalFolder 	= "/group_workspaces/jasmin/esmeval/data/"		
 		#####
 		# Location of model files.	
-		MEDUSAFolder_pref	= ukp.folder(esmvalFolder+"MEDUSA/")
-		NEMOFolder_pref		= ukp.folder(esmvalFolder+"MEDUSA/")
+		MEDUSAFolder_pref	= ukp.folder(esmvalFolder)
+		NEMOFolder_pref		= ukp.folder(esmvalFolder)
 		
 		#####
 		# Location of data files.
-		if annual:	WOAFolder 	= ukp.folder(esmvalFolder+"WOA/annual")
-		else:		WOAFolder 	= ukp.folder(esmvalFolder+"WOA/")
-		MAREDATFolder 	= ukp.folder(esmvalFolder+"/MAREDAT/")
-		WOAFolder 	= ukp.folder(esmvalFolder+"WOA/")
-		GEOTRACESFolder = ukp.folder(esmvalFolder+"GEOTRACES/GEOTRACES_PostProccessed/")
-		TakahashiFolder = ukp.folder(esmvalFolder+"Takahashi2009_pCO2/")
-		MLDFolder  	= ukp.folder(esmvalFolder+"IFREMER-MLD/")
+		if annual:	WOAFolder 	= ukp.folder(ObsFolder+"WOA/annual")
+		else:		WOAFolder 	= ukp.folder(ObsFolder+"WOA/")
+		
+		MAREDATFolder 	= ObsFolder+"/MAREDAT/MAREDAT/"
+		GEOTRACESFolder = ObsFolder+"/GEOTRACES/GEOTRACES_PostProccessed/"
+		TakahashiFolder = ObsFolder+"/Takahashi2009_pCO2/"
+		MLDFolder	= ObsFolder+"/IFREMER-MLD/"
+		iMarNetFolder	= ObsFolder+"/LestersReportData/"
+		GlodapDir	= ObsFolder+"/GLODAP/"
+		GLODAPv2Dir	= ObsFolder+"/GLODAPv2/GLODAPv2_Mapped_Climatologies/"
+		OSUDir		= ObsFolder+"OSU/"
+		CCIDir		= ObsFolder+"CCI/"
+		
 	
 		# Directory for output files:
 		workDir 	= ukp.folder(esmvalFolder+"ukesm_postProcessed/")
