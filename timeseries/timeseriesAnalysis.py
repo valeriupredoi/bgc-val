@@ -320,7 +320,7 @@ class timeseriesAnalysis:
 	for r in self.regions:
 	    for l in self.layers:	
 		if type(l) in [type(0),type(0.)]:continue
- 		mapfilename = ukp.folder('images/timeseries/'+self.jobID+'/'+self.dataType)+'_'.join(['map',self.jobID,self.dataType,str(l),r,])+'.png'
+ 		mapfilename = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join(['map',self.jobID,self.dataType,str(l),r,])+'.png'
    		modeldata	= mDL.load[(r,l)]
    		modellat	= mDL.load[(r,l,'lat')]
    		modellon	= mDL.load[(r,l,'lon')]
@@ -389,7 +389,7 @@ class timeseriesAnalysis:
 		    	modeldataDict[m] = [self.modeldataD[(r,l,m)][t] for t in timesDict[m]]
 						    	
 		title = ' '.join([r,str(l),self.datasource, self.dataType])
-		filename = ukp.folder('images/timeseries/'+self.jobID+'/'+self.dataType)+'_'.join(['percentiles',self.jobID,self.dataType,r,str(l),'percentiles',])+'.png'
+		filename = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join(['percentiles',self.jobID,self.dataType,r,str(l),'percentiles',])+'.png'
 		tsp.percentilesPlot(timesDict,modeldataDict,dataslice,title = title,filename=filename,units =self.modeldetails['units'])					    	
 		
 		  	    
@@ -463,10 +463,10 @@ class timeseriesAnalysis:
 		else: 	dataZcoords = {}
 
 		title = ' '.join([r,m,self.dataType])		
-	    	hovfilename = ukp.folder('images/timeseries/'+self.jobID+'/'+self.dataType)+'_'.join(['hov',self.jobID,self.dataType,r,m,])+'.png'
+	    	hovfilename = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join(['hov',self.jobID,self.dataType,r,m,])+'.png'
 		tsp.hovmoellerPlot(modeldata,data,hovfilename, modelZcoords = modelZcoords, dataZcoords= dataZcoords, title = title,diff=False)		
 	
-	    	hovfilename = ukp.folder('images/timeseries/'+self.jobID+'/'+self.dataType)+'_'.join(['hov',self.jobID,self.dataType,r,m,])+'-diff.png'
+	    	hovfilename = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join(['hov',self.jobID,self.dataType,r,m,])+'-diff.png'
 		tsp.hovmoellerPlot(modeldata,data,hovfilename, modelZcoords = modelZcoords, dataZcoords= dataZcoords, title = title,diff=True)		
 	
 
@@ -477,7 +477,7 @@ class timeseriesAnalysis:
 	  	for l in self.layers:	
 	 		if runmapplots:continue
 			if type(l) in [type(0),type(0.)]:continue
-	 		mapfilename = ukp.folder('images/timeseries/'+self.jobID+'/'+self.dataType)+'_'.join(['map',self.jobID,self.dataType,str(l),r,])+'.png'
+	 		mapfilename = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join(['map',self.jobID,self.dataType,str(l),r,])+'.png'
 			if ukp.shouldIMakeFile(self.modelFiles[-1],mapfilename,debug=False):runmapplots = True
  	if runmapplots:
 		self.mapplotsRegionsLayers() 		
