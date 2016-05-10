@@ -81,6 +81,14 @@ def addImagesText(imagePath,title = ''):
 	contents = f.readlines()
 	f.close()
 	if title == '': title = fnToTitle(imagePath)
+	
+	#####
+	# Halves the title if it is too long
+	if len(title) > 40:
+		line = title.split(' ')
+		line.insert(len(line)/2,'<br>')
+		title = ' '.join(line)
+		
 	for l,line in enumerate(contents):
 		if line.find('imagefilename')>=0:	contents[l] = contents[l].replace('imagefilename',imagePath)
 		if line.find('PlotTitle')>=0:		contents[l] = contents[l].replace('PlotTitle',title)

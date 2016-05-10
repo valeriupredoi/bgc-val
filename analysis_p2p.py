@@ -172,7 +172,7 @@ def analysis_jasmin(
 	#####
 	# What depth level to investigate, in the case of big 3D files (T,Sal, N,P,Si, etc)	
 	#if annual:	
-		print "WARNING: annual data not yet tested."
+	#	print "WARNING: annual data not yet tested."
 	#	assert False
 	#if annual:depthLevels 	= ['',]
 	#else:		depthLevels 	= ['Transect','Surface','100m','200m','500m',]

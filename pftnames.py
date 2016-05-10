@@ -506,6 +506,23 @@ def getLongName(text,debug=False):
   	if text == 'silicate200m':	return "Silicate (200m deep)"    	
   	if text == 'silicate500m':	return "Silicate (500m deep)"    	
 
+
+	if text == 'Alkalinity':	return "Alkalinity"  
+	if text == 'percentiles':	return "time series"  
+	if text == 'Chlorophyll':	return "Chlorophyll"  
+	if text == 'cci':		return "CCI"  
+	if text == 'pig':		return "pigments"  
+	if text == 'exportRatio':	return "Export Ratio"  
+	if text == 'IntegratedPrimaryProduction':	return "Integrated Primary Production"  
+	if text == 'OSU':		return "(OSU)"  
+	if text == '1x1':		return "(iMarNet)"  
+	if text == 'Oxygen':		return "Oxygen"  
+
+
+	if text == 'AirSeaFluxCO2':	return "Air Sea Flux of CO2"  
+	if text == 'DIC':		return "DIC"  
+
+
   	if text == 'AtlanticTransect':	return "Atlantic Transect"    
   	if text == 'PacificTransect':	return "Pacific Transect"    	
   	if text == 'SouthernTransect':	return "Southern Transect"    	
@@ -649,6 +666,17 @@ def getLongName(text,debug=False):
 	if text in ['Overestimate','Underestimate','Matched', 'Arctic','Tropics','Temperate', 'Surface',]:return text
 	
   	if text == 'SurfaceNoArtics':	return ""
+
+
+  	if text == 'Global':			return "Global"	
+  	if text == 'Equator10':			return "Equator (+/-10)"	
+  	if text == 'Remainder':			return "Remainder"	
+  	if text == 'ArcticOcean':		return "Arctic Ocean"	
+  	if text == 'NorthernSubpolarAtlantic':	return "Northern Subpolar Atlantic"	
+  	if text == 'NorthernSubpolarPacific':	return "Northern Subpolar Pacific"	
+  	if text == 'ignoreInlandSeas':		return "No Inland Seas"	
+  	if text == 'SouthernOcean':		return "Southern Ocean"	  	  	  	  	  	  		
+	
 	
   	if text == 'NorthTemperate':	return "North Temperate"
   	if text == 'SouthTemperate':	return "South Temperate"  	

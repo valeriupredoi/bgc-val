@@ -52,7 +52,7 @@ def html5Maker(
 
 	####
 	# Copy all necceasiry objects and templates to the report location:
-	print " Copying html and js assets to", reportdir
+	print "Copying html and js assets to", reportdir
 	copytree('html5/html5Assets', reportdir)
 	indexhtmlfn 	= reportdir+"index.html"
 	try:os.rename(reportdir+'index-template.html', indexhtmlfn)
@@ -74,7 +74,8 @@ def html5Maker(
 	# Add time series regional plots:
 	#key = 'ignoreInlandSeas'
 
-	plotbyregion = True
+	plotbyregion = 0#True
+	plotbyfield = True
 	if plotbyregion:
 		for key in ['Global','ignoreInlandSeas','Equator10', 'ArcticOcean','NorthernSubpolarAtlantic','NorthernSubpolarPacific','SouthernOcean','Remainder',]:
 			vfiles = glob('./images/'+jobID+'/timeseries/*/percentiles*'+key+'*.png')
@@ -90,12 +91,49 @@ def html5Maker(
 					shutil.copy2(fn, newfn)
 				relfn = newfn.replace(reportdir,'./')
 				
-				files.append(relativePath)
-				print "Adding ",newfn,"to script"
-	
-			html5Tools.AddSection(indexhtmlfn,'ts'+key,getLongName(key), Description=getLongName(key)+'Time Series plots',Files = files)
+				#####
+				# Create custom title by removing extra bits.
+				title = html5Tools.fnToTitle(relfn).split(' ')
+				#title.remove('Surface').remove('surface')
+				title.remove('percentiles')
+				title.remove(jobID)
+				title.remove(key)
+				
+			
+				files[relfn] = ' '.join([getLongName(t) for t in title])
+				print "Adding ",relfn,"to script"
+				
+			html5Tools.AddSection(indexhtmlfn,'ts'+key,getLongName(key)+ ' TS', Description=getLongName(key)+' Time Series plots',Files = files)
 
+	if plotbyfield:
+		fields = ['Alkalinity' , 'Nitrate' ,'Silicate' , 'Temperature' , 'salinity' , 'DIC','Chlorophyll_cci' , 'IntegratedPrimaryProduction_OSU' , 'Oxygen' ,'exportRatio' , ]#  'IntegratedPrimaryProduction_1x1' , 'Chlorophyll_pig' , 'AirSeaFluxCO2' , ]
 
+		for key in fields:
+			vfiles = glob('./images/'+jobID+'/timeseries/*/percentiles*'+key+'*.png')
+			files = {}
+			for fn in vfiles:
+				#####
+				# Note that we use three paths here.
+				# fn: The original file path
+				# newfn: The location of the new copy of the file
+				# relfn: The location of the new copy relative to the index.html
+				newfn = newImageLocation(fn)	
+				if not os.path.exists(newfn):
+					shutil.copy2(fn, newfn)
+				relfn = newfn.replace(reportdir,'./')
+				
+				#####
+				# Create custom title by removing extra bits.
+				title = html5Tools.fnToTitle(relfn).split(' ')
+				for k in ['percentiles', jobID, key,'percentiles']:
+					try: title.remove(k)
+					except:pass
+				
+			
+				files[relfn] = ' '.join([getLongName(t) for t in title])
+				print "Adding ",relfn,"to script"
+				
+			html5Tools.AddSection(indexhtmlfn,'ts'+key,getLongName(key)+ ' TS', Description=getLongName(key)+' Time Series plots',Files = files)
 
 
 
