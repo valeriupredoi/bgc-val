@@ -24,7 +24,9 @@
 from UKESMpython import folder
 from pftnames import getLongName
 from glob import glob
+from sys import argv
 import os 
+
 import shutil
 
 from html5 import html5Tools
@@ -217,6 +219,7 @@ def html5Maker(
 
 
 	print "-------------\nSuccess\ntest with:\nfirefox",indexhtmlfn
+	print "To zip it up:\ntar cfvz  report-"+jobID+".tar.gz ",reportdir
 
 
 
