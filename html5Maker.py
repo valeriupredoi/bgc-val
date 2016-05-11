@@ -43,6 +43,7 @@ def copytree(src, dst, symlinks=False, ignore=None):
 def html5Maker(
 		jobID = 'u-ab749',
 		reportdir = folder('../../html5report'),
+		
 	):
 
 	#####
@@ -73,11 +74,35 @@ def html5Maker(
 	#####
 	# Add time series regional plots:
 	#key = 'ignoreInlandSeas'
+	fields = ['Alkalinity' , 
+		  'Nitrate' ,
+		  'Silicate' , 
+		  'Temperature' , 
+		  'salinity' , 
+		  'DIC',
+		  'Chlorophyll_cci' , 
+		  'IntegratedPrimaryProduction_OSU' , 
+		  'Oxygen' ,
+		  'exportRatio' , 
+		  #  'IntegratedPrimaryProduction_1x1' , 
+		  #'Chlorophyll_pig' , 
+		  #'AirSeaFluxCO2' , ]
+		 ]
+	regions = ['Global',
+		  'ignoreInlandSeas',
+		  'Equator10', 
+		  'ArcticOcean',
+		  'NorthernSubpolarAtlantic',
+		  'NorthernSubpolarPacific',
+		  'SouthernOcean',
+		  'Remainder',]
+		
 
 	plotbyregion = 0#True
-	plotbyfield = True
+	plotbyfield = 0#
+	plotbyfieldandregion = True
 	if plotbyregion:
-		for key in ['Global','ignoreInlandSeas','Equator10', 'ArcticOcean','NorthernSubpolarAtlantic','NorthernSubpolarPacific','SouthernOcean','Remainder',]:
+		for key in regions:
 			vfiles = glob('./images/'+jobID+'/timeseries/*/percentiles*'+key+'*.png')
 			files = {}
 			for fn in vfiles:
@@ -106,8 +131,6 @@ def html5Maker(
 			html5Tools.AddSection(indexhtmlfn,'ts'+key,getLongName(key)+ ' TS', Description=getLongName(key)+' Time Series plots',Files = files)
 
 	if plotbyfield:
-		fields = ['Alkalinity' , 'Nitrate' ,'Silicate' , 'Temperature' , 'salinity' , 'DIC','Chlorophyll_cci' , 'IntegratedPrimaryProduction_OSU' , 'Oxygen' ,'exportRatio' , ]#  'IntegratedPrimaryProduction_1x1' , 'Chlorophyll_pig' , 'AirSeaFluxCO2' , ]
-
 		for key in fields:
 			vfiles = glob('./images/'+jobID+'/timeseries/*/percentiles*'+key+'*.png')
 			files = {}
@@ -134,6 +157,39 @@ def html5Maker(
 				print "Adding ",relfn,"to script"
 				
 			html5Tools.AddSection(indexhtmlfn,'ts'+key,getLongName(key)+ ' TS', Description=getLongName(key)+' Time Series plots',Files = files)
+
+	if plotbyfieldandregion:
+		for key in fields[:2]:
+		    for region in regions:		
+			vfiles = glob('./images/'+jobID+'/timeseries/*/percentiles*'+key+'*'+region+'*.png')
+			vfiles.extend(glob('./images/'+jobID+'/P2Pplots/2007/*'+key+'*/BGCVal/*'+region+'*'+key+'*hist.png'))
+			vfiles.extend(glob('./images/'+jobID+'/P2Pplots/2007/*'+key+'*/BGCVal/*'+region+'*'+key+'*robingquad.png'))			
+			vfiles.extend(glob('./images/'+jobID+'/P2Pplots/2007/*'+key+'*/BGCVal/*'+region+'*'+key+'*2007.png'))						
+			files = {}
+			for fn in vfiles:
+				#####
+				# Note that we use three paths here.
+				# fn: The original file path
+				# newfn: The location of the new copy of the file
+				# relfn: The location of the new copy relative to the index.html
+				newfn = newImageLocation(fn)	
+				if not os.path.exists(newfn):
+					shutil.copy2(fn, newfn)
+				relfn = newfn.replace(reportdir,'./')
+				
+				#####
+				# Create custom title by removing extra bits.
+				title = html5Tools.fnToTitle(relfn).split(' ')
+				for k in ['percentiles', jobID, key,'percentiles']:
+					try: title.remove(k)
+					except:pass
+				
+			
+				files[relfn] = ' '.join([getLongName(t) for t in title])
+				print "Adding ",relfn,"to script"
+				longnames = getLongName(key)+ ' '+ getLongName(region)
+			html5Tools.AddSection(indexhtmlfn,key+'-'+region,longnames, Description=longnames+' plots',Files = files)
+
 
 
 

@@ -55,7 +55,7 @@ def writeSideBar(filepath, href, text):
 	"""	Addes a sidebar to the file "filepath."
 	"""	
 								
-	newline = '\n\t\t\t\t\t\t\t\t<li><a href="#'+href+'" id="'+href+'-link" class="skel-layers-ignoreHref"><span class="icon fa-th">'+text+'</span></a></\n'
+	newline = '\n\t\t\t\t\t\t\t\t<li><a href="#'+href+'" id="'+href+'-link" class="skel-layers-ignoreHref"><span class="icon fa-square">'+text+'</span></a></li>\n'
 	linenumber = locateLineNumber(filepath, 'AddSideBar') -1
 	print "Adding at ", linenumber,"line:\n",newline
 	AddtoFile(filepath,linenumber,newline)

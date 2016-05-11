@@ -263,7 +263,8 @@ def analysis_jasmin(
 	justAll		= ['All',]				# All is not a slice, it has no cut on location, time, or depth.
 	AllStandard	= ['All','Standard','ignoreInlandSeas']	
 	HighLatWinter	= ['All','HighLatWinter',]
-						
+	tsRegions	= ['Global','Equator10', 'Remainder','ArcticOcean','NorthernSubpolarAtlantic','NorthernSubpolarPacific','ignoreInlandSeas','SouthernOcean',]
+					
 	medusaCoords 	= {'t':'index_t', 'z':'deptht', 'lat': 'nav_lat',  'lon': 'nav_lon',   'cal': '365_day',}	# model doesn't need time dict.
 	maredatCoords 	= {'t':'index_t', 'z':'DEPTH',  'lat': 'LATITUDE', 'lon': 'LONGITUDE', 'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
 	woaCoords 	= {'t':'index_t', 'z':'depth',  'lat': 'lat', 	   'lon': 'lon',       'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}		
@@ -302,7 +303,7 @@ def analysis_jasmin(
 
 			av['chl']['depthLevels'] 		= ['',]
 			av['chl']['MEDUSA']['grid']		= modelGrid		
-			av['chl']['plottingSlices'] 		= AllStandard
+			av['chl']['plottingSlices'] 		= tsRegions
 
 		if doCHL_CCI:						
 			name = 'Chlorophyll_cci'
@@ -315,7 +316,7 @@ def analysis_jasmin(
 			
 			av[name]['MEDUSA']['grid']		= modelGrid		
 			av[name]['depthLevels'] 		= ['',]
-			if annual:	av[name]['plottingSlices'] 	= AllStandard
+			if annual:	av[name]['plottingSlices'] 	= tsRegions
 			else:		av[name]['plottingSlices'] 	= HighLatWinter
 			
 			av[name]['Data']['coords'] 	= cciCoords
@@ -403,7 +404,7 @@ def analysis_jasmin(
 			
 			av[name]['MEDUSA']['grid']	= modelGrid		
 			av[name]['depthLevels'] 	= ['Surface','Transect','PTransect','SOTransect',]
-			if annual:	av[name]['plottingSlices'] 	= AllStandard
+			if annual:	av[name]['plottingSlices'] 	= tsRegions
 			else:		av[name]['plottingSlices'] 	= HighLatWinter
 			
 			av[name]['Data']['coords'] 	= woaCoords
@@ -427,7 +428,7 @@ def analysis_jasmin(
 			
 			av[name]['MEDUSA']['grid']		= modelGrid		
 			av[name]['depthLevels'] 		= ['Surface','Transect','PTransect']
-			if annual:	av[name]['plottingSlices'] 	= AllStandard
+			if annual:	av[name]['plottingSlices'] 	= tsRegions
 			else:		av[name]['plottingSlices'] 	= HighLatWinter
 			
 			av[name]['Data']['coords'] 	= woaCoords
@@ -473,7 +474,7 @@ def analysis_jasmin(
 			
 			av['oxygen']['MEDUSA']['grid']		= modelGrid		
 			av['oxygen']['depthLevels'] 		= ['Surface','Transect','PTransect']
-			if annual:	av[name]['plottingSlices'] 	= AllStandard
+			if annual:	av[name]['plottingSlices'] 	= tsRegions
 			else:		av[name]['plottingSlices'] 	= HighLatWinter
 			
 			av['oxygen']['Data']['coords'] 		= woaCoords
@@ -515,7 +516,7 @@ def analysis_jasmin(
 
 			av[name]['NEMO']['grid'] 		= modelGrid
 			av[name]['depthLevels'] 		= ['Surface','Transect','PTransect']	 
-			av[name]['plottingSlices'] 	= AllStandard
+			av[name]['plottingSlices'] 	= tsRegions
 			
 			av[name]['Data']['coords'] 	= woaCoords
 			av[name]['NEMO']['coords']	= medusaCoords
@@ -537,7 +538,7 @@ def analysis_jasmin(
 
 			av[name]['NEMO']['grid'] 	= modelGrid	
 			av[name]['depthLevels'] 	= ['Surface','Transect','PTransect']	
-			av[name]['plottingSlices'] 	= AllStandard
+			av[name]['plottingSlices'] 	= tsRegions
 
 			av[name]['Data']['coords'] 	= woaCoords
 			av[name]['NEMO']['coords']	= medusaCoords
@@ -559,7 +560,7 @@ def analysis_jasmin(
 					
 			av[name]['NEMO']['grid'] 		= modelGrid
 			av[name]['depthLevels'] 		= ['',]
-			av[name]['plottingSlices'] 		= AllStandard
+			av[name]['plottingSlices'] 		= tsRegions
 
 			av[name]['Data']['coords'] 	= {'t':'index_t', 'z':'index_z','lat':'lat','lon':'lon','cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
 			av[name]['NEMO']['coords']	= medusaCoords

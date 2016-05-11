@@ -48,7 +48,13 @@ purple = [125./256., 38./256., 205./256.]
 
 
 class makePatternStatsPlots:
-  def __init__(self,shelveDict, plotTitle, xkeys, filenamebase,grid='ORCA1',):
+  def __init__(self,
+  		shelveDict, 
+  		plotTitle, 
+  		xkeys, 
+  		filenamebase,
+  		grid='ORCA1',
+  		gridFile=''):
   	"""	makePatternStatsPlots:
   		
 		Similarly to makeTargets.py, this routine produces a set of plots based on the shelves made by makePlots.py.
@@ -76,6 +82,7 @@ class makePatternStatsPlots:
 	self.filenamebase = filenamebase
 	self.xkeys = xkeys
 	self.grid = grid
+	self.gridFile = gridFile	
   	self.setDictionaries()
   	
   	if not len(self.AllShelves):
@@ -94,10 +101,10 @@ class makePatternStatsPlots:
   def calculateVolume(self):
 	# makes a netcdf with the volumes of each pixel in the flat map.
 	# 
-	self.gridfile = ukp.getGridFile(self.grid)
+	if self.gridFile=='':	self.gridFile = ukp.getGridFile(self.grid)
 	volumeDict = {}
 	if self.grid == 'Flat1deg': 
-		nc = Dataset(self.gridfile,'r')
+		nc = Dataset(self.gridFile,'r')
 		lat = nc.variables['lat'][:]
 		lon = nc.variables['lon'][:]	 
 		print 'calculating volume: '	
@@ -121,8 +128,8 @@ class makePatternStatsPlots:
 		nc.close()
 		self.volumeDict	= volumeDict			
 		return
-	if self.grid in ['ORCA1','ORCA025']:
-		nc = Dataset(self.gridfile,'r')	
+	if self.grid in ['ORCA1','ORCA025',]:
+		nc = Dataset(self.gridFile,'r')	
 		pvol = nc.variables['pvol'][0,:,:]
 		lat = nc.variables['nav_lat'][:]
 		lon = nc.variables['nav_lon'][:]
@@ -136,7 +143,25 @@ class makePatternStatsPlots:
 		nc.close()
 		self.volumeDict	= volumeDict			
 		return
-		
+
+	if self.grid in ['eORCA1',]:
+		#####
+		# No pvol in this mesh file
+		nc = Dataset(self.gridFile,'r')	
+		pvol = nc.variables['e1t'][:]*nc.variables['e2t'][:]
+		lat = nc.variables['nav_lat'][:]
+		lon = nc.variables['nav_lon'][:]
+		m = np.ma.array(pvol).mask + np.ma.array(lat).mask +np.ma.array(lon).mask
+		pvol = np.ma.masked_where(m,pvol).compressed()
+		lat  = np.ma.masked_where(m,lat).compressed()
+		lon  = np.ma.masked_where(m,lon).compressed()
+						
+		for la,lo,v in zip(lat,lon,pvol):
+			volumeDict[(round(la,3),round(lo,3))] = v
+		nc.close()
+		self.volumeDict	= volumeDict			
+		return
+				
 	print 	"calculateVolume: Error. Can't do the",self.grid,"Grid.   This is not the case for the ORCA1 and ORCA025 grids"		
 	assert False
 
@@ -144,7 +169,7 @@ class makePatternStatsPlots:
   	#### 
   	# Calculates the total quatity in the dataset.
 	totalConc = 0.
-	#print 'calcTotalConcentration:',sh['xtype'],key,self.grid,self.gridfile
+	#print 'calcTotalConcentration:',sh['xtype'],key,self.grid,self.gridFile
 	#print self.volumeDict
 	for la,lo,data in zip(self.loadFromshelve(sh,'x_lat'),self.loadFromshelve(sh,'x_lon'), sh[key]):
 		#print la,lo,data, [(round(la,3),round(lo,3))]
@@ -320,6 +345,7 @@ class makePatternStatsPlots:
   	####
   	# plotMetrics makes the plots.
   	# 
+  	return
   	
   	metrics = self.metrics
 	title = getLongName(self.plotTitle)
@@ -351,7 +377,7 @@ class makePatternStatsPlots:
 				xkeystring = 	xkeystring.replace('Ocean','').replace('North','North ').replace('South','South ')#.replace(' ','\n')
 				linesDict['xticklabels'].append(xkeystring)
 
-			
+				if not len(metrics[metric][xkey].keys()): continue
 				for m, val in sorted(metrics[metric][xkey].items()):
 					#if plotStyle=='Lines':
 					if val in [None,]:
@@ -371,6 +397,7 @@ class makePatternStatsPlots:
 			
 			for key in self.keys: 
 				#print linesDict['x'],linesDict[key],self.keyscolours[key]
+				print key, linesDict['x'],linesDict[key]
 				pyplot.plot(linesDict['x'],linesDict[key],c=self.keyscolours[key],lw=2)# s = 40,lw=0.)#marker=modelmarkers[m]
 			
 			pyplot.ylabel(self.metricsDict[metric])	

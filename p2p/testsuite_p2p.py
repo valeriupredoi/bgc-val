@@ -321,7 +321,8 @@ def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
 							name+' '+g,	#xkeysname
 							ukp.slicesDict[xkeys],		#xkeysLabels=
 							filenamebase,	# filename base	
-							grid	= grid,												
+							grid		= grid,	
+							gridFile	= gridFile				
 							)
 			if not annual:
 				#####
@@ -334,7 +335,8 @@ def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
 							name+' Months',	#xkeysname
 							ukp.slicesDict['Months'],#xkeysLabels=
 							filenamebase,	# filename base	
-							grid	= grid,												
+							grid	= grid,	
+							gridFile= gridFile												
 							)
 
 		if noPlots: continue
@@ -352,7 +354,8 @@ def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
 						name+' '+g,
 						ukp.slicesDict[g],		
 						filenamebase,
-						grid	= grid,												
+						grid	= grid,
+						gridFile= gridFile			
 						)
 									
 	#assert False

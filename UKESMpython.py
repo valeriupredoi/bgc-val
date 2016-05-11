@@ -1217,6 +1217,7 @@ def getSlicesDict():
 	Seasons		=['JFM','AMJ','JAS','OND'] 
 	Transects	= ['AtlanticTransect', 'PacificTransect','SouthernTransect','10N','10S']
 	Misc		= ['HighLatWinter',]
+	BGCVal		= ['Global','ignoreInlandSeas','Equator10', 'ArcticOcean','NorthernSubpolarAtlantic','NorthernSubpolarPacific','SouthernOcean','Remainder',]
 	
 	OceanMonths  		= { o: [ (o,m) for m in months] for o in Oceans}
 	OceanSeasons 		= { o: [ (o,m) for m in Seasons] for o in Oceans}	
@@ -1239,6 +1240,7 @@ def getSlicesDict():
 	newSlices.extend(HemispheresSeasons)	
 	newSlices.extend(Transects)		
 	newSlices.extend(Misc)			
+	newSlices.extend(BGCVal)				
 	for om,keys in OceanMonths.items(): 		newSlices.extend(keys)
 	for om,keys in OceanSeasons.items(): 		newSlices.extend(keys)
 	for om,keys in HemispheresMonths.items(): 	newSlices.extend(keys)
@@ -1255,6 +1257,7 @@ def getSlicesDict():
 	slicesDict['depthRanges'] 	= depthRanges	
 	slicesDict['Transects'] 	= Transects		
 	slicesDict['Misc'] 		= Misc			
+	slicesDict['BGCVal'] 		= BGCVal				
 	for om,keys in OceanMonths.items(): 		slicesDict[om+'Months' ] = keys
 	for om,keys in OceanSeasons.items(): 		slicesDict[om+'Seasons'] = keys
 	for om,keys in HemispheresMonths.items(): 	slicesDict[om+'Months' ] = keys
