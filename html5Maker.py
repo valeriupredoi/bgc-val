@@ -44,12 +44,15 @@ def copytree(src, dst, symlinks=False, ignore=None):
 	            
 def html5Maker(
 		jobID = 'u-ab749',
-		reportdir = folder('../../html5report'),
+		reportdir = '../../html5report',
 		
 	):
 
+	reportdir = folder(reportdir)
+	
 	#####
 	# Delete old files
+	
 	print "Removing old files from:",reportdir
 	shutil.rmtree(reportdir)
 
