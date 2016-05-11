@@ -140,7 +140,8 @@ def AddSection(filepath,href,Title, Description='',Files=[]):
 	
 	AddtoFile(filepath,linenumber,outtxt)	
 
-def AddSubSections(filepath,hrefs,SectionTitle,Titles={}, Descriptions={},FileLists={}):
+
+def AddSubSections(filepath,hrefs,SectionTitle,SidebarTitles = {},Titles={}, Descriptions={},FileLists={}):
 	"""	Addes a section and a series of nested subsectionto the file "filepath."
 	"""
 	#####
@@ -149,11 +150,12 @@ def AddSubSections(filepath,hrefs,SectionTitle,Titles={}, Descriptions={},FileLi
 	writeSideBar(filepath, '', '',option ='startSub')	
 	
 	for href in hrefs:
+		SidebarTitle = SidebarTitles[href]
 		Title = Titles[href]
 		Description = Descriptions[href]
 		Files = FileLists[href]#
 		
-		writeSideBar(filepath, href, Title,option='sub')
+		writeSideBar(filepath, href, SidebarTitle,option='sub')
 
 		##### 
 		# Copy the template and add the images.

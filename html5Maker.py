@@ -163,12 +163,14 @@ def html5Maker(
 			SectionTitle= getLongName(key)
 			hrefs 	= []
 			Titles	= {}
+			SidebarTitles = {}
 			Descriptions= {}
 			FileLists	= {}
 			for region in regions:
 				href = 	key+'-'+region
 				hrefs.append(href)
-				Titles[href] = 	getLongName(region)
+				Titles[href] = 	getLongName(region) +' '+	getLongName(key)
+				SidebarTitles[href] = getLongName(region)				
 				Descriptions[href] = getLongName(key) +' '+	getLongName(region)
 				FileLists[href] = {}
 				
@@ -203,7 +205,11 @@ def html5Maker(
 					FileLists[href][relfn] = ' '.join([getLongName(t) for t in title])
 					print "Adding ",relfn,"to script"
 				
-			html5Tools.AddSubSections(indexhtmlfn,hrefs,SectionTitle,Titles=Titles, Descriptions=Descriptions,FileLists=FileLists)
+			html5Tools.AddSubSections(indexhtmlfn,hrefs,SectionTitle,
+					SidebarTitles=SidebarTitles,#
+					Titles=Titles, 
+					Descriptions=Descriptions,
+					FileLists=FileLists)
 
 #			html5Tools.AddSection(indexhtmlfn,key+'-'+region,longnames, Description=longnames+' plots',Files = files)
 

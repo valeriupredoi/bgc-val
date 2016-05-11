@@ -147,7 +147,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		machinelocation = 'JASMIN'	
 				
 		ObsFolder 	= "/group_workspaces/jasmin/esmeval/example_data/bgc/"
-		esmvalFolder 	= "/group_workspaces/jasmin/esmeval/data/"		
+		esmvalFolder 	= "/group_workspaces/jasmin2/ukesm/BGC_data/"		
 		#####
 		# Location of model files.	
 		MEDUSAFolder_pref	= ukp.folder(esmvalFolder)
