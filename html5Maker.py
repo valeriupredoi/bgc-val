@@ -52,7 +52,8 @@ def html5Maker(
 	#####
 	# Delete old files
 	print "Removing old files from:",reportdir
-	shutil.rmtree(reportdir)
+	try:shutil.rmtree(reportdir)
+	except: pass
 
 	reportdir = folder(reportdir)
 	
