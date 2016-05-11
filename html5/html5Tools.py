@@ -51,11 +51,19 @@ def locateLineNumber(filepath,linekey):
 		if line.find(linekey)>=0:
 			return l
 
-def writeSideBar(filepath, href, text):
+
+def writeSideBar(filepath, href, text,option='head'):
 	"""	Addes a sidebar to the file "filepath."
 	"""	
-								
-	newline = '\n\t\t\t\t\t\t\t\t<li><a href="#'+href+'" id="'+href+'-link" class="skel-layers-ignoreHref"><span class="icon fa-square">'+text+'</span></a></li>\n'
+	
+	if option == 'sub':	
+		newline = '\n\t\t\t\t\t\t\t\t<li><a href="#'+href+'" id="'+href+'-link" class="skel-layers-ignoreHref"><span class="icon fa-square">'+text+'</span></a></li>\n'
+	if option == 'head':	
+		newline = '\n\t\t\t\t\t\t\t  <li><a href="#'+href+'" id="'+href+'-link" class="skel-layers-ignoreHref"><span class="icon fa-th">'    +text+'</span></a></li>\n'
+
+	if option == 'startSub': newline = '\n\t\t\t\t\t\t\t\t<ul>\n'
+	if option == 'endSub': 	 newline = '\n\t\t\t\t\t\t\t\t</ul>\n'
+				
 	linenumber = locateLineNumber(filepath, 'AddSideBar') -1
 	print "Adding at ", linenumber,"line:\n",newline
 	AddtoFile(filepath,linenumber,newline)
@@ -132,6 +140,51 @@ def AddSection(filepath,href,Title, Description='',Files=[]):
 	
 	AddtoFile(filepath,linenumber,outtxt)	
 
+def AddSubSections(filepath,hrefs,SectionTitle,Titles={}, Descriptions={},FileLists={}):
+	"""	Addes a section and a series of nested subsectionto the file "filepath."
+	"""
+	#####
+	# Add a leading link to the side bar
+	writeSideBar(filepath, hrefs[0], SectionTitle,option ='head')
+	writeSideBar(filepath, '', '',option ='startSub')	
+	
+	for href in hrefs:
+		Title = Titles[href]
+		Description = Descriptions[href]
+		Files = FileLists[href]#
+		
+		writeSideBar(filepath, href, Title,option='sub')
+
+		##### 
+		# Copy the template and add the images.
+		f = open("html5/html5Assets/section-template.html", "r")
+		contents = f.readlines()
+		f.close()
+		if type(Files) == type(['a','list',]):
+			imagesTxt = '\n'.join([addImagesText(f) for f in Files])
+		
+		if type(Files) == type({'a':'dict',}):
+			imagesTxt = '\n'.join([addImagesText(f,title=Files[f]) for f in sorted(Files.keys())])
+			
+		#####
+		# Add Title, description and figures to the copied template
+		for l,line in enumerate(contents):
+			if line.find('href')>=0:	contents[l] = contents[l].replace('href',href)
+			if line.find('Title')>=0:	contents[l] = contents[l].replace('Title',Title)
+			if line.find('Description')>=0:	contents[l] = contents[l].replace('Description',Description)				
+			if line.find('Figures')>=0:	contents[l+1] += imagesTxt
+	
+		#####
+		# Convert the list into a string				
+		outtxt = '\n'.join(contents)
+	
+		#####
+		# Add this into the template file.
+		linenumber = locateLineNumber(filepath, 'AddSectionHere') -1
+	
+		AddtoFile(filepath,linenumber,outtxt)	
+	writeSideBar(filepath, '', '',option ='endSub')
+	
 #def AddImage(filepath, href, text):
 #	"""	Addes a sidebar to the file "filepath."
 #	"""	

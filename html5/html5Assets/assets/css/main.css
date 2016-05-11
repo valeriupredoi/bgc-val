@@ -2070,19 +2070,19 @@
 		}
 		
 		/* Add behaviour for nested lists */
-		#nav ul li li a {
+		#nav ul ul li a {
 			display: block;
-			padding: 0.0em 1.5em 0.0em 0.6em;
-			color: rgba(255, 255, 255, 0.3);
+			padding: 0.0em 1.5em 0.0em 1.5em;
+			color: rgba(0, 255, 255, 0.3);
 			text-decoration: none;
 			outline: 0;
 			border: 0;
 			-moz-transition: none;
 			-webkit-transition: none;
 			-ms-transition: none;
-			transition: none;
-			
+			transition: none;		
 		}
+		
 		
 
 		#nav ul li a span {
@@ -2107,7 +2107,7 @@
 		}
 
 			#nav ul li a.active span:before {
-				color: #e27689;
+				color: rgba(0, 255, 255, 0.3);
 			}
 
 /* Footer */

@@ -41,7 +41,7 @@ def downloadMass(jobID,):
 	machine = gethostname()
 	
 	if machine.find('mass')>-1:
-		outputFold = "/group_workspaces/jasmin/esmeval/data/"+jobID
+		outputFold = "/group_workspaces/jasmin2/ukesm/BGC_data/"+jobID
 		if not os.path.exists(outputFold):
 			print "Making ",outputFold
     			os.makedirs(outputFold)
