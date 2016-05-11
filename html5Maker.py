@@ -48,14 +48,14 @@ def html5Maker(
 		
 	):
 
-	reportdir = folder(reportdir)
 	
 	#####
 	# Delete old files
-	
 	print "Removing old files from:",reportdir
 	shutil.rmtree(reportdir)
 
+	reportdir = folder(reportdir)
+	
 	####
 	# Copy all necceasiry objects and templates to the report location:
 	print "Copying html and js assets to", reportdir
