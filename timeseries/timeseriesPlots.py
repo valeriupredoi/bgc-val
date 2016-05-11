@@ -148,6 +148,9 @@ def percentilesPlot(
 	maxt = np.ma.max(timesDict[metrics[0]])
 	miny = np.ma.min(modeldataDict['min'])
 	maxy = np.ma.max(modeldataDict['max'])
+	if miny in [np.ma.masked, np.nan,np.inf]:
+		print "percentilesPlot:\tIt is not possible to make this plot,(",title,"), as the min values are no plottable:",miny
+		return
 	for m in metrics:
 		if np.ma.min(timesDict[m]) < mint: mint = np.ma.min(timesDict[m])
 		if np.ma.max(timesDict[m]) > maxt: maxt = np.ma.max(timesDict[m])
@@ -160,6 +163,7 @@ def percentilesPlot(
 		if np.ma.max(dataslice) > maxy: maxy = np.ma.max(dataslice)			
 	xlims= [mint,maxt]
 	ylims= [miny,maxy]
+
 
 	if dolog and ylims[0] *ylims[-1] <=0.:
 		print "zero (or less) in ylims", ylims,
