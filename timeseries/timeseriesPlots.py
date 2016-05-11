@@ -144,20 +144,20 @@ def percentilesPlot(
 
 	#####
 	# Determine the x axis and y axis corners.	
-	mint = np.min(timesDict[metrics[0]])
-	maxt = np.max(timesDict[metrics[0]])
-	miny = np.min(modeldataDict['min'])
-	maxy = np.max(modeldataDict['max'])
+	mint = np.ma.min(timesDict[metrics[0]])
+	maxt = np.ma.max(timesDict[metrics[0]])
+	miny = np.ma.min(modeldataDict['min'])
+	maxy = np.ma.max(modeldataDict['max'])
 	for m in metrics:
-		if np.min(timesDict[m]) < mint: mint = np.min(timesDict[m])
-		if np.max(timesDict[m]) > maxt: maxt = np.max(timesDict[m])
-		if np.min(modeldataDict[m]) < miny: miny = np.min(modeldataDict[m])
-		if np.max(modeldataDict[m]) > maxy: maxy = np.max(modeldataDict[m])
+		if np.ma.min(timesDict[m]) < mint: mint = np.ma.min(timesDict[m])
+		if np.ma.max(timesDict[m]) > maxt: maxt = np.ma.max(timesDict[m])
+		if np.ma.min(modeldataDict[m]) < miny: miny = np.ma.min(modeldataDict[m])
+		if np.ma.max(modeldataDict[m]) > maxy: maxy = np.ma.max(modeldataDict[m])
 	if len(dataslice):	
 		try:	dataslice = dataslice.compressed()
 		except:	pass
-		if np.min(dataslice) < miny: miny = np.min(dataslice)
-		if np.max(dataslice) > maxy: maxy = np.max(dataslice)			
+		if np.ma.min(dataslice) < miny: miny = np.ma.min(dataslice)
+		if np.ma.max(dataslice) > maxy: maxy = np.ma.max(dataslice)			
 	xlims= [mint,maxt]
 	ylims= [miny,maxy]
 
@@ -169,7 +169,7 @@ def percentilesPlot(
 		print "new ylims:",ylims
 		#assert 0
 		
-	if np.max(ylims)/np.min(ylims)>20.:	
+	if np.ma.max(ylims)/np.ma.min(ylims)>20.:	
 		#####
 		# log
 		ylims[0] = ylims[0]*0.6
@@ -246,7 +246,7 @@ def percentilesPlot(
 	axm.set_ylim(ylims)	
 	axd.set_ylim(ylims)
 
-	if np.max(ylims)/np.min(ylims)>20.:
+	if np.ma.max(ylims)/np.ma.min(ylims)>20.:
 		axm.set_yscale('log')	
 		axd.set_yscale('log')
 
