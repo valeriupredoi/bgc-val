@@ -187,10 +187,14 @@ class timeseriesAnalysis:
 		    	#####
 		    	# can't skip it, need to load it.
 			layerdata = DL.load[(r,l)]
-			if len(layerdata)==0:
-				layerdata  = np.ma.array([-999,],mask=[True,])
+
 			if type(layerdata) == type(np.ma.array([1,-999,],mask=[False, True,])):
 				layerdata = layerdata.compressed()
+
+			if len(layerdata)==0:
+				for m in self.metrics:
+					modeldataD[(r,l,m)][meantime] = np.ma.array([-999,],mask=[True,])
+					
 		  	for m in self.metrics:
 		  		try:
 		  			a = modeldataD[(r,l,m)][meantime]

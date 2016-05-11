@@ -226,7 +226,10 @@ if __name__=="__main__":
 	try:	jobID = argv[1]
 	except:	
 		jobID = "u-ab749"
-	html5Maker(jobID =jobID,)
+	try: 		reportdir = argv[2]
+	except: 	reportdir =folder('../../html5report')
+		
+	html5Maker(jobID =jobID,reportdir=reportdir)
 
 
 
