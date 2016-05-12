@@ -40,7 +40,18 @@ def copytree(src, dst, symlinks=False, ignore=None):
         else:
             shutil.copy2(s, d)
 
-
+def addImageToHtml(fn,imagesfold):
+	#####
+	# Note that we use three paths here.
+	# fn: The original file path relative to here
+	# newfn: The location of the new copy of the file relative to here
+	# relfn: The location of the new copy relative to the index.html
+	
+	newfn = imagesfold+os.path.basename(fn)
+	if not os.path.exists(newfn):
+		shutil.copy2(fn, newfn)
+	relfn = newfn.replace(reportdir,'./')	
+	return relfn
 	            
 def html5Maker(
 		jobID = 'u-ab749',
@@ -80,16 +91,18 @@ def html5Maker(
 	#####
 	# Add time series regional plots:
 	#key = 'ignoreInlandSeas'
-	fields = ['Alkalinity' , 
-		  'Nitrate' ,
-		  'Silicate' , 
-		  'Temperature' , 
-		  'salinity' , 
+	fields = ['Alkalinity', 
+		  'Nitrate',
+		  'Silicate', 
+		  'Temperature', 
+		  'Salinity', 
+		  'Oxygen',
 		  'DIC',
-		  'Chlorophyll_cci' , 
-		  'IntegratedPrimaryProduction_OSU' , 
-		  'Oxygen' ,
-		  'exportRatio' , 
+		  'Chlorophyll_cci', 
+		  'IntegratedPrimaryProduction_OSU', 
+
+		  'ExportRatio', 
+		  'MLD',
 		  #  'IntegratedPrimaryProduction_1x1' , 
 		  #'Chlorophyll_pig' , 
 		  #'AirSeaFluxCO2' , ]
@@ -103,24 +116,105 @@ def html5Maker(
 		  'SouthernOcean',
 		  'Remainder',]
 		
-
+	summarySection = 0
+	summarySections = True	
 	plotbyregion = 0#True
 	plotbyfield = 0#
 	plotbyfieldandregion = True
+	
+	
+	
+	if summarySection:
+		files = {}
+		vfiles = glob('./images/'+jobID+'/timeseries/*/percentiles*ignoreInlandSeas*.png')
+		vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*/*/*ignoreInlandSeas*hist.png'))
+		vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*/*/*ignoreInlandSeas*robinquad.png'))			
+		vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*/*/*ignoreInlandSeas*scatter.png'))	
+						
+		print './images/'+jobID+'/timeseries/*/percentiles*ignoreInlandSeas*.png:',vfiles
+		if len(vfiles) == 0 : assert 0 
+				
+		for fn in vfiles:
+
+			relfn = addImageToHtml(fn,imagesfold)
+			
+			#####
+			# Create custom title by removing extra bits.
+			title = html5Tools.fnToTitle(relfn).split(' ')
+				
+			files[relfn] = ', '.join([getLongName(t) for t in title])
+			print "Adding ",relfn,"to script"
+		print files			
+		if len(files.keys()) == 0 : assert 0 
+						
+		html5Tools.AddSection(indexhtmlfn,'Summary','Summary', Description='A selection of the important metrics of model performance',Files = files)
+
+
+	
+	if summarySections:
+
+		SectionTitle= 'Summary'
+		hrefs 	= []
+		Titles	= {}
+		SidebarTitles = {}
+		Descriptions= {}
+		FileLists	= {}
+		
+		region = 'ignoreInlandSeas'
+		for key in sorted(fields):
+			href = 	key+'-'+region
+			hrefs.append(href)
+			Titles[href] = 	getLongName(region) +' '+	getLongName(key)
+			SidebarTitles[href] = getLongName(key)				
+			Descriptions[href] = getLongName(key) +' '+	getLongName(region)
+			FileLists[href] = {}
+			
+			#####
+			# Determine the list of files:
+			vfiles = glob('./images/'+jobID+'/timeseries/*/percentiles*'+key+'*'+region+'*.png')
+			vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*hist.png'))
+			vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*robinquad.png'))			
+			vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*scatter.png'))						
+		
+			#####
+			# Create plot headers for each file.
+			for fn in vfiles:
+				#####
+				# Copy image to image folder and return relative path.
+				relfn = addImageToHtml(fn, imagesfold)
+				####
+				# WOA fields that also produce transects, etc.
+				if key in ['Nitrate', 'Silicate', 'Temperature', 'Salinity', 'Oxygen',] and fn.lower().find('surface')<0:continue
+				
+				#####
+				# Create custom title by removing extra bits.
+				title = html5Tools.fnToTitle(relfn).split(' ')
+				#for k in ['percentiles', jobID, key,'percentiles']:
+				#	try: title.remove(k)
+				#	except:pass
+		
+	
+				FileLists[href][relfn] = ', '.join([getLongName(t) for t in title])
+				print "Adding ",relfn,"to script"
+			
+		html5Tools.AddSubSections(indexhtmlfn,hrefs,SectionTitle,
+				SidebarTitles=SidebarTitles,#
+				Titles=Titles, 
+				Descriptions=Descriptions,
+				FileLists=FileLists)
+					
+						
+	
+	
+	
 	if plotbyregion:
 		for key in regions:
 			vfiles = glob('./images/'+jobID+'/timeseries/*/percentiles*'+key+'*.png')
 			files = {}
 			for fn in vfiles:
 				#####
-				# Note that we use three paths here.
-				# fn: The original file path
-				# newfn: The location of the new copy of the file
-				# relfn: The location of the new copy relative to the index.html
-				newfn = newImageLocation(fn)	
-				if not os.path.exists(newfn):
-					shutil.copy2(fn, newfn)
-				relfn = newfn.replace(reportdir,'./')
+				# Copy image to image folder and return relative path.
+				relfn = addImageToHtml(fn, imagesfold)
 				
 				#####
 				# Create custom title by removing extra bits.
@@ -142,14 +236,8 @@ def html5Maker(
 			files = {}
 			for fn in vfiles:
 				#####
-				# Note that we use three paths here.
-				# fn: The original file path
-				# newfn: The location of the new copy of the file
-				# relfn: The location of the new copy relative to the index.html
-				newfn = newImageLocation(fn)	
-				if not os.path.exists(newfn):
-					shutil.copy2(fn, newfn)
-				relfn = newfn.replace(reportdir,'./')
+				# Copy image to image folder and return relative path.
+				relfn = addImageToHtml(fn, imagesfold)
 				
 				#####
 				# Create custom title by removing extra bits.
@@ -165,7 +253,7 @@ def html5Maker(
 			html5Tools.AddSection(indexhtmlfn,'ts'+key,getLongName(key)+ ' TS', Description=getLongName(key)+' Time Series plots',Files = files)
 
 	if plotbyfieldandregion:
-		for key in fields:
+		for key in sorted(fields):
 			SectionTitle= getLongName(key)
 			hrefs 	= []
 			Titles	= {}
@@ -184,21 +272,15 @@ def html5Maker(
 				# Determine the list of files:
 				vfiles = glob('./images/'+jobID+'/timeseries/*/percentiles*'+key+'*'+region+'*.png')
 				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/2007/*'+key+'*/BGCVal/*'+region+'*'+key+'*hist.png'))
-				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/2007/*'+key+'*/BGCVal/*'+region+'*'+key+'*robingquad.png'))			
+				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/2007/*'+key+'*/BGCVal/*'+region+'*'+key+'*robinquad.png'))			
 				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/2007/*'+key+'*/BGCVal/*'+region+'*'+key+'*2007.png'))						
 				
 				#####
 				# Create plot headers for each file.
 				for fn in vfiles:
 					#####
-					# Note that we use three paths here.
-					# fn: The original file path
-					# newfn: The location of the new copy of the file
-					# relfn: The location of the new copy relative to the index.html
-					newfn = newImageLocation(fn)	
-					if not os.path.exists(newfn):
-						shutil.copy2(fn, newfn)
-					relfn = newfn.replace(reportdir,'./')
+					# Copy image to image folder and return relative path.
+					relfn = addImageToHtml(fn, imagesfold)
 				
 					#####
 					# Create custom title by removing extra bits.

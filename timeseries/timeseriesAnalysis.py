@@ -394,7 +394,7 @@ class timeseriesAnalysis:
 		    	modeldataDict[m] = [self.modeldataD[(r,l,m)][t] for t in timesDict[m]]
 						    	
 		title = ' '.join([r,str(l),self.datasource, self.dataType])
-		filename = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join(['percentiles',self.jobID,self.dataType,r,str(l),'percentiles',])+'.png'
+		filename = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join(['percentiles',self.jobID,self.dataType,r,str(l),])+'.png'
 		tsp.percentilesPlot(timesDict,modeldataDict,dataslice,title = title,filename=filename,units =self.modeldetails['units'])					    	
 		
 		  	    

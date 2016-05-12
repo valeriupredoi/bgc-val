@@ -386,7 +386,7 @@ class makePlots:
 	try: title = getLongName(newSlice)+' '+getLongName(self.name+self.depthLevel)#+getLongName(self.name)
 	except:title = newSlice+' '+xkey+' vs '+ykey
 			
-
+	scatterfn  	= filename.replace('.png','_scatter.png')
 	robfnxy  	= filename.replace('.png','_xyrobin.png')
 	robfnquad  	= filename.replace('.png','_robinquad.png')	
 	robfncartopy	= filename.replace('.png','_robinquad-cartopy.png')		
@@ -493,7 +493,7 @@ class makePlots:
 			
 		#####
 		# Scatter  (hexbin) plot
-		if ukp.shouldIMakeFile([self.xfn,self.yfn],filename,debug=False):		
+		if ukp.shouldIMakeFile([self.xfn,self.yfn],scatterfn,debug=False):		
 			gs = 50	
 			scattitle = title
 			slabelx = labelx
@@ -506,8 +506,8 @@ class makePlots:
 				pass
 			
 			if self.name in noXYLogs or dmin*dmax <=0.:
-				ukp.scatterPlot(datax, datay,  filename, Title=scattitle, labelx=slabelx,labely=slabely,dpi=200, bestfitLine=True,gridsize=gs)
-			else:	ukp.scatterPlot(datax, datay,  filename, Title=scattitle, labelx=slabelx,labely=slabely,dpi=200, bestfitLine=True,gridsize=gs,logx = True, logy=True,)
+				ukp.scatterPlot(datax, datay,  scatterfn, Title=scattitle, labelx=slabelx,labely=slabely,dpi=200, bestfitLine=True,gridsize=gs)
+			else:	ukp.scatterPlot(datax, datay,  scatterfn, Title=scattitle, labelx=slabelx,labely=slabely,dpi=200, bestfitLine=True,gridsize=gs,logx = True, logy=True,)
 
 	#####
 	# Save fit in a shelve file.		

@@ -288,22 +288,23 @@ def analysis_jasmin(
 		# depthLevel is added, because some WOA files are huges and my desktop can not run the p2p analysis of that data.
 		av = ukp.AutoVivification()
 		if doCHL:
-			av['chl']['Data']['File'] 		= MAREDATFolder+"MarEDat20121001Pigments.nc"	
-			if modelGrid == 'ORCA1':	av['chl']['MEDUSA']['File'] 	= MEDUSAFolder+jobID+'_' + year+"_CHL.nc"
-			if modelGrid == 'ORCA025':	av['chl']['MEDUSA']['File']	= MEDUSAFolder+"xjwki_1979_CH.nc"
+			name = 'Chlorophyll_pig'		
+			av[name]['Data']['File'] 		= MAREDATFolder+"MarEDat20121001Pigments.nc"	
+			if modelGrid == 'ORCA1':	av[name]['MEDUSA']['File'] 	= MEDUSAFolder+jobID+'_' + year+"_CHL.nc"
+			if modelGrid == 'ORCA025':	av[name]['MEDUSA']['File']	= MEDUSAFolder+"xjwki_1979_CH.nc"
 			
-			av['chl']['Data']['coords'] 		= maredatCoords
-			av['chl']['MEDUSA']['coords']		= medusaCoords
+			av[name]['Data']['coords'] 		= maredatCoords
+			av[name]['MEDUSA']['coords']		= medusaCoords
 			
-			av['chl']['MEDUSA']['details']		= {'name': 'CHL', 'vars':['CHL',], 'convert': ukp.NoChange,'units':'mg C/m^3'}			
-			av['chl']['Data']['details']		= {'name': 'Chlorophylla', 'vars':['Chlorophylla',], 'convert': ukp.div1000,'units':'ug/L'}			
+			av[name]['MEDUSA']['details']		= {'name': 'CHL', 'vars':['CHL',], 'convert': ukp.NoChange,'units':'mg C/m^3'}			
+			av[name]['Data']['details']		= {'name': 'Chlorophylla', 'vars':['Chlorophylla',], 'convert': ukp.div1000,'units':'ug/L'}			
 
-			av['chl']['Data']['source'] 		= 'MAREDAT'
-			av['chl']['MEDUSA']['source']		= 'MEDUSA'
+			av[name]['Data']['source'] 		= 'MAREDAT'
+			av[name]['MEDUSA']['source']		= 'MEDUSA'
 
-			av['chl']['depthLevels'] 		= ['',]
-			av['chl']['MEDUSA']['grid']		= modelGrid		
-			av['chl']['plottingSlices'] 		= tsRegions
+			av[name]['depthLevels'] 		= ['',]
+			av[name]['MEDUSA']['grid']		= modelGrid		
+			av[name]['plottingSlices'] 		= tsRegions
 
 		if doCHL_CCI:						
 			name = 'Chlorophyll_cci'
@@ -329,71 +330,74 @@ def analysis_jasmin(
 			av[name]['Data']['details']		= {'name': name, 'vars':['chlor_a',], 'convert':  ukp.NoChange,'units':'mg C/m^3'}			
 		
 		if doDiatoms:
+			name = 'Diatoms'
 			if annual: 
 				print "No diatoms iron file",
 				assert 0		
-			av['diatoms']['Data']['File'] 		= MAREDATFolder+"MarEDat20120716Diatoms.nc"	
-			av['diatoms']['MEDUSA']['File'] 	= MEDUSAFolder+jobID+'_' + year+"_PHD.nc"
+			av[name]['Data']['File'] 		= MAREDATFolder+"MarEDat20120716Diatoms.nc"	
+			av[name]['MEDUSA']['File'] 	= MEDUSAFolder+jobID+'_' + year+"_PHD.nc"
 			
-			av['diatoms']['depthLevels'] 		= ['',]	
-			av['diatoms']['MEDUSA']['grid']		= modelGrid						
-			av['diatoms']['plottingSlices']		= AllStandard
+			av[name]['depthLevels'] 		= ['',]	
+			av[name]['MEDUSA']['grid']		= modelGrid						
+			av[name]['plottingSlices']		= AllStandard
 
-			av['diatoms']['Data']['coords'] 	= maredatCoords
-			av['diatoms']['MEDUSA']['coords']	= medusaCoords
+			av[name]['Data']['coords'] 	= maredatCoords
+			av[name]['MEDUSA']['coords']	= medusaCoords
 
-			av['diatoms']['MEDUSA']['details']	= {'name': 'diatoms', 'vars':['PHD',],     'convert': ukp.N2Biomass,'units': 'mg C/m^3'}						
-			av['diatoms']['Data']['details']	= {'name': 'diatoms', 'vars':['BIOMASS',], 'convert': ukp.NoChange,'units':'mg C/m^3'}			
+			av[name]['MEDUSA']['details']	= {'name': name, 'vars':['PHD',],     'convert': ukp.N2Biomass,'units': 'mg C/m^3'}						
+			av[name]['Data']['details']	= {'name': name, 'vars':['BIOMASS',], 'convert': ukp.NoChange,'units':'mg C/m^3'}			
 
-			av['diatoms']['Data']['source'] 	= 'MAREDAT'
-			av['diatoms']['MEDUSA']['source']	= 'MEDUSA'
+			av[name]['Data']['source'] 	= 'MAREDAT'
+			av[name]['MEDUSA']['source']	= 'MEDUSA'
 
 			
 		if doMicrozoo:
+			name = 'Microzoo'		
 			if annual: 
 				print "No microzoo iron file",
 				assert 0		
-			av['microzoo']['Data']['File'] 		= MAREDATFolder+"MarEDat20120424Microzooplankton.nc"	
-			av['microzoo']['MEDUSA']['File'] 	= MEDUSAFolder+jobID+'_' + year+"_ZMI.nc"	
+			av[name]['Data']['File'] 		= MAREDATFolder+"MarEDat20120424Microzooplankton.nc"	
+			av[name]['MEDUSA']['File'] 	= MEDUSAFolder+jobID+'_' + year+"_ZMI.nc"	
 			
-			av['microzoo']['MEDUSA']['grid']	= modelGrid		
-			av['microzoo']['depthLevels'] 		= ['',]	
-			av['microzoo']['plottingSlices'] 	= AllStandard
+			av[name]['MEDUSA']['grid']	= modelGrid		
+			av[name]['depthLevels'] 		= ['',]	
+			av[name]['plottingSlices'] 	= AllStandard
 
-			av['microzoo']['Data']['coords'] 	= maredatCoords
-			av['microzoo']['MEDUSA']['coords']	= medusaCoords
+			av[name]['Data']['coords'] 	= maredatCoords
+			av[name]['MEDUSA']['coords']	= medusaCoords
 			
-			av['microzoo']['MEDUSA']['details']	= {'name': 'microzoo', 'vars':['ZMI',],     'convert': ukp.N2Biomass,'units': 'mg C/m^3'}			
-			av['microzoo']['Data']['details']	= {'name': 'microzoo', 'vars':['BIOMASS',], 'convert': ukp.NoChange,'units':'mg C/m^3'}			
+			av[name]['MEDUSA']['details']	= {'name': name, 'vars':['ZMI',],     'convert': ukp.N2Biomass,'units': 'mg C/m^3'}			
+			av[name]['Data']['details']	= {'name': name, 'vars':['BIOMASS',], 'convert': ukp.NoChange,'units':'mg C/m^3'}			
 
-			av['microzoo']['Data']['source'] 	= 'MAREDAT'
-			av['microzoo']['MEDUSA']['source']	= 'MEDUSA'
+			av[name]['Data']['source'] 	= 'MAREDAT'
+			av[name]['MEDUSA']['source']	= 'MEDUSA'
 			
 			
 		if doMesozoo:
+			name = 'Mesozoo'
 			if annual: 
 				print "No mesozoo iron file",
 				assert 0
 						
-			av['mesozoo']['Data']['File'] 		= MAREDATFolder+"MarEDat20120705Mesozooplankton.nc"	
-			av['mesozoo']['MEDUSA']['File'] 	= MEDUSAFolder+jobID+'_' + year+"_ZME.nc"	
+			av[name]['Data']['File'] 		= MAREDATFolder+"MarEDat20120705Mesozooplankton.nc"	
+			av[name]['MEDUSA']['File'] 	= MEDUSAFolder+jobID+'_' + year+"_ZME.nc"	
 
-			av['mesozoo']['MEDUSA']['grid']		= modelGrid		
-			av['mesozoo']['depthLevels'] 		= ['',]
-			av['mesozoo']['plottingSlices'] 	= AllStandard
+			av[name]['MEDUSA']['grid']		= modelGrid		
+			av[name]['depthLevels'] 		= ['',]
+			av[name]['plottingSlices'] 	= AllStandard
 
-			av['mesozoo']['Data']['coords'] 	= maredatCoords
-			av['mesozoo']['MEDUSA']['coords']	= medusaCoords
+			av[name]['Data']['coords'] 	= maredatCoords
+			av[name]['MEDUSA']['coords']	= medusaCoords
 			
-			av['mesozoo']['MEDUSA']['details']	= {'name': 'mesozoo', 'vars':['ZME',],     'convert': ukp.N2Biomass,'units': 'mg C/m^3'}			
-			av['mesozoo']['Data']['details']	= {'name': 'mesozoo', 'vars':['BIOMASS',], 'convert': ukp.NoChange,'units':'mg C/m^3'}			
+			av[name]['MEDUSA']['details']	= {'name': name, 'vars':['ZME',],     'convert': ukp.N2Biomass,'units': 'mg C/m^3'}			
+			av[name]['Data']['details']	= {'name': name, 'vars':['BIOMASS',], 'convert': ukp.NoChange,'units':'mg C/m^3'}			
 
-			av['mesozoo']['Data']['source'] 	= 'MAREDAT'
-			av['mesozoo']['MEDUSA']['source']	= 'MEDUSA'
+			av[name]['Data']['source'] 	= 'MAREDAT'
+			av[name]['MEDUSA']['source']	= 'MEDUSA'
 			
 			
 		if doN:
-			name = 'nitrate'		
+			name = 'Nitrate'		
 			if annual:	
 				av[name]['Data']['File'] 	= WOAFolder+'woa13_all_n00_01.nc'
 				av[name]['MEDUSA']['File'] 	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_ptrc_T.nc"))[0]	
@@ -418,7 +422,7 @@ def analysis_jasmin(
 
 						
 		if doSi:
-			name = 'silicate'
+			name = 'Silicate'
 			if annual:
 				av[name]['Data']['File'] 	= WOAFolder+'woa13_all_i00_01.nc'
 				av[name]['MEDUSA']['File'] 	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_ptrc_T.nc"))[0]					
@@ -442,49 +446,51 @@ def analysis_jasmin(
 			
 						
 		if doFe:
+			name = 'Iron'
 			if annual: 
 				print "No annual iron file",
 				assert 0
 				
-			av['iron']['Data']['File'] 		= GEOTRACESFolder+"Iron_GEOTRACES_IDP2014_Discrete_Sample_Data_ascii.nc"
-			av['iron']['MEDUSA']['File'] 		= MEDUSAFolder+jobID+'_' + year+"_FER.nc"	
+			av[name]['Data']['File'] 		= GEOTRACESFolder+"Iron_GEOTRACES_IDP2014_Discrete_Sample_Data_ascii.nc"
+			av[name]['MEDUSA']['File'] 		= MEDUSAFolder+jobID+'_' + year+"_FER.nc"	
 			
-			av['iron']['depthLevels'] 		= ['',]
-			av['iron']['MEDUSA']['grid']		= modelGrid		
-			av['iron']['plottingSlices']		= justAll
+			av[name]['depthLevels'] 		= ['',]
+			av[name]['MEDUSA']['grid']		= modelGrid		
+			av[name]['plottingSlices']		= justAll
 			
-			av['iron']['Data']['coords'] 	= {'t': 'MONTH','z':'DEPTH','lat':'Latitude','lon':'Longitude','cal':'standard','tdict': ukp.tdicts['OneToZero']}
-			av['iron']['MEDUSA']['coords']	= medusaCoords
+			av[name]['Data']['coords'] 	= {'t': 'MONTH','z':'DEPTH','lat':'Latitude','lon':'Longitude','cal':'standard','tdict': ukp.tdicts['OneToZero']}
+			av[name]['MEDUSA']['coords']	= medusaCoords
 	
 			
-			av['iron']['Data']['source'] 	= 'GEOTRACES'
-			av['iron']['MEDUSA']['source']	= 'MEDUSA'			
+			av[name]['Data']['source'] 	= 'GEOTRACES'
+			av[name]['MEDUSA']['source']	= 'MEDUSA'			
 	
-			av['iron']['MEDUSA']['details']	= {'name': 'iron', 'vars':['FER',], 'convert': ukp.mul1000,'units':'umol F/m^3'}			
-			av['iron']['Data']['details']	= {'name': 'iron', 'vars':['Fe_D_CONC_BOTTLE',], 'convert': ukp.NoChange,}	# no units?
+			av[name]['MEDUSA']['details']	= {'name': name, 'vars':['FER',], 'convert': ukp.mul1000,'units':'umol F/m^3'}			
+			av[name]['Data']['details']	= {'name': name, 'vars':['Fe_D_CONC_BOTTLE',], 'convert': ukp.NoChange,}	# no units?
 
 			
 		if doO2:
+			name = 'Oxygen'		
 			if annual:
-				av['oxygen']['MEDUSA']['File'] 	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_ptrc_T.nc"))[0]					
-				av['oxygen']['Data']['File'] 	=  WOAFolder+'woa13_all_o00_01.nc'
+				av[name]['MEDUSA']['File'] 	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_ptrc_T.nc"))[0]					
+				av[name]['Data']['File'] 	=  WOAFolder+'woa13_all_o00_01.nc'
 			else:	
-				av['oxygen']['Data']['File'] 	=  WOAFolder+'oxygen-woa13.nc'
-				av['oxygen']['MEDUSA']['File']	= MEDUSAFolder+jobID+"_"+year+"_OXY.nc"
+				av[name]['Data']['File'] 	=  WOAFolder+'oxygen-woa13.nc'
+				av[name]['MEDUSA']['File']	= MEDUSAFolder+jobID+"_"+year+"_OXY.nc"
 			
-			av['oxygen']['MEDUSA']['grid']		= modelGrid		
-			av['oxygen']['depthLevels'] 		= ['Surface','Transect','PTransect']
+			av[name]['MEDUSA']['grid']		= modelGrid		
+			av[name]['depthLevels'] 		= ['Surface','Transect','PTransect']
 			if annual:	av[name]['plottingSlices'] 	= tsRegions
 			else:		av[name]['plottingSlices'] 	= HighLatWinter
 			
-			av['oxygen']['Data']['coords'] 		= woaCoords
-			av['oxygen']['MEDUSA']['coords']	= medusaCoords
+			av[name]['Data']['coords'] 		= woaCoords
+			av[name]['MEDUSA']['coords']	= medusaCoords
 			
-			av['oxygen']['Data']['source'] 		= 'WOA'
-			av['oxygen']['MEDUSA']['source']	= 'MEDUSA'			
+			av[name]['Data']['source'] 		= 'WOA'
+			av[name]['MEDUSA']['source']	= 'MEDUSA'			
 	
-			av['oxygen']['MEDUSA']['details']	= {'name': 'oxygen', 'vars':['OXY',], 'convert': ukp.NoChange,}			
-			av['oxygen']['Data']['details']		= {'name': 'oxygen', 'vars':['o_an',], 'convert': ukp.oxconvert,'units':'mmol/m^3'}
+			av[name]['MEDUSA']['details']	= {'name': name, 'vars':['OXY',], 'convert': ukp.NoChange,}			
+			av[name]['Data']['details']		= {'name': name, 'vars':['o_an',], 'convert': ukp.oxconvert,'units':'mmol/m^3'}
 			
 					
 #		#if doPCO2:
@@ -506,7 +512,7 @@ def analysis_jasmin(
 		
 		
 		if doSal:
-			name = 'salinity'
+			name = 'Salinity'
 			if annual:
 				av[name]['NEMO']['File'] 	= sorted(glob(NEMOFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_grid_T.nc"))[0]
 				av[name]['Data']['File'] 	= WOAFolder+'woa13_decav_s00_01v2.nc'	
@@ -528,7 +534,7 @@ def analysis_jasmin(
 			
 					
 		if doTemp:
-			name = 'temperature'
+			name = 'Temperature'
 			if annual:
 				av[name]['NEMO']['File'] 	= sorted(glob(NEMOFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_grid_T.nc"))[0]				
 				av[name]['Data']['File'] 	= WOAFolder+'woa13_decav_t00_01v2.nc'	
@@ -550,7 +556,7 @@ def analysis_jasmin(
 			
 						   
 		if doMLD:
-			name = 'mld'		
+			name = 'MLD'		
 			if annual:	
 				av[name]['NEMO']['File'] 	= sorted(glob(NEMOFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_grid_T.nc"))[0]							
 				av[name]['Data']['File'] 		= MLDFolder+"mld_DT02_c1m_reg2.0-annual.nc"
@@ -598,10 +604,14 @@ def analysis_jasmin(
 	
 		
 if __name__=="__main__":
-	#analysis_jasmin()	
+	#analysis_jasmin()
+	try: 	jobID = argv[1]
+	except:	jobID =	'u-ab749'
+	try:	year = argv[2]
+	except:	year = '2007'
 	analysis_jasmin(models	= ['NEMO','MEDUSA',],
-		jobID 	= 'u-ab749',
-		years 	= ['2007'], #'2075','2076',
+		jobID 	= jobID,
+		years 	= [year,], #'2075','2076',
 		modelGrid = 'eORCA1',
 		annual 	= True,
 		noPlots = False,
