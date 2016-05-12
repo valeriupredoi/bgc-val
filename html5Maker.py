@@ -116,40 +116,12 @@ def html5Maker(
 		  'SouthernOcean',
 		  'Remainder',]
 		
-	summarySection = 0
 	summarySections = True	
 	plotbyregion = 0#True
 	plotbyfield = 0#
 	plotbyfieldandregion = True
 	
 	
-	
-	if summarySection:
-		files = {}
-		vfiles = glob('./images/'+jobID+'/timeseries/*/percentiles*ignoreInlandSeas*.png')
-		vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*/*/*ignoreInlandSeas*hist.png'))
-		vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*/*/*ignoreInlandSeas*robinquad.png'))			
-		vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*/*/*ignoreInlandSeas*scatter.png'))	
-						
-		print './images/'+jobID+'/timeseries/*/percentiles*ignoreInlandSeas*.png:',vfiles
-		if len(vfiles) == 0 : assert 0 
-				
-		for fn in vfiles:
-
-			relfn = addImageToHtml(fn,imagesfold)
-			
-			#####
-			# Create custom title by removing extra bits.
-			title = html5Tools.fnToTitle(relfn).split(' ')
-				
-			files[relfn] = ', '.join([getLongName(t) for t in title])
-			print "Adding ",relfn,"to script"
-		print files			
-		if len(files.keys()) == 0 : assert 0 
-						
-		html5Tools.AddSection(indexhtmlfn,'Summary','Summary', Description='A selection of the important metrics of model performance',Files = files)
-
-
 	
 	if summarySections:
 
@@ -184,14 +156,11 @@ def html5Maker(
 				relfn = addImageToHtml(fn, imagesfold)
 				####
 				# WOA fields that also produce transects, etc.
-				if key in ['Nitrate', 'Silicate', 'Temperature', 'Salinity', 'Oxygen',] and fn.lower().find('surface')<0:continue
+				if key in ['Nitrate', 'Silicate', 'Temperature', 'Salinity', 'Oxygen','DIC','Alkalinity'] and fn.lower().find('surface')<0:continue
 				
 				#####
 				# Create custom title by removing extra bits.
 				title = html5Tools.fnToTitle(relfn).split(' ')
-				#for k in ['percentiles', jobID, key,'percentiles']:
-				#	try: title.remove(k)
-				#	except:pass
 		
 	
 				FileLists[href][relfn] = ', '.join([getLongName(t) for t in title])

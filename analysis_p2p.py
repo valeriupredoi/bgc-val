@@ -29,6 +29,7 @@ from os.path import exists
 from calendar import month_name
 from socket import gethostname
 from glob import glob
+from netCDF4 import Dataset
 
 #Specific local code:
 import UKESMpython as ukp
@@ -98,14 +99,17 @@ def analysis_jasmin(
 		doSi		= True	
 		doFe		= True		
 		doPCO2		= 0#True
-		doIntPP		= 0#True
-		
+		doAlk		= True			# Glodap Alkalinity
+		doDIC		= True			# Globap tCO2
+		doAirSeaFlux	= True			# work in progress
+		doIntPP_iMarNet	= True			# Integrated primpary production from iMarNEt
+		doIntPP_OSU	= True			# OSU Integrated primpary production	
 		doO2		= True	
 		doSal		= True
 		doTemp		= True
 		doMLD		= True
 	elif analysisSuite.lower() in ['debug',]:
-		doCHL 		= True
+		doCHL 		= 0#True
 		doCHL_CCI 	= 0				
 		doDiatoms	= 0#True
 		doMicrozoo	= 0#True
@@ -114,11 +118,15 @@ def analysis_jasmin(
 		doSi		= 0#True	
 		doFe		= 0#True		
 		doPCO2		= 0#True
-		doIntPP		= 0#True
 		doO2		= 0#True	
 		doSal		= 0#True
 		doTemp		= 0#True
 		doMLD		= 0#True
+		doAlk		= 0#True			# Glodap Alkalinity
+		doDIC		= 0#True			# Globap tCO2
+		doAirSeaFlux	= 0#True		# work in progress
+		doIntPP_iMarNet	= 0#True		# Integrated primpary production from iMarNEt
+		doIntPP_OSU	= True		# OSU Integrated primpary production	
 	elif analysisSuite.lower() in ['bio',]:
 		doCHL 		= True
 		doCHL_CCI 	= 0				
@@ -129,11 +137,15 @@ def analysis_jasmin(
 		doSi		= 0#True	
 		doFe		= 0#True		
 		doPCO2		= 0#True
-		doIntPP		= 0#True
 		doO2		= 0#True	
 		doSal		= 0#True
 		doTemp		= 0#True
-		doMLD		= 0#True			
+		doMLD		= 0#True
+		doAlk		= True			# Glodap Alkalinity
+		doDIC		= True			# Globap tCO2
+		doAirSeaFlux	= True			# work in progress
+		doIntPP_iMarNet	= True			# Integrated primpary production from iMarNEt
+		doIntPP_OSU	= True			# OSU Integrated primpary production	
 	elif analysisSuite.lower() in ['annual',]:
 		#####
 		# Data sets with annual coverage available (instead o monthly)
@@ -146,11 +158,15 @@ def analysis_jasmin(
 		doSi		= True	
 		doFe		= 0#True		
 		doPCO2		= 0#True
-		doIntPP		= 0#True
 		doO2		= True	
 		doSal		= True
 		doTemp		= True
-		doMLD		= True	
+		doMLD		= True
+		doAlk		= True			# Glodap Alkalinity
+		doDIC		= True			# Globap tCO2
+		doAirSeaFlux	= True			# work in progress
+		doIntPP_iMarNet	= True			# Integrated primpary production from iMarNEt
+		doIntPP_OSU	= True			# OSU Integrated primpary production	
 	else:		
 		doCHL 		= 0#True
 		doCHL_CCI 	= 0				
@@ -161,12 +177,15 @@ def analysis_jasmin(
 		doSi		= 0#True	
 		doFe		= 0#True
 		doPCO2		= 0#True
-		doIntPP		= 0#True
 		doO2		= 0#True	
 		doSal		= 0#True
 		doTemp		= 0#True
 		doMLD		= 0#True
-
+		doAlk		= True			# Glodap Alkalinity
+		doDIC		= True			# Globap tCO2
+		doAirSeaFlux	= True			# work in progress
+		doIntPP_iMarNet	= True			# Integrated primpary production from iMarNEt
+		doIntPP_OSU	= True			# OSU Integrated primpary production	
 	
 	
 	#####
@@ -269,6 +288,8 @@ def analysis_jasmin(
 	maredatCoords 	= {'t':'index_t', 'z':'DEPTH',  'lat': 'LATITUDE', 'lon': 'LONGITUDE', 'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
 	woaCoords 	= {'t':'index_t', 'z':'depth',  'lat': 'lat', 	   'lon': 'lon',       'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}		
 	cciCoords	= {'t':'index_t', 'z':'index_z','lat': 'lat',      'lon': 'lon',       'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
+	glodapCoords	= {'t':'index_t', 'z':'depth',  'lat': 'latitude', 'lon': 'longitude', 'cal': 'standard','tdict':ukp.tdicts['ZeroToZero'] }	
+	glodapv2Coords	= {'t':'index_t', 'z':'Pressure','lat':'lat',      'lon': 'lon',        'cal': '',        'tdict':{0:0,} }	
 	shelvesAV = []	
 	
 	for year in years:		
@@ -483,15 +504,136 @@ def analysis_jasmin(
 			if annual:	av[name]['plottingSlices'] 	= tsRegions
 			else:		av[name]['plottingSlices'] 	= HighLatWinter
 			
-			av[name]['Data']['coords'] 		= woaCoords
+			av[name]['Data']['coords'] 	= woaCoords
 			av[name]['MEDUSA']['coords']	= medusaCoords
 			
-			av[name]['Data']['source'] 		= 'WOA'
+			av[name]['Data']['source'] 	= 'WOA'
 			av[name]['MEDUSA']['source']	= 'MEDUSA'			
 	
 			av[name]['MEDUSA']['details']	= {'name': name, 'vars':['OXY',], 'convert': ukp.NoChange,}			
 			av[name]['Data']['details']		= {'name': name, 'vars':['o_an',], 'convert': ukp.oxconvert,'units':'mmol/m^3'}
+
+
+		if doAlk:
+			name = 'Alkalinity'	
+			def convertmeqm3TOumolkg(nc,keys):
+				return nc.variables[keys[0]][:]* 1.027
+		
+			if annual:		
+				av[name]['MEDUSA']['File'] 	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_ptrc_T.nc"))[0]
+				av[name]['Data']['File'] 		=  GlodapDir+'Alk.nc'
+			else:
+				print "Alkalinity data not available for monthly Analysis"
+				assert 0
+				
+			av[name]['MEDUSA']['grid']		= modelGrid		
+			av[name]['depthLevels'] 		= ['Surface','Transect','PTransect']
+				
+
+			if annual:	av[name]['plottingSlices'] 	= tsRegions
+			else:		av[name]['plottingSlices'] 	= HighLatWinter
 			
+			av[name]['Data']['coords'] 	= glodapCoords
+			av[name]['MEDUSA']['coords']	= medusaCoords				
+
+			av[name]['Data']['source'] 	= 'GLODAP'
+			av[name]['MEDUSA']['source']	= 'MEDUSA'
+
+			av[name]['MEDUSA']['details'] 	= {'name': name, 'vars':['ALK',], 'convert': ukp.NoChange,'units':'meq/m^3',}
+			av[name]['Data']['details']  	= {'name': name, 'vars':['Alk',], 'convert': convertmeqm3TOumolkg,'units':'meq/m^3',}		
+						
+		if doDIC:
+			name = 'DIC'
+		
+			if annual:		
+				av[name]['MEDUSA']['File'] 	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_ptrc_T.nc"))[0]
+				av[name]['Data']['File'] 	=  GLODAPv2Dir+'GLODAPv2.tco2.historic.nc'
+			else:
+				print "DIC data not available for monthly Analysis"
+				assert 0
+				
+			av[name]['MEDUSA']['grid']		= modelGrid		
+			av[name]['depthLevels'] 		= ['Surface','Transect','PTransect']
+				
+
+			if annual:	av[name]['plottingSlices'] 	= tsRegions
+			else:		av[name]['plottingSlices'] 	= HighLatWinter
+			
+			av[name]['Data']['coords'] 	= glodapv2Coords
+			av[name]['MEDUSA']['coords']	= medusaCoords				
+
+			av[name]['Data']['source'] 	= 'GLODAPv2'
+			av[name]['MEDUSA']['source']	= 'MEDUSA'
+
+			av[name]['MEDUSA']['details'] 	= {'name': name, 'vars':['DIC',],  'convert': ukp.NoChange,'units':'mmol C/m^3'}
+			av[name]['Data']['details']  	= {'name': name, 'vars':['tco2',], 'convert': ukp.NoChange,'units':'micro-mol kg-1'}
+	
+		
+
+		if doIntPP_OSU:
+			name = 'IntegratedPrimaryProduction_OSU'
+			
+			nc = Dataset(orcaGridfn,'r')
+			area = nc.variables['e1t'][:]*nc.variables['e2t'][:]
+			nc.close()
+			def medusadepthInt(nc,keys):
+				#	 mmolN/m2/d        [mg C /m2/d]   [mgC/m2/yr] [gC/m2/yr]     Gt/m2/yr
+				factor = 1.		* 6.625 * 12.011 * 365.	      / 1000.   /     1E15
+				arr = (nc.variables[keys[0]][:]+ nc.variables[keys[1]][:]).squeeze()*factor
+				if arr.ndim ==3:
+					for i in np.arange(arr.shape[0]):
+						arr[i] = arr[i]*area
+				elif arr.ndim ==2: arr = arr*area
+				else: assert 0
+				return arr
+			
+			if annual:
+				av[name]['MEDUSA']['File']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_diad_T.nc"))
+				av[name]['Data']['File']  		= OSUDir +"/standard_VGPM.SeaWIFS.global.average.nc"
+			
+			av[name]['MEDUSA']['coords'] 	= medusaCoords 	
+			av[name]['Data']['coords']	= glodapCoords
+
+			av[name]['MEDUSA']['grid']		= modelGrid		
+			av[name]['depthLevels'] 		= ['',]
+			
+			av[name]['Data']['source'] 	= 'OSU'
+			av[name]['MEDUSA']['source']	= 'MEDUSA'
+						
+			nc = Dataset(av[name]['dataFile'] ,'r')
+			lats = nc.variables['latitude'][:]
+			osuareas = np.zeros((1080, 2160))
+			osuarea = (111100. / 6.)**2. # area of a pixel at equator. in m2
+			for a in np.arange(1080):osuareas[a] = np.ones((2160,))*osuarea*np.cos(np.deg2rad(lats[a]))
+		
+			def osuconvert(nc,keys):
+				arr = nc.variables[keys[0]][:,:,:] 
+				tlen = arr.shape[0]
+			
+				arr  = arr.sum(0)/tlen * 365.	/ 1000. /     1E15
+				if arr.ndim ==3:
+					for i in np.arange(arr.shape[0]):
+						arr[i] = arr[i]*osuarea
+				elif arr.ndim ==2: arr = arr*osuarea
+				else: assert 0
+				return arr
+						
+			
+			av[name]['modeldetails'] 	= {'name': name, 'vars':['PRN' ,'PRD'], 'convert': medusadepthInt,'units':'gC/yr'}
+			av[name]['datadetails']  	= {'name': name, 'vars':['NPP',], 'convert': osuconvert,'units':'gC/yr'}
+					
+						
+		
+
+			
+					
+
+		doAirSeaFlux	= True			# work in progress
+		doIntPP_iMarNet	= True			# Integrated primpary production from iMarNEt
+
+			
+	
+						
 					
 #		#if doPCO2:
 #			av['pCO2']['Data']['File'] 	= TakahashiFolder + "takahashi2009_month_flux_pCO2_2006c_noHead.nc"	
@@ -615,7 +757,7 @@ if __name__=="__main__":
 		modelGrid = 'eORCA1',
 		annual 	= True,
 		noPlots = False,
-		analysisSuite='annual',)
+		analysisSuite='debug',)
 	
 			
 

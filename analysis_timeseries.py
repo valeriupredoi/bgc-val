@@ -77,10 +77,10 @@ def analysis_timeseries(jobID = "u-ab671",
 	doO2		= True			# WOA Oxygen
 	doAlk		= True			# Glodap Alkalinity
 	doDIC		= True			# Globap tCO2
-	doOMZ		= 0#True		# work in progress
 	doAirSeaFlux	= True			# work in progress
 	doIntPP_iMarNet	= True			# Integrated primpary production from iMarNEt
 	doIntPP_OSU	= True			# OSU Integrated primpary production	
+	doOMZ		= 0#True		# work in progress
 	doExportRatio   = True			# Export ratio (no data)
 	
 	#####	
@@ -440,8 +440,10 @@ def analysis_timeseries(jobID = "u-ab671",
 	if doDIC:
 	
 		name = 'DIC'
+		
 		av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
-		av[name]['dataFile'] 		= GLODAPv2Dir+'GLODAPv2.tco2.nc'
+		
+		av[name]['dataFile'] 		= GLODAPv2Dir+ 'GLODAPv2.tco2.historic.nc'
 				
 		av[name]['modelcoords'] 	= medusaCoords 	
 		av[name]['datacoords'] 		= glodapv2Coords
@@ -464,8 +466,12 @@ def analysis_timeseries(jobID = "u-ab671",
 			return nc.variables[keys[0]][:]* 1.027
 		
 		name = 'Alkalinity'
-		av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
-		av[name]['dataFile'] 		=  GlodapDir+'Alk.nc'
+		if annual:		
+			av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
+			av[name]['dataFile'] 		=  GlodapDir+'Alk.nc'
+		else:
+			print "Alkalinity data not available for monthly Analysis"
+			assert 0
 				
 		av[name]['modelcoords'] 	= medusaCoords 	
 		av[name]['datacoords'] 		= glodapCoords

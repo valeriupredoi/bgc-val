@@ -52,7 +52,7 @@ def locateLineNumber(filepath,linekey):
 			return l
 
 
-def writeSideBar(filepath, href, text,option='head'):
+def writeSideBar(filepath, href, text,option='head',debug=False):
 	"""	Addes a sidebar to the file "filepath."
 	"""	
 	
@@ -65,17 +65,17 @@ def writeSideBar(filepath, href, text,option='head'):
 	if option == 'endSub': 	 newline = '\n\t\t\t\t\t\t\t\t</ul>\n'
 				
 	linenumber = locateLineNumber(filepath, 'AddSideBar') -1
-	print "Adding at ", linenumber,"line:\n",newline
+	if debug:print "Adding sidebar at ", linenumber,"line:\n",newline.replace('\t','')
 	AddtoFile(filepath,linenumber,newline)
 
 
 
-def writeDescription(filepath, text):
+def writeDescription(filepath, text,debug=False):
 	"""	Addes a sidebar to the file "filepath."
 	"""	
 	newline = '\t\t\t\t\t\t\t<p>'+text+'</p>'
 	linenumber = locateLineNumber(filepath, 'HeaderDescription') 
-	print "Adding at ", linenumber,"line:\n",newline
+	if debug: print "Adding descriptionat ", linenumber,"line:\n",newline.replace('\t','')
 	AddtoFile(filepath,linenumber,newline)
 
 
