@@ -30,6 +30,8 @@ from calendar import month_name
 from socket import gethostname
 from glob import glob
 from netCDF4 import Dataset
+import numpy as np
+
 
 #Specific local code:
 import UKESMpython as ukp
@@ -289,6 +291,7 @@ def analysis_jasmin(
 	woaCoords 	= {'t':'index_t', 'z':'depth',  'lat': 'lat', 	   'lon': 'lon',       'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}		
 	cciCoords	= {'t':'index_t', 'z':'index_z','lat': 'lat',      'lon': 'lon',       'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
 	glodapCoords	= {'t':'index_t', 'z':'depth',  'lat': 'latitude', 'lon': 'longitude', 'cal': 'standard','tdict':ukp.tdicts['ZeroToZero'] }	
+	osuCoords	= {'t':'index_t', 'z':'index_z','lat': 'latitude', 'lon': 'longitude', 'cal': 'standard','tdict':ukp.tdicts['ZeroToZero'] }		
 	glodapv2Coords	= {'t':'index_t', 'z':'Pressure','lat':'lat',      'lon': 'lon',        'cal': '',        'tdict':{0:0,} }	
 	shelvesAV = []	
 	
@@ -573,6 +576,18 @@ def analysis_jasmin(
 		if doIntPP_OSU:
 			name = 'IntegratedPrimaryProduction_OSU'
 			
+			
+			#####
+			# Files:
+			if annual:
+				av[name]['MEDUSA']['File']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_diad_T.nc"))[0]				
+				av[name]['Data']['File']  		= OSUDir +"/standard_VGPM.SeaWIFS.global.average.nc"
+			else:
+				print "IntegratedPrimaryProduction (OSU) data not available for monthly Analysis"
+				assert 0
+							
+			#####
+			# Calculating depth in PP in medusa			
 			nc = Dataset(orcaGridfn,'r')
 			area = nc.variables['e1t'][:]*nc.variables['e2t'][:]
 			nc.close()
@@ -584,43 +599,55 @@ def analysis_jasmin(
 					for i in np.arange(arr.shape[0]):
 						arr[i] = arr[i]*area
 				elif arr.ndim ==2: arr = arr*area
+				elif arr.ndim==1:
+					index_x = nc.variables['index_x'][:]
+					index_y = nc.variables['index_y'][:]
+					for i,a in enumerate(arr):
+						arr[i] = a * area[index_y[i],index_x[i]]
 				else: assert 0
 				return arr
-			
-			if annual:
-				av[name]['MEDUSA']['File']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_diad_T.nc"))
-				av[name]['Data']['File']  		= OSUDir +"/standard_VGPM.SeaWIFS.global.average.nc"
-			
-			av[name]['MEDUSA']['coords'] 	= medusaCoords 	
-			av[name]['Data']['coords']	= glodapCoords
 
-			av[name]['MEDUSA']['grid']		= modelGrid		
-			av[name]['depthLevels'] 		= ['',]
-			
-			av[name]['Data']['source'] 	= 'OSU'
-			av[name]['MEDUSA']['source']	= 'MEDUSA'
-						
-			nc = Dataset(av[name]['dataFile'] ,'r')
+
+			#####
+			# converting data to same units.						
+			nc = Dataset(av[name]['Data']['File'] ,'r')
 			lats = nc.variables['latitude'][:]
 			osuareas = np.zeros((1080, 2160))
 			osuarea = (111100. / 6.)**2. # area of a pixel at equator. in m2
 			for a in np.arange(1080):osuareas[a] = np.ones((2160,))*osuarea*np.cos(np.deg2rad(lats[a]))
 		
 			def osuconvert(nc,keys):
-				arr = nc.variables[keys[0]][:,:,:] 
-				tlen = arr.shape[0]
-			
-				arr  = arr.sum(0)/tlen * 365.	/ 1000. /     1E15
+				arr = nc.variables[keys[0]][:] 
+				tlen = 1 # arr.shape[0]
+				arr  = arr/tlen * 365.	/ 1000. /     1E15
 				if arr.ndim ==3:
 					for i in np.arange(arr.shape[0]):
-						arr[i] = arr[i]*osuarea
-				elif arr.ndim ==2: arr = arr*osuarea
-				else: assert 0
+						arr[i] = arr[i]*osuareas
+				elif arr.ndim ==2: arr = arr*osuareas
+				elif arr.ndim ==1:
+					index_x = nc.variables['index_x'][:]
+					index_y = nc.variables['index_y'][:]
+					for i,a in enumerate(arr):
+						print i,a,[index_y[i],index_x[i]]
+						arr[i] = a * osuareas[index_y[i],index_x[i]]				
+				else: 
+					assert 0
 				return arr
 						
+			av[name]['MEDUSA']['coords'] 	= medusaCoords 	
+			av[name]['Data']['coords']	= osuCoords
+
+			av[name]['MEDUSA']['grid']	= modelGrid		
+			av[name]['depthLevels'] 	= ['',]
 			
-			av[name]['modeldetails'] 	= {'name': name, 'vars':['PRN' ,'PRD'], 'convert': medusadepthInt,'units':'gC/yr'}
-			av[name]['datadetails']  	= {'name': name, 'vars':['NPP',], 'convert': osuconvert,'units':'gC/yr'}
+			if annual:	av[name]['plottingSlices'] 	= tsRegions
+			else:		av[name]['plottingSlices'] 	= HighLatWinter
+						
+			av[name]['Data']['source'] 	= 'OSU'
+			av[name]['MEDUSA']['source']	= 'MEDUSA'			
+			
+			av[name]['MEDUSA']['details'] 	= {'name': name, 'vars':['PRN' ,'PRD'], 'convert': medusadepthInt,'units':'gC/yr'}
+			av[name]['Data']['details']  	= {'name': name, 'vars':['NPP',], 'convert': osuconvert,'units':'gC/yr'}
 					
 						
 		
@@ -628,9 +655,9 @@ def analysis_jasmin(
 			
 					
 
-		doAirSeaFlux	= True			# work in progress
-		doIntPP_iMarNet	= True			# Integrated primpary production from iMarNEt
-
+		if doAirSeaFlux:
+			assert 0
+			
 			
 	
 						

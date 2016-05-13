@@ -136,7 +136,7 @@ def percentilesPlot(
 		title 	='',
 		filename='',
 		units = '',		
-		greyband= True,
+		greyband= 'MinMax',	# MinMax, 10-90pc or none
 		dolog=True
 	):
 	
@@ -146,31 +146,51 @@ def percentilesPlot(
 	# Determine the x axis and y axis corners.	
 	mint = np.ma.min(timesDict[metrics[0]])
 	maxt = np.ma.max(timesDict[metrics[0]])
-	miny = np.ma.min(modeldataDict['min'])
-	maxy = np.ma.max(modeldataDict['max'])
+	if greyband == 'MinMax':
+		miny = np.ma.min(modeldataDict['min'])
+		maxy = np.ma.max(modeldataDict['max'])
+	elif greyband == '10-90pc':	
+		miny = np.ma.min(modeldataDict['10pc'])
+		maxy = np.ma.max(modeldataDict['90pc'])	
+	else:
+		miny = np.ma.min(modeldataDict['20pc'])
+		maxy = np.ma.max(modeldataDict['80pc'])		
+		
 	if miny in [np.ma.masked, np.nan,np.inf]:
 		print "percentilesPlot:\tIt is not possible to make this plot,(",title,"), as the min values are no plottable:",miny
 		return
-	for m in metrics:
-		if np.ma.min(timesDict[m]) < mint: mint = np.ma.min(timesDict[m])
-		if np.ma.max(timesDict[m]) > maxt: maxt = np.ma.max(timesDict[m])
-		if np.ma.min(modeldataDict[m]) < miny: miny = np.ma.min(modeldataDict[m])
-		if np.ma.max(modeldataDict[m]) > maxy: maxy = np.ma.max(modeldataDict[m])
+		
+	#for m in metrics:
+	#	if np.ma.min(timesDict[m]) < mint: mint = np.ma.min(timesDict[m])
+	#	if np.ma.max(timesDict[m]) > maxt: maxt = np.ma.max(timesDict[m])
+	#	if np.ma.min(modeldataDict[m]) < miny: miny = np.ma.min(modeldataDict[m])
+	#	if np.ma.max(modeldataDict[m]) > maxy: maxy = np.ma.max(modeldataDict[m])
+		
 	if len(dataslice):	
 		try:	dataslice = dataslice.compressed()
 		except:	pass
-		if np.ma.min(dataslice) < miny: miny = np.ma.min(dataslice)
-		if np.ma.max(dataslice) > maxy: maxy = np.ma.max(dataslice)			
+		if greyband == 'MinMax':
+			 miny_dat = np.ma.min(dataslice)
+			 maxy_dat = np.ma.max(dataslice)			 
+		elif greyband == '10-90pc':
+			 miny_dat = np.percentile(dataslice,10.)
+			 maxy_dat = np.percentile(dataslice,90.)
+		else:
+			 miny_dat = np.percentile(dataslice,20.)
+			 maxy_dat = np.percentile(dataslice,80.)
+		if miny_dat < miny: miny = miny_dat
+		if maxy_dat > maxy: maxy = maxy_dat		
+
 	xlims= [mint,maxt]
 	ylims= [miny,maxy]
 
 
-	if dolog and ylims[0] *ylims[-1] <=0.:
-		print "zero (or less) in ylims", ylims,
-		smallestNonZeroModel = getSmallestAboveZero(modeldataDict['min'])
-		smallestNonZeroData = getSmallestAboveZero(dataslice)
-		ylims[0] = getSmallestAboveZero([smallestNonZeroModel, smallestNonZeroData])
-		print "new ylims:",ylims
+#	if dolog and ylims[0] *ylims[-1] <=0.:
+#		print "zero (or less) in ylims", ylims,
+#		smallestNonZeroModel = getSmallestAboveZero(modeldataDict['min'])
+#		smallestNonZeroData = getSmallestAboveZero(dataslice)
+#		ylims[0] = getSmallestAboveZero([smallestNonZeroModel, smallestNonZeroData])
+#		print "new ylims:",ylims
 		#assert 0
 		
 	if np.ma.max(ylims)/np.ma.min(ylims)>20.:	
@@ -208,11 +228,17 @@ def percentilesPlot(
 		axd.axhline(y=np.ma.mean(dataslice),  c='k',ls='--',lw=1.5,)
 		axd.axhline(y=np.ma.median(dataslice),c='k',ls='-', lw=1.5,)#alpha=0.5)	
 				
-		pcmin 	= np.clip(np.array([dataslice.min() for i in xlims]),ylims[0],ylims[1])
-		pcmax 	= np.clip(np.array([dataslice.max() for i in xlims]),ylims[0],ylims[1])
-		if greyband:
+
+		if greyband == 'MinMax':
+			pcmin 	= np.clip(np.array([dataslice.min() for i in xlims]),ylims[0],ylims[1])
+			pcmax 	= np.clip(np.array([dataslice.max() for i in xlims]),ylims[0],ylims[1])
 			axd  	= drawgreyband(axd,xlims, [pcmin,pc1],)
 			axd  	= drawgreyband(axd,xlims, [pc6,pcmax],)
+		if greyband == '10-90pc':
+			pcmin 	= np.clip(np.array([np.percentile(dataslice,10.) for i in xlims]),ylims[0],ylims[1])
+			pcmax 	= np.clip(np.array([np.percentile(dataslice,90.) for i in xlims]),ylims[0],ylims[1])
+			axd  	= drawgreyband(axd,xlims, [pcmin,pc1],)
+			axd  	= drawgreyband(axd,xlims, [pc6,pcmax],)			
 		pyplot.title('Data')	
 		pyplot.ylabel(units)
 		
@@ -221,8 +247,8 @@ def percentilesPlot(
 	# Model plot to the right.	
 	axm = pyplot.subplot(gs[1])	
 
-	pyplot.plot(timesDict[m],np.clip(modeldataDict['mean'],  ylims[0],ylims[1]),'k--',lw=1,label='mean')
-	pyplot.plot(timesDict[m],np.clip(modeldataDict['median'],ylims[0],ylims[1]),'k-', lw=1,label='median')	
+	pyplot.plot(timesDict['mean'],  np.clip(modeldataDict['mean'],  ylims[0],ylims[1]),'k--',lw=1,label='mean')
+	pyplot.plot(timesDict['median'],np.clip(modeldataDict['median'],ylims[0],ylims[1]),'k-', lw=1,label='median')	
 			
 	legend = pyplot.legend(loc='lower center',  numpoints = 1, ncol=2, prop={'size':12}) 
 	legend.draw_frame(False) 
@@ -233,9 +259,13 @@ def percentilesPlot(
 	trafficarray = [np.clip(modeldataDict[m],ylims[0],ylims[1]) for m in ['20pc','30pc','40pc','60pc','70pc','80pc']]
 	axm = trafficlights(axm,timesDict['min'], trafficarray,labels=labels,drawlegend=False)		
 
-	if greyband:
+	if greyband == 'MinMax':
 		axm  	= drawgreyband(axm,timesDict['min'], [np.clip(modeldataDict[m],ylims[0],ylims[1]) for m in ['min','20pc']],)
 		axm  	= drawgreyband(axm,timesDict['min'], [np.clip(modeldataDict[m],ylims[0],ylims[1]) for m in ['80pc','max']],)				
+
+	if greyband == '10-90pc':
+		axm  	= drawgreyband(axm,timesDict['min'], [np.clip(modeldataDict[m],ylims[0],ylims[1]) for m in ['10pc','20pc']],)
+		axm  	= drawgreyband(axm,timesDict['min'], [np.clip(modeldataDict[m],ylims[0],ylims[1]) for m in ['80pc','90pc']],)				
 
 
 	#yticks = list(axm.get_xticks())
@@ -257,8 +287,13 @@ def percentilesPlot(
 	axm.get_yaxis().set_ticklabels([])			
 	axd.get_xaxis().set_ticks([])	
 	
-		
-	ytickLabels	= ['min', '20pc','30pc','40pc','60pc','70pc','80pc','max']
+	if greyband == 'MinMax':
+		ytickLabels	= ['min',  '20pc','30pc','40pc','60pc','70pc','80pc','max']
+	elif greyband == '10-90pc':	
+		ytickLabels	= ['10pc', '20pc','30pc','40pc','60pc','70pc','80pc','90pc']
+	else:
+		ytickLabels	= [        '20pc','30pc','40pc','60pc','70pc','80pc',]			
+
 	yticks = np.clip([ modeldataDict[m][-1]	for m in ytickLabels],ylims[0],ylims[1])
 	axm.set_yticks(yticks)
 	axm.set_yticklabels(ytickLabels,fontsize=10)

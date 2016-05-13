@@ -85,7 +85,7 @@ def fnToTitle(fn):
 def addImagesText(imagePath,title = ''):
 	""" Creates the appropriate text to insert an image onto the page.
 	"""
-	f = open("html5/html5Assets/figure-template.html", "r")
+	f = open("html5/figure-template.html", "r")
 	contents = f.readlines()
 	f.close()
 	if title == '': title = fnToTitle(imagePath)
@@ -113,7 +113,7 @@ def AddSection(filepath,href,Title, Description='',Files=[]):
 
 	##### 
 	# Copy the template and add the images.
-	f = open("html5/html5Assets/section-template.html", "r")
+	f = open("html5/section-template.html", "r")
 	contents = f.readlines()
 	f.close()
 	if type(Files) == type(['a','list',]):
@@ -125,7 +125,7 @@ def AddSection(filepath,href,Title, Description='',Files=[]):
 	#####
 	# Add Title, description and figures to the copied template
 	for l,line in enumerate(contents):
-		if line.find('href')>=0:	contents[l] = contents[l].replace('href',href)
+		if line.find('inserthref')>=0:	contents[l] = contents[l].replace('inserthref',href)
 		if line.find('Title')>=0:	contents[l] = contents[l].replace('Title',Title)
 		if line.find('Description')>=0:	contents[l] = contents[l].replace('Description',Description)				
 		if line.find('Figures')>=0:	contents[l+1] += imagesTxt
@@ -159,7 +159,7 @@ def AddSubSections(filepath,hrefs,SectionTitle,SidebarTitles = {},Titles={}, Des
 
 		##### 
 		# Copy the template and add the images.
-		f = open("html5/html5Assets/section-template.html", "r")
+		f = open("html5/section-template.html", "r")
 		contents = f.readlines()
 		f.close()
 		if type(Files) == type(['a','list',]):
@@ -171,7 +171,7 @@ def AddSubSections(filepath,hrefs,SectionTitle,SidebarTitles = {},Titles={}, Des
 		#####
 		# Add Title, description and figures to the copied template
 		for l,line in enumerate(contents):
-			if line.find('href')>=0:	contents[l] = contents[l].replace('href',href)
+			if line.find('inserthref')>=0:	contents[l] = contents[l].replace('inserthref',href)
 			if line.find('Title')>=0:	contents[l] = contents[l].replace('Title',Title)
 			if line.find('Description')>=0:	contents[l] = contents[l].replace('Description',Description)				
 			if line.find('Figures')>=0:	contents[l+1] += imagesTxt

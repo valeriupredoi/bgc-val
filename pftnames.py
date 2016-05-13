@@ -508,7 +508,7 @@ def getLongName(text,debug=False):
 
 
 	if text == 'Alkalinity':	return "Alkalinity"  
-	if text == 'percentiles':	return "time series"  
+	if text == 'percentiles':	return "Time series"  
 	if text == 'Chlorophyll':	return "Chlorophyll"  
 	if text == 'Chlorophyll_cci':	return "Chlorophyll (CCI)"  
 	if text == 'Chlorophyll_pig':	return "Chlorophyll (Pigments)"  		
@@ -526,6 +526,11 @@ def getLongName(text,debug=False):
 	if text == 'AirSeaFluxCO2':	return "Air Sea Flux of CO2"  
 	if text == 'DIC':		return "DIC"  
 
+	if text == 'hist':		return "Histogram"  
+	if text == 'scatter':		return "scatter diagram"  	
+	if text == 'robinquad':		return "Maps"  		
+	if text == 'hov':		return "Hovmoeller"  			
+	
 
   	if text == 'AtlanticTransect':	return "Atlantic Transect"    
   	if text == 'PacificTransect':	return "Pacific Transect"    	
@@ -802,7 +807,12 @@ def getLongName(text,debug=False):
   	for m in month_name:
   		t =  text.find(m)
   		if t>0: return getLongName(text[:t]) +' '+m
-  		
+  	
+  	if len(text) ==4:
+  		try:	
+  			year = int(text)
+  			return text
+  		except: pass
   	#if text in ['picophyto','microzoo','mesozoo','diatoms', 'bac', ]:
   	#	print "need to add ",text,"to get longname"
   	print "getLongName:\tERROR:\tCould not find Longname for ",text

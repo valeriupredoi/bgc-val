@@ -50,6 +50,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			clean = 0,
 			annual = True,
 			strictFileCheck = True,
+			analysisSuite = 'all',
 			):
 
 	"""
@@ -70,25 +71,45 @@ def analysis_timeseries(jobID = "u-ab671",
 	
 	#####	
 	# BGC switches:
-	doChl_CCI	= True			# CCI Chlorophyll	
-	doChl_pig	= True			# Chlorophyll from pigments (MAREDAT)
-	doN		= True			# WOA Nitrate
-	doSi		= True			# WOA Siliate
-	doO2		= True			# WOA Oxygen
-	doAlk		= True			# Glodap Alkalinity
-	doDIC		= True			# Globap tCO2
-	doAirSeaFlux	= True			# work in progress
-	doIntPP_iMarNet	= True			# Integrated primpary production from iMarNEt
-	doIntPP_OSU	= True			# OSU Integrated primpary production	
-	doOMZ		= 0#True		# work in progress
-	doExportRatio   = True			# Export ratio (no data)
+	if analysisSuite.lower() in ['all',]:	
+		doChl_CCI	= True			# CCI Chlorophyll	
+		doChl_pig	= True			# Chlorophyll from pigments (MAREDAT)
+		doN		= True			# WOA Nitrate
+		doSi		= True			# WOA Siliate
+		doO2		= True			# WOA Oxygen
+		doAlk		= True			# Glodap Alkalinity
+		doDIC		= True			# Globap tCO2
+		doAirSeaFlux	= True			# work in progress
+		doIntPP_iMarNet	= True			# Integrated primpary production from iMarNEt
+		doIntPP_OSU	= True			# OSU Integrated primpary production	
+		doOMZ		= 0#True		# work in progress
+		doExportRatio   = True			# Export ratio (no data)
 	
-	#####	
-	# Physics switches:
-	doT		= True			# WOA Temperature
-	doS		= True			# WOA Salinity
-	doMLD		= True			# iFERMER Mixed Layer Depth - work in prgress
+		#####	
+		# Physics switches:
+		doT		= True			# WOA Temperature
+		doS		= True			# WOA Salinity
+		doMLD		= True			# iFERMER Mixed Layer Depth - work in prgress
 		
+	if analysisSuite.lower() in ['debug',]:	
+		doChl_CCI	= 0#True			# CCI Chlorophyll	
+		doChl_pig	= 0#True			# Chlorophyll from pigments (MAREDAT)
+		doN		= 0#True			# WOA Nitrate
+		doSi		= 0#True			# WOA Siliate
+		doO2		= 0#True			# WOA Oxygen
+		doAlk		= 0#True			# Glodap Alkalinity
+		doDIC		= 0#True			# Globap tCO2
+		doAirSeaFlux	= True				# work in progress
+		doIntPP_iMarNet	= 0#True			# Integrated primpary production from iMarNEt
+		doIntPP_OSU	= 0#True			# OSU Integrated primpary production	
+		doOMZ		= 0#True			# work in progress
+		doExportRatio   = 0#True			# Export ratio (no data)
+	
+		#####	
+		# Physics switches:
+		doT		= True			# WOA Temperature
+		doS		= 0#True			# WOA Salinity
+		doMLD		= 0#True			# iFERMER Mixed Layer Depth - work in prgress		
 
 	#####
 	# Location of images directory
@@ -495,12 +516,13 @@ def analysis_timeseries(jobID = "u-ab671",
 
 	if doAirSeaFlux:
 	
-		nc = Dataset(orcaGridfn,'r')
-		area = nc.variables['e1t'][:]*nc.variables['e2t'][:]
-		nc.close()
+		#nc = Dataset(orcaGridfn,'r')
+		#area = nc.variables['e1t'][:]*nc.variables['e2t'][:]
+		#nc.close()
+		
 		def eOrcaTotal(nc,keys):
-			factor = 365. *12000. #/ 1.E12
-			arr = nc.variables[keys[0]][:].squeeze()	# mmolC/m2/d
+			factor =  12./1000. #/ 1.E12
+			arr = nc.variables['CO2FLUX'][:].squeeze()	# mmolC/m2/d
 			#if arr.ndim ==3:
 			#	for i in np.arange(arr.shape[0]):
 			#		arr[i] = arr[i]*area
@@ -509,15 +531,13 @@ def analysis_timeseries(jobID = "u-ab671",
 			return arr * factor
 					
 		def takaTotal(nc,keys):
-			
-			factor = 1.E12 #*1.E12/1.E18 # for GT/year
-			#factor = 1.E12*1.E12/1.E18 # for GT/year			
 			arr = nc.variables['TFLUXSW06'][:].squeeze()	# 10^12 g Carbon year^-1
-			#area = nc.variables['AREA_MKM2'][:].squeeze() 	# 10^6 km^2
-			
+			arr = 1.E12* arr / 365.				#g Carbon/day
+			area = nc.variables['AREA_MKM2'][:].squeeze() *1E12	# 10^6 km^2
+			fluxperarea = arr/area
 			#arr = arr*area #* 1.E24 	# converts area into m^2
 			#print arr.sum(), arr.sum()*factor
-			return arr * factor
+			return fluxperarea
 			# area 10^6 km^2
 			# flux:  10^15 g Carbon month^-1. (GT)/m2/month
 
@@ -847,7 +867,7 @@ if __name__=="__main__":
 	try:	jobID = argv[1]
 	except:	
 		jobID = "u-ab749"
-	analysis_timeseries(jobID =jobID,)#clean=1)			
+	analysis_timeseries(jobID =jobID,analysisSuite='debug')#clean=1)			
 	#analysis_timeseries(jobID = "u-ab963")			
 	
 	

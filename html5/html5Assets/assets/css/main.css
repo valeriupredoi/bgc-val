@@ -1705,7 +1705,10 @@
 			display: block;
 			width: 100%;
 		}
-
+		.image img:hover {
+		    border: 1px solid #777;
+		}
+		
 		.image.avatar48 {
 			width: 48px;
 			height: 48px;
