@@ -525,12 +525,12 @@ def getLongName(text,debug=False):
 
 	if text == 'AirSeaFluxCO2':	return "Air Sea Flux of CO2"  
 	if text == 'DIC':		return "DIC"  
-
+	
 	if text == 'hist':		return "Histogram"  
 	if text == 'scatter':		return "scatter diagram"  	
 	if text == 'robinquad':		return "Maps"  		
 	if text == 'hov':		return "Hovmoeller"  			
-	
+	if text == '10-90pc':		return ""  				
 
   	if text == 'AtlanticTransect':	return "Atlantic Transect"    
   	if text == 'PacificTransect':	return "Pacific Transect"    	
@@ -563,6 +563,7 @@ def getLongName(text,debug=False):
   	
      	if text == 'IFREMER':	return "IFREMER"
   	if text == 'mld':		return 'Mixed Layer Depth'     	
+  	if text == 'MLD':		return 'Mixed Layer Depth'     	  	
   	if text == 'mld_DT02':		return 'MLD: Fixed Threshold Temperature '
   	if text == 'mld_DR003':		return 'MLD: Fixed Threshold Density'
   	if text == 'mld_DReqDTm02':	return 'MLD: Variable Threshold Density'  	  	

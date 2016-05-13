@@ -31,6 +31,8 @@ from itertools import product,izip
 import numpy as np
 from matplotlib import pyplot
 from mpl_toolkits.basemap import Basemap
+from matplotlib.ticker import FormatStrFormatter
+
 import cartopy.crs as ccrs
 import cartopy.io.shapereader as shapereader
 from scipy.stats.mstats import scoreatpercentile
@@ -465,18 +467,22 @@ def robinPlotQuad(lons, lats, data1,data2,filename,titles=['',''],title='',lon0=
 	data1 = np.ma.array(data1)
 	data2 = np.ma.array(data2)
 	axs,bms,cbs,ims = [],[],[],[]
+
+	if not vmin: vmin = data1.min()
+	if not vmax: vmax = data1.max()
+	vmin = min([data1.min(),data2.min(),vmin])
+	vmax = max([data1.max(),data2.max(),vmax])			
+	
+	doLog, vmin,vmax = determineLimsAndLog(vmin,vmax)
+	
 	doLogs = [doLog,doLog,False,True]
 	print "robinPlotQuad:\t",len(lons),len(lats),len(data1),len(data2)
 	for i,spl in enumerate([221,222,223,224]):	
 		
 		if spl in [221,222]:
-			if not vmin: vmin = data1.min()
-			if not vmax: vmax = data1.max()
-			#if 'vmin' in kwargs.keys():vmin = kwargs['vmin']
-			#if 'vmax' in kwargs.keys():vmax = kwargs['vmax']
-					
-			rbmi = min([data1.min(),data2.min(),vmin])
-			rbma = max([data1.max(),data2.max(),vmax])
+			rbmi = vmin
+			rbma = vmax
+			
 		if spl in [223,]:
 			
 			rbma =3*np.ma.std(data1 -data2)
@@ -574,6 +580,7 @@ def robinPlotQuad(lons, lats, data1,data2,filename,titles=['',''],title='',lon0=
 	print "UKESMpython:\trobinPlotQuad: \tSaving:" , filename
 	pyplot.savefig(filename ,dpi=dpi)		
 	pyplot.close()
+
 	
 def HovPlotQuad(lats, depths, data1,data2,filename,titles=['',''],title='',lon0=0.,marble=False,drawCbar=True,cbarlabel='',doLog=False,scatter=True,dpi=100,vmin='',vmax='',):#,**kwargs):
 
@@ -584,19 +591,21 @@ def HovPlotQuad(lats, depths, data1,data2,filename,titles=['',''],title='',lon0=
 	lats = np.array(lats)
 	data1 = np.ma.array(data1)
 	data2 = np.ma.array(data2)
+	
+	if not vmin: vmin = data1.min()
+	if not vmax: vmax = data1.max()
+	vmin = min([data1.min(),data2.min(),vmin])
+	vmax = max([data1.max(),data2.max(),vmax])	
+	doLog, vmin,vmax = determineLimsAndLog(vmin,vmax)
+			
 	axs,bms,cbs,ims = [],[],[],[]
 	doLogs = [doLog,doLog,False,True]
 	print "HovPlotQuad:\t",len(depths),len(lats),len(data1),len(data2)
 	for i,spl in enumerate([221,222,223,224]):	
 		
 		if spl in [221,222]:
-			if not vmin: vmin = data1.min()
-			if not vmax: vmax = data1.max()
-			#if 'vmin' in kwargs.keys():vmin = kwargs['vmin']
-			#if 'vmax' in kwargs.keys():vmax = kwargs['vmax']
-					
-			rbmi = min([data1.min(),data2.min(),vmin])
-			rbma = max([data1.max(),data2.max(),vmax])
+			rbmi = vmin
+			rbma = vmax
 		if spl in [223,]:
 			rbma =3*np.ma.std(data1 -data2)
 			print spl,i, rbma, max(data1),max(data2)
@@ -657,7 +666,30 @@ def HovPlotQuad(lats, depths, data1,data2,filename,titles=['',''],title='',lon0=
 	pyplot.close()
 		
 	
+
+def determineLimsAndLog(mi,ma):
+	#####
+	# Takes the minimum, the maximum value and retuns wherether it should be a log, 
+	# and the new axis range.
+	log = True
+	
+	if 0. in [mi,ma]:
+		log=False		
+	elif ma/mi < 20.:
+		log=False
 		
+	if log:
+		#####
+		# log
+		diff = np.log10(ma) - np.log10(mi)
+		xmin = 10.**(np.log10(mi)-diff/20.) 
+		ma = 10.**(np.log10(ma)+diff/20.) 	
+	else:	#####
+		# not log
+		diff = abs(ma - mi)
+		mi =mi-diff/20.
+		ma = ma+diff/20.	
+	return log, mi ,ma		
 		
 
 def histPlot(datax, datay,  filename, Title='', labelx='',labely='',xaxislabel='', logx=False,logy=False,nbins=50,dpi=100,minNumPoints = 6, legendDict= ['mean','mode','std','median','mad']):
@@ -669,29 +701,25 @@ def histPlot(datax, datay,  filename, Title='', labelx='',labely='',xaxislabel='
 	ax = pyplot.subplot(111)
 	xmin =  np.ma.min([np.ma.min(datax),np.ma.min(datay)])#*0.9
 	xmax =  np.ma.max([np.ma.max(datax),np.ma.max(datay)])#*1.1
-	if xmin<0:	xmin=xmin*1.1
-	if xmin>0:	xmin=xmin*0.9
-	if xmax<0:	xmax=xmax*0.9
-	if xmax>0:	xmax=xmax*1.1	
+
 		
-	print "UKESMpython:\thistplot:\t preparing", Title, datax.size, datay.size, (xmin, '-->',xmax)#, datax,datay
-	if xmin*xmax <= 0.:
-		logx=False
-		print "UKESMpython:\thistPlot:\tx value below zero, can not run log scale.", xmin, '\t',labelx,'(x):', np.ma.min(datax), '\t',labely,'(y):', np.ma.min(datay)
+	logx, xmin,xmax = determineLimsAndLog(xmin,xmax)
 	
-	
+		
 	if datax.size < minNumPoints and datay.size < minNumPoints:
 		print "UKESMpython:\thistPlot:\tThere aren't enough points for a sensible dataplot: ", datax.size
 		return		
 
-	
+	print "UKESMpython:\thistplot:\t preparing", Title, datax.size, datay.size, (xmin, '-->',xmax)#, datax,datay
+		
 	if logx:
 		n, bins, patchesx = pyplot.hist(datax,  histtype='stepfilled', bins=10.**np.linspace(np.log10(xmin), np.log10(xmax), nbins),range=[xmin,xmax])
 		n, bins, patchesy = pyplot.hist(datay,  histtype='stepfilled', bins=10.**np.linspace(np.log10(xmin), np.log10(xmax), nbins),range=[xmin,xmax])
 	else: 
 		n, bins, patchesx = pyplot.hist(datax,  bins=np.linspace(xmin, xmax, nbins), histtype='stepfilled',range=[xmin,xmax] )
 		n, bins, patchesy = pyplot.hist(datay,  bins=np.linspace(xmin, xmax, nbins), histtype='stepfilled',range=[xmin,xmax])
-			
+
+	ax.set_xlim([xmin,xmax])			
 	pyplot.setp(patchesx, 'facecolor', 'g', 'alpha', 0.5)	
 	pyplot.setp(patchesy, 'facecolor', 'b', 'alpha', 0.5)
 	
@@ -735,8 +763,12 @@ def histPlot(datax, datay,  filename, Title='', labelx='',labely='',xaxislabel='
 	#	pyplot.xticks(bins, ["2^%s" % i for i in bins])
 	#	plt.hist(numpy.log2(data), log=True, bins=bins)
 	
-	if logx: ax.set_xscale('log')
+	if logx: 
+		ax.set_xscale('log')
+		
 	if logy: ax.set_yscale('log')
+
+		
 	leg = pyplot.legend([labelx,labely],loc='upper left')
 	leg.draw_frame(False) 
 	leg.get_frame().set_alpha(0.)	
@@ -749,7 +781,6 @@ def histPlot(datax, datay,  filename, Title='', labelx='',labely='',xaxislabel='
 	pyplot.savefig(filename ,dpi=dpi)
 	pyplot.close()	
 
-
 def histsPlot(datax, datay,  filename, Title='', labelx='',labely='',xaxislabel='', logx=False,logy=False,nbins=50,dpi=100,minNumPoints = 6):
 
 
@@ -758,15 +789,9 @@ def histsPlot(datax, datay,  filename, Title='', labelx='',labely='',xaxislabel=
 	fig.set_size_inches(8,14)	
 	xmin =  np.ma.min([np.ma.min(datax),np.ma.min(datay)])
 	xmax =  np.ma.max([np.ma.max(datax),np.ma.max(datay)])
-	if xmin<0:	xmin=xmin*1.1
-	if xmin>0:	xmin=xmin*0.9
-	if xmax<0:	xmax=xmax*0.9
-	if xmax>0:	xmax=xmax*1.1		
-	print "UKESMpython:\thistsPlot:\t preparing", Title, datax.size, datay.size, (xmin,'-->',xmax)
 	
-	if xmin*xmax <= 0.:
-		logx=False
-		print "UKESMpython:\thistPlot:\tx value below zero, can not run log scale.", xmin, '\t',labelx,'(x):', np.ma.min(datax), '\t',labely,'(y):', np.ma.min(datay)
+	logx, xmin,xmax = determineLimsAndLog(xmin,xmax)
+		
 	
 	
 	if datax.size < minNumPoints and datay.size < minNumPoints:
@@ -810,13 +835,18 @@ def histsPlot(datax, datay,  filename, Title='', labelx='',labely='',xaxislabel=
 	
 	ax = pyplot.subplot(313)
 	pyplot.title('Quotient: '+labelx+' / '+labely)	
-	d = datax/datay
-	
-	maxd = np.power(10.,np.int(np.ma.max(np.ma.abs(np.ma.log10(d)))+1))
-	print maxd, 1/maxd
-	n, bins, patchesx = pyplot.hist(d,  histtype='stepfilled', bins=10**np.linspace(np.log10(1./maxd), np.log10(maxd), nbins),range=[xmin,xmax])	
-	pyplot.setp(patchesx, 'facecolor', 'g', 'alpha', 0.5)	
-	ax.set_xscale('log')
+	d = datax/np.ma.masked_where(datay==0.,datay)
+
+	if logx:		
+		maxd = np.ma.power(10.,np.int(np.ma.max(np.ma.abs(np.ma.log10(d)))+1))
+		print maxd, 1/maxd
+		n, bins, patchesx = pyplot.hist(d,  histtype='stepfilled', bins=10**np.linspace(np.log10(1./maxd), np.log10(maxd), nbins),range=[xmin,xmax])	
+		pyplot.setp(patchesx, 'facecolor', 'g', 'alpha', 0.5)	
+		ax.set_xscale('log')
+	else:
+		n, bins, patchesx = pyplot.hist(d,  histtype='stepfilled', range=[d.min(),d.max()])	
+		pyplot.setp(patchesx, 'facecolor', 'g', 'alpha', 0.5)	
+				
 	y = pyplot.axvline(x=1., c = 'k',ls='--',lw=2,)
 	y = pyplot.axvline(x=np.ma.mean(d), c = 'k',ls='-',label= 'Mean Slope: '+str(round(np.ma.mean(d),2)))	
 	y = pyplot.axvline(x=np.ma.median(d), c = 'k',ls='--',label= 'Median Slope: '+str(round(np.ma.median(d),2)))	
@@ -939,16 +969,20 @@ def scatterPlot(datax, datay,  filename, Title='', labelx='',labely='', logx=Fal
 		xmin = ymin= np.ma.min([xmin,ymin])
 		xmax = ymax= np.ma.max([xmax,ymax])
 		
-	plotrange = [xmin, xmax, ymin, ymax]		
 
 
 
+
+	logx, xmin,xmax = determineLimsAndLog(xmin,xmax)
+	logy, ymin,ymax = determineLimsAndLog(ymin,ymax)
+	
+	plotrange = [xmin, xmax, ymin, ymax]			
 	print "UKESMpython:\tscatterPlot:\trange:",plotrange
 	
-	if xmin*xmax <= 0. or ymin*ymax <=.0:
-		logx=False
-		logy=False
-		print "UKESMpython:\tscatterPlot:\tx value below zero, can not run log scale.", '\t',labelx,'(x):', xmin, '\t',labely,'(y):', ymin		
+	#if xmin*xmax <= 0. or ymin*ymax <=.0:
+#		logx=False
+#		logy=False
+#		print "UKESMpython:\tscatterPlot:\tx value below zero, can not run log scale.", '\t',labelx,'(x):', xmin, '\t',labely,'(y):', ymin		
 	
 	if logx: ax.set_xscale('log')
 	if logy: ax.set_yscale('log')

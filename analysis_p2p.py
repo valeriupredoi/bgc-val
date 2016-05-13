@@ -126,9 +126,9 @@ def analysis_jasmin(
 		doMLD		= 0#True
 		doAlk		= 0#True			# Glodap Alkalinity
 		doDIC		= 0#True			# Globap tCO2
-		doAirSeaFlux	= 0#True		# work in progress
+		doAirSeaFlux	= True		# work in progress
 		doIntPP_iMarNet	= 0#True		# Integrated primpary production from iMarNEt
-		doIntPP_OSU	= True		# OSU Integrated primpary production	
+		doIntPP_OSU	= 0#True		# OSU Integrated primpary production	
 	elif analysisSuite.lower() in ['bio',]:
 		doCHL 		= True
 		doCHL_CCI 	= 0				
@@ -166,9 +166,9 @@ def analysis_jasmin(
 		doMLD		= True
 		doAlk		= True			# Glodap Alkalinity
 		doDIC		= True			# Globap tCO2
-		doAirSeaFlux	= True			# work in progress
+		doAirSeaFlux	= 0#True			# work in progress
 		doIntPP_iMarNet	= True			# Integrated primpary production from iMarNEt
-		doIntPP_OSU	= True			# OSU Integrated primpary production	
+		doIntPP_OSU	= 0#True			# OSU Integrated primpary production	
 	else:		
 		doCHL 		= 0#True
 		doCHL_CCI 	= 0				
@@ -292,7 +292,9 @@ def analysis_jasmin(
 	cciCoords	= {'t':'index_t', 'z':'index_z','lat': 'lat',      'lon': 'lon',       'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
 	glodapCoords	= {'t':'index_t', 'z':'depth',  'lat': 'latitude', 'lon': 'longitude', 'cal': 'standard','tdict':ukp.tdicts['ZeroToZero'] }	
 	osuCoords	= {'t':'index_t', 'z':'index_z','lat': 'latitude', 'lon': 'longitude', 'cal': 'standard','tdict':ukp.tdicts['ZeroToZero'] }		
-	glodapv2Coords	= {'t':'index_t', 'z':'Pressure','lat':'lat',      'lon': 'lon',        'cal': '',        'tdict':{0:0,} }	
+	glodapv2Coords	= {'t':'index_t', 'z':'Pressure','lat':'lat',      'lon': 'lon',       'cal': '',        'tdict':{0:0,} }	
+	takahashiCoords	= {'t':'index_t', 'z':'index_z','lat': 'LAT',      'lon': 'LON',       'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
+		
 	shelvesAV = []	
 	
 	for year in years:		
@@ -581,7 +583,7 @@ def analysis_jasmin(
 			# Files:
 			if annual:
 				av[name]['MEDUSA']['File']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_diad_T.nc"))[0]				
-				av[name]['Data']['File']  		= OSUDir +"/standard_VGPM.SeaWIFS.global.average.nc"
+				av[name]['Data']['File']  	= OSUDir +"/standard_VGPM.SeaWIFS.global.average.nc"
 			else:
 				print "IntegratedPrimaryProduction (OSU) data not available for monthly Analysis"
 				assert 0
@@ -593,18 +595,19 @@ def analysis_jasmin(
 			nc.close()
 			def medusadepthInt(nc,keys):
 				#	 mmolN/m2/d        [mg C /m2/d]   [mgC/m2/yr] [gC/m2/yr]     Gt/m2/yr
-				factor = 1.		* 6.625 * 12.011 * 365.	      / 1000.   /     1E15
-				arr = (nc.variables[keys[0]][:]+ nc.variables[keys[1]][:]).squeeze()*factor
-				if arr.ndim ==3:
-					for i in np.arange(arr.shape[0]):
-						arr[i] = arr[i]*area
-				elif arr.ndim ==2: arr = arr*area
-				elif arr.ndim==1:
-					index_x = nc.variables['index_x'][:]
-					index_y = nc.variables['index_y'][:]
-					for i,a in enumerate(arr):
-						arr[i] = a * area[index_y[i],index_x[i]]
-				else: assert 0
+				factor = 1.		* 6.625 * 12.011 #* 365.	      / 1000.   /     1E15
+				arr = (nc.variables[keys[0]][:]+ nc.variables[keys[1]][:])*factor
+				
+				#if arr.ndim ==3:
+				#	for i in np.arange(arr.shape[0]):
+				#		arr[i] = arr[i]*area
+				#elif arr.ndim ==2: arr = arr*area
+				#elif arr.ndim==1:
+				#	index_x = nc.variables['index_x'][:]
+				#	index_y = nc.variables['index_y'][:]
+				#	for i,a in enumerate(arr):
+				#		arr[i] = a * area[index_y[i],index_x[i]]
+				#else: assert 0
 				return arr
 
 
@@ -617,21 +620,22 @@ def analysis_jasmin(
 			for a in np.arange(1080):osuareas[a] = np.ones((2160,))*osuarea*np.cos(np.deg2rad(lats[a]))
 		
 			def osuconvert(nc,keys):
+				# Already in 
 				arr = nc.variables[keys[0]][:] 
-				tlen = 1 # arr.shape[0]
-				arr  = arr/tlen * 365.	/ 1000. /     1E15
-				if arr.ndim ==3:
-					for i in np.arange(arr.shape[0]):
-						arr[i] = arr[i]*osuareas
-				elif arr.ndim ==2: arr = arr*osuareas
-				elif arr.ndim ==1:
-					index_x = nc.variables['index_x'][:]
-					index_y = nc.variables['index_y'][:]
-					for i,a in enumerate(arr):
-						print i,a,[index_y[i],index_x[i]]
-						arr[i] = a * osuareas[index_y[i],index_x[i]]				
-				else: 
-					assert 0
+				#tlen = 1 # arr.shape[0]
+				#arr  = arr/tlen * 365.	/ 1000. /     1E15
+				#if arr.ndim ==3:
+				#	for i in np.arange(arr.shape[0]):
+				#		arr[i] = arr[i]*osuareas
+				#elif arr.ndim ==2: arr = arr*osuareas
+				#elif arr.ndim ==1:
+				#	index_x = nc.variables['index_x'][:]
+				#	index_y = nc.variables['index_y'][:]
+				#	for i,a in enumerate(arr):
+				#		#print i,a,[index_y[i],index_x[i]]
+				#		arr[i] = a * osuareas[index_y[i],index_x[i]]				
+				#else: 
+				#	assert 0
 				return arr
 						
 			av[name]['MEDUSA']['coords'] 	= medusaCoords 	
@@ -646,8 +650,8 @@ def analysis_jasmin(
 			av[name]['Data']['source'] 	= 'OSU'
 			av[name]['MEDUSA']['source']	= 'MEDUSA'			
 			
-			av[name]['MEDUSA']['details'] 	= {'name': name, 'vars':['PRN' ,'PRD'], 'convert': medusadepthInt,'units':'gC/yr'}
-			av[name]['Data']['details']  	= {'name': name, 'vars':['NPP',], 'convert': osuconvert,'units':'gC/yr'}
+			av[name]['MEDUSA']['details'] 	= {'name': name, 'vars':['PRN' ,'PRD'], 'convert': medusadepthInt,'units':'mgC/m^2/day'}
+			av[name]['Data']['details']  	= {'name': name, 'vars':['NPP',], 'convert': osuconvert,'units':'mgC/m^2/day'}
 					
 						
 		
@@ -656,10 +660,49 @@ def analysis_jasmin(
 					
 
 		if doAirSeaFlux:
-			assert 0
-			
-			
+
 	
+			name = 'AirSeaFluxCO2'
+			if annual:
+				av[name]['MEDUSA']['File'] 	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_diad_T.nc"))[0]			
+				av[name]['Data']['File'] 	=  TakahashiFolder+'takahashi_2009_Anual_sumflux_2006c_noHead.nc'							
+			else:	
+				av[name]['Data']['File'] 	=  TakahashiFolder+'takahashi2009_month_flux_pCO2_2006c_noHead.nc'			
+				
+				print "Air Sea Flux CO2 monthly not implemented"
+				assert 0
+					
+			def eOrcaTotal(nc,keys):
+				factor =  12./1000. #/ 1.E12
+				arr = nc.variables['CO2FLUX'][:].squeeze()	# mmolC/m2/d
+				return arr * factor
+					
+			def takaTotal(nc,keys):
+				arr = nc.variables['TFLUXSW06'][:].squeeze()	# 10^12 g Carbon year^-1
+				arr = 1.E12* arr / 365.				#g Carbon/day
+				area = nc.variables['AREA_MKM2'][:].squeeze() *1E12	# 10^6 km^2
+				fluxperarea = arr/area
+				return fluxperarea
+
+						
+			av[name]['MEDUSA']['coords'] 	= medusaCoords 	
+			av[name]['Data']['coords']	= takahashiCoords
+
+			av[name]['MEDUSA']['grid']	= modelGrid		
+			av[name]['depthLevels'] 	= ['',]
+			
+			if annual:	av[name]['plottingSlices'] 	= tsRegions
+			else:		av[name]['plottingSlices'] 	= HighLatWinter
+						
+			av[name]['Data']['source'] 	= 'Takahashi2009'
+			av[name]['MEDUSA']['source']	= 'MEDUSA'			
+			
+			av[name]['MEDUSA']['details'] 	= {'name': name, 'vars':['CO2FLUX',], 'convert': eOrcaTotal,'units':'g C/m2/yr'}
+			av[name]['Data']['details']  	= {'name': name, 'vars':['TFLUXSW06','AREA_MKM2'], 'convert': takaTotal,'units':'g C/m2/yr'}
+					
+				
+							
+
 						
 					
 #		#if doPCO2:

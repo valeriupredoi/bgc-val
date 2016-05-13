@@ -51,6 +51,7 @@ def addImageToHtml(fn,imagesfold):
 	
 	newfn = imagesfold+os.path.basename(fn)
 	if not os.path.exists(newfn):
+		print "cp ",newfn,fn	
 		shutil.copy2(fn, newfn)
 	else:
 		####
@@ -58,6 +59,8 @@ def addImageToHtml(fn,imagesfold):
 		if os.path.getmtime(newfn) > os.path.getmtime(fn):
 			shutil.remove(newfn)
 			shutil.copy2(fn, newfn)			
+			print "cp ",newfn,fn
+			
 	relfn = newfn.replace(reportdir,'./')	
 	return relfn
 	            
@@ -152,7 +155,7 @@ def html5Maker(
 			
 			#####
 			# Determine the list of files:
-			vfiles = glob('./images/'+jobID+'/timeseries/*/percentiles*'+key+'*'+region+'*.png')
+			vfiles = glob('./images/'+jobID+'/timeseries/*/percentiles*'+key+'*'+region+'*10-90pc.png')
 			vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*hist.png'))
 			vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*robinquad.png'))			
 			vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*scatter.png'))						
@@ -189,6 +192,7 @@ def html5Maker(
 
 	if plotbyfieldandregion:
 		for key in sorted(fields):
+			#if key not in ['Alkalinity','Nitrate']: continue
 			SectionTitle= getLongName(key)
 			hrefs 	= []
 			Titles	= {}
@@ -205,7 +209,7 @@ def html5Maker(
 				
 				#####
 				# Determine the list of files:
-				vfiles = glob('./images/'+jobID+'/timeseries/*/percentiles*'+key+'*'+region+'*.png')
+				vfiles = glob('./images/'+jobID+'/timeseries/*/percentiles*'+key+'*'+region+'*10-90pc.png')
 				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*hist.png'))
 				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*robinquad.png'))			
 				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*scatter.png'))							
@@ -254,8 +258,11 @@ if __name__=="__main__":
 		jobID = "u-ab749"
 	try: 		reportdir = argv[2]
 	except: 	reportdir =folder('../../html5report')
-		
-	html5Maker(jobID =jobID,reportdir=reportdir)
+	
+	if 'clean' in argv[1:]:
+		clean = True
+	else:	clean = False
+	html5Maker(jobID =jobID,reportdir=reportdir,clean=clean)
 
 
 

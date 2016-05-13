@@ -216,12 +216,12 @@ def percentilesPlot(
 	if len(dataslice):
 
 		
-		pc1 = np.clip(np.array([np.percentile(dataslice,20.) for i in xlims]),ylims[0],ylims[1])
-		pc2 = np.clip(np.array([np.percentile(dataslice,30.) for i in xlims]),ylims[0],ylims[1])
-		pc3 = np.clip(np.array([np.percentile(dataslice,40.) for i in xlims]),ylims[0],ylims[1])
-		pc4 = np.clip(np.array([np.percentile(dataslice,60.) for i in xlims]),ylims[0],ylims[1])
-		pc5 = np.clip(np.array([np.percentile(dataslice,70.) for i in xlims]),ylims[0],ylims[1])
-		pc6 = np.clip(np.array([np.percentile(dataslice,80.) for i in xlims]),ylims[0],ylims[1])
+		pc1 = np.array([np.percentile(dataslice,20.) for i in xlims])
+		pc2 = np.array([np.percentile(dataslice,30.) for i in xlims])
+		pc3 = np.array([np.percentile(dataslice,40.) for i in xlims])
+		pc4 = np.array([np.percentile(dataslice,60.) for i in xlims])
+		pc5 = np.array([np.percentile(dataslice,70.) for i in xlims])
+		pc6 = np.array([np.percentile(dataslice,80.) for i in xlims])
 		labels = ['20-30 pc','30-40 pc','40-60 pc','60-70 pc','70-80 pc',]
 		axd = trafficlights(axd,xlims, [pc1,pc2,pc3,pc4,pc5,pc6],labels=labels,drawlegend=False)
 
@@ -230,13 +230,13 @@ def percentilesPlot(
 				
 
 		if greyband == 'MinMax':
-			pcmin 	= np.clip(np.array([dataslice.min() for i in xlims]),ylims[0],ylims[1])
-			pcmax 	= np.clip(np.array([dataslice.max() for i in xlims]),ylims[0],ylims[1])
+			pcmin 	= np.array([dataslice.min() for i in xlims])
+			pcmax 	= np.array([dataslice.max() for i in xlims])
 			axd  	= drawgreyband(axd,xlims, [pcmin,pc1],)
 			axd  	= drawgreyband(axd,xlims, [pc6,pcmax],)
 		if greyband == '10-90pc':
-			pcmin 	= np.clip(np.array([np.percentile(dataslice,10.) for i in xlims]),ylims[0],ylims[1])
-			pcmax 	= np.clip(np.array([np.percentile(dataslice,90.) for i in xlims]),ylims[0],ylims[1])
+			pcmin 	= np.array([np.percentile(dataslice,10.) for i in xlims])
+			pcmax 	= np.array([np.percentile(dataslice,90.) for i in xlims])
 			axd  	= drawgreyband(axd,xlims, [pcmin,pc1],)
 			axd  	= drawgreyband(axd,xlims, [pc6,pcmax],)			
 		pyplot.title('Data')	
@@ -247,8 +247,8 @@ def percentilesPlot(
 	# Model plot to the right.	
 	axm = pyplot.subplot(gs[1])	
 
-	pyplot.plot(timesDict['mean'],  np.clip(modeldataDict['mean'],  ylims[0],ylims[1]),'k--',lw=1,label='mean')
-	pyplot.plot(timesDict['median'],np.clip(modeldataDict['median'],ylims[0],ylims[1]),'k-', lw=1,label='median')	
+	pyplot.plot(timesDict['mean'],  modeldataDict['mean']  ,'k--',lw=1,label='mean')
+	pyplot.plot(timesDict['median'],modeldataDict['median'],'k-', lw=1,label='median')	
 			
 	legend = pyplot.legend(loc='lower center',  numpoints = 1, ncol=2, prop={'size':12}) 
 	legend.draw_frame(False) 
@@ -256,16 +256,16 @@ def percentilesPlot(
 		
 	
 	labels = ['20-30 pc','30-40 pc','40-60 pc','60-70 pc','70-80 pc',]	
-	trafficarray = [np.clip(modeldataDict[m],ylims[0],ylims[1]) for m in ['20pc','30pc','40pc','60pc','70pc','80pc']]
+	trafficarray = [modeldataDict[m] for m in ['20pc','30pc','40pc','60pc','70pc','80pc']]
 	axm = trafficlights(axm,timesDict['min'], trafficarray,labels=labels,drawlegend=False)		
 
 	if greyband == 'MinMax':
-		axm  	= drawgreyband(axm,timesDict['min'], [np.clip(modeldataDict[m],ylims[0],ylims[1]) for m in ['min','20pc']],)
-		axm  	= drawgreyband(axm,timesDict['min'], [np.clip(modeldataDict[m],ylims[0],ylims[1]) for m in ['80pc','max']],)				
+		axm  	= drawgreyband(axm,timesDict['min'], [modeldataDict[m] for m in ['min','20pc']],)
+		axm  	= drawgreyband(axm,timesDict['min'], [modeldataDict[m] for m in ['80pc','max']],)				
 
 	if greyband == '10-90pc':
-		axm  	= drawgreyband(axm,timesDict['min'], [np.clip(modeldataDict[m],ylims[0],ylims[1]) for m in ['10pc','20pc']],)
-		axm  	= drawgreyband(axm,timesDict['min'], [np.clip(modeldataDict[m],ylims[0],ylims[1]) for m in ['80pc','90pc']],)				
+		axm  	= drawgreyband(axm,timesDict['min'], [modeldataDict[m] for m in ['10pc','20pc']],)
+		axm  	= drawgreyband(axm,timesDict['min'], [modeldataDict[m] for m in ['80pc','90pc']],)				
 
 
 	#yticks = list(axm.get_xticks())
@@ -294,7 +294,7 @@ def percentilesPlot(
 	else:
 		ytickLabels	= [        '20pc','30pc','40pc','60pc','70pc','80pc',]			
 
-	yticks = np.clip([ modeldataDict[m][-1]	for m in ytickLabels],ylims[0],ylims[1])
+	yticks = [ modeldataDict[m][-1]	for m in ytickLabels]
 	axm.set_yticks(yticks)
 	axm.set_yticklabels(ytickLabels,fontsize=10)
 	axm.yaxis.tick_right()		

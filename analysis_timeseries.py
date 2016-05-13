@@ -543,10 +543,12 @@ def analysis_timeseries(jobID = "u-ab671",
 
 			
 		name = 'AirSeaFluxCO2'
+						
 		if annual:
 			av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_diad_T.nc"))
-			av[name]['dataFile'] 		=  TakahashiFolder+'takahashi2009_month_flux_pCO2_2006c_noHead.nc'			
+			av[name]['dataFile'] 		=  TakahashiFolder+'takahashi_2009_Anual_sumflux_2006c_noHead.nc'		
 		else:	
+			av[name]['dataFile'] 		=  TakahashiFolder+'takahashi2009_month_flux_pCO2_2006c_noHead.nc'				
 			print "Air Sea Flux CO2 monthly not implemented"
 			assert 0
 			#av[name]['dataFile'] 		=  TakahashiFolder+'takahashi2009_month_flux_pCO2_2006c_noHead.nc'
