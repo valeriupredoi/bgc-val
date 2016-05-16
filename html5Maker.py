@@ -95,7 +95,7 @@ def html5Maker(
 	
 	#####
 	#
-
+	
 	html5Tools.writeDescription(
 				indexhtmlfn,
 				'Validation of the job: '+jobID,
@@ -129,12 +129,27 @@ def html5Maker(
 		  'SouthernOcean',
 		  'Remainder',
 		   ]
-		
+
+	#####
+	# Two switches to turn on Summary section, and groups of plots of field and region.		
 	summarySections = True	
 	plotbyfieldandregion = True
 	
 	
 	
+	
+	#####
+	# A list of caveats linked to specific datasets or regions, or jobs.
+	ListofCaveats, ListofCaveats_regions = {}, {}
+	ListofCaveats['ExportRatio'] = 'Note that there is no historic data set for this variable.'
+	ListofCaveats['MLD'] = 'Note that the Model MLD is calculated with based on a sigma_0 difference of 0.01 with the surface where as data uses as \
+			sigma_0 difference of +/- 0.2 degrees from a depth on 10m.'
+			
+	if jobID == 'u-ad371':
+		ListofCaveats['Chlorophyll_cci']= 'Note that the Non-diatom chlorophyll failed in run:'+jobID
+		ListofCaveats['IntegratedPrimaryProduction_OSU']= 'Note that the Non-diatom chlorophyll does not contribute to IntPP in this run:'+jobID
+		
+		
 	if summarySections:
 
 		SectionTitle= 'Summary'
@@ -147,10 +162,14 @@ def html5Maker(
 		region = 'ignoreInlandSeas'
 		for key in sorted(fields):
 			href = 	key+'-'+region
+			desc = ''
+			if key in ListofCaveats.keys():			desc +=ListofCaveats[key]+'\n'
+			if region in ListofCaveats_regions.keys():	desc +=ListofCaveats_regions[key]+'\n'			
+
 			hrefs.append(href)
 			Titles[href] = 	getLongName(region) +' '+	getLongName(key)
-			SidebarTitles[href] = getLongName(key)				
-			Descriptions[href] = '' #getLongName(key) +' '+	getLongName(region)
+			SidebarTitles[href] = getLongName(key)	
+			Descriptions[href] = desc
 			FileLists[href] = {}
 			
 			#####
@@ -201,10 +220,15 @@ def html5Maker(
 			FileLists	= {}
 			for region in regions:
 				href = 	key+'-'+region
+				
+				desc = ''
+				if key in ListofCaveats.keys():			desc +=ListofCaveats[key]+'\n'
+				if region in ListofCaveats_regions.keys():	desc +=ListofCaveats_regions[key]+'\n'		
+							
 				hrefs.append(href)
 				Titles[href] = 	getLongName(region) +' '+	getLongName(key)
 				SidebarTitles[href] = getLongName(region)				
-				Descriptions[href] = '' #getLongName(key) +' '+	getLongName(region)
+				Descriptions[href] = desc
 				FileLists[href] = {}
 				
 				#####

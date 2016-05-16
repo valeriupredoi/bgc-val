@@ -454,14 +454,15 @@ class makePlots:
 				doLog=True
 				cbarlabel='log$_{10}$('+xunits+')'		
 			print "plotWithSlices:\tHov quad:",[ti1,ti2],False,dmin,dmax
-			ukp.HovPlotQuad(nmxy, nmxz, 
+			ukp.HovPlotQuad(nmxx,nmxy, nmxz, 
 					datax,datay,
 					hovquadfn,
 					titles=[ti1,ti2],
 					title  = ' '.join([getLongName(newSlice),getLongName(self.name+self.depthLevel),self.year]),
 					cbarlabel=cbarlabel, 
 					doLog=doLog,
-					vmin=dmin,vmax=dmax,
+					vmin=dmin,
+					vmax=dmax,
 					)		
 		
 		

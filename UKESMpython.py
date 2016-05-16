@@ -582,12 +582,17 @@ def robinPlotQuad(lons, lats, data1,data2,filename,titles=['',''],title='',lon0=
 	pyplot.close()
 
 	
-def HovPlotQuad(lats, depths, data1,data2,filename,titles=['',''],title='',lon0=0.,marble=False,drawCbar=True,cbarlabel='',doLog=False,scatter=True,dpi=100,vmin='',vmax='',):#,**kwargs):
+def HovPlotQuad(lons,lats, depths, 
+		data1,data2,filename,
+		titles=['',''],title='',
+		lon0=0.,marble=False,drawCbar=True,cbarlabel='',doLog=False,scatter=True,dpi=100,vmin='',vmax='',
+		):#,**kwargs):
 
 	fig = pyplot.figure()
 	fig.set_size_inches(14,8)
 	depths = np.array(depths)
 	if depths.max() * depths.min() >0. and depths.max()  >0.: depths = -depths
+	lons = np.array(lons)
 	lats = np.array(lats)
 	data1 = np.ma.array(data1)
 	data2 = np.ma.array(data2)
@@ -601,6 +606,16 @@ def HovPlotQuad(lats, depths, data1,data2,filename,titles=['',''],title='',lon0=
 	axs,bms,cbs,ims = [],[],[],[]
 	doLogs = [doLog,doLog,False,True]
 	print "HovPlotQuad:\t",len(depths),len(lats),len(data1),len(data2)
+
+	#####
+	# Plotting coordinate with lowest standard deviation.	
+	lon_std = lons.std()
+	lat_std = lats.std()	
+	if lon_std<lat_std:
+		hovXaxis = lats
+	else:	hovXaxis = lons
+	
+	
 	for i,spl in enumerate([221,222,223,224]):	
 		
 		if spl in [221,222]:
@@ -636,8 +651,8 @@ def HovPlotQuad(lats, depths, data1,data2,filename,titles=['',''],title='',lon0=
 			rbma = np.int(rbma)
 
 		axs.append(fig.add_subplot(spl))
-		if doLogs[i]:	ims.append(pyplot.scatter(lats,depths, c= np.log10(data),cmap=cmap, marker="s",alpha=0.9,linewidth='0',vmin=rbmi, vmax=rbma,))
-		else:		ims.append(pyplot.scatter(lats,depths, c=          data ,cmap=cmap, marker="s",alpha=0.9,linewidth='0',vmin=rbmi, vmax=rbma,))
+		if doLogs[i]:	ims.append(pyplot.scatter(hovXaxis,depths, c= np.log10(data),cmap=cmap, marker="s",alpha=0.9,linewidth='0',vmin=rbmi, vmax=rbma,))
+		else:		ims.append(pyplot.scatter(hovXaxis,depths, c=          data ,cmap=cmap, marker="s",alpha=0.9,linewidth='0',vmin=rbmi, vmax=rbma,))
 			
 
 		

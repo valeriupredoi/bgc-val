@@ -107,7 +107,7 @@ def analysis_timeseries(jobID = "u-ab671",
 	
 		#####	
 		# Physics switches:
-		doT		= True			# WOA Temperature
+		doT		= 0#True			# WOA Temperature
 		doS		= 0#True			# WOA Salinity
 		doMLD		= 0#True			# iFERMER Mixed Layer Depth - work in prgress		
 
@@ -532,7 +532,7 @@ def analysis_timeseries(jobID = "u-ab671",
 					
 		def takaTotal(nc,keys):
 			arr = nc.variables['TFLUXSW06'][:].squeeze()	# 10^12 g Carbon year^-1
-			arr = 1.E12* arr / 365.				#g Carbon/day
+			arr = -1.E12* arr / 365.				#g Carbon/day
 			area = nc.variables['AREA_MKM2'][:].squeeze() *1E12	# 10^6 km^2
 			fluxperarea = arr/area
 			#arr = arr*area #* 1.E24 	# converts area into m^2

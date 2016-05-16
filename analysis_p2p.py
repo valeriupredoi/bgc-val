@@ -457,7 +457,7 @@ def analysis_jasmin(
 				av[name]['MEDUSA']['File'] 	= MEDUSAFolder+jobID+'_' + year+"_SIL.nc"
 			
 			av[name]['MEDUSA']['grid']		= modelGrid		
-			av[name]['depthLevels'] 		= ['Surface','Transect','PTransect']
+			av[name]['depthLevels'] 		= ['Surface','Transect','PTransect','SOTransect']
 			if annual:	av[name]['plottingSlices'] 	= tsRegions
 			else:		av[name]['plottingSlices'] 	= HighLatWinter
 			
@@ -505,7 +505,7 @@ def analysis_jasmin(
 				av[name]['MEDUSA']['File']	= MEDUSAFolder+jobID+"_"+year+"_OXY.nc"
 			
 			av[name]['MEDUSA']['grid']		= modelGrid		
-			av[name]['depthLevels'] 		= ['Surface','Transect','PTransect']
+			av[name]['depthLevels'] 		= ['Surface','Transect','PTransect','SOTransect']
 			if annual:	av[name]['plottingSlices'] 	= tsRegions
 			else:		av[name]['plottingSlices'] 	= HighLatWinter
 			
@@ -532,7 +532,7 @@ def analysis_jasmin(
 				assert 0
 				
 			av[name]['MEDUSA']['grid']		= modelGrid		
-			av[name]['depthLevels'] 		= ['Surface','Transect','PTransect']
+			av[name]['depthLevels'] 		= ['Surface','Transect','PTransect','SOTransect']
 				
 
 			if annual:	av[name]['plottingSlices'] 	= tsRegions
@@ -558,7 +558,7 @@ def analysis_jasmin(
 				assert 0
 				
 			av[name]['MEDUSA']['grid']		= modelGrid		
-			av[name]['depthLevels'] 		= ['Surface','Transect','PTransect']
+			av[name]['depthLevels'] 		= ['Surface','Transect','PTransect','SOTransect']
 				
 
 			if annual:	av[name]['plottingSlices'] 	= tsRegions
@@ -679,7 +679,7 @@ def analysis_jasmin(
 					
 			def takaTotal(nc,keys):
 				arr = nc.variables['TFLUXSW06'][:].squeeze()	# 10^12 g Carbon year^-1
-				arr = 1.E12* arr / 365.				#g Carbon/day
+				arr = -1.E12* arr / 365.				#g Carbon/day
 				area = nc.variables['AREA_MKM2'][:].squeeze() *1E12	# 10^6 km^2
 				fluxperarea = arr/area
 				return fluxperarea
@@ -733,7 +733,7 @@ def analysis_jasmin(
 				av[name]['NEMO']['File'] 	= NEMOFolder+jobID+"_"+year+'_SAL.nc'	
 
 			av[name]['NEMO']['grid'] 		= modelGrid
-			av[name]['depthLevels'] 		= ['Surface','Transect','PTransect']	 
+			av[name]['depthLevels'] 		= ['Surface','Transect','PTransect','SOTransect']	 
 			av[name]['plottingSlices'] 	= tsRegions
 			
 			av[name]['Data']['coords'] 	= woaCoords
@@ -755,7 +755,7 @@ def analysis_jasmin(
 				av[name]['NEMO']['File'] 	= NEMOFolder+jobID+"_"+year+'_TEMP.nc'	
 
 			av[name]['NEMO']['grid'] 	= modelGrid	
-			av[name]['depthLevels'] 	= ['Surface','Transect','PTransect']	
+			av[name]['depthLevels'] 	= ['Surface','Transect','PTransect','SOTransect']	
 			av[name]['plottingSlices'] 	= tsRegions
 
 			av[name]['Data']['coords'] 	= woaCoords
@@ -827,7 +827,7 @@ if __name__=="__main__":
 		modelGrid = 'eORCA1',
 		annual 	= True,
 		noPlots = False,
-		analysisSuite='debug',)
+		analysisSuite='annual',)
 	
 			
 

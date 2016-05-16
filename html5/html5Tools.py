@@ -73,7 +73,7 @@ def writeSideBar(filepath, href, text,option='head',debug=False):
 def writeDescription(filepath, text,debug=False):
 	"""	Addes a sidebar to the file "filepath."
 	"""	
-	newline = '\t\t\t\t\t\t\t<p>'+text+'</p>'
+	newline = '\t\t\t\t\t\t\t<p>'+text+'</p>\n'
 	linenumber = locateLineNumber(filepath, 'HeaderDescription') 
 	if debug: print "Adding descriptionat ", linenumber,"line:\n",newline.replace('\t','')
 	AddtoFile(filepath,linenumber,newline)
