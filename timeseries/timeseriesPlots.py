@@ -396,6 +396,10 @@ def regrid(data,lat,lon):
 	
 def makemapplot(fig,ax,lons,lats,data,title, zrange=[-100,100],lon0=0.,drawCbar=True,cbarlabel='',doLog=False,):
 
+	if len(lons)==0:return fig,ax
+	try:
+		if len(lons.compressed())==0:return False, False 
+	except:pass
 	
 	lons = np.array(lons)
 	lats = np.array(lats)
@@ -473,7 +477,8 @@ def mapPlotPair(lons1, lats1, data1,lons2,lats2,data2,filename,titles=['',''],lo
 	lons1 = np.array(lons1)
 	lats1 = np.array(lats1)
 	data1 = np.ma.array(data1)
-	
+
+		
 	lons2 = np.array(lons2)
 	lats2 = np.array(lats2)
 	data2 = np.ma.array(data2)
@@ -482,13 +487,20 @@ def mapPlotPair(lons1, lats1, data1,lons2,lats2,data2,filename,titles=['',''],lo
 	rbma = max([data1.max(),data2.max()])		
 	
 	if rbmi * rbma >0. and rbma/rbmi > 100.: doLog=True
+	
+	if len(data2.compressed())==0:
+                mapPlotSingle(lons1, lats1, data1,filename,titles=titles,lon0=lon0,drawCbar=drawCbar,cbarlabel=cbarlabel,doLog=doLog,dpi=dpi)
+                return
+	
 	ax1 = pyplot.subplot(211,projection=cartopy.crs.PlateCarree(central_longitude=0.0, ))
 		
 	fig,ax1 = makemapplot(fig,ax1,lons1,lats1,data1,titles[0], zrange=[rbmi,rbma],lon0=0.,drawCbar=True,cbarlabel='',doLog=doLog,)
 	ax1.set_extent([-180.,180.,-90.,90.])	
 
 	ax2 = pyplot.subplot(212,projection=cartopy.crs.PlateCarree(central_longitude=0.0, ))	
-	try:fig,ax2 = makemapplot(fig,ax2,lons2,lats2,data2,titles[1], zrange=[rbmi,rbma],lon0=0.,drawCbar=True,cbarlabel='',doLog=doLog,)
+	try:
+		fig,ax2 = makemapplot(fig,ax2,lons2,lats2,data2,titles[1], zrange=[rbmi,rbma],lon0=0.,drawCbar=True,cbarlabel='',doLog=doLog,)
+		if False in [fig, ax2]: assert False
 	except: 
 		mapPlotSingle(lons1, lats1, data1,filename,titles=titles,lon0=lon0,drawCbar=drawCbar,cbarlabel=cbarlabel,doLog=doLog,dpi=dpi)
 		return

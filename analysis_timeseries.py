@@ -99,11 +99,11 @@ def analysis_timeseries(jobID = "u-ab671",
 		doO2		= 0#True			# WOA Oxygen
 		doAlk		= 0#True			# Glodap Alkalinity
 		doDIC		= 0#True			# Globap tCO2
-		doAirSeaFlux	= True				# work in progress
+		doAirSeaFlux	= 0#True				# work in progress
 		doIntPP_iMarNet	= 0#True			# Integrated primpary production from iMarNEt
 		doIntPP_OSU	= 0#True			# OSU Integrated primpary production	
 		doOMZ		= 0#True			# work in progress
-		doExportRatio   = 0#True			# Export ratio (no data)
+		doExportRatio   = True			# Export ratio (no data)
 	
 		#####	
 		# Physics switches:
@@ -194,7 +194,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		else:
 			# New eORCA1 grid		
 			orcaGridfn 	= '/group_workspaces/jasmin/esmeval/example_data/bgc/mesh_mask_eORCA1_wrk.nc'
-        # JASMIN                
+        # MONSOON                 
         if gethostname().find('monsoon')>-1:
                 print "analysis-timeseries.py:\tBeing run at the Met Office on ",gethostname()
                 machinelocation = 'MONSOON'
@@ -902,7 +902,7 @@ if __name__=="__main__":
 	try:	jobID = argv[1]
 	except:	
 		jobID = "u-ab749"
-	analysis_timeseries(jobID =jobID,analysisSuite='debug')#clean=1)			
+	analysis_timeseries(jobID =jobID,analysisSuite='all')#clean=1)			
 	#analysis_timeseries(jobID = "u-ab963")			
 	
 	
