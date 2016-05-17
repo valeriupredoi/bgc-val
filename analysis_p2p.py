@@ -28,6 +28,7 @@ from sys import argv,exit
 from os.path import exists
 from calendar import month_name
 from socket import gethostname
+from getpass import getuser
 from glob import glob
 from netCDF4 import Dataset
 import numpy as np
@@ -309,7 +310,7 @@ def analysis_jasmin(
                 else:
                         # New eORCA1 grid               
                         orcaGridfn      = ModelFolder+'/mesh_mask_eORCA1_wrk.nc'
-                workDir         = "/projects/ukesm/ldmora/UKESM_postprocessed"
+                workDir         = "/projects/ukesm/"+getuser()+"/UKESM_postprocessed"
                 imgDir          = ukp.folder('images')
 						
 	#####
