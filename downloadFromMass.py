@@ -39,17 +39,25 @@ def downloadMass(jobID,):
 	if jobID == '': return
 	
 	machine = gethostname()
-	
+	knownmachine = False	
 	if machine.find('mass')>-1:
+		knownmachine = True
 		outputFold = "/group_workspaces/jasmin2/ukesm/BGC_data/"+jobID
 		if not os.path.exists(outputFold):
 			print "Making ",outputFold
     			os.makedirs(outputFold)
 
+	if machine.find('monsoon')>-1:
+		knownmachine = True
+                outputFold = "/projects/ukesm/ldmora/UKESM/"+jobID
+                if not os.path.exists(outputFold):
+                        print "Making ",outputFold
+                        os.makedirs(outputFold)
+
 		
-	if machine.find('mass') <0 and "anymachine" not in argv:
+	if not knownmachine :
 		print "Are you running this on the correct machine?"
-		print "\tYou should be on mass-cli1.ceda.ac.uk at jasmin"
+		print "\tYou should be on mass-cli1.ceda.ac.uk at jasmin or on monsoon at the MO"
 		print "\tBut you're at",machine
 		print "\tTo skip this warning, use the \"anymachine\" option at the command line"
 		return

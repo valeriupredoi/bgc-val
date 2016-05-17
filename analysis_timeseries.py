@@ -194,6 +194,39 @@ def analysis_timeseries(jobID = "u-ab671",
 		else:
 			# New eORCA1 grid		
 			orcaGridfn 	= '/group_workspaces/jasmin/esmeval/example_data/bgc/mesh_mask_eORCA1_wrk.nc'
+        # JASMIN                
+        if gethostname().find('monsoon')>-1:
+                print "analysis-timeseries.py:\tBeing run at the Met Office on ",gethostname()
+                machinelocation = 'MONSOON'
+
+                ObsFolder       = "/projects/ukesm/ldmora/BGC-data/"
+                ModelFolder       = "/projects/ukesm/ldmora/UKESM"
+                #####
+                # Location of model files.      
+                MEDUSAFolder_pref       = ukp.folder(ModelFolder)
+                NEMOFolder_pref         = ukp.folder(ModelFolder)
+
+                #####
+                # Location of data files.
+                if annual:      WOAFolder       = ukp.folder(ObsFolder+"WOA/annual")
+                else:           WOAFolder       = ukp.folder(ObsFolder+"WOA/")
+
+                MAREDATFolder   = ObsFolder+"/MAREDAT/MAREDAT/"
+                GEOTRACESFolder = ObsFolder+"/GEOTRACES/GEOTRACES_PostProccessed/"
+                TakahashiFolder = ObsFolder+"/Takahashi2009_pCO2/"
+                MLDFolder       = ObsFolder+"/IFREMER-MLD/"
+                iMarNetFolder   = ObsFolder+"/LestersReportData/"
+                GlodapDir       = ObsFolder+"/GLODAP/"
+                GLODAPv2Dir     = ObsFolder+"/GLODAPv2/GLODAPv2_Mapped_Climatologies/"
+                OSUDir          = ObsFolder+"OSU/"
+                CCIDir          = ObsFolder+"CCI/"
+                if jobID in ["xkrus",]:
+                        # Old school ORCA1 grid
+                        orcaGridfn      =ModelFolder+'/mesh_mask_ORCA1_75.nc'
+                else:
+                        # New eORCA1 grid               
+                        orcaGridfn      = ModelFolder+'/mesh_mask_eORCA1_wrk.nc'
+
 
 	#####
 	# NOC		
