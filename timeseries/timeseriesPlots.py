@@ -652,6 +652,7 @@ def hovmoellerPlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords=
 		ax2min	= rbmi
 		cmapax2 = defcmap
 		title = 'Model: '+title
+		
 	#####
 	# Start drawing
 	# Grid spec allows you to make un-even shaped subplots.

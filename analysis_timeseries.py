@@ -51,6 +51,8 @@ def analysis_timeseries(jobID = "u-ab671",
 			annual = True,
 			strictFileCheck = True,
 			analysisSuite = 'all',
+			z_component = 'SurfaceOnly',
+			regions = 'all',
 			):
 
 	"""
@@ -63,6 +65,13 @@ def analysis_timeseries(jobID = "u-ab671",
 		
 		The strictFileCheck switch checks that the data/model netcdf files exist.
 			It fails if the switch is on and the files no not exist.
+			
+		analysisSuite chooses a set of fields to look at.
+		
+		z_component selects whethere you're looking at just the surface, or the full depth.(well, every 5 layers)
+		
+		regions selects a list of regions, default is 'all', which is the list supplied by Andy Yool. 
+		
 	"""	
 
 	#####
@@ -110,6 +119,37 @@ def analysis_timeseries(jobID = "u-ab671",
 		doT		= 0#True			# WOA Temperature
 		doS		= 0#True			# WOA Salinity
 		doMLD		= 0#True			# iFERMER Mixed Layer Depth - work in prgress		
+
+	#####
+	# Some lists of region.
+	# This are pre-made lists of regions that can be investigated.
+	# Note that each analysis below can be given its own set of regions.	
+	if regions == 'all':
+  		regionList	= ['Global', 'ignoreInlandSeas',
+		  		'SouthernOcean','ArcticOcean',
+				'Equator10', 'Remainder',
+  				'NorthernSubpolarAtlantic','NorthernSubpolarPacific',
+  				]
+	if regions == 'short':  	
+		regionList 	= ['Global','SouthernHemisphere','NorthernHemisphere',]
+
+
+	#####
+	# The z_component custom command:
+	# This flag sets a list of layers and metrics.
+	# It's not advised to run all the metrics and all the layers, as it'll slow down the analysis.
+	if z_component in ['SurfaceOnly',]:
+		layerList = ['Surface',]
+		metricList = ['mean','median', '10pc','20pc','30pc','40pc','50pc','60pc','70pc','80pc','90pc','min','max']
+
+	if z_component in ['FullDepth',]:
+		layerList = [0,2,5,10,15,20,25,30,35,40,45,50,55,60,70,]
+		metricList = ['mean','median',]
+	
+  	
+  	
+
+
 
 	#####
 	# Location of images directory
@@ -277,27 +317,8 @@ def analysis_timeseries(jobID = "u-ab671",
 	cciCoords	= {'t':'index_t', 'z':'index_z','lat': 'lat',      'lon': 'lon', 'cal': 'standard','tdict':['ZeroToZero'] }
 
 
-	#####
-	# Some lists of region.
-	# This are pre-made lists of regions that can be investigated.
-	# Note that each analysis below can be given its own set of regions.	
-#	regions 	= ['Global','NorthAtlanticOcean','SouthAtlanticOcean',]
-#	oldRegions	= ['Global','SouthernHemisphere','NorthernHemisphere',
-#			  'NorthAtlanticOcean','SouthAtlanticOcean','EquatorialAtlanticOcean',
-#			  'Atlantic','Arctic','nino3','nino3.4','atl_spg','ne_atl','persian']
-	#shortRegions 	= ['Global','SouthernHemisphere','NorthernHemisphere',]
-  	#AndyRegions 	= ['SouthernOcean','NorthernSubpolarAtlantic','NorthernSubpolarPacific','Arctic','SouthRemainder','NorthRemainder', 'Global']
- 
- 	allRegions	= ['Global','Equator10', 'Remainder','ArcticOcean','NorthernSubpolarAtlantic','NorthernSubpolarPacific','ignoreInlandSeas','SouthernOcean',]
- 	
-  	allRegions 	= allRegions	
-  	keyRegions 	= allRegions	  	
-  	
-	alllayers = ['Surface',]
-	#alllayers = [0,2,5,10,15,20,25,30,35,40,45,50,55,60,70,]#80,]
-	#alllayers.append('Surface')  	
-  	
-	standardmetrics = ['mean','median', '10pc','20pc','30pc','40pc','50pc','60pc','70pc','80pc','90pc','min','max']
+
+
   	
   	#####
   	# The analysis settings:
@@ -338,9 +359,9 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modeldetails'] 	= {'name': name, 'vars':['CHN','CHD'], 'convert': ukp.sums,'units':'mg C/m^3'}
 		av[name]['datadetails']  	= {'name': name, 'vars':['Chlorophylla',], 'convert': ukp.div1000,'units':'ug/L'}
 	
-		av[name]['layers'] 		= alllayers
-		av[name]['regions'] 		= allRegions 
-		av[name]['metrics']		= standardmetrics
+		av[name]['layers'] 		= layerList
+		av[name]['regions'] 		= regionList 
+		av[name]['metrics']		= metricList
 
 		av[name]['datasource'] 		= 'MAREDAT'
 		av[name]['model']		= 'MEDUSA'
@@ -370,8 +391,8 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['datadetails']  	= {'name': name, 'vars':['chlor_a',], 'convert':  ukp.NoChange,'units':'mg C/m^3'}
 	
 		av[name]['layers'] 		= ['Surface',] 	# CCI is surface only, it's a satellite product.
-		av[name]['regions'] 		= allRegions 
-		av[name]['metrics']		= standardmetrics	#['mean','median', ]
+		av[name]['regions'] 		= regionList 
+		av[name]['metrics']		= metricList	#['mean','median', ]
 
 		av[name]['datasource'] 		= 'CCI'
 		av[name]['model']		= 'MEDUSA'
@@ -399,12 +420,12 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modeldetails'] 	= {'name': name, 'vars':['DIN',], 'convert': ukp.NoChange,'units':'mmol N/m^3'}
 		av[name]['datadetails']  	= {'name': name, 'vars':['n_an',], 'convert': ukp.NoChange,'units':'mmol N/m^3'}
 	
-		av[name]['layers'] 		=  alllayers
-		av[name]['regions'] 		= allRegions
+		av[name]['layers'] 		=  layerList
+		av[name]['regions'] 		= regionList
 		
 		#av[name]['layers'] 		= ['Surface','300m',]#'1000m',]#'Surface - 300m',]'100m',
-		#av[name]['regions'] 		= allRegions#['Global',]#'NorthAtlanticOcean','SouthAtlanticOcean',]#'NorthAtlantic']
-		av[name]['metrics']		= standardmetrics #['mean','median', ]
+		#av[name]['regions'] 		= regionList#['Global',]#'NorthAtlanticOcean','SouthAtlanticOcean',]#'NorthAtlantic']
+		av[name]['metrics']		= metricList #['mean','median', ]
 
 		av[name]['datasource'] 		= 'WOA'
 		av[name]['model']		= 'MEDUSA'
@@ -427,9 +448,9 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modeldetails'] 	= {'name': name, 'vars':['SIL',],  'convert': ukp.NoChange,'units':'mmol Si/m^3'}
 		av[name]['datadetails']  	= {'name': name, 'vars':['i_an',], 'convert': ukp.NoChange,'units':'mmol Si/m^3'}
 		
-		av[name]['layers'] 		=  alllayers
-		av[name]['regions'] 		= allRegions
-		av[name]['metrics']		= standardmetrics
+		av[name]['layers'] 		=  layerList
+		av[name]['regions'] 		= regionList
+		av[name]['metrics']		= metricList
 
 		av[name]['datasource'] 		= 'WOA'
 		av[name]['model']		= 'MEDUSA'
@@ -450,9 +471,9 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modeldetails'] 	= {'name': name, 'vars':['OXY',], 'convert': ukp.NoChange,'units':'mmol O2/m^3'}	
 		av[name]['datadetails']  	= {'name': name, 'vars':['o_an',], 'convert': ukp.oxconvert,'units':'mmol O2/m^3'}
 
-		av[name]['layers'] 		=  alllayers
-		av[name]['regions'] 		= allRegions
-		av[name]['metrics']		= standardmetrics
+		av[name]['layers'] 		=  layerList
+		av[name]['regions'] 		= regionList
+		av[name]['metrics']		= metricList
 
 		av[name]['datasource'] 		= 'WOA'
 		av[name]['model']		= 'MEDUSA'
@@ -481,7 +502,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['datadetails']  	= {'name': name, 'vars':['o_an',], 'convert': ukp.oxconvert,'units':'mmol/m^3'}
 	
 		av[name]['layers'] 		= ['Surface',] #'100m','300m','1000m',]
-		av[name]['regions'] 		= keyRegions
+		av[name]['regions'] 		= regionList
 		av[name]['metrics']		= ['sum', ]
 
 		av[name]['datasource'] 		= 'WOA'
@@ -505,9 +526,9 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modeldetails'] 	= {'name': 'DIC', 'vars':['DIC',],  'convert': ukp.NoChange,'units':'mmol C/m^3'}
 		av[name]['datadetails']  	= {'name': 'DIC', 'vars':['tco2',], 'convert': ukp.NoChange,'units':'micro-mol kg-1'}
 	
-		av[name]['layers'] 		=  alllayers
-		av[name]['regions'] 		= allRegions
-		av[name]['metrics']		= standardmetrics
+		av[name]['layers'] 		=  layerList
+		av[name]['regions'] 		= regionList
+		av[name]['metrics']		= metricList
 
 		av[name]['datasource'] 		= 'GLODAP'
 		av[name]['model']		= 'MEDUSA'
@@ -534,10 +555,10 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['datadetails']  	= {'name': name, 'vars':['Alk',], 'convert': convertmeqm3TOumolkg,'units':'meq/m^3',}
 	
 	#	av[name]['layers'] 		=  ['Surface','100m','300m','1000m',]
-	#	av[name]['regions'] 		= keyRegions
-		av[name]['layers'] 		=  alllayers
-		av[name]['regions'] 		= allRegions		
-		av[name]['metrics']		= standardmetrics
+	#	av[name]['regions'] 		= regionList
+		av[name]['layers'] 		=  layerList
+		av[name]['regions'] 		= regionList		
+		av[name]['metrics']		= metricList
 
 		av[name]['datasource'] 		= 'GLODAP'
 		av[name]['model']		= 'MEDUSA'
@@ -593,8 +614,8 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['datadetails']  	= {'name': 'AirSeaFluxCO2', 'vars':['TFLUXSW06','AREA_MKM2'], 'convert': takaTotal,'units':'g C/m2/yr'}
 	
 		av[name]['layers'] 		= ['Surface',]
-		av[name]['regions'] 		= keyRegions
-		av[name]['metrics']		= standardmetrics
+		av[name]['regions'] 		= regionList
+		av[name]['metrics']		= metricList
 
 		av[name]['datasource'] 		= ''
 		av[name]['model']		= 'MEDUSA'
@@ -625,8 +646,8 @@ def analysis_timeseries(jobID = "u-ab671",
 
 	
 		av[name]['layers'] 		= ['Surface',]#'100m','200m','Surface - 1000m','Surface - 300m',]#'depthint']
-		av[name]['regions'] 		= keyRegions
-		av[name]['metrics']		= standardmetrics
+		av[name]['regions'] 		= regionList
+		av[name]['metrics']		= metricList
 
 		av[name]['datasource'] 		= 'MAREDAT'
 		av[name]['model']		= 'MEDUSA'
@@ -692,8 +713,8 @@ def analysis_timeseries(jobID = "u-ab671",
 
 	
 		av[name]['layers'] 		= ['Surface',]#'100m','200m','Surface - 1000m','Surface - 300m',]#'depthint']
-		av[name]['regions'] 		= keyRegions
-		av[name]['metrics']		= standardmetrics
+		av[name]['regions'] 		= regionList
+		av[name]['metrics']		= metricList
 
 		av[name]['datasource'] 		= 'OSU'
 		av[name]['model']		= 'MEDUSA'
@@ -722,8 +743,8 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['datadetails']  	= {'name':'','units':'',}
 	
 		av[name]['layers'] 		= ['Surface',]#'100m','200m','Surface - 1000m','Surface - 300m',]#'depthint']
-		av[name]['regions'] 		= keyRegions
-		av[name]['metrics']		= standardmetrics
+		av[name]['regions'] 		= regionList
+		av[name]['metrics']		= metricList
 
 		av[name]['datasource'] 		= ''
 		av[name]['model']		= 'MEDUSA'
@@ -747,9 +768,9 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modeldetails'] 	= {'name': name, 'vars':['votemper',], 'convert': ukp.NoChange,'units':'degrees C'}
 		av[name]['datadetails']  	= {'name': name, 'vars':['t_an',], 'convert': ukp.NoChange,'units':'degrees C'}
 	
-		av[name]['layers'] 		=  alllayers
-		av[name]['regions'] 		= allRegions	
-		av[name]['metrics']		= standardmetrics
+		av[name]['layers'] 		=  layerList
+		av[name]['regions'] 		= regionList	
+		av[name]['metrics']		= metricList
 
 		av[name]['datasource'] 		= 'WOA'
 		av[name]['model']		= 'NEMO'
@@ -773,9 +794,9 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modeldetails'] 	= {'name': name, 'vars':['vosaline',], 'convert': ukp.NoChange,'units':'PSU'}	
 		av[name]['datadetails']  	= {'name': name, 'vars':['s_an',], 'convert': ukp.NoChange,'units':'PSU'}
 
-		av[name]['layers'] 		=  alllayers
-		av[name]['regions'] 		= allRegions		
-		av[name]['metrics']		= standardmetrics
+		av[name]['layers'] 		=  layerList
+		av[name]['regions'] 		= regionList		
+		av[name]['metrics']		= metricList
 
 		av[name]['datasource'] 		= 'WOA'
 		av[name]['model']		= 'NEMO'
@@ -833,8 +854,8 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['datadetails']  	= {'name': 'mld', 'vars':['mld','mask',], 'convert': mldapplymask,'units':'m'}
 	
 		av[name]['layers'] 		= ['Surface',]#'Surface - 1000m','Surface - 300m',]#'depthint']
-		av[name]['regions'] 		= keyRegions
-		av[name]['metrics']		= standardmetrics
+		av[name]['regions'] 		= regionList
+		av[name]['metrics']		= metricList
 
 		av[name]['datasource'] 		= 'IFREMER'
 		av[name]['model']		= 'NEMO'
@@ -902,7 +923,12 @@ if __name__=="__main__":
 	try:	jobID = argv[1]
 	except:	
 		jobID = "u-ab749"
-	analysis_timeseries(jobID =jobID,analysisSuite='all')#clean=1)			
+	
+	suite = 'all'	
+	analysis_timeseries(jobID =jobID,analysisSuite=suite, z_component = 'FullDepth',)#clean=1)			
+	analysis_timeseries(jobID =jobID,analysisSuite=suite, z_component = 'SurfaceOnly',)#clean=1)			
+
+		
 	#analysis_timeseries(jobID = "u-ab963")			
 	
 	
