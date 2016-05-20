@@ -52,7 +52,7 @@ from p2p.shelveToDictionary import shelveToDictionary
 
 
 
-def analysis_jasmin(
+def analysis_p2p(
 		models	= ['NEMO','MEDUSA',],
 		jobID 	= 'xkrus',
 		years 	= ['2077'], #'2075','2076',
@@ -245,11 +245,11 @@ def analysis_jasmin(
 		print "analysis-JASMIN.py:\tBeing run at CEDA on ",gethostname()
 			
 		ObsFolder 	= "/group_workspaces/jasmin/esmeval/example_data/bgc/"
-		esmvalFolder 	= "/group_workspaces/jasmin/esmeval/data/"		
+		modelFolder 	= "/group_workspaces/jasmin2/ukesm/BGC_data/"
 		#####
 		# Location of model files.	
-		MEDUSAFolder_pref	= ukp.folder(esmvalFolder)
-		NEMOFolder_pref		= ukp.folder(esmvalFolder)
+		MEDUSAFolder_pref	= ukp.folder(modelFolder)
+		NEMOFolder_pref		= ukp.folder(modelFolder)
 		
 		#####
 		# Location of data files.
@@ -268,7 +268,7 @@ def analysis_jasmin(
 		
 	
 		# Directory for output files:
-		workDir 	= ukp.folder(esmvalFolder+"ukesm_postProcessed/")
+		workDir 	= ukp.folder(modelFolder+"ukesm_postProcessed/")
 		imgDir		= ukp.folder('images')		
 
 		if jobID in ["xkrus",]:
@@ -370,6 +370,7 @@ def analysis_jasmin(
 		if doCHL_CCI:						
 			name = 'Chlorophyll_cci'
 			if annual:
+				print MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_ptrc_T.nc"
 				av[name]['Data']['File'] 	= CCIDir+"ESACCI-OC-L3S-OC_PRODUCTS-CLIMATOLOGY-16Y_MONTHLY_1degree_GEO_PML_OC4v6_QAA-annual-fv2.0.nc"	
 				av[name]['MEDUSA']['File'] 	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_ptrc_T.nc"))[0]					
 			else:
@@ -851,12 +852,11 @@ def analysis_jasmin(
 	
 		
 if __name__=="__main__":
-	#analysis_jasmin()
 	try: 	jobID = argv[1]
 	except:	jobID =	'u-ab749'
 	try:	year = argv[2]
 	except:	year = '2007'
-	analysis_jasmin(models	= ['NEMO','MEDUSA',],
+	analysis_p2p(models	= ['NEMO','MEDUSA',],
 		jobID 	= jobID,
 		years 	= [year,], #'2075','2076',
 		modelGrid = 'eORCA1',

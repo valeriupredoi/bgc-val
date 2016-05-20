@@ -381,7 +381,7 @@ class matchDataAndModel:
 			lldict[(wla,wlo)] = la,lo
 			finds+=1
 
-			if self.debug:
+			if self.debug and i%10000==0:
 			    print "matchModelToData:\t",i,'New match:\tlon:',[wlo,self.loncc[la,lo]],'\tlat:',[wla,self.latcc[la,lo]],[finds,len(lldict)]
 
 			if abs(self.latcc[la,lo] - wla)>90.: 
