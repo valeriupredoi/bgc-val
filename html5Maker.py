@@ -234,6 +234,7 @@ def html5Maker(
 				#####
 				# Determine the list of files:
 				vfiles = glob('./images/'+jobID+'/timeseries/*/percentiles*'+key+'*'+region+'*10-90pc.png')
+				vfiles.extend(glob('./images/'+jobID+'/timeseries/*/hov*'+key+'*'+region+'*_median.png'))
 				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*hist.png'))
 				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*robinquad.png'))			
 				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*scatter.png'))							
@@ -281,7 +282,7 @@ if __name__=="__main__":
 	except:	
 		jobID = "u-ab749"
 	try: 		reportdir = argv[2]
-	except: 	reportdir =folder('../../html5report')
+	except: 	reportdir =folder('reports/'+jobID)
 	
 	if 'clean' in argv[1:]:
 		clean = True

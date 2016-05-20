@@ -807,10 +807,10 @@ def analysis_p2p(
 			name = 'MLD'		
 			if annual:	
 				av[name]['NEMO']['File'] 	= sorted(glob(NEMOFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_grid_T.nc"))[0]							
-				av[name]['Data']['File'] 		= MLDFolder+"mld_DT02_c1m_reg2.0-annual.nc"
+				av[name]['Data']['File'] 	= MLDFolder+"mld_DT02_c1m_reg2.0-annual.nc"
 			else:	
-				av[name]['Data']['File'] 		= MLDFolder+"mld_DT02_c1m_reg2.0.nc"
-				av[name]['NEMO']['File'] 		= NEMOFolder+jobID+"_"+year+'_MLD.nc'	
+				av[name]['Data']['File'] 	= MLDFolder+"mld_DT02_c1m_reg2.0.nc"
+				av[name]['NEMO']['File'] 	= NEMOFolder+jobID+"_"+year+'_MLD.nc'	
 					
 			av[name]['NEMO']['grid'] 		= modelGrid
 			av[name]['depthLevels'] 		= ['',]

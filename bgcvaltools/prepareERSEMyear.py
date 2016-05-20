@@ -65,6 +65,11 @@ def run(jobID,key,runType,doAnnual=True):
 		keys = ['Z4c',	'Z5c','Z6c',]
 		L = 'P'		
 
+	if runType in ['N5s','P1s','R6s','R8s',]:
+		keys = [runType,]
+		keys = [runType,]	
+		L = 'P'
+			
 	if runType == 'OXY':
 		keys = ['O2o',]
 		keys = ['O2o',]	
@@ -164,7 +169,7 @@ def run(jobID,key,runType,doAnnual=True):
 def main():
 	jobID='xhonp'#xhono'xjeza' #
 	key ='clim'#'1894'# '2001'#'clim'#'fullClim'#'2006'#'clim'#'2001' #'1982'#'1948' #'HighResp'#'1894'#'clim'
-	runTypes= ['MLD',]#'W','V',]#'OXY','U','V','W',]#'ERSEMMisc','ERSEMO2','NEMO','ERSEMNuts','ERSEMphytoBm','ERSEMphytoChl','ERSEMzoo', 'ERSEMbac']
+	runTypes= ['U',]#'N5s','P1s','R6s','R8s','MLD','V','NEMO',]#'OXY','U','V','W',]#'ERSEMMisc','ERSEMO2','NEMO','ERSEMNuts','ERSEMphytoBm','ERSEMphytoChl','ERSEMzoo', 'ERSEMbac']
 	#'SalTempWind','ERSEMFull','ERSEMphyto','Detritus', ]#'SalTempWind', ]# ]#]#]
 		
 	try: 	
@@ -184,5 +189,5 @@ def main():
 
 
 	
-	for r in runTypes: run(jobID,key,r)
+	for r in runTypes: run(jobID,key,r,doAnnual=False)
 main()	
