@@ -317,6 +317,12 @@ def analysis_timeseries(jobID = "u-ab671",
 	cciCoords	= {'t':'index_t', 'z':'index_z','lat': 'lat',      'lon': 'lon', 'cal': 'standard','tdict':['ZeroToZero'] }
 
 
+	def ModelDataFiles(filekey):
+		if annual:
+			return sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_"+fileky+".nc"))
+		else:
+			return sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1m_*_"+fileky+".nc"))
+		
 
 
   	
