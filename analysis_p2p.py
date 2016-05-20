@@ -321,7 +321,7 @@ def analysis_p2p(
 	HighLatWinter	= ['All','HighLatWinter',]
 	tsRegions	= ['Global','Equator10', 'Remainder','ArcticOcean','NorthernSubpolarAtlantic','NorthernSubpolarPacific','ignoreInlandSeas','SouthernOcean',]
 					
-	medusaCoords 	= {'t':'index_t', 'z':'deptht', 'lat': 'nav_lat',  'lon': 'nav_lon',   'cal': '365_day',}	# model doesn't need time dict.
+	medusaCoords 	= {'t':'index_t', 'z':'deptht', 'lat': 'nav_lat',  'lon': 'nav_lon',   'cal': '360_day',}	# model doesn't need time dict.
 	maredatCoords 	= {'t':'index_t', 'z':'DEPTH',  'lat': 'LATITUDE', 'lon': 'LONGITUDE', 'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
 	woaCoords 	= {'t':'index_t', 'z':'depth',  'lat': 'lat', 	   'lon': 'lon',       'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}		
 	cciCoords	= {'t':'index_t', 'z':'index_z','lat': 'lat',      'lon': 'lon',       'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
