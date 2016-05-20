@@ -469,10 +469,10 @@ class timeseriesAnalysis:
 		else: 	dataZcoords = {}
 
 		title = ' '.join([r,m,self.dataType])		
-	    	hovfilename = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join(['hov',self.jobID,self.dataType,r,m,])+'.png'
+	    	hovfilename = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join(['profile',self.jobID,self.dataType,r,m,])+'.png'
 		tsp.hovmoellerPlot(modeldata,data,hovfilename, modelZcoords = modelZcoords, dataZcoords= dataZcoords, title = title,diff=False)		
 	
-	    	hovfilename = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join(['hov',self.jobID,self.dataType,r,m,])+'-diff.png'
+	    	hovfilename = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join(['profileDiff',self.jobID,self.dataType,r,m,])+'.png'
 		tsp.hovmoellerPlot(modeldata,data,hovfilename, modelZcoords = modelZcoords, dataZcoords= dataZcoords, title = title,diff=True)		
 	
 
