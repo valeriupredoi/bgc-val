@@ -454,7 +454,7 @@ class timeseriesAnalysis:
 
 		#####
 		# check that multiple layers were requested.
-		if len(data.keys()s)<1: continue
+		if len(data.keys())<1: continue
 
 		#####
 		# create a dictionary of model depths and layers.

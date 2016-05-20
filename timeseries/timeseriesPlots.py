@@ -575,7 +575,9 @@ def hovmoellerPlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords=
 	times = taxisfromCC(np.array(times_cc))
 	yaxis = zaxisfromCC(yaxis_cc)
 	print "hovmoellerPlot:", title, md.shape,md.mean(),times.shape,yaxis.shape #, times, yaxis
-	
+	if len(md.shape)==1 or 1 in md.shape:
+		print "Not enough model data dimensions:",md.shape
+		return
 	#####
 	# creating data data dictionairies
 	dd = []
