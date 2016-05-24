@@ -26,7 +26,7 @@ from sys import argv
 import subprocess
 from socket import gethostname
 import os
-
+from glob import glob
 
 
 def linkTwoJobs(jobID1,jobID2):
