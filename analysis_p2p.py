@@ -167,9 +167,9 @@ def analysis_p2p(
 		doMLD		= True
 		doAlk		= True			# Glodap Alkalinity
 		doDIC		= True			# Globap tCO2
-		doAirSeaFlux	= 0#True			# work in progress
+		doAirSeaFlux	= False			# work in progress
 		doIntPP_iMarNet	= True			# Integrated primpary production from iMarNEt
-		doIntPP_OSU	= 0#True			# OSU Integrated primpary production	
+		doIntPP_OSU	= True			# OSU Integrated primpary production	
 	else:		
 		doCHL 		= 0#True
 		doCHL_CCI 	= 0				
