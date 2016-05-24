@@ -95,7 +95,21 @@ def linkTwoJobs(jobID1,jobID2):
 				print "linking:\t",fn1, '--->',fn2, 'FAILED'
 				
 	
+
+
+if __name__=="__main__":	
 	
+	try:	
+		jobID1 = argv[1]
+		jobID2 = argv[2]		
+	except:	
+		print "Please provide two jobIDs"
+		jobID1 = ''
+		jobID2 = ''
+		
+				
+	linkTwoJobs(jobID1,jobID2)
+		
 	
 	
 	
