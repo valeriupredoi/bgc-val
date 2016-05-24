@@ -43,7 +43,7 @@ def linkTwoJobs(jobID1,jobID2):
 	
 	machine = gethostname()
 	knownmachine = False	
-	if machine.find('mass')>-1:
+	if machine.find('ceda')>-1:
 		knownmachine = True
 		outputFold1 = "/group_workspaces/jasmin2/ukesm/BGC_data/"+jobID1
 		if not os.path.exists(outputFold1):
