@@ -67,7 +67,9 @@ def addImageToHtml(fn,imagesfold):
 def html5Maker(
 		jobID = 'u-ab749',
 		reportdir = '../../html5report',
-		clean = False
+		year = '*',
+		clean = False,
+		
 		
 	):
 
@@ -80,6 +82,7 @@ def html5Maker(
 		except: pass
 
 	reportdir = folder(reportdir)
+	year = str(year)
 	
 	####
 	# Copy all necceasiry objects and templates to the report location:
@@ -96,9 +99,11 @@ def html5Maker(
 	#####
 	#
 	
+	descriptionText = 'Validation of the job: '+jobID
+	if year != '*':	descriptionText+=', in the year: ' +year
 	html5Tools.writeDescription(
 				indexhtmlfn,
-				'Validation of the job: '+jobID,
+				descriptionText,
 				)
 
 	#####
@@ -175,9 +180,9 @@ def html5Maker(
 			#####
 			# Determine the list of files:
 			vfiles = glob('./images/'+jobID+'/timeseries/*/percentiles*'+key+'*'+region+'*10-90pc.png')
-			vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*hist.png'))
-			vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*robinquad.png'))			
-			vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*scatter.png'))						
+			vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*hist.png'))
+			vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*robinquad.png'))
+			vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*scatter.png'))
 		
 			#####
 			# Create plot headers for each file.
@@ -235,10 +240,10 @@ def html5Maker(
 				# Determine the list of files:
 				vfiles = glob('./images/'+jobID+'/timeseries/*/percentiles*'+key+'*'+region+'*10-90pc.png')
 				vfiles.extend(glob('./images/'+jobID+'/timeseries/*/hov*'+key+'*'+region+'*_median.png'))
-				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*hist.png'))
-				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*robinquad.png'))			
-				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*scatter.png'))							
-				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*Transect/*/*'+region+'*'+key+'*hov.png'))
+				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*hist.png'))
+				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*robinquad.png'))			
+				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*scatter.png'))							
+				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*Transect/*/*'+region+'*'+key+'*'+year+'*hov.png'))
 				#####
 				# Create plot headers for each file.
 				for fn in vfiles:
@@ -284,10 +289,17 @@ if __name__=="__main__":
 	try: 		reportdir = argv[2]
 	except: 	reportdir =folder('reports/'+jobID)
 	
+	try:	year = int(argv[3])
+	except: year = '*'
+	
 	if 'clean' in argv[1:]:
 		clean = True
 	else:	clean = False
-	html5Maker(jobID =jobID,reportdir=reportdir,clean=clean)
+	html5Maker(jobID =jobID,
+		   reportdir=reportdir,
+		   year = year,
+		   clean=clean,
+		   )
 
 
 
