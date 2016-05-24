@@ -26,8 +26,10 @@ from sys import argv
 import subprocess
 from socket import gethostname
 import os
+import shutil
 from glob import glob
-
+from shelve import open as shopen
+from UKESMpython import folder
 
 def linkTwoJobs(jobID1,jobID2):
 	"""
@@ -39,63 +41,102 @@ def linkTwoJobs(jobID1,jobID2):
 	"""
 	
 	if '' in [jobID1,jobID2,]: return
-	
-	
-	machine = gethostname()
-	knownmachine = False	
-	if machine.find('ceda')>-1:
-		knownmachine = True
-		outputFold1 = "/group_workspaces/jasmin2/ukesm/BGC_data/"+jobID1
-		if not os.path.exists(outputFold1):
-			print "This folder doesn't exist. Do you have the right jobID 1?", jobID1
-			return
-		outputFold2 = "/group_workspaces/jasmin2/ukesm/BGC_data/"+jobID2
-		if not os.path.exists(outputFold2):
-			print "This folder doesn't exist. Do you have the right jobID 2?", jobID2
-			return						
-			
-	if machine.find('monsoon')>-1:
-		knownmachine = True
-                outputFold1 = "/projects/ukesm/ldmora/UKESM/"+jobID1
-		if not os.path.exists(outputFold1):
-			print "This folder doesn't exist. Do you have the right jobID 1?", jobID1
-			return
-		outputFold2 ="/projects/ukesm/ldmora/UKESM/"+jobID2
-		if not os.path.exists(outputFold2):
-			print "This folder doesn't exist. Do you have the right jobID 2?", jobID2
-			return	
 
-		
-	if not knownmachine :
-		print "Are you running this on the correct machine?"
-		print "\tYou should be on mass-cli1.ceda.ac.uk at jasmin or on monsoon at the MO"
-		print "\tBut you're at",machine
-		return
-
-
-	linkNetcdfs = True
 
 	########
 	# Two aspects of this: 
 	#	link the netcdf files
 	#	copy the shelve files.
 	
+	linkNetcdfs = True
+	copyShelves = True
+
+
+	#####
+	# Netcdf stuff:		
 	if linkNetcdfs:
+		machine = gethostname()
+		knownmachine = False	
+		if machine.find('ceda')>-1:
+			knownmachine = True
+
+			netcdfFold1 = "/group_workspaces/jasmin2/ukesm/BGC_data/"+jobID1
+			netcdfFold2 =	netcdfFold1.replace(jobID1,jobID2)
+			if not os.path.exists(netcdfFold1):
+				print "This folder doesn't exist. Do you have the right jobID 1?", jobID1
+				return
+			if not os.path.exists(netcdfFold2):
+				print "This folder doesn't exist. Do you have the right jobID 2?", jobID2
+				return						
 		
-		for fn1 in sorted(glob(outputFold1+'/*.nc')):
-			fn2 = fn1.replace(jobID1,jobID2)
+		if machine.find('monsoon')>-1:
+			knownmachine = True
+		        netcdfFold1 = "/projects/ukesm/ldmora/UKESM/"+jobID1
+			netcdfFold2 =	netcdfFold1.replace(jobID1,jobID2)
+			if not os.path.exists(netcdfFold1):
+				print "This folder doesn't exist. Do you have the right jobID 1?", jobID1
+				return
+			if not os.path.exists(netcdfFold2):
+				print "This folder doesn't exist. Do you have the right jobID 2?", jobID2
+
+				return	
+
+	
+		if not knownmachine :
+			print "Are you running this on the correct machine?"
+			print "\tYou should be on mass-cli1.ceda.ac.uk at jasmin or on monsoon at the MO"
+			print "\tBut you're at",machine
+			return
+
+
+
+		#####
+		# link the files:
+		
+		if os.path.exists(fn2):
+			print "Already exists:\t",fn2
+			continue
+		try:
+			os.symlink(fn1, fn2)
+			print "linking:\t",fn1, '--->',fn2
+		except:
+			print "linking:\t",fn1, '--->',fn2, 'FAILED'
+				
+				
+
+	#####
+	# shelve stuff: (same location on both machines!)
+	if copyShelves:	
+		shelvefold1 = "shelves/timeseries/"+jobID1
+		shelvefold2 = newfnshe(shelvefold1.replace(jobID1,jobID2))
+
+		for fn1 in sorted(glob(shelvefold1*)):
+			fn2 = fn1.replace(jobID1,jobID2)		
 
 			if os.path.exists(fn2):
 				print "Already exists:\t",fn2
-				continue
+				continue			
+			
 			try:
-				os.symlink(fn1, fn2)
-				print "linking:\t",fn1, '--->',fn2
+				shutil.copy2(fn1, fn2)
+				print "Copying:\t",fn1, '--->',fn2
 			except:
-				print "linking:\t",fn1, '--->',fn2, 'FAILED'
-				
+				print "Copying:\t",fn1, '--->',fn2, 'FAILED'
 	
-
+			if os.path.exists(fn2) and fn2.find('insitu')==-1:	
+				s = shopen(fn2)
+				if 'readFiles' not in s.keys():
+					s.close()
+					print "Shelve has no readFiles:",fn2
+					continue
+				readFiles = s['readFiles']
+				for i, fnshel in enumerate(readFiles):
+					newfnshe = fnshel.replace(jobID1,jobID2)
+					readFiles[i] = newfnshe
+					print "changing shelve contents from ",	fnshel, "to",newfnshe
+				s['readFiles']	= readFiles
+				s.close()
+			
 
 if __name__=="__main__":	
 	
