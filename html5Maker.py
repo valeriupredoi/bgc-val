@@ -69,8 +69,7 @@ def html5Maker(
 		reportdir = '../../html5report',
 		year = '*',
 		clean = False,
-		
-		
+		doZip= True,
 	):
 
 	
@@ -180,6 +179,7 @@ def html5Maker(
 			#####
 			# Determine the list of files:
 			vfiles = glob('./images/'+jobID+'/timeseries/*/percentiles*'+key+'*'+region+'*10-90pc.png')
+                        vfiles.extend(glob('./images/'+jobID+'/timeseries/*/profile*'+key+'*'+region+'*median.png'))
 			vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*hist.png'))
 			vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*robinquad.png'))
 			vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*scatter.png'))
@@ -239,11 +239,13 @@ def html5Maker(
 				#####
 				# Determine the list of files:
 				vfiles = glob('./images/'+jobID+'/timeseries/*/percentiles*'+key+'*'+region+'*10-90pc.png')
-				vfiles.extend(glob('./images/'+jobID+'/timeseries/*/hov*'+key+'*'+region+'*_median.png'))
+ 	                        vfiles.extend(glob('./images/'+jobID+'/timeseries/*/profile*'+key+'*'+region+'*median.png'))
+
 				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*hist.png'))
 				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*robinquad.png'))			
 				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*scatter.png'))							
 				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*Transect/*/*'+region+'*'+key+'*'+year+'*hov.png'))
+
 				#####
 				# Create plot headers for each file.
 				for fn in vfiles:
@@ -273,12 +275,13 @@ def html5Maker(
 #			html5Tools.AddSection(indexhtmlfn,key+'-'+region,longnames, Description=longnames+' plots',Files = files)
 
 
-
+        tar = "tar cfvz  report-"+jobID+".tar.gz "+reportdir
 
 	print "-------------\nSuccess\ntest with:\nfirefox",indexhtmlfn
-	print "To zip it up:\ntar cfvz  report-"+jobID+".tar.gz ",reportdir
-
-
+	print "To zip it up:\n",tar
+	if doZip:
+		import subprocess
+		subprocess.Popen(tar.split())
 
 
 
