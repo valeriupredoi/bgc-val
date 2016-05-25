@@ -320,16 +320,16 @@ def analysis_timeseries(jobID = "u-ab671",
 	def listModelDataFiles(jobID, filekey, datafolder, z_comp,annual):
 		if z_comp == 'SurfaceOnly':
 			if annual:
-				return sorted(glob(datafolder+jobID+"/"+jobID+"o_1y_*_"+fileky+".nc"))
+				return sorted(glob(datafolder+jobID+"/"+jobID+"o_1y_*_"+filekey+".nc"))
 			else:
-				return sorted(glob(datafolder+jobID+"/"+jobID+"o_1m_*_"+fileky+".nc"))
+				return sorted(glob(datafolder+jobID+"/"+jobID+"o_1m_*_"+filekey+".nc"))
 		if z_comp == 'FullDepth':
 			if annual:
-				return sorted(glob(datafolder+jobID+"/"+jobID+"o_1y_????????_*[0,5]????_"+fileky+".nc"))
+				return sorted(glob(datafolder+jobID+"/"+jobID+"o_1y_????????_*[0,5]????_"+filekey+".nc"))
 			else:
 				print "need to figoure out how to implement this."
 				assert 0
-#				return sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1m_*_"+fileky+".nc"))		
+#				return sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1m_*_"+filekey+".nc"))		
 		
 
 
@@ -940,11 +940,10 @@ if __name__=="__main__":
 		jobID = "u-ab749"
 	
 	suite = 'all'
-	analysis_timeseries(jobID =jobID,analysisSuite=suite, z_component = 'SurfaceOnly',)#clean=1)			
-        #analysis_timeseries(jobID =jobID,analysisSuite=suite, z_component = 'FullDepth',)#clean=1)                      
+	#analysis_timeseries(jobID =jobID,analysisSuite=suite, z_component = 'SurfaceOnly',)#clean=1)			
+        analysis_timeseries(jobID =jobID,analysisSuite=suite, z_component = 'FullDepth',)#clean=1)                      
 
 		
-	#analysis_timeseries(jobID = "u-ab963")			
 	
 	
 	
