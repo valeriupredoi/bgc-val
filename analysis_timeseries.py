@@ -317,11 +317,19 @@ def analysis_timeseries(jobID = "u-ab671",
 	cciCoords	= {'t':'index_t', 'z':'index_z','lat': 'lat',      'lon': 'lon', 'cal': 'standard','tdict':['ZeroToZero'] }
 
 
-	def ModelDataFiles(filekey):
-		if annual:
-			return sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_"+fileky+".nc"))
-		else:
-			return sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1m_*_"+fileky+".nc"))
+	def listModelDataFiles(jobID, filekey, datafolder, z_comp,annual):
+		if z_comp == 'SurfaceOnly':
+			if annual:
+				return sorted(glob(datafolder+jobID+"/"+jobID+"o_1y_*_"+fileky+".nc"))
+			else:
+				return sorted(glob(datafolder+jobID+"/"+jobID+"o_1m_*_"+fileky+".nc"))
+		if z_comp == 'FullDepth':
+			if annual:
+				return sorted(glob(datafolder+jobID+"/"+jobID+"o_1y_????????_*[0,5]????_"+fileky+".nc"))
+			else:
+				print "need to figoure out how to implement this."
+				assert 0
+#				return sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1m_*_"+fileky+".nc"))		
 		
 
 
@@ -382,13 +390,11 @@ def analysis_timeseries(jobID = "u-ab671",
 		#####
 		# Not that this is the 1 degree resolution dataset, but higher resolution data are also available.
 		
-		if annual:
-			av[name]['modelFiles']  = sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'ptrc_T', MEDUSAFolder_pref, z_component,annual)		
+		if annual:	
 			av[name]['dataFile'] 	= CCIDir+"ESACCI-OC-L3S-OC_PRODUCTS-CLIMATOLOGY-16Y_MONTHLY_1degree_GEO_PML_OC4v6_QAA-annual-fv2.0.nc"	
 			print MEDUSAFolder_pref+"/"+jobID+"o_1y_*_ptrc_T.nc"
-		else:
-			av[name]['modelFiles']  = sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1m_*_ptrc_T.nc"))
-			av[name]['dataFile'] 	= CCIDir+'ESACCI-OC-L3S-OC_PRODUCTS-CLIMATOLOGY-16Y_MONTHLY_1degree_GEO_PML_OC4v6_QAA-all-fv2.0.nc'
+		else:	av[name]['dataFile'] 	= CCIDir+'ESACCI-OC-L3S-OC_PRODUCTS-CLIMATOLOGY-16Y_MONTHLY_1degree_GEO_PML_OC4v6_QAA-all-fv2.0.nc'
 			
 		av[name]['modelcoords'] 	= medusaCoords 	
 		av[name]['datacoords'] 		= cciCoords
@@ -413,11 +419,10 @@ def analysis_timeseries(jobID = "u-ab671",
 
 	if doN:
 		name = 'Nitrate'
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'ptrc_T', MEDUSAFolder_pref, z_component,annual)				
 		if annual:
-			av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
 			av[name]['dataFile'] 		=  WOAFolder+'/woa13_all_n00_01.nc'
 		else:
-			av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1m_*_ptrc_T.nc"))
 			av[name]['dataFile'] 		=  WOAFolder+'/nitrate_monthly_1deg.nc'
 				
 		av[name]['modelcoords'] 	= medusaCoords 	
@@ -442,11 +447,10 @@ def analysis_timeseries(jobID = "u-ab671",
 	if doSi:
 
 		name = 'Silicate'
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'ptrc_T', MEDUSAFolder_pref, z_component,annual)				
 		if annual:	
-			av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
 			av[name]['dataFile'] 		= WOAFolder+'woa13_all_i00_01.nc'
 		else:
-			av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1m_*_ptrc_T.nc"))
 			av[name]['dataFile'] 		= WOAFolder+'wsilicate_monthly_1deg.nc'
 		av[name]['modelcoords'] 	= medusaCoords 	
 		av[name]['datacoords'] 		= woaCoords
@@ -468,7 +472,7 @@ def analysis_timeseries(jobID = "u-ab671",
 	if doO2:
 		name = 'Oxygen'
 		if annual:
-			av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
+			av[name]['modelFiles']  = listModelDataFiles(jobID, 'ptrc_T', MEDUSAFolder_pref, z_component,annual)		
 			av[name]['dataFile'] 		=  WOAFolder+'woa13_all_o00_01.nc'
 				
 		av[name]['modelcoords'] 	= medusaCoords 	
@@ -522,8 +526,7 @@ def analysis_timeseries(jobID = "u-ab671",
 	
 		name = 'DIC'
 		
-		av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
-		
+		av[name]['modelFiles'] 		= listModelDataFiles(jobID, 'ptrc_T', MEDUSAFolder_pref, z_component,annual)				
 		av[name]['dataFile'] 		= GLODAPv2Dir+ 'GLODAPv2.tco2.historic.nc'
 				
 		av[name]['modelcoords'] 	= medusaCoords 	
@@ -548,8 +551,8 @@ def analysis_timeseries(jobID = "u-ab671",
 		
 		name = 'Alkalinity'
 		if annual:		
-			av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
-			av[name]['dataFile'] 		=  GlodapDir+'Alk.nc'
+			av[name]['modelFiles']  = listModelDataFiles(jobID, 'ptrc_T', MEDUSAFolder_pref, z_component,annual)		
+			av[name]['dataFile'] 	=  GlodapDir+'Alk.nc'
 		else:
 			print "Alkalinity data not available for monthly Analysis"
 			assert 0
@@ -603,9 +606,9 @@ def analysis_timeseries(jobID = "u-ab671",
 
 			
 		name = 'AirSeaFluxCO2'
-						
+
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', MEDUSAFolder_pref, z_component,annual)								
 		if annual:
-			av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_diad_T.nc"))
 			av[name]['dataFile'] 		=  TakahashiFolder+'takahashi_2009_Anual_sumflux_2006c_noHead.nc'		
 		else:	
 			av[name]['dataFile'] 		=  TakahashiFolder+'takahashi2009_month_flux_pCO2_2006c_noHead.nc'				
@@ -639,7 +642,8 @@ def analysis_timeseries(jobID = "u-ab671",
 		def medusadepthInt(nc,keys):
 			return (nc.variables[keys[0]][:]+ nc.variables[keys[1]][:])* 6.625 * 12.011 / 1000.	
 		name = 'IntegratedPrimaryProduction_1x1'
-		av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_diad_T.nc"))
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', MEDUSAFolder_pref, z_component,annual)										
+		#av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_diad_T.nc"))
 		av[name]['dataFile'] 		= iMarNetFolder+"/PPint_1deg.nc"
 
 				
@@ -681,7 +685,7 @@ def analysis_timeseries(jobID = "u-ab671",
 				
 		name = 'IntegratedPrimaryProduction_OSU'
 		if annual:
-			av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_diad_T.nc"))
+			av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', MEDUSAFolder_pref, z_component,annual)								
 			av[name]['dataFile'] 		= OSUDir +"/standard_VGPM.SeaWIFS.global.average.nc"
 #		else:
 #			print "" 
@@ -737,8 +741,10 @@ def analysis_timeseries(jobID = "u-ab671",
 			return 	a
 			
 		name = 'ExportRatio'
-		if annual:	av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_diad_T.nc"))
-		else:		av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1m_*_diad_T.nc"))
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', MEDUSAFolder_pref, z_component,annual)								
+				
+		#if annual:	av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_diad_T.nc"))
+		#else:		av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1m_*_diad_T.nc"))
 		av[name]['dataFile'] 		= ""
 
 				
@@ -762,11 +768,12 @@ def analysis_timeseries(jobID = "u-ab671",
 		
 	if doT:
 		name = 'Temperature'
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', MEDUSAFolder_pref, z_component,annual)										
 		if annual:		
-			av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_grid_T.nc"))
+			#av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_grid_T.nc"))
 			av[name]['dataFile'] 		= WOAFolder+'woa13_decav_t00_01v2.nc'
 		else:
-			av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1m_*_grid_T.nc"))
+			#av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1m_*_grid_T.nc"))
 			av[name]['dataFile'] 		= WOAFolder+'temperature_monthly_1deg.nc'
 		av[name]['modelcoords'] 	= medusaCoords 	
 		av[name]['datacoords'] 		= woaCoords
@@ -787,11 +794,12 @@ def analysis_timeseries(jobID = "u-ab671",
 					
 	if doS:
 		name = 'Salinity'
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', MEDUSAFolder_pref, z_component,annual)												
 		if annual:
-			av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_grid_T.nc"))
+			#av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_grid_T.nc"))
 			av[name]['dataFile'] 		= WOAFolder+'woa13_decav_s00_01v2.nc'
 		else:
-			av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1m_*_grid_T.nc"))
+			#av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1m_*_grid_T.nc"))
 			av[name]['dataFile'] 		= WOAFolder+'salinity_monthly_1deg.nc'
 			
 		av[name]['modelcoords'] 	= medusaCoords 	
@@ -847,7 +855,8 @@ def analysis_timeseries(jobID = "u-ab671",
 
 			
 		name = 'MLD'
-		av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_grid_T.nc"))
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', MEDUSAFolder_pref, z_component,annual)												
+		#av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_grid_T.nc"))
 		av[name]['dataFile'] 		= MLDFolder+"mld_DT02_c1m_reg2.0.nc"
 			#MLD_DT02 = depth where (T = T_10m +/- 0.2 degC)
  	
