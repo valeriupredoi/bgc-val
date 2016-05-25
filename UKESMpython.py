@@ -690,7 +690,7 @@ def determineLimsAndLog(mi,ma):
 	
 	if 0. in [mi,ma]:
 		log=False		
-	elif ma/mi < 20.:
+	elif ma/mi < 500.:
 		log=False
 		
 	if log:

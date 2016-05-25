@@ -139,7 +139,7 @@ def analysis_timeseries(jobID = "u-ab671",
 	# This flag sets a list of layers and metrics.
 	# It's not advised to run all the metrics and all the layers, as it'll slow down the analysis.
 	if z_component in ['SurfaceOnly',]:
-		layerList = ['Surface',]
+		layerList = ['Surface','500m','1000m',]
 		metricList = ['mean','median', '10pc','20pc','30pc','40pc','50pc','60pc','70pc','80pc','90pc','min','max']
 
 	if z_component in ['FullDepth',]:
@@ -940,8 +940,8 @@ if __name__=="__main__":
 		jobID = "u-ab749"
 	
 	suite = 'all'
-	#analysis_timeseries(jobID =jobID,analysisSuite=suite, z_component = 'SurfaceOnly',)#clean=1)			
-        analysis_timeseries(jobID =jobID,analysisSuite=suite, z_component = 'FullDepth',)#clean=1)                      
+	analysis_timeseries(jobID =jobID,analysisSuite=suite, z_component = 'SurfaceOnly',)#clean=1)			
+        #analysis_timeseries(jobID =jobID,analysisSuite=suite, z_component = 'FullDepth',)#clean=1)                      
 
 		
 	
