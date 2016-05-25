@@ -92,15 +92,16 @@ def linkTwoJobs(jobID1,jobID2):
 
 		#####
 		# link the files:
-		
-		if os.path.exists(fn2):
-			print "Already exists:\t",fn2
-			continue
-		try:
-			os.symlink(fn1, fn2)
-			print "linking:\t",fn1, '--->',fn2
-		except:
-			print "linking:\t",fn1, '--->',fn2, 'FAILED'
+                for fn1 in sorted(glob(netcdfFold1+'*')):
+			fn2 = fn1.replace(jobID1,jobID2)			
+			if os.path.exists(fn2):
+				print "Already exists:\t",fn2
+				continue
+			try:
+				os.symlink(fn1, fn2)
+				print "linking:\t",fn1, '--->',fn2
+			except:
+				print "linking:\t",fn1, '--->',fn2, 'FAILED'
 				
 				
 
@@ -108,9 +109,9 @@ def linkTwoJobs(jobID1,jobID2):
 	# shelve stuff: (same location on both machines!)
 	if copyShelves:	
 		shelvefold1 = "shelves/timeseries/"+jobID1
-		shelvefold2 = newfnshe(shelvefold1.replace(jobID1,jobID2))
+		shelvefold2 = folder(shelvefold1.replace(jobID1,jobID2))
 
-		for fn1 in sorted(glob(shelvefold1*)):
+		for fn1 in sorted(glob(shelvefold1+'/*')):
 			fn2 = fn1.replace(jobID1,jobID2)		
 
 			if os.path.exists(fn2):
@@ -123,12 +124,14 @@ def linkTwoJobs(jobID1,jobID2):
 			except:
 				print "Copying:\t",fn1, '--->',fn2, 'FAILED'
 	
-			if os.path.exists(fn2) and fn2.find('insitu')==-1:	
-				s = shopen(fn2)
-				if 'readFiles' not in s.keys():
-					s.close()
-					print "Shelve has no readFiles:",fn2
-					continue
+			if os.path.exists(fn2) and fn2.find('insitu')==-1:
+				try:	
+					s = shopen(fn2)
+					if 'readFiles' not in s.keys():
+						s.close()
+						print "Shelve has no readFiles:",fn2
+						continue
+				except: continue
 				readFiles = s['readFiles']
 				for i, fnshel in enumerate(readFiles):
 					newfnshe = fnshel.replace(jobID1,jobID2)
