@@ -506,7 +506,7 @@ def robinPlotQuad(lons, lats, data1,data2,filename,titles=['',''],title='',lon0=
 
 
 		if spl in [221,222,]:cmap= defcmap
-		if spl in [223,224,]:cmap= pyplot.cm.RdBu		
+		if spl in [223,224,]:cmap= pyplot.cm.RdBu_r		
 		
 		if doLogs[i]:
 			rbmi = np.int(np.log10(rbmi))
@@ -642,7 +642,7 @@ def HovPlotQuad(lons,lats, depths,
 
 
 		if spl in [221,222,]:cmap= defcmap
-		if spl in [223,224,]:cmap= pyplot.cm.RdBu		
+		if spl in [223,224,]:cmap= pyplot.cm.RdBu_r		
 		
 		if doLogs[i]:
 			rbmi = np.int(np.log10(rbmi))
