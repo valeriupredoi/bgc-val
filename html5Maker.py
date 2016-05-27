@@ -155,7 +155,21 @@ def html5Maker(
 		
 		
 	if summarySections:
-
+		sumfields = [
+			  'IntegratedPrimaryProduction_OSU', 
+			  'AirSeaFluxCO2' ,
+			  'Chlorophyll_cci', 			   	
+			  'DIC',			  		  
+			  'Nitrate',
+			  'Silicate', 
+			  'Temperature', 
+			  'Salinity', 
+			  'Oxygen',
+			  'ExportRatio', 
+			  'MLD',
+			  'Alkalinity', 			  
+			 ]
+		 
 		SectionTitle= 'Summary'
 		hrefs 	= []
 		Titles	= {}
@@ -164,7 +178,7 @@ def html5Maker(
 		FileLists	= {}
 		
 		region = 'ignoreInlandSeas'
-		for key in sorted(fields):
+		for key in sumfields:
 			href = 	key+'-'+region
 			desc = ''
 			if key in ListofCaveats.keys():			desc +=ListofCaveats[key]+'\n'
@@ -190,6 +204,7 @@ def html5Maker(
 				#####
 				# Copy image to image folder and return relative path.
 				relfn = addImageToHtml(fn, imagesfold)
+				
 				####
 				# WOA fields that also produce transects, etc.
 				if key in ['Nitrate', 'Silicate', 'Temperature', 'Salinity', 'Oxygen','DIC','Alkalinity'] and fn.lower().find('surface')<0:continue
@@ -197,8 +212,6 @@ def html5Maker(
 				#####
 				# Create custom title by removing extra bits.
 				title = html5Tools.fnToTitle(relfn).split(' ')
-		
-	
 				FileLists[href][relfn] = ', '.join([getLongName(t) for t in title])
 				print "Adding ",relfn,"to script"
 			
