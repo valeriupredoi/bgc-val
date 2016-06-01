@@ -110,9 +110,9 @@ def analysis_timeseries(jobID = "u-ab671",
 		doDIC		= 0#True			# Globap tCO2
 		doAirSeaFlux	= 0#True				# work in progress
 		doIntPP_iMarNet	= 0#True			# Integrated primpary production from iMarNEt
-		doIntPP_OSU	= 0#True			# OSU Integrated primpary production	
+		doIntPP_OSU	= True			# OSU Integrated primpary production	
 		doOMZ		= 0#True			# work in progress
-		doExportRatio   = True			# Export ratio (no data)
+		doExportRatio   = 0#True			# Export ratio (no data)
 	
 		#####	
 		# Physics switches:
@@ -672,13 +672,13 @@ def analysis_timeseries(jobID = "u-ab671",
 		nc.close()
 		def medusadepthInt(nc,keys):
 			#	 mmolN/m2/d        [mg C /m2/d]   [mgC/m2/yr] [gC/m2/yr]     Gt/m2/yr
-			factor = 1.		* 6.625 * 12.011 * 365.	      / 1000.   /     1E15
+			factor = 1.		* 6.625 * 12.011 #* 365.	      / 1000.   /     1E15
 			arr = (nc.variables[keys[0]][:]+ nc.variables[keys[1]][:]).squeeze()*factor
-			if arr.ndim ==3:
-				for i in np.arange(arr.shape[0]):
-					arr[i] = arr[i]*area
-			elif arr.ndim ==2: arr = arr*area
-			else: assert 0
+			#if arr.ndim ==3:
+			#	for i in np.arange(arr.shape[0]):
+			#		arr[i] = arr[i]*area
+			#elif arr.ndim ==2: arr = arr*area
+			#else: assert 0
 			return arr
 			
 		
@@ -704,22 +704,22 @@ def analysis_timeseries(jobID = "u-ab671",
 		
 		def osuconvert(nc,keys):
 			arr = nc.variables[keys[0]][:,:,:] 
-			tlen = arr.shape[0]
+			#tlen = arr.shape[0]
 			
-			arr  = arr.sum(0)/tlen * 365.	/ 1000. /     1E15
-			if arr.ndim ==3:
-				for i in np.arange(arr.shape[0]):
-					arr[i] = arr[i]*osuarea
-			elif arr.ndim ==2: arr = arr*osuarea
-			else: assert 0
+			#arr  = arr.sum(0)/tlen * 365.	/ 1000. /     1E15
+			#if arr.ndim ==3:
+			#	for i in np.arange(arr.shape[0]):
+			#		arr[i] = arr[i]*osuarea
+			#elif arr.ndim ==2: arr = arr*osuarea
+			#else: assert 0
 			return arr
 						
 			
 
 	
-		av[name]['modeldetails'] 	= {'name': 'IntPP', 'vars':['PRN' ,'PRD'], 'convert': medusadepthInt,'units':'gC/yr'}
+		av[name]['modeldetails'] 	= {'name': 'IntPP', 'vars':['PRN' ,'PRD'], 'convert': medusadepthInt,'units':'mgC/m^2/day'}
 		#av[name]['datadetails']  	= {'name': 'IntPP', 'vars':['Chlorophylla',], 'convert': ukp.div1000,'units':'ug/L'}
-		av[name]['datadetails']  	= {'name': 'IntPP', 'vars':['NPP',], 'convert': osuconvert,'units':'gC/yr'}
+		av[name]['datadetails']  	= {'name': 'IntPP', 'vars':['NPP',], 'convert': osuconvert,'units':'mgC/m^2/day'}
 
 	
 		av[name]['layers'] 		= ['Surface',]#'100m','200m','Surface - 1000m','Surface - 300m',]#'depthint']
@@ -939,7 +939,7 @@ if __name__=="__main__":
 	except:	
 		jobID = "u-ab749"
 	
-	suite = 'all'
+	suite = 'debug'
 	analysis_timeseries(jobID =jobID,analysisSuite=suite, z_component = 'SurfaceOnly',)#clean=1)			
         #analysis_timeseries(jobID =jobID,analysisSuite=suite, z_component = 'FullDepth',)#clean=1)                      
 
