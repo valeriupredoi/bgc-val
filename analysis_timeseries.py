@@ -110,15 +110,15 @@ def analysis_timeseries(jobID = "u-ab671",
 		doO2		= 0#True			# WOA Oxygen
 		doAlk		= 0#True			# Glodap Alkalinity
 		doDIC		= 0#True			# Globap tCO2
-		doAirSeaFlux	= 0#True				# work in progress
+		doAirSeaFlux	= True				# work in progress
 		doTotalAirSeaFlux= True				# work in progress
 		doIntPP_iMarNet	= 0#True			# Integrated primpary production from iMarNEt
-		doIntPP_OSU	= True			# OSU Integrated primpary production	
+		doIntPP_OSU	= 0#True			# OSU Integrated primpary production	
 		doPP_OSU	= 0#True			# OSU Integrated primpary production			
 		doOMZ		= 0#True			# work in progress
 		doOMZ		= 0#True		# work in progress
-		doLocalExportRatio   = True			# Export ratio (no data)
-		doGlobalExportRatio   = True			# Export ratio (no data)
+		doLocalExportRatio   = 0#True			# Export ratio (no data)
+		doGlobalExportRatio   = 0#True			# Export ratio (no data)
 	
 		#####	
 		# Physics switches:
@@ -642,21 +642,21 @@ def analysis_timeseries(jobID = "u-ab671",
 		nc.close()
 		
 		def eOrcaTotal(nc,keys):
-			factor =  12./1000. #/ 1.E12
-			arr = nc.variables['CO2FLUX'][:].squeeze()	# mmolC/m2/d
+			factor =  365.25 * 12./1000. #/ 1.E12
+			arr = nc.variables['CO2FLUX'][:].squeeze() * factor	# mmolC/m2/d
 			if arr.ndim ==3:
 				for i in np.arange(arr.shape[0]):
 					arr[i] = arr[i]*area
 			elif arr.ndim ==2: arr = arr*area
 			else: assert 0
-			return arr * factor
+			return arr.sum()
 					
 		def takaTotal(nc,keys):
 			arr = nc.variables['TFLUXSW06'][:].squeeze()	# 10^12 g Carbon year^-1
 			arr = -1.E12* arr #/ 365.				#g Carbon/day
 			#area = nc.variables['AREA_MKM2'][:].squeeze() *1E12	# 10^6 km^2
 			#fluxperarea = arr/area
-			return arr
+			return arr.sum()
 			# area 10^6 km^2
 			# flux:  10^15 g Carbon month^-1. (GT)/m2/month
 
@@ -677,7 +677,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modeldetails'] 	= {'name': 'AirSeaFluxCO2', 'vars':['CO2FLUX',], 'convert': eOrcaTotal,'units':'g C/m2/yr'}
 		av[name]['datadetails']  	= {'name': 'AirSeaFluxCO2', 'vars':['TFLUXSW06','AREA_MKM2'], 'convert': takaTotal,'units':'g C/m2/yr'}
 		av[name]['layers'] 		= ['Surface',]
-		av[name]['regions'] 		= regionList
+		av[name]['regions'] 		= ['Global',]
 		av[name]['metrics']		= ['sum',]
 		av[name]['datasource'] 		= ''
 		av[name]['model']		= 'MEDUSA'
@@ -1055,9 +1055,10 @@ if __name__=="__main__":
 	except:	
 		jobID = "u-ab749"
 	
-	suite = 'all'
+	suite = 'debug'
+	#suite = 'all'	
 	analysis_timeseries(jobID =jobID,analysisSuite=suite, z_component = 'SurfaceOnly',)#clean=1)			
-        analysis_timeseries(jobID =jobID,analysisSuite=suite, z_component = 'FullDepth',)#clean=1)                      
+        #analysis_timeseries(jobID =jobID,analysisSuite=suite, z_component = 'FullDepth',)#clean=1)                      
 
 		
 	
