@@ -291,8 +291,8 @@ def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
 			
 			#####
 			# Produce a set of pattern and a target plots for each of the groups here.
-			if annual:	groups = {'Oceans':[],'depthRanges':[]}
-			else:		groups = {'Oceans':[],'Months':[],'Seasons':[],'NorthHemisphereMonths':[],'SouthHemisphereMonths':[],'depthRanges':[]}
+			if annual:	groups = {'Oceans':[],'depthRanges':[], 'BGCVal':[],}
+			else:		groups = {'Oceans':[],'Months':[],'Seasons':[],'NorthHemisphereMonths':[],'SouthHemisphereMonths':[],'depthRanges':[],'BGCVal':[],}
 			for g in groups:
 			    	groups[g] = ukp.reducesShelves(shelvesAV,  models =[model,],depthLevels = [depthLevel,], names = [name,], sliceslist =ukp.slicesDict[g])
 				print g, groups[g]
@@ -311,10 +311,10 @@ def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
 				# makePattern plots:
 				# Make a pattern  diagram of all matches for this particular dataset. 
 				xkeys=''
-				for o in ['Oceans','Months','depthRanges']:
+				for o in ['Oceans','Months','depthRanges','BGCVal']:
 					if g.find(o)>=0:  xkeys=o
 				if xkeys=='':
-					print "Could no find x axis keys!",g,'in',['Oceans','Months']
+					print "Could no find x axis keys!",g,'in',['Oceans','Months','BGCVal']
 					
 			  	filenamebase = ukp.folder(imageFolder+'/Patterns/'+year+'/'+name+depthLevel+'/'+g)+'Months-'+model+'-'+jobID+'_'+year+'_'+name+depthLevel
 				makePatternStatsPlots(	{name :groups[g],}, # {legend, shelves}
@@ -342,8 +342,8 @@ def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
 		if noPlots: continue
 		#####
 		# And now by depth levels:
-		if annual:	groups = ['Oceans','depthRanges']
-		else:		groups = ['Oceans','Months','Seasons','depthRanges']	#'NorthHemisphereMonths':[],'SouthHemisphereMonths':[]}		
+		if annual:	groups = ['Oceans','depthRanges','BGCVal',]
+		else:		groups = ['Oceans','Months','Seasons','depthRanges','BGCVal',]	#'NorthHemisphereMonths':[],'SouthHemisphereMonths':[]}		
 		for g in groups:
 			if len(av[name]['depthLevels'])<=1: continue	
 			outShelves = {}
