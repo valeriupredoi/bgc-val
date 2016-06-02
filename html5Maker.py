@@ -217,6 +217,10 @@ def html5Maker(
 				#####
 				# Create custom title by removing extra bits.
 				title = html5Tools.fnToTitle(relfn).split(' ')
+				for i,t in enumerate(title):
+					# remove redundent versus field
+					if t.find('vs')>-1:	title[i] = ''		
+			
 				FileLists[href][relfn] = ', '.join([getLongName(t) for t in title])
 				print "Adding ",relfn,"to script"
 			
