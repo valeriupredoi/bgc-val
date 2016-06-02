@@ -161,6 +161,7 @@ def html5Maker(
 			  'TotalIntegratedPrimaryProduction',
 			  'IntegratedPrimaryProduction_OSU', 
 			  'AirSeaFluxCO2' ,
+			  'TotalAirSeaFluxCO2' ,			  
 			  'Chlorophyll_cci', 			   	
 			  'DIC',			  		  
 			  'Nitrate',

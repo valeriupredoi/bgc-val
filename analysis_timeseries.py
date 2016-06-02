@@ -1061,8 +1061,10 @@ if __name__=="__main__":
 		
 	
 	#suite = 'all'	
+	
 	analysis_timeseries(jobID =jobID,analysisSuite=suite, z_component = 'SurfaceOnly',)#clean=1)			
-        #analysis_timeseries(jobID =jobID,analysisSuite=suite, z_component = 'FullDepth',)#clean=1)                      
+	if suite == 'all':
+	        analysis_timeseries(jobID =jobID,analysisSuite=suite, z_component = 'FullDepth',)#clean=1)                      
 
 		
 	
