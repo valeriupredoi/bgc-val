@@ -1054,8 +1054,12 @@ if __name__=="__main__":
 	try:	jobID = argv[1]
 	except:	
 		jobID = "u-ab749"
+
+	if 'debug' in argv[1:]:
+		suite = 'debug'
+	else:	suite = 'all'
+		
 	
-	suite = 'debug'
 	#suite = 'all'	
 	analysis_timeseries(jobID =jobID,analysisSuite=suite, z_component = 'SurfaceOnly',)#clean=1)			
         #analysis_timeseries(jobID =jobID,analysisSuite=suite, z_component = 'FullDepth',)#clean=1)                      
