@@ -120,6 +120,7 @@ def html5Maker(
 		  'IntegratedPrimaryProduction_OSU', 
 		  'TotalIntegratedPrimaryProduction',
 		  'ExportRatio', 
+		  'LocalExportRatio', 		  
 		  'MLD',
 		  #  'IntegratedPrimaryProduction_1x1' , 
 		  #'Chlorophyll_pig' , 
@@ -168,6 +169,7 @@ def html5Maker(
 			  'Salinity', 
 			  'Oxygen',
 			  'ExportRatio', 
+			  'LocalExportRatio', 			  
 			  'MLD',
 			  'Alkalinity', 			  
 			 ]
