@@ -477,7 +477,14 @@ def getLongName(text,debug=False):
   	if text == 'temperature200m':		return "Temperature (200m deep)"  
   	if text == 'temperature500m':		return "Temperature (500m deep)"  	
   	if text == 'temperature1000m':		return "Temperature (1000m deep)"  	  		  	  	
-  	
+  	if text == 'TemperaturePTransect':	return "Pacific Transect Temperature"
+  	if text == 'TemperatureSurface':	return "Surface Temperature"
+  	if text == 'TemperatureAll':		return "Temperature"  	
+  	if text == 'Temperature100m':		return "Temperature (100m deep)"  	
+  	if text == 'Temperature200m':		return "Temperature (200m deep)"  
+  	if text == 'Temperature500m':		return "Temperature (500m deep)"  	
+  	if text == 'Temperature1000m':		return "Temperature (1000m deep)"  
+  	  	
   	if text == 'salinityPTransect':		return "Pacific Transect Salinity"
   	if text == 'salinitySurface':		return "Surface Salinity"
   	if text == 'salinityAll':		return "Salinity"  	
@@ -485,7 +492,14 @@ def getLongName(text,debug=False):
   	if text == 'salinity200m':		return "Salinity (200m deep)"  	  	  	
   	if text == 'salinity500m':		return "Salinity (500m deep)"  	
   	if text == 'salinity1000m':		return "Salinity (1000m deep)"  	 	  	
-  	
+  	if text == 'SalinityPTransect':		return "Pacific Transect Salinity"
+  	if text == 'SalinitySurface':		return "Surface Salinity"
+  	if text == 'SalinityAll':		return "Salinity"  	
+  	if text == 'Salinity100m':		return "Salinity (100m deep)"  	
+  	if text == 'Salinity200m':		return "Salinity (200m deep)"  	  	  	
+  	if text == 'Salinity500m':		return "Salinity (500m deep)"  	
+  	if text == 'Salinity1000m':		return "Salinity (1000m deep)"  	
+  	  	
   	if text == 'nitratePTransect':	return "Pacific Transect Nitrate (WOA14)"
   	if text == 'nitrateSurface':	return "Surface Nitrate (WOA14)"
   	if text == 'nitrateAll':	return "Nitrate (WOA14)"  	

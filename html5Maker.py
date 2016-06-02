@@ -277,7 +277,8 @@ def html5Maker(
 						try: title.remove(k)
 						except:pass
 					for i,t in enumerate(title):
-						if t[:len(key)] == key: title[i] = t[len(key):]
+						if t[:len(key)] == key: title[i] = t[len(key):]	# replace redudance value. 
+						if t.find('vs')>-1:	title[i] = ''		# remove redundent versus field
 				
 			
 					FileLists[href][relfn] = ' '.join([getLongName(t) for t in title])
