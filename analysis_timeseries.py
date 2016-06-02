@@ -89,11 +89,13 @@ def analysis_timeseries(jobID = "u-ab671",
 		doAlk		= True			# Glodap Alkalinity
 		doDIC		= True			# Globap tCO2
 		doAirSeaFlux	= True			# work in progress
+		doTotalAirSeaFlux= True			# work in progress		
 		doIntPP_iMarNet	= True			# Integrated primpary production from iMarNEt
 		doIntPP_OSU	= True			# OSU Integrated primpary production	
+		doPP_OSU	= True			# OSU Integrated primpary production			
 		doOMZ		= 0#True		# work in progress
-		doExportRatio   = True			# Export ratio (no data)
-	
+		doLocalExportRatio   = True			# Export ratio (no data)
+		doGlobalExportRatio   = True			# Export ratio (no data)	
 		#####	
 		# Physics switches:
 		doT		= True			# WOA Temperature
@@ -109,10 +111,14 @@ def analysis_timeseries(jobID = "u-ab671",
 		doAlk		= 0#True			# Glodap Alkalinity
 		doDIC		= 0#True			# Globap tCO2
 		doAirSeaFlux	= 0#True				# work in progress
+		doTotalAirSeaFlux= True				# work in progress
 		doIntPP_iMarNet	= 0#True			# Integrated primpary production from iMarNEt
 		doIntPP_OSU	= True			# OSU Integrated primpary production	
+		doPP_OSU	= 0#True			# OSU Integrated primpary production			
 		doOMZ		= 0#True			# work in progress
-		doExportRatio   = 0#True			# Export ratio (no data)
+		doOMZ		= 0#True		# work in progress
+		doLocalExportRatio   = True			# Export ratio (no data)
+		doGlobalExportRatio   = True			# Export ratio (no data)
 	
 		#####	
 		# Physics switches:
@@ -618,21 +624,66 @@ def analysis_timeseries(jobID = "u-ab671",
 				
 		av[name]['modelcoords'] 	= medusaCoords 	
 		av[name]['datacoords'] 		= takahashiCoords
-	
 		av[name]['modeldetails'] 	= {'name': 'AirSeaFluxCO2', 'vars':['CO2FLUX',], 'convert': eOrcaTotal,'units':'g C/m2/yr'}
 		av[name]['datadetails']  	= {'name': 'AirSeaFluxCO2', 'vars':['TFLUXSW06','AREA_MKM2'], 'convert': takaTotal,'units':'g C/m2/yr'}
-	
 		av[name]['layers'] 		= ['Surface',]
 		av[name]['regions'] 		= regionList
 		av[name]['metrics']		= metricList
-
 		av[name]['datasource'] 		= ''
 		av[name]['model']		= 'MEDUSA'
-
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= orcaGridfn
 					
+	if doTotalAirSeaFlux:
 
+		name = 'TotalAirSeaFluxCO2'	
+		nc = Dataset(orcaGridfn,'r')
+		area = nc.variables['e1t'][:]*nc.variables['e2t'][:]
+		nc.close()
+		
+		def eOrcaTotal(nc,keys):
+			factor =  12./1000. #/ 1.E12
+			arr = nc.variables['CO2FLUX'][:].squeeze()	# mmolC/m2/d
+			if arr.ndim ==3:
+				for i in np.arange(arr.shape[0]):
+					arr[i] = arr[i]*area
+			elif arr.ndim ==2: arr = arr*area
+			else: assert 0
+			return arr * factor
+					
+		def takaTotal(nc,keys):
+			arr = nc.variables['TFLUXSW06'][:].squeeze()	# 10^12 g Carbon year^-1
+			arr = -1.E12* arr #/ 365.				#g Carbon/day
+			#area = nc.variables['AREA_MKM2'][:].squeeze() *1E12	# 10^6 km^2
+			#fluxperarea = arr/area
+			return arr
+			# area 10^6 km^2
+			# flux:  10^15 g Carbon month^-1. (GT)/m2/month
+
+			
+
+
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', MEDUSAFolder_pref, z_component,annual)								
+		if annual:
+			av[name]['dataFile'] 		=  TakahashiFolder+'takahashi_2009_Anual_sumflux_2006c_noHead.nc'		
+		else:	
+			av[name]['dataFile'] 		=  TakahashiFolder+'takahashi2009_month_flux_pCO2_2006c_noHead.nc'				
+			print "Air Sea Flux CO2 monthly not implemented"
+			assert 0
+			#av[name]['dataFile'] 		=  TakahashiFolder+'takahashi2009_month_flux_pCO2_2006c_noHead.nc'
+				
+		av[name]['modelcoords'] 	= medusaCoords 	
+		av[name]['datacoords'] 		= takahashiCoords
+		av[name]['modeldetails'] 	= {'name': 'AirSeaFluxCO2', 'vars':['CO2FLUX',], 'convert': eOrcaTotal,'units':'g C/m2/yr'}
+		av[name]['datadetails']  	= {'name': 'AirSeaFluxCO2', 'vars':['TFLUXSW06','AREA_MKM2'], 'convert': takaTotal,'units':'g C/m2/yr'}
+		av[name]['layers'] 		= ['Surface',]
+		av[name]['regions'] 		= regionList
+		av[name]['metrics']		= ['sum',]
+		av[name]['datasource'] 		= ''
+		av[name]['model']		= 'MEDUSA'
+		av[name]['modelgrid']		= 'eORCA1'
+		av[name]['gridFile']		= orcaGridfn
+					
 										
 					
 
@@ -666,7 +717,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['gridFile']		= orcaGridfn
 		
 		
-	if doIntPP_OSU:
+	if doPP_OSU:
 		nc = Dataset(orcaGridfn,'r')
 		area = nc.variables['e1t'][:]*nc.variables['e2t'][:]
 		nc.close()
@@ -718,53 +769,118 @@ def analysis_timeseries(jobID = "u-ab671",
 
 	
 		av[name]['modeldetails'] 	= {'name': 'IntPP', 'vars':['PRN' ,'PRD'], 'convert': medusadepthInt,'units':'mgC/m^2/day'}
-		#av[name]['datadetails']  	= {'name': 'IntPP', 'vars':['Chlorophylla',], 'convert': ukp.div1000,'units':'ug/L'}
 		av[name]['datadetails']  	= {'name': 'IntPP', 'vars':['NPP',], 'convert': osuconvert,'units':'mgC/m^2/day'}
-
 	
-		av[name]['layers'] 		= ['Surface',]#'100m','200m','Surface - 1000m','Surface - 300m',]#'depthint']
+		av[name]['layers'] 		= ['Surface',]
 		av[name]['regions'] 		= regionList
 		av[name]['metrics']		= metricList
-
 		av[name]['datasource'] 		= 'OSU'
 		av[name]['model']		= 'MEDUSA'
-
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= orcaGridfn
 
 
-	if doExportRatio:
+	#####
+	# Total 
+	if doIntPP_OSU:
+		nc = Dataset(orcaGridfn,'r')
+		area = nc.variables['e1t'][:]*nc.variables['e2t'][:]
+		nc.close()
+		def medusadepthInt(nc,keys):
+			#	 mmolN/m2/d        [mg C /m2/d]   [mgC/m2/yr] [gC/m2/yr]     Gt/m2/yr
+			factor = 1.		* 6.625 * 12.011 * 365.	      / 1000.   /     1E15
+			arr = (nc.variables[keys[0]][:]+ nc.variables[keys[1]][:]).squeeze()*factor
+			if arr.ndim ==3:
+				for i in np.arange(arr.shape[0]):
+					arr[i] = arr[i]*area
+			elif arr.ndim ==2: arr = arr*area
+			else: assert 0
+			return arr
+			
+		name = 'TotalIntegratedPrimaryProduction'
+		if annual:
+			av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', MEDUSAFolder_pref, z_component,annual)								
+			av[name]['dataFile'] 		= OSUDir +"/standard_VGPM.SeaWIFS.global.average.nc"
+			
+		av[name]['modelcoords'] 	= medusaCoords 	
+		av[name]['datacoords'] 		= glodapCoords
+
+
+		nc = Dataset(av[name]['dataFile'] ,'r')
+		lats = nc.variables['latitude'][:]
+		osuareas = np.zeros((1080, 2160))
+		osuarea = (111100. / 6.)**2. # area of a pixel at equator. in m2
+		for a in np.arange(1080):osuareas[a] = np.ones((2160,))*osuarea*np.cos(np.deg2rad(lats[a]))
+		
+		
+		def osuconvert(nc,keys):
+			arr = nc.variables[keys[0]][:,:,:] 
+			tlen = arr.shape[0]
+			arr  = arr.sum(0)/tlen * 365.	/ 1000. /     1E15
+			if arr.ndim ==3:
+				for i in np.arange(arr.shape[0]):
+					arr[i] = arr[i]*osuarea
+			elif arr.ndim ==2: arr = arr*osuarea
+			else: assert 0
+			return arr
+						
+	
+		av[name]['modeldetails'] 	= {'name': 'IntPP', 'vars':['PRN' ,'PRD'], 'convert': medusadepthInt,'units':'Gt/m2/yr'}
+		av[name]['datadetails']  	= {'name': 'IntPP', 'vars':['NPP',], 'convert': osuconvert,'units':'Gt/m2/yr'}
+	
+		av[name]['layers'] 		= ['Surface',]
+		av[name]['regions'] 		= regionList
+		av[name]['metrics']		= ['sum',]
+		av[name]['datasource'] 		= 'OSU'
+		av[name]['model']		= 'MEDUSA'
+		av[name]['modelgrid']		= 'eORCA1'
+		av[name]['gridFile']		= orcaGridfn		
+		
+	if doGlobalExportRatio:
+		
+		def calcExportRatio(nc,keys):
+			a = (nc.variables['SDT__100'][:] +nc.variables['FDT__100'][:]).sum()/ (nc.variables['PRD'][:] +nc.variables['PRN'][:] ).sum()
+			#a = np.ma.masked_where(a>1.01, a)
+			return 	a
+			
+		name = 'ExportRatio'
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', MEDUSAFolder_pref, z_component,annual)								
+				
+		av[name]['dataFile'] 		= ""
+		av[name]['modelcoords'] 	= medusaCoords 	
+		av[name]['datacoords'] 		= maredatCoords
+		av[name]['modeldetails'] 	= {'name': name, 'vars':['SDT__100','FDT__100' ,'PRD','PRN',], 'convert': calcExportRatio,'units':''}
+		av[name]['datadetails']  	= {'name':'','units':'',}
+		av[name]['layers'] 		= ['Surface',]
+		av[name]['regions'] 		= ['Global',]
+		av[name]['metrics']		= ['sum',]
+		av[name]['datasource'] 		= ''
+		av[name]['model']		= 'MEDUSA'
+		av[name]['modelgrid']		= 'eORCA1'
+		av[name]['gridFile']		= orcaGridfn		
+
+	if  doLocalExportRatio:
 		
 		def calcExportRatio(nc,keys):
 			a = (nc.variables['SDT__100'][:] +nc.variables['FDT__100'][:])/ (nc.variables['PRD'][:] +nc.variables['PRN'][:] )
 			a = np.ma.masked_where(a>1.01, a)
 			return 	a
 			
-		name = 'ExportRatio'
+		name = 'LocalExportRatio'
 		av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', MEDUSAFolder_pref, z_component,annual)								
 				
-		#if annual:	av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_diad_T.nc"))
-		#else:		av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1m_*_diad_T.nc"))
 		av[name]['dataFile'] 		= ""
-
-				
 		av[name]['modelcoords'] 	= medusaCoords 	
 		av[name]['datacoords'] 		= maredatCoords
-	
 		av[name]['modeldetails'] 	= {'name': name, 'vars':['SDT__100','FDT__100' ,'PRD','PRN',], 'convert': calcExportRatio,'units':''}
 		av[name]['datadetails']  	= {'name':'','units':'',}
-	
 		av[name]['layers'] 		= ['Surface',]#'100m','200m','Surface - 1000m','Surface - 300m',]#'depthint']
 		av[name]['regions'] 		= regionList
 		av[name]['metrics']		= metricList
-
 		av[name]['datasource'] 		= ''
 		av[name]['model']		= 'MEDUSA'
-
 		av[name]['modelgrid']		= 'eORCA1'
-		av[name]['gridFile']		= orcaGridfn		
-
-
+		av[name]['gridFile']		= orcaGridfn	
 		
 	if doT:
 		name = 'Temperature'

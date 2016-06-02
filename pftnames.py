@@ -518,12 +518,14 @@ def getLongName(text,debug=False):
 	if text == 'ExportRatio':	return "Export Ratio"  	
 	if text == 'IntegratedPrimaryProduction':	return "Integrated Primary Production"  
 	if text == 'IntegratedPrimaryProduction_OSU':	return "Integrated Primary Production (OSU)"  
-	if text == 'IntegratedPrimaryProduction':	return "Integrated Primary Production"  		
+	if text == 'IntegratedPrimaryProduction':	return "Integrated Primary Production"
+	if text == 'TotalIntegratedPrimaryProduction':	return "Total Integrated Primary Production"	
+	  		
 	if text == 'OSU':		return "(OSU)"  
 	if text == '1x1':		return "(iMarNet)"  
 	if text == 'Oxygen':		return "Oxygen"  
-
-	if text == 'AirSeaFluxCO2':	return "Air Sea Flux of CO2"  
+	if text == 'AirSeaFluxCO2':	return "Air Sea CO2 Flux"  
+	if text == 'TotalAirSeaFluxCO2':return "Total Air Sea CO2 Flux"  
 	if text == 'DIC':		return "DIC"  
 	
 	if text == 'hist':		return "Histogram"  

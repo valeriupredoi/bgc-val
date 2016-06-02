@@ -57,6 +57,7 @@ def addImageToHtml(fn,imagesfold):
 		####
 		# Check if file is newer than the one in images.
 		if os.path.getmtime(newfn) > os.path.getmtime(fn):
+			print "removing old file",fn
 			shutil.remove(newfn)
 			shutil.copy2(fn, newfn)			
 			print "cp ",newfn,fn
@@ -117,7 +118,7 @@ def html5Maker(
 		  'DIC',
 		  'Chlorophyll_cci', 
 		  'IntegratedPrimaryProduction_OSU', 
-
+		  'TotalIntegratedPrimaryProduction',
 		  'ExportRatio', 
 		  'MLD',
 		  #  'IntegratedPrimaryProduction_1x1' , 
@@ -156,6 +157,7 @@ def html5Maker(
 		
 	if summarySections:
 		sumfields = [
+			  'TotalIntegratedPrimaryProduction',
 			  'IntegratedPrimaryProduction_OSU', 
 			  'AirSeaFluxCO2' ,
 			  'Chlorophyll_cci', 			   	

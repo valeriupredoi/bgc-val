@@ -29,7 +29,7 @@ import os
 
 #Specific local code:
 import UKESMpython as ukp
-
+from pftnames import getLongName
 import timeseriesTools as tst 
 import timeseriesPlots as tsp 
 #getTimes, loadData
@@ -349,8 +349,8 @@ class timeseriesAnalysis:
 	  	print "mapplotsRegionsLayers:\t",r,l, "data lat:",len(datalat),datalat.min(),datalat.mean(),datalat.max()
 	  	print "mapplotsRegionsLayers:\t",r,l, "data lon:",len(datalon),datalon.min(),datalon.mean(),datalon.max() 	
 	
-		titles = [' '.join([self.model,'('+self.jobID+')',str(l),self.modeldetails['name']]),
-			  ' '.join([self.datasource,str(l),self.datadetails['name']])]
+		titles = [' '.join([getLongName(t) for t in [self.model,'('+self.jobID+')',str(l),self.modeldetails['name']]]),
+			  ' '.join([getLongName(t) for t in [self.datasource,str(l),self.datadetails['name']]])]
 			  
 	  	tsp.mapPlotPair(modellon, modellat, modeldata,
 	  			datalon,datalat,datadata,
@@ -370,7 +370,7 @@ class timeseriesAnalysis:
 			
 	
 	#####
-	# Trafficlight plots:
+	# Trafficlight and percentiles plots:
 	for r in self.regions:
 	    for l in self.layers:
 		#####
@@ -393,26 +393,22 @@ class timeseriesAnalysis:
 			timesDict[m] 	 = sorted(self.modeldataD[(r,l,m)].keys())
 		    	modeldataDict[m] = [self.modeldataD[(r,l,m)][t] for t in timesDict[m]]
 						    	
-		title = ' '.join([r,str(l),self.datasource, self.dataType])
+		title = ' '.join([getLongName(t) for t in [r,str(l),self.datasource, self.dataType]])
 		for greyband in  ['MinMax', '10-90pc',]:
 			filename = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join(['percentiles',self.jobID,self.dataType,r,str(l),greyband])+'.png'
 			tsp.percentilesPlot(timesDict,modeldataDict,dataslice,title = title,filename=filename,units =self.modeldetails['units'],greyband=greyband)					    	
 		
-		  	    
-	    #for m in self.metrics:  
-#	    	continue
-#	    	if m in ['mean','median',]:#'min','max']:
-#			modeldataDict = self.modeldataD[(r,l,m)]
-#
-#			times = sorted(modeldataDict.keys())
-#			modeldata = [modeldataDict[t] for t in times]
-#			title = ' '.join([r,str(l),m,self.dataType])
-#			filename = ukp.folder('images/timeseries/'+self.jobID+'/'+self.dataType)+'_'.join(['trafficlight',self.jobID,self.dataType,r,str(l),m,])+'.png'
-#			tsp.trafficlightsPlot(times,modeldata,dataslice,metric = m, title = title,filename=filename,greyband=False)
-#				
-#			filename = ukp.folder('images/timeseries/'+self.jobID+'/'+self.dataType)+'_'.join(['trafficlight',self.jobID,self.dataType,r,str(l),m,])+'-grey.png'
-#			tsp.trafficlightsPlot(times,modeldata,dataslice,metric = m, title = title,filename=filename,greyband=True)		
-
+	    #####
+	    # Percentiles plots.		  	    
+	    for m in self.metrics:  
+	    		if m != 'sum': continue 
+			modeldataDict = self.modeldataD[(r,l,m)]
+			times = sorted(modeldataDict.keys())
+			modeldata = [modeldataDict[t] for t in times]
+			title = ' '.join([getLongName(t) for t in [r,str(l),m,self.dataType]])
+			filename = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join(['Sum',self.jobID,self.dataType,r,str(l),m,])+'.png'
+			tsp.trafficlightsPlot(times,modeldata,dataslice,metric = m, title = title,filename=filename,units = self.modeldetails['units'],greyband=False)
+				
 
 	#####
 	# Hovmoeller plots
@@ -468,7 +464,7 @@ class timeseriesAnalysis:
 		  	dnc.close()  	
 		else: 	dataZcoords = {}
 
-		title = ' '.join([r,m,self.dataType])		
+		title = ' '.join([getLongName(t) for t in [r,m,self.dataType]])		
 	    	hovfilename = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join(['profile',self.jobID,self.dataType,r,m,])+'.png'
 		tsp.hovmoellerPlot(modeldata,data,hovfilename, modelZcoords = modelZcoords, dataZcoords= dataZcoords, title = title,diff=False)		
 	
