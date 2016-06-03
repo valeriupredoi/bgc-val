@@ -26,6 +26,7 @@ import numpy as np
 from shelve import open as shOpen
 from netCDF4 import Dataset,num2date
 import os
+import shutil
 
 #Specific local code:
 import UKESMpython as ukp
@@ -306,9 +307,16 @@ class timeseriesAnalysis:
 	###############
 	# Savng shelve		
 	print "timeseriesAnalysis:\t loadData.\tSaving shelve:", self.shelvefn_insitu			
-	sh = shOpen(self.shelvefn_insitu)
-	sh['dataD'] 	= dataD
-	sh.close()
+	try:
+		sh = shOpen(self.shelvefn_insitu)
+		sh['dataD'] 	= dataD
+		sh.close()
+	except:
+		print "timeseriesAnalysis:\t WARNING.\tSaving shelve failed, trying again.:", self.shelvefn_insitu			
+		shutil.remove(self.shelvefn_insitu)	
+		sh = shOpen(self.shelvefn_insitu)
+		sh['dataD'] 	= dataD
+		sh.close()		
 	 	
 	self.dataD = dataD
 
