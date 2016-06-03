@@ -36,7 +36,8 @@ import numpy as np
 
 #Specific local code:
 import UKESMpython as ukp
-from p2p import makePatternStatsPlots, testsuite_p2p, summaryTargets
+from p2p import makePatternStatsPlots, testsuite_p2p
+from p2p.summaryTargets import summaryTargets
 from p2p.patternAnalyses import InterAnnualPatterns,BGCvsPhysics
 from pftnames import months
 from p2p.shelveToDictionary import shelveToDictionary
@@ -122,7 +123,7 @@ def analysis_p2p(
 		doFe		= 0#True		
 		doPCO2		= 0#True
 		doO2		= 0#True	
-		doSal		= 0#True
+		doSal		= True
 		doTemp		= 0#True
 		doMLD		= 0#True
 		doAlk		= 0#True			# Glodap Alkalinity
@@ -836,9 +837,11 @@ def analysis_p2p(
 					annual		= annual,
 			 	)
 			)
-		
-		imageFold = folder(imageFolder+'/Targets/'+year+'/Summary')
-		summaryTargets(shelvesAV, imageFold)
+			
+		######
+		# Summary Target diagrams:
+		imageFold = ukp.folder(imageFolder+'/Targets/'+year+'/Summary')
+		summaryTargets(shelvesAV, imageFold, year)
 
 		
 	#BGCvsPhysics(shelvesAV, jobID, modelGrid )
@@ -850,15 +853,21 @@ def analysis_p2p(
 if __name__=="__main__":
 	try: 	jobID = argv[1]
 	except:	jobID =	'u-ab749'
+	
 	try:	year = argv[2]
 	except:	year = '2007'
+	
+	if 'debug' in  argv[1:]:
+		analysisSuite='debug'
+	else:	analysisSuite='annual'
+		
 	analysis_p2p(models	= ['NEMO','MEDUSA',],
 		jobID 	= jobID,
 		years 	= [year,], #'2075','2076',
 		modelGrid = 'eORCA1',
 		annual 	= True,
 		noPlots = False,
-		analysisSuite='annual',)
+		analysisSuite=analysisSuite,)
 	
 			
 

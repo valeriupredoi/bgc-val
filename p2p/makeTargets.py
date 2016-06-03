@@ -66,15 +66,12 @@ class makeTargets:
 	self.legendKeys = legendKeys 
 	self.determineLegend()
 
-
-
-	
   	#self.shelvedir = workingDir
   	#if self.shelvedir == '':self.shelvedir = ukp.folder(['shelves',self.xtype,self.ytype, 'Slices',self.name])
   	#else:			self.shelvedir = ukp.folder(self.shelvedir)		
-
+	self.dataLoaded = False
+	
 	if len(self.matchedShelves)>0 and ukp.shouldIMakeFile(self.matchedShelves,self.filename,debug=False):
-		self.loadShelves()
 		self.makeDiagram()
 
   def determineLegend(self,):
@@ -177,7 +174,7 @@ class makeTargets:
 		self.data[leg]['rR'] = rR
 		self.data[leg]['rG'] = rG
 		self.data[leg]['rp'] = rp
-			
+	self.dataLoaded = True	
 				
   def makeTitle(self,):
   	"""	MakeTitle determines how you have sliced the data.
@@ -186,7 +183,7 @@ class makeTargets:
   	"""
   	
   	self.xtype = ', '.join(self.xtypes.keys())
-	self.ytype = ', '.join(self.ytypes.keys())	
+	self.ytype = ', '.join(self.ytypes.keys())
 	if self.ytype in ['LANA','LANA_p']:
 			#labelx = getLongName(self.name)
 			#labely = getLongName(self.ytype)
@@ -256,13 +253,16 @@ class makeTargets:
 		
 
 	for t in self.diagramTypes:
-		if not len(self.data.keys()):
-			continue
-		    	print 'makeDiagram\t:No Plots to make'
 
 		filename = self.filename.replace('.png','_'+t+'.png')
 		if not ukp.shouldIMakeFile(self.matchedShelves,filename,debug=False):continue
-					
+		
+		if not self.dataLoaded: self.loadShelves()
+
+		if not len(self.data.keys()):
+			continue
+		    	print 'makeDiagram\t:No Plots to make'
+		    						
 		fig = pyplot.figure()		
 		ax = pyplot.subplot(111, aspect='equal')
 		c = pyplot.get_cmap('jet')
