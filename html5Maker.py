@@ -50,12 +50,19 @@ def addImageToHtml(fn,imagesfold):
 	# relfn: The location of the new copy relative to the index.html
 	
 	newfn = imagesfold+os.path.basename(fn)
+	relfn = newfn.replace(reportdir,'./')	
+		
 	if not os.path.exists(newfn):
 		print "cp ",newfn,fn	
 		shutil.copy2(fn, newfn)
 	else:
 		####
-		# Check if file is newer than the one in images.
+		# Check if the newer file is the same one from images.
+		
+		if os.path.getmtime(fn) == os.path.getmtime(newfn): return relfn
+
+		####
+		# Check if file is newer than the one in images.		
 		if shouldIMakeFile(fn, newfn,):
 			assert 0
 			print "removing old file",fn
@@ -63,14 +70,14 @@ def addImageToHtml(fn,imagesfold):
 			shutil.copy2(fn, newfn)			
 			print "cp ",newfn,fn
 			
-	relfn = newfn.replace(reportdir,'./')	
+
 	return relfn
 
 	
          
 def html5Maker(
 		jobID = 'u-ab749',
-		reportdir = '../../html5report',
+		reportdir = 'reports/tmp',
 		year = '*',
 		clean = False,
 		doZip= True,
