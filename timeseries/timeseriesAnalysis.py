@@ -313,7 +313,7 @@ class timeseriesAnalysis:
 		sh.close()
 	except:
 		print "timeseriesAnalysis:\t WARNING.\tSaving shelve failed, trying again.:", self.shelvefn_insitu			
-		shutil.remove(self.shelvefn_insitu)	
+		shutil.move(self.shelvefn_insitu, self.shelvefn_insitu+'.broken')
 		sh = shOpen(self.shelvefn_insitu)
 		sh['dataD'] 	= dataD
 		sh.close()		

@@ -57,6 +57,7 @@ def addImageToHtml(fn,imagesfold):
 		####
 		# Check if file is newer than the one in images.
 		if shouldIMakeFile(fn, newfn,):
+			assert 0
 			print "removing old file",fn
 			shutil.remove(newfn)
 			shutil.copy2(fn, newfn)			
