@@ -1944,6 +1944,8 @@
 	.item {
 		box-shadow: 0 0.05em 0.15em 0 rgba(0, 0, 0, 0.05);
 		margin-bottom: 40px;
+		background: #fff;
+		min-height: 450px;														
 	}
 
 		.item header {
@@ -2252,6 +2254,14 @@
 				padding: 5em 0;
 			}
 
+		/* Item */
+
+			.item {
+				margin-bottom: 20px;
+				min-height: 300px;										
+			}
+						
+
 	}
 
 /* Narrow */
@@ -2278,6 +2288,7 @@
 
 			.item {
 				margin-bottom: 20px;
+				min-height: 350px;										
 			}
 
 		/* Header */
@@ -2351,6 +2362,7 @@
 
 			.item {
 				margin-bottom: 15px;
+				min-height: 280px;						
 			}
 
 		/* List */

@@ -302,7 +302,7 @@ def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
 				#####
 				# makeTargets:
 				# Make a target diagram of the shelves of this group. 
-			  	filename = ukp.folder(imageFolder+'/Targets/'+year+'/'+name+depthLevel+'/'+g)+model+'-'+jobID+'_'+year+'_'+name+depthLevel+'_'+g+'.png'
+			  	filename = ukp.folder(imageFolder+'/Targets/'+year+'/'+name+depthLevel+'/'+g)+model+'_'+jobID+'_'+year+'_'+name+depthLevel+'_'+g+'.png'
 				makeTargets(	groups[g], 
 						filename,
 						legendKeys = ['newSlice',],					
@@ -316,7 +316,7 @@ def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
 				if xkeys=='':
 					print "Could no find x axis keys!",g,'in',['Oceans','Months','BGCVal']
 					
-			  	filenamebase = ukp.folder(imageFolder+'/Patterns/'+year+'/'+name+depthLevel+'/'+g)+'Months-'+model+'-'+jobID+'_'+year+'_'+name+depthLevel
+			  	filenamebase = ukp.folder(imageFolder+'/Patterns/'+year+'/'+name+depthLevel+'/'+g)+'Months_'+model+'_'+jobID+'_'+year+'_'+name+depthLevel
 				makePatternStatsPlots(	{name :groups[g],}, # {legend, shelves}
 							name+' '+g,	#xkeysname
 							ukp.slicesDict[xkeys],		#xkeysLabels=
@@ -327,7 +327,7 @@ def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
 			if not annual:
 				#####
 				# After finding all the shelves, we can plot them on the same axis.				
-			  	filenamebase = ukp.folder(imageFolder+'/Patterns/'+year+'/'+name+depthLevel+'/ANSH')+'ANSH-Months-'+model+'-'+jobID+'_'+year+'_'+name+depthLevel
+			  	filenamebase = ukp.folder(imageFolder+'/Patterns/'+year+'/'+name+depthLevel+'/ANSH')+'ANSH-Months_'+model+'_'+jobID+'_'+year+'_'+name+depthLevel
 			  	
 				makePatternStatsPlots(	{'North Hemisphere' :groups['NorthHemisphereMonths'],
 							 'South Hemisphere' :groups['SouthHemisphereMonths'],
@@ -349,7 +349,7 @@ def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
 			outShelves = {}
 			for dl in av[name]['depthLevels']:
 				outShelves[dl] = ukp.reducesShelves(shelvesAV,  models =[model,],depthLevels = [dl,], names = [name,], sliceslist =ukp.slicesDict[g])	
-		  	filenamebase = ukp.folder(imageFolder+'/Patterns/'+year+'/'+name+'AllDepths/')+'AllDepths-'+g+'-'+model+'-'+jobID+'_'+year+'_'+name
+		  	filenamebase = ukp.folder(imageFolder+'/Patterns/'+year+'/'+name+'AllDepths/')+'AllDepths_'+g+'_'+model+'_'+jobID+'_'+year+'_'+name
 			makePatternStatsPlots(	outShelves, 
 						name+' '+g,
 						ukp.slicesDict[g],		

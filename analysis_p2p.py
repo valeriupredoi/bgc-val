@@ -749,14 +749,7 @@ def analysis_p2p(
 #			av['pCO2']['depthLevels'] 	= ['',]
 #			av['pCO2']['MEDUSA']['grid']	= modelGrid				
 #			#av['pCO2']['plottingSlices'] 	= []
-#
-#	#	if doIntPP:
-#	#		av['intpp']['Data']['File'] 	=  LesterFolder+'PPint_1deg.nc'
-#	#		av['intpp']['Data']['Vars'] 	= ['PPint',]
-#	#		#av['intpp']['ERSEM']['Vars'] 	= ['netPP',] This field is net, not integrated.
-#	#		#av['intpp']['ERSEM']['File']	= ERSEMFolder+'_ERSEMMisc.nc' This file will need to be remade.
-#	#		av['intpp']['ERSEM']['grid']	= modelGrid
-#	#		av['intpp']['depthLevels'] 		= ['',]
+
 		
 		
 		if doSal:

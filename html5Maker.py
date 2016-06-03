@@ -64,7 +64,9 @@ def addImageToHtml(fn,imagesfold):
 			
 	relfn = newfn.replace(reportdir,'./')	
 	return relfn
-	            
+
+	
+         
 def html5Maker(
 		jobID = 'u-ab749',
 		reportdir = '../../html5report',
@@ -221,12 +223,9 @@ def html5Maker(
 				
 				#####
 				# Create custom title by removing extra bits.
-				title = html5Tools.fnToTitle(relfn).split(' ')
-				for i,t in enumerate(title):
-					# remove redundent versus field
-					if t.find('vs')>-1:	title[i] = ''		
-			
-				FileLists[href][relfn] = ', '.join([getLongName(t) for t in title])
+				#title = filenameToTitle(relfn)
+	
+				FileLists[href][relfn] = html5Tools.fnToTitle(relfn) 
 				print "Adding ",relfn,"to script"
 			
 		html5Tools.AddSubSections(indexhtmlfn,hrefs,SectionTitle,
@@ -282,16 +281,16 @@ def html5Maker(
 				
 					#####
 					# Create custom title by removing extra bits.
-					title = html5Tools.fnToTitle(relfn).split(' ')
-					for k in ['percentiles', jobID, key,'percentiles',key+'vs'+key]:
-						try: title.remove(k)
-						except:pass
-					for i,t in enumerate(title):
-						if t[:len(key)] == key: title[i] = t[len(key):]	# replace redudance value. 
-						if t.find('vs')>-1:	title[i] = ''		# remove redundent versus field
-				
+					title = html5Tools.fnToTitle(relfn)
+					#for k in ['percentiles', jobID, key,'percentiles',key+'vs'+key]:
+					#	try: title.remove(k)
+					#	except:pass
+					#for i,t in enumerate(title):
+					#	if t[:len(key)] == key: title[i] = t[len(key):]	# replace redudance value. 
+					#	if t.find('vs')>-1:	title[i] = ''		# remove redundent versus field
+					#FileLists[href][relfn] = ' '.join([getLongName(t) for t in title])				
 			
-					FileLists[href][relfn] = ' '.join([getLongName(t) for t in title])
+					FileLists[href][relfn] = title
 					print "Adding ",relfn,"to script"
 				
 			html5Tools.AddSubSections(indexhtmlfn,hrefs,SectionTitle,
