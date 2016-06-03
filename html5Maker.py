@@ -60,11 +60,9 @@ def addImageToHtml(fn,imagesfold):
 		# Check if the newer file is the same one from images.
 		
 		if os.path.getmtime(fn) == os.path.getmtime(newfn): return relfn
-
 		####
 		# Check if file is newer than the one in images.		
 		if shouldIMakeFile(fn, newfn,):
-			assert 0
 			print "removing old file",fn
 			shutil.remove(newfn)
 			shutil.copy2(fn, newfn)			
