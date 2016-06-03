@@ -357,11 +357,11 @@ def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
 						grid	= grid,
 						gridFile= gridFile			
 						)
-									
-	#assert False
-			#####
-			# EVERYTHING IS GREAT UNTIL THIS POINT, THEN IT ALL GOES TITS UP .
-						
+
+
+	
+	
+
 
 	return shelvesAV
 																			

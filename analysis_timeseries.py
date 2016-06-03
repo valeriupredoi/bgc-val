@@ -35,6 +35,7 @@ from glob import glob
 from scipy.interpolate import interp1d
 import numpy as np
 import os
+from getpass import getuser
 
 #####	
 # Load specific local code:
@@ -168,7 +169,7 @@ def analysis_timeseries(jobID = "u-ab671",
 	# This allows us to put away a python open to be re-opened later.
 	# This means that we can interupt the analysis without loosing lots of data and processing time, 
 	# or we can append new simulation years to the end of the analysis without starting from scratch each time.
-	shelvedir 	= ukp.folder('shelves/timeseries/'+jobID)
+	#shelvedir 	= ukp.folder('shelves/timeseries/'+jobID)
 
 	
 
@@ -206,7 +207,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		OSUDir		= ObsFolder+"OSU/"
 		CCIDir		= ObsFolder+"CCI/"
 		orcaGridfn 	= '/data/euryale7/scratch/ledm/UKESM/MEDUSA/mesh_mask_eORCA1_wrk.nc'
-				
+		shelvedir 	= ukp.folder('shelves/timeseries/'+jobID)		
 	#####
 	# JASMIN		
 	if gethostname().find('ceda.ac.uk')>-1:
@@ -214,7 +215,9 @@ def analysis_timeseries(jobID = "u-ab671",
 		machinelocation = 'JASMIN'	
 				
 		ObsFolder 	= "/group_workspaces/jasmin/esmeval/example_data/bgc/"
-		esmvalFolder 	= "/group_workspaces/jasmin2/ukesm/BGC_data/"		
+		esmvalFolder 	= "/group_workspaces/jasmin2/ukesm/BGC_data/"
+		shelvedir 	= ukp.folder("/group_workspaces/jasmin2/ukesm/BGC_data/"+getuser()+"/shelves/timeseries/"+jobID)
+			
 		#####
 		# Location of model files.	
 		MEDUSAFolder_pref	= ukp.folder(esmvalFolder)

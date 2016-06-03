@@ -36,7 +36,7 @@ import numpy as np
 
 #Specific local code:
 import UKESMpython as ukp
-from p2p import makePatternStatsPlots, testsuite_p2p
+from p2p import makePatternStatsPlots, testsuite_p2p, summaryTargets
 from p2p.patternAnalyses import InterAnnualPatterns,BGCvsPhysics
 from pftnames import months
 from p2p.shelveToDictionary import shelveToDictionary
@@ -836,7 +836,10 @@ def analysis_p2p(
 					annual		= annual,
 			 	)
 			)
-	
+		
+		imageFold = folder(imageFolder+'/Targets/'+year+'/Summary')
+		summaryTargets(shelvesAV, imageFold)
+
 		
 	#BGCvsPhysics(shelvesAV, jobID, modelGrid )
 	#if len(years)>1: InterAnnualPatterns(shelvesAV, jobID, years,modelGrid)	# plots interannual comparison and time series.
