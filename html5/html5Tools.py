@@ -99,8 +99,11 @@ def fnToTitle(fn,jobID='u-a'):
 		if t.find('vs')>-1:continue
 		if t.find(jobID)==0:continue
 		if t in IgnoreList:continue
-		if t in ['sum','Sum']:continue		
-		title += getLongName(t)+', '
+		if t in ['sum','Sum']:continue	
+		
+		ln = 	getLongName(t)
+		if ln in IgnoreList:continue
+		title += ln+', '
 	return title[:-2]
 	
 	
