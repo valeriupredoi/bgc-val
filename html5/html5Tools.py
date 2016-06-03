@@ -100,12 +100,8 @@ def fnToTitle(fn,jobID='u-a'):
 		if t.find(jobID)==0:continue
 		if t in IgnoreList:continue
 		if t in ['sum','Sum']:continue		
-		
-		title += getLongName(t)
-		if t == titlelist[-1]: continue
-		title += ', '
-		
-	return title
+		title += getLongName(t)+', '
+	return title[:-2]
 	
 	
 def addImagesText(imagePath,title = ''):

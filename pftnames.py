@@ -561,6 +561,15 @@ def getLongName(text,debug=False):
 	if text == 'AirSeaFluxCO2':	return "Air Sea CO2 Flux"  
 	if text == 'TotalAirSeaFluxCO2':return "Total Air Sea CO2 Flux"  
 	if text == 'DIC':		return "DIC"  
+	if text == 'DICSurface':	return "Surface DIC"  
+	if text == 'DICTransect':	return "Atlantic Transect DIC"  
+	if text == 'DICPTransect':	return "Pacific Transect DIC"  
+	if text == 'DIC100m':		return "DIC (100m deep) "  
+	if text == 'DIC200m':		return "DIC (200m deep)"
+	if text == 'DIC500m':		return "DIC (500m deep)"  
+	if text == 'DIC1000m':		return "DIC (1000m deep)"  	
+		  				
+	
 	
 	if text == 'hist':		return "Histogram"  
 	if text == 'scatter':		return "scatter diagram"  	
