@@ -32,7 +32,7 @@ def summaryTargets(shelvesAV, imageFold, year):
 	#####
 	# makeTargets:
 	# Make a target diagram of the shelves of this group. 	
-	BGCVALregions = ['ignoreInlandSeas',]
+	BGCVALregions = ['Global','ignoreInlandSeas','Equator10', 'ArcticOcean','NorthernSubpolarAtlantic','NorthernSubpolarPacific','SouthernOcean','Remainder',]
 	
 	for r in BGCVALregions:
 	    	shelves = ukp.reducesShelves(shelvesAV, models = ['NEMO','MEDUSA',], sliceslist =[r,])
