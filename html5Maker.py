@@ -21,7 +21,7 @@
 # Email:
 # ledm@pml.ac.uk
 
-from UKESMpython import folder
+from UKESMpython import folder, shouldIMakeFile
 from pftnames import getLongName
 from glob import glob
 from sys import argv
@@ -56,7 +56,7 @@ def addImageToHtml(fn,imagesfold):
 	else:
 		####
 		# Check if file is newer than the one in images.
-		if os.path.getmtime(newfn) > os.path.getmtime(fn):
+		if shouldIMakeFile(fn, newfn,):
 			print "removing old file",fn
 			shutil.remove(newfn)
 			shutil.copy2(fn, newfn)			
