@@ -82,7 +82,8 @@ class makePlots:
   		imageDir='',
   		newSlices =['All','Standard'], 
   		compareCoords=True,  		
-  		noPlots=False): #xfilename,yfilename,saveShelve=True,
+  		noPlots=False,
+  		dpi = 100): #xfilename,yfilename,saveShelve=True,
 
   
   	self.xfn =matchedModelFile
@@ -107,7 +108,7 @@ class makePlots:
   	self.modeldetails 	= modeldetails
   	self.datacoords 	= datacoords
   	self.datadetails 	= datadetails
-  			
+  	self.dpi 		= dpi
 	#self.mt = getmt()
 	#Models = [m.upper() for m in ['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankTOM6','PlankTOM10','NEMO','IMARNET','CMIP5',]] # skip these to find in situ data types.
 	#Models.extend(['IMARNET_' +m.upper() for m in ['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankTOM6','PlankTOM10','NEMO',]])	
@@ -481,8 +482,8 @@ class makePlots:
 				histxaxis = 'DMS, '+ xunits
 				
 			if self.name in noXYLogs or dmin*dmax <=0.:				
-				ukp.histPlot(datax, datay,  histfnxy, Title=histtitle, labelx=labelx,labely=labely,dpi=200,xaxislabel =histxaxis)	
-			else:	ukp.histPlot(datax, datay,  histfnxy, Title=histtitle, labelx=labelx,labely=labely,dpi=200,xaxislabel =histxaxis, logx = True, )
+				ukp.histPlot(datax, datay,  histfnxy, Title=histtitle, labelx=labelx,labely=labely,dpi=self.dpi,xaxislabel =histxaxis)	
+			else:	ukp.histPlot(datax, datay,  histfnxy, Title=histtitle, labelx=labelx,labely=labely,dpi=self.dpi,xaxislabel =histxaxis, logx = True, )
 
 		# Simultaneous histograms plot	- triple
 		if ukp.shouldIMakeFile([self.xfn,self.yfn],histsfnxy,debug=False):
@@ -507,8 +508,8 @@ class makePlots:
 				pass
 			
 			if self.name in noXYLogs or dmin*dmax <=0.:
-				ukp.scatterPlot(datax, datay,  scatterfn, Title=scattitle, labelx=slabelx,labely=slabely,dpi=200, bestfitLine=True,gridsize=gs)
-			else:	ukp.scatterPlot(datax, datay,  scatterfn, Title=scattitle, labelx=slabelx,labely=slabely,dpi=200, bestfitLine=True,gridsize=gs,logx = True, logy=True,)
+				ukp.scatterPlot(datax, datay,  scatterfn, Title=scattitle, labelx=slabelx,labely=slabely,dpi=self.dpi, bestfitLine=True,gridsize=gs)
+			else:	ukp.scatterPlot(datax, datay,  scatterfn, Title=scattitle, labelx=slabelx,labely=slabely,dpi=self.dpi, bestfitLine=True,gridsize=gs,logx = True, logy=True,)
 
 	#####
 	# Save fit in a shelve file.		
@@ -634,7 +635,7 @@ class makePlots:
 		pyplot.ylabel(self.ytype+' '+ykey)
 
 		print "\tSaving: " + filename
-		pyplot.savefig(filename,dpi=100,)
+		pyplot.savefig(filename,dpi=self.dpi,)
 		pyplot.close()	  	
 
 
