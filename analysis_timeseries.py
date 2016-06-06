@@ -117,7 +117,6 @@ def analysis_timeseries(jobID = "u-ab671",
 		doIntPP_OSU	= 0#True			# OSU Integrated primpary production	
 		doPP_OSU	= 0#True			# OSU Integrated primpary production			
 		doOMZ		= 0#True			# work in progress
-		doOMZ		= 0#True		# work in progress
 		doLocalExportRatio   = 0#True			# Export ratio (no data)
 		doGlobalExportRatio   = 0#True			# Export ratio (no data)
 	
@@ -517,7 +516,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modelcoords'] 	= medusaCoords 	
 		av[name]['datacoords'] 		= woaCoords
 	
-		av[name]['modeldetails'] 	= {'name': name, 'vars':['OXY',], 'convert': ukp.NoChange,}	
+		av[name]['modeldetails'] 	= {'name': name, 'vars':['OXY',], 'convert': ukp.NoChange,}
 		av[name]['datadetails']  	= {'name': name, 'vars':['o_an',], 'convert': ukp.oxconvert,'units':'mmol/m^3'}
 	
 		av[name]['layers'] 		= ['Surface',] #'100m','300m','1000m',]

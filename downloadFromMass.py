@@ -26,7 +26,59 @@ from sys import argv
 import subprocess
 from socket import gethostname
 import os
+from glob import glob
+from re import findall
 
+def getYearFromFile(fn):
+	a = findall(r'\d\d\d\d\d\d\d\d',fn)
+	for i in a:
+	    if i[-4:] == '1130': 
+	    	yr = i[:4]
+	      	return yr
+			      
+	return False
+	
+	
+def findLastFinishedYear(jobID):
+	"""
+		command:
+		downloadMass jobID options.
+		options:
+			anymachine : skip check.
+	"""
+	if jobID == '': return
+	
+	machine = gethostname()
+	if machine.find('mass')>-1:
+		outputFold = "/group_workspaces/jasmin2/ukesm/BGC_data/"+jobID+'/'
+
+	if machine.find('monsoon')>-1:
+                outputFold = "/projects/ukesm/ldmora/UKESM/"+jobID+'/'
+                        
+	if gethostname().find('pmpc')>-1:	
+                outputFold = "/data/euryale7/scratch/ledm/UKESM/MEDUSA/"+jobID+'/'		
+		                        
+	fnDict = {}	
+	files = sorted(glob(outputFold+jobID+'o_1y_????1201_????1130_????_?.nc'))
+	suffixes = ['diad_T.nc', 'grid_T.nc','grid_U.nc','grid_V.nc','grid_W.nc','ptrc_T.nc']
+	for fn in files:
+		yr = getYearFromFile(fn)
+		print fn, yr
+		try: 	fnDict[yr]+=1
+		except:	fnDict[yr] =1
+	
+	years = sorted(fnDict.keys())
+	years.reverse()
+	
+	print years, fnDict
+	for y in years:
+		print y,':', fnDict[y]
+		if fnDict[y] == len(suffixes): return y
+		
+	print "No correct year, there's probably a problem here findLastFinishedYear(",jobID,")"
+	print "Machine", machine
+	print "outputFold:", outputFold
+	assert 0	
 
 
 def downloadMass(jobID,):
