@@ -71,7 +71,6 @@ def linkTwoJobs(jobID1,jobID2):
 				return						
 			shelvefold1 = "/group_workspaces/jasmin2/ukesm/BGC_data/"+getuser()+"/shelves/*/"+jobID1
 			shelvefold2 = "/group_workspaces/jasmin2/ukesm/BGC_data/"+getuser()+"/shelves/*/"+jobID2
-			shelvefold2 = folder(shelvefold2)
 		
 		if machine.find('monsoon')>-1:
 			knownmachine = True
@@ -126,6 +125,7 @@ def linkTwoJobs(jobID1,jobID2):
 				print "Already exists:\t",fn2
 				continue			
 			
+			sh2 = folder(os.path.dirname(fn2))
 			try:
 				shutil.copy2(fn1, fn2)
 				print "Copying:\t",fn1, '--->',fn2
