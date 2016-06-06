@@ -26,10 +26,15 @@ from pftnames import getLongName
 from glob import glob
 from sys import argv
 import os 
-
 import shutil
-
 from html5 import html5Tools
+
+
+#####
+# makeReport.py:
+# Usage:
+#	provide a job ID, a year to look at, and a folder location.
+
 
 def copytree(src, dst, symlinks=False, ignore=None):
     for item in os.listdir(src):
@@ -42,7 +47,7 @@ def copytree(src, dst, symlinks=False, ignore=None):
             try:shutil.copy2(s, d)
             except: pass
 
-def addImageToHtml(fn,imagesfold):
+def addImageToHtml(fn,imagesfold,reportdir):
 	#####
 	# Note that we use three paths here.
 	# fn: The original file path relative to here
@@ -221,7 +226,7 @@ def html5Maker(
 			for fn in vfiles:
 				#####
 				# Copy image to image folder and return relative path.
-				relfn = addImageToHtml(fn, imagesfold)
+				relfn = addImageToHtml(fn, imagesfold, reportdir)
 				
 				####
 				# WOA fields that also produce transects, etc.
@@ -283,7 +288,7 @@ def html5Maker(
 				for fn in vfiles:
 					#####
 					# Copy image to image folder and return relative path.
-					relfn = addImageToHtml(fn, imagesfold)
+					relfn = addImageToHtml(fn, imagesfold, reportdir)
 				
 					#####
 					# Create custom title by removing extra bits.
@@ -318,24 +323,43 @@ def html5Maker(
 
 
 
-if __name__=="__main__":	
+def main():
 	try:	jobID = argv[1]
 	except:	
-		jobID = "u-ab749"
-	try: 		reportdir = argv[2]
-	except: 	reportdir =folder('reports/'+jobID)
+		print "Please provide a jobID next time"
+		exit()
 	
-	try:	year = int(argv[3])
-	except: year = '*'
+	#defaults:
+	clean = False
+	year = '*'
+	reportdir =folder('reports/'+jobID)
 	
-	if 'clean' in argv[1:]:
-		clean = True
-	else:	clean = False
+	for i,arg in enumerate(argv):
+		if i <= 1: continue
+
+		try:	
+			y = int(arg)
+			year = y
+			continue
+		except: pass
+
+		if arg == 'clean':
+			 clean = True
+			 continue
+		
+		reportdir = arg
+			
+
+	
+
 	html5Maker(jobID =jobID,
 		   reportdir=reportdir,
 		   year = year,
 		   clean=clean,
 		   )
+		   	
+if __name__=="__main__":	
+	main()
 
 
 

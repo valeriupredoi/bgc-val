@@ -75,6 +75,9 @@ def analysis_timeseries(jobID = "u-ab671",
 		
 	"""	
 
+	#print "analysis_p2p:",	jobID,clean, annual,strictFileCheck,analysisSuite,z_component,regions
+	#assert 0
+	
 	#####
 	# Switches:
 	# These are some booleans that allow us to choose which analysis to run. 
@@ -126,6 +129,29 @@ def analysis_timeseries(jobID = "u-ab671",
 		doS		= 0#True			# WOA Salinity
 		doMLD		= 0#True			# iFERMER Mixed Layer Depth - work in prgress		
 
+	if analysisSuite.lower() in ['FullDepth',]:
+		#Skip 2D fields	
+		doChl_CCI	= 0#True			# CCI Chlorophyll	
+		doChl_pig	= True				# Chlorophyll from pigments (MAREDAT)
+		doN		= True				# WOA Nitrate
+		doSi		= True				# WOA Siliate
+		doO2		= True				# WOA Oxygen
+		doAlk		= True				# Glodap Alkalinity
+		doDIC		= True				# Globap tCO2
+		doAirSeaFlux	= 0#True			# work in progress
+		doTotalAirSeaFlux= 0#True			# work in progress		
+		doIntPP_iMarNet	= 0#True			# Integrated primpary production from iMarNEt
+		doIntPP_OSU	= 0#True			# OSU Integrated primpary production	
+		doPP_OSU	= 0#True			# OSU Integrated primpary production			
+		doOMZ		= 0#True			# work in progress
+		doLocalExportRatio   = 0#True			# Export ratio (no data)
+		doGlobalExportRatio   = 0#True			# Export ratio (no data)	
+		#####	
+		# Physics switches:
+		doT		= True				# WOA Temperature
+		doS		= True				# WOA Salinity
+		doMLD		= 0#True			# iFERMER Mixed Layer Depth - work in prgress
+		
 	#####
 	# Some lists of region.
 	# This are pre-made lists of regions that can be investigated.
@@ -333,7 +359,10 @@ def analysis_timeseries(jobID = "u-ab671",
 				return sorted(glob(datafolder+jobID+"/"+jobID+"o_1m_*_"+filekey+".nc"))
 		if z_comp == 'FullDepth':
 			if annual:
-				return sorted(glob(datafolder+jobID+"/"+jobID+"o_1y_????????_*[0,5]????_"+filekey+".nc"))
+				files = sorted(glob(datafolder+jobID+"/"+jobID+"o_1y_????????_*[0,5]????_"+filekey+".nc"))
+				if len(files)==0:
+					files = sorted(glob(datafolder+jobID+"/"+jobID+"o_1y_????????_*????_"+filekey+".nc"))
+				return files
 			else:
 				print "need to figoure out how to implement this."
 				assert 0
@@ -1066,7 +1095,7 @@ if __name__=="__main__":
 	
 	analysis_timeseries(jobID =jobID,analysisSuite=suite, z_component = 'SurfaceOnly',)#clean=1)			
 	if suite == 'all':
-	        analysis_timeseries(jobID =jobID,analysisSuite=suite, z_component = 'FullDepth',)#clean=1)                      
+	        analysis_timeseries(jobID =jobID,analysisSuite='FullDepth', z_component = 'FullDepth',)#clean=1)                      
 
 		
 	
