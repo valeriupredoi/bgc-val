@@ -30,6 +30,7 @@ import shutil
 from glob import glob
 from shelve import open as shopen
 from UKESMpython import folder
+from getpass import getuser
 
 def linkTwoJobs(jobID1,jobID2):
 	"""
@@ -68,6 +69,9 @@ def linkTwoJobs(jobID1,jobID2):
 			if not os.path.exists(netcdfFold2):
 				print "This folder doesn't exist. Do you have the right jobID 2?", jobID2
 				return						
+			shelvefold1 = "/group_workspaces/jasmin2/ukesm/BGC_data/"+getuser()+"/shelves/*/"+jobID1
+			shelvefold2 = "/group_workspaces/jasmin2/ukesm/BGC_data/"+getuser()+"/shelves/*/"+jobID2
+			shelvefold2 = folder(shelvefold2)
 		
 		if machine.find('monsoon')>-1:
 			knownmachine = True
@@ -81,6 +85,11 @@ def linkTwoJobs(jobID1,jobID2):
 
 				return	
 
+			shelvefold1 = "shelves/timeseries/"+jobID1
+			shelvefold2 = folder(shelvefold1.replace(jobID1,jobID2))
+
+				
+
 	
 		if not knownmachine :
 			print "Are you running this on the correct machine?"
@@ -93,6 +102,7 @@ def linkTwoJobs(jobID1,jobID2):
 		#####
 		# link the files:
                 for fn1 in sorted(glob(netcdfFold1+'*')):
+                	print "linking", fn1
 			fn2 = fn1.replace(jobID1,jobID2)			
 			if os.path.exists(fn2):
 				print "Already exists:\t",fn2
@@ -108,8 +118,6 @@ def linkTwoJobs(jobID1,jobID2):
 	#####
 	# shelve stuff: (same location on both machines!)
 	if copyShelves:	
-		shelvefold1 = "shelves/timeseries/"+jobID1
-		shelvefold2 = folder(shelvefold1.replace(jobID1,jobID2))
 
 		for fn1 in sorted(glob(shelvefold1+'/*')):
 			fn2 = fn1.replace(jobID1,jobID2)		
@@ -150,7 +158,7 @@ if __name__=="__main__":
 		print "Please provide two jobIDs"
 		jobID1 = ''
 		jobID2 = ''
-		
+		os.exit()
 				
 	linkTwoJobs(jobID1,jobID2)
 		
