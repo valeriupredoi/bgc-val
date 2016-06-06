@@ -100,7 +100,7 @@ def linkTwoJobs(jobID1,jobID2):
 
 		#####
 		# link the files:
-                for fn1 in sorted(glob(netcdfFold1+'*')):
+                for fn1 in sorted(glob(netcdfFold1+'/*')):
                 	print "linking", fn1
 			fn2 = fn1.replace(jobID1,jobID2)			
 			if os.path.exists(fn2):
