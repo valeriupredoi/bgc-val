@@ -29,6 +29,8 @@ import os
 import shutil
 from glob import glob
 from shelve import open as shopen
+from datetime import datetime
+
 from UKESMpython import folder
 from getpass import getuser
 
@@ -147,7 +149,23 @@ def linkTwoJobs(jobID1,jobID2):
 					print "changing shelve contents from ",	fnshel, "to",newfnshe
 				s['readFiles']	= readFiles
 				s.close()
+	
+	if linkchain:				
+		fn = netcdfFold1.replace(jobID1,'linking.log')
+		try:
+			f = open(fn,'r')
+			txt = f.read()
+			f.close()
+		except:
+			txt = ''
+		newline = str(datetime.now())+':\t'+jobID1+' -> '+jobID2+'\n'
+		
+		if txt.find(newline)>-1:
+			txt+=newline
 			
+		f = open(fn,'o')
+		f.write(txt)
+		f.close()		
 
 if __name__=="__main__":	
 	
