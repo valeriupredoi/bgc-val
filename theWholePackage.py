@@ -20,7 +20,7 @@ from UKESMpython import folder
 
 def theWholePackage(jobID):
 	print "########\nThe Whole Package:\tStarting job", jobID 
-	downloadMass(jobID)
+#	downloadMass(jobID)
 	
 	
 	print "########\nThe Whole Package:\tStarting Time series (surface only)", jobID 	
@@ -35,14 +35,14 @@ def theWholePackage(jobID):
 		key = timeseriesDict[index]
 		singleTimeSeries(jobID, key)
 	
-	print "########\nThe Whole Package:\tStarting Time series ", jobID 
-	cores = 4
-    	p = Pool(cores)
-	remaining = sorted(timeseriesDict.keys())
-    	p.map(timeseriesParrallel,remaining)
+#	print "########\nThe Whole Package:\tStarting Time series ", jobID 
+#	cores = 4
+ #   	p = Pool(cores)
+#	remaining = sorted(timeseriesDict.keys())
+ #   	p.map(timeseriesParrallel,remaining)
 		
 	#	singleTimeSeries(jobID, key)
-	assert 0
+#	assert 0
 	print "########\nThe Whole Package:\tLocating final year of model data", jobID 		        
         year = findLastFinishedYear(jobID)
 	print "########\nThe Whole Package:\tFinal year of model data", jobID,"is", year
