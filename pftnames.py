@@ -573,7 +573,8 @@ def getLongName(text,debug=False):
   	if text == 'OMZ':	 	return 'Oxygen minimum zone' 
   	if text == 'TotalOMZVolume':	return 'Total Oxygen minimum zone volume (<20 mmol O2/m^3)'   	
   	if text == 'TotalOMZVolume50':	return 'Total Oxygen minimum zone volume (<50 mmol O2/m^3)'   	  	
-	
+  	if text == 'OMZThickness':	return 'Oxygen minimum zone thickness (<20 mmol O2/m^3)'  
+  		
 	
 	if text == 'hist':		return "Histogram"  
 	if text == 'scatter':		return "scatter diagram"  	

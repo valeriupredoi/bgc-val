@@ -127,8 +127,9 @@ def analysis_timeseries(jobID = "u-ab671",
 		if analysisSuite.lower() in ['debug',]:	
 			#analysisKeys.append('AirSeaFlux')		# work in progress
 			#analysisKeys.append('TotalAirSeaFlux')		# work in progress
-			analysisKeys.append('TotalOMZVolume')			# work in progress
-			analysisKeys.append('TotalOMZVolume50')			# work in progress			
+			#analysisKeys.append('TotalOMZVolume')			# work in progress
+			#analysisKeys.append('TotalOMZVolume50')			# work in progress			
+			analysisKeys.append('OMZThickness')			# work in progress						
 			
 		if analysisSuite.lower() in ['FullDepth',]:
 			#Skip 2D fields
@@ -535,9 +536,6 @@ def analysis_timeseries(jobID = "u-ab671",
 	if 'OMZ' in analysisKeys:
 		# Here we calculate the volume of the OMZ, where the O2 concentration is below 20.
 		nc = Dataset(orcaGridfn,'r')
-
-	
-
 		assert 0 
 		# not ready yet
 		name = 'OMZ'
@@ -560,6 +558,73 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= orcaGridfn
+ 
+ 
+ 
+ 
+	if 'OMZThickness' in analysisKeys:
+		name = 'OMZThickness'
+		
+		if annual:
+			av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
+			av[name]['dataFile'] 		=  WOAFolder+'woa13_all_o00_01.nc'
+		else:
+			print "OMZ Thickness not implemented for monthly data"
+			assert 0
+			
+		nc = Dataset(orcaGridfn,'r')
+		thickness   = nc.variables['e3t' ][:]
+		nc.close()			
+
+		if name == 'OMZThickness':	omzthreshold = 20.
+		if name == 'OMZThickness50':	omzthreshold = 50.		
+		def modelOMZthickness(nc,keys):
+			o2 = nc.variables[keys[0]][:].squeeze()
+			totalthick = np.ma.masked_where((o2>omzthreshold)+o2[0].mask,thickness).sum(0).data
+			if totalthick.max() in [0.,0]: return np.array([0.,])
+			
+			return np.ma.masked_where(totalthick==0., totalthick)
+			#return np.ma.masked_where((arr>omzthreshold) + (arr <0.) + arr.mask,thickness).sum(0)
+	
+
+			
+		def woaOMZthickness(nc,keys):
+			o2 = nc.variables[keys[0]][:].squeeze() *44.661
+			pthick = np.zeros_like(o2) 
+			lons = nc.variables['lon'][:]
+			lats = nc.variables['lat'][:]			
+			zthick  = np.abs(nc.variables['depth_bnds'][:,0] - nc.variables['depth_bnds'][:,1])
+
+			for y,lat in enumerate(lats):
+			    for x,lon in enumerate(lons):			  
+				pthick[:,y,x] = zthick
+			totalthick = np.ma.masked_where((o2>omzthreshold)+o2[0].mask,pthick).sum(0).data
+			
+			if totalthick.max() in [0.,0]: return np.array([0.,])
+			return np.ma.masked_where(totalthick==0., totalthick)
+						
+			#np.ma.masked_where(o2[0].mask, totalthick)							
+			#return np.ma.masked_where(arr.mask + (arr >omzthreshold)+(arr <0.),pthick).sum(0)
+				
+		av[name]['modelcoords'] 	= medusaCoords 	
+		av[name]['datacoords'] 		= woaCoords
+	
+		av[name]['modeldetails'] 	= {'name': name, 'vars':['OXY',], 'convert': modelOMZthickness,'units':'m'}
+		av[name]['datadetails']  	= {'name': name, 'vars':['o_an',], 'convert': woaOMZthickness,'units':'m'}
+	
+		av[name]['layers'] 		= ['Surface',] 
+		av[name]['regions'] 		= regionList
+		av[name]['metrics']		= metricList
+
+		av[name]['datasource'] 		= 'WOA'
+		av[name]['model']		= 'MEDUSA'
+
+		av[name]['modelgrid']		= 'eORCA1'
+		av[name]['gridFile']		= orcaGridfn	
+		
+		
+		
+		
 
 	if 'TotalOMZVolume' in analysisKeys or 'TotalOMZVolume50' in analysisKeys:
 	    for name in ['TotalOMZVolume','TotalOMZVolume50']:

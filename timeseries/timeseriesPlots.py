@@ -493,11 +493,13 @@ def mapPlotPair(lons1, lats1, data1,lons2,lats2,data2,filename,titles=['',''],lo
 	rbma = max([data1.max(),data2.max()])		
 	
 	if rbmi * rbma >0. and rbma/rbmi > 100.: doLog=True
-	
-	if len(data2.compressed())==0:
-                mapPlotSingle(lons1, lats1, data1,filename,titles=titles,lon0=lon0,drawCbar=drawCbar,cbarlabel=cbarlabel,doLog=doLog,dpi=dpi)
-                return
-	
+	if 0 in [len(data2.compressed()),len(np.ma.array(lons2).compressed()),len(np.ma.array(lats2).compressed()), ]:
+ 		try:    mapPlotSingle(lons1, lats1, data1,filename,titles=titles,lon0=lon0,drawCbar=drawCbar,cbarlabel=cbarlabel,doLog=doLog,dpi=dpi)
+ 		except:pass
+ 		return
+
+	if 0 in [len(data1.compressed()),len(np.ma.array(lons1).compressed()),len(np.ma.array(lats1).compressed()), ]:return
+		
 	ax1 = pyplot.subplot(211,projection=cartopy.crs.PlateCarree(central_longitude=0.0, ))
 		
 	fig,ax1 = makemapplot(fig,ax1,lons1,lats1,data1,titles[0], zrange=[rbmi,rbma],lon0=0.,drawCbar=True,cbarlabel='',doLog=doLog,)
@@ -508,7 +510,8 @@ def mapPlotPair(lons1, lats1, data1,lons2,lats2,data2,filename,titles=['',''],lo
 		fig,ax2 = makemapplot(fig,ax2,lons2,lats2,data2,titles[1], zrange=[rbmi,rbma],lon0=0.,drawCbar=True,cbarlabel='',doLog=doLog,)
 		if False in [fig, ax2]: assert False
 	except: 
-		mapPlotSingle(lons1, lats1, data1,filename,titles=titles,lon0=lon0,drawCbar=drawCbar,cbarlabel=cbarlabel,doLog=doLog,dpi=dpi)
+		try:mapPlotSingle(lons1, lats1, data1,filename,titles=titles,lon0=lon0,drawCbar=drawCbar,cbarlabel=cbarlabel,doLog=doLog,dpi=dpi)
+		except:pass
 		return
 	ax2.set_extent([-180.,180.,-90.,90.])	
 		
