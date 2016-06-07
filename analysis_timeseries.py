@@ -110,7 +110,8 @@ def analysis_timeseries(jobID = "u-ab671",
 			analysisKeys.append('PP_OSU')			# OSU Integrated primpary production			
 			analysisKeys.append('LocalExportRatio')		# Export ratio (no data)
 			analysisKeys.append('GlobalExportRatio')	# Export ratio (no data)
-			
+			analysisKeys.append('TotalOMZVolume')		# Total OMZ Volume
+						
 			#####	
 			# Physics switches:
 			analysisKeys.append('T')			# WOA Temperature
@@ -127,6 +128,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('AirSeaFlux')		# work in progress
 			#analysisKeys.append('TotalAirSeaFlux')		# work in progress
 			analysisKeys.append('TotalOMZVolume')			# work in progress
+			analysisKeys.append('TotalOMZVolume50')			# work in progress			
 			
 		if analysisSuite.lower() in ['FullDepth',]:
 			#Skip 2D fields
@@ -559,14 +561,16 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= orcaGridfn
 
-	if 'TotalOMZVolume' in analysisKeys:
-		name = 'TotalOMZVolume'
+	if 'TotalOMZVolume' in analysisKeys or 'TotalOMZVolume50' in analysisKeys:
+	    for name in ['TotalOMZVolume','TotalOMZVolume50']:
+	        if name not in analysisKeys: continue
 		if annual:
 			av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
 			av[name]['dataFile'] 		=  WOAFolder+'woa13_all_o00_01.nc'
 		else:
 			print "OMZ volume not implemented for monthly data"
 			assert 0
+			
 		nc = Dataset(orcaGridfn,'r')
 		try:	
 			vol   = nc.variables['pvol' ][:]
@@ -578,7 +582,8 @@ def analysis_timeseries(jobID = "u-ab671",
 			pvol = np.ma.masked_where(tmask==0,pvol)
 		nc.close()			
 
-		omzthreshold = 20.
+		if name == 'TotalOMZVolume':	omzthreshold = 20.
+		if name == 'TotalOMZVolume50':	omzthreshold = 50.		
 		def modelTotalOMZvol(nc,keys):
 			arr = nc.variables[keys[0]][:].squeeze()
 			return np.ma.masked_where((arr>omzthreshold) + pvol.mask,pvol).sum()
