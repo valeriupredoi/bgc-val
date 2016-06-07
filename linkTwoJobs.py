@@ -53,7 +53,7 @@ def linkTwoJobs(jobID1,jobID2):
 	
 	linkNetcdfs = True
 	copyShelves = True
-
+	linkchain   = True
 
 	#####
 	# Netcdf stuff:		
@@ -152,19 +152,19 @@ def linkTwoJobs(jobID1,jobID2):
 	
 	if linkchain:				
 		fn = netcdfFold1.replace(jobID1,'linking.log')
-		try:
-			f = open(fn,'r')
-			txt = f.read()
-			f.close()
-		except:
-			txt = ''
+#		try:
+#			f = open(fn,'r')
+#			txt = f.read()
+#			f.close()
+#		except:
+#			txt = ''
 		newline = str(datetime.now())+':\t'+jobID1+' -> '+jobID2+'\n'
 		
-		if txt.find(newline)>-1:
-			txt+=newline
+	#	if txt.find(newline)>-1:
+	#		txt+=newline
 			
-		f = open(fn,'o')
-		f.write(txt)
+		f = open(fn,'a')
+		f.write(newline)
 		f.close()		
 
 if __name__=="__main__":	
