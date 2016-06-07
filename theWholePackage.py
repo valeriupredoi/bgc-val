@@ -7,12 +7,16 @@
 	
 """
 from sys import argv,exit
+from multiprocessing import Pool
 
 from downloadFromMass import  downloadMass, findLastFinishedYear
-from analysis_timeseries import analysis_timeseries
+from analysis_timeseries import analysis_timeseries, singleTimeSeries, timeseriesDict
 from analysis_p2p import analysis_p2p
 from makeReport import html5Maker
 from UKESMpython import folder
+
+
+
 
 def theWholePackage(jobID):
 	print "########\nThe Whole Package:\tStarting job", jobID 
@@ -21,11 +25,24 @@ def theWholePackage(jobID):
 	
 	print "########\nThe Whole Package:\tStarting Time series (surface only)", jobID 	
 	suite = 'all'
-	analysis_timeseries(jobID =jobID,analysisSuite=suite, z_component = 'SurfaceOnly',)
+	
+	
 
-	print "########\nThe Whole Package:\tStarting Time series (Full depth)", jobID 		
-        analysis_timeseries(jobID =jobID,analysisSuite=suite, z_component = 'FullDepth',)#clean=1) 	 
-        
+			  
+	def timeseriesParrallel(index):
+		print "timeseriesParrallel",index, jobID
+		assert 0
+		key = timeseriesDict[index]
+		singleTimeSeries(jobID, key)
+	
+	print "########\nThe Whole Package:\tStarting Time series ", jobID 
+	cores = 4
+    	p = Pool(cores)
+	remaining = sorted(timeseriesDict.keys())
+    	p.map(timeseriesParrallel,remaining)
+		
+	#	singleTimeSeries(jobID, key)
+	assert 0
 	print "########\nThe Whole Package:\tLocating final year of model data", jobID 		        
         year = findLastFinishedYear(jobID)
 	print "########\nThe Whole Package:\tFinal year of model data", jobID,"is", year

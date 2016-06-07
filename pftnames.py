@@ -568,7 +568,8 @@ def getLongName(text,debug=False):
 	if text == 'DIC200m':		return "DIC (200m deep)"
 	if text == 'DIC500m':		return "DIC (500m deep)"  
 	if text == 'DIC1000m':		return "DIC (1000m deep)"  	
-		  				
+  	if text == 'OMZ':	 	return 'Oxygen minimum zone' 
+  	if text == 'TotalOMZVolume':	return 'Total Oxygen minimum zone volume'   	
 	
 	
 	if text == 'hist':		return "Histogram"  
@@ -605,6 +606,7 @@ def getLongName(text,debug=False):
   	if text ==  'p_an': 	return 'Oxygen'    	
   	if text ==  'i_mn': 	return 'Mean Silicate'  	
   	if text ==  'i_an': 	return 'Silicate'  
+  	  	
   	  	  	  	  	
 	if text == 'Seasons':   return 'Seasons'
 	if text in ['JFM','AMJ','JAS','OND',]:return text   	

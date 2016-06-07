@@ -1164,6 +1164,20 @@ def makeLonSafeArr(lon):
 	 	 
 	assert False
 
+
+def Area(p1,p2):#lat,lon
+	R=6378000. #m
+	lat1,lon1=p1[0],p1[1]
+	lat2,lon2=p2[0],p2[1]
+
+	A = (np.pi/180.)*R*R* abs(np.sin(lat1*np.pi/180.)-np.sin(lat2*np.pi/180.))*abs(lon1-lon2)
+	print 'Area:',lat1,'N->',lat2,'N\t',lon1,'E->',lon2,'E,\tA=',A
+
+	return A
+			
+			
+			
+
 class shelveMetadata:
    def __init__(self,model='',name='',year='',depthLevel='',newSlice='',xkey='',ykey='',shelve = ''):
    	self.model 	= model
