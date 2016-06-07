@@ -550,6 +550,8 @@ def getLongName(text,debug=False):
 	if text == 'pig':		return "pigments"  
 	if text == 'exportRatio':	return "Export Ratio"  
 	if text == 'ExportRatio':	return "Export Ratio"  	
+	if text == 'LocalExportRatio':	return "Export Ratio"  		
+	
 	if text == 'IntegratedPrimaryProduction':	return "Integrated Primary Production"  
 	if text == 'IntegratedPrimaryProduction_OSU':	return "Integrated Primary Production (OSU)"  
 	if text == 'IntegratedPrimaryProduction':	return "Integrated Primary Production"
