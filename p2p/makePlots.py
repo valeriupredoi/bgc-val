@@ -63,7 +63,7 @@ noXYLogs 	= [ 'pCO2',
 		'tempSurface',		'tempAll',	'tempTransect',	'temp100m',	'temp200m','temp1000m',	'temp500m',
 		'salSurface', 		'salAll',	'salTransect',	'sal100m',	'sal200m','sal1000m',	'sal500m',]
 		
-
+transectSlices = ['All','Global',]
 
 class makePlots:
   def __init__(self,matchedDataFile,
@@ -175,7 +175,6 @@ class makePlots:
 	  	
 	xkeys = []
 	ykeys = []
-	plotpairs = [] 
 
 	
 	#nx = self.mt[self.xtype][self.name]
@@ -208,7 +207,6 @@ class makePlots:
 	    for xk,yk in product(xkeys,ykeys):
 	  	print 'plotWithSlices:\t',newSlice,'\tlisting plotpairs:\tX', xk,': [',self.xtype,'][',self.name,']'
 	  	print 'plotWithSlices:\t',newSlice,'\tlisting plotpairs:\tY', yk,': [',self.ytype,'][',self.name,']'	 
-		plotpairs.append((xk,yk))
 		print xk,yk,self.xtype,self.ytype,self.name
 
 		if type(newSlice) in [type(['a','b',]),type(('a','b',))]:	
@@ -219,6 +217,10 @@ class makePlots:
 	  	except:
 	  		print "ERROR:\tcan\'t add ",newSlice,ns,xk,yk, 'together as strings. the problem is probably in your mt dictionary in pftnames.'
 			assert False
+		
+		#####
+		# Don't make Plots for transects with two spacial cuts.
+		if self.depthLevel.lower().find('transect') >-1 and newSlice not in transectSlices: continue
 			
 		#####
 		# Does the image exist?	
@@ -268,6 +270,11 @@ class makePlots:
 	self.yx = np.ma.array(self.ync.variables[self.datacoords['lon']][:])
 	
 	for newSlice in self.newSlices:	
+
+	    #####
+	    # Don't make Plots for transects with two spacial cuts.
+	    if self.depthLevel.lower().find('transect') >-1 and newSlice not in transectSlices: continue	
+	    
 	    for xkey,ykey in product(xkeys,ykeys):
 	    	print "plotWithSlices:\t", newSlice, xkey,ykey
 		self.plotsFromKeys(newSlice,xkey,ykey)

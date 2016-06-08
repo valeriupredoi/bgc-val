@@ -124,12 +124,12 @@ def analysis_p2p(
 		doFe		= 0#True		
 		doPCO2		= 0#True
 		doO2		= 0#True	
-		doSal		= True
+		doSal		= 0#True
 		doTemp		= 0#True
 		doMLD		= 0#True
 		doAlk		= 0#True			# Glodap Alkalinity
-		doDIC		= 0#True			# Globap tCO2
-		doAirSeaFlux	= True		# work in progress
+		doDIC		= True			# Globap tCO2
+		doAirSeaFlux	= 0#True		# work in progress
 		doIntPP_iMarNet	= 0#True		# Integrated primpary production from iMarNEt
 		doIntPP_OSU	= 0#True		# OSU Integrated primpary production	
 	elif analysisSuite.lower() in ['bio',]:
