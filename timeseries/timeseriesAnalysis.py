@@ -399,7 +399,13 @@ class timeseriesAnalysis:
 		timesDict	= {}
 		for m in self.metrics:
 			timesDict[m] 	 = sorted(self.modeldataD[(r,l,m)].keys())
-		    	modeldataDict[m] = [self.modeldataD[(r,l,m)][t] for t in timesDict[m]]
+		    	#modeldataDict[m] = [self.modeldataD[(r,l,m)][t] for t in timesDict[m]]
+		    	modeldataDict[m] = []
+		    	for t in timesDict[m]:
+		    			v = self.modeldataD[(r,l,m)][t]
+		    			if v == np.ma.masked: modeldataDict[m].append(0.)
+		    			else:	modeldataDict[m].append(v)
+		    	
 			#print '\n\n',r,l,m, timesDict[m] ,	modeldataDict[m]    	
 		title = ' '.join([getLongName(t) for t in [r,str(l),self.datasource, self.dataType]])
 		for greyband in  ['MinMax', '10-90pc',]:
