@@ -572,8 +572,9 @@ def analysis_p2p(
 			av[name]['MEDUSA']['grid']		= modelGrid		
 			av[name]['depthLevels'] 		= ['Surface','Transect','PTransect','SOTransect']
 				
-
-			if annual:	av[name]['plottingSlices'] 	= tsRegions
+			alkregions	= ['Global','Equator10', 'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific','ignoreInlandSeas','SouthernOcean',]
+			#### very little arctic alkalinty
+			if annual:	av[name]['plottingSlices'] 	= alkregions
 			else:		av[name]['plottingSlices'] 	= HighLatWinter
 			
 			av[name]['Data']['coords'] 	= glodapCoords

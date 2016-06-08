@@ -541,7 +541,29 @@ def getLongName(text,debug=False):
   	if text == 'Silicate500m':	return "Silicate (500m deep)"    	
 
 
+
 	if text == 'Alkalinity':	return "Alkalinity"  
+  	if text == 'alkalinityTransect':return "Pacific Transect Alkalinity"
+  	if text == 'alkalinitySurface':	return "Surface Alkalinity"
+  	if text == 'alkalinityAll':	return "Alkalinity"  	
+  	if text == 'alkalinity100m':	return "Alkalinity (100m deep)"  	  	
+  	if text == 'alkalinity200m':	return "Alkalinity (200m deep)"    	
+  	if text == 'alkalinity500m':	return "Alkalinity (500m deep)"   
+  	if text == 'AlkalinityTransect':return "Pacific Transect Alkalinity"
+  	if text == 'AlkalinitySurface':	return "Surface Alkalinity"
+  	if text == 'AlkalinityAll':	return "Alkalinity"  	
+  	if text == 'Alkalinity100m':	return "Alkalinity (100m deep)"  	  	
+  	if text == 'Alkalinity200m':	return "Alkalinity (200m deep)"    	
+  	if text == 'Alkalinity500m':	return "Alkalinity (500m deep)"    	
+
+  	if text == 'DICTransect':	return "Pacific Transect DIC"
+  	if text == 'DICSurface':	return "Surface DIC"
+  	if text == 'DICAll':	return "DIC"  	
+  	if text == 'DIC100m':	return "DIC (100m deep)"  	  	
+  	if text == 'DIC200m':	return "DIC (200m deep)"    	
+  	if text == 'DIC500m':	return "DIC (500m deep)"   
+  	
+  		
 	if text == 'percentiles':	return "Time series"  
 	if text == 'Chlorophyll':	return "Chlorophyll"  
 	if text == 'Chlorophyll_cci':	return "Chlorophyll (CCI)"  
