@@ -199,38 +199,31 @@ def html5Maker(
 		
 		region = 'ignoreInlandSeas'
 		for key in sumfields:
-#		    if key == 'SummaryTargets':
-#			href = 	'SummaryTargets'
-#			desc = ''
-#			#if key in ListofCaveats.keys():			desc +=ListofCaveats[key]+'\n'
-#			#if region in ListofCaveats_regions.keys():	desc +=ListofCaveats_regions[key]+'\n'			
-#
-#			hrefs.append(href)
-#			Titles[href] = 	getLongName(region) +' Summary Diagrams'
-#			SidebarTitles[href] = 'Summary Diagrams'	
-#			Descriptions[href] = desc
-#			FileLists[href] = {}		
-#
-#			for fn in vfiles:
-#				#####
-#				# Copy image to image folder and return relative path.
-#				relfn = addImageToHtml(fn, imagesfold, reportdir)
-#				FileLists[href][relfn] = html5Tools.fnToTitle(relfn) 
-#				print "Adding ",relfn,"to script"
-#													
-		#
-		#    else:
+
+			#####
+			# href is the name used for the html 
 			href = 	key+'-'+region
+			hrefs.append(href)
+			
+			#####
+			# Title is the main header, SidebarTitles is the side bar title.
+			if key == 'SummaryTargets':
+				Titles[href] = 	getLongName(key)			
+			else:	Titles[href] = 	getLongName(region) +' '+	getLongName(key)
+			SidebarTitles[href] = getLongName(key)	
+						
+			#####
+			# Descriptions is a small sub-header
 			desc = ''
 			if key in ListofCaveats.keys():			desc +=ListofCaveats[key]+'\n'
 			if region in ListofCaveats_regions.keys():	desc +=ListofCaveats_regions[key]+'\n'			
-
-			hrefs.append(href)
-			Titles[href] = 	getLongName(region) +' '+	getLongName(key)
-			SidebarTitles[href] = getLongName(key)	
 			Descriptions[href] = desc
-			FileLists[href] = {}
 			
+
+
+			#####
+			# A list of files to put in this group.
+			FileLists[href] = {}
 			if key == 'SummaryTargets':
 				vfiles = glob('./images/'+jobID+'/Targets/'+year+'/Summary/*'+region+'*.png')			
 			else:

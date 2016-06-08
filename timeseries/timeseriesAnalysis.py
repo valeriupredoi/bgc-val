@@ -400,7 +400,7 @@ class timeseriesAnalysis:
 		for m in self.metrics:
 			timesDict[m] 	 = sorted(self.modeldataD[(r,l,m)].keys())
 		    	modeldataDict[m] = [self.modeldataD[(r,l,m)][t] for t in timesDict[m]]
-			print '\n\n',r,l,m, timesDict[m] ,	modeldataDict[m]    	
+			#print '\n\n',r,l,m, timesDict[m] ,	modeldataDict[m]    	
 		title = ' '.join([getLongName(t) for t in [r,str(l),self.datasource, self.dataType]])
 		for greyband in  ['MinMax', '10-90pc',]:
 			filename = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join(['percentiles',self.jobID,self.dataType,r,str(l),greyband])+'.png'

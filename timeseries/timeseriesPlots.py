@@ -301,7 +301,8 @@ def percentilesPlot(
 
 	
 	print "UKESMpython:\tpercentilesPlot:\tSaving:" , filename
-	pyplot.savefig(filename )
+	try:pyplot.savefig(filename )
+	except:	print "WARNING: THIS PLOT FAILED:",filename , '(probably beaucse of all masks/ infs./nans)'
 	pyplot.close()	
 
 
