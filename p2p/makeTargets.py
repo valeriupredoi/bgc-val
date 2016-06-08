@@ -182,8 +182,14 @@ class makeTargets:
   		so if this is only from one year, or only one Model, then those are added to the title.
   	"""
   	
-  	self.xtype = ', '.join(self.xtypes.keys())
-	self.ytype = ', '.join(self.ytypes.keys())
+  	if len(self.xtypes)<=2:	  	self.xtype = ', '.join(self.xtypes.keys())
+	elif len(self.xtypes)<=1:	self.xtype = self.xtypes.keys()[0]
+	else:	self.xtype = ''
+
+  	if len(self.ytypes)<=2:	  	self.ytype = ', '.join(self.ytypes.keys())
+	elif len(self.ytypes)<=1:	self.ytype = self.ytypes.keys()[0]
+	else:	self.ytype = ''
+		
 	if self.ytype in ['LANA','LANA_p']:
 			#labelx = getLongName(self.name)
 			#labely = getLongName(self.ytype)
