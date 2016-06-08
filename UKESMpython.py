@@ -1715,6 +1715,8 @@ def sums(nc,keys):
 	for k in keys[1:]:a += nc.variables[k][:]
 	return a 
 def oxconvert(nc,keys): return nc.variables[keys[0]][:] *44.661
+def convertkgToM3(nc,keys): return nc.variables[keys[0]][:]* 1.027
+
 # 1 ml/l = 103/22.391 = 44.661 umol/l
 # http://ocean.ices.dk/Tools/UnitConversion.aspx
 	

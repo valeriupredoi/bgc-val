@@ -609,7 +609,7 @@ def analysis_p2p(
 			av[name]['MEDUSA']['source']	= 'MEDUSA'
 
 			av[name]['MEDUSA']['details'] 	= {'name': name, 'vars':['DIC',],  'convert': ukp.NoChange,'units':'mmol C/m^3'}
-			av[name]['Data']['details']  	= {'name': name, 'vars':['tco2',], 'convert': ukp.NoChange,'units':'micro-mol kg-1'}
+			av[name]['Data']['details']  	= {'name': name, 'vars':['tco2',], 'convert': ukp.convertkgToM3,'units':'mmol C/m^3'}
 	
 		
 

@@ -111,7 +111,8 @@ def analysis_timeseries(jobID = "u-ab671",
 			analysisKeys.append('LocalExportRatio')		# Export ratio (no data)
 			analysisKeys.append('GlobalExportRatio')	# Export ratio (no data)
 			analysisKeys.append('TotalOMZVolume')		# Total OMZ Volume
-						
+			analysisKeys.append('OMZThickness')		# Total OMZ Volume
+									
 			#####	
 			# Physics switches:
 			analysisKeys.append('T')			# WOA Temperature
@@ -129,7 +130,8 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('TotalAirSeaFlux')		# work in progress
 			#analysisKeys.append('TotalOMZVolume')			# work in progress
 			#analysisKeys.append('TotalOMZVolume50')			# work in progress			
-			analysisKeys.append('OMZThickness')			# work in progress						
+			#analysisKeys.append('OMZThickness')			# work in progress						
+			analysisKeys.append('DIC')			# work in progress									
 			
 		if analysisSuite.lower() in ['FullDepth',]:
 			#Skip 2D fields
@@ -692,6 +694,9 @@ def analysis_timeseries(jobID = "u-ab671",
 	
 	if 'DIC' in analysisKeys:
 	
+		def convertkgToM3(nc,keys):
+			return nc.variables[keys[0]][:]* 1.027
+				
 		name = 'DIC'
 		
 		av[name]['modelFiles'] 		= listModelDataFiles(jobID, 'ptrc_T', MEDUSAFolder_pref, z_component,annual)				
@@ -701,7 +706,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['datacoords'] 		= glodapv2Coords
 	
 		av[name]['modeldetails'] 	= {'name': 'DIC', 'vars':['DIC',],  'convert': ukp.NoChange,'units':'mmol C/m^3'}
-		av[name]['datadetails']  	= {'name': 'DIC', 'vars':['tco2',], 'convert': ukp.NoChange,'units':'micro-mol kg-1'}
+		av[name]['datadetails']  	= {'name': 'DIC', 'vars':['tco2',], 'convert': ukp.convertkgToM3,'units':'mmol C/m^3'}
 	
 		av[name]['layers'] 		=  layerList
 		av[name]['regions'] 		= regionList
