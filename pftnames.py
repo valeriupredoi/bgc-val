@@ -583,7 +583,9 @@ def getLongName(text,debug=False):
 	if text == '10-90pc':		return ""  				
 	if text == 'Target':		return "Target Diagram"  	
 	if text == 'Taylor':		return "Taylor Diagram"  	
-	if text == 'RobustTarget':		return "Robust Statisitcs Target Diagram" 			
+	if text == 'SummaryTargets':	return "Summary Diagrams"  		
+	if text == 'RobustTarget':	return "Robust Statisitcs Target Diagram" 			
+
 
   	if text == 'AtlanticTransect':	return "Atlantic Transect"    
   	if text == 'PacificTransect':	return "Pacific Transect"    	

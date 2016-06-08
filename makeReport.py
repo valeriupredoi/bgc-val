@@ -171,6 +171,7 @@ def html5Maker(
 		
 	if summarySections:
 		sumfields = [
+			  'SummaryTargets',
 			  'TotalIntegratedPrimaryProduction',
 			  'IntegratedPrimaryProduction_OSU', 
 			  'AirSeaFluxCO2' ,
@@ -198,6 +199,27 @@ def html5Maker(
 		
 		region = 'ignoreInlandSeas'
 		for key in sumfields:
+#		    if key == 'SummaryTargets':
+#			href = 	'SummaryTargets'
+#			desc = ''
+#			#if key in ListofCaveats.keys():			desc +=ListofCaveats[key]+'\n'
+#			#if region in ListofCaveats_regions.keys():	desc +=ListofCaveats_regions[key]+'\n'			
+#
+#			hrefs.append(href)
+#			Titles[href] = 	getLongName(region) +' Summary Diagrams'
+#			SidebarTitles[href] = 'Summary Diagrams'	
+#			Descriptions[href] = desc
+#			FileLists[href] = {}		
+#
+#			for fn in vfiles:
+#				#####
+#				# Copy image to image folder and return relative path.
+#				relfn = addImageToHtml(fn, imagesfold, reportdir)
+#				FileLists[href][relfn] = html5Tools.fnToTitle(relfn) 
+#				print "Adding ",relfn,"to script"
+#													
+		#
+		#    else:
 			href = 	key+'-'+region
 			desc = ''
 			if key in ListofCaveats.keys():			desc +=ListofCaveats[key]+'\n'
@@ -209,16 +231,19 @@ def html5Maker(
 			Descriptions[href] = desc
 			FileLists[href] = {}
 			
-			#####
-			# Determine the list of files:
-			vfiles = glob('./images/'+jobID+'/timeseries/*/percentiles*'+key+'*'+region+'*10-90pc.png')
-                        vfiles.extend(glob('./images/'+jobID+'/timeseries/*/profile*'+key+'*'+region+'*median.png'))
-                        vfiles.extend(glob('./images/'+jobID+'/timeseries/*/Sum*'+key+'*'+region+'*sum.png'))      
-                        vfiles.extend(glob('./images/'+jobID+'/timeseries/*/Sum*'+key+'*'+'Global*sum.png'))                                                                  
-			vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*hist.png'))
-			vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*robinquad.png'))
-			vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*scatter.png'))
-			vfiles.extend(glob('./images/'+jobID+'/Targets/'+year+'/*'+key+'*/BGCVal/*.png'))
+			if key == 'SummaryTargets':
+				vfiles = glob('./images/'+jobID+'/Targets/'+year+'/Summary/*'+region+'*.png')			
+			else:
+				#####
+				# Determine the list of files:
+				vfiles = glob('./images/'+jobID+'/timeseries/*/percentiles*'+key+'*'+region+'*10-90pc.png')
+		                vfiles.extend(glob('./images/'+jobID+'/timeseries/*/profile*'+key+'*'+region+'*median.png'))
+		                vfiles.extend(glob('./images/'+jobID+'/timeseries/*/Sum*'+key+'*'+region+'*sum.png'))      
+		                vfiles.extend(glob('./images/'+jobID+'/timeseries/*/Sum*'+key+'*'+'Global*sum.png'))                                                                  
+				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*hist.png'))
+				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*robinquad.png'))
+				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*scatter.png'))
+				vfiles.extend(glob('./images/'+jobID+'/Targets/'+year+'/*'+key+'*/BGCVal/*.png'))
 			
 						
 		
