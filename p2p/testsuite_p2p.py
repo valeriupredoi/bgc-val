@@ -291,8 +291,8 @@ def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
 			
 			#####
 			# Produce a set of pattern and a target plots for each of the groups here.
-			if annual:	groups = {'Oceans':[],'depthRanges':[]}
-			else:		groups = {'Oceans':[],'Months':[],'Seasons':[],'NorthHemisphereMonths':[],'SouthHemisphereMonths':[],'depthRanges':[]}
+			if annual:	groups = {'Oceans':[],'depthRanges':[], 'BGCVal':[],}
+			else:		groups = {'Oceans':[],'Months':[],'Seasons':[],'NorthHemisphereMonths':[],'SouthHemisphereMonths':[],'depthRanges':[],'BGCVal':[],}
 			for g in groups:
 			    	groups[g] = ukp.reducesShelves(shelvesAV,  models =[model,],depthLevels = [depthLevel,], names = [name,], sliceslist =ukp.slicesDict[g])
 				print g, groups[g]
@@ -302,7 +302,7 @@ def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
 				#####
 				# makeTargets:
 				# Make a target diagram of the shelves of this group. 
-			  	filename = ukp.folder(imageFolder+'/Targets/'+year+'/'+name+depthLevel+'/'+g)+model+'-'+jobID+'_'+year+'_'+name+depthLevel+'_'+g+'.png'
+			  	filename = ukp.folder(imageFolder+'/Targets/'+year+'/'+name+depthLevel+'/'+g)+model+'_'+jobID+'_'+year+'_'+name+depthLevel+'_'+g+'.png'
 				makeTargets(	groups[g], 
 						filename,
 						legendKeys = ['newSlice',],					
@@ -311,12 +311,12 @@ def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
 				# makePattern plots:
 				# Make a pattern  diagram of all matches for this particular dataset. 
 				xkeys=''
-				for o in ['Oceans','Months','depthRanges']:
+				for o in ['Oceans','Months','depthRanges','BGCVal']:
 					if g.find(o)>=0:  xkeys=o
 				if xkeys=='':
-					print "Could no find x axis keys!",g,'in',['Oceans','Months']
+					print "Could no find x axis keys!",g,'in',['Oceans','Months','BGCVal']
 					
-			  	filenamebase = ukp.folder(imageFolder+'/Patterns/'+year+'/'+name+depthLevel+'/'+g)+'Months-'+model+'-'+jobID+'_'+year+'_'+name+depthLevel
+			  	filenamebase = ukp.folder(imageFolder+'/Patterns/'+year+'/'+name+depthLevel+'/'+g)+'Months_'+model+'_'+jobID+'_'+year+'_'+name+depthLevel
 				makePatternStatsPlots(	{name :groups[g],}, # {legend, shelves}
 							name+' '+g,	#xkeysname
 							ukp.slicesDict[xkeys],		#xkeysLabels=
@@ -327,7 +327,7 @@ def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
 			if not annual:
 				#####
 				# After finding all the shelves, we can plot them on the same axis.				
-			  	filenamebase = ukp.folder(imageFolder+'/Patterns/'+year+'/'+name+depthLevel+'/ANSH')+'ANSH-Months-'+model+'-'+jobID+'_'+year+'_'+name+depthLevel
+			  	filenamebase = ukp.folder(imageFolder+'/Patterns/'+year+'/'+name+depthLevel+'/ANSH')+'ANSH-Months_'+model+'_'+jobID+'_'+year+'_'+name+depthLevel
 			  	
 				makePatternStatsPlots(	{'North Hemisphere' :groups['NorthHemisphereMonths'],
 							 'South Hemisphere' :groups['SouthHemisphereMonths'],
@@ -342,14 +342,14 @@ def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
 		if noPlots: continue
 		#####
 		# And now by depth levels:
-		if annual:	groups = ['Oceans','depthRanges']
-		else:		groups = ['Oceans','Months','Seasons','depthRanges']	#'NorthHemisphereMonths':[],'SouthHemisphereMonths':[]}		
+		if annual:	groups = ['Oceans','depthRanges','BGCVal',]
+		else:		groups = ['Oceans','Months','Seasons','depthRanges','BGCVal',]	#'NorthHemisphereMonths':[],'SouthHemisphereMonths':[]}		
 		for g in groups:
 			if len(av[name]['depthLevels'])<=1: continue	
 			outShelves = {}
 			for dl in av[name]['depthLevels']:
 				outShelves[dl] = ukp.reducesShelves(shelvesAV,  models =[model,],depthLevels = [dl,], names = [name,], sliceslist =ukp.slicesDict[g])	
-		  	filenamebase = ukp.folder(imageFolder+'/Patterns/'+year+'/'+name+'AllDepths/')+'AllDepths-'+g+'-'+model+'-'+jobID+'_'+year+'_'+name
+		  	filenamebase = ukp.folder(imageFolder+'/Patterns/'+year+'/'+name+'AllDepths/')+'AllDepths_'+g+'_'+model+'_'+jobID+'_'+year+'_'+name
 			makePatternStatsPlots(	outShelves, 
 						name+' '+g,
 						ukp.slicesDict[g],		
@@ -357,11 +357,11 @@ def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
 						grid	= grid,
 						gridFile= gridFile			
 						)
-									
-	#assert False
-			#####
-			# EVERYTHING IS GREAT UNTIL THIS POINT, THEN IT ALL GOES TITS UP .
-						
+
+
+	
+	
+
 
 	return shelvesAV
 																			

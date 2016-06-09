@@ -72,6 +72,7 @@ def ApplyDepthSlice(arr,k):
 	if arr.ndim == 3: return arr[k,:,:]
 	if arr.ndim == 2: return arr	
 	if arr.ndim == 1: return arr	
+	return arr
 	
 def ApplyDepthrange(arr,k1,k2):
 	if arr.ndim == 4: return arr[:,k1:k2,:,:]
@@ -152,14 +153,13 @@ def getHorizontalSlice(nc,coords,details,layer,data = ''):
 		except:	return []
 		if data =='': 	data = ukp.extractData(nc,details)				
 		print "getHorizontalSlice:\tSpecific depth level requested",details['name'], layer,nc.variables[coords['z']][k], data.shape	
-		
-		return ApplyDepthSlice(data, k)	
+		return ApplyDepthSlice(data, k)
 			
 	if layer in nc.variables[coords['z']][:]:
 		k =  ukp.getORCAdepth(z,nc.variables[coords['z']][:],debug=False)
 		if data =='': 	data = ukp.extractData(nc,details)		
 		print "getHorizontalSlice:\tSpecific depth requested",details['name'], layer,nc.variables[coords['z']][k], data.shape	
-		return ApplyDepthSlice(data, k)	
+		return ApplyDepthSlice(data, k)
 			
 	print "getHorizontalSlice\t:ERROR:\tunrecoginised layer instructions",layer, coords
 	assert 0
@@ -256,9 +256,16 @@ class DataLoader:
   	dat = self.__getlayerDat__(layer)
 	if dat.ndim == 2:	dat =dat[None,:,:]
 
-	if len(dat) == 0:
+	try:	l = len(dat)
+	except:
+		dat = np.ma.array([dat,])
+		l = len(dat)
+		print "createOneDDataArray: \tWarning:\tdata was a single float:",dat, l, dat.shape,dat.ndim
+	if l == 0:
 		a = np.ma.array([-999,],mask=[True,])
 		return a,a,a,a,a
+
+		
 	#####
 	# Create Temporary Output Arrays.
   	arr 	= []
@@ -332,6 +339,14 @@ class DataLoader:
   			arr_z.append(0)
   			arr_lat.append(la)
   			arr_lon.append(lo)
+  	  elif len(dat)==1:
+  	    	print 'createDataArray',self.details['name'],layer, "single point data:",dims,dat.shape
+  		arr = dat  	
+  		arr_t = [0,]
+  		arr_z = [0.,]
+  		arr_lat = [0.,]
+  		arr_lon = [0.,]
+  	    		  	
   	  else:
   		print "Unknown dimensions order", dims
   		assert False	  	

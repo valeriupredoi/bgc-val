@@ -29,7 +29,10 @@ import os
 import shutil
 from glob import glob
 from shelve import open as shopen
+from datetime import datetime
+
 from UKESMpython import folder
+from getpass import getuser
 
 def linkTwoJobs(jobID1,jobID2):
 	"""
@@ -50,7 +53,7 @@ def linkTwoJobs(jobID1,jobID2):
 	
 	linkNetcdfs = True
 	copyShelves = True
-
+	linkchain   = True
 
 	#####
 	# Netcdf stuff:		
@@ -68,6 +71,8 @@ def linkTwoJobs(jobID1,jobID2):
 			if not os.path.exists(netcdfFold2):
 				print "This folder doesn't exist. Do you have the right jobID 2?", jobID2
 				return						
+			shelvefold1 = "/group_workspaces/jasmin2/ukesm/BGC_data/"+getuser()+"/shelves/*/"+jobID1
+			shelvefold2 = "/group_workspaces/jasmin2/ukesm/BGC_data/"+getuser()+"/shelves/*/"+jobID2
 		
 		if machine.find('monsoon')>-1:
 			knownmachine = True
@@ -81,6 +86,11 @@ def linkTwoJobs(jobID1,jobID2):
 
 				return	
 
+			shelvefold1 = "shelves/timeseries/"+jobID1
+			shelvefold2 = folder(shelvefold1.replace(jobID1,jobID2))
+
+				
+
 	
 		if not knownmachine :
 			print "Are you running this on the correct machine?"
@@ -92,7 +102,8 @@ def linkTwoJobs(jobID1,jobID2):
 
 		#####
 		# link the files:
-                for fn1 in sorted(glob(netcdfFold1+'*')):
+                for fn1 in sorted(glob(netcdfFold1+'/*')):
+                	print "linking", fn1
 			fn2 = fn1.replace(jobID1,jobID2)			
 			if os.path.exists(fn2):
 				print "Already exists:\t",fn2
@@ -108,8 +119,6 @@ def linkTwoJobs(jobID1,jobID2):
 	#####
 	# shelve stuff: (same location on both machines!)
 	if copyShelves:	
-		shelvefold1 = "shelves/timeseries/"+jobID1
-		shelvefold2 = folder(shelvefold1.replace(jobID1,jobID2))
 
 		for fn1 in sorted(glob(shelvefold1+'/*')):
 			fn2 = fn1.replace(jobID1,jobID2)		
@@ -118,6 +127,7 @@ def linkTwoJobs(jobID1,jobID2):
 				print "Already exists:\t",fn2
 				continue			
 			
+			sh2 = folder(os.path.dirname(fn2))
 			try:
 				shutil.copy2(fn1, fn2)
 				print "Copying:\t",fn1, '--->',fn2
@@ -139,7 +149,23 @@ def linkTwoJobs(jobID1,jobID2):
 					print "changing shelve contents from ",	fnshel, "to",newfnshe
 				s['readFiles']	= readFiles
 				s.close()
+	
+	if linkchain:				
+		fn = netcdfFold1.replace(jobID1,'linking.log')
+#		try:
+#			f = open(fn,'r')
+#			txt = f.read()
+#			f.close()
+#		except:
+#			txt = ''
+		newline = str(datetime.now())+':\t'+jobID1+' -> '+jobID2+'\n'
+		
+	#	if txt.find(newline)>-1:
+	#		txt+=newline
 			
+		f = open(fn,'a')
+		f.write(newline)
+		f.close()		
 
 if __name__=="__main__":	
 	
@@ -150,7 +176,7 @@ if __name__=="__main__":
 		print "Please provide two jobIDs"
 		jobID1 = ''
 		jobID2 = ''
-		
+		os.exit()
 				
 	linkTwoJobs(jobID1,jobID2)
 		

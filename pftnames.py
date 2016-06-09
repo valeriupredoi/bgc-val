@@ -477,7 +477,14 @@ def getLongName(text,debug=False):
   	if text == 'temperature200m':		return "Temperature (200m deep)"  
   	if text == 'temperature500m':		return "Temperature (500m deep)"  	
   	if text == 'temperature1000m':		return "Temperature (1000m deep)"  	  		  	  	
-  	
+  	if text == 'TemperaturePTransect':	return "Pacific Transect Temperature"
+  	if text == 'TemperatureSurface':	return "Surface Temperature"
+  	if text == 'TemperatureAll':		return "Temperature"  	
+  	if text == 'Temperature100m':		return "Temperature (100m deep)"  	
+  	if text == 'Temperature200m':		return "Temperature (200m deep)"  
+  	if text == 'Temperature500m':		return "Temperature (500m deep)"  	
+  	if text == 'Temperature1000m':		return "Temperature (1000m deep)"  
+  	  	
   	if text == 'salinityPTransect':		return "Pacific Transect Salinity"
   	if text == 'salinitySurface':		return "Surface Salinity"
   	if text == 'salinityAll':		return "Salinity"  	
@@ -485,13 +492,27 @@ def getLongName(text,debug=False):
   	if text == 'salinity200m':		return "Salinity (200m deep)"  	  	  	
   	if text == 'salinity500m':		return "Salinity (500m deep)"  	
   	if text == 'salinity1000m':		return "Salinity (1000m deep)"  	 	  	
-  	
+  	if text == 'SalinityPTransect':		return "Pacific Transect Salinity"
+  	if text == 'SalinitySurface':		return "Surface Salinity"
+  	if text == 'SalinityAll':		return "Salinity"  	
+  	if text == 'Salinity100m':		return "Salinity (100m deep)"  	
+  	if text == 'Salinity200m':		return "Salinity (200m deep)"  	  	  	
+  	if text == 'Salinity500m':		return "Salinity (500m deep)"  	
+  	if text == 'Salinity1000m':		return "Salinity (1000m deep)"  	
+  	  	
   	if text == 'nitratePTransect':	return "Pacific Transect Nitrate (WOA14)"
   	if text == 'nitrateSurface':	return "Surface Nitrate (WOA14)"
   	if text == 'nitrateAll':	return "Nitrate (WOA14)"  	
   	if text == 'nitrate100m':	return "Nitrate (100m deep)"  	  	
   	if text == 'nitrate200m':	return "Nitrate (200m deep)"  
   	if text == 'nitrate500m':	return "Nitrate (500m deep)"  	  	
+  	if text == 'NitratePTransect':	return "Pacific Transect Nitrate (WOA14)"
+  	if text == 'NitrateSurface':	return "Surface Nitrate (WOA14)"
+  	if text == 'NitrateAll':	return "Nitrate (WOA14)"  	
+  	if text == 'Nitrate100m':	return "Nitrate (100m deep)"  	  	
+  	if text == 'Nitrate200m':	return "Nitrate (200m deep)"  
+  	if text == 'Nitrate500m':	return "Nitrate (500m deep)"  	
+  	 
   	  		  	  	
   	if text == 'phosphatePTransect':	return "Pacific Transect Phosphate"
   	if text == 'phosphateSurface':	return "Surface Phosphate"
@@ -499,15 +520,50 @@ def getLongName(text,debug=False):
   	if text == 'phosphate100m':	return "Phosphate (100m deep)"  	  	
   	if text == 'phosphate200m':	return "Phosphate (200m deep)"    	
   	if text == 'phosphate500m':	return "Phosphate (500m deep)"    	  	
+  	if text == 'PhosphatePTransect':	return "Pacific Transect Phosphate"
+  	if text == 'PhosphateSurface':	return "Surface Phosphate"
+  	if text == 'PhosphateAll':	return "Phosphate"  	
+  	if text == 'Phosphate100m':	return "Phosphate (100m deep)"  	  	
+  	if text == 'Phosphate200m':	return "Phosphate (200m deep)"    	
+  	if text == 'Phosphate500m':	return "Phosphate (500m deep)"   
+  	 	  	
   	if text == 'silicateTransect':	return "Pacific Transect Silicate"
   	if text == 'silicateSurface':	return "Surface Silicate"
   	if text == 'silicateAll':	return "Silicate"  	
   	if text == 'silicate100m':	return "Silicate (100m deep)"  	  	
   	if text == 'silicate200m':	return "Silicate (200m deep)"    	
-  	if text == 'silicate500m':	return "Silicate (500m deep)"    	
+  	if text == 'silicate500m':	return "Silicate (500m deep)"   
+  	if text == 'SilicateTransect':	return "Pacific Transect Silicate"
+  	if text == 'SilicateSurface':	return "Surface Silicate"
+  	if text == 'SilicateAll':	return "Silicate"  	
+  	if text == 'Silicate100m':	return "Silicate (100m deep)"  	  	
+  	if text == 'Silicate200m':	return "Silicate (200m deep)"    	
+  	if text == 'Silicate500m':	return "Silicate (500m deep)"    	
+
 
 
 	if text == 'Alkalinity':	return "Alkalinity"  
+  	if text == 'alkalinityTransect':return "Pacific Transect Alkalinity"
+  	if text == 'alkalinitySurface':	return "Surface Alkalinity"
+  	if text == 'alkalinityAll':	return "Alkalinity"  	
+  	if text == 'alkalinity100m':	return "Alkalinity (100m deep)"  	  	
+  	if text == 'alkalinity200m':	return "Alkalinity (200m deep)"    	
+  	if text == 'alkalinity500m':	return "Alkalinity (500m deep)"   
+  	if text == 'AlkalinityTransect':return "Pacific Transect Alkalinity"
+  	if text == 'AlkalinitySurface':	return "Surface Alkalinity"
+  	if text == 'AlkalinityAll':	return "Alkalinity"  	
+  	if text == 'Alkalinity100m':	return "Alkalinity (100m deep)"  	  	
+  	if text == 'Alkalinity200m':	return "Alkalinity (200m deep)"    	
+  	if text == 'Alkalinity500m':	return "Alkalinity (500m deep)"    	
+
+  	if text == 'DICTransect':	return "Pacific Transect DIC"
+  	if text == 'DICSurface':	return "Surface DIC"
+  	if text == 'DICAll':	return "DIC"  	
+  	if text == 'DIC100m':	return "DIC (100m deep)"  	  	
+  	if text == 'DIC200m':	return "DIC (200m deep)"    	
+  	if text == 'DIC500m':	return "DIC (500m deep)"   
+  	
+  		
 	if text == 'percentiles':	return "Time series"  
 	if text == 'Chlorophyll':	return "Chlorophyll"  
 	if text == 'Chlorophyll_cci':	return "Chlorophyll (CCI)"  
@@ -516,21 +572,42 @@ def getLongName(text,debug=False):
 	if text == 'pig':		return "pigments"  
 	if text == 'exportRatio':	return "Export Ratio"  
 	if text == 'ExportRatio':	return "Export Ratio"  	
+	if text == 'LocalExportRatio':	return "Export Ratio"  		
+	
 	if text == 'IntegratedPrimaryProduction':	return "Integrated Primary Production"  
 	if text == 'IntegratedPrimaryProduction_OSU':	return "Integrated Primary Production (OSU)"  
-	if text == 'IntegratedPrimaryProduction':	return "Integrated Primary Production"  		
+	if text == 'IntegratedPrimaryProduction':	return "Integrated Primary Production"
+	if text == 'TotalIntegratedPrimaryProduction':	return "Total Integrated Primary Production"	
+	  		
 	if text == 'OSU':		return "(OSU)"  
 	if text == '1x1':		return "(iMarNet)"  
 	if text == 'Oxygen':		return "Oxygen"  
-
-	if text == 'AirSeaFluxCO2':	return "Air Sea Flux of CO2"  
+	if text == 'AirSeaFluxCO2':	return "Air Sea CO2 Flux"  
+	if text == 'TotalAirSeaFluxCO2':return "Total Air Sea CO2 Flux"  
 	if text == 'DIC':		return "DIC"  
+	if text == 'DICSurface':	return "Surface DIC"  
+	if text == 'DICTransect':	return "Atlantic Transect DIC"  
+	if text == 'DICPTransect':	return "Pacific Transect DIC"  
+	if text == 'DIC100m':		return "DIC (100m deep) "  
+	if text == 'DIC200m':		return "DIC (200m deep)"
+	if text == 'DIC500m':		return "DIC (500m deep)"  
+	if text == 'DIC1000m':		return "DIC (1000m deep)"  	
+  	if text == 'OMZ':	 	return 'Oxygen minimum zone' 
+  	if text == 'TotalOMZVolume':	return 'Total Oxygen minimum zone volume (<20 mmol O2/m^3)'   	
+  	if text == 'TotalOMZVolume50':	return 'Total Oxygen minimum zone volume (<50 mmol O2/m^3)'   	  	
+  	if text == 'OMZThickness':	return 'Oxygen minimum zone thickness (<20 mmol O2/m^3)'  
+  		
 	
 	if text == 'hist':		return "Histogram"  
 	if text == 'scatter':		return "scatter diagram"  	
 	if text == 'robinquad':		return "Maps"  		
 	if text == 'hov':		return "Hovmoeller"  			
 	if text == '10-90pc':		return ""  				
+	if text == 'Target':		return "Target Diagram"  	
+	if text == 'Taylor':		return "Taylor Diagram"  	
+	if text == 'SummaryTargets':	return "Summary Diagrams"  		
+	if text == 'RobustTarget':	return "Robust Statisitcs Target Diagram" 			
+
 
   	if text == 'AtlanticTransect':	return "Atlantic Transect"    
   	if text == 'PacificTransect':	return "Pacific Transect"    	
@@ -557,6 +634,7 @@ def getLongName(text,debug=False):
   	if text ==  'p_an': 	return 'Oxygen'    	
   	if text ==  'i_mn': 	return 'Mean Silicate'  	
   	if text ==  'i_an': 	return 'Silicate'  
+  	  	
   	  	  	  	  	
 	if text == 'Seasons':   return 'Seasons'
 	if text in ['JFM','AMJ','JAS','OND',]:return text   	

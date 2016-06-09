@@ -37,6 +37,7 @@ import numpy as np
 #Specific local code:
 import UKESMpython as ukp
 from p2p import makePatternStatsPlots, testsuite_p2p
+from p2p.summaryTargets import summaryTargets
 from p2p.patternAnalyses import InterAnnualPatterns,BGCvsPhysics
 from pftnames import months
 from p2p.shelveToDictionary import shelveToDictionary
@@ -50,145 +51,94 @@ from p2p.shelveToDictionary import shelveToDictionary
 # 	from 
 
 
-
+p2pKeys = ['T','S','MLD', 'Chl_pig','Chl_CCI',
+		  'N','Si','O2','Alk','DIC','AirSeaFlux',
+		  'TotalAirSeaFlux','IntPP_iMarNet','IntPP_OSU',
+		  'PP_OSU','LocalExportRatio','GlobalExportRatio',
+		  'OMZThickness', 'TotalOMZVolume',
+		  'Diatoms', 'Microzoo', 'Mesozoo',
+		  ]
+p2pDict = {i:n for i,n in enumerate(p2pKeys)}		  
 
 def analysis_p2p(
 		models	= ['NEMO','MEDUSA',],
-		jobID 	= 'xkrus',
-		years 	= ['2077'], #'2075','2076',
-		modelGrid = 'ORCA1',
-		annual 	= False,
+		jobID 	= 'u-ad980',
+		years 	= ['1077'], #'2075','2076',
+		modelGrid = 'eORCA1',
+		annual 	= True,
 		noPlots = False,
-		analysisSuite='bio',
+		analysisSuite='default',
 		):
-	
-	# DMS model:
-	#model= 'MEDUSA'
-	#jobID = 'xkrum'
-	#year = 'clim'		
-	#modelGrid = 'ORCA1'
-	#MEDUSAFolder	= "/data/euryale7/scratch/ledm/UKESM_postProcessed/MEDUSA/outNetCDF/"+jobID+'-' + year+'/'
-
-	# ORCA1:
-	#models= ['MEDUSA','NEMO']
-	#jobID = 'xkrus'
-	#years = ['2077-annual'] #'2075','2076',
-	#modelGrid = 'ORCA1'
-	#MEDUSAFolder_pref= "/data/euryale7/scratch/ledm/UKESM/MEDUSA/xkrus_postProc/"
-	#NEMOFolder_pref= "/data/euryale7/scratch/ledm/UKESM/MEDUSA/xkrus_postProc/"
-	#annual = True
-
-
-	
-	# ORCA025:
-	#model= 'MEDUSA'
-	#jobID = 'xjwki'
-	#year = '1979'		
-	#modelGrid = 'ORCA025'	
-	#MEDUSAFolder	= "/data/euryale7/scratch/ledm/UKESM/MEDUSA-ORCA025/"+jobID+"_postProc/"+year+"/"
-	
 	
 	
 	#####
-	# Which analysis to run
-	
-	if analysisSuite.lower() in ['default',]:
-		doCHL 		= True
-		doCHL_CCI 	= 0				
-		doDiatoms	= 0#True
-		doMicrozoo	= 0#True
-		doMesozoo	= 0#True
-		doN		= True
-		doSi		= True	
-		doFe		= True		
-		doPCO2		= 0#True
-		doAlk		= True			# Glodap Alkalinity
-		doDIC		= True			# Globap tCO2
-		doAirSeaFlux	= True			# work in progress
-		doIntPP_iMarNet	= True			# Integrated primpary production from iMarNEt
-		doIntPP_OSU	= True			# OSU Integrated primpary production	
-		doO2		= True	
-		doSal		= True
-		doTemp		= True
-		doMLD		= True
-	elif analysisSuite.lower() in ['debug',]:
-		doCHL 		= 0#True
-		doCHL_CCI 	= 0				
-		doDiatoms	= 0#True
-		doMicrozoo	= 0#True
-		doMesozoo	= 0#True		
-		doN		= 0#True
-		doSi		= 0#True	
-		doFe		= 0#True		
-		doPCO2		= 0#True
-		doO2		= 0#True	
-		doSal		= 0#True
-		doTemp		= 0#True
-		doMLD		= 0#True
-		doAlk		= 0#True			# Glodap Alkalinity
-		doDIC		= 0#True			# Globap tCO2
-		doAirSeaFlux	= True		# work in progress
-		doIntPP_iMarNet	= 0#True		# Integrated primpary production from iMarNEt
-		doIntPP_OSU	= 0#True		# OSU Integrated primpary production	
-	elif analysisSuite.lower() in ['bio',]:
-		doCHL 		= True
-		doCHL_CCI 	= 0				
-		doDiatoms	= True
-		doMicrozoo	= True
-		doMesozoo	= True		
-		doN		= 0#True
-		doSi		= 0#True	
-		doFe		= 0#True		
-		doPCO2		= 0#True
-		doO2		= 0#True	
-		doSal		= 0#True
-		doTemp		= 0#True
-		doMLD		= 0#True
-		doAlk		= True			# Glodap Alkalinity
-		doDIC		= True			# Globap tCO2
-		doAirSeaFlux	= True			# work in progress
-		doIntPP_iMarNet	= True			# Integrated primpary production from iMarNEt
-		doIntPP_OSU	= True			# OSU Integrated primpary production	
-	elif analysisSuite.lower() in ['annual',]:
-		#####
-		# Data sets with annual coverage available (instead o monthly)
-		doCHL 		= 0
-		doCHL_CCI 	= True		
-		doDiatoms	= 0
-		doMicrozoo	= 0
-		doMesozoo	= 0		
-		doN		= True
-		doSi		= True	
-		doFe		= 0#True		
-		doPCO2		= 0#True
-		doO2		= True	
-		doSal		= True
-		doTemp		= True
-		doMLD		= True
-		doAlk		= True			# Glodap Alkalinity
-		doDIC		= True			# Globap tCO2
-		doAirSeaFlux	= False			# work in progress
-		doIntPP_iMarNet	= True			# Integrated primpary production from iMarNEt
-		doIntPP_OSU	= True			# OSU Integrated primpary production	
-	else:		
-		doCHL 		= 0#True
-		doCHL_CCI 	= 0				
-		doDiatoms	= 0#True
-		doMicrozoo	= 0#True
-		doMesozoo	= 0#True
-		doN		= True
-		doSi		= 0#True	
-		doFe		= 0#True
-		doPCO2		= 0#True
-		doO2		= 0#True	
-		doSal		= 0#True
-		doTemp		= 0#True
-		doMLD		= 0#True
-		doAlk		= True			# Glodap Alkalinity
-		doDIC		= True			# Globap tCO2
-		doAirSeaFlux	= True			# work in progress
-		doIntPP_iMarNet	= True			# Integrated primpary production from iMarNEt
-		doIntPP_OSU	= True			# OSU Integrated primpary production	
+	# Switches:
+	# These are some booleans that allow us to choose which analysis to run. 
+	# This lets up give a list of keys one at a time, or in parrallel.
+	if type(analysisSuite) == type(['Its','A','list!']):
+		analysisKeys = analysisSuite
+
+	#####
+	# Switches:
+	# These are some preset switches to run in series. 
+	if type(analysisSuite) == type('Its_A_string'):
+		analysisKeys = []
+		if analysisSuite.lower() in ['all','default',]:	
+			analysisKeys.append('Chl_CCI')			# CCI Chlorophyll	
+			analysisKeys.append('Chl_pig')			# Chlorophyll from pigments (MAREDAT)
+			analysisKeys.append('Diatoms')			# Chlorophyll from pigments (MAREDAT)
+			analysisKeys.append('Microzoo')			# Chlorophyll from pigments (MAREDAT)
+			analysisKeys.append('Mesozoo')			# Chlorophyll from pigments (MAREDAT)
+					
+			analysisKeys.append('N')			# WOA Nitrate
+			analysisKeys.append('Si')			# WOA Siliate
+			analysisKeys.append('O2')			# WOA Oxygen
+			analysisKeys.append('Fe')			# Iron			
+			analysisKeys.append('Alk')			# Glodap Alkalinity
+			analysisKeys.append('DIC')			# Globap tCO2
+			analysisKeys.append('AirSeaFlux')		# work in progress
+			analysisKeys.append('TotalAirSeaFlux')		# work in progress		
+			analysisKeys.append('IntPP_iMarNet')		# Integrated primpary production from iMarNEt
+			analysisKeys.append('IntPP_OSU')		# OSU Integrated primpary production	
+			analysisKeys.append('PP_OSU')			# OSU Integrated primpary production			
+			analysisKeys.append('LocalExportRatio')		# Export ratio (no data)
+			analysisKeys.append('GlobalExportRatio')	# Export ratio (no data)
+			analysisKeys.append('TotalOMZVolume')		# Total OMZ Volume
+			analysisKeys.append('OMZThickness')		# Total OMZ Volume
+									
+			#####	
+			# Physics switches:
+			analysisKeys.append('T')			# WOA Temperature
+			analysisKeys.append('S')			# WOA Salinity
+			analysisKeys.append('MLD')			# iFERMER Mixed Layer Depth - work in prgress
+
+		if analysisSuite.lower() in ['annual',]:	
+			analysisKeys.append('Chl_CCI')			# CCI Chlorophyll	
+					
+			analysisKeys.append('N')			# WOA Nitrate
+			analysisKeys.append('Si')			# WOA Siliate
+			analysisKeys.append('O2')			# WOA Oxygen
+			analysisKeys.append('Alk')			# Glodap Alkalinity
+			analysisKeys.append('DIC')			# Globap tCO2
+			analysisKeys.append('AirSeaFlux')		# work in progress
+			analysisKeys.append('TotalAirSeaFlux')		# work in progress		
+			analysisKeys.append('IntPP_iMarNet')		# Integrated primpary production from iMarNEt
+			analysisKeys.append('IntPP_OSU')		# OSU Integrated primpary production	
+			analysisKeys.append('PP_OSU')			# OSU Integrated primpary production			
+			analysisKeys.append('LocalExportRatio')		# Export ratio (no data)
+			analysisKeys.append('GlobalExportRatio')	# Export ratio (no data)
+			analysisKeys.append('TotalOMZVolume')		# Total OMZ Volume
+			analysisKeys.append('OMZThickness')		# Total OMZ Volume
+									
+			#####	
+			# Physics switches:
+			analysisKeys.append('T')			# WOA Temperature
+			analysisKeys.append('S')			# WOA Salinity
+			analysisKeys.append('MLD')			# iFERMER Mixed Layer Depth - work in prgress
+
+		if analysisSuite.lower() in ['debug',]:	
+			analysisKeys.append('DIC')			# Globap tCO2
+				
 	
 	
 	#####
@@ -348,7 +298,7 @@ def analysis_p2p(
 		# We use AutoVivification here to determine which files to analyse and which fields in those files.
 		# depthLevel is added, because some WOA files are huges and my desktop can not run the p2p analysis of that data.
 		av = ukp.AutoVivification()
-		if doCHL:
+		if 'Chl_pig' in analysisKeys:
 			name = 'Chlorophyll_pig'		
 			av[name]['Data']['File'] 		= MAREDATFolder+"MarEDat20121001Pigments.nc"	
 			if modelGrid == 'ORCA1':	av[name]['MEDUSA']['File'] 	= MEDUSAFolder+jobID+'_' + year+"_CHL.nc"
@@ -367,7 +317,7 @@ def analysis_p2p(
 			av[name]['MEDUSA']['grid']		= modelGrid		
 			av[name]['plottingSlices'] 		= tsRegions
 
-		if doCHL_CCI:						
+		if 'Chl_CCI' in analysisKeys:						
 			name = 'Chlorophyll_cci'
 			if annual:
 				print MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_ptrc_T.nc"
@@ -391,7 +341,7 @@ def analysis_p2p(
 			av[name]['MEDUSA']['details']		= {'name': name, 'vars':['CHN','CHD'], 'convert': ukp.sums,'units':'mg C/m^3'}		
 			av[name]['Data']['details']		= {'name': name, 'vars':['chlor_a',], 'convert':  ukp.NoChange,'units':'mg C/m^3'}			
 		
-		if doDiatoms:
+		if 'Diatoms' in analysisKeys:
 			name = 'Diatoms'
 			if annual: 
 				print "No diatoms iron file",
@@ -413,7 +363,7 @@ def analysis_p2p(
 			av[name]['MEDUSA']['source']	= 'MEDUSA'
 
 			
-		if doMicrozoo:
+		if 'Microzoo' in analysisKeys:
 			name = 'Microzoo'		
 			if annual: 
 				print "No microzoo iron file",
@@ -435,7 +385,7 @@ def analysis_p2p(
 			av[name]['MEDUSA']['source']	= 'MEDUSA'
 			
 			
-		if doMesozoo:
+		if 'Mesozoo' in analysisKeys:
 			name = 'Mesozoo'
 			if annual: 
 				print "No mesozoo iron file",
@@ -458,7 +408,7 @@ def analysis_p2p(
 			av[name]['MEDUSA']['source']	= 'MEDUSA'
 			
 			
-		if doN:
+		if 'N' in analysisKeys:
 			name = 'Nitrate'		
 			if annual:	
 				av[name]['Data']['File'] 	= WOAFolder+'woa13_all_n00_01.nc'
@@ -483,7 +433,7 @@ def analysis_p2p(
 			av[name]['Data']['details']	= {'name': name, 'vars':['n_an',], 'convert': ukp.NoChange,}	# no units?
 
 						
-		if doSi:
+		if 'Si' in analysisKeys:
 			name = 'Silicate'
 			if annual:
 				av[name]['Data']['File'] 	= WOAFolder+'woa13_all_i00_01.nc'
@@ -507,7 +457,7 @@ def analysis_p2p(
 			av[name]['Data']['details']	= {'name': name, 'vars':['i_an',], 'convert': ukp.NoChange,}	# no units?
 			
 						
-		if doFe:
+		if 'Fe' in analysisKeys:
 			name = 'Iron'
 			if annual: 
 				print "No annual iron file",
@@ -531,7 +481,7 @@ def analysis_p2p(
 			av[name]['Data']['details']	= {'name': name, 'vars':['Fe_D_CONC_BOTTLE',], 'convert': ukp.NoChange,}	# no units?
 
 			
-		if doO2:
+		if 'O2' in analysisKeys:
 			name = 'Oxygen'		
 			if annual:
 				av[name]['MEDUSA']['File'] 	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_ptrc_T.nc"))[0]					
@@ -555,7 +505,7 @@ def analysis_p2p(
 			av[name]['Data']['details']		= {'name': name, 'vars':['o_an',], 'convert': ukp.oxconvert,'units':'mmol/m^3'}
 
 
-		if doAlk:
+		if 'Alk' in analysisKeys:
 			name = 'Alkalinity'	
 			def convertmeqm3TOumolkg(nc,keys):
 				return nc.variables[keys[0]][:]* 1.027
@@ -570,8 +520,9 @@ def analysis_p2p(
 			av[name]['MEDUSA']['grid']		= modelGrid		
 			av[name]['depthLevels'] 		= ['Surface','Transect','PTransect','SOTransect']
 				
-
-			if annual:	av[name]['plottingSlices'] 	= tsRegions
+			alkregions	= ['Global','Equator10', 'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific','ignoreInlandSeas','SouthernOcean',]
+			#### very little arctic alkalinty
+			if annual:	av[name]['plottingSlices'] 	= alkregions
 			else:		av[name]['plottingSlices'] 	= HighLatWinter
 			
 			av[name]['Data']['coords'] 	= glodapCoords
@@ -583,7 +534,7 @@ def analysis_p2p(
 			av[name]['MEDUSA']['details'] 	= {'name': name, 'vars':['ALK',], 'convert': ukp.NoChange,'units':'meq/m^3',}
 			av[name]['Data']['details']  	= {'name': name, 'vars':['Alk',], 'convert': convertmeqm3TOumolkg,'units':'meq/m^3',}		
 						
-		if doDIC:
+		if 'DIC' in analysisKeys:
 			name = 'DIC'
 		
 			if annual:		
@@ -607,11 +558,11 @@ def analysis_p2p(
 			av[name]['MEDUSA']['source']	= 'MEDUSA'
 
 			av[name]['MEDUSA']['details'] 	= {'name': name, 'vars':['DIC',],  'convert': ukp.NoChange,'units':'mmol C/m^3'}
-			av[name]['Data']['details']  	= {'name': name, 'vars':['tco2',], 'convert': ukp.NoChange,'units':'micro-mol kg-1'}
+			av[name]['Data']['details']  	= {'name': name, 'vars':['tco2',], 'convert': ukp.convertkgToM3,'units':'mmol C/m^3'}
 	
 		
 
-		if doIntPP_OSU:
+		if 'IntPP_OSU' in analysisKeys:
 			name = 'IntegratedPrimaryProduction_OSU'
 			
 			
@@ -695,7 +646,7 @@ def analysis_p2p(
 			
 					
 
-		if doAirSeaFlux:
+		if 'AirSeaFlux' in analysisKeys:
 
 	
 			name = 'AirSeaFluxCO2'
@@ -741,7 +692,7 @@ def analysis_p2p(
 
 						
 					
-#		#if doPCO2:
+#		#if 'PCO2:
 #			av['pCO2']['Data']['File'] 	= TakahashiFolder + "takahashi2009_month_flux_pCO2_2006c_noHead.nc"	
 #			av['pCO2']['MEDUSA']['File'] 	= MEDUSAFolder+"medusa_bio_"+year+".nc"
 #			av['pCO2']['Data']['Vars'] 	= ['PCO2_SW',] 		#l+'_mn',
@@ -749,17 +700,10 @@ def analysis_p2p(
 #			av['pCO2']['depthLevels'] 	= ['',]
 #			av['pCO2']['MEDUSA']['grid']	= modelGrid				
 #			#av['pCO2']['plottingSlices'] 	= []
-#
-#	#	if doIntPP:
-#	#		av['intpp']['Data']['File'] 	=  LesterFolder+'PPint_1deg.nc'
-#	#		av['intpp']['Data']['Vars'] 	= ['PPint',]
-#	#		#av['intpp']['ERSEM']['Vars'] 	= ['netPP',] This field is net, not integrated.
-#	#		#av['intpp']['ERSEM']['File']	= ERSEMFolder+'_ERSEMMisc.nc' This file will need to be remade.
-#	#		av['intpp']['ERSEM']['grid']	= modelGrid
-#	#		av['intpp']['depthLevels'] 		= ['',]
+
 		
 		
-		if doSal:
+		if 'S' in analysisKeys:
 			name = 'Salinity'
 			if annual:
 				av[name]['NEMO']['File'] 	= sorted(glob(NEMOFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_grid_T.nc"))[0]
@@ -781,7 +725,7 @@ def analysis_p2p(
 			av[name]['Data']['details']	= {'name': name, 'vars':['s_an',], 'convert': ukp.NoChange,}	# no units?
 			
 					
-		if doTemp:
+		if 'T' in analysisKeys:
 			name = 'Temperature'
 			if annual:
 				av[name]['NEMO']['File'] 	= sorted(glob(NEMOFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_grid_T.nc"))[0]				
@@ -803,7 +747,7 @@ def analysis_p2p(
 			av[name]['Data']['details']	= {'name': name, 'vars':['t_an',], 'convert': ukp.NoChange,}	# no units?
 			
 						   
-		if doMLD:
+		if 'MLD' in analysisKeys:
 			name = 'MLD'		
 			if annual:	
 				av[name]['NEMO']['File'] 	= sorted(glob(NEMOFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_grid_T.nc"))[0]							
@@ -843,26 +787,56 @@ def analysis_p2p(
 					annual		= annual,
 			 	)
 			)
-	
+			
+		######
+		# Summary Target diagrams:
+		imageFold = ukp.folder(imageFolder+'/Targets/'+year+'/Summary')
+		summaryTargets(shelvesAV, imageFold, year)
+
 		
 	#BGCvsPhysics(shelvesAV, jobID, modelGrid )
 	#if len(years)>1: InterAnnualPatterns(shelvesAV, jobID, years,modelGrid)	# plots interannual comparison and time series.
 #	def outPutForJASMIN(shelvesAV):
 #	outdict = shelveToDictionary(shelvesAV)
+
+
+def single_p2p(jobID, key, year):
+	try:
+		analysis_p2p(models	= ['NEMO','MEDUSA',],
+			jobID 	= jobID,
+			years 	= [year,], #'2075','2076',
+			modelGrid = 'eORCA1',
+			annual 	= True,
+			noPlots = False,
+			analysisSuite=[key,],
+			)
+		
+	except:
+		print "Failed single_p2p",(jobID,key, year)
+		return 
+	
+		
+		
 	
 		
 if __name__=="__main__":
 	try: 	jobID = argv[1]
 	except:	jobID =	'u-ab749'
+	
 	try:	year = argv[2]
 	except:	year = '2007'
+	
+	if 'debug' in  argv[1:]:
+		analysisSuite='debug'
+	else:	analysisSuite='annual'
+		
 	analysis_p2p(models	= ['NEMO','MEDUSA',],
 		jobID 	= jobID,
 		years 	= [year,], #'2075','2076',
 		modelGrid = 'eORCA1',
 		annual 	= True,
 		noPlots = False,
-		analysisSuite='annual',)
+		analysisSuite=analysisSuite,)
 	
 			
 

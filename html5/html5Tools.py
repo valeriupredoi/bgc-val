@@ -23,7 +23,7 @@
 # ledm@pml.ac.uk
 
 import os
-
+from pftnames import getLongName
 
 
 def AddtoFile(filepath,linenumber,text):
@@ -78,10 +78,35 @@ def writeDescription(filepath, text,debug=False):
 	if debug: print "Adding descriptionat ", linenumber,"line:\n",newline.replace('\t','')
 	AddtoFile(filepath,linenumber,newline)
 
+def removeDuplicates(seq):
+	seen = set()
+	seen_add = seen.add
+	return [x for x in seq if not (x in seen or seen_add(x))]
+    
 
-def fnToTitle(fn):
-	return os.path.basename(fn).replace('.png', '').replace('_',' ')
-
+def fnToTitle(fn,jobID='u-a'):
+	"""	This script takes a filename and returned a usable description of the plot title.
+	"""
+	titlelist=  os.path.basename(fn).replace('.png', '').replace('_',' ').split(' ')
+	
+	titlelist = removeDuplicates(titlelist)
+	
+	IgnoreList = ['percentiles', 'BGCVal', 'MEDUSA','','10-90pc','5-95pc',]
+	
+	title = ''
+	for i,t in enumerate(titlelist):
+		# remove redundent versus field
+		if t.find('vs')>-1:continue
+		if t.find(jobID)==0:continue
+		if t in IgnoreList:continue
+		if t in ['sum','Sum']:continue	
+		
+		ln = 	getLongName(t)
+		if ln in IgnoreList:continue
+		title += ln+', '
+	return title[:-2]
+	
+	
 def addImagesText(imagePath,title = ''):
 	""" Creates the appropriate text to insert an image onto the page.
 	"""

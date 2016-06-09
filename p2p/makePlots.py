@@ -63,7 +63,7 @@ noXYLogs 	= [ 'pCO2',
 		'tempSurface',		'tempAll',	'tempTransect',	'temp100m',	'temp200m','temp1000m',	'temp500m',
 		'salSurface', 		'salAll',	'salTransect',	'sal100m',	'sal200m','sal1000m',	'sal500m',]
 		
-
+transectSlices = ['All','Global',]
 
 class makePlots:
   def __init__(self,matchedDataFile,
@@ -82,7 +82,8 @@ class makePlots:
   		imageDir='',
   		newSlices =['All','Standard'], 
   		compareCoords=True,  		
-  		noPlots=False): #xfilename,yfilename,saveShelve=True,
+  		noPlots=False,
+  		dpi = 100): #xfilename,yfilename,saveShelve=True,
 
   
   	self.xfn =matchedModelFile
@@ -107,7 +108,7 @@ class makePlots:
   	self.modeldetails 	= modeldetails
   	self.datacoords 	= datacoords
   	self.datadetails 	= datadetails
-  			
+  	self.dpi 		= dpi
 	#self.mt = getmt()
 	#Models = [m.upper() for m in ['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankTOM6','PlankTOM10','NEMO','IMARNET','CMIP5',]] # skip these to find in situ data types.
 	#Models.extend(['IMARNET_' +m.upper() for m in ['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankTOM6','PlankTOM10','NEMO',]])	
@@ -174,7 +175,6 @@ class makePlots:
 	  	
 	xkeys = []
 	ykeys = []
-	plotpairs = [] 
 
 	
 	#nx = self.mt[self.xtype][self.name]
@@ -207,7 +207,6 @@ class makePlots:
 	    for xk,yk in product(xkeys,ykeys):
 	  	print 'plotWithSlices:\t',newSlice,'\tlisting plotpairs:\tX', xk,': [',self.xtype,'][',self.name,']'
 	  	print 'plotWithSlices:\t',newSlice,'\tlisting plotpairs:\tY', yk,': [',self.ytype,'][',self.name,']'	 
-		plotpairs.append((xk,yk))
 		print xk,yk,self.xtype,self.ytype,self.name
 
 		if type(newSlice) in [type(['a','b',]),type(('a','b',))]:	
@@ -218,6 +217,10 @@ class makePlots:
 	  	except:
 	  		print "ERROR:\tcan\'t add ",newSlice,ns,xk,yk, 'together as strings. the problem is probably in your mt dictionary in pftnames.'
 			assert False
+		
+		#####
+		# Don't make Plots for transects with two spacial cuts.
+		if self.depthLevel.lower().find('transect') >-1 and newSlice not in transectSlices: continue
 			
 		#####
 		# Does the image exist?	
@@ -267,6 +270,11 @@ class makePlots:
 	self.yx = np.ma.array(self.ync.variables[self.datacoords['lon']][:])
 	
 	for newSlice in self.newSlices:	
+
+	    #####
+	    # Don't make Plots for transects with two spacial cuts.
+	    if self.depthLevel.lower().find('transect') >-1 and newSlice not in transectSlices: continue	
+	    
 	    for xkey,ykey in product(xkeys,ykeys):
 	    	print "plotWithSlices:\t", newSlice, xkey,ykey
 		self.plotsFromKeys(newSlice,xkey,ykey)
@@ -481,8 +489,8 @@ class makePlots:
 				histxaxis = 'DMS, '+ xunits
 				
 			if self.name in noXYLogs or dmin*dmax <=0.:				
-				ukp.histPlot(datax, datay,  histfnxy, Title=histtitle, labelx=labelx,labely=labely,dpi=200,xaxislabel =histxaxis)	
-			else:	ukp.histPlot(datax, datay,  histfnxy, Title=histtitle, labelx=labelx,labely=labely,dpi=200,xaxislabel =histxaxis, logx = True, )
+				ukp.histPlot(datax, datay,  histfnxy, Title=histtitle, labelx=labelx,labely=labely,dpi=self.dpi,xaxislabel =histxaxis)	
+			else:	ukp.histPlot(datax, datay,  histfnxy, Title=histtitle, labelx=labelx,labely=labely,dpi=self.dpi,xaxislabel =histxaxis, logx = True, )
 
 		# Simultaneous histograms plot	- triple
 		if ukp.shouldIMakeFile([self.xfn,self.yfn],histsfnxy,debug=False):
@@ -507,8 +515,8 @@ class makePlots:
 				pass
 			
 			if self.name in noXYLogs or dmin*dmax <=0.:
-				ukp.scatterPlot(datax, datay,  scatterfn, Title=scattitle, labelx=slabelx,labely=slabely,dpi=200, bestfitLine=True,gridsize=gs)
-			else:	ukp.scatterPlot(datax, datay,  scatterfn, Title=scattitle, labelx=slabelx,labely=slabely,dpi=200, bestfitLine=True,gridsize=gs,logx = True, logy=True,)
+				ukp.scatterPlot(datax, datay,  scatterfn, Title=scattitle, labelx=slabelx,labely=slabely,dpi=self.dpi, bestfitLine=True,gridsize=gs)
+			else:	ukp.scatterPlot(datax, datay,  scatterfn, Title=scattitle, labelx=slabelx,labely=slabely,dpi=self.dpi, bestfitLine=True,gridsize=gs,logx = True, logy=True,)
 
 	#####
 	# Save fit in a shelve file.		
@@ -634,7 +642,7 @@ class makePlots:
 		pyplot.ylabel(self.ytype+' '+ykey)
 
 		print "\tSaving: " + filename
-		pyplot.savefig(filename,dpi=100,)
+		pyplot.savefig(filename,dpi=self.dpi,)
 		pyplot.close()	  	
 
 

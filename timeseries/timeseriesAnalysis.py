@@ -26,10 +26,11 @@ import numpy as np
 from shelve import open as shOpen
 from netCDF4 import Dataset,num2date
 import os
+import shutil
 
 #Specific local code:
 import UKESMpython as ukp
-
+from pftnames import getLongName
 import timeseriesTools as tst 
 import timeseriesPlots as tsp 
 #getTimes, loadData
@@ -193,7 +194,7 @@ class timeseriesAnalysis:
 
 			if len(layerdata)==0:
 				for m in self.metrics:
-					modeldataD[(r,l,m)][meantime] = np.ma.array([-999,],mask=[True,])
+					modeldataD[(r,l,m)][meantime] = np.ma.masked #np.ma.array([-999,],mask=[True,])
 					
 		  	for m in self.metrics:
 		  		try:
@@ -306,9 +307,16 @@ class timeseriesAnalysis:
 	###############
 	# Savng shelve		
 	print "timeseriesAnalysis:\t loadData.\tSaving shelve:", self.shelvefn_insitu			
-	sh = shOpen(self.shelvefn_insitu)
-	sh['dataD'] 	= dataD
-	sh.close()
+	try:
+		sh = shOpen(self.shelvefn_insitu)
+		sh['dataD'] 	= dataD
+		sh.close()
+	except:
+		print "timeseriesAnalysis:\t WARNING.\tSaving shelve failed, trying again.:", self.shelvefn_insitu			
+		shutil.move(self.shelvefn_insitu, self.shelvefn_insitu+'.broken')
+		sh = shOpen(self.shelvefn_insitu)
+		sh['dataD'] 	= dataD
+		sh.close()		
 	 	
 	self.dataD = dataD
 
@@ -349,8 +357,8 @@ class timeseriesAnalysis:
 	  	print "mapplotsRegionsLayers:\t",r,l, "data lat:",len(datalat),datalat.min(),datalat.mean(),datalat.max()
 	  	print "mapplotsRegionsLayers:\t",r,l, "data lon:",len(datalon),datalon.min(),datalon.mean(),datalon.max() 	
 	
-		titles = [' '.join([self.model,'('+self.jobID+')',str(l),self.modeldetails['name']]),
-			  ' '.join([self.datasource,str(l),self.datadetails['name']])]
+		titles = [' '.join([getLongName(t) for t in [self.model,'('+self.jobID+')',str(l),self.modeldetails['name']]]),
+			  ' '.join([getLongName(t) for t in [self.datasource,str(l),self.datadetails['name']]])]
 			  
 	  	tsp.mapPlotPair(modellon, modellat, modeldata,
 	  			datalon,datalat,datadata,
@@ -370,7 +378,7 @@ class timeseriesAnalysis:
 			
 	
 	#####
-	# Trafficlight plots:
+	# Trafficlight and percentiles plots:
 	for r in self.regions:
 	    for l in self.layers:
 		#####
@@ -391,34 +399,41 @@ class timeseriesAnalysis:
 		timesDict	= {}
 		for m in self.metrics:
 			timesDict[m] 	 = sorted(self.modeldataD[(r,l,m)].keys())
-		    	modeldataDict[m] = [self.modeldataD[(r,l,m)][t] for t in timesDict[m]]
-						    	
-		title = ' '.join([r,str(l),self.datasource, self.dataType])
+		    	#modeldataDict[m] = [self.modeldataD[(r,l,m)][t] for t in timesDict[m]]
+		    	modeldataDict[m] = []
+		    	for t in timesDict[m]:
+		    			v = self.modeldataD[(r,l,m)][t]
+		    			if v == np.ma.masked: modeldataDict[m].append(0.)
+		    			else:	modeldataDict[m].append(v)
+		    	
+			#print '\n\n',r,l,m, timesDict[m] ,	modeldataDict[m]    	
+		title = ' '.join([getLongName(t) for t in [r,str(l),self.datasource, self.dataType]])
 		for greyband in  ['MinMax', '10-90pc',]:
 			filename = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join(['percentiles',self.jobID,self.dataType,r,str(l),greyband])+'.png'
-			tsp.percentilesPlot(timesDict,modeldataDict,dataslice,title = title,filename=filename,units =self.modeldetails['units'],greyband=greyband)					    	
+			if not ukp.shouldIMakeFile([self.shelvefn, self.shelvefn_insitu],filename,debug=False):continue
+			tsp.percentilesPlot(timesDict,modeldataDict,dataslice,title = title,filename=filename,units =self.modeldetails['units'],greyband=greyband)
 		
-		  	    
-	    #for m in self.metrics:  
-#	    	continue
-#	    	if m in ['mean','median',]:#'min','max']:
-#			modeldataDict = self.modeldataD[(r,l,m)]
-#
-#			times = sorted(modeldataDict.keys())
-#			modeldata = [modeldataDict[t] for t in times]
-#			title = ' '.join([r,str(l),m,self.dataType])
-#			filename = ukp.folder('images/timeseries/'+self.jobID+'/'+self.dataType)+'_'.join(['trafficlight',self.jobID,self.dataType,r,str(l),m,])+'.png'
-#			tsp.trafficlightsPlot(times,modeldata,dataslice,metric = m, title = title,filename=filename,greyband=False)
-#				
-#			filename = ukp.folder('images/timeseries/'+self.jobID+'/'+self.dataType)+'_'.join(['trafficlight',self.jobID,self.dataType,r,str(l),m,])+'-grey.png'
-#			tsp.trafficlightsPlot(times,modeldata,dataslice,metric = m, title = title,filename=filename,greyband=True)		
-
+	    #####
+	    # Percentiles plots.		  	    
+	    for m in self.metrics:  
+	    		if m != 'sum': continue 
+			filename = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join(['Sum',self.jobID,self.dataType,r,str(l),m,])+'.png'
+			if not ukp.shouldIMakeFile([self.shelvefn, self.shelvefn_insitu],filename,debug=False):	continue
+				    		
+			modeldataDict = self.modeldataD[(r,l,m)]
+			times = sorted(modeldataDict.keys())
+			modeldata = [modeldataDict[t] for t in times]
+			title = ' '.join([getLongName(t) for t in [r,str(l),m,self.dataType]])
+	
+			tsp.trafficlightsPlot(times,modeldata,dataslice,metric = m, title = title,filename=filename,units = self.modeldetails['units'],greyband=False)
+				
 
 	#####
 	# Hovmoeller plots
 	for r in self.regions:
 	    for m in self.metrics: 
 	    	if m not in ['mean','median',]:continue
+	    	
 	   	#####
 	   	# Load data layers:
 		data = {}
@@ -468,12 +483,14 @@ class timeseriesAnalysis:
 		  	dnc.close()  	
 		else: 	dataZcoords = {}
 
-		title = ' '.join([r,m,self.dataType])		
+		title = ' '.join([getLongName(t) for t in [r,m,self.dataType]])	
 	    	hovfilename = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join(['profile',self.jobID,self.dataType,r,m,])+'.png'
-		tsp.hovmoellerPlot(modeldata,data,hovfilename, modelZcoords = modelZcoords, dataZcoords= dataZcoords, title = title,diff=False)		
+		if  ukp.shouldIMakeFile([self.shelvefn, self.shelvefn_insitu],hovfilename,debug=False):				
+			tsp.hovmoellerPlot(modeldata,data,hovfilename, modelZcoords = modelZcoords, dataZcoords= dataZcoords, title = title,diff=False)		
 	
 	    	hovfilename = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join(['profileDiff',self.jobID,self.dataType,r,m,])+'.png'
-		tsp.hovmoellerPlot(modeldata,data,hovfilename, modelZcoords = modelZcoords, dataZcoords= dataZcoords, title = title,diff=True)		
+		if  ukp.shouldIMakeFile([self.shelvefn, self.shelvefn_insitu],hovfilename,debug=False):					    	
+			tsp.hovmoellerPlot(modeldata,data,hovfilename, modelZcoords = modelZcoords, dataZcoords= dataZcoords, title = title,diff=True)		
 	
 
 	#####

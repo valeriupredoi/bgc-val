@@ -473,7 +473,8 @@ def robinPlotQuad(lons, lats, data1,data2,filename,titles=['',''],title='',lon0=
 	vmin = min([data1.min(),data2.min(),vmin])
 	vmax = max([data1.max(),data2.max(),vmax])			
 	
-	doLog, vmin,vmax = determineLimsAndLog(vmin,vmax)
+	#doLog, vmin,vmax = determineLimsAndLog(vmin,vmax)
+	doLog, vmin,vmax = determineLimsFromData(data1,data2)
 	
 	doLogs = [doLog,doLog,False,True]
 	print "robinPlotQuad:\t",len(lons),len(lats),len(data1),len(data2)
@@ -597,11 +598,13 @@ def HovPlotQuad(lons,lats, depths,
 	data1 = np.ma.array(data1)
 	data2 = np.ma.array(data2)
 	
-	if not vmin: vmin = data1.min()
-	if not vmax: vmax = data1.max()
-	vmin = min([data1.min(),data2.min(),vmin])
-	vmax = max([data1.max(),data2.max(),vmax])	
-	doLog, vmin,vmax = determineLimsAndLog(vmin,vmax)
+	#if not vmin: vmin = data1.min()
+	#if not vmax: vmax = data1.max()
+	#vmin = min([data1.min(),data2.min(),vmin])
+	#vmax = max([data1.max(),data2.max(),vmax])
+		
+	#doLog, vmin,vmax = determineLimsAndLog(vmin,vmax)
+	doLog, vmin,vmax = determineLimsFromData(data1,data2)
 			
 	axs,bms,cbs,ims = [],[],[],[]
 	doLogs = [doLog,doLog,False,True]
@@ -705,7 +708,26 @@ def determineLimsAndLog(mi,ma):
 		mi =mi-diff/20.
 		ma = ma+diff/20.	
 	return log, mi ,ma		
+
+def determineLimsFromData(data1,data2):
+	#####
+	# Takes the two data sets, and retuns wherether it should be a log, 
+	# and the new axis range.
+	
+	log = True
+	
+	data = np.append(data1.compressed(),data2.compressed(),)
+	
+	mi = np.percentile(data, 5.)
+	ma = np.percentile(data,95.)	
+	
+	if 0. in [mi,ma]:
+		log=False		
+	elif ma/mi < 500.:
+		log=False
 		
+	return log, mi ,ma
+			
 
 def histPlot(datax, datay,  filename, Title='', labelx='',labely='',xaxislabel='', logx=False,logy=False,nbins=50,dpi=100,minNumPoints = 6, legendDict= ['mean','mode','std','median','mad']):
 #	try:import seaborn as sb
@@ -984,12 +1006,9 @@ def scatterPlot(datax, datay,  filename, Title='', labelx='',labely='', logx=Fal
 		xmin = ymin= np.ma.min([xmin,ymin])
 		xmax = ymax= np.ma.max([xmax,ymax])
 		
-
-
-
-
-	logx, xmin,xmax = determineLimsAndLog(xmin,xmax)
-	logy, ymin,ymax = determineLimsAndLog(ymin,ymax)
+	dolog, xmin,xmax = determineLimsAndLog(xmin,xmax)
+	logx=dolog
+	logy=dolog	
 	
 	plotrange = [xmin, xmax, ymin, ymax]			
 	print "UKESMpython:\tscatterPlot:\trange:",plotrange
@@ -1144,6 +1163,20 @@ def makeLonSafeArr(lon):
 	 return lon
 	 	 
 	assert False
+
+
+def Area(p1,p2):#lat,lon
+	R=6378000. #m
+	lat1,lon1=p1[0],p1[1]
+	lat2,lon2=p2[0],p2[1]
+
+	A = (np.pi/180.)*R*R* abs(np.sin(lat1*np.pi/180.)-np.sin(lat2*np.pi/180.))*abs(lon1-lon2)
+	print 'Area:',lat1,'N->',lat2,'N\t',lon1,'E->',lon2,'E,\tA=',A
+
+	return A
+			
+			
+			
 
 class shelveMetadata:
    def __init__(self,model='',name='',year='',depthLevel='',newSlice='',xkey='',ykey='',shelve = ''):
@@ -1682,6 +1715,8 @@ def sums(nc,keys):
 	for k in keys[1:]:a += nc.variables[k][:]
 	return a 
 def oxconvert(nc,keys): return nc.variables[keys[0]][:] *44.661
+def convertkgToM3(nc,keys): return nc.variables[keys[0]][:]* 1.027
+
 # 1 ml/l = 103/22.391 = 44.661 umol/l
 # http://ocean.ices.dk/Tools/UnitConversion.aspx
 	

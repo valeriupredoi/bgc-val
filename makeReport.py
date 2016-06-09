@@ -21,15 +21,20 @@
 # Email:
 # ledm@pml.ac.uk
 
-from UKESMpython import folder
+from UKESMpython import folder, shouldIMakeFile
 from pftnames import getLongName
 from glob import glob
 from sys import argv
 import os 
-
 import shutil
-
 from html5 import html5Tools
+
+
+#####
+# makeReport.py:
+# Usage:
+#	provide a job ID, a year to look at, and a folder location.
+
 
 def copytree(src, dst, symlinks=False, ignore=None):
     for item in os.listdir(src):
@@ -42,7 +47,7 @@ def copytree(src, dst, symlinks=False, ignore=None):
             try:shutil.copy2(s, d)
             except: pass
 
-def addImageToHtml(fn,imagesfold):
+def addImageToHtml(fn,imagesfold,reportdir):
 	#####
 	# Note that we use three paths here.
 	# fn: The original file path relative to here
@@ -50,23 +55,32 @@ def addImageToHtml(fn,imagesfold):
 	# relfn: The location of the new copy relative to the index.html
 	
 	newfn = imagesfold+os.path.basename(fn)
+	relfn = newfn.replace(reportdir,'./')	
+		
 	if not os.path.exists(newfn):
 		print "cp ",newfn,fn	
 		shutil.copy2(fn, newfn)
 	else:
 		####
-		# Check if file is newer than the one in images.
-		if os.path.getmtime(newfn) > os.path.getmtime(fn):
-			shutil.remove(newfn)
+		# Check if the newer file is the same one from images.
+		
+		if os.path.getmtime(fn) == os.path.getmtime(newfn): return relfn
+		####
+		# Check if file is newer than the one in images.		
+		if shouldIMakeFile(fn, newfn,):
+			print "removing old file",fn
+			os.remove(newfn)
 			shutil.copy2(fn, newfn)			
 			print "cp ",newfn,fn
 			
-	relfn = newfn.replace(reportdir,'./')	
+
 	return relfn
-	            
+
+	
+         
 def html5Maker(
 		jobID = 'u-ab749',
-		reportdir = '../../html5report',
+		reportdir = 'reports/tmp',
 		year = '*',
 		clean = False,
 		doZip= True,
@@ -117,8 +131,9 @@ def html5Maker(
 		  'DIC',
 		  'Chlorophyll_cci', 
 		  'IntegratedPrimaryProduction_OSU', 
-
+		  'TotalIntegratedPrimaryProduction',
 		  'ExportRatio', 
+		  'LocalExportRatio', 		  
 		  'MLD',
 		  #  'IntegratedPrimaryProduction_1x1' , 
 		  #'Chlorophyll_pig' , 
@@ -133,7 +148,8 @@ def html5Maker(
 		  'SouthernOcean',
 		  'Remainder',
 		   ]
-
+	Transects = ['Transect','PTransect','SOTransect']
+	
 	#####
 	# Two switches to turn on Summary section, and groups of plots of field and region.		
 	summarySections = True	
@@ -155,7 +171,26 @@ def html5Maker(
 		
 		
 	if summarySections:
-
+		sumfields = [
+			  'SummaryTargets',
+			  'TotalIntegratedPrimaryProduction',
+			  'IntegratedPrimaryProduction_OSU', 
+			  'AirSeaFluxCO2' ,
+			  'TotalOMZVolume',
+			  'TotalAirSeaFluxCO2' ,			  
+			  'Chlorophyll_cci', 			   	
+			  'DIC',			  		  
+			  'Nitrate',
+			  'Silicate', 
+			  'Temperature', 
+			  'Salinity', 
+			  'Oxygen',
+			  'ExportRatio', 
+			  'LocalExportRatio', 			  
+			  'MLD',
+			  'Alkalinity', 			  
+			 ]
+		 
 		SectionTitle= 'Summary'
 		hrefs 	= []
 		Titles	= {}
@@ -164,42 +199,64 @@ def html5Maker(
 		FileLists	= {}
 		
 		region = 'ignoreInlandSeas'
-		for key in sorted(fields):
+		for key in sumfields:
+
+			#####
+			# href is the name used for the html 
 			href = 	key+'-'+region
+			hrefs.append(href)
+			
+			#####
+			# Title is the main header, SidebarTitles is the side bar title.
+			if key == 'SummaryTargets':
+				Titles[href] = 	getLongName(key)			
+			else:	Titles[href] = 	getLongName(region) +' '+	getLongName(key)
+			SidebarTitles[href] = getLongName(key)	
+						
+			#####
+			# Descriptions is a small sub-header
 			desc = ''
 			if key in ListofCaveats.keys():			desc +=ListofCaveats[key]+'\n'
 			if region in ListofCaveats_regions.keys():	desc +=ListofCaveats_regions[key]+'\n'			
-
-			hrefs.append(href)
-			Titles[href] = 	getLongName(region) +' '+	getLongName(key)
-			SidebarTitles[href] = getLongName(key)	
 			Descriptions[href] = desc
-			FileLists[href] = {}
 			
+
+
 			#####
-			# Determine the list of files:
-			vfiles = glob('./images/'+jobID+'/timeseries/*/percentiles*'+key+'*'+region+'*10-90pc.png')
-                        vfiles.extend(glob('./images/'+jobID+'/timeseries/*/profile*'+key+'*'+region+'*median.png'))
-			vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*hist.png'))
-			vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*robinquad.png'))
-			vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*scatter.png'))
+			# A list of files to put in this group.
+			FileLists[href] = {}
+			if key == 'SummaryTargets':
+				vfiles = glob('./images/'+jobID+'/Targets/'+year+'/Summary/*'+region+'*.png')			
+			else:
+				#####
+				# Determine the list of files:
+				vfiles = glob('./images/'+jobID+'/timeseries/*/percentiles*'+key+'*'+region+'*10-90pc.png')
+		                vfiles.extend(glob('./images/'+jobID+'/timeseries/*/profile*'+key+'*'+region+'*median.png'))
+		                vfiles.extend(glob('./images/'+jobID+'/timeseries/*/Sum*'+key+'*'+region+'*sum.png'))      
+		                vfiles.extend(glob('./images/'+jobID+'/timeseries/*/Sum*'+key+'*'+'Global*sum.png'))                                                                  
+				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*hist.png'))
+				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*robinquad.png'))
+				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*scatter.png'))
+				vfiles.extend(glob('./images/'+jobID+'/Targets/'+year+'/*'+key+'*/BGCVal/*.png'))
+			
+						
 		
 			#####
 			# Create plot headers for each file.
 			for fn in vfiles:
 				#####
 				# Copy image to image folder and return relative path.
-				relfn = addImageToHtml(fn, imagesfold)
+				relfn = addImageToHtml(fn, imagesfold, reportdir)
+				
 				####
 				# WOA fields that also produce transects, etc.
 				if key in ['Nitrate', 'Silicate', 'Temperature', 'Salinity', 'Oxygen','DIC','Alkalinity'] and fn.lower().find('surface')<0:continue
 				
 				#####
 				# Create custom title by removing extra bits.
-				title = html5Tools.fnToTitle(relfn).split(' ')
-		
+				#title = filenameToTitle(relfn)
 	
-				FileLists[href][relfn] = ', '.join([getLongName(t) for t in title])
+				FileLists[href][relfn] = html5Tools.fnToTitle(relfn) 
 				print "Adding ",relfn,"to script"
 			
 		html5Tools.AddSubSections(indexhtmlfn,hrefs,SectionTitle,
@@ -240,31 +297,68 @@ def html5Maker(
 				# Determine the list of files:
 				vfiles = glob('./images/'+jobID+'/timeseries/*/percentiles*'+key+'*'+region+'*10-90pc.png')
  	                        vfiles.extend(glob('./images/'+jobID+'/timeseries/*/profile*'+key+'*'+region+'*median.png'))
-
+                   	     	vfiles.extend(glob('./images/'+jobID+'/timeseries/*/Sum*'+key+'*'+region+'*sum.png'))                        
 				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*hist.png'))
 				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*robinquad.png'))			
 				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*scatter.png'))							
-				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*Transect/*/*'+region+'*'+key+'*'+year+'*hov.png'))
+				#vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*Transect/*/*'+region+'*'+key+'*'+year+'*hov.png'))
+
+				#####
+				# Create plot headers for each file.
+				for fn in vfiles:
+					#####
+					# Skip transects, they'll be added below.
+					if fn.find('Transect') >-1: continue
+					
+					#####
+					# Copy image to image folder and return relative path.
+					relfn = addImageToHtml(fn, imagesfold, reportdir)
+				
+					#####
+					# Create custom title by removing extra bits.
+					title = html5Tools.fnToTitle(relfn)
+			
+					FileLists[href][relfn] = title
+					print "Adding ",relfn,"to script"
+			for transect in Transects:
+				href = 	key+'-'+transect
+				
+				desc = ''
+				if key in ListofCaveats.keys():			desc +=ListofCaveats[key]+'\n'
+				if transect in ListofCaveats_regions.keys():	desc +=ListofCaveats_regions[key]+'\n'		
+							
+				hrefs.append(href)
+				Titles[href] = 	getLongName(transect) +' '+	getLongName(key)
+				SidebarTitles[href] = getLongName(transect)				
+				Descriptions[href] = desc
+				FileLists[href] = {}
+				
+				#####
+				# Determine the list of files:
+				region = 'Global'
+				vfiles = []
+				#vfiles = glob('./images/'+jobID+'/timeseries/*/percentiles*'+key+'*'+region+'*10-90pc.png')
+ 	                        #vfiles.extend(glob('./images/'+jobID+'/timeseries/*/profile*'+key+'*'+region+'*median.png'))
+                   	     	#vfiles.extend(glob('./images/'+jobID+'/timeseries/*/Sum*'+key+'*'+region+'*sum.png'))                        
+				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+transect+'/*/'+key+transect+'*'+region+'*'+key+'*'+year+'*hist.png'))
+				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+transect+'/*/'+key+transect+'*'+region+'*'+key+'*'+year+'*robinquad.png'))			
+				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+transect+'/*/'+key+transect+'*'+region+'*'+key+'*'+year+'*scatter.png'))		
+				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+transect+'/*/'+key+transect+'*'+region+'*'+key+'*'+year+'*hov.png'))
 
 				#####
 				# Create plot headers for each file.
 				for fn in vfiles:
 					#####
 					# Copy image to image folder and return relative path.
-					relfn = addImageToHtml(fn, imagesfold)
+					relfn = addImageToHtml(fn, imagesfold, reportdir)
 				
 					#####
 					# Create custom title by removing extra bits.
-					title = html5Tools.fnToTitle(relfn).split(' ')
-					for k in ['percentiles', jobID, key,'percentiles',key+'vs'+key]:
-						try: title.remove(k)
-						except:pass
-					for i,t in enumerate(title):
-						if t[:len(key)] == key: title[i] = t[len(key):]
-				
+					title = html5Tools.fnToTitle(relfn)
 			
-					FileLists[href][relfn] = ' '.join([getLongName(t) for t in title])
+					FileLists[href][relfn] = title
 					print "Adding ",relfn,"to script"
+					
 				
 			html5Tools.AddSubSections(indexhtmlfn,hrefs,SectionTitle,
 					SidebarTitles=SidebarTitles,#
@@ -285,24 +379,43 @@ def html5Maker(
 
 
 
-if __name__=="__main__":	
+def main():
 	try:	jobID = argv[1]
 	except:	
-		jobID = "u-ab749"
-	try: 		reportdir = argv[2]
-	except: 	reportdir =folder('reports/'+jobID)
+		print "Please provide a jobID next time"
+		exit()
 	
-	try:	year = int(argv[3])
-	except: year = '*'
+	#defaults:
+	clean = False
+	year = '*'
+	reportdir =folder('reports/'+jobID)
 	
-	if 'clean' in argv[1:]:
-		clean = True
-	else:	clean = False
+	for i,arg in enumerate(argv):
+		if i <= 1: continue
+
+		try:	
+			y = int(arg)
+			year = y
+			continue
+		except: pass
+
+		if arg == 'clean':
+			 clean = True
+			 continue
+		
+		reportdir = arg
+			
+
+	
+
 	html5Maker(jobID =jobID,
 		   reportdir=reportdir,
 		   year = year,
 		   clean=clean,
 		   )
+		   	
+if __name__=="__main__":	
+	main()
 
 
 
