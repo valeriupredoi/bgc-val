@@ -47,6 +47,7 @@ timeseriesKeys = ['T','S','MLD', 'Chl_pig','Chl_CCI',
 		  'N','Si','O2','Alk','DIC','AirSeaFlux',
 		  'TotalAirSeaFlux','IntPP_iMarNet','IntPP_OSU',
 		  'PP_OSU','LocalExportRatio','GlobalExportRatio',
+		  'OMZThickness', 'TotalOMZVolume',		  
 		  ]
 timeseriesDict = {i:n for i,n in enumerate(timeseriesKeys)}
 
@@ -158,7 +159,6 @@ def analysis_timeseries(jobID = "u-ab671",
 			analysisKeys.append('S')			# WOA Salinity
 			#analysisKeys.append('MLD')			# iFERMER Mixed Layer Depth - work in prgress
 		
- 	print 
  	
 	#####
 	# Some lists of region.
@@ -1238,11 +1238,9 @@ def main():
 	except:	
 		jobID = "u-ab749"
 
-	if 'debug' in argv[1:]:
-		suite = 'debug'
-	elif 'all' in argv[1:]:
-		suite = 'all'
-	else:	suite = 'all'
+	if 'debug' in argv[1:]:	suite = 'debug'
+	elif 'all' in argv[1:]:	suite = 'all'
+	else:			suite = 'all'
 		
 	
 	analysis_timeseries(jobID =jobID,analysisSuite=suite, z_component = 'SurfaceOnly',)#clean=1)			
