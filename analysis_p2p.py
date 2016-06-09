@@ -128,7 +128,7 @@ def analysis_p2p(
 			analysisKeys.append('MLD')			# iFERMER Mixed Layer Depth - work in prgress
 
 		if analysisSuite.lower() in ['debug',]:	
-			analysisKeys.append('DIC')			# Globap tCO2
+			analysisKeys.append('AirSeaFlux')			# Globap tCO2
 				
 	
 	
