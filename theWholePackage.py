@@ -43,7 +43,7 @@ def theWholePackage(jobID):
 #	downloadMass(jobID)
 
 	parrallel = True
-	cores = 4
+	cores = 8
 	suite = 'all'
 
 			  
