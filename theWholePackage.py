@@ -11,7 +11,7 @@ from multiprocessing import Pool
 
 from downloadFromMass import  downloadMass, findLastFinishedYear
 from analysis_timeseries import analysis_timeseries, singleTimeSeries, timeseriesDict, singleTimeSeriesProfile
-from analysis_p2p import analysis_p2p, p2pDict, p2pKeys, single_p2p
+from analysis_p2p import analysis_p2p, p2pDict_annual, single_p2p
 from makeReport import html5Maker
 from UKESMpython import folder
 
@@ -31,7 +31,7 @@ def timeseriesParrallelProfile(index):
 
 def p2pParrallel(index):
 	print "p2pParrallel",index, jobID, 'START'
-	key = p2pDict[index]
+	key = p2pDict_annual[index]
 	single_p2p(jobID, key, year)
 	print "p2pParrallel",index, jobID, 'SUCESS'
 	
@@ -59,7 +59,7 @@ def theWholePackage(jobID):
 		
 	print "########\nThe Whole Package:\tRunning point to point analysis of", jobID,"on", year
 	if parrallel:
-		remaining = sorted(p2pDict.keys())[:]
+		remaining = sorted(p2pDict_annual.keys())[:]
 	   	p1 = Pool(cores)
 	    	p1.map(p2pParrallel,remaining)	
 

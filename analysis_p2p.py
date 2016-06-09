@@ -63,6 +63,7 @@ p2pKeys_annual = ['T','S','MLD', 'Chl_CCI',
 		  ]
 		  		  
 p2pDict = {i:n for i,n in enumerate(p2pKeys)}		  
+p2pDict_annual = {i:n for i,n in enumerate(p2pKeys_annual)}		  
 
 def analysis_p2p(
 		models	= ['NEMO','MEDUSA',],
