@@ -71,7 +71,7 @@ def theWholePackage(jobID):
 			modelGrid = 'eORCA1',
 			annual 	= True,
 			noPlots = True,
-			analysisSuite=suite,)  
+			analysisSuite='annual',)  
 				    	
 	else:	
 		analysis_p2p(models	= ['NEMO','MEDUSA',],
@@ -80,7 +80,7 @@ def theWholePackage(jobID):
 			modelGrid = 'eORCA1',
 			annual 	= True,
 			noPlots = False,
-			analysisSuite=suite,)        
+			analysisSuite='annual',)        
 
 
 	
