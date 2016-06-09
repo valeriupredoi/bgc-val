@@ -49,7 +49,7 @@ def findLastFinishedYear(jobID):
 	if jobID == '': return
 	
 	machine = gethostname()
-	if machine.find('mass')>-1:
+	if machine.find('ceda')>-1:
 		outputFold = "/group_workspaces/jasmin2/ukesm/BGC_data/"+jobID+'/'
 
 	if machine.find('monsoon')>-1:
