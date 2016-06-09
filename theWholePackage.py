@@ -62,6 +62,17 @@ def theWholePackage(jobID):
 		remaining = sorted(p2pDict.keys())[:]
 	   	p1 = Pool(cores)
 	    	p1.map(p2pParrallel,remaining)	
+
+		#####
+		# And once over to make the summary target diagrams.
+		analysis_p2p(models	= ['NEMO','MEDUSA',],
+			jobID 	= jobID,
+			years 	= [year,], #'2075','2076',
+			modelGrid = 'eORCA1',
+			annual 	= True,
+			noPlots = True,
+			analysisSuite=suite,)  
+				    	
 	else:	
 		analysis_p2p(models	= ['NEMO','MEDUSA',],
 			jobID 	= jobID,
