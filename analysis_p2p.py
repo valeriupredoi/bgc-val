@@ -53,11 +53,15 @@ from p2p.shelveToDictionary import shelveToDictionary
 
 p2pKeys = ['T','S','MLD', 'Chl_pig','Chl_CCI',
 		  'N','Si','O2','Alk','DIC','AirSeaFlux',
-		  'TotalAirSeaFlux','IntPP_iMarNet','IntPP_OSU',
-		  'PP_OSU','LocalExportRatio','GlobalExportRatio',
-		  'OMZThickness', 'TotalOMZVolume',
+		  'IntPP_OSU',
 		  'Diatoms', 'Microzoo', 'Mesozoo',
 		  ]
+
+p2pKeys_annual = ['T','S','MLD', 'Chl_CCI',
+		  'N','Si','O2','Alk','DIC','AirSeaFlux',
+		  'IntPP_OSU',
+		  ]
+		  		  
 p2pDict = {i:n for i,n in enumerate(p2pKeys)}		  
 
 def analysis_p2p(
@@ -97,14 +101,7 @@ def analysis_p2p(
 			analysisKeys.append('Alk')			# Glodap Alkalinity
 			analysisKeys.append('DIC')			# Globap tCO2
 			analysisKeys.append('AirSeaFlux')		# work in progress
-			analysisKeys.append('TotalAirSeaFlux')		# work in progress		
-			analysisKeys.append('IntPP_iMarNet')		# Integrated primpary production from iMarNEt
 			analysisKeys.append('IntPP_OSU')		# OSU Integrated primpary production	
-			analysisKeys.append('PP_OSU')			# OSU Integrated primpary production			
-			analysisKeys.append('LocalExportRatio')		# Export ratio (no data)
-			analysisKeys.append('GlobalExportRatio')	# Export ratio (no data)
-			analysisKeys.append('TotalOMZVolume')		# Total OMZ Volume
-			analysisKeys.append('OMZThickness')		# Total OMZ Volume
 									
 			#####	
 			# Physics switches:
@@ -121,14 +118,7 @@ def analysis_p2p(
 			analysisKeys.append('Alk')			# Glodap Alkalinity
 			analysisKeys.append('DIC')			# Globap tCO2
 			analysisKeys.append('AirSeaFlux')		# work in progress
-			analysisKeys.append('TotalAirSeaFlux')		# work in progress		
-			analysisKeys.append('IntPP_iMarNet')		# Integrated primpary production from iMarNEt
 			analysisKeys.append('IntPP_OSU')		# OSU Integrated primpary production	
-			analysisKeys.append('PP_OSU')			# OSU Integrated primpary production			
-			analysisKeys.append('LocalExportRatio')		# Export ratio (no data)
-			analysisKeys.append('GlobalExportRatio')	# Export ratio (no data)
-			analysisKeys.append('TotalOMZVolume')		# Total OMZ Volume
-			analysisKeys.append('OMZThickness')		# Total OMZ Volume
 									
 			#####	
 			# Physics switches:
