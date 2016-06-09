@@ -148,7 +148,8 @@ def html5Maker(
 		  'SouthernOcean',
 		  'Remainder',
 		   ]
-
+	Transects = ['Transect','PTransect','SOTransect']
+	
 	#####
 	# Two switches to turn on Summary section, and groups of plots of field and region.		
 	summarySections = True	
@@ -300,7 +301,49 @@ def html5Maker(
 				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*hist.png'))
 				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*robinquad.png'))			
 				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*scatter.png'))							
-				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*Transect/*/*'+region+'*'+key+'*'+year+'*hov.png'))
+				#vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*Transect/*/*'+region+'*'+key+'*'+year+'*hov.png'))
+
+				#####
+				# Create plot headers for each file.
+				for fn in vfiles:
+					#####
+					# Skip transects, they'll be added below.
+					if fn.find('Transect') >-1: continue
+					
+					#####
+					# Copy image to image folder and return relative path.
+					relfn = addImageToHtml(fn, imagesfold, reportdir)
+				
+					#####
+					# Create custom title by removing extra bits.
+					title = html5Tools.fnToTitle(relfn)
+			
+					FileLists[href][relfn] = title
+					print "Adding ",relfn,"to script"
+			for transect in Transects:
+				href = 	key+'-'+transect
+				
+				desc = ''
+				if key in ListofCaveats.keys():			desc +=ListofCaveats[key]+'\n'
+				if transect in ListofCaveats_regions.keys():	desc +=ListofCaveats_regions[key]+'\n'		
+							
+				hrefs.append(href)
+				Titles[href] = 	getLongName(transect) +' '+	getLongName(key)
+				SidebarTitles[href] = getLongName(transect)				
+				Descriptions[href] = desc
+				FileLists[href] = {}
+				
+				#####
+				# Determine the list of files:
+				region = 'Global'
+				vfiles = []
+				#vfiles = glob('./images/'+jobID+'/timeseries/*/percentiles*'+key+'*'+region+'*10-90pc.png')
+ 	                        #vfiles.extend(glob('./images/'+jobID+'/timeseries/*/profile*'+key+'*'+region+'*median.png'))
+                   	     	#vfiles.extend(glob('./images/'+jobID+'/timeseries/*/Sum*'+key+'*'+region+'*sum.png'))                        
+				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+transect+'/*/'+key+transect+'*'+region+'*'+key+'*'+year+'*hist.png'))
+				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+transect+'/*/'+key+transect+'*'+region+'*'+key+'*'+year+'*robinquad.png'))			
+				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+transect+'/*/'+key+transect+'*'+region+'*'+key+'*'+year+'*scatter.png'))		
+				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+transect+'/*/'+key+transect+'*'+region+'*'+key+'*'+year+'*hov.png'))
 
 				#####
 				# Create plot headers for each file.
@@ -312,16 +355,10 @@ def html5Maker(
 					#####
 					# Create custom title by removing extra bits.
 					title = html5Tools.fnToTitle(relfn)
-					#for k in ['percentiles', jobID, key,'percentiles',key+'vs'+key]:
-					#	try: title.remove(k)
-					#	except:pass
-					#for i,t in enumerate(title):
-					#	if t[:len(key)] == key: title[i] = t[len(key):]	# replace redudance value. 
-					#	if t.find('vs')>-1:	title[i] = ''		# remove redundent versus field
-					#FileLists[href][relfn] = ' '.join([getLongName(t) for t in title])				
 			
 					FileLists[href][relfn] = title
 					print "Adding ",relfn,"to script"
+					
 				
 			html5Tools.AddSubSections(indexhtmlfn,hrefs,SectionTitle,
 					SidebarTitles=SidebarTitles,#

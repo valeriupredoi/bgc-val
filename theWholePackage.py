@@ -16,7 +16,13 @@ from makeReport import html5Maker
 from UKESMpython import folder
 
 
-
+def timeseriesParrallel(index):
+	print "timeseriesParrallel",index, jobID, 'START'
+	
+	#return
+	key = timeseriesDict[index]
+	singleTimeSeries(jobID, key)
+	print "timeseriesParrallel",index, jobID, 'SUCESS'	
 
 def theWholePackage(jobID):
 	print "########\nThe Whole Package:\tStarting job", jobID 
@@ -29,20 +35,15 @@ def theWholePackage(jobID):
 	
 
 			  
-	def timeseriesParrallel(index):
-		print "timeseriesParrallel",index, jobID
-		assert 0
-		key = timeseriesDict[index]
-		singleTimeSeries(jobID, key)
+
+	print "########\nThe Whole Package:\tStarting Time series ", jobID 
+	remaining = sorted(timeseriesDict.keys())
+	cores = 4
+   	p = Pool(cores)
+    	p.map(timeseriesParrallel,remaining)
+	return 	
+	#assert 0
 	
-#	print "########\nThe Whole Package:\tStarting Time series ", jobID 
-#	cores = 4
- #   	p = Pool(cores)
-#	remaining = sorted(timeseriesDict.keys())
- #   	p.map(timeseriesParrallel,remaining)
-		
-	#	singleTimeSeries(jobID, key)
-#	assert 0
 	print "########\nThe Whole Package:\tLocating final year of model data", jobID 		        
         year = findLastFinishedYear(jobID)
 	print "########\nThe Whole Package:\tFinal year of model data", jobID,"is", year

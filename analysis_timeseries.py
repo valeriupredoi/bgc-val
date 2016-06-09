@@ -1218,7 +1218,11 @@ def analysis_timeseries(jobID = "u-ab671",
 
 
 def singleTimeSeries(jobID,key):
-	analysis_timeseries(jobID =jobID,analysisSuite=[key,], z_component = 'SurfaceOnly',)#clean=1)
+	try:
+		analysis_timeseries(jobID =jobID,analysisSuite=[key,], z_component = 'SurfaceOnly',)#clean=1)
+	except:
+		print "Failed singleTimeSeries",(jobID,key)
+		return 
 
 	FullDepths = ['T','S', 'Chl_pig','N','Si','O2','Alk','DIC',]
 	if key in FullDepths:
