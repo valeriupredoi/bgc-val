@@ -10,7 +10,7 @@ from sys import argv,exit
 from multiprocessing import Pool
 
 from downloadFromMass import  downloadMass, findLastFinishedYear
-from analysis_timeseries import analysis_timeseries, singleTimeSeries, timeseriesDict
+from analysis_timeseries import analysis_timeseries, singleTimeSeries, timeseriesDict, singleTimeSeriesProfile
 from analysis_p2p import analysis_p2p
 from makeReport import html5Maker
 from UKESMpython import folder
@@ -18,16 +18,24 @@ from UKESMpython import folder
 
 def timeseriesParrallel(index):
 	print "timeseriesParrallel",index, jobID, 'START'
-	
-	#return
 	key = timeseriesDict[index]
-	singleTimeSeries(jobID, key)
+	singleTimeSeries(jobID, key,)
 	print "timeseriesParrallel",index, jobID, 'SUCESS'	
+	
+def timeseriesParrallelProfile(index):
+	print "timeseriesParrallelProfile",index, jobID, 'START'
+	key = timeseriesDict[index]
+	singleTimeSeriesProfile((jobID, key,)
+	print "timeseriesParrallelProfile",index, jobID, 'SUCESS'
+
+
 
 def theWholePackage(jobID):
 	print "########\nThe Whole Package:\tStarting job", jobID 
 #	downloadMass(jobID)
-	
+
+	cores = 4
+		
 	
 	print "########\nThe Whole Package:\tStarting Time series (surface only)", jobID 	
 	suite = 'all'
@@ -38,10 +46,9 @@ def theWholePackage(jobID):
 
 	print "########\nThe Whole Package:\tStarting Time series ", jobID 
 	remaining = sorted(timeseriesDict.keys())
-	cores = 4
+
    	p = Pool(cores)
     	p.map(timeseriesParrallel,remaining)
-	return 	
 	#assert 0
 	
 	print "########\nThe Whole Package:\tLocating final year of model data", jobID 		        
@@ -57,6 +64,7 @@ def theWholePackage(jobID):
 		annual 	= True,
 		noPlots = False,
 		analysisSuite=suite,)        
+	
 		
 	print "########\nThe Whole Package:\tmaking Summary report"	
 	html5Maker(jobID =jobID,
@@ -64,7 +72,21 @@ def theWholePackage(jobID):
 		   year = year,
 		   clean=True,
 		   )
-	
+
+
+	print "########\nThe Whole Package:\tStarting Time series profiles", jobID 
+	remaining = sorted(timeseriesDict.keys())
+   	p1 = Pool(cores)
+    	p1.map(timeseriesParrallelProfile,remaining)
+	#assert 0
+		
+	print "########\nThe Whole Package:\tmaking Summary report"	
+	html5Maker(jobID =jobID,
+		   reportdir=folder('reports/'+jobID),
+		   year = year,
+		   clean=False,
+		   )
+
 
 
 if __name__=="__main__":	

@@ -1217,17 +1217,21 @@ def analysis_timeseries(jobID = "u-ab671",
 		shelves_insitu[name] = tsa.shelvefn_insitu
 
 
-def singleTimeSeries(jobID,key):
+def singleTimeSeriesProfile(jobID,key):
+	
+	FullDepths = ['T','S', 'Chl_pig','N','Si','O2','Alk','DIC',]
+	if key in FullDepths:
+		analysis_timeseries(jobID =jobID,analysisSuite=[key,], z_component = 'FullDepth',)
+
+def singleTimeSeries(jobID,key,):
 	try:
 		analysis_timeseries(jobID =jobID,analysisSuite=[key,], z_component = 'SurfaceOnly',)#clean=1)
 	except:
 		print "Failed singleTimeSeries",(jobID,key)
 		return 
-
-	FullDepths = ['T','S', 'Chl_pig','N','Si','O2','Alk','DIC',]
-	if key in FullDepths:
-		analysis_timeseries(jobID =jobID,analysisSuite=[key,], z_component = 'FullDepth',)
+	
 		
+				
 
 def main():
 	try:	jobID = argv[1]
