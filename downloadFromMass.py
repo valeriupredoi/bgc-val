@@ -92,7 +92,7 @@ def downloadMass(jobID,):
 	
 	machine = gethostname()
 	knownmachine = False	
-	if machine.find('mass')>-1:
+	if machine.find('ceda')>-1:
 		knownmachine = True
 		outputFold = "/group_workspaces/jasmin2/ukesm/BGC_data/"+jobID
 		if not os.path.exists(outputFold):

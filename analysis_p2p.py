@@ -787,7 +787,7 @@ def analysis_p2p(
 					annual		= annual,
 			 	)
 			)
-			
+		if len(av.keys())==1: return	
 		######
 		# Summary Target diagrams:
 		imageFold = ukp.folder(imageFolder+'/Targets/'+year+'/Summary')
