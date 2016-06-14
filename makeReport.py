@@ -111,7 +111,6 @@ def html5Maker(
 	
 	#####
 	#
-	
 	descriptionText = 'Validation of the job: '+jobID
 	if year != '*':	descriptionText+=', in the year: ' +year
 	html5Tools.writeDescription(
@@ -140,20 +139,22 @@ def html5Maker(
 		  'AirSeaFluxCO2' , 
 		 ]
 	regions = ['Global',
-		  'ignoreInlandSeas',
+		  'SouthernOcean',
+		  'NorthernSubpolarAtlantic',
+		  'NorthernSubpolarPacific',		  	
 		  'Equator10', 
 		  'ArcticOcean',
-		  'NorthernSubpolarAtlantic',
-		  'NorthernSubpolarPacific',
-		  'SouthernOcean',
 		  'Remainder',
+		  'ignoreInlandSeas',		  
 		   ]
 	Transects = ['Transect','PTransect','SOTransect']
 	
 	#####
 	# Two switches to turn on Summary section, and groups of plots of field and region.		
-	summarySections = True	
-	plotbyfieldandregion = True
+	Level1 = True
+	Level1Regional = True	
+	summarySections = False
+	plotbyfieldandregion = False
 	
 	
 	
@@ -168,7 +169,157 @@ def html5Maker(
 	if jobID == 'u-ad371':
 		ListofCaveats['Chlorophyll_cci']= 'Note that the Non-diatom chlorophyll failed in run:'+jobID
 		ListofCaveats['IntegratedPrimaryProduction_OSU']= 'Note that the Non-diatom chlorophyll does not contribute to IntPP in this run:'+jobID
+
+
+	if Level1:
+		level1Fields = [
+			  'TotalIntegratedPrimaryProduction',
+			  'ExportRatio', 			  
+			  'AirSeaFluxCO2' ,
+			  'Nitrate',
+			  'DIC',			  		  
+			  'Alkalinity', 
+			  'TotalOMZVolume',			  			  
+			 ]
+		 
+		SectionTitle= 'Level 1'
+		hrefs 	= []
+		Titles	= {}
+		SidebarTitles = {}
+		Descriptions= {}
+		FileLists	= {}
 		
+		region = 'Global'
+		for key in level1Fields:
+
+			#####
+			# href is the name used for the html 
+			href = 	key+'-'+region
+			hrefs.append(href)
+			
+			#####
+			# Title is the main header, SidebarTitles is the side bar title.
+			Titles[href] = 	getLongName(region) +' '+	getLongName(key)
+			SidebarTitles[href] = getLongName(key)	
+						
+			#####
+			# Descriptions is a small sub-header
+			desc = ''
+			if key in ListofCaveats.keys():			desc +=ListofCaveats[key]+'\n'
+			if region in ListofCaveats_regions.keys():	desc +=ListofCaveats_regions[key]+'\n'			
+			Descriptions[href] = desc
+			
+
+			#####
+			# A list of files to put in this group.
+			FileLists[href] = {}
+			#####
+			# Determine the list of files:
+			vfiles = glob('./images/'+jobID+'/timeseries/*/percentiles*'+key+'*'+region+'*10-90pc.png')
+	                #vfiles.extend(glob('./images/'+jobID+'/timeseries/*/profile*'+key+'*'+region+'*median.png'))
+	                #vfiles.extend(glob('./images/'+jobID+'/timeseries/*/Sum*'+key+'*'+region+'*sum.png'))      
+	                #vfiles.extend(glob('./images/'+jobID+'/timeseries/*/Sum*'+key+'*'+'Global*sum.png'))                                                                  
+			#vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*hist.png'))
+			#vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*robinquad.png'))
+			#vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*scatter.png'))
+			#vfiles.extend(glob('./images/'+jobID+'/Targets/'+year+'/*'+key+'*/BGCVal/*.png'))
+			
+						
+		
+			#####
+			# Create plot headers for each file.
+			for fn in vfiles:
+				#####
+				# Copy image to image folder and return relative path.
+				relfn = addImageToHtml(fn, imagesfold, reportdir)
+				
+				####
+				# WOA fields that also produce transects, etc.
+				if key in ['Nitrate', 'Silicate', 'Temperature', 'Salinity', 'Oxygen','DIC','Alkalinity'] and fn.lower().find('surface')<0:continue
+				
+				#####
+				# Create custom title by removing extra bits.
+				#title = filenameToTitle(relfn)
+	
+				FileLists[href][relfn] = html5Tools.fnToTitle(relfn) 
+				print "Adding ",relfn,"to script"
+			
+		html5Tools.AddSubSections(indexhtmlfn,hrefs,SectionTitle,
+				SidebarTitles=SidebarTitles,#
+				Titles=Titles, 
+				Descriptions=Descriptions,
+				FileLists=FileLists)
+					
+						
+	
+
+	if Level1Regional:
+		regionalFields = [
+			  'Nitrate',
+			  'Silicate', 
+			  'Iron',
+			  'IntegratedPrimaryProduction_OSU',
+			]
+		SectionTitle= 'Level 1 - regional'
+		hrefs 	= []
+		Titles	= {}
+		SidebarTitles = {}
+		Descriptions= {}
+		FileLists	= {}
+					
+		for key in regionalFields:
+			#if key not in ['Alkalinity','Nitrate']: continue
+
+			href = 	key#+'-'+region
+			
+			desc = ''
+			if key in ListofCaveats.keys():			desc +=ListofCaveats[key]+'\n'
+			#if region in ListofCaveats_regions.keys():	desc +=ListofCaveats_regions[key]+'\n'		
+						
+			hrefs.append(href)
+			Titles[href] = 		getLongName(key)
+			SidebarTitles[href] = getLongName(key)				
+			Descriptions[href] = desc
+			FileLists[href] = {}
+			
+			#####
+			# Determine the list of files:
+			vfiles = []
+			for region in regions:				
+				vfiles.extend(glob('./images/'+jobID+'/timeseries/*/percentiles*'+key+'*'+region+'*10-90pc.png'))
+
+			#####
+			# Create plot headers for each file.
+			for fn in vfiles:
+				#####
+				# Skip transects, they'll be added below.
+				if fn.find('Transect') >-1: continue
+				if fn.lower().find('surface')<0:continue
+				#####
+				# Copy image to image folder and return relative path.
+				relfn = addImageToHtml(fn, imagesfold, reportdir)
+			
+				#####
+				# Create custom title by removing extra bits.
+				title = html5Tools.fnToTitle(relfn)
+		
+				FileLists[href][relfn] = title
+				print "Adding ",relfn,"to script"
+
+				
+					
+				
+		html5Tools.AddSubSections(indexhtmlfn,hrefs,SectionTitle,
+				SidebarTitles=SidebarTitles,#
+				Titles=Titles, 
+				Descriptions=Descriptions,
+				FileLists=FileLists)
+
+
+
+
+
+			
 		
 	if summarySections:
 		sumfields = [
