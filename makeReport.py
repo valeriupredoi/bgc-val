@@ -197,7 +197,7 @@ def html5Maker(
 
 			#####
 			# href is the name used for the html 
-			href = 	key+'-'+region
+			href = 	'L1'+key+'-'+region
 			hrefs.append(href)
 			
 			#####
@@ -283,7 +283,7 @@ def html5Maker(
 		for key in regionalFields:
 			#if key not in ['Alkalinity','Nitrate']: continue
 
-			href = 	key#+'-'+region
+			href = 	'L1region'+key#+'-'+region
 			
 			desc = ''
 			if key in ListofCaveats.keys():			desc +=ListofCaveats[key]+'\n'
@@ -363,7 +363,7 @@ def html5Maker(
 		for key in regionalFields:
 			#if key not in ['Alkalinity','Nitrate']: continue
 
-			href = 	key#+'-'+region
+			href = 	'L1prof'+key#+'-'+region
 			
 			desc = ''
 			if key in ListofCaveats.keys():			desc +=ListofCaveats[key]+'\n'
@@ -449,7 +449,7 @@ def html5Maker(
 
 			#####
 			# href is the name used for the html 
-			href = 	key+'-'+region
+			href = 	'L2'+key+'-'+region
 			hrefs.append(href)
 			
 			#####
