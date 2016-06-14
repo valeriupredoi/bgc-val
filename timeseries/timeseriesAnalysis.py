@@ -403,7 +403,8 @@ class timeseriesAnalysis:
 		    	modeldataDict[m] = []
 		    	for t in timesDict[m]:
 		    			v = self.modeldataD[(r,l,m)][t]
-		    			if v == np.ma.masked: modeldataDict[m].append(0.)
+					print r,l,m,t,v,type(v)
+		    			if np.ma.is_masked(v): modeldataDict[m].append(0.)
 		    			else:	modeldataDict[m].append(v)
 		    	
 			#print '\n\n',r,l,m, timesDict[m] ,	modeldataDict[m]    	
