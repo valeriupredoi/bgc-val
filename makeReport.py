@@ -327,7 +327,7 @@ def html5Maker(
 				SidebarTitles=SidebarTitles,#
 				Titles=Titles, 
 				Descriptions=Descriptions,
-				FileLists=FileLists
+				FileLists=FileLists,
 				FileOrder=FileOrder)
 
 
