@@ -401,7 +401,7 @@ class timeseriesAnalysis:
 			timesDict[m] 	 = sorted(self.modeldataD[(r,l,m)].keys())
 		    	#modeldataDict[m] = [self.modeldataD[(r,l,m)][t] for t in timesDict[m]]
 		    	modeldataDict[m] = []
-		    	for t in timesDict[m]:
+		    	for t in sorted(timesDict[m]):
 		    			v = self.modeldataD[(r,l,m)][t]
 		    			if v == np.ma.masked: modeldataDict[m].append(0.)
 		    			else:	modeldataDict[m].append(v)
