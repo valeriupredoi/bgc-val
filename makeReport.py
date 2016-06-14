@@ -163,6 +163,7 @@ def html5Maker(
 	# A list of caveats linked to specific datasets or regions, or jobs.
 	ListofCaveats, ListofCaveats_regions = {}, {}
 	ListofCaveats['ExportRatio'] = 'Note that there is no historic data set for this variable.'
+	ListofCaveats['Iron'] = 'Note that there is no suitable historic data set for this variable.'	
 	ListofCaveats['MLD'] = 'Note that the Model MLD is calculated with based on a sigma_0 difference of 0.01 with the surface where as data uses as \
 			sigma_0 difference of +/- 0.2 degrees from a depth on 10m.'
 			
@@ -254,6 +255,16 @@ def html5Maker(
 	
 
 	if Level1Regional:
+		l1regions = ['Global',
+		  'SouthernOcean',
+		  'NorthernSubpolarAtlantic',
+		  'NorthernSubpolarPacific',		  	
+		  'Equator10', 
+		  'ArcticOcean',
+		  'Remainder',
+		  'ignoreInlandSeas',		  
+		   ]
+		   	
 		regionalFields = [
 			  'Nitrate',
 			  'Silicate', 
@@ -261,12 +272,12 @@ def html5Maker(
 			  'IntegratedPrimaryProduction_OSU',
 			]
 		SectionTitle= 'Level 1 - regional'
-		hrefs 	= []
-		Titles	= {}
-		SidebarTitles = {}
-		Descriptions= {}
+		hrefs 		= []
+		Titles		= {}
+		SidebarTitles 	= {}
+		Descriptions	= {}
 		FileLists	= {}
-					
+		FileOrder 	= {}		
 		for key in regionalFields:
 			#if key not in ['Alkalinity','Nitrate']: continue
 
@@ -281,15 +292,16 @@ def html5Maker(
 			SidebarTitles[href] = getLongName(key)				
 			Descriptions[href] = desc
 			FileLists[href] = {}
-			
+			FileOrder[href] = {}
 			#####
 			# Determine the list of files:
 			vfiles = []
-			for region in regions:				
+			for region in l1regions:				
 				vfiles.extend(glob('./images/'+jobID+'/timeseries/*/percentiles*'+key+'*'+region+'*10-90pc.png'))
 
 			#####
 			# Create plot headers for each file.
+			count=0
 			for fn in vfiles:
 				#####
 				# Skip transects, they'll be added below.
@@ -304,6 +316,8 @@ def html5Maker(
 				title = html5Tools.fnToTitle(relfn)
 		
 				FileLists[href][relfn] = title
+				FileOrder[href][count] = relfn
+				count+=1
 				print "Adding ",relfn,"to script"
 
 				
@@ -313,7 +327,8 @@ def html5Maker(
 				SidebarTitles=SidebarTitles,#
 				Titles=Titles, 
 				Descriptions=Descriptions,
-				FileLists=FileLists)
+				FileLists=FileLists
+				FileOrder=FileOrder)
 
 
 

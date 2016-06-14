@@ -166,7 +166,7 @@ def AddSection(filepath,href,Title, Description='',Files=[]):
 	AddtoFile(filepath,linenumber,outtxt)	
 
 
-def AddSubSections(filepath,hrefs,SectionTitle,SidebarTitles = {},Titles={}, Descriptions={},FileLists={}):
+def AddSubSections(filepath,hrefs,SectionTitle,SidebarTitles = {},Titles={}, Descriptions={},FileLists={},FileOrder={}):
 	"""	Addes a section and a series of nested subsectionto the file "filepath."
 	"""
 	#####
@@ -179,7 +179,7 @@ def AddSubSections(filepath,hrefs,SectionTitle,SidebarTitles = {},Titles={}, Des
 		Title = Titles[href]
 		Description = Descriptions[href]
 		Files = FileLists[href]#
-		
+
 		writeSideBar(filepath, href, SidebarTitle,option='sub')
 
 		##### 
@@ -188,10 +188,14 @@ def AddSubSections(filepath,hrefs,SectionTitle,SidebarTitles = {},Titles={}, Des
 		contents = f.readlines()
 		f.close()
 		if type(Files) == type(['a','list',]):
-			imagesTxt = '\n'.join([addImagesText(f) for f in Files])
+			try:	Order = FileOrder[href]
+			except:	Order = {i:f for i,f in enumerate(sorted(Files))}		
+			imagesTxt = '\n'.join([addImagesText(Order[count]) for count in sorted(Order.keys())])
 		
 		if type(Files) == type({'a':'dict',}):
-			imagesTxt = '\n'.join([addImagesText(f,title=Files[f]) for f in sorted(Files.keys())])
+			try:	Order = FileOrder[href]
+			except:	Order = {i:f for i,f in enumerate(sorted(Files.keys()))}			
+			imagesTxt = '\n'.join([addImagesText(Order[count],title=Files[Order[count]]) for count in sorted(Order.keys())])
 			
 		#####
 		# Add Title, description and figures to the copied template
