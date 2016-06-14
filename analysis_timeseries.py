@@ -113,6 +113,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			analysisKeys.append('GlobalExportRatio')	# Export ratio (no data)
 			analysisKeys.append('TotalOMZVolume')		# Total OMZ Volume
 			analysisKeys.append('OMZThickness')		# Total OMZ Volume
+                        analysisKeys.append('Iron') 	            	# Iron
 									
 			#####	
 			# Physics switches:
@@ -124,7 +125,22 @@ def analysis_timeseries(jobID = "u-ab671",
 			# Off switches
 			#analysisKeys.append('OMZ')			# work in progress
 
-	
+                if analysisSuite.lower() in ['level1',]:
+                        analysisKeys.append('N')                        # WOA Nitrate
+                        analysisKeys.append('Si')                       # WOA Siliate
+                        analysisKeys.append('O2')                       # WOA Oxygen
+                        analysisKeys.append('Alk')                      # Glodap Alkalinity
+                        analysisKeys.append('DIC')                      # Globap tCO2
+                        analysisKeys.append('AirSeaFlux')               # work in progress
+                        analysisKeys.append('TotalAirSeaFlux')          # work in progress              
+                        analysisKeys.append('IntPP_OSU')                # OSU Integrated primpary production    
+                        analysisKeys.append('PP_OSU')                   # OSU Integrated primpary production                    
+                        analysisKeys.append('LocalExportRatio')         # Export ratio (no data)
+                        analysisKeys.append('GlobalExportRatio')        # Export ratio (no data)
+                        analysisKeys.append('TotalOMZVolume')           # Total OMZ Volume
+                        analysisKeys.append('OMZThickness')             # Total OMZ Volume
+                        analysisKeys.append('Iron')                     # Iron
+
 		
 		if analysisSuite.lower() in ['debug',]:	
 			#analysisKeys.append('AirSeaFlux')		# work in progress
@@ -133,7 +149,8 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('TotalOMZVolume50')			# work in progress			
 			#analysisKeys.append('OMZThickness')			# work in progress						
 			#analysisKeys.append('DIC')			# work in progress									
-			analysisKeys.append('Iron')			# work in progress												
+			#analysisKeys.append('Iron')			# work in progress												
+                        analysisKeys.append('IntPP_OSU')                # OSU Integrated primpary production    
 			
 		if analysisSuite.lower() in ['FullDepth',]:
 			#Skip 2D fields
@@ -950,6 +967,7 @@ def analysis_timeseries(jobID = "u-ab671",
 	#####
 	# Total 
 	if 'IntPP_OSU' in analysisKeys:
+		noOSU = True
 		nc = Dataset(orcaGridfn,'r')
 		area = nc.variables['e1t'][:]*nc.variables['e2t'][:]
 		nc.close()
@@ -966,39 +984,42 @@ def analysis_timeseries(jobID = "u-ab671",
 			
 		name = 'TotalIntegratedPrimaryProduction'
 		if annual:
-			av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', MEDUSAFolder_pref, z_component,annual)								
-			av[name]['dataFile'] 		= OSUDir +"/standard_VGPM.SeaWIFS.global.average.nc"
+			av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', MEDUSAFolder_pref, z_component,annual)							
+			if noOSU:	av[name]['dataFile']            = ''
+			else:		av[name]['dataFile'] 		= OSUDir +"/standard_VGPM.SeaWIFS.global.average.nc"
 			
 		av[name]['modelcoords'] 	= medusaCoords 	
 		av[name]['datacoords'] 		= glodapCoords
 
+                av[name]['modeldetails']        = {'name': 'IntPP', 'vars':['PRN' ,'PRD'], 'convert': medusadepthInt,'units':'Gt/m2/yr'}
+		if noOSU: 
+	                av[name]['datadetails']         = {'name': '', 'units':''}
 
-		nc = Dataset(av[name]['dataFile'] ,'r')
-		lats = nc.variables['latitude'][:]
-		osuareas = np.zeros((1080, 2160))
-		osuarea = (111100. / 6.)**2. # area of a pixel at equator. in m2
-		for a in np.arange(1080):osuareas[a] = np.ones((2160,))*osuarea*np.cos(np.deg2rad(lats[a]))
+		else:
+			nc = Dataset(av[name]['dataFile'] ,'r')
+			lats = nc.variables['latitude'][:]
+			osuareas = np.zeros((1080, 2160))
+			osuarea = (111100. / 6.)**2. # area of a pixel at equator. in m2
+			for a in np.arange(1080):osuareas[a] = np.ones((2160,))*osuarea*np.cos(np.deg2rad(lats[a]))
 		
 		
-		def osuconvert(nc,keys):
-			arr = nc.variables[keys[0]][:,:,:] 
-			tlen = arr.shape[0]
-			arr  = arr.sum(0)/tlen * 365.	/ 1000. /     1E15
-			if arr.ndim ==3:
-				for i in np.arange(arr.shape[0]):
-					arr[i] = arr[i]*osuarea
-			elif arr.ndim ==2: arr = arr*osuarea
-			else: assert 0
-			return arr
-						
-	
-		av[name]['modeldetails'] 	= {'name': 'IntPP', 'vars':['PRN' ,'PRD'], 'convert': medusadepthInt,'units':'Gt/m2/yr'}
-		av[name]['datadetails']  	= {'name': 'IntPP', 'vars':['NPP',], 'convert': osuconvert,'units':'Gt/m2/yr'}
-	
+			def osuconvert(nc,keys):
+				arr = nc.variables[keys[0]][:,:,:] 
+				tlen = arr.shape[0]
+				arr  = arr.sum(0)/tlen * 365.	/ 1000. /     1E15
+				if arr.ndim ==3:
+					for i in np.arange(arr.shape[0]):
+						arr[i] = arr[i]*osuarea
+				elif arr.ndim ==2: arr = arr*osuarea
+				else: assert 0
+				return arr
+	               	av[name]['datadetails']         = {'name': 'IntPP', 'vars':['NPP',], 'convert': osuconvert,'units':'Gt/m2/yr'}
+
 		av[name]['layers'] 		= ['Surface',]
 		av[name]['regions'] 		= regionList
 		av[name]['metrics']		= ['sum',]
-		av[name]['datasource'] 		= 'OSU'
+		if noOSU:	av[name]['datasource']          = ''
+		else:		av[name]['datasource'] 		= 'OSU'
 		av[name]['model']		= 'MEDUSA'
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= orcaGridfn		
@@ -1259,12 +1280,13 @@ def main():
 
 	if 'debug' in argv[1:]:	suite = 'debug'
 	elif 'all' in argv[1:]:	suite = 'all'
+	elif 'level1' in argv[1:]:suite='level1'
 	else:			suite = 'all'
 		
 	
 	analysis_timeseries(jobID =jobID,analysisSuite=suite, z_component = 'SurfaceOnly',)#clean=1)			
-	if suite == 'all':
-	        analysis_timeseries(jobID =jobID,analysisSuite='FullDepth', z_component = 'FullDepth',)#clean=1)  
+	#if suite == 'all':
+	analysis_timeseries(jobID =jobID,analysisSuite='FullDepth', z_component = 'FullDepth',)#clean=1)  
 
 if __name__=="__main__":
 	main()	

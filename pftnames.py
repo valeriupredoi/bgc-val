@@ -771,7 +771,7 @@ def getLongName(text,debug=False):
 
   	if text == 'Global':			return "Global"	
   	if text == 'Equator10':			return "Equator (+/-10)"	
-  	if text == 'Remainder':			return "Remainder"	
+  	if text == 'Remainder':			return "Oligotrophic Gyres"
   	if text == 'ArcticOcean':		return "Arctic Ocean"	
   	if text == 'NorthernSubpolarAtlantic':	return "Northern Subpolar Atlantic"	
   	if text == 'NorthernSubpolarPacific':	return "Northern Subpolar Pacific"	
