@@ -154,7 +154,7 @@ def html5Maker(
 	Level1 = True
 	Level1Regional = True
 	Level1Profiles = True	
-	Level1Profiles = False
+	level2Horizontal = False
 	summarySections = False
 	plotbyfieldandregion = False
 	
