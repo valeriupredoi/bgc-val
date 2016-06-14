@@ -33,8 +33,11 @@ from matplotlib import pyplot
 from mpl_toolkits.basemap import Basemap
 from matplotlib.ticker import FormatStrFormatter
 
-import cartopy.crs as ccrs
-import cartopy.io.shapereader as shapereader
+try:
+	import cartopy.crs as ccrs
+	import cartopy.io.shapereader as shapereader
+except:
+	print "Unable to load Cartopy"
 from scipy.stats.mstats import scoreatpercentile
 from scipy.stats import linregress,mode as scimode
 from calendar import month_name

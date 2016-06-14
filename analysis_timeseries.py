@@ -44,7 +44,7 @@ from timeseries import timeseriesAnalysis
 
 
 timeseriesKeys = ['T','S','MLD', 'Chl_pig','Chl_CCI',
-		  'N','Si','O2','Alk','DIC','AirSeaFlux',
+		  'N','Si','O2','Alk','DIC','AirSeaFlux','Iron',
 		  'TotalAirSeaFlux','IntPP_iMarNet','IntPP_OSU',
 		  'PP_OSU','LocalExportRatio','GlobalExportRatio',
 		  'OMZThickness', 'TotalOMZVolume',		  
@@ -132,7 +132,8 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('TotalOMZVolume')			# work in progress
 			#analysisKeys.append('TotalOMZVolume50')			# work in progress			
 			#analysisKeys.append('OMZThickness')			# work in progress						
-			analysisKeys.append('DIC')			# work in progress									
+			#analysisKeys.append('DIC')			# work in progress									
+			analysisKeys.append('Iron')			# work in progress												
 			
 		if analysisSuite.lower() in ['FullDepth',]:
 			#Skip 2D fields
@@ -1047,7 +1048,25 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['model']		= 'MEDUSA'
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= orcaGridfn	
+
+	if  'Iron' in analysisKeys:
 		
+		name = 'Iron'
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'ptrc_T', MEDUSAFolder_pref, z_component,annual)								
+				
+		av[name]['dataFile'] 		= ""
+		av[name]['modelcoords'] 	= medusaCoords 	
+		av[name]['datacoords'] 		= maredatCoords
+		av[name]['modeldetails']	= {'name': name, 'vars':['FER',], 'convert': ukp.NoChange, units:'mmolFe/m3'}
+		av[name]['datadetails']  	= {'name':'','units':'',}
+		av[name]['layers'] 		= layerList
+		av[name]['regions'] 		= regionList
+		av[name]['metrics']		= metricList
+		av[name]['datasource'] 		= ''
+		av[name]['model']		= 'MEDUSA'
+		av[name]['modelgrid']		= 'eORCA1'
+		av[name]['gridFile']		= orcaGridfn
+				
 	if 'T' in analysisKeys:
 		name = 'Temperature'
 		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', MEDUSAFolder_pref, z_component,annual)										
@@ -1219,7 +1238,7 @@ def analysis_timeseries(jobID = "u-ab671",
 
 def singleTimeSeriesProfile(jobID,key):
 	
-	FullDepths = ['T','S', 'Chl_pig','N','Si','O2','Alk','DIC',]
+	FullDepths = ['T','S', 'Chl_pig','N','Si','O2','Alk','DIC','Iron',]
 	if key in FullDepths:
 		analysis_timeseries(jobID =jobID,analysisSuite=[key,], z_component = 'FullDepth',)
 
