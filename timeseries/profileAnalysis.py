@@ -33,12 +33,13 @@ import UKESMpython as ukp
 from pftnames import getLongName
 import timeseriesTools as tst 
 import timeseriesPlots as tsp 
+from makeEORCAmasks import makeMaskNC
 #getTimes, loadData
 
 
 
 
-class timeseriesAnalysis:
+class profileAnalysis:
   def __init__(self,
   		modelFiles, 
 		dataFile,
@@ -66,7 +67,7 @@ class timeseriesAnalysis:
 	#	First we save all the initialisation settings as class attributes.
 		
 	
-	if debug: print "timeseriesAnalysis:\t init."	
+	if debug: print "profileAnalysis:\t init."	
 	self.modelFiles 	= modelFiles 		
 	self.dataFile		= dataFile
 	self.dataType		= dataType
@@ -86,10 +87,13 @@ class timeseriesAnalysis:
   	self.imageDir 		= imageDir
 	self.debug		= debug
 	self.clean		= clean
-		
-  	self.shelvefn 		= ukp.folder(self.workingDir)+'_'.join([self.jobID,self.dataType,])+'.shelve'
-	self.shelvefn_insitu	= ukp.folder(self.workingDir)+'_'.join([self.jobID,self.dataType,])+'_insitu.shelve'
 
+  	self.gridmaskshelve 	= ukp.folder(self.workingDir)+'_'.join([self.grid,])+'_masks.shelve'		
+  	self.shelvefn 		= ukp.folder(self.workingDir)+'_'.join(['profile',self.jobID,self.dataType,])+'.shelve'
+	self.shelvefn_insitu	= ukp.folder(self.workingDir)+'_'.join(['profile',self.jobID,self.dataType,])+'_insitu.shelve'
+
+	self._masksLoaded_ 	= False
+	
 	#####
 	# Load Data file	
  	self.loadData()
@@ -106,9 +110,10 @@ class timeseriesAnalysis:
   	
   	
   def loadModel(self):
-	if self.debug: print "timeseriesAnalysis:\tloadModel."		
+	if self.debug: print "profileAnalysis:\tloadModel."
 	####
 	# load and calculate the model info
+	
 	try:
 		if self.clean: 
 			print "User requested clean run. Wiping old data."
@@ -126,7 +131,7 @@ class timeseriesAnalysis:
 		  for m in self.metrics:
 		   	modeldataD[(r,l,m)] = {}
 		   	
-		print "Could not open shelve:", self.shelvefn, '\tread', len(readFiles)	
+		print "Could not open shelve:", self.shelvefn, '\tread', len(readFiles)
 
 	###############
 	# Check whethere there has been a change in what was requested:
@@ -153,66 +158,43 @@ class timeseriesAnalysis:
 		print "shelveFn:",self.shelvefn
 		print "readFiles:",readFiles
 
+
+
 	
 	###############
 	# Load files, and calculate fields.
 	openedFiles = 0					
 	for fn in self.modelFiles:
 		if fn in readFiles:continue
+		
+		if not self._masksLoaded_: 
+			self.loadMasks()		
+		
 		print "loadModel:\tloading new file:",fn,
 		nc = Dataset(fn,'r')
 		ts = tst.getTimes(nc,self.modelcoords)
 		meantime = np.mean(ts)
 		print "\ttime:",meantime
 		
-		DL = tst.DataLoader(fn,nc,self.modelcoords,self.modeldetails, regions = self.regions, layers = self.layers,)
+		#DL = tst.DataLoader(fn,nc,self.modelcoords,self.modeldetails, regions = self.regions, layers = self.layers,)
+		nc = Dataset(fn,'r')
+		dataAll = ukp.extractData(nc,self.modeldetails).squeeze()
+		m = 'mean'
 		
-	
-		for l in self.layers:		
-	 	    counts =0		
-		    for r in self.regions:
-		    	
-		    	#####
-		    	# Check wherether you can skip loading this metric,region,layer
-			skip = True
-			for m in self.metrics:
-				if skip == False:continue
-				try: 
-					a = modeldataD[(r,l,m)][meantime]
-					print "Already created ",int(meantime),':\t',(r,l,m),'\t=',a
-				except: 
-					skip = False
-					print "Need to create ",int(meantime),':\t',(r,l,m)
-			if skip: continue
-			
-		    	#####
-		    	# can't skip it, need to load it.
-			layerdata = DL.load[(r,l)]
-
-			if type(layerdata) == type(np.ma.array([1,-999,],mask=[False, True,])):
-				layerdata = layerdata.compressed()
-
-			if len(layerdata)==0:
-				for m in self.metrics:
-					modeldataD[(r,l,m)][meantime] = np.ma.masked #np.ma.array([-999,],mask=[True,])
+		for r in self.regions:
+		  for m in self.metrics:
+			if m =='mean':
+				data = np.ma.masked_where((self.modelMasks[r] == 1) + dataAll.mask,dataAll).mean(1).mean(1)
+				#print "Saving model data profile",r,m,data.shape, dataAll.shape ,self.modelMasks[r].shape
+				for l,d in enumerate(data):
+					#print "Saving model data profile",r,m,l,d
+					modeldataD[(r,l,m)][meantime] = d
 					
-		  	for m in self.metrics:
-		  		try:
-		  			a = modeldataD[(r,l,m)][meantime]
-		  			continue
-		  		except:pass
-				if m == 'mean':   	modeldataD[(r,l,m)][meantime] = np.ma.mean(layerdata)
-				if m == 'median':   	modeldataD[(r,l,m)][meantime] = np.ma.median(layerdata)
-				if m == 'sum':   	modeldataD[(r,l,m)][meantime] = np.ma.sum(layerdata)
-				if m == 'min':   	modeldataD[(r,l,m)][meantime] = np.ma.min(layerdata)
-				if m == 'max':   	modeldataD[(r,l,m)][meantime] = np.ma.max(layerdata)
-				if m.find('pc')>-1:
-					pc = int(m.replace('pc',''))
-					modeldataD[(r,l,m)][meantime] = np.percentile(layerdata,pc)
-					
-		  		print "Loaded metric:", int(meantime),'\t',[(r,l,m)], '\t',modeldataD[(r,l,m)][meantime]
-				counts+=1
-						
+			else:
+				print 'ERROR:',m, "not implemented in profile"
+				assert 0
+		
+								
 		readFiles.append(fn)		
 		openedFiles+=1			
 
@@ -233,21 +215,53 @@ class timeseriesAnalysis:
 		sh.close()
 	
 	self.modeldataD = modeldataD
-	if self.debug: print "timeseriesAnalysis:\tloadModel.\t Model loaded:",	self.modeldataD.keys()[:3], '...', len(self.modeldataD.keys())	
+	if self.debug: print "profileAnalysis:\tloadModel.\t Model loaded:",	self.modeldataD.keys()[:3], '...', len(self.modeldataD.keys())	
+
+  def loadMasks(self):
+  	#####
+	# Here we load the masks file.
+	self.maskfn = 'data/'+self.grid+'_masks.nc'
+	
+	if not os.path.exists(self.maskfn):
+		print "Making mask file",
+
+		makeMaskNC(self.maskfn, self.regions, self.grid)
+	
+	self.modelMasks= {}
+	
+	ncmasks = Dataset(self.maskfn,'r')
+	
+	for r in self.regions:
+		if r in ncmasks.variables.keys():
+			print "Loading mask",r
+			self.modelMasks[r] = ncmasks.variables[r][:]
+			
+		else:
+			newmask = 'data/'+self.grid+'_masks_'+r+'.nc'
+			makeMaskNC(newmask, [r,], self.grid)
+			nc = Dataset(newmask,'r')
+			self.modelMasks[r] = nc.variables[r][:]
+			nc.close()			
+			
+	print "Loaded masks",self.modelMasks.keys()
+
+	ncmasks.close()
+	self._masksLoaded_ = True
 
 
 
+	
   def loadData(self):
   	
-	if self.debug: print "timeseriesAnalysis:\t loadData.",self.dataFile		
+	if self.debug: print "profileAnalysis:\t loadData.",self.dataFile		
 	
   	if not self.dataFile: 
- 		if self.debug: print "timeseriesAnalysis:\t No data File provided:",self.dataFile		 		
+ 		if self.debug: print "profileAnalysis:\t No data File provided:",self.dataFile		 		
 		self.dataD = {}
 		return
 
   	if not os.path.exists(self.dataFile): 
- 		if self.debug: print "timeseriesAnalysis:\tWARNING:\t No such data File:",self.dataFile		 
+ 		if self.debug: print "profileAnalysis:\tWARNING:\t No such data File:",self.dataFile		 
 		self.dataD = {}
 		return
 				
@@ -255,16 +269,17 @@ class timeseriesAnalysis:
 	# load and calculate the real data info
 	try:
 		if self.clean: 
-			print "timeseriesAnalysis:\t loadData\tUser requested clean run. Wiping old data."
+			print "profileAnalysis:\t loadData\tUser requested clean run. Wiping old data."
 			assert 0		
 		sh = shOpen(self.shelvefn_insitu)
 		dataD 	= sh['dataD']
 		sh.close()
-		print "timeseriesAnalysis:\t loadData\tOpened shelve:", self.shelvefn_insitu
+		print "profileAnalysis:\t loadData\tOpened shelve:", self.shelvefn_insitu
 		self.dataD = dataD
 	except:
 		dataD = {}
-		print "timeseriesAnalysis:\t loadData\tCould not open shelve:", self.shelvefn_insitu
+		print "profileAnalysis:\t loadData\tCould not open shelve:", self.shelvefn_insitu
+
 
 	###############
 	# Test to find out if we need to load the netcdf, or if we can just return the dict as a self.object.
@@ -283,10 +298,11 @@ class timeseriesAnalysis:
 		
 	###############
 	# Loading data for each region.
-	print "timeseriesAnalysis:\t loadData,\tloading ",self.dataFile
-	#nc = Dataset(self.dataFile,'r')
-	#data = tst.loadData(nc, self.datadetails)
-			
+	print "profileAnalysis:\t loadData,\tloading ",self.dataFile
+	nc = Dataset(self.dataFile,'r')
+	data = tst.loadData(nc, self.datadetails)
+
+	
 	
 	###############
 	# Loading data for each region.
@@ -302,17 +318,17 @@ class timeseriesAnalysis:
 			dataD[(r,l,'lat')]  = np.ma.array([-999,],mask=[True,])	    	
 			dataD[(r,l,'lon')]  = np.ma.array([-999,],mask=[True,])	    	
 									    	
-    		print "timeseriesAnalysis:\t loadData,\tloading ",(r,l),  dataD[(r,l)].min(),  dataD[(r,l)].max(),  dataD[(r,l)].mean()
+    		print "profileAnalysis:\t loadData,\tloading ",(r,l),  dataD[(r,l)].min(),  dataD[(r,l)].max(),  dataD[(r,l)].mean()
     		
 	###############
 	# Savng shelve		
-	print "timeseriesAnalysis:\t loadData.\tSaving shelve:", self.shelvefn_insitu			
+	print "profileAnalysis:\t loadData.\tSaving shelve:", self.shelvefn_insitu			
 	try:
 		sh = shOpen(self.shelvefn_insitu)
 		sh['dataD'] 	= dataD
 		sh.close()
 	except:
-		print "timeseriesAnalysis:\t WARNING.\tSaving shelve failed, trying again.:", self.shelvefn_insitu			
+		print "profileAnalysis:\t WARNING.\tSaving shelve failed, trying again.:", self.shelvefn_insitu			
 		shutil.move(self.shelvefn_insitu, self.shelvefn_insitu+'.broken')
 		sh = shOpen(self.shelvefn_insitu)
 		sh['dataD'] 	= dataD
@@ -369,70 +385,15 @@ class timeseriesAnalysis:
 	
 	
   def makePlots(self):
-	if self.debug: print "timeseriesAnalysis:\t makePlots."		  
+	if self.debug: print "profileAnalysis:\t makePlots."		  
 
 
-				
-
-
-			
-	
-	#####
-	# Trafficlight and percentiles plots:
-	for r in self.regions:
-	    for l in self.layers:
-		#####
-		# Don't make pictures for each integer or float layer, only the ones that are strings. 
-		if type(l) in [type(0),type(0.)]:continue
-		    
-		#####
-		# Test for presence/absence of in situ data.
-	    	try:	dataslice = self.dataD[(r,l)]	  
-	    	except:	dataslice = []
-	    	try:	dataslice = dataslice.compressed()
-	    	except:	pass
-
-		#####
-		# Percentiles plots.
-  	    	if '20pc' not in self.metrics: continue
-		modeldataDict	= {}
-		timesDict	= {}
-		for m in self.metrics:
-			timesDict[m] 	 = sorted(self.modeldataD[(r,l,m)].keys())
-		    	#modeldataDict[m] = [self.modeldataD[(r,l,m)][t] for t in timesDict[m]]
-		    	modeldataDict[m] = []
-		    	for t in sorted(timesDict[m]):
-		    			v = self.modeldataD[(r,l,m)][t]
-		    			if np.ma.is_masked(v): modeldataDict[m].append(0.)
-		    			else:	modeldataDict[m].append(v)
-		    	
-			#print '\n\n',r,l,m, timesDict[m] ,	modeldataDict[m]    	
-		title = ' '.join([getLongName(t) for t in [r,str(l),self.datasource, self.dataType]])
-		for greyband in  ['MinMax', '10-90pc',]:
-			filename = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join(['percentiles',self.jobID,self.dataType,r,str(l),greyband])+'.png'
-			if not ukp.shouldIMakeFile([self.shelvefn, self.shelvefn_insitu],filename,debug=False):continue
-			tsp.percentilesPlot(timesDict,modeldataDict,dataslice,title = title,filename=filename,units =self.modeldetails['units'],greyband=greyband)
-		
-	    #####
-	    # Percentiles plots.		  	    
-	    for m in self.metrics:  
-	    		if m != 'sum': continue 
-			filename = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join(['Sum',self.jobID,self.dataType,r,str(l),m,])+'.png'
-			if not ukp.shouldIMakeFile([self.shelvefn, self.shelvefn_insitu],filename,debug=False):	continue
-				    		
-			modeldataDict = self.modeldataD[(r,l,m)]
-			times = sorted(modeldataDict.keys())
-			modeldata = [modeldataDict[t] for t in times]
-			title = ' '.join([getLongName(t) for t in [r,str(l),m,self.dataType]])
-	
-			tsp.trafficlightsPlot(times,modeldata,dataslice,metric = m, title = title,filename=filename,units = self.modeldetails['units'],greyband=False)
-				
 
 	#####
 	# Hovmoeller plots
 	for r in self.regions:
 	    for m in self.metrics: 
-	    	if m not in ['mean','median',]:continue
+	    	if m not in ['mean','median','min','max',]:continue
 	    	
 	   	#####
 	   	# Load data layers:
@@ -493,21 +454,6 @@ class timeseriesAnalysis:
 			tsp.hovmoellerPlot(modeldata,data,hovfilename, modelZcoords = modelZcoords, dataZcoords= dataZcoords, title = title,diff=True)		
 	
 
-	#####
-	# map plots for specific regions:	
-	runmapplots=False
-	for r in self.regions:
-	  	for l in self.layers:	
-	 		if runmapplots:continue
-			if type(l) in [type(0),type(0.)]:continue
-	 		mapfilename = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join(['map',self.jobID,self.dataType,str(l),r,])+'.png'
-			if ukp.shouldIMakeFile(self.modelFiles[-1],mapfilename,debug=False):runmapplots = True
- 	if runmapplots:
-		self.mapplotsRegionsLayers() 		
-
-			
-			
-			
 			
 			
 			

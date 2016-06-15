@@ -147,7 +147,7 @@ def getHorizontalSlice(nc,coords,details,layer,data = ''):
 		assert 0
 
 
-	if type(layer) in [type(0),]:
+	if type(layer) in [type(0),np.int64,np.int,]:
 		k = layer
 		try:	z = nc.variables[coords['z']][k]
 		except:	return []
@@ -156,12 +156,13 @@ def getHorizontalSlice(nc,coords,details,layer,data = ''):
 		return ApplyDepthSlice(data, k)
 			
 	if layer in nc.variables[coords['z']][:]:
+		z = layer
 		k =  ukp.getORCAdepth(z,nc.variables[coords['z']][:],debug=False)
 		if data =='': 	data = ukp.extractData(nc,details)		
 		print "getHorizontalSlice:\tSpecific depth requested",details['name'], layer,nc.variables[coords['z']][k], data.shape	
 		return ApplyDepthSlice(data, k)
 			
-	print "getHorizontalSlice\t:ERROR:\tunrecoginised layer instructions",layer, coords
+	print "getHorizontalSlice\t:ERROR:\tunrecoginised layer instructions",layer, coords,type(layer)
 	assert 0
 
 

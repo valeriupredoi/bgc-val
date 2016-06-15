@@ -41,7 +41,7 @@ from getpass import getuser
 # Load specific local code:
 import UKESMpython as ukp
 from timeseries import timeseriesAnalysis
-
+from timeseries import profileAnalysis
 
 timeseriesKeys = ['T','S','MLD', 'Chl_pig','Chl_CCI',
 		  'N','Si','O2','Alk','DIC','AirSeaFlux','Iron',
@@ -148,9 +148,9 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('TotalOMZVolume')			# work in progress
 			#analysisKeys.append('TotalOMZVolume50')			# work in progress			
 			#analysisKeys.append('OMZThickness')			# work in progress						
-			#analysisKeys.append('DIC')			# work in progress									
+			analysisKeys.append('DIC')			# work in progress									
 			#analysisKeys.append('Iron')			# work in progress												
-                        analysisKeys.append('IntPP_OSU')                # OSU Integrated primpary production    
+                        #analysisKeys.append('IntPP_OSU')                # OSU Integrated primpary production    
 			
 		if analysisSuite.lower() in ['FullDepth',]:
 			#Skip 2D fields
@@ -445,7 +445,7 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= orcaGridfn
-
+		av[name]['Dimensions']		= 3
 
 	if 'Chl_CCI' in analysisKeys:
 		name = 'Chlorophyll_cci'
@@ -473,7 +473,7 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= orcaGridfn
-		
+		av[name]['Dimensions']		= 2		
 
 
 
@@ -505,7 +505,8 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= orcaGridfn
-
+		av[name]['Dimensions']		= 3
+		
 	if 'Si' in analysisKeys:
 		name = 'Silicate'
 		av[name]['modelFiles']  = listModelDataFiles(jobID, 'ptrc_T', MEDUSAFolder_pref, z_component,annual)				
@@ -528,7 +529,7 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= orcaGridfn
-		
+		av[name]['Dimensions']		= 3		
 	
 	if 'O2' in analysisKeys:
 		name = 'Oxygen'
@@ -551,36 +552,9 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= orcaGridfn
+		av[name]['Dimensions']		= 3
 
 
-	if 'OMZ' in analysisKeys:
-		# Here we calculate the volume of the OMZ, where the O2 concentration is below 20.
-		nc = Dataset(orcaGridfn,'r')
-		assert 0 
-		# not ready yet
-		name = 'OMZ'
-		if annual:
-			av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
-			av[name]['dataFile'] 		=  WOAFolder+'oxygen-woa13.nc'
-				
-		av[name]['modelcoords'] 	= medusaCoords 	
-		av[name]['datacoords'] 		= woaCoords
-	
-		av[name]['modeldetails'] 	= {'name': name, 'vars':['OXY',], 'convert': ukp.NoChange,}
-		av[name]['datadetails']  	= {'name': name, 'vars':['o_an',], 'convert': ukp.oxconvert,'units':'mmol/m^3'}
-	
-		av[name]['layers'] 		= ['Surface',] #'100m','300m','1000m',]
-		av[name]['regions'] 		= regionList
-		av[name]['metrics']		= ['sum', ]
-
-		av[name]['datasource'] 		= 'WOA'
-		av[name]['model']		= 'MEDUSA'
-
-		av[name]['modelgrid']		= 'eORCA1'
-		av[name]['gridFile']		= orcaGridfn
- 
- 
- 
  
 	if 'OMZThickness' in analysisKeys:
 		name = 'OMZThickness'
@@ -641,7 +615,7 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= orcaGridfn	
-		
+		av[name]['Dimensions']		= 2		
 		
 		
 		
@@ -708,7 +682,7 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= orcaGridfn	
-	
+		av[name]['Dimensions']		= 1	
 	
 	if 'DIC' in analysisKeys:
 	
@@ -735,7 +709,8 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= orcaGridfn		
-
+		av[name]['Dimensions']		= 3
+		
 	if 'Alk' in analysisKeys:
 		def convertmeqm3TOumolkg(nc,keys):
 			return nc.variables[keys[0]][:]* 1.027
@@ -765,7 +740,7 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= orcaGridfn
-					
+		av[name]['Dimensions']		= 3					
 
 
 	if 'AirSeaFlux' in analysisKeys:
@@ -818,7 +793,8 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['model']		= 'MEDUSA'
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= orcaGridfn
-					
+		av[name]['Dimensions']		= 2
+							
 	if 'TotalAirSeaFlux' in analysisKeys:
 		name = 'TotalAirSeaFluxCO2'	
 		nc = Dataset(orcaGridfn,'r')
@@ -867,7 +843,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['model']		= 'MEDUSA'
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= orcaGridfn
-					
+		av[name]['Dimensions']		= 2					
 										
 					
 
@@ -899,7 +875,7 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= orcaGridfn
-		
+		av[name]['Dimensions']		= 2		
 		
 	if 'PP_OSU' in analysisKeys:
 		nc = Dataset(orcaGridfn,'r')
@@ -962,7 +938,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['model']		= 'MEDUSA'
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= orcaGridfn
-
+		av[name]['Dimensions']		= 3
 
 	#####
 	# Total 
@@ -1023,7 +999,8 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['model']		= 'MEDUSA'
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= orcaGridfn		
-		
+		av[name]['Dimensions']		= 2
+				
 	if 'GlobalExportRatio' in analysisKeys:
 		
 		def calcExportRatio(nc,keys):
@@ -1046,7 +1023,8 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['model']		= 'MEDUSA'
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= orcaGridfn		
-
+		av[name]['Dimensions']		= 1
+		
 	if  'LocalExportRatio' in analysisKeys:
 		
 		def calcExportRatio(nc,keys):
@@ -1069,7 +1047,8 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['model']		= 'MEDUSA'
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= orcaGridfn	
-
+		av[name]['Dimensions']		= 2
+		
 	if  'Iron' in analysisKeys:
 		
 		name = 'Iron'
@@ -1087,7 +1066,8 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['model']		= 'MEDUSA'
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= orcaGridfn
-				
+		av[name]['Dimensions']		= 3
+						
 	if 'T' in analysisKeys:
 		name = 'Temperature'
 		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', MEDUSAFolder_pref, z_component,annual)										
@@ -1112,7 +1092,7 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= orcaGridfn
-
+		av[name]['Dimensions']		= 3
 					
 	if 'S' in analysisKeys:
 		name = 'Salinity'
@@ -1139,7 +1119,8 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= orcaGridfn
-
+		av[name]['Dimensions']		= 3
+		
 	if 'MLD' in analysisKeys:
 		
 		def mldapplymask(nc,keys):
@@ -1199,7 +1180,7 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= orcaGridfn
-		
+		av[name]['Dimensions']		= 2		
 			
 				
 
@@ -1232,7 +1213,31 @@ def analysis_timeseries(jobID = "u-ab671",
 		   if not os.path.exists(av[name]['dataFile']):
 			print "analysis-Timeseries.py:\tWARNING:\tdata file is not found:",av[name]['dataFile']
 			if strictFileCheck: assert 0
-			
+
+		if av[name]['Dimensions'] == 3:
+			profa = profileAnalysis(
+				av[name]['modelFiles'], 
+				av[name]['dataFile'],
+				dataType	= name,
+	  			modelcoords 	= av[name]['modelcoords'],
+	  			modeldetails 	= av[name]['modeldetails'],
+	  			datacoords 	= av[name]['datacoords'],
+	  			datadetails 	= av[name]['datadetails'],								
+				datasource	= av[name]['datasource'],
+				model 		= av[name]['model'],
+				jobID		= jobID,
+				layers	 	= list(np.arange(120)),
+				regions	 	= av[name]['regions'],			
+				metrics	 	= ['mean',],
+				workingDir	= shelvedir,
+				imageDir	= imagedir,					
+				grid		= av[name]['modelgrid'],
+				gridFile	= av[name]['gridFile'],
+				clean 		= clean,
+			)
+			shelves[name] = profa.shelvefn
+			shelves_insitu[name] = profa.shelvefn_insitu
+					
 		tsa = timeseriesAnalysis(
 			av[name]['modelFiles'], 
 			av[name]['dataFile'],
@@ -1249,13 +1254,15 @@ def analysis_timeseries(jobID = "u-ab671",
 			metrics	 	= av[name]['metrics'],
 			workingDir	= shelvedir,
 			imageDir	= imagedir,					
-			grid		= av[name]['grid'],
+			grid		= av[name]['modelgrid'],
 			gridFile	= av[name]['gridFile'],
 			clean 		= clean,
 		)
 		shelves[name] = tsa.shelvefn
 		shelves_insitu[name] = tsa.shelvefn_insitu
 
+
+		
 
 def singleTimeSeriesProfile(jobID,key):
 	

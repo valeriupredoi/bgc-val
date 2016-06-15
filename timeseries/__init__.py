@@ -25,4 +25,4 @@
 from timeseriesPlots import *
 from timeseriesTools import *
 from timeseriesAnalysis import timeseriesAnalysis
-
+from profileAnalysis import profileAnalysis
