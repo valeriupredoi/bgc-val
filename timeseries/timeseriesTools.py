@@ -146,7 +146,6 @@ def getHorizontalSlice(nc,coords,details,layer,data = ''):
 		print "getHorizontalSlice\t:ERROR:\tDepth in should be done in the extractData phase by passing a function in the details dictionary."
 		assert 0
 
-
 	if type(layer) in [type(0),np.int64,np.int,]:
 		k = layer
 		try:	z = nc.variables[coords['z']][k]

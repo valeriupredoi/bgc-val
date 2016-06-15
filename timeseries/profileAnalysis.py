@@ -158,9 +158,6 @@ class profileAnalysis:
 		print "shelveFn:",self.shelvefn
 		print "readFiles:",readFiles
 
-
-
-	
 	###############
 	# Load files, and calculate fields.
 	openedFiles = 0					
@@ -184,8 +181,11 @@ class profileAnalysis:
 		for r in self.regions:
 		  for m in self.metrics:
 			if m =='mean':
-				data = np.ma.masked_where((self.modelMasks[r] == 1) + dataAll.mask,dataAll).mean(1).mean(1)
-				#print "Saving model data profile",r,m,data.shape, dataAll.shape ,self.modelMasks[r].shape
+				data = np.ma.masked_where((self.modelMasks[r] != 1) + dataAll.mask,dataAll).mean(1).mean(1)
+				
+				print r, self.modelMasks[r].sum(), dataAll.mask.sum()
+								
+				print "Saving model data profile",r,m,data.shape, data.min(),data.max(), dataAll.shape ,self.modelMasks[r].shape, dataAll.min(),dataAll.max()
 				for l,d in enumerate(data):
 					#print "Saving model data profile",r,m,l,d
 					modeldataD[(r,l,m)][meantime] = d
@@ -193,11 +193,9 @@ class profileAnalysis:
 			else:
 				print 'ERROR:',m, "not implemented in profile"
 				assert 0
-		
 								
 		readFiles.append(fn)		
 		openedFiles+=1			
-
 
 		nc.close()
 		if openedFiles:
@@ -388,13 +386,25 @@ class profileAnalysis:
 	if self.debug: print "profileAnalysis:\t makePlots."		  
 
 
+	#####
+	# create a dictionary of model and data depths and layers.
+  	mnc = Dataset(self.modelFiles[-1],'r')		
+	modelZcoords = {i:z for i,z in enumerate(mnc.variables[self.modelcoords['z']][:])}
+  	mnc.close()  
+
+	if self.dataFile:
+	  	dnc = Dataset(self.dataFile,'r')	
+	  	dataZcoords = {i:z for i,z in enumerate(dnc.variables[self.datacoords['z']][:])}
+	  	print 
+	  	dnc.close()  	
+	else: 	dataZcoords = {}
 
 	#####
 	# Hovmoeller plots
 	for r in self.regions:
 	    for m in self.metrics: 
 	    	if m not in ['mean','median','min','max',]:continue
-	    	
+
 	   	#####
 	   	# Load data layers:
 		data = {}
@@ -403,13 +413,14 @@ class profileAnalysis:
 	  		#print "Hovmoeller plots:",r,m,l
 	  		
 	  		if type(l) == type('str'):continue	# no strings, only numbered layers.
+	  		if l > max(dataZcoords.keys()): continue
 			#####
 			# Test for presence/absence of in situ data.
 			try:	
 				dataslice = self.dataD[(r,l)]	  
 				dataslice = dataslice.compressed()				
 			except:	dataslice = np.ma.array([-1000,],mask=[True,])
-						
+		
 			if m == 'mean': 
 				try:	data[l] = np.ma.mean(dataslice)
 				except:	data[l] = np.ma.array([-1000,],mask=[True,])				
@@ -422,36 +433,34 @@ class profileAnalysis:
 			elif m == 'max':
 				try:	data[l] = np.ma.max(dataslice)
 				except:	data[l] = np.ma.array([-1000,],mask=[True,])				
-			else: continue		
 			
-			#print "makePlots:\tHovmoeller plots:",r,m,l,'modeldata',self.modeldataD[(r,l,m)]
-			#print "makePlots:\tHovmoeller plots:",r,m,l,'data',data[l]			
-			modeldata[l] = self.modeldataD[(r,l,m)]
+			print "makePlots:\tHovmoeller plots:",r,m,l,'\tdata',data[l]								
 
+	   	#####
+	   	# Load model layers:
+	  	for l in self.layers:
+	  		if type(l) == type('str'):continue	# no strings, only numbered layers.
+	  		if l > max(modelZcoords.keys()): continue
+
+			modeldata[l] = self.modeldataD[(r,l,m)]
+			print "makePlots:\tHovmoeller plots:",r,m,l,'\tmodeldata:',modeldata[l]
+			
 		#####
 		# check that multiple layers were requested.
 		if len(data.keys())<1: continue
+		if len(modeldata.keys())<1: continue
+	
 
-		#####
-		# create a dictionary of model depths and layers.
-	  	mnc = Dataset(self.modelFiles[-1],'r')		
-		modelZcoords = {i:z for i,z in enumerate(mnc.variables[self.modelcoords['z']][:])}
-	  	mnc.close()  	
 
-		if self.dataFile:
-		  	dnc = Dataset(self.dataFile,'r')	
-		  	dataZcoords = {i:z for i,z in enumerate(dnc.variables[self.datacoords['z']][:])}
-		  	dnc.close()  	
-		else: 	dataZcoords = {}
 
 		title = ' '.join([getLongName(t) for t in [r,m,self.dataType]])	
 	    	hovfilename = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join(['profile',self.jobID,self.dataType,r,m,])+'.png'
 		if  ukp.shouldIMakeFile([self.shelvefn, self.shelvefn_insitu],hovfilename,debug=False):				
 			tsp.hovmoellerPlot(modeldata,data,hovfilename, modelZcoords = modelZcoords, dataZcoords= dataZcoords, title = title,diff=False)		
 	
-	    	hovfilename = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join(['profileDiff',self.jobID,self.dataType,r,m,])+'.png'
-		if  ukp.shouldIMakeFile([self.shelvefn, self.shelvefn_insitu],hovfilename,debug=False):					    	
-			tsp.hovmoellerPlot(modeldata,data,hovfilename, modelZcoords = modelZcoords, dataZcoords= dataZcoords, title = title,diff=True)		
+	    	hovfilename_diff = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join(['profileDiff',self.jobID,self.dataType,r,m,])+'.png'
+		if  ukp.shouldIMakeFile([self.shelvefn, self.shelvefn_insitu],hovfilename_diff,debug=False):					    	
+			tsp.hovmoellerPlot(modeldata,data,hovfilename_diff, modelZcoords = modelZcoords, dataZcoords= dataZcoords, title = title,diff=True)		
 	
 
 			

@@ -521,7 +521,7 @@ def mapPlotPair(lons1, lats1, data1,lons2,lats2,data2,filename,titles=['',''],lo
 	pyplot.close()
 		
 
-def hovmoellerAxis(fig,ax,title,xaxis,yaxis,data,vmin='',vmax='',cmap = defcmap ,debug = False):
+def hovmoellerAxis(fig,ax,title,xaxis,yaxis,data,vmin='',vmax='',cmap = defcmap ,debug = True):
 	yaxis = np.array(yaxis)
 	if yaxis.min()*yaxis.max() <=0.:
 		if yaxis.mean()<0:yaxis = np.clip(yaxis,-10000.,-0.1)
@@ -571,7 +571,7 @@ def hovmoellerPlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords=
 	times_cc = []
 	yaxis_cc = []
 	
-	for l in modelZcoords:
+	for l in sorted(modelZcoords.keys()):
 		if l not in modeldata.keys():continue
 		yaxis_cc.append(modelZcoords[l])
 
@@ -584,23 +584,27 @@ def hovmoellerPlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords=
 	md = np.ma.masked_where(np.ma.masked_invalid(md).mask + md.mask, md)
 	times = taxisfromCC(np.array(times_cc))
 	yaxis = zaxisfromCC(yaxis_cc)
-	print "hovmoellerPlot:", title, md.shape,md.mean(),times.shape,yaxis.shape #, times, yaxis
+	print "hovmoellerPlot model:", title, md.shape,md.mean(),times.shape,yaxis.shape #, times, yaxis
 	if len(md.shape)==1 or 1 in md.shape:
 		print "Not enough model data dimensions:",md.shape
 		return
+		
 	#####
 	# creating data data dictionairies
 	dd = []
 	dxaxis= []
 	dyaxis_cc = []
 	
-	for l in dataZcoords:
+	for l in sorted(dataZcoords.keys()):
 		if l not in dataslice.keys():continue
 		dyaxis_cc.append(dataZcoords[l])
 		print 'preparing data for hov:',l,dataZcoords[l], dataslice[l]
-		dd.append([np.ma.array(dataslice[l]),])
+		dd.append(dataslice[l])
+	
 	dd = np.ma.array(dd)#.squeeze()
+	print "hovmoellerPlot data: (pre-mask)", title, '\t',dd.shape,dd.min(),dd.mean(),dd.max()
 	dd = np.ma.masked_where(np.ma.masked_invalid(dd).mask + dd.mask, dd)	
+	print "hovmoellerPlot data: (post-mask)", title, '\t',dd.shape,dd.min(),dd.mean(),dd.max()
 	dyaxis_cc = np.array(dyaxis_cc)
 		
 	
@@ -618,7 +622,7 @@ def hovmoellerPlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords=
 	dyaxis = zaxisfromCC(dyaxis_cc)
 	print "hovmoellerPlot: - data:", title, dd.shape,dd.mean(),dxaxis.shape,dyaxis.shape
 	
- 	if len(dd.squeeze().compressed())!=0 and diff: 
+ 	if len(dd.squeeze().compressed())==0 and diff: 
 		print "hovmoellerPlot:\tWARNNG: Data entire masked, can not take difference of entirely masked data."
 		return
 	

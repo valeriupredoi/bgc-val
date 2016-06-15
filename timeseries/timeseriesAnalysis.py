@@ -427,7 +427,7 @@ class timeseriesAnalysis:
 	
 			tsp.trafficlightsPlot(times,modeldata,dataslice,metric = m, title = title,filename=filename,units = self.modeldetails['units'],greyband=False)
 				
-
+	"""
 	#####
 	# Hovmoeller plots
 	for r in self.regions:
@@ -491,7 +491,7 @@ class timeseriesAnalysis:
 	    	hovfilename = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join(['profileDiff',self.jobID,self.dataType,r,m,])+'.png'
 		if  ukp.shouldIMakeFile([self.shelvefn, self.shelvefn_insitu],hovfilename,debug=False):					    	
 			tsp.hovmoellerPlot(modeldata,data,hovfilename, modelZcoords = modelZcoords, dataZcoords= dataZcoords, title = title,diff=True)		
-	
+	"""
 
 	#####
 	# map plots for specific regions:	

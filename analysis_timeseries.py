@@ -200,9 +200,9 @@ def analysis_timeseries(jobID = "u-ab671",
 		layerList = ['Surface','500m','1000m',]
 		metricList = ['mean','median', '10pc','20pc','30pc','40pc','50pc','60pc','70pc','80pc','90pc','min','max']
 
-	if z_component in ['FullDepth',]:
-		layerList = [0,2,5,10,15,20,25,30,35,40,45,50,55,60,70,]
-		metricList = ['mean','median',]
+#	if z_component in ['FullDepth',]:
+#		layerList = [0,2,5,10,15,20,25,30,35,40,45,50,55,60,70,]
+#		metricList = ['mean','median',]
 	
   	
   	
@@ -1226,7 +1226,7 @@ def analysis_timeseries(jobID = "u-ab671",
 				datasource	= av[name]['datasource'],
 				model 		= av[name]['model'],
 				jobID		= jobID,
-				layers	 	= list(np.arange(120)),
+				layers	 	= list(np.arange(80)),
 				regions	 	= av[name]['regions'],			
 				metrics	 	= ['mean',],
 				workingDir	= shelvedir,
@@ -1235,9 +1235,9 @@ def analysis_timeseries(jobID = "u-ab671",
 				gridFile	= av[name]['gridFile'],
 				clean 		= clean,
 			)
-			shelves[name] = profa.shelvefn
-			shelves_insitu[name] = profa.shelvefn_insitu
-					
+			#shelves[name] = profa.shelvefn
+			#shelves_insitu[name] = profa.shelvefn_insitu
+			
 		tsa = timeseriesAnalysis(
 			av[name]['modelFiles'], 
 			av[name]['dataFile'],
@@ -1258,8 +1258,8 @@ def analysis_timeseries(jobID = "u-ab671",
 			gridFile	= av[name]['gridFile'],
 			clean 		= clean,
 		)
-		shelves[name] = tsa.shelvefn
-		shelves_insitu[name] = tsa.shelvefn_insitu
+		#shelves[name] = tsa.shelvefn
+		#shelves_insitu[name] = tsa.shelvefn_insitu
 
 
 		
@@ -1293,7 +1293,7 @@ def main():
 	
 	analysis_timeseries(jobID =jobID,analysisSuite=suite, z_component = 'SurfaceOnly',)#clean=1)			
 	#if suite == 'all':
-	analysis_timeseries(jobID =jobID,analysisSuite='FullDepth', z_component = 'FullDepth',)#clean=1)  
+	#analysis_timeseries(jobID =jobID,analysisSuite='FullDepth', z_component = 'FullDepth',)#clean=1)  
 
 if __name__=="__main__":
 	main()	
