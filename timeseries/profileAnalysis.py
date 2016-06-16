@@ -147,7 +147,10 @@ class profileAnalysis:
 	    		if self.debug: print 'has no keys'
 	    	try:	
 	    	    	if len(modeldataD[(r,l,m)].keys()) == 0: 
+	    	    		print "modeldataD[",(r,l,m),"] has no keys"
 	    	    		readFiles = []
+	    	    		assert 0
+	    	    		
 	    	except: pass
 
 	#####
@@ -186,9 +189,19 @@ class profileAnalysis:
 				print r, self.modelMasks[r].sum(), dataAll.mask.sum()
 								
 				print "Saving model data profile",r,m,data.shape, data.min(),data.max(), dataAll.shape ,self.modelMasks[r].shape, dataAll.min(),dataAll.max()
+				
+				alllayers = []
 				for l,d in enumerate(data):
 					#print "Saving model data profile",r,m,l,d
 					modeldataD[(r,l,m)][meantime] = d
+					alllayers.append(l)
+					
+				#####
+				# Add a masked value in layers where there is no data.
+				
+				for l in self.layers:
+					if l in alllayers:continue
+					modeldataD[(r,l,m)][meantime] = np.ma.masked
 					
 			else:
 				print 'ERROR:',m, "not implemented in profile"
@@ -408,8 +421,8 @@ class profileAnalysis:
 	   	#####
 	   	# Load data layers:
 		data = {}
-		modeldata = {}
-	  	for l in self.layers:
+		if self.dataFile:		
+	  	    for l in self.layers:
 	  		#print "Hovmoeller plots:",r,m,l
 	  		
 	  		if type(l) == type('str'):continue	# no strings, only numbered layers.
@@ -438,6 +451,7 @@ class profileAnalysis:
 
 	   	#####
 	   	# Load model layers:
+		modeldata = {}	   	
 	  	for l in self.layers:
 	  		if type(l) == type('str'):continue	# no strings, only numbered layers.
 	  		if l > max(modelZcoords.keys()): continue
@@ -454,7 +468,12 @@ class profileAnalysis:
 
 
 		title = ' '.join([getLongName(t) for t in [r,m,self.dataType]])	
-	    	hovfilename = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join(['profile',self.jobID,self.dataType,r,m,])+'.png'
+	    	profilefn = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join(['profile',self.jobID,self.dataType,r,m,])+'.png'
+		if  ukp.shouldIMakeFile([self.shelvefn, self.shelvefn_insitu],profilefn,debug=False):					    	
+			tsp.profilePlot(modeldata,data,profilefn, modelZcoords = modelZcoords, dataZcoords= dataZcoords, title = title,)			
+			
+			
+	    	hovfilename = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join(['profilehov',self.jobID,self.dataType,r,m,])+'.png'
 		if  ukp.shouldIMakeFile([self.shelvefn, self.shelvefn_insitu],hovfilename,debug=False):				
 			tsp.hovmoellerPlot(modeldata,data,hovfilename, modelZcoords = modelZcoords, dataZcoords= dataZcoords, title = title,diff=False)		
 	
@@ -463,10 +482,7 @@ class profileAnalysis:
 			tsp.hovmoellerPlot(modeldata,data,hovfilename_diff, modelZcoords = modelZcoords, dataZcoords= dataZcoords, title = title,diff=True)		
 	
 
-			
-			
-			
-			
+
 			
 			
 			

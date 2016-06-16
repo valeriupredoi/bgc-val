@@ -335,6 +335,7 @@ def html5Maker(
 
 
 	if Level1Profiles:
+	    for plottype in ['profile','profilehov']:
 		l1regions = ['Global',
 		  'SouthernOcean',
 		  'NorthernSubpolarAtlantic',
@@ -353,7 +354,8 @@ def html5Maker(
 			  'Alkalinity',
 			  'Oxygen',
 			]
-		SectionTitle= 'Level 1 - Profiles'
+		if plottype == 'profile':	SectionTitle= 'Level 1 - Profiles'
+		if plottype == 'profilehov':	SectionTitle= 'Level 1 - Hovmoeller plots'		
 		hrefs 		= []
 		Titles		= {}
 		SidebarTitles 	= {}
@@ -363,7 +365,7 @@ def html5Maker(
 		for key in regionalFields:
 			#if key not in ['Alkalinity','Nitrate']: continue
 
-			href = 	'L1prof'+key#+'-'+region
+			href = 	'L1'+plottype+'-'+key#+'-'+region
 			
 			desc = ''
 			if key in ListofCaveats.keys():			desc +=ListofCaveats[key]+'\n'
@@ -378,9 +380,10 @@ def html5Maker(
 			#####
 			# Determine the list of files:
 			vfiles = []
-			for region in l1regions:				
+			for region in l1regions:
 				#vfiles.extend(glob('./images/'+jobID+'/timeseries/*/percentiles*'+key+'*'+region+'*10-90pc.png'))
-		                vfiles.extend(glob('./images/'+jobID+'/timeseries/*/profile*'+key+'*'+region+'*mean.png'))
+		                if plottype == 'profile':	vfiles.extend(glob('./images/'+jobID+'/timeseries/*/profile_*'+key+'*'+region+'*mean.png'))
+		                if plottype == 'profilehov':	vfiles.extend(glob('./images/'+jobID+'/timeseries/*/profilehov_*'+key+'*'+region+'*mean.png'))		                
 			#####
 			# Create plot headers for each file.
 			count=0
@@ -388,7 +391,7 @@ def html5Maker(
 				#####
 				# Skip transects, they'll be added below.
 				if fn.find('Transect') >-1: continue
-				if fn.lower().find('surface')<0:continue
+				#if fn.lower().find('surface')<0:continue
 				
 				#####
 				# Copy image to image folder and return relative path.
@@ -402,7 +405,6 @@ def html5Maker(
 				FileOrder[href][count] = relfn
 				count+=1
 				print "Adding ",relfn,"to script"
-
 				
 		html5Tools.AddSubSections(indexhtmlfn,hrefs,SectionTitle,
 				SidebarTitles=SidebarTitles,#

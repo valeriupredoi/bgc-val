@@ -521,12 +521,14 @@ def mapPlotPair(lons1, lats1, data1,lons2,lats2,data2,filename,titles=['',''],lo
 	pyplot.close()
 		
 
-def hovmoellerAxis(fig,ax,title,xaxis,yaxis,data,vmin='',vmax='',cmap = defcmap ,debug = True):
+def hovmoellerAxis(fig,ax,title,xaxis,yaxis,data,vmin='',vmax='',cmap = defcmap ,debug = False):
 	yaxis = np.array(yaxis)
 	if yaxis.min()*yaxis.max() <=0.:
 		if yaxis.mean()<0:yaxis = np.clip(yaxis,-10000.,-0.1)
-	if debug:	print "hovmoellerAxis:\txaxis:",xaxis,"\tyaxis:",yaxis,"\tdata:",data
-	if debug:	print "hovmoellerAxis:\txaxis:",xaxis.shape,"\tyaxis:",yaxis.shape,"\tdata:",data.shape	
+	
+	if debug:	print "hovmoellerAxis:\txaxis:",title, xaxis,"\tyaxis:",yaxis,"\tdata:",data
+	if debug:	print "hovmoellerAxis:\txaxis:",title, xaxis.shape,"\tyaxis:",yaxis.shape,"\tdata:",data.shape
+	
 	
 	if vmin==vmax=='':	p=pyplot.pcolormesh(xaxis,yaxis,data,cmap = cmap)
 	else:			p=pyplot.pcolormesh(xaxis,yaxis,data,vmin=vmin,vmax=vmax,cmap = cmap)
@@ -644,7 +646,7 @@ def hovmoellerPlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords=
 		# diff:
 		# If the diff key is true, this subtracts the data from the model, it also changes the colour scheme.
 		
-		if len(dd.squeeze().compressed())!=0:
+		if len(dd.squeeze().compressed())==0:
 			print "hovmoellerPlot:\tWARNNG: Data entire masked, can not take difference of entirely masked data."
 			return
 		# First step is to perform the interpollartion.		
@@ -681,8 +683,13 @@ def hovmoellerPlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords=
 	
 	ax1 = pyplot.subplot(gs[0])
 	if len(dd.squeeze().compressed())!=0:
-		hovmoellerAxis(fig,ax1,'Data',dxaxis,dyaxis,dd,vmin=rbmi,vmax=rbma)
-		if diff: pyplot.colorbar()		
+		try:	hovmoellerAxis(fig,ax1,'Data',dxaxis,dyaxis,dd,vmin=rbmi,vmax=rbma)
+		except:	
+			hovmoellerAxis(fig,ax1,'Data',dxaxis,dyaxis,np.tile(dd,[2,1]).transpose(),vmin=rbmi,vmax=rbma)
+		
+		if diff: 
+		    #c1 = fig.colorbar(ax1,pad=0.05,shrink=0.75)
+		    pyplot.colorbar(pad=0.25,shrink=1.)		
 	pyplot.ylim([zmi,zma])
 	ax1.get_xaxis().set_ticks([])
 	pyplot.ylabel('Depth')
@@ -705,5 +712,106 @@ def hovmoellerPlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords=
 	
 	
 	
+
+
+
+
+def profilePlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords= {}, title = '',dpi=100,):	
+	#####
+	# creating model data dictionairies
+	md = []
+	times_cc = []
+	yaxis_cc = []
 	
+	for l in sorted(modelZcoords.keys()):
+		if l not in modeldata.keys():continue
+		yaxis_cc.append(modelZcoords[l])
+
+		times_cc = sorted(modeldata[l].keys())
+		try:	md.append(np.array([modeldata[l][t][0] for t in times_cc]))
+		except:	md.append(np.array([modeldata[l][t] for t in times_cc]))
+		
+	md = np.ma.array(md)#
+	md = md.squeeze()
+	md = np.ma.masked_where(np.ma.masked_invalid(md).mask + md.mask, md)
+	yaxis_cc = np.abs(np.array(yaxis_cc))*-1.
+	#times = taxisfromCC(np.array(times_cc))
+	#yaxis = zaxisfromCC(yaxis_cc)
+	#print "profilePlot model:", title, md.shape,md.mean(),times.shape,yaxis.shape #, times, yaxis
+	if len(md.shape)==1 or 1 in md.shape:
+		print "Not enough model data dimensions:",md.shape
+		return
+		
+	#####
+	# creating data data dictionairies
+	dd = []
+	#dxaxis= []
+	dyaxis_cc = []
+	
+	for l in sorted(dataZcoords.keys()):
+		if l not in dataslice.keys():continue
+		dyaxis_cc.append(dataZcoords[l])
+		print 'preparing data for hov:',l,dataZcoords[l], dataslice[l]
+		dd.append(dataslice[l])
+	
+	dd = np.ma.array(dd)#.squeeze()
+	print "profilePlot data: (pre-mask)", title, '\t',dd.shape,dd.min(),dd.mean(),dd.max()
+	dd = np.ma.masked_where(np.ma.masked_invalid(dd).mask + dd.mask, dd)	
+	print "profilePlot data: (post-mask)", title, '\t',dd.shape,dd.min(),dd.mean(),dd.max()
+	dyaxis_cc = np.abs(np.array(dyaxis_cc))*-1.
+		
+	
+
+	######
+	# Locate min/max colours
+	rbmi = min([md.min(),dd.min(),])
+	rbma = max([md.max(),dd.max(),])
+	
+	######
+	# Locate min/max depths
+	zmi = min([dyaxis_cc.min(),yaxis_cc.min(),])
+	zma = max([dyaxis_cc.max(),yaxis_cc.max(),])	
+	
+	
+
+	#####
+	# Start drawing
+	# Grid spec allows you to make un-even shaped subplots.
+	# here we want the in situ data to be much narrower.
+	fig = pyplot.figure()	
+	fig.set_size_inches(6,6)
+
+	#####
+	# Data  subplot
+	
+	ax1 = pyplot.subplot(111)
+	
+	if len(times_cc)>10:
+		times_cc = times_cc[-5:]
+		
+	if len(dd.squeeze().compressed())!=0:
+		for i,t in enumerate(times_cc):
+			print 'plot',i,t, md[:,i].shape,yaxis_cc.shape
+			pyplot.plot(md[:,i], yaxis_cc, label=str(int(t)))
+			
+	pyplot.ylim([zmi,zma])
+	pyplot.ylabel('Depth')
+	pyplot.title(title)
+
+	#####
+	# model subplot
+	pyplot.plot(dd, dyaxis_cc, 'k', lw=2, label='Data')
+
+	legend = pyplot.legend(loc='lower center',  numpoints = 1, ncol=2, prop={'size':10}) 
+	legend.draw_frame(False) 
+	legend.get_frame().set_alpha(0.)
+					
+	
+	pyplot.tight_layout()			
+	print "profilePlot.py: \tSaving:" , filename
+	pyplot.savefig(filename ,dpi=dpi)		
+	pyplot.close()	
+	
+	
+		
 			
