@@ -22,11 +22,6 @@ def timeseriesParrallel(index):
 	singleTimeSeries(jobID, key,)
 	print "timeseriesParrallel",index, jobID, 'SUCESS'	
 	
-def timeseriesParrallelProfile(index):
-	print "timeseriesParrallelProfile",index, jobID, 'START'
-	key = timeseriesDict[index]
-	singleTimeSeriesProfile(jobID, key,)
-	print "timeseriesParrallelProfile",index, jobID, 'SUCESS'
 
 
 def p2pParrallel(index):
@@ -54,7 +49,7 @@ def theWholePackage(jobID):
 	   	p = Pool(cores)
 	    	p.map(timeseriesParrallel,remaining)
 	else:	
-		analysis_timeseries(jobID =jobID,analysisSuite='All', z_component = 'SurfaceOnly',)
+		analysis_timeseries(jobID =jobID,analysisSuite='level1', z_component = 'SurfaceOnly',)
 		
 		
 	print "########\nThe Whole Package:\tRunning point to point analysis of", jobID,"on", year
@@ -94,19 +89,6 @@ def theWholePackage(jobID):
 		   )
 
 
-	print "########\nThe Whole Package:\tStarting Time series profiles", jobID 
-	if parrallel:	
-		remaining = sorted(timeseriesDict.keys())[:]
-	   	p2 = Pool(cores)
-	    	p2.map(timeseriesParrallelProfile,remaining)
-		#assert 0
-		
-	print "########\nThe Whole Package:\tmaking Summary report"	
-	html5Maker(jobID =jobID,
-		   reportdir=folder('reports/'+jobID),
-		   year = year,
-		   clean=False,
-		   )
 
 
 
