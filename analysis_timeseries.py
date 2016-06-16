@@ -58,7 +58,6 @@ def analysis_timeseries(jobID = "u-ab671",
 			annual = True,
 			strictFileCheck = True,
 			analysisSuite = 'all',
-			z_component = 'SurfaceOnly',
 			regions = 'all',
 			):
 
@@ -75,13 +74,12 @@ def analysis_timeseries(jobID = "u-ab671",
 			
 		analysisSuite chooses a set of fields to look at.
 		
-		z_component selects whethere you're looking at just the surface, or the full depth.(well, every 5 layers)
 		
 		regions selects a list of regions, default is 'all', which is the list supplied by Andy Yool. 
 		
 	"""	
 
-	#print "analysis_p2p:",	jobID,clean, annual,strictFileCheck,analysisSuite,z_component,regions
+	#print "analysis_p2p:",	jobID,clean, annual,strictFileCheck,analysisSuite,regions
 	#assert 0
 	
 	#####
@@ -196,9 +194,9 @@ def analysis_timeseries(jobID = "u-ab671",
 	# The z_component custom command:
 	# This flag sets a list of layers and metrics.
 	# It's not advised to run all the metrics and all the layers, as it'll slow down the analysis.
-	if z_component in ['SurfaceOnly',]:
-		layerList = ['Surface','500m','1000m',]
-		metricList = ['mean','median', '10pc','20pc','30pc','40pc','50pc','60pc','70pc','80pc','90pc','min','max']
+	#if z_component in ['SurfaceOnly',]:
+	layerList = ['Surface','500m','1000m',]
+	metricList = ['mean','median', '10pc','20pc','30pc','40pc','50pc','60pc','70pc','80pc','90pc','min','max']
 
 #	if z_component in ['FullDepth',]:
 #		layerList = [0,2,5,10,15,20,25,30,35,40,45,50,55,60,70,]
@@ -377,22 +375,22 @@ def analysis_timeseries(jobID = "u-ab671",
 	cciCoords	= {'t':'index_t', 'z':'index_z','lat': 'lat',      'lon': 'lon', 'cal': 'standard','tdict':['ZeroToZero'] }
 
 
-	def listModelDataFiles(jobID, filekey, datafolder, z_comp,annual):
-		if z_comp == 'SurfaceOnly':
-			if annual:
-				return sorted(glob(datafolder+jobID+"/"+jobID+"o_1y_*_"+filekey+".nc"))
-			else:
-				return sorted(glob(datafolder+jobID+"/"+jobID+"o_1m_*_"+filekey+".nc"))
-		if z_comp == 'FullDepth':
-			if annual:
-				files = sorted(glob(datafolder+jobID+"/"+jobID+"o_1y_????????_*[0,5]????_"+filekey+".nc"))
-				if len(files)==0:
-					files = sorted(glob(datafolder+jobID+"/"+jobID+"o_1y_????????_*????_"+filekey+".nc"))
-				return files
-			else:
-				print "need to figoure out how to implement this."
-				assert 0
-#				return sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1m_*_"+filekey+".nc"))		
+	def listModelDataFiles(jobID, filekey, datafolder, annual):
+		if annual:
+			return sorted(glob(datafolder+jobID+"/"+jobID+"o_1y_*_"+filekey+".nc"))
+		else:
+			return sorted(glob(datafolder+jobID+"/"+jobID+"o_1m_*_"+filekey+".nc"))
+
+	#	if z_comp == 'FullDepth':
+	#		if annual:
+	#			files = sorted(glob(datafolder+jobID+"/"+jobID+"o_1y_????????_*[0,5]????_"+filekey+".nc"))
+	#			if len(files)==0:
+	#				files = sorted(glob(datafolder+jobID+"/"+jobID+"o_1y_????????_*????_"+filekey+".nc"))
+	#			return files
+	#		else:
+	#			print "need to figoure out how to implement this."
+	#			assert 0
+#	#			return sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1m_*_"+filekey+".nc"))		
 		
 
 
@@ -452,7 +450,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		#####
 		# Not that this is the 1 degree resolution dataset, but higher resolution data are also available.
 		
-		av[name]['modelFiles']  = listModelDataFiles(jobID, 'ptrc_T', MEDUSAFolder_pref, z_component,annual)		
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'ptrc_T', MEDUSAFolder_pref, annual)		
 		if annual:	
 			av[name]['dataFile'] 	= CCIDir+"ESACCI-OC-L3S-OC_PRODUCTS-CLIMATOLOGY-16Y_MONTHLY_1degree_GEO_PML_OC4v6_QAA-annual-fv2.0.nc"	
 			print MEDUSAFolder_pref+"/"+jobID+"o_1y_*_ptrc_T.nc"
@@ -481,7 +479,7 @@ def analysis_timeseries(jobID = "u-ab671",
 
 	if 'N' in analysisKeys:
 		name = 'Nitrate'
-		av[name]['modelFiles']  = listModelDataFiles(jobID, 'ptrc_T', MEDUSAFolder_pref, z_component,annual)				
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'ptrc_T', MEDUSAFolder_pref, annual)				
 		if annual:
 			av[name]['dataFile'] 		=  WOAFolder+'/woa13_all_n00_01.nc'
 		else:
@@ -509,7 +507,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		
 	if 'Si' in analysisKeys:
 		name = 'Silicate'
-		av[name]['modelFiles']  = listModelDataFiles(jobID, 'ptrc_T', MEDUSAFolder_pref, z_component,annual)				
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'ptrc_T', MEDUSAFolder_pref, annual)				
 		if annual:	
 			av[name]['dataFile'] 		= WOAFolder+'woa13_all_i00_01.nc'
 		else:
@@ -534,7 +532,7 @@ def analysis_timeseries(jobID = "u-ab671",
 	if 'O2' in analysisKeys:
 		name = 'Oxygen'
 		if annual:
-			av[name]['modelFiles']  = listModelDataFiles(jobID, 'ptrc_T', MEDUSAFolder_pref, z_component,annual)		
+			av[name]['modelFiles']  = listModelDataFiles(jobID, 'ptrc_T', MEDUSAFolder_pref, annual)		
 			av[name]['dataFile'] 		=  WOAFolder+'woa13_all_o00_01.nc'
 				
 		av[name]['modelcoords'] 	= medusaCoords 	
@@ -691,7 +689,7 @@ def analysis_timeseries(jobID = "u-ab671",
 				
 		name = 'DIC'
 		
-		av[name]['modelFiles'] 		= listModelDataFiles(jobID, 'ptrc_T', MEDUSAFolder_pref, z_component,annual)				
+		av[name]['modelFiles'] 		= listModelDataFiles(jobID, 'ptrc_T', MEDUSAFolder_pref, annual)				
 		av[name]['dataFile'] 		= GLODAPv2Dir+ 'GLODAPv2.tco2.historic.nc'
 				
 		av[name]['modelcoords'] 	= medusaCoords 	
@@ -717,7 +715,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		
 		name = 'Alkalinity'
 		if annual:		
-			av[name]['modelFiles']  = listModelDataFiles(jobID, 'ptrc_T', MEDUSAFolder_pref, z_component,annual)		
+			av[name]['modelFiles']  = listModelDataFiles(jobID, 'ptrc_T', MEDUSAFolder_pref, annual)		
 			av[name]['dataFile'] 	=  GlodapDir+'Alk.nc'
 		else:
 			print "Alkalinity data not available for monthly Analysis"
@@ -773,7 +771,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			
 		name = 'AirSeaFluxCO2'
 
-		av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', MEDUSAFolder_pref, z_component,annual)								
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', MEDUSAFolder_pref, annual)								
 		if annual:
 			av[name]['dataFile'] 		=  TakahashiFolder+'takahashi_2009_Anual_sumflux_2006c_noHead.nc'		
 		else:	
@@ -823,7 +821,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			
 
 
-		av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', MEDUSAFolder_pref, z_component,annual)								
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', MEDUSAFolder_pref, annual)								
 		if annual:
 			av[name]['dataFile'] 		=  TakahashiFolder+'takahashi_2009_Anual_sumflux_2006c_noHead.nc'		
 		else:	
@@ -853,7 +851,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		def medusadepthInt(nc,keys):
 			return (nc.variables[keys[0]][:]+ nc.variables[keys[1]][:])* 6.625 * 12.011 / 1000.	
 
-		av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', MEDUSAFolder_pref, z_component,annual)										
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', MEDUSAFolder_pref, annual)										
 		#av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_diad_T.nc"))
 		av[name]['dataFile'] 		= iMarNetFolder+"/PPint_1deg.nc"
 
@@ -896,7 +894,7 @@ def analysis_timeseries(jobID = "u-ab671",
 				
 		name = 'IntegratedPrimaryProduction_OSU'
 		if annual:
-			av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', MEDUSAFolder_pref, z_component,annual)								
+			av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', MEDUSAFolder_pref, annual)								
 			av[name]['dataFile'] 		= OSUDir +"/standard_VGPM.SeaWIFS.global.average.nc"
 #		else:
 #			print "" 
@@ -960,7 +958,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			
 		name = 'TotalIntegratedPrimaryProduction'
 		if annual:
-			av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', MEDUSAFolder_pref, z_component,annual)							
+			av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', MEDUSAFolder_pref, annual)							
 			if noOSU:	av[name]['dataFile']            = ''
 			else:		av[name]['dataFile'] 		= OSUDir +"/standard_VGPM.SeaWIFS.global.average.nc"
 			
@@ -1009,7 +1007,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			return 	a
 			
 		name = 'ExportRatio'
-		av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', MEDUSAFolder_pref, z_component,annual)								
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', MEDUSAFolder_pref, annual)								
 				
 		av[name]['dataFile'] 		= ""
 		av[name]['modelcoords'] 	= medusaCoords 	
@@ -1033,7 +1031,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			return 	a
 			
 		name = 'LocalExportRatio'
-		av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', MEDUSAFolder_pref, z_component,annual)								
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', MEDUSAFolder_pref, annual)								
 				
 		av[name]['dataFile'] 		= ""
 		av[name]['modelcoords'] 	= medusaCoords 	
@@ -1052,7 +1050,7 @@ def analysis_timeseries(jobID = "u-ab671",
 	if  'Iron' in analysisKeys:
 		
 		name = 'Iron'
-		av[name]['modelFiles']  = listModelDataFiles(jobID, 'ptrc_T', MEDUSAFolder_pref, z_component,annual)								
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'ptrc_T', MEDUSAFolder_pref, annual)								
 				
 		av[name]['dataFile'] 		= ""
 		av[name]['modelcoords'] 	= medusaCoords 	
@@ -1070,7 +1068,7 @@ def analysis_timeseries(jobID = "u-ab671",
 						
 	if 'T' in analysisKeys:
 		name = 'Temperature'
-		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', MEDUSAFolder_pref, z_component,annual)										
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', MEDUSAFolder_pref, annual)										
 		if annual:		
 			#av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_grid_T.nc"))
 			av[name]['dataFile'] 		= WOAFolder+'woa13_decav_t00_01v2.nc'
@@ -1096,7 +1094,7 @@ def analysis_timeseries(jobID = "u-ab671",
 					
 	if 'S' in analysisKeys:
 		name = 'Salinity'
-		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', MEDUSAFolder_pref, z_component,annual)												
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', MEDUSAFolder_pref, annual)												
 		if annual:
 			#av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_grid_T.nc"))
 			av[name]['dataFile'] 		= WOAFolder+'woa13_decav_s00_01v2.nc'
@@ -1158,7 +1156,7 @@ def analysis_timeseries(jobID = "u-ab671",
 
 			
 		name = 'MLD'
-		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', MEDUSAFolder_pref, z_component,annual)												
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', MEDUSAFolder_pref, annual)												
 		#av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_grid_T.nc"))
 		av[name]['dataFile'] 		= MLDFolder+"mld_DT02_c1m_reg2.0.nc"
 			#MLD_DT02 = depth where (T = T_10m +/- 0.2 degC)
@@ -1268,11 +1266,11 @@ def singleTimeSeriesProfile(jobID,key):
 	
 	FullDepths = ['T','S', 'Chl_pig','N','Si','O2','Alk','DIC','Iron',]
 	if key in FullDepths:
-		analysis_timeseries(jobID =jobID,analysisSuite=[key,], z_component = 'FullDepth',)
+		analysis_timeseries(jobID =jobID,analysisSuite=[key,], )
 
 def singleTimeSeries(jobID,key,):
 	try:
-		analysis_timeseries(jobID =jobID,analysisSuite=[key,], z_component = 'SurfaceOnly',)#clean=1)
+		analysis_timeseries(jobID =jobID,analysisSuite=[key,], )#clean=1)
 	except:
 		print "Failed singleTimeSeries",(jobID,key)
 		return 
@@ -1291,7 +1289,7 @@ def main():
 	else:			suite = 'all'
 		
 	
-	analysis_timeseries(jobID =jobID,analysisSuite=suite, z_component = 'SurfaceOnly',)#clean=1)			
+	analysis_timeseries(jobID =jobID,analysisSuite=suite, )#clean=1)			
 	#if suite == 'all':
 	#analysis_timeseries(jobID =jobID,analysisSuite='FullDepth', z_component = 'FullDepth',)#clean=1)  
 

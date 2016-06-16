@@ -179,16 +179,14 @@ class profileAnalysis:
 		#DL = tst.DataLoader(fn,nc,self.modelcoords,self.modeldetails, regions = self.regions, layers = self.layers,)
 		nc = Dataset(fn,'r')
 		dataAll = ukp.extractData(nc,self.modeldetails).squeeze()
-		m = 'mean'
 		
 		for r in self.regions:
 		  for m in self.metrics:
 			if m =='mean':
 				data = np.ma.masked_where((self.modelMasks[r] != 1) + dataAll.mask,dataAll).mean(1).mean(1)
 				
-				print r, self.modelMasks[r].sum(), dataAll.mask.sum()
-								
-				print "Saving model data profile",r,m,data.shape, data.min(),data.max(), dataAll.shape ,self.modelMasks[r].shape, dataAll.min(),dataAll.max()
+				if self.debug:print "profileAnalysis:\tloadModel."r, self.modelMasks[r].sum(), dataAll.mask.sum()
+				if self.debug:print "profileAnalysis:\tloadModel.",data.shape, data.min(),data.max(), dataAll.shape ,self.modelMasks[r].shape, dataAll.min(),dataAll.max()
 				
 				alllayers = []
 				for l,d in enumerate(data):
@@ -296,7 +294,9 @@ class profileAnalysis:
 	# Test to find out if we need to load the netcdf, or if we can just return the dict as a self.object.
 	needtoLoad = False
 	for r in self.regions:
+	    if needtoLoad:continue
 	    for l in self.layers:
+		if needtoLoad:continue
 	    	try:	
 	    		print r,l, len(self.dataD[(r,l)]),self.dataD[(r,l)].shape
 	    	except: 
