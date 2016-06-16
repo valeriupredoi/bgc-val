@@ -1,5 +1,5 @@
 from matplotlib.colors import ListedColormap,LinearSegmentedColormap
-
+import numpy as np
 """ 	In this code, we copied viridis code straight out of matplotlib.
 	This is because we can not be sure that matplotlib 1.5 or later is available.
 """
@@ -265,6 +265,21 @@ _viridis_data = [[0.267004, 0.004874, 0.329415],
 
 viridis=ListedColormap(_viridis_data,'viridis',)	
 
+
+
+def discrete_viridis(N,):# base_cmap=None):
+    """Create an N-bin discrete colormap from viridis"""
+    # Note that if base_cmap is a string or None, you can simply do
+    #    return plt.cm.get_cmap(base_cmap, N)
+    # The following works for string, None, or a colormap instance:
+    # from https://gist.github.com/jakevdp/91077b0cae40f8f8244a
+
+    #base = plt.cm.get_cmap(base_cmap)
+    color_list = viridis(np.linspace(0, 1, N))
+    cmap_name = viridis.name + str(N)
+    return ListedColormap(color_list,'viridis_'+str(N),)    
+    
+    
 
 if __name__=="__main__":
 	from matplotlib import pyplot

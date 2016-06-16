@@ -185,7 +185,7 @@ class profileAnalysis:
 			if m =='mean':
 				data = np.ma.masked_where((self.modelMasks[r] != 1) + dataAll.mask,dataAll).mean(1).mean(1)
 				
-				if self.debug:print "profileAnalysis:\tloadModel."r, self.modelMasks[r].sum(), dataAll.mask.sum()
+				if self.debug:print "profileAnalysis:\tloadModel.",r, self.modelMasks[r].sum(), dataAll.mask.sum()
 				if self.debug:print "profileAnalysis:\tloadModel.",data.shape, data.min(),data.max(), dataAll.shape ,self.modelMasks[r].shape, dataAll.min(),dataAll.max()
 				
 				alllayers = []

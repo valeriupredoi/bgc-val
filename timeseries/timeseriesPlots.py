@@ -32,12 +32,15 @@ import numpy as np
 from scipy import interpolate 
 
 import timeseriesTools as tst
+from bgcvaltools.viridis import viridis,discrete_viridis
 
-try:	defcmap = pyplot.cm.viridis
+try:	
+	defcmap = pyplot.cm.viridis
+	defcmapstr = 'viridis'
 except:	
-	from bgcvaltools.viridis import viridis
+
 	defcmap = viridis
-	
+	defcmapstr = 'viridis'	
 	
 
 def trafficlights(ax,xlims, bands,labels=[],drawlegend=True):
@@ -640,6 +643,10 @@ def hovmoellerPlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords=
 	zma = max([dyaxis.max(),yaxis.max(),])	
 	
 	
+	bins = 15
+	if defcmapstr =='viridis':
+		cmapax1 = discrete_viridis(bins)
+	else:	cmapax1 = pyplot.cm.get_cmap(defcmap, bins)    
 
 	if diff:
 		#####
@@ -663,12 +670,16 @@ def hovmoellerPlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords=
 		# change plot ranges, title, colorscale
 		ax2max = max([abs(md.max()),abs(md.min()),])
 		ax2min = - ax2max
-		cmapax2 = pyplot.cm.bwr
+		#cmapax2 = pyplot.cm.bwr
+		cmapax2 = pyplot.cm.get_cmap('bwr', bins)    
+		
 		title = 'Model - Data: '+title		
 	else:
 		ax2max	= rbma
 		ax2min	= rbmi
-		cmapax2 = defcmap
+		if defcmapstr =='viridis':
+			cmapax2 = discrete_viridis(bins)
+		else:	cmapax2 = pyplot.cm.get_cmap(defcmap, bins)    
 		title = 'Model: '+title
 	#####
 	# Start drawing
@@ -683,9 +694,9 @@ def hovmoellerPlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords=
 	
 	ax1 = pyplot.subplot(gs[0])
 	if len(dd.squeeze().compressed())!=0:
-		try:	hovmoellerAxis(fig,ax1,'Data',dxaxis,dyaxis,dd,vmin=rbmi,vmax=rbma)
+		try:	hovmoellerAxis(fig,ax1,'Data',dxaxis,dyaxis,dd,vmin=rbmi,vmax=rbma , cmap = cmapax1)
 		except:	
-			hovmoellerAxis(fig,ax1,'Data',dxaxis,dyaxis,np.tile(dd,[2,1]).transpose(),vmin=rbmi,vmax=rbma)
+			hovmoellerAxis(fig,ax1,'Data',dxaxis,dyaxis,np.tile(dd,[2,1]).transpose(),vmin=rbmi,vmax=rbma,cmap = cmapax1)
 		
 		if diff: 
 		    #c1 = fig.colorbar(ax1,pad=0.05,shrink=0.75)
@@ -751,7 +762,7 @@ def profilePlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords= {}
 	for l in sorted(dataZcoords.keys()):
 		if l not in dataslice.keys():continue
 		dyaxis_cc.append(dataZcoords[l])
-		print 'preparing data for hov:',l,dataZcoords[l], dataslice[l]
+		#print 'preparing data for hov:',l,dataZcoords[l], dataslice[l]
 		dd.append(dataslice[l])
 	
 	dd = np.ma.array(dd)#.squeeze()
