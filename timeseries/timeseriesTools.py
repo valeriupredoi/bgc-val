@@ -178,7 +178,7 @@ class DataLoader:
   	self.details 	= details
   	self.regions 	= regions
   	self.layers 	= layers
-  	
+  	self.name	= self.details['name']
 	if data == '': data = ukp.extractData(nc,self.details)
   	self.Fulldata 	= data
   	self.__lay__ 	= ''
@@ -186,7 +186,22 @@ class DataLoader:
 	
   def run(self):
   	self.load = {}
-    	for layer in self.layers:  	
+   	try:	depth = {i,z for i,z in enumerate(self.nc.variables[self.coords[z]][:])} 
+   	except: depths = {}
+   	
+   	 	
+    	for layer in self.layers: 
+  	    if type(layer) == type(1):
+  		if layer not in depths.keys():
+		a = np.ma.array([-999,],mask=[True,])
+		
+   		self.load[(region,layer)] =  arr 
+   		self.load[(region,layer,'t')] =  arr_t
+   		self.load[(region,layer,'z')] =  arr_z
+   		self.load[(region,layer,'lat')] =  arr_lat 
+   		self.load[(region,layer,'lon')] =  arr_lon
+   			   			   		
+   			   			   				
   	    for region in self.regions:
   	    
   	    	#if region in  ['Global','All']:
@@ -204,16 +219,17 @@ class DataLoader:
    		self.load[(region,layer,'lon')] =  arr_lon
    			   			   			   			
    			
-  		print "DataLoader:\tLoaded",region, layer, len(self.load[(region,layer)])
+  		print "DataLoader:\tLoaded",self.name,region, layer, len(self.load[(region,layer)])
   		
   def __getlayerDat__(self,layer):
   	""" Minimise quick load and save to minimise disk-reading time.
   	"""
+
   	if self.__lay__ == layer:
   		return self.__layDat__
   	else:
   		 self.__layDat__ = np.ma.array(getHorizontalSlice(self.nc,self.coords,self.details,layer,data = self.Fulldata))
-  		 print "DataLoader:\tgetlayerDat:",layer
+  		 print "DataLoader:\tgetlayerDat:",self.name,layer
   		 self.__lay__ = layer
   		 return self.__layDat__
   		 
@@ -251,6 +267,7 @@ class DataLoader:
 	# load lat, lon and data.
   	lat = self.nc.variables[self.coords['lat']][:]
   	lon = ukp.makeLonSafeArr(self.nc.variables[self.coords['lon']][:]) # makes sure it's between +/-180
+
 	dims =   self.nc.variables[self.details['vars'][0]].dimensions
   	
   	dat = self.__getlayerDat__(layer)
@@ -260,7 +277,7 @@ class DataLoader:
 	except:
 		dat = np.ma.array([dat,])
 		l = len(dat)
-		print "createOneDDataArray: \tWarning:\tdata was a single float:",dat, l, dat.shape,dat.ndim
+		print "createOneDDataArray: \tWarning:\tdata was a single float:",self.name,dat, l, dat.shape,dat.ndim
 	if l == 0:
 		a = np.ma.array([-999,],mask=[True,])
 		return a,a,a,a,a
@@ -329,7 +346,7 @@ class DataLoader:
   		  			
   	elif dat.ndim == 1:
    	  if dims[0] == 'index':
-  	    print 'createDataArray',self.details['name'],layer, "1 D data:",dims,dat.shape
+  	    print 'createDataArray',self.name,layer, "1 D data:",dims,dat.shape
  	    for i,v in enumerate(dat):
   			la = lat[i]  			
   			lo = lon[i]  			
@@ -340,7 +357,7 @@ class DataLoader:
   			arr_lat.append(la)
   			arr_lon.append(lo)
   	  elif len(dat)==1:
-  	    	print 'createDataArray',self.details['name'],layer, "single point data:",dims,dat.shape
+  	    	print 'createDataArray',self.name,layer, "single point data:",dims,dat.shape
   		arr = dat  	
   		arr_t = [0,]
   		arr_z = [0.,]
