@@ -795,7 +795,7 @@ def profilePlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords= {}
 	# Grid spec allows you to make un-even shaped subplots.
 	# here we want the in situ data to be much narrower.
 	fig = pyplot.figure()	
-	fig.set_size_inches(6,4)
+	fig.set_size_inches(8,6)
 
 	#####
 	# Data  subplot
@@ -825,6 +825,8 @@ def profilePlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords= {}
 	pyplot.ylabel('Depth')
 	pyplot.title(title)
 	print 'x',rbmi,'->',rbma, 'z:',zmi,'->',zma
+
+	ax1.set_yscale('log')
 
 	#####
 	# Add data:
