@@ -186,21 +186,23 @@ class DataLoader:
 	
   def run(self):
   	self.load = {}
-   	try:	depth = {i,z for i,z in enumerate(self.nc.variables[self.coords[z]][:])} 
+   	try:	depth = {i:z for i,z in enumerate(self.nc.variables[self.coords[z]][:])} 
    	except: depths = {}
    	
    	 	
     	for layer in self.layers: 
   	    if type(layer) == type(1):
-  		if layer not in depths.keys():
-		a = np.ma.array([-999,],mask=[True,])
+                
+ 		if layer not in depths.keys():
+                    for region in self.regions:
+			a = np.ma.array([-999,],mask=[True,])
 		
-   		self.load[(region,layer)] =  arr 
-   		self.load[(region,layer,'t')] =  arr_t
-   		self.load[(region,layer,'z')] =  arr_z
-   		self.load[(region,layer,'lat')] =  arr_lat 
-   		self.load[(region,layer,'lon')] =  arr_lon
-   			   			   		
+   			self.load[(region,layer)] =  a 
+   			self.load[(region,layer,'t')] =  a
+	   		self.load[(region,layer,'z')] =  a
+   			self.load[(region,layer,'lat')] =  a 
+   			self.load[(region,layer,'lon')] =  a
+   	            return	   		
    			   			   				
   	    for region in self.regions:
   	    
