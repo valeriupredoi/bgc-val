@@ -420,25 +420,25 @@ def html5Maker(
 	if level2Horizontal:
 		l2Fields = [
 			  'Nitrate',
-			  'TotalIntegratedPrimaryProduction',
-			  'IntegratedPrimaryProduction_OSU', 
-			  'AirSeaFluxCO2' ,
-			  'TotalOMZVolume',
-			  'TotalAirSeaFluxCO2' ,			  
-			  'Chlorophyll_cci', 			   	
+			  'Silicate', 		  
 			  'DIC',			  		  
-
-			  'Silicate', 
-			  'Temperature', 
-			  'Salinity', 
-			  'Oxygen',
-			  'ExportRatio', 
-			  'LocalExportRatio', 			  
-			  'MLD',
-			  'Alkalinity', 			  
+			  'Alkalinity',
+			  'Chlorophyll_cci', 			   	
+			  #'TotalIntegratedPrimaryProduction',
+			  'IntegratedPrimaryProduction_OSU', 
+			  #'AirSeaFluxCO2' ,
+			  #'TotalOMZVolume',
+			  #'TotalAirSeaFluxCO2' ,
+			  			  
+			  #'Temperature', 
+			  #'Salinity', 
+			  #'Oxygen',
+			  #'ExportRatio', 
+			  #'LocalExportRatio', 			  
+			  #'MLD',
 			 ]
 		 
-		SectionTitle= 'Summary'
+		SectionTitle= 'Level 2'
 		hrefs 	= []
 		Titles	= {}
 		SidebarTitles = {}

@@ -611,6 +611,9 @@ def hovmoellerPlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords=
 		dd = np.ma.masked_where(np.ma.masked_invalid(dd).mask + dd.mask, dd)	
 		print "hovmoellerPlot data: (post-mask)", title, '\t',dd.shape,dd.min(),dd.mean(),dd.max()
 		dyaxis_cc = np.array(dyaxis_cc)
+	else:
+		dd = np.ma.array([-999,],mask=True)
+		dyaxis_cc = np.ma.array([-999,],mask=True)	
 		
 	
 	#####

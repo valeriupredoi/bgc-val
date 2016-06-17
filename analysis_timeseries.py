@@ -147,7 +147,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('OMZThickness')		# work in progress						
 			#analysisKeys.append('DIC')			# work in progress									
 			#analysisKeys.append('O2')			# work in progress
-			analysisKeys.append('Iron')			# work in progress												
+			analysisKeys.append('Iron')			# work in progress	
                         #analysisKeys.append('IntPP_OSU')                # OSU Integrated primpary production    
 			
 		if analysisSuite.lower() in ['FullDepth',]:
@@ -1211,26 +1211,26 @@ def analysis_timeseries(jobID = "u-ab671",
 			print "analysis-Timeseries.py:\tWARNING:\tdata file is not found:",av[name]['dataFile']
 			if strictFileCheck: assert 0
 
-		profa = profileAnalysis(
-			av[name]['modelFiles'], 
-			av[name]['dataFile'],
-			dataType	= name,
-  			modelcoords 	= av[name]['modelcoords'],
-  			modeldetails 	= av[name]['modeldetails'],
-  			datacoords 	= av[name]['datacoords'],
-  			datadetails 	= av[name]['datadetails'],								
-			datasource	= av[name]['datasource'],
-			model 		= av[name]['model'],
-			jobID		= jobID,
-			layers	 	= list(np.arange(102)),	# 102 because that is the number of layers in WOA Oxygen
-			regions	 	= av[name]['regions'],			
-			metrics	 	= ['mean',],
-			workingDir	= shelvedir,
-			imageDir	= imagedir,					
-			grid		= av[name]['modelgrid'],
-			gridFile	= av[name]['gridFile'],
-			clean 		= clean,
-		)
+#		profa = profileAnalysis(
+#			av[name]['modelFiles'], 
+#			av[name]['dataFile'],
+#			dataType	= name,
+ # 			modelcoords 	= av[name]['modelcoords'],
+  #			modeldetails 	= av[name]['modeldetails'],
+  #			datacoords 	= av[name]['datacoords'],
+  #			datadetails 	= av[name]['datadetails'],								
+#			datasource	= av[name]['datasource'],
+#			model 		= av[name]['model'],
+#			jobID		= jobID,
+#			layers	 	= list(np.arange(102)),	# 102 because that is the number of layers in WOA Oxygen
+#			regions	 	= av[name]['regions'],			
+#			metrics	 	= ['mean',],
+#			workingDir	= shelvedir,
+#			imageDir	= imagedir,					
+#			grid		= av[name]['modelgrid'],
+#			gridFile	= av[name]['gridFile'],
+#			clean 		= clean,
+#		)
 			#shelves[name] = profa.shelvefn
 			#shelves_insitu[name] = profa.shelvefn_insitu				
 		
