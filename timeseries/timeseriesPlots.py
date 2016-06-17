@@ -796,29 +796,29 @@ def profilePlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords= {}
 	# Data  subplot
 	
 	ax1 = pyplot.subplot(111)
-	
+
+	#####
+	# Choose which years tp plot:	
 	profileTimes = {}
+	for i,t in enumerate(times_cc):
+		if i == 0: 			profileTimes[i] = t	# First year
+		if i == len(times_cc) -1: 	profileTimes[i] = t	# Last year		
+		if int(t)%50==0:  		profileTimes[i] = t	# Every 50 years
 	
-	profileTimes[times_cc[0]] = 1		# First year
-	profileTimes[times_cc[-1]] = 1		# Last year
-	
-	for t in times_cc:
-		if int(t)%50==0:  		# Every 50 years
-			profileTimes[times_cc[-1]] = 1
-	
-		
-	if len(dd.squeeze().compressed())!=0:
-		for i,t in enumerate(sorted(profileTimes.keys())):
-			print 'plot',i,t, md[:,i].shape,yaxis_cc.shape
-			pyplot.plot(md[:,i], yaxis_cc, label=str(int(t)))
+	####
+	# Add model data
+	for i in enumerate(sorted(profileTimes.keys())):
+		print 'profilePlot',i,profileTimes[i], md[:,i].shape,yaxis_cc.shape
+		pyplot.plot(md[:,i], yaxis_cc, label=str(int(profileTimes[i])))
 			
 	pyplot.ylim([zmi,zma])
 	pyplot.ylabel('Depth')
 	pyplot.title(title)
 
 	#####
-	# model subplot
-	pyplot.plot(dd, dyaxis_cc, 'k', lw=2, label='Data')
+	# Add data:
+	if len(dd.squeeze().compressed())!=0:	
+		pyplot.plot(dd, dyaxis_cc, 'k', lw=2, label='Data')
 
 	legend = pyplot.legend(loc='lower center',  numpoints = 1, ncol=2, prop={'size':10}) 
 	legend.draw_frame(False) 
