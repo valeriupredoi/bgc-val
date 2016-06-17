@@ -120,8 +120,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			analysisKeys.append('MLD')			# iFERMER Mixed Layer Depth - work in prgress
 
 			#####
-			# Off switches
-			#analysisKeys.append('OMZ')			# work in progress
+			# Switched Off
 
                 if analysisSuite.lower() in ['level1',]:
                         analysisKeys.append('N')                        # WOA Nitrate
@@ -143,11 +142,11 @@ def analysis_timeseries(jobID = "u-ab671",
 		if analysisSuite.lower() in ['debug',]:	
 			#analysisKeys.append('AirSeaFlux')		# work in progress
 			#analysisKeys.append('TotalAirSeaFlux')		# work in progress
-			#analysisKeys.append('TotalOMZVolume')			# work in progress
-			#analysisKeys.append('TotalOMZVolume50')			# work in progress			
-			#analysisKeys.append('OMZThickness')			# work in progress						
+			#analysisKeys.append('TotalOMZVolume')		# work in progress
+			#analysisKeys.append('TotalOMZVolume50')	# work in progress			
+			#analysisKeys.append('OMZThickness')		# work in progress						
 			#analysisKeys.append('DIC')			# work in progress									
-			analysisKeys.append('O2')			# work in progress												
+			#analysisKeys.append('O2')			# work in progress
 			analysisKeys.append('Iron')			# work in progress												
                         #analysisKeys.append('IntPP_OSU')                # OSU Integrated primpary production    
 			
@@ -165,7 +164,6 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('IntPP_iMarNet')		# Integrated primpary production from iMarNEt
 			#analysisKeys.append('IntPP_OSU')		# OSU Integrated primpary production	
 			#analysisKeys.append('PP_OSU')			# OSU Integrated primpary production			
-			#analysisKeys.append('OMZ')			# work in progress
 		
 			#analysisKeys.append('LocalExportRatio')		# Export ratio (no data)
 			#analysisKeys.append('GlobalExportRatio')	# Export ratio (no data)
@@ -937,7 +935,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['model']		= 'MEDUSA'
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= orcaGridfn
-		av[name]['Dimensions']		= 3
+		av[name]['Dimensions']		= 2
 
 	#####
 	# Total 
@@ -1213,6 +1211,29 @@ def analysis_timeseries(jobID = "u-ab671",
 			print "analysis-Timeseries.py:\tWARNING:\tdata file is not found:",av[name]['dataFile']
 			if strictFileCheck: assert 0
 
+		profa = profileAnalysis(
+			av[name]['modelFiles'], 
+			av[name]['dataFile'],
+			dataType	= name,
+  			modelcoords 	= av[name]['modelcoords'],
+  			modeldetails 	= av[name]['modeldetails'],
+  			datacoords 	= av[name]['datacoords'],
+  			datadetails 	= av[name]['datadetails'],								
+			datasource	= av[name]['datasource'],
+			model 		= av[name]['model'],
+			jobID		= jobID,
+			layers	 	= list(np.arange(102)),	# 102 because that is the number of layers in WOA Oxygen
+			regions	 	= av[name]['regions'],			
+			metrics	 	= ['mean',],
+			workingDir	= shelvedir,
+			imageDir	= imagedir,					
+			grid		= av[name]['modelgrid'],
+			gridFile	= av[name]['gridFile'],
+			clean 		= clean,
+		)
+			#shelves[name] = profa.shelvefn
+			#shelves_insitu[name] = profa.shelvefn_insitu				
+		
 		if av[name]['Dimensions'] == 3:
 			profa = profileAnalysis(
 				av[name]['modelFiles'], 
@@ -1257,6 +1278,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			gridFile	= av[name]['gridFile'],
 			clean 		= clean,
 		)
+		
 		#shelves[name] = tsa.shelvefn
 		#shelves_insitu[name] = tsa.shelvefn_insitu
 
