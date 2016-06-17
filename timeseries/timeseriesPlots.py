@@ -775,19 +775,19 @@ def profilePlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords= {}
 		print "profilePlot data: (post-mask)", title, '\t',dd.shape,dd.min(),dd.mean(),dd.max()
 		dyaxis_cc = np.abs(np.array(dyaxis_cc))*-1.
 	else:
-		dd = np.ma.array([-999,],mask=True)
-		dyaxis_cc = np.ma.array([-999,],mask=True)	
+		dd = np.ma.array([-999,],mask=[True,])
+		dyaxis_cc = np.ma.array([-999,],mask=[True,])	
 
 	######
 	# Locate min/max colours
-	rbmi = min([md.min(),dd.min(),])
-	rbma = max([md.max(),dd.max(),])
+	rbmi = np.ma.min([md.min(),dd.min(),])
+	rbma = npmax([md.max(),dd.max(),])
 	
 	######
 	# Locate min/max depths
 	zmi = min([dyaxis_cc.min(),yaxis_cc.min(),])
 	zma = max([dyaxis_cc.max(),yaxis_cc.max(),])	
-	
+
 	
 
 	#####
@@ -825,9 +825,12 @@ def profilePlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords= {}
 	pyplot.ylabel('Depth')
 	pyplot.title(title)
 
+	print 'x',rbmi,'->',rbma, 'z:',zmi,'->',zma
+
 	#####
 	# Add data:
 	if len(dd.squeeze().compressed())!=0:	
+
 		pyplot.plot(dd, dyaxis_cc, 'k', lw=2, label='Data')
 
 	legend = pyplot.legend(loc='lower center',  numpoints = 1, ncol=2, prop={'size':10}) 
