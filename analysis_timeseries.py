@@ -51,7 +51,7 @@ timeseriesKeys = ['T','S','MLD', 'Chl_pig','Chl_CCI',
 		  ]
 timeseriesDict = {i:n for i,n in enumerate(timeseriesKeys)}
 level1Keys = ['N', 'Si','O2','Alk','DIC','AirSeaFlux','TotalAirSeaFlux','IntPP_OSU','PP_OSU' ,'LocalExportRatio','GlobalExportRatio' ,'TotalOMZVolume','OMZThickness' ,'Iron']
-level1KeysDict {i:n for i,n in enumerate(level1Keys)}	
+level1KeysDict = {i:n for i,n in enumerate(level1Keys)}	
 
 def analysis_timeseries(jobID = "u-ab671",
 			clean = 0,
