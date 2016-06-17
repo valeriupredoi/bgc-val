@@ -780,13 +780,13 @@ def profilePlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords= {}
 
 	######
 	# Locate min/max colours
-	rbmi = min([md.min(),dd.min(),])
-	rbma = max([md.max(),dd.max(),])
+	rbmi = np.ma.min([md.min(),dd.min(),])
+	rbma = np.ma.max([md.max(),dd.max(),])
 	
 	######
 	# Locate min/max depths
-	zmi = min([dyaxis_cc.min(),yaxis_cc.min(),])
-	zma = max([dyaxis_cc.max(),yaxis_cc.max(),])	
+	zmi = np.ma.min([dyaxis_cc.min(),yaxis_cc.min(),])
+	zma = np.ma.max([dyaxis_cc.max(),yaxis_cc.max(),])	
 	
 	
 
@@ -820,14 +820,15 @@ def profilePlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords= {}
 		if i == lastyr: 	lw =2
 		color = defcmap((float(profileTimes[i])-times_cc[0])/(float(times_cc[-1]-times_cc[0])))
 		pyplot.plot(md[:,i], yaxis_cc, c=color, lw = lw, label=str(int(profileTimes[i])))
-			
+		print md[:,i].min(),md[:,i].mean(), yaxis_cc.min(),yaxis_cc.max()	
 	pyplot.ylim([zmi,zma])
 	pyplot.ylabel('Depth')
 	pyplot.title(title)
-
+	print 'x',rbmi,'->',rbma, 'z:',zmi,'->',zma
 	#####
 	# Add data:
-	if len(dd.squeeze().compressed())!=0:	
+	if len(dd.squeeze().compressed())!=0:
+		print "Adding data profile."	
 		pyplot.plot(dd, dyaxis_cc, 'k', lw=2, label='Data')
 
 	legend = pyplot.legend(loc='lower center',  numpoints = 1, ncol=2, prop={'size':10}) 
@@ -840,6 +841,6 @@ def profilePlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords= {}
 	pyplot.savefig(filename ,dpi=dpi)		
 	pyplot.close()	
 	
-	
+	assert 0
 		
 			
