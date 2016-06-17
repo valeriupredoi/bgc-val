@@ -146,7 +146,8 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('TotalOMZVolume')			# work in progress
 			#analysisKeys.append('TotalOMZVolume50')			# work in progress			
 			#analysisKeys.append('OMZThickness')			# work in progress						
-			analysisKeys.append('DIC')			# work in progress									
+			#analysisKeys.append('DIC')			# work in progress									
+			analysisKeys.append('O2')			# work in progress												
 			#analysisKeys.append('Iron')			# work in progress												
                         #analysisKeys.append('IntPP_OSU')                # OSU Integrated primpary production    
 			
@@ -1224,7 +1225,7 @@ def analysis_timeseries(jobID = "u-ab671",
 				datasource	= av[name]['datasource'],
 				model 		= av[name]['model'],
 				jobID		= jobID,
-				layers	 	= list(np.arange(80)),
+				layers	 	= list(np.arange(102)),	# 102 because that is the number of layers in WOA Oxygen
 				regions	 	= av[name]['regions'],			
 				metrics	 	= ['mean',],
 				workingDir	= shelvedir,
