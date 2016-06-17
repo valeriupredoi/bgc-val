@@ -159,7 +159,7 @@ class profileAnalysis:
 		print "loadModel:post checks:"
 		#print "modeldataD:",modeldataD
 		print "shelveFn:",self.shelvefn
-		print "readFiles:",readFiles
+		print "readFiles:",readFiles[:2],'...',readFiles[-2:]
 
 	###############
 	# Load files, and calculate fields.
@@ -185,8 +185,8 @@ class profileAnalysis:
 			if m =='mean':
 				data = np.ma.masked_where((self.modelMasks[r] != 1) + dataAll.mask,dataAll).mean(1).mean(1)
 				
-				if self.debug:print "profileAnalysis:\tloadModel.",self.dataType,r, self.modelMasks[r].sum(), dataAll.mask.sum()
-				if self.debug:print "profileAnalysis:\tloadModel.",self.dataType, data.shape, data.min(),data.max(), dataAll.shape ,self.modelMasks[r].shape, dataAll.min(),dataAll.max()
+				if self.debug:print "profileAnalysis:\tloadModel.",self.dataType,'\t',meantime 
+				#if self.debug:print "profileAnalysis:\tloadModel.",self.dataType, data.shape, data.min(),data.max(), dataAll.shape ,self.modelMasks[r].shape, dataAll.min(),dataAll.max()
 				
 				alllayers = []
 				for l,d in enumerate(data):
@@ -459,7 +459,7 @@ class profileAnalysis:
 			
 		#####
 		# check that multiple layers were requested.
-		if len(data.keys())<1: continue
+		#if len(data.keys())<1: continue
 		if len(modeldata.keys())<1: continue
 	
 
