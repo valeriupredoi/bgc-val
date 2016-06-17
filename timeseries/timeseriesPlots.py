@@ -808,7 +808,7 @@ def profilePlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords= {}
 	
 		
 	if len(dd.squeeze().compressed())!=0:
-		for i,t in enumerate(times_cc):
+		for i,t in enumerate(sorted(profileTimes.keys())):
 			print 'plot',i,t, md[:,i].shape,yaxis_cc.shape
 			pyplot.plot(md[:,i], yaxis_cc, label=str(int(t)))
 			
