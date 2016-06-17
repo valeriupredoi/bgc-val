@@ -447,7 +447,7 @@ class profileAnalysis:
 				try:	data[l] = np.ma.max(dataslice)
 				except:	data[l] = np.ma.array([-1000,],mask=[True,])				
 			
-			print "makePlots:\tHovmoeller plots:",r,m,l,'\tdata',data[l]								
+			print "makePlots:\tHovmoeller plots:",r,m,l,'\tdata'#,data[l]								
 
 	   	#####
 	   	# Load model layers:
@@ -455,16 +455,13 @@ class profileAnalysis:
 	  	for l in self.layers:
 	  		if type(l) == type('str'):continue	# no strings, only numbered layers.
 	  		if l > max(modelZcoords.keys()): continue
-
 			modeldata[l] = self.modeldataD[(r,l,m)]
-			print "makePlots:\tHovmoeller plots:",r,m,l,'\tmodeldata:',modeldata[l]
 			
 		#####
 		# check that multiple layers were requested.
 		if len(data.keys())<1: continue
 		if len(modeldata.keys())<1: continue
 	
-
 
 
 		title = ' '.join([getLongName(t) for t in [r,m,self.dataType]])	
