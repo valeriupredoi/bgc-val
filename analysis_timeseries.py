@@ -149,6 +149,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('DIC')			# work in progress									
 			analysisKeys.append('O2')			# work in progress												
 			#analysisKeys.append('Iron')			# work in progress												
+			analysisKeys.append('Iron')			# work in progress												
                         #analysisKeys.append('IntPP_OSU')                # OSU Integrated primpary production    
 			
 		if analysisSuite.lower() in ['FullDepth',]:
