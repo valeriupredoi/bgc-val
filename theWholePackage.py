@@ -10,7 +10,8 @@ from sys import argv,exit
 from multiprocessing import Pool
 
 from downloadFromMass import  downloadMass, findLastFinishedYear
-from analysis_timeseries import analysis_timeseries, singleTimeSeries, timeseriesDict, singleTimeSeriesProfile
+from analysis_timeseries import analysis_timeseries, singleTimeSeries, singleTimeSeriesProfile
+from analysis_timeseries import level1KeysDict, timeseriesDict
 from analysis_p2p import analysis_p2p, p2pDict_annual, single_p2p
 from makeReport import html5Maker
 from UKESMpython import folder
@@ -22,7 +23,11 @@ def timeseriesParrallel(index):
 	singleTimeSeries(jobID, key,)
 	print "timeseriesParrallel",index, jobID, 'SUCESS'	
 	
-
+def timeseriesParrallelL1(index):
+	print "timeseriesParrallel",index, jobID, 'START'
+	key = level1KeysDict[index]
+	singleTimeSeries(jobID, key,)
+	print "timeseriesParrallel",index, jobID, 'SUCESS'	
 
 def p2pParrallel(index):
 	print "p2pParrallel",index, jobID, 'START'
@@ -39,15 +44,18 @@ def theWholePackage(jobID):
 
 	parrallel = True
 	cores = 8
-	suite = 'all'
-
+	#suite = 'all'
+	suite = 'level1'
 			  
 
 	print "########\nThe Whole Package:\tStarting Time series (surface only)", jobID 	
 	if parrallel:
-		remaining = sorted(timeseriesDict.keys())[:]
+		if suite =='all':	remaining = sorted(timeseriesDict.keys())[:]
+		if suite =='level1':	remaining = sorted(level1KeysDict.keys())[:]
+			
 	   	p = Pool(cores)
-	    	p.map(timeseriesParrallel,remaining)
+	    	if suite =='all':	p.map(timeseriesParrallel,  remaining)
+	    	if suite =='level1':	p.map(timeseriesParrallelL1,remaining)
 	else:	
 		analysis_timeseries(jobID =jobID,analysisSuite='level1', )#z_component = 'SurfaceOnly',)
 		
