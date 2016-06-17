@@ -797,8 +797,15 @@ def profilePlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords= {}
 	
 	ax1 = pyplot.subplot(111)
 	
-	if len(times_cc)>10:
-		times_cc = times_cc[-5:]
+	profileTimes = {}
+	
+	profileTimes[times_cc[0]] = 1		# First year
+	profileTimes[times_cc[-1]] = 1		# Last year
+	
+	for t in times_cc:
+		if int(t)%50==0:  		# Every 50 years
+			profileTimes[times_cc[-1]] = 1
+	
 		
 	if len(dd.squeeze().compressed())!=0:
 		for i,t in enumerate(times_cc):
