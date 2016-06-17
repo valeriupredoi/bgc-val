@@ -820,11 +820,9 @@ def profilePlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords= {}
 		if i == lastyr: 	lw =2
 		color = defcmap((float(profileTimes[i])-times_cc[0])/(float(times_cc[-1]-times_cc[0])))
 		pyplot.plot(md[:,i], yaxis_cc, c=color, lw = lw, label=str(int(profileTimes[i])))
-		print md[:,i].min(),md[:,i].mean(), yaxis_cc.min(),yaxis_cc.max()	
 	pyplot.ylim([zmi,zma])
 	pyplot.ylabel('Depth')
 	pyplot.title(title)
-	print 'x',rbmi,'->',rbma, 'z:',zmi,'->',zma
 	#####
 	# Add data:
 	if len(dd.squeeze().compressed())!=0:
@@ -841,6 +839,5 @@ def profilePlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords= {}
 	pyplot.savefig(filename ,dpi=dpi)		
 	pyplot.close()	
 	
-	assert 0
 		
 			
