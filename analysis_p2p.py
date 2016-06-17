@@ -410,7 +410,7 @@ def analysis_p2p(
 				if modelGrid == 'ORCA025':	av[name]['MEDUSA']['File'] = MEDUSAFolder+jobID+'_'+ year+"_DIN.nc"							
 			
 			av[name]['MEDUSA']['grid']	= modelGrid		
-			av[name]['depthLevels'] 	= ['Surface','Transect','PTransect','SOTransect',]
+			av[name]['depthLevels'] 	= ['Surface','1000m','Transect','PTransect','SOTransect',]
 			if annual:	av[name]['plottingSlices'] 	= tsRegions
 			else:		av[name]['plottingSlices'] 	= HighLatWinter
 			
@@ -434,7 +434,7 @@ def analysis_p2p(
 				av[name]['MEDUSA']['File'] 	= MEDUSAFolder+jobID+'_' + year+"_SIL.nc"
 			
 			av[name]['MEDUSA']['grid']		= modelGrid		
-			av[name]['depthLevels'] 		= ['Surface','Transect','PTransect','SOTransect']
+			av[name]['depthLevels'] 		= ['Surface','1000m','Transect','PTransect','SOTransect']
 			if annual:	av[name]['plottingSlices'] 	= tsRegions
 			else:		av[name]['plottingSlices'] 	= HighLatWinter
 			
@@ -482,7 +482,7 @@ def analysis_p2p(
 				av[name]['MEDUSA']['File']	= MEDUSAFolder+jobID+"_"+year+"_OXY.nc"
 			
 			av[name]['MEDUSA']['grid']		= modelGrid		
-			av[name]['depthLevels'] 		= ['Surface','Transect','PTransect','SOTransect']
+			av[name]['depthLevels'] 		= ['Surface','1000m','500m','Transect','PTransect','SOTransect']
 			if annual:	av[name]['plottingSlices'] 	= tsRegions
 			else:		av[name]['plottingSlices'] 	= HighLatWinter
 			
@@ -509,7 +509,7 @@ def analysis_p2p(
 				assert 0
 				
 			av[name]['MEDUSA']['grid']		= modelGrid		
-			av[name]['depthLevels'] 		= ['Surface','Transect','PTransect','SOTransect']
+			av[name]['depthLevels'] 		= ['Surface','1000m','Transect','PTransect','SOTransect']
 				
 			alkregions	= ['Global','Equator10', 'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific','ignoreInlandSeas','SouthernOcean',]
 			#### very little arctic alkalinty
@@ -536,7 +536,7 @@ def analysis_p2p(
 				assert 0
 				
 			av[name]['MEDUSA']['grid']		= modelGrid		
-			av[name]['depthLevels'] 		= ['Surface','Transect','PTransect','SOTransect']
+			av[name]['depthLevels'] 		= ['Surface','1000m','Transect','PTransect','SOTransect']
 				
 
 			if annual:	av[name]['plottingSlices'] 	= tsRegions
