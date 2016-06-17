@@ -804,7 +804,7 @@ def profilePlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords= {}
 	lastyr = len(times_cc) -1
 	for i,t in enumerate(times_cc):
 		if i == 0: 		profileTimes[i] = t	# First year
-		if i == lastyr: 		profileTimes[i] = t	# Last year		
+		if i == lastyr: 	profileTimes[i] = t	# Last year		
 		if int(t)%50==0:  	profileTimes[i] = t	# Every 50 years
 		
 	####
@@ -813,7 +813,7 @@ def profilePlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords= {}
 		print 'profilePlot',i,profileTimes[i], md[:,i].shape,yaxis_cc.shape
 		lw =1
 		if i == lastyr: 	lw =2
-		color = defcmap((float(t)-firstyr)/(lastyr-firstyr))
+		color = defcmap((float(t)-times_cc[0])/(times_cc[-1]-times_cc[0]))
 		pyplot.plot(md[:,i], yaxis_cc, c=color, lw = lw, label=str(int(profileTimes[i])))
 			
 	pyplot.ylim([zmi,zma])
