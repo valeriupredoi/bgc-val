@@ -804,10 +804,10 @@ def profilePlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords= {}
 		if i == 0: 			profileTimes[i] = t	# First year
 		if i == len(times_cc) -1: 	profileTimes[i] = t	# Last year		
 		if int(t)%50==0:  		profileTimes[i] = t	# Every 50 years
-	
+		
 	####
 	# Add model data
-	for i in enumerate(sorted(profileTimes.keys())):
+	for i in sorted(profileTimes.keys()):
 		print 'profilePlot',i,profileTimes[i], md[:,i].shape,yaxis_cc.shape
 		pyplot.plot(md[:,i], yaxis_cc, label=str(int(profileTimes[i])))
 			
