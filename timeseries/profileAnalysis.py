@@ -170,7 +170,7 @@ class profileAnalysis:
 		if not self._masksLoaded_: 
 			self.loadMasks()		
 		
-		print "loadModel:\tloading new file:",fn,
+		print "loadModel:\tloading new file:",self.dataType,fn,
 		nc = Dataset(fn,'r')
 		ts = tst.getTimes(nc,self.modelcoords)
 		meantime = np.mean(ts)
@@ -185,8 +185,8 @@ class profileAnalysis:
 			if m =='mean':
 				data = np.ma.masked_where((self.modelMasks[r] != 1) + dataAll.mask,dataAll).mean(1).mean(1)
 				
-				if self.debug:print "profileAnalysis:\tloadModel.",r, self.modelMasks[r].sum(), dataAll.mask.sum()
-				if self.debug:print "profileAnalysis:\tloadModel.",data.shape, data.min(),data.max(), dataAll.shape ,self.modelMasks[r].shape, dataAll.min(),dataAll.max()
+				if self.debug:print "profileAnalysis:\tloadModel.",self.dataType,r, self.modelMasks[r].sum(), dataAll.mask.sum()
+				if self.debug:print "profileAnalysis:\tloadModel.",self.dataType, data.shape, data.min(),data.max(), dataAll.shape ,self.modelMasks[r].shape, dataAll.min(),dataAll.max()
 				
 				alllayers = []
 				for l,d in enumerate(data):
@@ -210,14 +210,14 @@ class profileAnalysis:
 
 		nc.close()
 		if openedFiles:
-			print "Saving shelve:", self.shelvefn, '\tread', len(readFiles)				
+			print "Saving shelve:",self.dataType, self.shelvefn, '\tread', len(readFiles)				
 			sh = shOpen(self.shelvefn)
 			sh['readFiles']		= readFiles
 			sh['modeldata'] 	= modeldataD
 			sh.close()
 			openedFiles=0	
 	if openedFiles:
-		print "Saving shelve:", self.shelvefn, '\tread', len(readFiles)				
+		print "Saving shelve:",self.dataType, self.shelvefn, '\tread', len(readFiles)				
 		sh = shOpen(self.shelvefn)
 		sh['readFiles']		= readFiles
 		sh['modeldata'] 	= modeldataD
