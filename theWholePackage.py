@@ -49,7 +49,7 @@ def theWholePackage(jobID):
 	   	p = Pool(cores)
 	    	p.map(timeseriesParrallel,remaining)
 	else:	
-		analysis_timeseries(jobID =jobID,analysisSuite='level1', z_component = 'SurfaceOnly',)
+		analysis_timeseries(jobID =jobID,analysisSuite='level1', )#z_component = 'SurfaceOnly',)
 		
 		
 	print "########\nThe Whole Package:\tRunning point to point analysis of", jobID,"on", year
