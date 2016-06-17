@@ -775,13 +775,13 @@ def profilePlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords= {}
 		print "profilePlot data: (post-mask)", title, '\t',dd.shape,dd.min(),dd.mean(),dd.max()
 		dyaxis_cc = np.abs(np.array(dyaxis_cc))*-1.
 	else:
-		dd = np.ma.array([-999,],mask=True)
-		dyaxis_cc = np.ma.array([-999,],mask=True)	
+		dd = np.ma.array([-999,],mask=[True,])
+		dyaxis_cc = np.ma.array([-999,],mask=[True,])	
 
 	######
 	# Locate min/max colours
 	rbmi = np.ma.min([md.min(),dd.min(),])
-	rbma = np.ma.max([md.max(),dd.max(),])
+	rbma = np.max([md.max(),dd.max(),])
 	
 	######
 	# Locate min/max depths
@@ -795,7 +795,7 @@ def profilePlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords= {}
 	# Grid spec allows you to make un-even shaped subplots.
 	# here we want the in situ data to be much narrower.
 	fig = pyplot.figure()	
-	fig.set_size_inches(6,4)
+	fig.set_size_inches(8,6)
 
 	#####
 	# Data  subplot
@@ -823,6 +823,10 @@ def profilePlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords= {}
 	pyplot.ylim([zmi,zma])
 	pyplot.ylabel('Depth')
 	pyplot.title(title)
+	print 'x',rbmi,'->',rbma, 'z:',zmi,'->',zma
+
+	ax1.set_yscale('log')
+
 	#####
 	# Add data:
 	if len(dd.squeeze().compressed())!=0:
