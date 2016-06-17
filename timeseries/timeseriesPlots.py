@@ -765,13 +765,15 @@ def profilePlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords= {}
 		#print 'preparing data for hov:',l,dataZcoords[l], dataslice[l]
 		dd.append(dataslice[l])
 	
-	dd = np.ma.array(dd)#.squeeze()
-	print "profilePlot data: (pre-mask)", title, '\t',dd.shape,dd.min(),dd.mean(),dd.max()
-	dd = np.ma.masked_where(np.ma.masked_invalid(dd).mask + dd.mask, dd)	
-	print "profilePlot data: (post-mask)", title, '\t',dd.shape,dd.min(),dd.mean(),dd.max()
-	dyaxis_cc = np.abs(np.array(dyaxis_cc))*-1.
-		
-	
+	if len(dd):
+		dd = np.ma.array(dd)#.squeeze()
+		print "profilePlot data: (pre-mask)", title, '\t',dd.shape,dd.min(),dd.mean(),dd.max()
+		dd = np.ma.masked_where(np.ma.masked_invalid(dd).mask + dd.mask, dd)	
+		print "profilePlot data: (post-mask)", title, '\t',dd.shape,dd.min(),dd.mean(),dd.max()
+		dyaxis_cc = np.abs(np.array(dyaxis_cc))*-1.
+	else:
+		dd = np.ma.array([-999,],mask=True)
+		dyaxis_cc = np.ma.array([-999,],mask=True)	
 
 	######
 	# Locate min/max colours

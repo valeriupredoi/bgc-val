@@ -937,7 +937,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['model']		= 'MEDUSA'
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= orcaGridfn
-		av[name]['Dimensions']		= 3
+		av[name]['Dimensions']		= 2
 
 	#####
 	# Total 
@@ -998,7 +998,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['model']		= 'MEDUSA'
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= orcaGridfn		
-		av[name]['Dimensions']		= 2
+		av[name]['Dimensions']		= 1
 				
 	if 'GlobalExportRatio' in analysisKeys:
 		
