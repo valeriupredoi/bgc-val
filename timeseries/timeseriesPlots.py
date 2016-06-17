@@ -522,7 +522,9 @@ def mapPlotPair(lons1, lats1, data1,lons2,lats2,data2,filename,titles=['',''],lo
 	print "mapPlotPair: \tSaving:" , filename
 	pyplot.savefig(filename ,dpi=dpi)		
 	pyplot.close()
-		 hovmoellerAxis(fig,ax,title,xaxis,yaxis,data,vmin='',vmax='',cmap = defcmap ,debug = False):
+
+
+def hovmoellerAxis(fig,ax,title,xaxis,yaxis,data,vmin='',vmax='',cmap = defcmap ,debug = False):
 	yaxis = np.array(yaxis)
 	if yaxis.min()*yaxis.max() <=0.:
 		if yaxis.mean()<0:yaxis = np.clip(yaxis,-10000.,-0.1)
