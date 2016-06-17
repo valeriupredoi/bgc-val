@@ -522,9 +522,7 @@ def mapPlotPair(lons1, lats1, data1,lons2,lats2,data2,filename,titles=['',''],lo
 	print "mapPlotPair: \tSaving:" , filename
 	pyplot.savefig(filename ,dpi=dpi)		
 	pyplot.close()
-		
-
-def hovmoellerAxis(fig,ax,title,xaxis,yaxis,data,vmin='',vmax='',cmap = defcmap ,debug = False):
+		 hovmoellerAxis(fig,ax,title,xaxis,yaxis,data,vmin='',vmax='',cmap = defcmap ,debug = False):
 	yaxis = np.array(yaxis)
 	if yaxis.min()*yaxis.max() <=0.:
 		if yaxis.mean()<0:yaxis = np.clip(yaxis,-10000.,-0.1)
@@ -800,16 +798,21 @@ def profilePlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords= {}
 	#####
 	# Choose which years tp plot:	
 	profileTimes = {}
+	firstyr = sorted(times_cc)[0]
+	lastyr = len(times_cc) -1
 	for i,t in enumerate(times_cc):
-		if i == 0: 			profileTimes[i] = t	# First year
-		if i == len(times_cc) -1: 	profileTimes[i] = t	# Last year		
-		if int(t)%50==0:  		profileTimes[i] = t	# Every 50 years
+		if i == 0: 		profileTimes[i] = t	# First year
+		if i == lastyr: 		profileTimes[i] = t	# Last year		
+		if int(t)%50==0:  	profileTimes[i] = t	# Every 50 years
 		
 	####
 	# Add model data
 	for i in sorted(profileTimes.keys()):
 		print 'profilePlot',i,profileTimes[i], md[:,i].shape,yaxis_cc.shape
-		pyplot.plot(md[:,i], yaxis_cc, label=str(int(profileTimes[i])))
+		lw =1
+		if i == lastyr: 	lw =2
+		color = defcmap((float(t)-firstyr)/(lastyr-firstyr))
+		pyplot.plot(md[:,i], yaxis_cc, c=color, lw = lw, label=str(int(profileTimes[i])))
 			
 	pyplot.ylim([zmi,zma])
 	pyplot.ylabel('Depth')
