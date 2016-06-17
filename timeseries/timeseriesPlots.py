@@ -818,7 +818,7 @@ def profilePlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords= {}
 		print 'profilePlot',i,profileTimes[i], md[:,i].shape,yaxis_cc.shape
 		lw =1
 		if i == lastyr: 	lw =2
-		color = defcmap((float(t)-times_cc[0])/(times_cc[-1]-times_cc[0]))
+		color = defcmap((float(profileTimes[i])-times_cc[0])/(float(times_cc[-1]-times_cc[0])))
 		pyplot.plot(md[:,i], yaxis_cc, c=color, lw = lw, label=str(int(profileTimes[i])))
 			
 	pyplot.ylim([zmi,zma])
