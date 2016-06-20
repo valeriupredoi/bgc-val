@@ -133,7 +133,7 @@ def analysis_p2p(
 			analysisKeys.append('O2')			# WOA Oxygen
 			analysisKeys.append('Alk')			# Glodap Alkalinity
 			analysisKeys.append('DIC')			# Globap tCO2
-			analysisKeys.append('Fe')			# Iron	
+			#analysisKeys.append('Fe')			# Iron	
 			analysisKeys.append('Chl_CCI')			# CCI Chlorophyll	
 			analysisKeys.append('IntPP_OSU')		# OSU Integrated primpary production
 												
