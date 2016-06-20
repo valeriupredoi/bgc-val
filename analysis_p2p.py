@@ -126,7 +126,17 @@ def analysis_p2p(
 			analysisKeys.append('T')			# WOA Temperature
 			analysisKeys.append('S')			# WOA Salinity
 			analysisKeys.append('MLD')			# iFERMER Mixed Layer Depth - work in prgress
-
+			
+		if analysisSuite.lower() in ['level2',]:
+			analysisKeys.append('N')			# WOA Nitrate
+			analysisKeys.append('Si')			# WOA Siliate
+			analysisKeys.append('O2')			# WOA Oxygen
+			analysisKeys.append('Alk')			# Glodap Alkalinity
+			analysisKeys.append('DIC')			# Globap tCO2
+			analysisKeys.append('Fe')			# Iron	
+			analysisKeys.append('Chl_CCI')			# CCI Chlorophyll	
+			analysisKeys.append('IntPP_OSU')		# OSU Integrated primpary production
+												
 		if analysisSuite.lower() in ['debug',]:	
 		#	analysisKeys.append('AirSeaFlux')			# Globap tCO2
 			analysisKeys.append('N')			# WOA Nitrate				
@@ -818,6 +828,8 @@ if __name__=="__main__":
 	
 	if 'debug' in  argv[1:]:
 		analysisSuite='debug'
+	elif 'level2' in argv[1:]:
+		analysisSuite='level2'
 	else:	analysisSuite='annual'
 		
 	analysis_p2p(models	= ['NEMO','MEDUSA',],
