@@ -32,10 +32,11 @@ import numpy as np
 from matplotlib import pyplot
 from mpl_toolkits.basemap import Basemap
 from matplotlib.ticker import FormatStrFormatter
-
+from matplotlib.colors import LogNorm
 try:
 	import cartopy.crs as ccrs
 	import cartopy.io.shapereader as shapereader
+	from cartopy import img_transform, feature as cfeature	
 except:
 	print "Unable to load Cartopy"
 from scipy.stats.mstats import scoreatpercentile
@@ -463,7 +464,7 @@ def robinPlotPair(lons, lats, data1,data2,filename,titles=['',''],lon0=0.,marble
 def robinPlotQuad(lons, lats, data1,data2,filename,titles=['',''],title='',lon0=0.,marble=False,drawCbar=True,cbarlabel='',doLog=False,scatter=True,dpi=100,vmin='',vmax='',maptype='Basemap'):#,**kwargs):
 
 	fig = pyplot.figure()
-	fig.set_size_inches(14,8)
+	fig.set_size_inches(10,6)
 
 	lons = np.array(lons)
 	lats = np.array(lats)
@@ -512,11 +513,8 @@ def robinPlotQuad(lons, lats, data1,data2,filename,titles=['',''],title='',lon0=
 		if spl in [221,222,]:cmap= defcmap
 		if spl in [223,224,]:cmap= pyplot.cm.RdBu_r		
 		
-		if doLogs[i]:
-			rbmi = np.int(np.log10(rbmi))
-			rbma = np.log10(rbma)
-			if rbma > np.int(rbma): rbma+=1
-			rbma = np.int(rbma)
+
+			
 		if maptype=='Basemap':
 			axs.append(fig.add_subplot(spl))		
 			bms.append( Basemap(projection='robin',lon_0=lon0,resolution='c') )#lon_0=-106.,
@@ -528,7 +526,13 @@ def robinPlotQuad(lons, lats, data1,data2,filename,titles=['',''],title='',lon0=
 				bms[i].fillcontinents(color=(255/255.,255/255.,255/255.,1))
 			bms[i].drawparallels(np.arange(-90.,120.,30.))
 			bms[i].drawmeridians(np.arange(0.,420.,60.))
-								
+			
+			if doLogs[i]:
+				rbmi = np.int(np.log10(rbmi))
+				rbma = np.log10(rbma)
+				if rbma > np.int(rbma): rbma+=1
+				rbma = np.int(rbma)
+											
 			if scatter:
 				if doLogs[i]:	ims.append(bms[i].scatter(x1,y1,c = np.log10(data),cmap=cmap, marker="s",alpha=0.9,linewidth='0',vmin=rbmi, vmax=rbma,))# **kwargs))
 				else:		ims.append(bms[i].scatter(x1,y1,c = data,	   cmap=cmap, marker="s",alpha=0.9,linewidth='0',vmin=rbmi, vmax=rbma,))# **kwargs))
@@ -541,21 +545,58 @@ def robinPlotQuad(lons, lats, data1,data2,filename,titles=['',''],title='',lon0=
 			#axs.append(fig.add_subplot(spl))
 			bms.append(pyplot.subplot(spl,projection=ccrs.Robinson()))
 			bms[i].set_global()
+			
+			if doLogs[i] and spl in [221,222]:
+				rbmi = np.int(np.log10(rbmi))
+				rbma = np.log10(rbma)
+				if rbma > np.int(rbma): rbma+=1
+				rbma = np.int(rbma)
+						
 			if marble:	bms[i].stock_img()
 			else:
 				# Because Cartopy is hard wired to download the shapes files from a website that doesn't exist anymore:
-				#bms[i].coastlines()	#doesn't work.
+
 				bms[i].add_geometries(list(shapereader.Reader('data/ne_110m_coastline.shp').geometries()),
 							ccrs.PlateCarree(), color='k',facecolor = 'none',linewidth=0.5)
 			
 			if scatter:
-				if doLogs[i]:	ims.append(bms[i].scatter(lons, lats,c = np.log10(data),marker="s",alpha=0.9,linewidth='0',vmin=rbmi, vmax=rbma,transform=ccrs.PlateCarree(),))# **kwargs))
-				else:		ims.append(bms[i].scatter(lons, lats,c = data,	  	marker="s",alpha=0.9,linewidth='0',vmin=rbmi, vmax=rbma,transform=ccrs.PlateCarree(),))# **kwargs))
+				if doLogs[i]:
+					ims.append(
+						bms[i].scatter(lons, lats,c = np.log10(data),
+							cmap=cmap,marker="s",alpha=0.9,linewidth='0',
+							vmin=rbmi, vmax=rbma,
+							transform=ccrs.PlateCarree(),
+							)
+						)
+				else:	
+					ims.append(
+						bms[i].scatter(lons, lats,c = data,
+						        cmap=cmap,marker="s",alpha=0.9,linewidth='0',
+						        vmin=rbmi, vmax=rbma,
+						        transform=ccrs.PlateCarree(),)
+						  )
 			else:
-				assert False
-
-
-		
+				crojp2, newData, newLon,newLat = regrid(data.squeeze(),lons, lats)	
+				print "cartopy robin quad:",i,spl,newData.shape,newData.min(),newData.max(), rbmi,rbma
+				if doLogs[i]:
+					ims.append(							
+						bms[i].pcolormesh(newLon, newLat,newData,
+							transform=ccrs.PlateCarree(),
+							cmap=cmap,
+							norm=LogNorm(vmin=rbmi,vmax=rbma)
+							)
+						)
+							
+				else:
+					ims.append(											
+						bms[i].pcolormesh(newLon, newLat,newData,
+							transform=ccrs.PlateCarree(),
+							cmap=cmap,
+							vmin=rbmi,vmax=rbma)
+						)
+				bms[i].coastlines()	#doesn't work.
+				#bms[i].fillcontinents(color=(255/255.,255/255.,255/255.,1))
+				bms[i].add_feature(cfeature.LAND,  facecolor='1.')	
 		if drawCbar:
 			if spl in [221,222,223]:
 				if doLogs[i]:	cbs.append(fig.colorbar(ims[i],pad=0.05,shrink=0.5,ticks = np.linspace(rbmi,rbma,rbma-rbmi+1)))
@@ -590,6 +631,7 @@ def HovPlotQuad(lons,lats, depths,
 		data1,data2,filename,
 		titles=['',''],title='',
 		lon0=0.,marble=False,drawCbar=True,cbarlabel='',doLog=False,scatter=True,dpi=100,vmin='',vmax='',
+		logy = False
 		):#,**kwargs):
 
 	fig = pyplot.figure()
@@ -657,9 +699,15 @@ def HovPlotQuad(lons,lats, depths,
 			rbma = np.int(rbma)
 
 		axs.append(fig.add_subplot(spl))
-		if doLogs[i]:	ims.append(pyplot.scatter(hovXaxis,depths, c= np.log10(data),cmap=cmap, marker="s",alpha=0.9,linewidth='0',vmin=rbmi, vmax=rbma,))
-		else:		ims.append(pyplot.scatter(hovXaxis,depths, c=          data ,cmap=cmap, marker="s",alpha=0.9,linewidth='0',vmin=rbmi, vmax=rbma,))
+		if scatter:
+			if doLogs[i]:	ims.append(pyplot.scatter(hovXaxis,depths, c= np.log10(data),cmap=cmap, marker="s",alpha=0.9,linewidth='0',vmin=rbmi, vmax=rbma,))
+			else:		ims.append(pyplot.scatter(hovXaxis,depths, c=          data ,cmap=cmap, marker="s",alpha=0.9,linewidth='0',vmin=rbmi, vmax=rbma,))
+		else:
+			print "hovXaxis:",hovXaxis.shape,"depths:",depths.shape,"data:",data.shape
+			newX,newY,newData = arrayify(hovXaxis,depths,data)
 			
+			if doLogs[i]:	ims.append(pyplot.pcolormesh(newX,newY, np.log10(newData),cmap=cmap, vmin=rbmi, vmax=rbma,))
+			else:		ims.append(pyplot.pcolormesh(newX,newY,          newData ,cmap=cmap, vmin=rbmi, vmax=rbma,))			
 
 		
 		if drawCbar:
@@ -679,6 +727,15 @@ def HovPlotQuad(lons,lats, depths,
 		if i ==2:	pyplot.title('Difference ('+titles[0]+' - '+titles[1]+')')
 		if i ==3:	pyplot.title('Quotient ('  +titles[0]+' / '+titles[1]+')')
 	
+		if logy: axs[i].set_yscale('log')
+		
+		if hovXaxis.min() >=-90. and hovXaxis.max()<=90.:
+			axs[i].set_xlim([-90.,90.])			
+		if hovXaxis.min() >=-180. and hovXaxis.max()<=180.:	
+			axs[i].set_xlim([180.,180.])
+		if hovXaxis.min() >=0. and hovXaxis.max()<=360.:	
+			axs[i].set_xlim([0.,360.])			
+		
 	if title:
 		fig.text(0.5,0.975,title,horizontalalignment='center',verticalalignment='top')	
 	pyplot.tight_layout()		
@@ -686,7 +743,33 @@ def HovPlotQuad(lons,lats, depths,
 	pyplot.savefig(filename ,dpi=dpi)		
 	pyplot.close()
 		
+def arrayify(oldX,oldY,data):
+	#####
+	# Takes three arrays and converts it into mesh grid style coordinates and a 2D array of the data.
+	newXd,newYd,newDatad = {},{},{}
 	
+	if len(oldX) == len(oldY) == len(data): pass
+	else:
+		print "Arrays are the wrong size!"
+		assert 0
+	for x, y, d in zip(oldX,oldY,data):
+		newXd[x] = 1
+		newYd[y] = 1		
+		newDatad[(x,y)] = d
+	newX = np.array(sorted(newXd.keys()))
+	newY = np.array(sorted(newYd.keys()))
+	indexX = {x:i for i,x in enumerate(newX)}
+	indexY = {y:i for i,y in enumerate(newY)}
+	
+	newData = np.ma.zeros((len(newY),len(newX))) - 999.
+	
+	for (x,y),d in newDatad.items():
+		i = indexX[x]
+		j = indexY[y]
+		newData[j,i] = d
+
+	newData = np.ma.masked_where(newData==-999.,newData)
+	return newX,newY,newData
 
 def determineLimsAndLog(mi,ma):
 	#####
@@ -1179,6 +1262,36 @@ def Area(p1,p2):#lat,lon
 	return A
 			
 			
+
+def regrid(data,lon,lat):
+    	nX = np.arange(-179.5,180.5,1.)
+    	nY = np.arange( -89.5, 90.5,1.)
+    	
+    	if lat.ndim ==2:
+    		   oldLon, oldLat = lon,lat		
+    	else:
+    		if data.ndim >1:
+ 	   		oldLon, oldLat = np.meshgrid(lon,lat)
+ 	   	else:
+ 	   		oldLon, oldLat,data = lon,lat,data
+
+    	newLon, newLat = np.meshgrid(nX,nY)
+    	
+    	crojp1 = ccrs.PlateCarree(central_longitude=180.0, )#central_latitude=300.0)
+    	crojp2 = ccrs.PlateCarree(central_longitude=180.0, )#central_latitude=300.0)
+
+    	a = img_transform.regrid(data,
+    			     source_x_coords=oldLon,
+                             source_y_coords=oldLat,
+                             source_cs=crojp1,
+                             target_proj=crojp2,
+                             target_x_points=newLon,
+                             target_y_points=newLat
+                             )
+       # print 'newregid shape:',a.shape                     
+	return crojp2, a, newLon,newLat
+	
+	
 			
 
 class shelveMetadata:

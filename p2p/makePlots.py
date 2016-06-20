@@ -409,7 +409,9 @@ class makePlots:
 	else:
 		#####
 		# Robinson projection plots - Basemap
-		if ukp.shouldIMakeFile([self.xfn,self.yfn],robfnquad,debug=False):
+		mptbasemap = True	# Don't need both.			
+		if mptbasemap:
+		  if ukp.shouldIMakeFile([self.xfn,self.yfn],robfnquad,debug=False):
 			ti1 = getLongName(self.xtype)
 			ti2 =  getLongName(self.ytype)
 			if self.name in noXYLogs or dmin*dmax <=0.:
@@ -429,8 +431,11 @@ class makePlots:
 					vmin=dmin,vmax=dmax,)
 
 		# Robinson projection plots - Cartopy
-		makeCartopy = False	# Don't need both.	
-		if makeCartopy:
+		#makeCartopy = True	# Don't need both.	
+		if newSlice=='Global':
+		   # ####
+		   # Global, as we have interpollation turned on here.
+		   
 		   if ukp.shouldIMakeFile([self.xfn,self.yfn],robfncartopy,debug=False):
 			ti1 = getLongName(self.xtype)
 			ti2 =  getLongName(self.ytype)
@@ -449,7 +454,8 @@ class makePlots:
 					cbarlabel=cbarlabel, 
 					doLog=doLog,
 					vmin=dmin,vmax=dmax,
-					maptype = 'Cartopy')
+					maptype = 'Cartopy',
+					scatter=False)
 					
 		if self.depthLevel not in ['Surface','100m','200m','500m','1000m',]:# No point in making these.
 		  if ukp.shouldIMakeFile([self.xfn,self.yfn],hovquadfn,debug=False):
@@ -471,8 +477,9 @@ class makePlots:
 					doLog=doLog,
 					vmin=dmin,
 					vmax=dmax,
+					scatter = False,
+					logy=False,
 					)		
-		
 		
 		#####
 		# Simultaneous histograms plot	- single

@@ -561,6 +561,7 @@ def getLongName(text,debug=False):
   	if text == 'alkalinity500m':	return "Alkalinity (500m deep)"   
   	if text == 'AlkalinityTransect':return "Atlantic Transect Alkalinity"
   	if text == 'AlkalinityPTransect':return "Pacific Transect Alkalinity"
+  	if text == 'AlkalinitySOTransect':return "South Ocean Transect Alkalinity"  	
   	if text == 'AlkalinitySurface':	return "Surface Alkalinity"
   	if text == 'AlkalinityAll':	return "Alkalinity"  	
   	if text == 'Alkalinity100m':	return "Alkalinity (100m deep)"  	  	

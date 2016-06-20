@@ -128,10 +128,9 @@ def analysis_p2p(
 			analysisKeys.append('MLD')			# iFERMER Mixed Layer Depth - work in prgress
 
 		if analysisSuite.lower() in ['debug',]:	
-			analysisKeys.append('AirSeaFlux')			# Globap tCO2
-				
-	
-	
+		#	analysisKeys.append('AirSeaFlux')			# Globap tCO2
+			analysisKeys.append('N')			# WOA Nitrate				
+		#	analysisKeys.append('Chl_pig')			# Chlorophyll from pigments (MAREDAT)	
 	#####
 	# What depth level to investigate, in the case of big 3D files (T,Sal, N,P,Si, etc)	
 	#if annual:	
@@ -410,7 +409,7 @@ def analysis_p2p(
 				if modelGrid == 'ORCA025':	av[name]['MEDUSA']['File'] = MEDUSAFolder+jobID+'_'+ year+"_DIN.nc"							
 			
 			av[name]['MEDUSA']['grid']	= modelGrid		
-			av[name]['depthLevels'] 	= ['Surface','1000m','Transect','PTransect','SOTransect',]
+			av[name]['depthLevels'] 	= ['Transect','PTransect','SOTransect',]	#['Surface','1000m','Transect','PTransect','SOTransect',]
 			if annual:	av[name]['plottingSlices'] 	= tsRegions
 			else:		av[name]['plottingSlices'] 	= HighLatWinter
 			
