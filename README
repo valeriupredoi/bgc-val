@@ -134,8 +134,11 @@ REQUIREMENTS:
 				changeNC, mergeNC, pruneNC, convertToOneDNC
 				from: https://gitlab.ecosystem-modelling.pml.ac.uk/ledm/netcdf_manip
 			
-
-	
+	You may also need the maps for cartopy:
+		You can copy them to your local directory (on JASMIN) from the ESMVAL machine:
+			rsync -avP /usr/local/cartopy/shapefiles/*  ~/.local/cartopy/shapefiles/.
+		or from mydirectory:
+			rsync -avP ~ledm/.local/cartopy/shapefiles/* ~/.local/cartopy/shapefiles/.	
 TO DO:
 	
 	

@@ -61,9 +61,15 @@ p2pKeys_annual = ['T','S','MLD', 'Chl_CCI',
 		  'N','Si','O2','Alk','DIC','AirSeaFlux',
 		  'IntPP_OSU',
 		  ]
-		  		  
+
+p2pKeys_level2 = ['Chl_CCI',
+		  'N','Si','O2','Alk','DIC','AirSeaFlux',
+		  'IntPP_OSU',
+		  ]
+		  		  		  
 p2pDict = {i:n for i,n in enumerate(p2pKeys)}		  
 p2pDict_annual = {i:n for i,n in enumerate(p2pKeys_annual)}		  
+p2pDict_level2 = {i:n for i,n in enumerate(p2pKeys_level2)}		  
 
 def analysis_p2p(
 		models	= ['NEMO','MEDUSA',],
@@ -136,11 +142,13 @@ def analysis_p2p(
 			#analysisKeys.append('Fe')			# Iron	
 			analysisKeys.append('Chl_CCI')			# CCI Chlorophyll	
 			analysisKeys.append('IntPP_OSU')		# OSU Integrated primpary production
-												
+			analysisKeys.append('AirSeaFlux')		# work in progress
+															
 		if analysisSuite.lower() in ['debug',]:	
 		#	analysisKeys.append('AirSeaFlux')			# Globap tCO2
-			analysisKeys.append('N')			# WOA Nitrate				
+		#	analysisKeys.append('N')			# WOA Nitrate				
 		#	analysisKeys.append('Chl_pig')			# Chlorophyll from pigments (MAREDAT)	
+			analysisKeys.append('DIC')			# Globap tCO2 
 	#####
 	# What depth level to investigate, in the case of big 3D files (T,Sal, N,P,Si, etc)	
 	#if annual:	
@@ -419,7 +427,7 @@ def analysis_p2p(
 				if modelGrid == 'ORCA025':	av[name]['MEDUSA']['File'] = MEDUSAFolder+jobID+'_'+ year+"_DIN.nc"							
 			
 			av[name]['MEDUSA']['grid']	= modelGrid		
-			av[name]['depthLevels'] 	= ['Transect','PTransect','SOTransect',]	#['Surface','1000m','Transect','PTransect','SOTransect',]
+			av[name]['depthLevels'] 	= ['Surface','1000m','Transect','PTransect','SOTransect',]
 			if annual:	av[name]['plottingSlices'] 	= tsRegions
 			else:		av[name]['plottingSlices'] 	= HighLatWinter
 			

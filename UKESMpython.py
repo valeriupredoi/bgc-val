@@ -635,7 +635,7 @@ def HovPlotQuad(lons,lats, depths,
 		):#,**kwargs):
 
 	fig = pyplot.figure()
-	fig.set_size_inches(14,8)
+	fig.set_size_inches(10,6)
 	depths = np.array(depths)
 	if depths.max() * depths.min() >0. and depths.max()  >0.: depths = -depths
 	lons = np.array(lons)
@@ -674,8 +674,8 @@ def HovPlotQuad(lons,lats, depths,
 			print spl,i, rbma, max(data1),max(data2)
 			rbmi = -rbma
 		if spl in [224,]:
-			rbma = 10. #max(np.ma.abs(data1 -data2))
-			rbmi = 0.1		
+			rbma = 10.001 #max(np.ma.abs(data1 -data2))
+			rbmi = 0.0999		
 				
 		if doLogs[i] and rbmi*rbma <=0.:
 			print "UKESMpython:\tHovPlotQuad: \tMasking",
@@ -692,22 +692,28 @@ def HovPlotQuad(lons,lats, depths,
 		if spl in [221,222,]:cmap= defcmap
 		if spl in [223,224,]:cmap= pyplot.cm.RdBu_r		
 		
-		if doLogs[i]:
+		if doLogs[i] and spl in [221,222]:
 			rbmi = np.int(np.log10(rbmi))
 			rbma = np.log10(rbma)
 			if rbma > np.int(rbma): rbma+=1
 			rbma = np.int(rbma)
+						
+		#if doLogs[i]:
+		#	rbmi = np.int(np.log10(rbmi))
+		#	rbma = np.log10(rbma)
+		#	if rbma > np.int(rbma): rbma+=1
+		#	rbma = np.int(rbma)
 
 		axs.append(fig.add_subplot(spl))
 		if scatter:
 			if doLogs[i]:	ims.append(pyplot.scatter(hovXaxis,depths, c= np.log10(data),cmap=cmap, marker="s",alpha=0.9,linewidth='0',vmin=rbmi, vmax=rbma,))
 			else:		ims.append(pyplot.scatter(hovXaxis,depths, c=          data ,cmap=cmap, marker="s",alpha=0.9,linewidth='0',vmin=rbmi, vmax=rbma,))
 		else:
-			print "hovXaxis:",hovXaxis.shape,"depths:",depths.shape,"data:",data.shape
+			print "hovXaxis:",hovXaxis.min(),hovXaxis.max(),"\tdepths:",depths.min(),depths.max(),"\tdata:",data.min(),data.max()
 			newX,newY,newData = arrayify(hovXaxis,depths,data)
-			
-			if doLogs[i]:	ims.append(pyplot.pcolormesh(newX,newY, np.log10(newData),cmap=cmap, vmin=rbmi, vmax=rbma,))
-			else:		ims.append(pyplot.pcolormesh(newX,newY,          newData ,cmap=cmap, vmin=rbmi, vmax=rbma,))			
+			print "newX:",newX.min(),newX.max(),"\tnewY:",newY.min(),newY.max(),"\tnewData:",newData.min(),newData.max() , 'range:', rbmi,rbma			
+			if doLogs[i]:	ims.append(pyplot.pcolormesh(newX,newY, newData, cmap=cmap, norm=LogNorm(vmin=rbmi,vmax=rbma),))
+			else:		ims.append(pyplot.pcolormesh(newX,newY, newData, cmap=cmap, vmin=rbmi, vmax=rbma,))			
 
 		
 		if drawCbar:
@@ -716,7 +722,7 @@ def HovPlotQuad(lons,lats, depths,
 				else:		cbs.append(fig.colorbar(ims[i],pad=0.05,shrink=0.5,))
 			if spl in [224,]:
 				cbs.append(fig.colorbar(ims[i],pad=0.05,shrink=0.5,))
-				cbs[i].set_ticks ([-1,0,1])
+				cbs[i].set_ticks ([0.1,1.,10.])
 				cbs[i].set_ticklabels(['0.1','1.','10.'])
 		 	
 		 	cbs[i].set_clim(rbmi,rbma)
@@ -729,12 +735,12 @@ def HovPlotQuad(lons,lats, depths,
 	
 		if logy: axs[i].set_yscale('log')
 		
-		if hovXaxis.min() >=-90. and hovXaxis.max()<=90.:
-			axs[i].set_xlim([-90.,90.])			
-		if hovXaxis.min() >=-180. and hovXaxis.max()<=180.:	
-			axs[i].set_xlim([180.,180.])
-		if hovXaxis.min() >=0. and hovXaxis.max()<=360.:	
-			axs[i].set_xlim([0.,360.])			
+		#if hovXaxis.min() >=-90. and hovXaxis.max()<=90.:
+		#	axs[i].set_xlim([-90.,90.])			
+		#if hovXaxis.min() >=-180. and hovXaxis.max()<=180.:	
+		#	axs[i].set_xlim([180.,180.])
+		#if hovXaxis.min() >=0. and hovXaxis.max()<=360.:	
+		#	axs[i].set_xlim([0.,360.])			
 		
 	if title:
 		fig.text(0.5,0.975,title,horizontalalignment='center',verticalalignment='top')	

@@ -12,7 +12,7 @@ from multiprocessing import Pool
 from downloadFromMass import  downloadMass, findLastFinishedYear
 from analysis_timeseries import analysis_timeseries, singleTimeSeries, singleTimeSeriesProfile
 from analysis_timeseries import level1KeysDict, timeseriesDict
-from analysis_p2p import analysis_p2p, p2pDict_annual, single_p2p
+from analysis_p2p import analysis_p2p, p2pDict_level2, single_p2p
 from makeReport import html5Maker
 from UKESMpython import folder
 
@@ -31,7 +31,7 @@ def timeseriesParrallelL1(index):
 
 def p2pParrallel(index):
 	print "p2pParrallel",index, jobID, 'START'
-	key = p2pDict_annual[index]
+	key = p2pDict_level2[index]
 	single_p2p(jobID, key, year)
 	print "p2pParrallel",index, jobID, 'SUCESS'
 	
@@ -62,7 +62,7 @@ def theWholePackage(jobID):
 		
 	print "########\nThe Whole Package:\tRunning point to point analysis of", jobID,"on", year
 	if parrallel:
-		remaining = sorted(p2pDict_annual.keys())[:]
+		remaining = sorted(p2pDict_level2.keys())[:]
 	   	p1 = Pool(cores)
 	    	p1.map(p2pParrallel,remaining)	
 
@@ -74,7 +74,7 @@ def theWholePackage(jobID):
 			modelGrid = 'eORCA1',
 			annual 	= True,
 			noPlots = True,
-			analysisSuite='annual',)  
+			analysisSuite='level2',) 
 				    	
 	else:	
 		analysis_p2p(models	= ['NEMO','MEDUSA',],
@@ -83,7 +83,7 @@ def theWholePackage(jobID):
 			modelGrid = 'eORCA1',
 			annual 	= True,
 			noPlots = False,
-			analysisSuite='annual',)        
+			analysisSuite='level2',)        
 
 
 	
