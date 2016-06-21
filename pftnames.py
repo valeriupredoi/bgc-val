@@ -615,7 +615,8 @@ def getLongName(text,debug=False):
 	
 	if text == 'hist':		return "Histogram"  
 	if text == 'scatter':		return "scatter diagram"  	
-	if text == 'robinquad':		return "Maps"  		
+	if text == 'robinquad':		return "Maps"  
+	if text == 'robinquad-cartopy':	return "Interpolated Map"
 	if text == 'hov':		return "Hovmoeller"  			
 	if text == '10-90pc':		return ""  				
 	if text == 'Target':		return "Target Diagram"  	

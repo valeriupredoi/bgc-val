@@ -426,7 +426,7 @@ def html5Maker(
 			  'Chlorophyll_cci', 			   	
 			  #'TotalIntegratedPrimaryProduction',
 			  'IntegratedPrimaryProduction_OSU', 
-			  #'AirSeaFluxCO2' ,
+			  'AirSeaFluxCO2',
 			  #'TotalOMZVolume',
 			  #'TotalAirSeaFluxCO2' ,
 			 ]
