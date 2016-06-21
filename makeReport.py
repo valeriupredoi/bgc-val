@@ -470,7 +470,13 @@ def html5Maker(
 				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+s+'*'+region+'*'+key+'*'+year+'*robinquad-cartopy.png'))						
 			    if s in ['Transect',]:
 				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*Transect/*/*'+s+'*'+region+'*'+key+'*'+year+'*hov.png'))
-
+			if key in [	'Chlorophyll_cci', 			   	
+				  	'IntegratedPrimaryProduction_OSU', 
+					'AirSeaFluxCO2',
+				  ]:
+				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*robinquad.png'))
+				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*robinquad-cartopy.png'))				  	
+				  
 			#####
 			# Create plot headers for each file.
 			count=0			
