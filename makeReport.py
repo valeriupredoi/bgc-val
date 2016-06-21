@@ -423,6 +423,7 @@ def html5Maker(
 			  'Silicate', 		  
 			  'DIC',			  		  
 			  'Alkalinity',
+			  'Oxygen',
 			  'Chlorophyll_cci', 			   	
 			  #'TotalIntegratedPrimaryProduction',
 			  'IntegratedPrimaryProduction_OSU', 
