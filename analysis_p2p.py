@@ -146,9 +146,10 @@ def analysis_p2p(
 															
 		if analysisSuite.lower() in ['debug',]:	
 		#	analysisKeys.append('AirSeaFlux')			# Globap tCO2
-		#	analysisKeys.append('N')			# WOA Nitrate				
+			analysisKeys.append('N')			# WOA Nitrate				
 		#	analysisKeys.append('Chl_pig')			# Chlorophyll from pigments (MAREDAT)	
-			analysisKeys.append('DIC')			# Globap tCO2 
+		#	analysisKeys.append('DIC')			# Globap tCO2 
+		
 	#####
 	# What depth level to investigate, in the case of big 3D files (T,Sal, N,P,Si, etc)	
 	#if annual:	

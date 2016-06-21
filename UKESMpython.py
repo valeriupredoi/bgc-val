@@ -546,11 +546,7 @@ def robinPlotQuad(lons, lats, data1,data2,filename,titles=['',''],title='',lon0=
 			bms.append(pyplot.subplot(spl,projection=ccrs.Robinson()))
 			bms[i].set_global()
 			
-			if doLogs[i] and spl in [221,222]:
-				rbmi = np.int(np.log10(rbmi))
-				rbma = np.log10(rbma)
-				if rbma > np.int(rbma): rbma+=1
-				rbma = np.int(rbma)
+
 						
 			if marble:	bms[i].stock_img()
 			else:
@@ -560,6 +556,12 @@ def robinPlotQuad(lons, lats, data1,data2,filename,titles=['',''],title='',lon0=
 							ccrs.PlateCarree(), color='k',facecolor = 'none',linewidth=0.5)
 			
 			if scatter:
+				if doLogs[i] and spl in [221,222]:
+					rbmi = np.int(np.log10(rbmi))
+					rbma = np.log10(rbma)
+					if rbma > np.int(rbma): rbma+=1
+					rbma = np.int(rbma)
+							
 				if doLogs[i]:
 					ims.append(
 						bms[i].scatter(lons, lats,c = np.log10(data),
