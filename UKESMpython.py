@@ -704,11 +704,7 @@ def HovPlotQuad(lons,lats, depths,
 		if spl in [221,222,]:cmap= defcmap
 		if spl in [223,224,]:cmap= pyplot.cm.RdBu_r		
 		
-		if doLogs[i] and spl in [221,222]:
-			rbmi = np.int(np.log10(rbmi))
-			rbma = np.log10(rbma)
-			if rbma > np.int(rbma): rbma+=1
-			rbma = np.int(rbma)
+
 						
 		#if doLogs[i]:
 		#	rbmi = np.int(np.log10(rbmi))
@@ -718,6 +714,12 @@ def HovPlotQuad(lons,lats, depths,
 
 		axs.append(fig.add_subplot(spl))
 		if scatter:
+			if doLogs[i] and spl in [221,222]:
+				rbmi = np.int(np.log10(rbmi))
+				rbma = np.log10(rbma)
+				if rbma > np.int(rbma): rbma+=1
+				rbma = np.int(rbma)
+					
 			if doLogs[i]:	ims.append(pyplot.scatter(hovXaxis,depths, c= np.log10(data),cmap=cmap, marker="s",alpha=0.9,linewidth='0',vmin=rbmi, vmax=rbma,))
 			else:		ims.append(pyplot.scatter(hovXaxis,depths, c=          data ,cmap=cmap, marker="s",alpha=0.9,linewidth='0',vmin=rbmi, vmax=rbma,))
 			if drawCbar:
