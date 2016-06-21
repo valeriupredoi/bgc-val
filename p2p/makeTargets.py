@@ -61,6 +61,17 @@ class makeTargets:
     	self.filename = filename
 	self.diagramTypes = diagramTypes 	#['Taylor','Target']
 	self.debug = debug
+	
+	runTargets=False
+	for t in self.diagramTypes:
+		filename = self.filename.replace('.png','_'+t+'.png')
+		if ukp.shouldIMakeFile(self.matchedShelves,filename,debug=False): runTargets=True
+		
+	if not runTargets: 
+		print "makeTargets:\tNo need to make Targets:",self.filename
+		return
+	
+			
 	#self.imageDir = imageDir
 
 	self.legendKeys = legendKeys 
