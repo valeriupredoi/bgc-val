@@ -575,6 +575,15 @@ def robinPlotQuad(lons, lats, data1,data2,filename,titles=['',''],title='',lon0=
 						        vmin=rbmi, vmax=rbma,
 						        transform=ccrs.PlateCarree(),)
 						  )
+				if drawCbar:
+					if spl in [221,222,223]:
+						if doLogs[i]:	cbs.append(fig.colorbar(ims[i],pad=0.05,shrink=0.5,ticks = np.linspace(rbmi,rbma,rbma-rbmi+1)))
+						else:		cbs.append(fig.colorbar(ims[i],pad=0.05,shrink=0.5,))
+					if spl in [224,]:
+						cbs.append(fig.colorbar(ims[i],pad=0.05,shrink=0.5,))
+						cbs[i].set_ticks ([-1,0,1])
+						cbs[i].set_ticklabels(['0.1','1.','10.'])
+										  
 			else:
 				crojp2, newData, newLon,newLat = regrid(data.squeeze(),lons, lats)	
 				print "cartopy robin quad:",i,spl,newData.shape,newData.min(),newData.max(), rbmi,rbma
@@ -597,14 +606,15 @@ def robinPlotQuad(lons, lats, data1,data2,filename,titles=['',''],title='',lon0=
 				bms[i].coastlines()	#doesn't work.
 				#bms[i].fillcontinents(color=(255/255.,255/255.,255/255.,1))
 				bms[i].add_feature(cfeature.LAND,  facecolor='1.')	
-		if drawCbar:
-			if spl in [221,222,223]:
-				if doLogs[i]:	cbs.append(fig.colorbar(ims[i],pad=0.05,shrink=0.5,ticks = np.linspace(rbmi,rbma,rbma-rbmi+1)))
-				else:		cbs.append(fig.colorbar(ims[i],pad=0.05,shrink=0.5,))
-			if spl in [224,]:
-				cbs.append(fig.colorbar(ims[i],pad=0.05,shrink=0.5,))
-				cbs[i].set_ticks ([-1,0,1])
-				cbs[i].set_ticklabels(['0.1','1.','10.'])
+				if drawCbar:
+					if spl in [221,222,223]:
+						if doLogs[i]:	cbs.append(fig.colorbar(ims[i],pad=0.05,shrink=0.5,ticks = np.linspace(rbmi,rbma,rbma-rbmi+1)))
+						else:		cbs.append(fig.colorbar(ims[i],pad=0.05,shrink=0.5,))
+					if spl in [224,]:
+						cbs.append(fig.colorbar(ims[i],pad=0.05,shrink=0.5,))
+						cbs[i].set_ticks ([0.1,1.,10.])
+						cbs[i].set_ticklabels(['0.1','1.','10.'])				
+
 			#else:		ticks = np.linspace( rbmi,rbma,9)
 			#print i, spl, ticks, [rbmi,rbma]
 			
@@ -708,6 +718,14 @@ def HovPlotQuad(lons,lats, depths,
 		if scatter:
 			if doLogs[i]:	ims.append(pyplot.scatter(hovXaxis,depths, c= np.log10(data),cmap=cmap, marker="s",alpha=0.9,linewidth='0',vmin=rbmi, vmax=rbma,))
 			else:		ims.append(pyplot.scatter(hovXaxis,depths, c=          data ,cmap=cmap, marker="s",alpha=0.9,linewidth='0',vmin=rbmi, vmax=rbma,))
+			if drawCbar:
+				if spl in [221,222,223]:
+					if doLogs[i]:	cbs.append(fig.colorbar(ims[i],pad=0.05,shrink=0.5,ticks = np.linspace(rbmi,rbma,rbma-rbmi+1)))
+					else:		cbs.append(fig.colorbar(ims[i],pad=0.05,shrink=0.5,))
+				if spl in [224,]:
+					cbs.append(fig.colorbar(ims[i],pad=0.05,shrink=0.5,))
+					cbs[i].set_ticks ([-1.,0.,1.])
+					cbs[i].set_ticklabels(['0.1','1.','10.'])			
 		else:
 			print "hovXaxis:",hovXaxis.min(),hovXaxis.max(),"\tdepths:",depths.min(),depths.max(),"\tdata:",data.min(),data.max()
 			newX,newY,newData = arrayify(hovXaxis,depths,data)
@@ -716,14 +734,14 @@ def HovPlotQuad(lons,lats, depths,
 			else:		ims.append(pyplot.pcolormesh(newX,newY, newData, cmap=cmap, vmin=rbmi, vmax=rbma,))			
 
 		
-		if drawCbar:
-			if spl in [221,222,223]:
-				if doLogs[i]:	cbs.append(fig.colorbar(ims[i],pad=0.05,shrink=0.5,ticks = np.linspace(rbmi,rbma,rbma-rbmi+1)))
-				else:		cbs.append(fig.colorbar(ims[i],pad=0.05,shrink=0.5,))
-			if spl in [224,]:
-				cbs.append(fig.colorbar(ims[i],pad=0.05,shrink=0.5,))
-				cbs[i].set_ticks ([0.1,1.,10.])
-				cbs[i].set_ticklabels(['0.1','1.','10.'])
+			if drawCbar:
+				if spl in [221,222,223]:
+					if doLogs[i]:	cbs.append(fig.colorbar(ims[i],pad=0.05,shrink=0.5,ticks = np.linspace(rbmi,rbma,rbma-rbmi+1)))
+					else:		cbs.append(fig.colorbar(ims[i],pad=0.05,shrink=0.5,))
+				if spl in [224,]:
+					cbs.append(fig.colorbar(ims[i],pad=0.05,shrink=0.5,))
+					cbs[i].set_ticks ([0.1,1.,10.])
+					cbs[i].set_ticklabels(['0.1','1.','10.'])
 		 	
 		 	cbs[i].set_clim(rbmi,rbma)
 
