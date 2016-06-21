@@ -608,7 +608,7 @@ def robinPlotQuad(lons, lats, data1,data2,filename,titles=['',''],title='',lon0=
 				bms[i].add_feature(cfeature.LAND,  facecolor='1.')	
 				if drawCbar:
 					if spl in [221,222,223]:
-						if doLogs[i]:	cbs.append(fig.colorbar(ims[i],pad=0.05,shrink=0.5,ticks = np.linspace(rbmi,rbma,rbma-rbmi+1)))
+						if doLogs[i]:	cbs.append(fig.colorbar(ims[i],pad=0.05,shrink=0.5,))#ticks = np.linspace(rbmi,rbma,rbma-rbmi+1)))
 						else:		cbs.append(fig.colorbar(ims[i],pad=0.05,shrink=0.5,))
 					if spl in [224,]:
 						cbs.append(fig.colorbar(ims[i],pad=0.05,shrink=0.5,))
