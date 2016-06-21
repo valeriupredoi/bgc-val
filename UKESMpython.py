@@ -540,7 +540,16 @@ def robinPlotQuad(lons, lats, data1,data2,filename,titles=['',''],title='',lon0=
 				xi1,yi1,di1=mapIrregularGrid(bms[i],axs[i],lons,lats,data,lon0,xres=360,yres=180)
 				if doLogs[i]: 	ims.append( bms[i].pcolormesh(xi1,yi1,di1,cmap=cmap,norm = LogNorm() ))
 				else:	  	ims.append( bms[i].pcolormesh(xi1,yi1,di1,cmap=cmap))
-
+			if drawCbar:
+				if spl in [221,222,223]:
+					if doLogs[i]:	cbs.append(fig.colorbar(ims[i],pad=0.05,shrink=0.5,ticks = np.linspace(rbmi,rbma,rbma-rbmi+1)))
+					else:		cbs.append(fig.colorbar(ims[i],pad=0.05,shrink=0.5,))
+				if spl in [224,]:
+					cbs.append(fig.colorbar(ims[i],pad=0.05,shrink=0.5,))
+					cbs[i].set_ticks ([-1,0,1])
+					cbs[i].set_ticklabels(['0.1','1.','10.'])
+										  
+										  
 		if maptype=='Cartopy':
 			#axs.append(fig.add_subplot(spl))
 			bms.append(pyplot.subplot(spl,projection=ccrs.Robinson()))
