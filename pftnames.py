@@ -550,7 +550,14 @@ def getLongName(text,debug=False):
   	if text == 'Silicate200m':	return "Silicate (200m deep)"    	
   	if text == 'Silicate500m':	return "Silicate (500m deep)"    	
 
-
+	if text == 'OxygenSurface':	return "Surface Oxygen"  
+	if text == 'OxygenTransect':	return "Atlantic Transect Oxygen"  
+	if text == 'OxygenPTransect':	return "Pacific Transect Oxygen"  
+	if text == 'OxygenSOTransect':	return "Southern Ocean Transect Oxygen"  	
+	if text == 'Oxygen100m':		return "Oxygen (100m deep) "  
+	if text == 'Oxygen200m':		return "Oxygen (200m deep)"
+	if text == 'Oxygen500m':		return "Oxygen (500m deep)"  
+	if text == 'Oxygen1000m':		return "Oxygen (1000m deep)"  
 
 	if text == 'Alkalinity':	return "Alkalinity"  
   	if text == 'alkalinityPTransect':return "Pacific Transect Alkalinity"
