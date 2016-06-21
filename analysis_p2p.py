@@ -146,7 +146,8 @@ def analysis_p2p(
 															
 		if analysisSuite.lower() in ['debug',]:	
 		#	analysisKeys.append('AirSeaFlux')			# Globap tCO2
-			analysisKeys.append('N')			# WOA Nitrate				
+		#	analysisKeys.append('N')			# WOA Nitrate	
+			analysisKeys.append('O2')			# WOA Oxygen						
 		#	analysisKeys.append('Chl_pig')			# Chlorophyll from pigments (MAREDAT)	
 		#	analysisKeys.append('DIC')			# Globap tCO2 
 		

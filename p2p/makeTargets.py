@@ -70,7 +70,6 @@ class makeTargets:
 	if not runTargets: 
 		print "makeTargets:\tNo need to make Targets:",self.filename
 		return
-	
 			
 	#self.imageDir = imageDir
 
