@@ -414,12 +414,11 @@ class makePlots:
 		  if ukp.shouldIMakeFile([self.xfn,self.yfn],robfnquad,debug=False):
 			ti1 = getLongName(self.xtype)
 			ti2 =  getLongName(self.ytype)
+			cbarlabel=xunits
 			if self.name in noXYLogs or dmin*dmax <=0.:
 				doLog=False
-				cbarlabel=xunits
 			else:	
 				doLog=True
-				cbarlabel='log$_{10}$('+xunits+')'		
 			print "plotWithSlices:\tROBIN QUAD:",[ti1,ti2],False,dmin,dmax
 			ukp.robinPlotQuad(nmxx, nmxy, 
 					datax,datay,
@@ -439,12 +438,11 @@ class makePlots:
 		   if ukp.shouldIMakeFile([self.xfn,self.yfn],robfncartopy,debug=False):
 			ti1 = getLongName(self.xtype)
 			ti2 =  getLongName(self.ytype)
+			cbarlabel=xunits
 			if self.name in noXYLogs or dmin*dmax <=0.:
 				doLog=False
-				cbarlabel=xunits
 			else:	
 				doLog=True
-				cbarlabel='log$_{10}$('+xunits+')'		
 			print "plotWithSlices:\tROBIN QUAD:",[ti1,ti2],False,dmin,dmax
 			ukp.robinPlotQuad(nmxx, nmxy, 
 					datax,datay,
@@ -461,12 +459,11 @@ class makePlots:
 		  if ukp.shouldIMakeFile([self.xfn,self.yfn],hovquadfn,debug=False):
 			ti1 = getLongName(self.xtype)
 			ti2 =  getLongName(self.ytype)
+			cbarlabel=xunits			
 			if self.name in noXYLogs or dmin*dmax <=0.:
 				doLog=False
-				cbarlabel=xunits
 			else:	
 				doLog=True
-				cbarlabel='log$_{10}$('+xunits+')'		
 			print "plotWithSlices:\tHov quad:",[ti1,ti2],False,dmin,dmax
 			ukp.HovPlotQuad(nmxx,nmxy, nmxz, 
 					datax,datay,
