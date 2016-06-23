@@ -232,7 +232,7 @@ class profileAnalysis:
 	self.maskfn = 'data/'+self.grid+'_masks.nc'
 	
 	if not os.path.exists(self.maskfn):
-		print "Making mask file",
+		print "Making mask file",self.maskfn
 
 		makeMaskNC(self.maskfn, self.regions, self.grid)
 	
