@@ -23,6 +23,8 @@ python /home/users/ldemora/workspace/ukesm-validation/RemoteScripts/hello.py
 printf "\n\nssh -A -X mass-cli1 'python /home/users/ldemora/workspace/ukesm-validation/RemoteScripts/hello.py'\n"
 ssh -X -A mass-cli1 'python /home/users/ldemora/workspace/ukesm-validation/RemoteScripts/hello.py'
 
+ssh -X -A jasmin-sci1 'python /home/users/ldemora/workspace/ukesm-validation/RemoteScripts/hello.py'
+
 
 
 
