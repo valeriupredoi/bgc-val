@@ -98,14 +98,12 @@ def theWholePackage(jobID):
 
 
 
-
-
 if __name__=="__main__":	
 
 	try:	jobID = argv[1]
 	except:	
 		print "Please provide a job ID"
 		exit()
-        year = findLastFinishedYear(jobID)		
+        year = findLastFinishedYear(jobID,dividby=25)		
 	theWholePackage(jobID)
 		

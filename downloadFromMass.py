@@ -39,12 +39,12 @@ def getYearFromFile(fn):
 	return False
 	
 	
-def findLastFinishedYear(jobID):
+def findLastFinishedYear(jobID,dividby=1):
 	"""
 		command:
 		downloadMass jobID options.
 		options:
-			anymachine : skip check.
+			dividby = only outputs every "dividby" years.
 	"""
 	if jobID == '': return
 	
@@ -72,6 +72,8 @@ def findLastFinishedYear(jobID):
 	
 	print years, fnDict
 	for y in years:
+		if int(y)%dividby != 0: continue
+		
 		print y,':', fnDict[y]
 		if fnDict[y] == len(suffixes): return y
 		
