@@ -17,4 +17,5 @@ python /home/users/ldemora/workspace/ukesm-validation/RemoteScripts/hello.py
 
 ssh -X -A mass-cli1 'python /home/users/ldemora/workspace/ukesm-validation/downloadFromMass.py u-ad980'
 
+echo "The end of downloadOnMassCli.sh"
 
