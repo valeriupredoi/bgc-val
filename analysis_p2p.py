@@ -32,7 +32,7 @@ from getpass import getuser
 from glob import glob
 from netCDF4 import Dataset
 import numpy as np
-
+import sys
 
 #Specific local code:
 import UKESMpython as ukp
@@ -823,6 +823,8 @@ def single_p2p(jobID, key, year):
 		
 	except:
 		print "Failed single_p2p",(jobID,key, year)
+		e = sys.exc_info()[0]
+		write_to_page("<p>Error: %s</p>" % e)		
 		return 
 	
 		

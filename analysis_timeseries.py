@@ -34,7 +34,7 @@ from netCDF4 import Dataset
 from glob import glob
 from scipy.interpolate import interp1d
 import numpy as np
-import os
+import os,sys
 from getpass import getuser
 
 #####	
@@ -1296,6 +1296,8 @@ def singleTimeSeries(jobID,key,):
 		analysis_timeseries(jobID =jobID,analysisSuite=[key,], )#clean=1)
 	except:
 		print "Failed singleTimeSeries",(jobID,key)
+		e = sys.exc_info()[0]
+		write_to_page("<p>Error: %s</p>" % e)
 		return 
 	
 		
