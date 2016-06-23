@@ -820,14 +820,9 @@ def single_p2p(jobID, key, year):
 			noPlots = False,
 			analysisSuite=[key,],
 			)
-		
 	except:
 		print "Failed single_p2p",(jobID,key, year)
-		e = sys.exc_info()[0]
-		write_to_page("<p>Error: %s</p>" % e)		
-		return 
-	
-		
+		print "Error: %s" % sys.exc_info()[0]	
 		
 	
 		
