@@ -825,7 +825,7 @@ def profilePlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords= {}
 	pyplot.title(title)
 	print 'x',rbmi,'->',rbma, 'z:',zmi,'->',zma
 
-	ax1.set_yscale('log')
+	#ax1.set_yscale('log')
 
 	#####
 	# Add data:
