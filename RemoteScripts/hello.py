@@ -1,3 +1,4 @@
 #!/usr/bin/python
 from socket import gethostname
-print "Hello world from ",gethostname()
+print "\n\n########\nHello world from ",gethostname()
+print "\n"
