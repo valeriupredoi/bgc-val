@@ -1297,7 +1297,7 @@ def singleTimeSeries(jobID,key,):
 	except:
 		print "Failed singleTimeSeries",(jobID,key)
 		print "Error: %s" % sys.exc_info()[0]	
-	
+		assert 0	
 		
 				
 
