@@ -9,6 +9,10 @@
 from sys import argv,exit
 from multiprocessing import Pool
 
+import matplotlib
+# Force matplotlib to not use any Xwindows backend.
+matplotlib.use('Agg')
+
 from downloadFromMass import  downloadMass, findLastFinishedYear
 from analysis_timeseries import analysis_timeseries, singleTimeSeries, singleTimeSeriesProfile
 from analysis_timeseries import level1KeysDict, timeseriesDict
@@ -104,6 +108,6 @@ if __name__=="__main__":
 	except:	
 		print "Please provide a job ID"
 		exit()
-        year = findLastFinishedYear(jobID,dividby=25)		
+        year = findLastFinishedYear(jobID,dividby=25)	
 	theWholePackage(jobID)
 		
