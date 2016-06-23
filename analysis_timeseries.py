@@ -1292,12 +1292,11 @@ def singleTimeSeriesProfile(jobID,key):
 		analysis_timeseries(jobID =jobID,analysisSuite=[key,], )
 
 def singleTimeSeries(jobID,key,):
-	try:
+#	try:
 		analysis_timeseries(jobID =jobID,analysisSuite=[key,], )#clean=1)
-	except:
-		print "Failed singleTimeSeries",(jobID,key)
-		print "Error: %s" % sys.exc_info()[0]	
-		assert 0	
+#	except:
+#		print "Failed singleTimeSeries",(jobID,key)
+#		print "Error: %s" % sys.exc_info()[0]	
 		
 				
 
