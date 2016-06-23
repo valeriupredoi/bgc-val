@@ -11,6 +11,6 @@ echo 'SSH_TTY:'  $SSH_TTY
 
 python /home/users/ldemora/workspace/ukesm-validation/RemoteScripts/hello.py
 
-ssh -X -A jasmin-sci1 'python /home/users/ldemora/workspace/ukesm-validation/theWholePackage.py u-ad980'
+ssh -X -A jasmin-sci1 'ipython /home/users/ldemora/workspace/ukesm-validation/theWholePackage.py u-ad980'
 
 echo "The end of runWholePackageOnSci1.sh"
