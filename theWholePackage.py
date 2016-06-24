@@ -68,6 +68,7 @@ def theWholePackage(jobID):
 	   	p = Pool(cores)
 	    	if suite =='all':	p.map(timeseriesParrallel,  remaining)
 	    	if suite =='level1':	p.map(timeseriesParrallelL1,remaining)
+	    	p.close()
 	else:	
 		analysis_timeseries(jobID =jobID,analysisSuite='level1', )#z_component = 'SurfaceOnly',)
 		
@@ -77,7 +78,8 @@ def theWholePackage(jobID):
 		remaining = sorted(p2pDict_level2.keys())[:]
 	   	p1 = Pool(cores)
 	    	p1.map(p2pParrallel,remaining)	
-
+		p1.close()
+		
 		#####
 		# And once over to make the summary target diagrams.
 		analysis_p2p(models	= ['NEMO','MEDUSA',],
@@ -101,12 +103,7 @@ def theWholePackage(jobID):
 	
 
 
-	print "########\nThe Whole Package:\tmaking Summary report"	
-	html5Maker(jobID =jobID,
-		   reportdir=folder('reports/'+jobID),
-		   year = year,
-		   clean=True,
-		   )
+
 
 
 
@@ -118,4 +115,13 @@ if __name__=="__main__":
 		exit()
         year = findLastFinishedYear(jobID,dividby=25)	
 	theWholePackage(jobID)
+
+	print "########\nThe Whole Package:\tmaking Summary report"	
+	html5Maker(jobID =jobID,
+		   reportdir=folder('reports/'+jobID),
+		   year = year,
+		   clean=True,
+		   )
+		   
+		   
 		
