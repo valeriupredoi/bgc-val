@@ -113,8 +113,12 @@ if __name__=="__main__":
 	except:	
 		print "Please provide a job ID"
 		exit()
-        year = findLastFinishedYear(jobID,dividby=25)	
-	theWholePackage(jobID)
+	if 'ReportOnly' in argv[:]:ReportOnly=True
+	else:	ReportOnly = False
+
+        year = findLastFinishedYear(jobID,dividby=25)		
+	if not ReportOnly:
+		theWholePackage(jobID)
 
 	print "########\nThe Whole Package:\tmaking Summary report"	
 	html5Maker(jobID =jobID,

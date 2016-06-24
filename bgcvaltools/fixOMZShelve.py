@@ -7,9 +7,9 @@ s.close()
 
 #modeldata[('Global', 'Surface', 'sum')].pop(1300.4136986301369,None)
 #readFiles.remove('/group_workspaces/jasmin2/ukesm/BGC_data/u-ad980/u-ad980o_1y_13001201_13011130_ptrc_T.nc')
-modeldata[('Global', 'Surface', 'sum')].pop(1447.4136986301369,None)
-readFiles.remove('/group_workspaces/jasmin2/ukesm/BGC_data/u-ad980/u-ad980o_1y_14461201_14471130_ptrc_T.nc')
-
+#modeldata[('Global', 'Surface', 'sum')].pop(1447.4136986301369,None)
+readFiles.remove('/group_workspaces/jasmin2/ukesm/BGC_data/u-ad980/u-ad980o_1y_14251201_14261130_ptrc_T.nc')
+modeldata[('Global', 'Surface', 'sum')].pop(1426.4136986301369,None)
 s = shopen('/group_workspaces/jasmin2/ukesm/BGC_data/ldemora/shelves/timeseries/u-ad980/u-ad980_TotalOMZVolume.shelve')
 print s.keys()
 s['modeldata'] = modeldata
