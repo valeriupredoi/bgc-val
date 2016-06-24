@@ -6,12 +6,13 @@
 	In this code, we run the whole package analysis suite.
 	
 """
-from sys import argv,exit
-from multiprocessing import Pool
+
 
 import matplotlib
 # Force matplotlib to not use any Xwindows backend.
 matplotlib.use('Agg')
+from sys import argv,exit
+from multiprocessing import Pool
 
 from downloadFromMass import  downloadMass, findLastFinishedYear
 from analysis_timeseries import analysis_timeseries, singleTimeSeries, singleTimeSeriesProfile
