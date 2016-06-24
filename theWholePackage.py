@@ -51,7 +51,14 @@ def theWholePackage(jobID):
 	cores = 8
 	#suite = 'all'
 	suite = 'level1'
-			  
+
+        print "########\nThe Whole Package:\tmaking Summary report"
+        html5Maker(jobID =jobID,
+                   reportdir=folder('reports/'+jobID),
+                   year = year,
+                   clean=True,
+                   )
+#	return			  
 
 	print "########\nThe Whole Package:\tStarting Time series (surface only)", jobID 	
 	if parrallel:
