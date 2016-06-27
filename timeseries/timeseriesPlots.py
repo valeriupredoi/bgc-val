@@ -706,6 +706,7 @@ def hovmoellerPlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords=
 		    pyplot.colorbar(pad=0.25,shrink=1.)		
 	pyplot.ylim([zmi,zma])
 	ax1.get_xaxis().set_ticks([])
+	ax1.set_yscale('symlog')	
 	pyplot.ylabel('Depth')
 
 
@@ -716,6 +717,7 @@ def hovmoellerPlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords=
 	pyplot.xlim([times.min(),times.max()])
 	pyplot.ylim([zmi,zma])	
 	pyplot.colorbar()
+	ax2.set_yscale('symlog')	
 	ax2.yaxis.set_ticklabels([])
 	pyplot.xlabel('Year')
 

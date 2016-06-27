@@ -145,9 +145,9 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('TotalOMZVolume')		# work in progress
 			#analysisKeys.append('TotalOMZVolume50')	# work in progress			
 			#analysisKeys.append('OMZThickness')		# work in progress						
-			#analysisKeys.append('DIC')			# work in progress									
+			analysisKeys.append('DIC')			# work in progress									
 			#analysisKeys.append('O2')			# work in progress
-			analysisKeys.append('Iron')			# work in progress	
+			#analysisKeys.append('Iron')			# work in progress	
                         #analysisKeys.append('IntPP_OSU')                # OSU Integrated primpary production    
 			
 		if analysisSuite.lower() in ['FullDepth',]:
