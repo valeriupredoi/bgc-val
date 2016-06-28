@@ -511,6 +511,91 @@ def html5Maker(
 
 
 
+	if level2Physics:
+		l2Fields = [
+			  'Temperature', 
+			  'Salinity', 
+			  'MLD',
+			 ]
+		hrefs 	= []
+		Titles	= {}
+		SidebarTitles = {}
+		Descriptions= {}
+		FileLists	= {}
+		SectionTitle= 'Level 2 - Physics'				
+		region = 'Global'
+		slices = ['Surface','1000m','Transect',]
+		FileOrder = {}		
+				
+		for key in sorted(l2Fields):
+			#if key not in ['Alkalinity','Nitrate']: continue
+
+
+			
+			href = 	'l2p-'+key+'-'+region
+			
+			desc = ''
+			if key in ListofCaveats.keys():			desc +=ListofCaveats[key]+'\n'
+			if region in ListofCaveats_regions.keys():	desc +=ListofCaveats_regions[key]+'\n'		
+						
+			hrefs.append(href)
+			Titles[href] = 	getLongName(region) +' '+getLongName(key)
+			SidebarTitles[href] = getLongName(key)				
+			Descriptions[href] = desc
+			FileLists[href] = {}
+			FileOrder[href] = {}			
+			#####
+			# Determine the list of files:
+			vfiles = []
+			#vfiles = glob('./images/'+jobID+'/timeseries/*/percentiles*'+key+'*'+region+'*10-90pc.png')
+                        #vfiles.extend(glob('./images/'+jobID+'/timeseries/*/profile*'+key+'*'+region+'*median.png'))
+           	     	#vfiles.extend(glob('./images/'+jobID+'/timeseries/*/Sum*'+key+'*'+region+'*sum.png'))                        
+			#vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*hist.png'))
+			for s in slices:
+			    if s in ['Surface','1000m',]:
+				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+s+'*'+region+'*'+key+'*'+year+'*robinquad.png'))	
+				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+s+'*'+region+'*'+key+'*'+year+'*robinquad-cartopy.png'))						
+			    if s in ['Transect',]:
+				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*Transect/*/*'+s+'*'+region+'*'+key+'*'+year+'*hov.png'))
+			if key in [	'Chlorophyll_cci', 			   	
+				  	'IntegratedPrimaryProduction_OSU', 
+					'AirSeaFluxCO2',
+					'MLD',
+				  ]:
+				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*robinquad.png'))
+				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*robinquad-cartopy.png'))				  	
+				  
+			#####
+			# Create plot headers for each file.
+			count=0			
+			for fn in vfiles:
+				#####
+				# Skip transects, they'll be added below.
+				#if fn.find('Transect') >-1: continue
+				
+				#####
+				# Copy image to image folder and return relative path.
+				relfn = addImageToHtml(fn, imagesfold, reportdir)
+			
+				#####
+				# Create custom title by removing extra bits.
+				title = html5Tools.fnToTitle(relfn)
+		
+				FileLists[href][relfn] = title
+				FileOrder[href][count] = relfn
+				count+=1				
+				print "Adding ",relfn,"to script"
+
+					
+				
+		html5Tools.AddSubSections(indexhtmlfn,hrefs,SectionTitle,
+				SidebarTitles=SidebarTitles,#
+				Titles=Titles, 
+				Descriptions=Descriptions,
+				FileLists=FileLists,
+				FileOrder=FileOrder)
+
+
 
 			
 		

@@ -143,7 +143,14 @@ def analysis_p2p(
 			analysisKeys.append('Chl_CCI')			# CCI Chlorophyll	
 			analysisKeys.append('IntPP_OSU')		# OSU Integrated primpary production
 			analysisKeys.append('AirSeaFlux')		# work in progress
-															
+
+			#####	
+			# Physics switches:
+			analysisKeys.append('T')			# WOA Temperature
+			analysisKeys.append('S')			# WOA Salinity
+			analysisKeys.append('MLD')			# iFERMER Mixed Layer Depth - work in prgress
+			
+																		
 		if analysisSuite.lower() in ['debug',]:	
 		#	analysisKeys.append('AirSeaFlux')			# Globap tCO2
 		#	analysisKeys.append('N')			# WOA Nitrate	
