@@ -44,7 +44,8 @@ def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
 			imageFolder = '',
 			noPlots = False,
 			gridFile='',
-			annual = ''
+			annual = '',
+			noTargets = False,
 			):
 
 	"""
@@ -272,7 +273,7 @@ def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
 			# no plots doesn't produce any plots, but does produce the list of shelves which can be used in Taylor/Target/Pattern diagrams.			
 			if noPlots: continue
 
-
+			if noTargets: continue
 			#csvFile = ukp.folder(workingDir+'/CSV')+'summary_file.csv'
 			#print "attempting csvFromShelves:",m.shelves, csvFile
 			#c = csvFromShelves.csvFromShelves(m.shelves, csvFile ,['check',])
@@ -339,7 +340,8 @@ def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
 							gridFile= gridFile												
 							)
 
-		if noPlots: continue
+		if noPlots: 	continue
+		if noTargets: 	continue		
 		#####
 		# And now by depth levels:
 		if annual:	groups = ['Oceans','depthRanges','BGCVal',]

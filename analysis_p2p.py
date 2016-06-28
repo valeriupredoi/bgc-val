@@ -79,6 +79,7 @@ def analysis_p2p(
 		annual 	= True,
 		noPlots = False,
 		analysisSuite='default',
+		noTargets=True,
 		):
 	
 	
@@ -802,9 +803,11 @@ def analysis_p2p(
 					noPlots		= noPlots,	# turns off plot making to save space and compute time.
 					gridFile	= orcaGridfn,	# enforces custom gridfile.
 					annual		= annual,
+					noTargets	= noTargets,
 			 	)
 			)
-		if len(av.keys())==1: return	
+		if len(av.keys())==1: 	return	
+		if noTargets:		return
 		######
 		# Summary Target diagrams:
 		imageFold = ukp.folder(imageFolder+'/Targets/'+year+'/Summary')
