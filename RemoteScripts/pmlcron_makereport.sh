@@ -7,5 +7,5 @@ export DISPLAY=':0'
 #ssh -A -X ldemora@jasmin-login1.ceda.ac.uk '/home/users/ldemora/workspace/ukesm-validation/RemoteScripts/helloOnMass.sh'
 
 ssh -A -X ldemora@jasmin-login1.ceda.ac.uk '/home/users/ldemora/workspace/ukesm-validation/RemoteScripts/runReportOnSci1.sh'
-cd /home/users/ldemora/ImagesFromJasmin
+cd /users/modellers/ledm/ImagesFromJasmin
 tar xfvz report-u-ad980.tar.gz
