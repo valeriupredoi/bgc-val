@@ -16,6 +16,7 @@ python /home/users/ldemora/workspace/ukesm-validation/RemoteScripts/hello.py
 #ssh -X -A mass-cli1 'python /home/users/ldemora/workspace/ukesm-validation/RemoteScripts/hello.py'
 
 ssh -X -A mass-cli1 'python /home/users/ldemora/workspace/ukesm-validation/downloadFromMass.py u-ad980'
+ssh -X -A mass-cli1 'ls -lhrt /group_workspaces/jasmin2/ukesm/BGC_data/u-ad980; ln -s  /group_workspaces/jasmin2/ukesm/BGC_data/u-ad980/*1y*grid_[UVWT]* /group_workspaces/jasmin2/ukesm/BGC_data/u-ad980/1y/.'
 
 echo "The end of downloadOnMassCli.sh"
 
