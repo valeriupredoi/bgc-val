@@ -145,7 +145,8 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('TotalOMZVolume')		# work in progress
 			#analysisKeys.append('TotalOMZVolume50')	# work in progress			
 			#analysisKeys.append('OMZThickness')		# work in progress						
-			analysisKeys.append('DIC')			# work in progress									
+			#analysisKeys.append('DIC')			# work in progress									
+			analysisKeys.append('TotalIceExtent')		# work in progress												
 			#analysisKeys.append('O2')			# work in progress
 			#analysisKeys.append('Iron')			# work in progress	
                         #analysisKeys.append('IntPP_OSU')                # OSU Integrated primpary production    
@@ -1179,6 +1180,39 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['gridFile']		= orcaGridfn
 		av[name]['Dimensions']		= 2		
 			
+			
+	if 'TotalIceExtent' in analysisKeys:
+		name = 'IceExtent'
+		
+		nc = Dataset(orcaGridfn,'r')
+		area = nc.variables['e2t'][:] * nc.variables['e1t'][:]			
+		tmask = nc.variables['tmask'][0,:,:]
+		nc.close()			
+
+		def calcTotalIceArea(nc,keys):
+			arr = nc.variables[keys[0]][:].squeeze() * area
+			return np.ma.masked_where(tmask==0,arr).sum()
+					
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', MEDUSAFolder_pref, annual)												
+		av[name]['dataFile'] 		= ''
+			
+		av[name]['modelcoords'] 	= medusaCoords 	
+		av[name]['datacoords'] 		= medusaCoords
+	
+		av[name]['modeldetails'] 	= {'name': name, 'vars':['soicecov',], 'convert': calcTotalIceArea,'units':'m^2'}	
+		av[name]['datadetails']  	= {'name':'','units':'',}
+
+		av[name]['layers'] 		=  ['Surface',]
+		av[name]['regions'] 		=  ['Global',]#'SouthHemisphere','NorthHemisphere',]		
+		av[name]['metrics']		= ['sum',]
+
+		av[name]['datasource'] 		= ''
+		av[name]['model']		= 'CICE'
+
+		av[name]['modelgrid']		= 'eORCA1'
+		av[name]['gridFile']		= orcaGridfn
+		av[name]['Dimensions']		= 1
+
 				
 
   	#####
