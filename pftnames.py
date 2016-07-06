@@ -619,7 +619,9 @@ def getLongName(text,debug=False):
   	if text == 'TotalOMZVolume':	return 'Total Oxygen minimum zone volume (<20 mmol O2/m^3)'   	
   	if text == 'TotalOMZVolume50':	return 'Total Oxygen minimum zone volume (<50 mmol O2/m^3)'   	  	
   	if text == 'OMZThickness':	return 'Oxygen minimum zone thickness (<20 mmol O2/m^3)'  
-  		
+  	
+  	if text == 'DrakePassageTransport':	return 'Drake Passage Transport'    	
+  	if text == 'DPT':			return 'Drake Passage Transport'    	  		
 	
 	if text == 'hist':		return "Histogram"  
 	if text == 'scatter':		return "scatter diagram"  	
@@ -775,6 +777,7 @@ def getLongName(text,debug=False):
    	if text =='75-95pc':	return '75-95 percentiles' 
    	if text =='95-99pc':	return '95-99 percentiles' 
    	if text =='99-100pc':	return '99-100 percentiles' 
+   	if text =='metricless':	return ''    	
 
 	if text =='Overestimate_2sig': return "Overestimate 2 sigma"
 	if text =='Overestimate_3sig': return "Overestimate 3 sigma"
@@ -795,7 +798,8 @@ def getLongName(text,debug=False):
   	if text == 'NorthernSubpolarPacific':	return "Northern Subpolar Pacific"	
   	if text == 'ignoreInlandSeas':		return "No Inland Seas"	
   	if text == 'SouthernOcean':		return "Southern Ocean"	  	  	  	  	  	  		
-	
+  	if text == 'regionless':		return ""		
+  	if text == 'layerless':			return ""			
 	
   	if text == 'NorthTemperate':	return "North Temperate"
   	if text == 'SouthTemperate':	return "South Temperate"  	

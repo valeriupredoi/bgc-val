@@ -154,9 +154,10 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('TotalOMZVolume50')	# work in progress			
 			#analysisKeys.append('OMZThickness')		# work in progress						
 			#analysisKeys.append('DIC')			# work in progress									
-			analysisKeys.append('TotalIceExtent')		# work in progress	
-			analysisKeys.append('NorthernTotalIceExtent')		# work in progress	
-			analysisKeys.append('SouthernTotalIceExtent')		# work in progress				
+			analysisKeys.append('DrakePassageTransport')			# DrakePassageTransport				
+			#analysisKeys.append('TotalIceExtent')		# work in progress	
+			#analysisKeys.append('NorthernTotalIceExtent')		# work in progress	
+			#analysisKeys.append('SouthernTotalIceExtent')		# work in progress				
 			#analysisKeys.append('TotalIceExtent')		# work in progress							
 														
 			#analysisKeys.append('O2')			# work in progress
@@ -1249,7 +1250,45 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['gridFile']		= orcaGridfn
 		av[name]['Dimensions']		= 1
 		
-						
+	if 'DrakePassageTransport' in analysisKeys:
+		name = 'DrakePassageTransport'
+		####
+		# Note that this will only work with the eORCAgrid.
+		
+		# coordinates of Drake Passage
+		LON=219
+		LAT0=79
+		LAT1=109
+		
+		nc = Dataset(orcaGridfn,'r')
+		e2u = nc.variables['e2u'][LAT0:LAT1,LON]
+		umask = nc.variables['umask'][:,LAT0:LAT1,LON]
+		nc.close()			
+
+		def drake(nc,keys):
+			e3u = nc.variables['e3u'][0,:,LAT0:LAT1,LON]
+			velo = nc.variables['vozocrtx'][0,:,LAT0:LAT1,LON]
+			return np.sum(velo*e3u*e2u*umask)*1.e-6			
+								
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_U', MEDUSAFolder_pref, annual)
+		av[name]['dataFile'] 	= ''
+			
+		av[name]['modelcoords'] = medusaCoords 	
+		av[name]['datacoords'] 	= medusaCoords
+
+		av[name]['modeldetails']= {'name': name, 'vars':['e3u','vozocrtx',], 'convert': drake,'units':'Sv'}		    	
+				
+		av[name]['regions'] 		=  ['regionless',]		
+		av[name]['datadetails']  	= {'name':'','units':'',}
+		av[name]['layers'] 		=  ['layerless',]		
+		av[name]['metrics']		= ['metricless',]
+		av[name]['datasource'] 		= ''
+		av[name]['model']		= 'NEMO'
+		av[name]['modelgrid']		= 'eORCA1'
+		av[name]['gridFile']		= orcaGridfn
+		av[name]['Dimensions']		= 1
+		
+												
 
   	#####
   	# Calling timeseriesAnalysis

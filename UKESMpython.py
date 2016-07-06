@@ -1570,7 +1570,7 @@ def makeMask(name,newSlice, xt,xz,xy,xx,xd,debug=False):
 		print "makeMask:\tSlice", newSlice, "requires both datasets, and you should never see this"
 		assert False
 
-  	if newSlice in ['All', 'Global']: 		
+  	if newSlice in ['All', 'Global','regionless','layerless']: 		
  # 		return
   		m = np.zeros(len(xd))		
   		for a in [xt,xz,xy,xx,xd]:

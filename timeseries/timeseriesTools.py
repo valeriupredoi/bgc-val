@@ -442,7 +442,7 @@ class DataLoader_1Darrays:
   	self.Fulldata 	= data
 	
 	for r in self.regions:
-		if r in ['Global','All']: 
+		if r in ['Global','All',]: 
 			print "Loading global file 1D. "
 			assert 0 
 			continue

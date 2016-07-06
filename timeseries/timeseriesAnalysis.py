@@ -204,6 +204,7 @@ class timeseriesAnalysis:
 				if m == 'mean':   	modeldataD[(r,l,m)][meantime] = np.ma.mean(layerdata)
 				if m == 'median':   	modeldataD[(r,l,m)][meantime] = np.ma.median(layerdata)
 				if m == 'sum':   	modeldataD[(r,l,m)][meantime] = np.ma.sum(layerdata)
+				if m == 'metricless':  	modeldataD[(r,l,m)][meantime] = np.ma.sum(layerdata)	# same as sum			
 				if m == 'min':   	modeldataD[(r,l,m)][meantime] = np.ma.min(layerdata)
 				if m == 'max':   	modeldataD[(r,l,m)][meantime] = np.ma.max(layerdata)
 				if m.find('pc')>-1:
@@ -416,7 +417,7 @@ class timeseriesAnalysis:
 	    #####
 	    # Percentiles plots.		  	    
 	    for m in self.metrics:  
-	    		if m != 'sum': continue 
+	    		if m not in ['sum', 'metricless']: continue 
 			filename = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join(['Sum',self.jobID,self.dataType,r,str(l),m,])+'.png'
 			if not ukp.shouldIMakeFile([self.shelvefn, self.shelvefn_insitu],filename,debug=False):	continue
 				    		
