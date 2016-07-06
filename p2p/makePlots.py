@@ -475,7 +475,7 @@ class makePlots:
 					vmin=dmin,
 					vmax=dmax,
 					scatter = False,
-					logy=False,
+					logy=True,
 					)		
 		
 		#####

@@ -774,7 +774,9 @@ def HovPlotQuad(lons,lats, depths,
 		if i ==2:	pyplot.title('Difference ('+titles[0]+' - '+titles[1]+')')
 		if i ==3:	pyplot.title('Quotient ('  +titles[0]+' / '+titles[1]+')')
 	
-		if logy: axs[i].set_yscale('log')
+		#if logy: axs[i].set_yscale('log')
+                if logy: axs[i].set_yscale('symlog')
+
 		
 		#if hovXaxis.min() >=-90. and hovXaxis.max()<=90.:
 		#	axs[i].set_xlim([-90.,90.])			

@@ -155,9 +155,15 @@ def analysis_p2p(
 		if analysisSuite.lower() in ['debug',]:	
 		#	analysisKeys.append('AirSeaFlux')			# Globap tCO2
 		#	analysisKeys.append('N')			# WOA Nitrate	
-			analysisKeys.append('O2')			# WOA Oxygen						
+		#	analysisKeys.append('O2')			# WOA Oxygen						
 		#	analysisKeys.append('Chl_pig')			# Chlorophyll from pigments (MAREDAT)	
 		#	analysisKeys.append('DIC')			# Globap tCO2 
+                        #####   
+                        # Physics switches:
+                        analysisKeys.append('T')                        # WOA Temperature
+                        analysisKeys.append('S')                        # WOA Salinity
+                        analysisKeys.append('MLD')                      # iFERMER Mixed Layer Depth - work in prgress
+
 		
 	#####
 	# What depth level to investigate, in the case of big 3D files (T,Sal, N,P,Si, etc)	
@@ -731,7 +737,7 @@ def analysis_p2p(
 				av[name]['NEMO']['File'] 	= NEMOFolder+jobID+"_"+year+'_SAL.nc'	
 
 			av[name]['NEMO']['grid'] 		= modelGrid
-			av[name]['depthLevels'] 		= ['Surface','Transect','PTransect','SOTransect']	 
+			av[name]['depthLevels'] 		= ['Surface','Transect','PTransect','SOTransect','1000m',]	 
 			av[name]['plottingSlices'] 	= tsRegions
 			
 			av[name]['Data']['coords'] 	= woaCoords
@@ -753,7 +759,7 @@ def analysis_p2p(
 				av[name]['NEMO']['File'] 	= NEMOFolder+jobID+"_"+year+'_TEMP.nc'	
 
 			av[name]['NEMO']['grid'] 	= modelGrid	
-			av[name]['depthLevels'] 	= ['Surface','Transect','PTransect','SOTransect']	
+			av[name]['depthLevels'] 	= ['Surface','Transect','PTransect','SOTransect','1000m',]	
 			av[name]['plottingSlices'] 	= tsRegions
 
 			av[name]['Data']['coords'] 	= woaCoords

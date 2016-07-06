@@ -184,6 +184,9 @@ def html5Maker(
 			  'DIC',			  		  
 			  'Alkalinity', 
 			  'TotalOMZVolume',			  			  
+                          'Temperature',
+                          'Salinity',
+
 			 ]
 		 
 		SectionTitle= 'Level 1'
@@ -273,6 +276,9 @@ def html5Maker(
 			  'Silicate', 
 			  'Iron',
 			  'IntegratedPrimaryProduction_OSU',
+                          'Temperature',
+                          'Salinity',
+
 			]
 		SectionTitle= 'Level 1 - regional'
 		hrefs 		= []
@@ -354,6 +360,9 @@ def html5Maker(
 			  'DIC',
 			  'Alkalinity',
 			  'Oxygen',
+                          'Temperature',
+                          'Salinity',
+
 			]
 		if plottype == 'profile':	SectionTitle= 'Level 1 - Profiles'
 		if plottype == 'profilehov':	SectionTitle= 'Level 1 - Hovmoeller plots'		

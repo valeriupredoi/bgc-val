@@ -137,6 +137,10 @@ def analysis_timeseries(jobID = "u-ab671",
                         analysisKeys.append('TotalOMZVolume')           # Total OMZ Volume
                         analysisKeys.append('OMZThickness')             # Total OMZ Volume
                         analysisKeys.append('Iron')                     # Iron
+                        #####   
+                        # Physics switches:
+                        analysisKeys.append('T')                        # WOA Temperature
+                        analysisKeys.append('S')                        # WOA Salinity
 
 		
 		if analysisSuite.lower() in ['debug',]:	
@@ -145,10 +149,14 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('TotalOMZVolume')		# work in progress
 			#analysisKeys.append('TotalOMZVolume50')	# work in progress			
 			#analysisKeys.append('OMZThickness')		# work in progress						
-			analysisKeys.append('DIC')			# work in progress									
+			#analysisKeys.append('DIC')			# work in progress									
 			#analysisKeys.append('O2')			# work in progress
 			#analysisKeys.append('Iron')			# work in progress	
                         #analysisKeys.append('IntPP_OSU')                # OSU Integrated primpary production    
+                        #####   
+                        # Physics switches:
+                        analysisKeys.append('T')                        # WOA Temperature
+                        analysisKeys.append('S')                        # WOA Salinity
 			
 		if analysisSuite.lower() in ['FullDepth',]:
 			#Skip 2D fields
