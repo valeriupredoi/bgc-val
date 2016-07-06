@@ -197,24 +197,24 @@ def html5Maker(
 		Descriptions= {}
 		FileLists	= {}
 		
-		region = 'Global'
+		#region = 'Global'
 		for key in level1Fields:
 
 			#####
 			# href is the name used for the html 
-			href = 	'L1'+key+'-'+region
+			href = 	'L1'+key+'-global'
 			hrefs.append(href)
 			
 			#####
 			# Title is the main header, SidebarTitles is the side bar title.
-			Titles[href] = 	getLongName(region) +' '+	getLongName(key)
+			Titles[href] = 	getLongName(key)
 			SidebarTitles[href] = getLongName(key)	
 						
 			#####
 			# Descriptions is a small sub-header
 			desc = ''
 			if key in ListofCaveats.keys():			desc +=ListofCaveats[key]+'\n'
-			if region in ListofCaveats_regions.keys():	desc +=ListofCaveats_regions[key]+'\n'			
+			#if region in ListofCaveats_regions.keys():	desc +=ListofCaveats_regions[key]+'\n'			
 			Descriptions[href] = desc
 			
 
@@ -223,7 +223,7 @@ def html5Maker(
 			FileLists[href] = {}
 			#####
 			# Determine the list of files:
-			vfiles = glob('./images/'+jobID+'/timeseries/*/percentiles*'+key+'*'+region+'*10-90pc.png')
+			vfiles = glob('./images/'+jobID+'/timeseries/*/percentiles*'+key+'*'+'Global*10-90pc.png')
 	                #vfiles.extend(glob('./images/'+jobID+'/timeseries/*/profile*'+key+'*'+region+'*median.png'))
 	                #vfiles.extend(glob('./images/'+jobID+'/timeseries/*/Sum*'+key+'*'+region+'*sum.png'))      
 	                vfiles.extend(glob('./images/'+jobID+'/timeseries/*/Sum*'+key+'*'+'Global*sum.png'))                                                                  
