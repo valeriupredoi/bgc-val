@@ -186,6 +186,7 @@ def html5Maker(
 			  'TotalOMZVolume',			  			  
                           'Temperature',
                           'Salinity',
+                          'TotalIceExtent',
 
 			 ]
 		 
@@ -278,6 +279,7 @@ def html5Maker(
 			  'IntegratedPrimaryProduction_OSU',
                           'Temperature',
                           'Salinity',
+                          #'TotalIceExtent'
 
 			]
 		SectionTitle= 'Level 1 - regional'
