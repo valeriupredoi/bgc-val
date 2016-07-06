@@ -118,7 +118,9 @@ def analysis_timeseries(jobID = "u-ab671",
 			analysisKeys.append('T')			# WOA Temperature
 			analysisKeys.append('S')			# WOA Salinity
 			analysisKeys.append('MLD')			# iFERMER Mixed Layer Depth - work in prgress
-
+			analysisKeys.append('TotalIceExtent')		# work in progress	
+			analysisKeys.append('NorthernTotalIceExtent')		# work in progress	
+			analysisKeys.append('SouthernTotalIceExtent')		# work in progress	
 			#####
 			# Switched Off
 
@@ -141,7 +143,9 @@ def analysis_timeseries(jobID = "u-ab671",
                         # Physics switches:
                         analysisKeys.append('T')                        # WOA Temperature
                         analysisKeys.append('S')                        # WOA Salinity
-
+			analysisKeys.append('TotalIceExtent')		# work in progress	
+			analysisKeys.append('NorthernTotalIceExtent')	# work in progress	
+			analysisKeys.append('SouthernTotalIceExtent')	# work in progress	
 		
 		if analysisSuite.lower() in ['debug',]:	
 			#analysisKeys.append('AirSeaFlux')		# work in progress
@@ -150,13 +154,18 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('TotalOMZVolume50')	# work in progress			
 			#analysisKeys.append('OMZThickness')		# work in progress						
 			#analysisKeys.append('DIC')			# work in progress									
+			analysisKeys.append('TotalIceExtent')		# work in progress	
+			analysisKeys.append('NorthernTotalIceExtent')		# work in progress	
+			analysisKeys.append('SouthernTotalIceExtent')		# work in progress				
+			#analysisKeys.append('TotalIceExtent')		# work in progress							
+														
 			#analysisKeys.append('O2')			# work in progress
 			#analysisKeys.append('Iron')			# work in progress	
                         #analysisKeys.append('IntPP_OSU')                # OSU Integrated primpary production    
                         #####   
                         # Physics switches:
-                        analysisKeys.append('T')                        # WOA Temperature
-                        analysisKeys.append('S')                        # WOA Salinity
+                        #analysisKeys.append('T')                        # WOA Temperature
+                        #analysisKeys.append('S')                        # WOA Salinity
 			
 		if analysisSuite.lower() in ['FullDepth',]:
 			#Skip 2D fields
@@ -1187,7 +1196,60 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['gridFile']		= orcaGridfn
 		av[name]['Dimensions']		= 2		
 			
+
+			
+	if 'NorthernTotalIceExtent' in analysisKeys or 'SouthernTotalIceExtent' in analysisKeys or 'TotalIceExtent' in analysisKeys:
+	    for name in ['NorthernTotalIceExtent','SouthernTotalIceExtent','TotalIceExtent']:
+	    	if name not in analysisKeys:continue
+		
+		nc = Dataset(orcaGridfn,'r')
+		area = nc.variables['e2t'][:] * nc.variables['e1t'][:]			
+		tmask = nc.variables['tmask'][0,:,:]
+		lat = nc.variables['nav_lat'][:,:]
+		nc.close()			
+
+		def calcTotalIceArea(nc,keys):	#Global
+			arr = nc.variables[keys[0]][:].squeeze() * area
+			return np.ma.masked_where(tmask==0,arr).sum()/1E12
+			
+		def calcTotalIceAreaN(nc,keys): # North
+			arr = nc.variables[keys[0]][:].squeeze() * area
+			return np.ma.masked_where((tmask==0)+(lat<0.),arr).sum()/1E12
+
+		def calcTotalIceAreaS(nc,keys): # South
+			arr = nc.variables[keys[0]][:].squeeze() * area
+			return np.ma.masked_where((tmask==0)+(lat>0.),arr).sum()/1E12
+								
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', MEDUSAFolder_pref, annual)												
+		av[name]['dataFile'] 		= ''
+			
+		av[name]['modelcoords'] 	= medusaCoords 	
+		av[name]['datacoords'] 		= medusaCoords
+
+	    	if name in ['NorthernTotalIceExtent',]:
+			av[name]['modeldetails'] 	= {'name': name, 'vars':['soicecov',], 'convert': calcTotalIceAreaN,'units':'1E6 km^2'}		    	
+		#	av[name]['regions'] 		=  ['NorthHemisphere',]	
 				
+	    	if name in ['SouthernTotalIceExtent',]:
+			av[name]['modeldetails'] 	= {'name': name, 'vars':['soicecov',], 'convert': calcTotalIceAreaS,'units':'1E6 km^2'}		    	
+		#	av[name]['regions'] 		=  ['SouthHemisphere',]				
+
+	    	if name in ['TotalIceExtent',]:
+			av[name]['modeldetails'] 	= {'name': name, 'vars':['soicecov',], 'convert': calcTotalIceArea,'units':'1E6 km^2'}		    	
+		#	av[name]['regions'] 		=  ['Global',]					
+		av[name]['regions'] 		=  ['Global',]		
+			
+		av[name]['datadetails']  	= {'name':'','units':'',}
+		#av[name]['layers'] 		=  ['Surface',]
+		av[name]['layers'] 		=  ['Surface',]		
+		av[name]['metrics']		= ['sum',]
+		av[name]['datasource'] 		= ''
+		av[name]['model']		= 'CICE'
+		av[name]['modelgrid']		= 'eORCA1'
+		av[name]['gridFile']		= orcaGridfn
+		av[name]['Dimensions']		= 1
+		
+						
 
   	#####
   	# Calling timeseriesAnalysis

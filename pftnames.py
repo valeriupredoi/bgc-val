@@ -663,7 +663,10 @@ def getLongName(text,debug=False):
   	if text ==  'i_mn': 	return 'Mean Silicate'  	
   	if text ==  'i_an': 	return 'Silicate'  
   	  	
-  	  	  	  	  	
+  	if text == ['NorthernTotalIceExtent']: 	return 'Northern Hemisphere Ice Extent'
+  	if text == ['SouthernTotalIceExtent']: 	return 'Southern Hemisphere Ice Extent'
+  	if text == ['TotalIceExtent']: 		return 'Total Ice Extent'  	  	
+  		
 	if text == 'Seasons':   return 'Seasons'
 	if text in ['JFM','AMJ','JAS','OND',]:return text   	
   	
@@ -861,6 +864,7 @@ def getLongName(text,debug=False):
 
   	if text ==  'NEMO': 	return 'NEMO'  	  	
   	if text ==  'Nemo': 	return 'NEMO'
+  	if text ==  'CICE': 	return 'CICE'  	  	  	
   	
   	if text ==  'ERSEM': 	return 'ERSEM'  	  	
   	if text ==  'ERSEM': 	return 'ERSEM'  	  	
