@@ -181,7 +181,7 @@ class DataLoader:
   	self.name	= self.details['name']
 	if data == '': data = ukp.extractData(nc,self.details)
   	self.Fulldata 	= data
-  	self.__lay__ 	= ''
+  	self.__lay__ 	= False
 	self.run()
 	
   def run(self):
