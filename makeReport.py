@@ -187,7 +187,7 @@ def html5Maker(
                           'Temperature',
                           'Salinity',
                           'TotalIceExtent',
-
+                          'DrakePassageTransport',
 			 ]
 		 
 		SectionTitle= 'Level 1'
@@ -227,6 +227,7 @@ def html5Maker(
 	                #vfiles.extend(glob('./images/'+jobID+'/timeseries/*/profile*'+key+'*'+region+'*median.png'))
 	                #vfiles.extend(glob('./images/'+jobID+'/timeseries/*/Sum*'+key+'*'+region+'*sum.png'))      
 	                vfiles.extend(glob('./images/'+jobID+'/timeseries/*/Sum*'+key+'*'+'Global*sum.png'))                                                                  
+	                vfiles.extend(glob('./images/'+jobID+'/timeseries/*/Sum*'+key+'*'+'regionless*metricless.png'))                                                                  	                
 			#vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*hist.png'))
 			#vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*robinquad.png'))
 			#vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*scatter.png'))
