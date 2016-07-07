@@ -1368,7 +1368,6 @@ def analysis_timeseries(jobID = "u-ab671",
 			)
 			#shelves[name] = profa.shelvefn
 			#shelves_insitu[name] = profa.shelvefn_insitu
-			assert 0 
 			
 		tsa = timeseriesAnalysis(
 			av[name]['modelFiles'], 
