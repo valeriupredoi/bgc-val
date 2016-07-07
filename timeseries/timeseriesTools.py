@@ -98,10 +98,14 @@ def getHorizontalSlice(nc,coords,details,layer,data = ''):
 		print "getHorizontalSlice:\tNo depth field only 1 value",details['name']	
 		if data =='': 	data = ukp.extractData(nc,details)
 		return ApplyDepthSlice(data, 0)
+	if layer in ['layerless',]:
+		print "getHorizontalSlice:\tNo layer data requested", layer
+		if data =='': 	data = ukp.extractData(nc,details)
+		return data
 
 	#####
 	# This is when there is only one dimension in the data/model file.
-	if len(nc.dimensions.keys()) == 1 and layer in ['Surface',]:
+	if len(nc.dimensions.keys()) == 1 and layer in ['Surface','layerless']:
 		print "getHorizontalSlice:\tOne D file",details['name']	
 		if data =='': 	data = ukp.extractData(nc,details)
 		data = np.ma.masked_where(nc.variables[coords['z']][:]>0,data)

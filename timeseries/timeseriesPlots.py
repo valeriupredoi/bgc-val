@@ -35,10 +35,9 @@ import timeseriesTools as tst
 from bgcvaltools.viridis import viridis,discrete_viridis
 
 try:	
-	defcmap = pyplot.cm.viridis
-	defcmapstr = 'viridis'
+	defcmap = pyplot.cm.jet
+	defcmapstr = 'jet'
 except:	
-
 	defcmap = viridis
 	defcmapstr = 'viridis'	
 	
@@ -569,7 +568,7 @@ def taxisfromCC(arr):
 	return np.array(zarr)
 	
 
-def hovmoellerPlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords= {}, title = '',dpi=100,diff=True):	
+def hovmoellerPlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords= {}, title = '',zaxislabel = '',dpi=100,diff=True):	
 	#####
 	# creating model data dictionairies
 	md = []
@@ -703,7 +702,8 @@ def hovmoellerPlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords=
 		
 		if diff: 
 		    #c1 = fig.colorbar(ax1,pad=0.05,shrink=0.75)
-		    pyplot.colorbar(pad=0.25,shrink=1.)		
+		    pyplot.colorbar(pad=0.25,shrink=1.)
+		    
 	pyplot.ylim([zmi,zma])
 	ax1.get_xaxis().set_ticks([])
 	ax1.set_yscale('symlog')	
@@ -716,7 +716,9 @@ def hovmoellerPlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords=
 	hovmoellerAxis(fig,ax2,title,times,yaxis,md,vmin=ax2min,vmax=ax2max,cmap = cmapax2)
 	pyplot.xlim([times.min(),times.max()])
 	pyplot.ylim([zmi,zma])	
-	pyplot.colorbar()
+	cb = pyplot.colorbar()
+	cb.set_label(zaxislabel)	
+
 	ax2.set_yscale('symlog')	
 	ax2.yaxis.set_ticklabels([])
 	pyplot.xlabel('Year')
@@ -732,7 +734,7 @@ def hovmoellerPlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords=
 
 
 
-def profilePlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords= {}, title = '',dpi=100,):	
+def profilePlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords= {}, title = '',xaxislabel = '',dpi=100,):	
 	#####
 	# creating model data dictionairies
 	md = []
@@ -789,7 +791,7 @@ def profilePlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords= {}
 	# Locate min/max depths
 	zmi = np.ma.min([dyaxis_cc.min(),yaxis_cc.min(),])
 	zma = np.ma.max([dyaxis_cc.max(),yaxis_cc.max(),])	
-	
+	zma = np.ma.min([-9.,zma]) 	# set shallowest depth to 9m
 	
 
 	#####
@@ -822,21 +824,32 @@ def profilePlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords= {}
 		if i == lastyr: 	lw =2
 		color = defcmap((float(profileTimes[i])-times_cc[0])/(float(times_cc[-1]-times_cc[0])))
 		pyplot.plot(md[:,i], yaxis_cc, c=color, lw = lw, label=str(int(profileTimes[i])))
-	pyplot.ylim([zmi,zma])
+
+	pyplot.xlabel(xaxislabel)
 	pyplot.ylabel('Depth')
 	pyplot.title(title)
 	print 'x',rbmi,'->',rbma, 'z:',zmi,'->',zma
 
 	#ax1.set_yscale('log')	# Doesn't like negative values
-	ax1.set_yscale('symlog')
+
 	
+	#####
+	ticks = []
+	for i in [10,100,1000,]: ticks.extend(np.arange(1,10)*i)
+	ticks = np.array(ticks)*-1.
+	ticks = ticks[ticks>zmi]
+	ticks = ticks[ticks<zma]
+	ax1.set_yscale('symlog',linthreshy=np.abs(ticks.max()))
+	pyplot.ylim([zmi,zma])	
+	ax1.set_yticks(ticks)
+
 	#####
 	# Add data:
 	if len(dd.squeeze().compressed())!=0:
 		print "Adding data profile."	
 		pyplot.plot(dd, dyaxis_cc, 'k', lw=2, label='Data')
 
-	legend = pyplot.legend(loc='lower center',  numpoints = 1, ncol=2, prop={'size':10}) 
+	legend = pyplot.legend(loc='best',  numpoints = 1, ncol=2, prop={'size':10}) 
 	legend.draw_frame(False) 
 	legend.get_frame().set_alpha(0.)
 					

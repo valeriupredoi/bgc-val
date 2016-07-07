@@ -278,8 +278,10 @@ def html5Maker(
 			  'Silicate', 
 			  'Iron',
 			  'IntegratedPrimaryProduction_OSU',
+                          'OMZThickness',
                           'Temperature',
                           'Salinity',
+
                           #'TotalIceExtent'
 
 			]
@@ -345,7 +347,8 @@ def html5Maker(
 
 
 	if Level1Profiles:
-	    for plottype in ['profile','profilehov']:
+	    #for plottype in ['profile','profilehov']:	# with Hovs
+	    for plottype in ['profile',]:		# without hovs.
 		l1regions = ['Global',
 		  'SouthernOcean',
 		  'NorthernSubpolarAtlantic',

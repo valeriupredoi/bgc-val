@@ -185,7 +185,7 @@ class profileAnalysis:
 			if m =='mean':
 				data = np.ma.masked_where((self.modelMasks[r] != 1) + dataAll.mask,dataAll).mean(1).mean(1)
 				
-				if self.debug:print "profileAnalysis:\tloadModel.",self.dataType,'\t',meantime 
+				if self.debug:print "profileAnalysis:\tloadModel.",self.dataType,'\t',meantime, 'mean:',dataAll.mean()
 				#if self.debug:print "profileAnalysis:\tloadModel.",self.dataType, data.shape, data.min(),data.max(), dataAll.shape ,self.modelMasks[r].shape, dataAll.min(),dataAll.max()
 				
 				alllayers = []
@@ -396,7 +396,7 @@ class profileAnalysis:
 	
 	
   def makePlots(self):
-	if self.debug: print "profileAnalysis:\t makePlots."		  
+	if self.debug: print "profileAnalysis:\t makePlots."	  
 
 
 	#####
@@ -466,17 +466,18 @@ class profileAnalysis:
 
 		title = ' '.join([getLongName(t) for t in [r,m,self.dataType]])	
 	    	profilefn = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join(['profile',self.jobID,self.dataType,r,m,])+'.png'
+	    	axislabel = getLongName(self.modeldetails['name'])+', '+getLongName(self.modeldetails['units'])
 		if  ukp.shouldIMakeFile([self.shelvefn, self.shelvefn_insitu],profilefn,debug=False):					    	
-			tsp.profilePlot(modeldata,data,profilefn, modelZcoords = modelZcoords, dataZcoords= dataZcoords, title = title,)			
+			tsp.profilePlot(modeldata,data,profilefn, modelZcoords = modelZcoords, dataZcoords= dataZcoords, xaxislabel = axislabel,title = title,)			
 			
 			
 	    	hovfilename = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join(['profilehov',self.jobID,self.dataType,r,m,])+'.png'
 		if  ukp.shouldIMakeFile([self.shelvefn, self.shelvefn_insitu],hovfilename,debug=False):				
-			tsp.hovmoellerPlot(modeldata,data,hovfilename, modelZcoords = modelZcoords, dataZcoords= dataZcoords, title = title,diff=False)		
+			tsp.hovmoellerPlot(modeldata,data,hovfilename, modelZcoords = modelZcoords, dataZcoords= dataZcoords, title = title,zaxislabel =axislabel, diff=False)		
 	
 	    	hovfilename_diff = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join(['profileDiff',self.jobID,self.dataType,r,m,])+'.png'
 		if  ukp.shouldIMakeFile([self.shelvefn, self.shelvefn_insitu],hovfilename_diff,debug=False):					    	
-			tsp.hovmoellerPlot(modeldata,data,hovfilename_diff, modelZcoords = modelZcoords, dataZcoords= dataZcoords, title = title,diff=True)		
+			tsp.hovmoellerPlot(modeldata,data,hovfilename_diff, modelZcoords = modelZcoords, dataZcoords= dataZcoords, title = title,zaxislabel =axislabel,diff=True)		
 	
 
 

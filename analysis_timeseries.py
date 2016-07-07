@@ -121,6 +121,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			analysisKeys.append('TotalIceExtent')		# work in progress	
 			analysisKeys.append('NorthernTotalIceExtent')		# work in progress	
 			analysisKeys.append('SouthernTotalIceExtent')		# work in progress	
+			analysisKeys.append('DrakePassageTransport')			# DrakePassageTransport							
 			#####
 			# Switched Off
 
@@ -146,11 +147,12 @@ def analysis_timeseries(jobID = "u-ab671",
 			analysisKeys.append('TotalIceExtent')		# work in progress	
 			analysisKeys.append('NorthernTotalIceExtent')	# work in progress	
 			analysisKeys.append('SouthernTotalIceExtent')	# work in progress	
-		
+			analysisKeys.append('DrakePassageTransport')			# DrakePassageTransport				
+					
 		if analysisSuite.lower() in ['debug',]:	
 			#analysisKeys.append('AirSeaFlux')		# work in progress
 			#analysisKeys.append('TotalAirSeaFlux')		# work in progress
-			#analysisKeys.append('TotalOMZVolume')		# work in progress
+			analysisKeys.append('TotalOMZVolume')		# work in progress
 			#analysisKeys.append('TotalOMZVolume50')	# work in progress			
 			#analysisKeys.append('OMZThickness')		# work in progress						
 			#analysisKeys.append('DIC')			# work in progress									
@@ -161,7 +163,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('TotalIceExtent')		# work in progress							
 														
 			#analysisKeys.append('O2')			# work in progress
-			#analysisKeys.append('Iron')			# work in progress	
+			analysisKeys.append('Iron')			# work in progress	
                         #analysisKeys.append('IntPP_OSU')                # OSU Integrated primpary production    
                         #####   
                         # Physics switches:
@@ -688,9 +690,9 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modeldetails'] 	= {'name': name, 'vars':['OXY',], 'convert': modelTotalOMZvol,'units':'m^3'}
 		av[name]['datadetails']  	= {'name': name, 'vars':['o_an',], 'convert': woaTotalOMZvol,'units':'m^3'}
 	
-		av[name]['layers'] 		= ['Surface',] 
-		av[name]['regions'] 		= ['Global',]
-		av[name]['metrics']		= ['sum', ]
+		av[name]['layers'] 		= ['layerless',] 
+		av[name]['regions'] 		= ['regionless',]
+		av[name]['metrics']		= ['metricless', ]
 
 		av[name]['datasource'] 		= 'WOA'
 		av[name]['model']		= 'MEDUSA'
@@ -1072,7 +1074,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['dataFile'] 		= ""
 		av[name]['modelcoords'] 	= medusaCoords 	
 		av[name]['datacoords'] 		= maredatCoords
-		av[name]['modeldetails']	= {'name': name, 'vars':['FER',], 'convert': ukp.NoChange, 'units':'mmolFe/m3'}
+		av[name]['modeldetails']	= {'name': name, 'vars':['FER',], 'convert': ukp.mul1000, 'units':'umolFe/m3'}
 		av[name]['datadetails']  	= {'name':'','units':'',}
 		av[name]['layers'] 		= layerList
 		av[name]['regions'] 		= regionList
@@ -1366,6 +1368,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			)
 			#shelves[name] = profa.shelvefn
 			#shelves_insitu[name] = profa.shelvefn_insitu
+			assert 0 
 			
 		tsa = timeseriesAnalysis(
 			av[name]['modelFiles'], 
