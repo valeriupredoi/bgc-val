@@ -155,7 +155,7 @@ def html5Maker(
 	Level1Regional = True
 	Level1Profiles = True	
 	level2Horizontal = True
-	level2Physics = True
+	level2Physics = False
 	summarySections = False
 	plotbyfieldandregion = False
 	
@@ -371,7 +371,6 @@ def html5Maker(
 			  'Oxygen',
                           'Temperature',
                           'Salinity',
-
 			]
 		if plottype == 'profile':	SectionTitle= 'Level 1 - Profiles'
 		if plottype == 'profilehov':	SectionTitle= 'Level 1 - Hovmoeller plots'		
@@ -449,6 +448,9 @@ def html5Maker(
 			  'AirSeaFluxCO2',
 			  #'TotalOMZVolume',
 			  #'TotalAirSeaFluxCO2' ,
+			  'Temperature', 
+			  'Salinity', 
+			  'MLD',			  
 			 ]
 		hrefs 	= []
 		Titles	= {}
