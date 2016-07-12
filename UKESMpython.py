@@ -820,6 +820,29 @@ def arrayify(oldX,oldY,data):
 	newData = np.ma.masked_where(newData==-999.,newData)
 	return newX,newY,newData
 
+
+def mameanaxis(a, axis=None):
+    """
+    	implements a version of np.mean(array, axis=tuple), which is not implemented by default in numpy.
+    	Taken from:
+    	https://stackoverflow.com/questions/30209624/numpy-mean-used-with-a-tuple-as-axis-argument-not-working-with-a-masked-arr
+    	Thanks user2357112!
+    """
+    if a.mask is np.ma.nomask:
+        return super(np.ma.MaskedArray, a).mean(axis=axis)
+    counts = np.logical_not(a.mask).sum(axis=axis)
+    if counts.shape:
+        sums = a.filled(0).sum(axis=axis)
+        mask = (counts == 0)
+        return np.ma.MaskedArray(data=sums * 1. / counts, mask=mask, copy=False)
+    elif counts:
+        # Return scalar, not array
+        return a.filled(0).sum(axis=axis) * 1. / counts
+    else:
+        # Masked scalar
+        return np.ma.masked
+        
+        
 def determineLimsAndLog(mi,ma):
 	#####
 	# Takes the minimum, the maximum value and retuns wherether it should be a log, 
