@@ -417,8 +417,8 @@ class timeseriesAnalysis:
 	    #####
 	    # Percentiles plots.		  	    
 	    for m in self.metrics:  
-	    		if m not in ['sum', 'metricless']: continue 
-			filename = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join(['Sum',self.jobID,self.dataType,r,str(l),m,])+'.png'
+	    		if m not in ['sum', 'metricless',]: continue 
+			filename = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join([m,self.jobID,self.dataType,r,str(l),m,])+'.png'
 			if not ukp.shouldIMakeFile([self.shelvefn, self.shelvefn_insitu],filename,debug=False):	continue
 				    		
 			modeldataDict = self.modeldataD[(r,l,m)]
@@ -427,7 +427,21 @@ class timeseriesAnalysis:
 			title = ' '.join([getLongName(t) for t in [r,str(l),m,self.dataType]])
 	
 			tsp.trafficlightsPlot(times,modeldata,dataslice,metric = m, title = title,filename=filename,units = self.modeldetails['units'],greyband=False)
-				
+
+	    #####
+	    # Mean plots.
+	    for m in self.metrics:  
+	    		if m not in ['mean']: continue
+			filename = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join([m,self.jobID,self.dataType,r,str(l),m,])+'.png'
+			if not ukp.shouldIMakeFile([self.shelvefn, self.shelvefn_insitu],filename,debug=False):	continue
+				    		
+			modeldataDict = self.modeldataD[(r,l,m)]
+			times = sorted(modeldataDict.keys())
+			modeldata = [modeldataDict[t] for t in times]
+			title = ' '.join([getLongName(t) for t in [r,str(l),m,self.dataType]])
+	
+			tsp.simpletimeseries(times,modeldata,np.mean(dataslice),title = title,filename=filename,units = self.modeldetails['units'],greyband=False)
+							
 	"""
 	#####
 	# Hovmoeller plots

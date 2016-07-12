@@ -65,70 +65,7 @@ def drawgreyband(ax,xaxis, bands,labels=[]):
 	ax.fill_between(xaxis,bands[0], bands[1] ,color='k', 	alpha = 0.05)
 	return ax
 
-	
-	
-def trafficlightsPlots(
-		times, 			# model times (in floats)
-		arr,			# model time series
-		dataslice,		# in situ data distribution
-		title 	='',
-		filename='',
-		greyband = False,
-	):
 
-	xlims= [times[0],times[-1]]
-	
-	fig = pyplot.figure()
-	
-	ax = fig.add_subplot(211)	
-	pyplot.plot(times,arr)
-	pyplot.xlim(xlims)	
-	pyplot.title(title)	
-
-	if len(dataslice):
-		#pyplot.axhline(y=np.ma.mean(dataslice),c='k',ls='-',lw=2,alpha=0.5)
-		pyplot.axhline(y=np.ma.median(dataslice),c='k',ls='-',lw=1,)#alpha=0.5)	
-		pc1 = np.array([np.percentile(dataslice,25.) for i in xlims]) 
-		pc2 = np.array([np.percentile(dataslice,35.) for i in xlims])
-		pc3 = np.array([np.percentile(dataslice,45.) for i in xlims])
-		pc4 = np.array([np.percentile(dataslice,55.) for i in xlims])
-		pc5 = np.array([np.percentile(dataslice,65.) for i in xlims])
-		pc6 = np.array([np.percentile(dataslice,75.) for i in xlims])
-		labels = ['25-35 pc','35-45 pc','45-55 pc','55-65 pc','65-75 pc',]
-		ax = trafficlights(ax,xlims, [pc1,pc2,pc3,pc4,pc5,pc6],labels=labels)
-		
-		pcmin 	= np.array([dataslice.min() for i in xlims]) 
-		pcmax 	= np.array([dataslice.min() for i in xlims]) 	
-		if greyband:
-			ax  	= drawgreyband(ax,xlims, [pcmin,pc1],)
-			ax  	= drawgreyband(ax,xlims, [pc6,pcmax],)
-				
-	
-	ax = fig.add_subplot(212)
-	newt,cusum = tst.calcCuSum(times,arr)
-	
-	if len(dataslice):
-		pyplot.plot(newt,cusum/np.ma.median(dataslice))
-		pyplot.title('Cumulative sum / in situ media')		
-	else:
-		pyplot.plot(newt,cusum)		
-		pyplot.title('Cumulative sum')
-		
-	pyplot.xlim(xlims)	
-	pyplot.axhline(y=0.,c='k',ls='-',lw=2,alpha=0.5)
-	
-	if len(dataslice):
-		m25 = np.array([-0.25 for i in xlims]) 
-		m15 = np.array([-0.15 for i in xlims])
-		m05 = np.array([-0.05 for i in xlims])
-		p05 = np.array([0.05  for i in xlims])		
-		p15 = np.array([0.15 for i in xlims])
-		p25 = np.array([0.25 for i in xlims]) 
-		ax = trafficlights(ax,xlims, [m25,m15,m05,p05,p15,p25])
-	
-	print "UKESMpython:\ttrafficlightsPlots:\tSaving:" , filename
-	pyplot.savefig(filename )
-	pyplot.close()	
 
 
 def percentilesPlot(
@@ -216,8 +153,6 @@ def percentilesPlot(
 	# Data plot to the left.
 	axd = pyplot.subplot(gs[0])	
 	if len(dataslice):
-
-		
 		pc1 = np.array([np.percentile(dataslice,20.) for i in xlims])
 		pc2 = np.array([np.percentile(dataslice,30.) for i in xlims])
 		pc3 = np.array([np.percentile(dataslice,40.) for i in xlims])
@@ -282,9 +217,9 @@ def percentilesPlot(
 	axm.set_ylim(ylims)	
 	axd.set_ylim(ylims)
 
-	if np.ma.max(ylims)/np.ma.min(ylims)>20.:
-		axm.set_yscale('log')	
-		axd.set_yscale('log')
+	#if np.ma.max(ylims)/np.ma.min(ylims)>500.:
+	#	axm.set_yscale('log')	
+	#	axd.set_yscale('log')
 
 	axm.get_yaxis().set_ticklabels([])			
 	axd.get_xaxis().set_ticks([])	
@@ -302,7 +237,7 @@ def percentilesPlot(
 	axm.yaxis.tick_right()		
 
 	
-	print "UKESMpython:\tpercentilesPlot:\tSaving:" , filename
+	print "timeseriesPlots:\tpercentilesPlot:\tSaving:" , filename
 	try:pyplot.savefig(filename )
 	except:	print "WARNING: THIS PLOT FAILED:",filename , '(probably beaucse of all masks/ infs./nans)'
 	pyplot.close()	
@@ -373,9 +308,51 @@ def trafficlightsPlot(
 	legend.draw_frame(False) 
 	legend.get_frame().set_alpha(0.)
 		
-	print "UKESMpython:\tscatterPlot:\tSaving:" , filename
+	print "timeseriesPlots:\tscatterPlot:\tSaving:" , filename
 	pyplot.savefig(filename )
 	pyplot.close()	
+
+
+def simpletimeseries(
+		times, 		# model times (in floats)
+		arr,		# model time series
+		data,		# in situ data distribution
+		title 	='',
+		filename='',
+		units = '',
+		greyband = False		
+	):
+	#####
+	# This is exclusively used for sums now.
+	
+	if len(times) ==0 or len(arr) == 0:
+		print "trafficlightsPlot:\tWARNING:\tdata or time arrays are empty.",len(times),len(arr),title
+		return
+	if np.ma.is_masked(arr):
+		print "trafficlightsPlot:\tWARNING:\tdata arrays is masked",len(times),len(arr),title
+		return
+				
+	xlims= [times[0],times[-1]]
+	
+	fig = pyplot.figure()
+	
+	ax = fig.add_subplot(111)	
+	pyplot.plot(times,arr,label='Model',)
+	pyplot.xlim(xlims)	
+	pyplot.title(title)	
+	pyplot.ylabel(units)
+
+	pyplot.axhline(y=data,c='k',ls='-',lw=1,label = 'data')
+				
+	legend = pyplot.legend(loc='lower center',  numpoints = 1, ncol=2, prop={'size':12}) 
+	legend.draw_frame(False) 
+	legend.get_frame().set_alpha(0.)
+		
+	print "timeseriesPlots:\tsimpletimeseries:\tSaving:" , filename
+	pyplot.savefig(filename )
+	pyplot.close()	
+
+
 
 
 def regrid(data,lat,lon):
@@ -707,7 +684,7 @@ def hovmoellerPlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords=
 	pyplot.ylim([zmi,zma])
 	ax1.get_xaxis().set_ticks([])
 	ax1.set_yscale('symlog')	
-	pyplot.ylabel('Depth')
+	pyplot.ylabel('Depth, m')
 
 
 	#####

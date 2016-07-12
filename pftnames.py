@@ -668,7 +668,11 @@ def getLongName(text,debug=False):
   	if text == 'NorthernTotalIceExtent': 	return 'Northern Hemisphere Ice Extent'
   	if text == 'SouthernTotalIceExtent': 	return 'Southern Hemisphere Ice Extent'
   	if text == 'TotalIceExtent': 		return 'Total Ice Extent'  	  	
-  		
+
+  	if text == 'NorthernTotalIceArea': 	return 'Northern Hemisphere Ice Area'
+  	if text == 'SouthernTotalIceArea': 	return 'Southern Hemisphere Ice Area'
+  	if text == 'TotalIceArea': 		return 'Total Ice Area'  
+  	  		
 	if text == 'Seasons':   return 'Seasons'
 	if text in ['JFM','AMJ','JAS','OND',]:return text   	
   	
