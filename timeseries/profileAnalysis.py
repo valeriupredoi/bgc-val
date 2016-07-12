@@ -183,9 +183,9 @@ class profileAnalysis:
 		for r in self.regions:
 		  for m in self.metrics:
 			if m =='mean':
-				data = np.ma.masked_where((self.modelMasks[r] != 1) + dataAll.mask,dataAll).mean(1).mean(1)
+				data = np.ma.masked_where((self.modelMasks[r] != 1) + dataAll.mask,dataAll).mean(axis=(1,2))
 				
-				if self.debug:print "profileAnalysis:\tloadModel.",self.dataType,'\t',meantime, 'mean:',dataAll.mean()
+				if self.debug:print "profileAnalysis:\tloadModel.",r,m,self.dataType,'\tyear:',int(meantime), 'mean:',data.mean()
 				#if self.debug:print "profileAnalysis:\tloadModel.",self.dataType, data.shape, data.min(),data.max(), dataAll.shape ,self.modelMasks[r].shape, dataAll.min(),dataAll.max()
 				
 				alllayers = []
