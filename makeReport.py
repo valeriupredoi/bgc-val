@@ -169,11 +169,12 @@ def html5Maker(
 	ListofCaveats['Iron'] = 'Note that there is no suitable historic data set for this variable.'	
 	ListofCaveats['MLD'] = 'Note that the Model MLD is calculated with based on a sigma_0 difference of 0.01 with the surface where as data uses as \
 			sigma_0 difference of +/- 0.2 degrees from a depth on 10m.'
-			
+	ListofCaveats['Nitrate']= 'Note that MEDUSA uses Dissolved Inorganic Nitrogen (DIN) rather than nitrate. We assume that non-nitrate parts of DIN are of relatively minor importance and so assume that WOA nitrate is comparable to model DIN.'	
+	
 	if jobID == 'u-ad371':
 		ListofCaveats['Chlorophyll_cci']= 'Note that the Non-diatom chlorophyll failed in run:'+jobID
 		ListofCaveats['IntegratedPrimaryProduction_OSU']= 'Note that the Non-diatom chlorophyll does not contribute to IntPP in this run:'+jobID
-		ListofCaveats['Nitrate']= 'Note that MEDUSA uses Dissolved Inorganic Nitrogen (DIN) rather than nitrate. We assume that non-nitrate parts of DIN are of relatively minor importance and so assume that WOA nitrate is comparable to model DIN.'
+
 
 
 	if Level1:
