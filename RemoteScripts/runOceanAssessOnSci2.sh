@@ -17,6 +17,6 @@ export jobid=$jobid
 
 python /home/users/ldemora/workspace/ukesm-validation/RemoteScripts/hello.py $jobid
 
-ssh -X -A jasmin-sci2 "cd /home/users/ldemora/workspace/ocean_assess; ./ocean_assess_$jobid.sh"
+ssh -X -A jasmin-sci2 "cd /home/users/ldemora/workspace/ocean_assess; ./ocean_assess_jobid.sh $jobid" 	# supposed to be jobid in script filename
 
 echo "The end of runOceanAssessOnSci2.sh"
