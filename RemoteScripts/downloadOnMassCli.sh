@@ -8,15 +8,22 @@ echo 'SSH_AUTH_SOCK:' $SSH_AUTH_SOCK
 echo 'SSH_CLIENT:' $SSH_CLIENT 
 echo 'SSH_CONNECTION:' $SSH_CONNECTION 
 echo 'SSH_TTY:'  $SSH_TTY        
+
+#####
+# parsing job id
+jobid=${1:-u-ad980}
+echo jobid=$jobid
+export jobid=$jobid
+
  
-python /home/users/ldemora/workspace/ukesm-validation/RemoteScripts/hello.py
+python /home/users/ldemora/workspace/ukesm-validation/RemoteScripts/hello.py $jobid
 
 
 #printf "\n\nssh -A -X mass-cli1 'python /home/users/ldemora/workspace/ukesm-validation/RemoteScripts/hello.py'\n"
 #ssh -X -A mass-cli1 'python /home/users/ldemora/workspace/ukesm-validation/RemoteScripts/hello.py'
 
-ssh -X -A mass-cli1 'python /home/users/ldemora/workspace/ukesm-validation/downloadFromMass.py u-ad980'
-ssh -X -A mass-cli1 'ln -s  /group_workspaces/jasmin2/ukesm/BGC_data/u-ad980/*1y*grid_[UVWT]*.nc /group_workspaces/jasmin2/ukesm/BGC_data/u-ad980/1y/.; ls -lhrt /group_workspaces/jasmin2/ukesm/BGC_data/u-ad980'
+ssh -X -A mass-cli1 "python /home/users/ldemora/workspace/ukesm-validation/downloadFromMass.py $jobid"
+ssh -X -A mass-cli1 "ln -s  /group_workspaces/jasmin2/ukesm/BGC_data/$jobid/*1y*grid_[UVWT]*.nc /group_workspaces/jasmin2/ukesm/BGC_data/$jobid/1y/.; ls -lhrt /group_workspaces/jasmin2/ukesm/BGC_data/$jobid"
 
-echo "The end of downloadOnMassCli.sh"
+echo "The end of downloadOnMassCli.sh $jobid"
 
