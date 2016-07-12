@@ -37,6 +37,24 @@ from makeEORCAmasks import makeMaskNC
 #getTimes, loadData
 
 
+def mameanaxis(a, axis=None):
+    """
+    	implements a version of np.mean(array, axis=tuple), which is not implemented by default in numpy.
+    """
+    if a.mask is np.ma.nomask:
+        return super(np.ma.MaskedArray, a).mean(axis=axis)
+    counts = np.logical_not(a.mask).sum(axis=axis)
+    if counts.shape:
+        sums = a.filled(0).sum(axis=axis)
+        mask = (counts == 0)
+        return np.ma.MaskedArray(data=sums * 1. / counts, mask=mask, copy=False)
+    elif counts:
+        # Return scalar, not array
+        return a.filled(0).sum(axis=axis) * 1. / counts
+    else:
+        # Masked scalar
+        return np.ma.masked
+        
 
 
 class profileAnalysis:
@@ -183,7 +201,7 @@ class profileAnalysis:
 		for r in self.regions:
 		  for m in self.metrics:
 			if m =='mean':
-				data = np.ma.masked_where((self.modelMasks[r] != 1) + dataAll.mask,dataAll).mean(axis=(1,2))
+				data = mameanaxis(np.ma.masked_where((self.modelMasks[r] != 1) + dataAll.mask,dataAll), axis=(1,2))
 				
 				if self.debug:print "profileAnalysis:\tloadModel.",r,m,self.dataType,'\tyear:',int(meantime), 'mean:',data.mean()
 				#if self.debug:print "profileAnalysis:\tloadModel.",self.dataType, data.shape, data.min(),data.max(), dataAll.shape ,self.modelMasks[r].shape, dataAll.min(),dataAll.max()
