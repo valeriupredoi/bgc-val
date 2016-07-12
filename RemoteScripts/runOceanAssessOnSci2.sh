@@ -12,7 +12,7 @@ echo 'SSH_TTY:'  $SSH_TTY
 #####
 # parsing job id
 jobid=${1:-u-ad980}
-echo jobid=$jobid
+echo runOceanAsssessOnSci2 jobid=$jobid
 export jobid=$jobid
 
 python /home/users/ldemora/workspace/ukesm-validation/RemoteScripts/hello.py $jobid
