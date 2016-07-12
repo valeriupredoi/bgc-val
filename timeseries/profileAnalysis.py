@@ -40,6 +40,9 @@ from makeEORCAmasks import makeMaskNC
 def mameanaxis(a, axis=None):
     """
     	implements a version of np.mean(array, axis=tuple), which is not implemented by default in numpy.
+    	Taken from:
+    	https://stackoverflow.com/questions/30209624/numpy-mean-used-with-a-tuple-as-axis-argument-not-working-with-a-masked-arr
+    	Thanks user2357112!
     """
     if a.mask is np.ma.nomask:
         return super(np.ma.MaskedArray, a).mean(axis=axis)
