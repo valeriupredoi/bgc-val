@@ -9,8 +9,14 @@ echo 'SSH_CLIENT:' $SSH_CLIENT
 echo 'SSH_CONNECTION:' $SSH_CONNECTION 
 echo 'SSH_TTY:'  $SSH_TTY   
 
-python /home/users/ldemora/workspace/ukesm-validation/RemoteScripts/hello.py
+#####
+# parsing job id
+jobid=${1:-u-ad980}
+echo jobid=$jobid
+export jobid=$jobid
 
-ssh -X -A jasmin-sci1 'cd /home/users/ldemora/workspace/ukesm-validation; ipython /home/users/ldemora/workspace/ukesm-validation/theWholePackage.py u-ad980'
+python /home/users/ldemora/workspace/ukesm-validation/RemoteScripts/hello.py $jobid
+
+ssh -X -A jasmin-sci1 "cd /home/users/ldemora/workspace/ukesm-validation; ipython /home/users/ldemora/workspace/ukesm-validation/theWholePackage.py $jobid"
 
 echo "The end of runWholePackageOnSci1.sh"
