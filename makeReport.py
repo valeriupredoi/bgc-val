@@ -173,6 +173,7 @@ def html5Maker(
 	if jobID == 'u-ad371':
 		ListofCaveats['Chlorophyll_cci']= 'Note that the Non-diatom chlorophyll failed in run:'+jobID
 		ListofCaveats['IntegratedPrimaryProduction_OSU']= 'Note that the Non-diatom chlorophyll does not contribute to IntPP in this run:'+jobID
+		ListofCaveats['Nitrate']= 'Note that MEDUSA uses Dissolved Inorganic Nitrogen (DIN) rather than nitrate. We assume that non-nitrate parts of DIN are of relatively minor importance and so assume that WOA nitrate is comparable to model DIN.'
 
 
 	if Level1:
@@ -186,7 +187,7 @@ def html5Maker(
 			  'TotalOMZVolume',			  			  
                           'Temperature',
                           'Salinity',
-                          'TotalIceExtent',
+                          'TotalIceArea',
                           'DrakePassageTransport',
 			 ]
 		 
@@ -197,24 +198,24 @@ def html5Maker(
 		Descriptions= {}
 		FileLists	= {}
 		
-		region = 'Global'
+		#region = 'Global'
 		for key in level1Fields:
 
 			#####
 			# href is the name used for the html 
-			href = 	'L1'+key+'-'+region
+			href = 	'L1'+key+'-global'
 			hrefs.append(href)
 			
 			#####
 			# Title is the main header, SidebarTitles is the side bar title.
-			Titles[href] = 	getLongName(region) +' '+	getLongName(key)
+			Titles[href] = 	getLongName(key)
 			SidebarTitles[href] = getLongName(key)	
 						
 			#####
 			# Descriptions is a small sub-header
 			desc = ''
 			if key in ListofCaveats.keys():			desc +=ListofCaveats[key]+'\n'
-			if region in ListofCaveats_regions.keys():	desc +=ListofCaveats_regions[key]+'\n'			
+			#if region in ListofCaveats_regions.keys():	desc +=ListofCaveats_regions[key]+'\n'			
 			Descriptions[href] = desc
 			
 
@@ -223,11 +224,12 @@ def html5Maker(
 			FileLists[href] = {}
 			#####
 			# Determine the list of files:
-			vfiles = glob('./images/'+jobID+'/timeseries/*/percentiles*'+key+'*'+region+'*10-90pc.png')
+			vfiles = glob('./images/'+jobID+'/timeseries/*/percentiles*'+key+'*'+'Global*10-90pc.png')
 	                #vfiles.extend(glob('./images/'+jobID+'/timeseries/*/profile*'+key+'*'+region+'*median.png'))
 	                #vfiles.extend(glob('./images/'+jobID+'/timeseries/*/Sum*'+key+'*'+region+'*sum.png'))      
-	                vfiles.extend(glob('./images/'+jobID+'/timeseries/*/Sum*'+key+'*'+'Global*sum.png'))                                                                  
-	                vfiles.extend(glob('./images/'+jobID+'/timeseries/*/Sum*'+key+'*'+'regionless*metricless.png'))                                                                  	                
+	                vfiles.extend(glob('./images/'+jobID+'/timeseries/*/sum*'+key+'*'+'Global*sum.png'))                                                                  
+	                vfiles.extend(glob('./images/'+jobID+'/timeseries/*/mean*'+key+'*'+'Global*mean.png'))                                                                  	                
+	                vfiles.extend(glob('./images/'+jobID+'/timeseries/*/*'+key+'*'+'regionless*metricless.png'))                                                                  	                
 			#vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*hist.png'))
 			#vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*robinquad.png'))
 			#vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*scatter.png'))
@@ -245,7 +247,7 @@ def html5Maker(
 				####
 				# WOA fields that also produce transects, etc.
 				if key in ['Nitrate', 'Silicate', 'Temperature', 'Salinity', 'Oxygen','DIC','Alkalinity'] and fn.lower().find('surface')<0:continue
-				
+				if key in ['ExportRatio'] and fn.find('_'+key)<0: continue # make sure it's the global one, not the local one.
 				#####
 				# Create custom title by removing extra bits.
 				#title = filenameToTitle(relfn)
@@ -278,9 +280,11 @@ def html5Maker(
 			  'Silicate', 
 			  'Iron',
 			  'IntegratedPrimaryProduction_OSU',
+                          'OMZThickness',
                           'Temperature',
                           'Salinity',
-                          #'TotalIceExtent'
+
+                          #'TotalIceArea'
 
 			]
 		SectionTitle= 'Level 1 - regional'
@@ -345,7 +349,8 @@ def html5Maker(
 
 
 	if Level1Profiles:
-	    for plottype in ['profile','profilehov']:
+	    #for plottype in ['profile','profilehov']:	# with Hovs
+	    for plottype in ['profile',]:		# without hovs.
 		l1regions = ['Global',
 		  'SouthernOcean',
 		  'NorthernSubpolarAtlantic',
@@ -483,7 +488,7 @@ def html5Maker(
 				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+s+'*'+region+'*'+key+'*'+year+'*robinquad.png'))	
 				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+s+'*'+region+'*'+key+'*'+year+'*robinquad-cartopy.png'))						
 			    if s in ['Transect',]:
-				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*Transect/*/*'+s+'*'+region+'*'+key+'*'+year+'*hov.png'))
+				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*Transect/*/*'+s+'*'+region+'*'+key+'*'+year+'*transect.png'))
 			if key in [	'Chlorophyll_cci', 			   	
 				  	'IntegratedPrimaryProduction_OSU', 
 					'AirSeaFluxCO2',
@@ -569,7 +574,7 @@ def html5Maker(
 				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+s+'*'+region+'*'+key+'*'+year+'*robinquad.png'))	
 				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+s+'*'+region+'*'+key+'*'+year+'*robinquad-cartopy.png'))						
 			    if s in ['Transect',]:
-				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*Transect/*/*'+s+'*'+region+'*'+key+'*'+year+'*hov.png'))
+				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*Transect/*/*'+s+'*'+region+'*'+key+'*'+year+'*transect.png'))
 			if key in [	'Chlorophyll_cci', 			   	
 				  	'IntegratedPrimaryProduction_OSU', 
 					'AirSeaFluxCO2',

@@ -35,10 +35,9 @@ import timeseriesTools as tst
 from bgcvaltools.viridis import viridis,discrete_viridis
 
 try:	
-	defcmap = pyplot.cm.viridis
-	defcmapstr = 'viridis'
+	defcmap = pyplot.cm.jet
+	defcmapstr = 'jet'
 except:	
-
 	defcmap = viridis
 	defcmapstr = 'viridis'	
 	
@@ -66,70 +65,7 @@ def drawgreyband(ax,xaxis, bands,labels=[]):
 	ax.fill_between(xaxis,bands[0], bands[1] ,color='k', 	alpha = 0.05)
 	return ax
 
-	
-	
-def trafficlightsPlots(
-		times, 			# model times (in floats)
-		arr,			# model time series
-		dataslice,		# in situ data distribution
-		title 	='',
-		filename='',
-		greyband = False,
-	):
 
-	xlims= [times[0],times[-1]]
-	
-	fig = pyplot.figure()
-	
-	ax = fig.add_subplot(211)	
-	pyplot.plot(times,arr)
-	pyplot.xlim(xlims)	
-	pyplot.title(title)	
-
-	if len(dataslice):
-		#pyplot.axhline(y=np.ma.mean(dataslice),c='k',ls='-',lw=2,alpha=0.5)
-		pyplot.axhline(y=np.ma.median(dataslice),c='k',ls='-',lw=1,)#alpha=0.5)	
-		pc1 = np.array([np.percentile(dataslice,25.) for i in xlims]) 
-		pc2 = np.array([np.percentile(dataslice,35.) for i in xlims])
-		pc3 = np.array([np.percentile(dataslice,45.) for i in xlims])
-		pc4 = np.array([np.percentile(dataslice,55.) for i in xlims])
-		pc5 = np.array([np.percentile(dataslice,65.) for i in xlims])
-		pc6 = np.array([np.percentile(dataslice,75.) for i in xlims])
-		labels = ['25-35 pc','35-45 pc','45-55 pc','55-65 pc','65-75 pc',]
-		ax = trafficlights(ax,xlims, [pc1,pc2,pc3,pc4,pc5,pc6],labels=labels)
-		
-		pcmin 	= np.array([dataslice.min() for i in xlims]) 
-		pcmax 	= np.array([dataslice.min() for i in xlims]) 	
-		if greyband:
-			ax  	= drawgreyband(ax,xlims, [pcmin,pc1],)
-			ax  	= drawgreyband(ax,xlims, [pc6,pcmax],)
-				
-	
-	ax = fig.add_subplot(212)
-	newt,cusum = tst.calcCuSum(times,arr)
-	
-	if len(dataslice):
-		pyplot.plot(newt,cusum/np.ma.median(dataslice))
-		pyplot.title('Cumulative sum / in situ media')		
-	else:
-		pyplot.plot(newt,cusum)		
-		pyplot.title('Cumulative sum')
-		
-	pyplot.xlim(xlims)	
-	pyplot.axhline(y=0.,c='k',ls='-',lw=2,alpha=0.5)
-	
-	if len(dataslice):
-		m25 = np.array([-0.25 for i in xlims]) 
-		m15 = np.array([-0.15 for i in xlims])
-		m05 = np.array([-0.05 for i in xlims])
-		p05 = np.array([0.05  for i in xlims])		
-		p15 = np.array([0.15 for i in xlims])
-		p25 = np.array([0.25 for i in xlims]) 
-		ax = trafficlights(ax,xlims, [m25,m15,m05,p05,p15,p25])
-	
-	print "UKESMpython:\ttrafficlightsPlots:\tSaving:" , filename
-	pyplot.savefig(filename )
-	pyplot.close()	
 
 
 def percentilesPlot(
@@ -217,8 +153,6 @@ def percentilesPlot(
 	# Data plot to the left.
 	axd = pyplot.subplot(gs[0])	
 	if len(dataslice):
-
-		
 		pc1 = np.array([np.percentile(dataslice,20.) for i in xlims])
 		pc2 = np.array([np.percentile(dataslice,30.) for i in xlims])
 		pc3 = np.array([np.percentile(dataslice,40.) for i in xlims])
@@ -283,9 +217,9 @@ def percentilesPlot(
 	axm.set_ylim(ylims)	
 	axd.set_ylim(ylims)
 
-	if np.ma.max(ylims)/np.ma.min(ylims)>20.:
-		axm.set_yscale('log')	
-		axd.set_yscale('log')
+	#if np.ma.max(ylims)/np.ma.min(ylims)>500.:
+	#	axm.set_yscale('log')	
+	#	axd.set_yscale('log')
 
 	axm.get_yaxis().set_ticklabels([])			
 	axd.get_xaxis().set_ticks([])	
@@ -303,7 +237,7 @@ def percentilesPlot(
 	axm.yaxis.tick_right()		
 
 	
-	print "UKESMpython:\tpercentilesPlot:\tSaving:" , filename
+	print "timeseriesPlots:\tpercentilesPlot:\tSaving:" , filename
 	try:pyplot.savefig(filename )
 	except:	print "WARNING: THIS PLOT FAILED:",filename , '(probably beaucse of all masks/ infs./nans)'
 	pyplot.close()	
@@ -374,9 +308,51 @@ def trafficlightsPlot(
 	legend.draw_frame(False) 
 	legend.get_frame().set_alpha(0.)
 		
-	print "UKESMpython:\tscatterPlot:\tSaving:" , filename
+	print "timeseriesPlots:\tscatterPlot:\tSaving:" , filename
 	pyplot.savefig(filename )
 	pyplot.close()	
+
+
+def simpletimeseries(
+		times, 		# model times (in floats)
+		arr,		# model time series
+		data,		# in situ data distribution
+		title 	='',
+		filename='',
+		units = '',
+		greyband = False		
+	):
+	#####
+	# This is exclusively used for sums now.
+	
+	if len(times) ==0 or len(arr) == 0:
+		print "trafficlightsPlot:\tWARNING:\tdata or time arrays are empty.",len(times),len(arr),title
+		return
+	if np.ma.is_masked(arr):
+		print "trafficlightsPlot:\tWARNING:\tdata arrays is masked",len(times),len(arr),title
+		return
+				
+	xlims= [times[0],times[-1]]
+	
+	fig = pyplot.figure()
+	
+	ax = fig.add_subplot(111)	
+	pyplot.plot(times,arr,label='Model',)
+	pyplot.xlim(xlims)	
+	pyplot.title(title)	
+	pyplot.ylabel(units)
+
+	pyplot.axhline(y=data,c='k',ls='-',lw=1,label = 'data')
+				
+	legend = pyplot.legend(loc='lower center',  numpoints = 1, ncol=2, prop={'size':12}) 
+	legend.draw_frame(False) 
+	legend.get_frame().set_alpha(0.)
+		
+	print "timeseriesPlots:\tsimpletimeseries:\tSaving:" , filename
+	pyplot.savefig(filename )
+	pyplot.close()	
+
+
 
 
 def regrid(data,lat,lon):
@@ -569,7 +545,7 @@ def taxisfromCC(arr):
 	return np.array(zarr)
 	
 
-def hovmoellerPlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords= {}, title = '',dpi=100,diff=True):	
+def hovmoellerPlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords= {}, title = '',zaxislabel = '',dpi=100,diff=True):	
 	#####
 	# creating model data dictionairies
 	md = []
@@ -703,11 +679,12 @@ def hovmoellerPlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords=
 		
 		if diff: 
 		    #c1 = fig.colorbar(ax1,pad=0.05,shrink=0.75)
-		    pyplot.colorbar(pad=0.25,shrink=1.)		
+		    pyplot.colorbar(pad=0.25,shrink=1.)
+		    
 	pyplot.ylim([zmi,zma])
 	ax1.get_xaxis().set_ticks([])
 	ax1.set_yscale('symlog')	
-	pyplot.ylabel('Depth')
+	pyplot.ylabel('Depth, m')
 
 
 	#####
@@ -716,7 +693,9 @@ def hovmoellerPlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords=
 	hovmoellerAxis(fig,ax2,title,times,yaxis,md,vmin=ax2min,vmax=ax2max,cmap = cmapax2)
 	pyplot.xlim([times.min(),times.max()])
 	pyplot.ylim([zmi,zma])	
-	pyplot.colorbar()
+	cb = pyplot.colorbar()
+	cb.set_label(zaxislabel)	
+
 	ax2.set_yscale('symlog')	
 	ax2.yaxis.set_ticklabels([])
 	pyplot.xlabel('Year')
@@ -732,7 +711,7 @@ def hovmoellerPlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords=
 
 
 
-def profilePlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords= {}, title = '',dpi=100,):	
+def profilePlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords= {}, title = '',xaxislabel = '',dpi=100,):	
 	#####
 	# creating model data dictionairies
 	md = []
@@ -789,7 +768,7 @@ def profilePlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords= {}
 	# Locate min/max depths
 	zmi = np.ma.min([dyaxis_cc.min(),yaxis_cc.min(),])
 	zma = np.ma.max([dyaxis_cc.max(),yaxis_cc.max(),])	
-	
+	zma = np.ma.min([-9.,zma]) 	# set shallowest depth to 9m
 	
 
 	#####
@@ -822,21 +801,32 @@ def profilePlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords= {}
 		if i == lastyr: 	lw =2
 		color = defcmap((float(profileTimes[i])-times_cc[0])/(float(times_cc[-1]-times_cc[0])))
 		pyplot.plot(md[:,i], yaxis_cc, c=color, lw = lw, label=str(int(profileTimes[i])))
-	pyplot.ylim([zmi,zma])
+
+	pyplot.xlabel(xaxislabel)
 	pyplot.ylabel('Depth')
 	pyplot.title(title)
 	print 'x',rbmi,'->',rbma, 'z:',zmi,'->',zma
 
 	#ax1.set_yscale('log')	# Doesn't like negative values
-	ax1.set_yscale('symlog')
+
 	
+	#####
+	ticks = []
+	for i in [10,100,1000,]: ticks.extend(np.arange(1,10)*i)
+	ticks = np.array(ticks)*-1.
+	ticks = ticks[ticks>zmi]
+	ticks = ticks[ticks<zma]
+	ax1.set_yscale('symlog',linthreshy=np.abs(ticks.max()))
+	pyplot.ylim([zmi,zma])	
+	ax1.set_yticks(ticks)
+
 	#####
 	# Add data:
 	if len(dd.squeeze().compressed())!=0:
 		print "Adding data profile."	
 		pyplot.plot(dd, dyaxis_cc, 'k', lw=2, label='Data')
 
-	legend = pyplot.legend(loc='lower center',  numpoints = 1, ncol=2, prop={'size':10}) 
+	legend = pyplot.legend(loc='best',  numpoints = 1, ncol=2, prop={'size':10}) 
 	legend.draw_frame(False) 
 	legend.get_frame().set_alpha(0.)
 					

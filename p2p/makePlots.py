@@ -398,7 +398,7 @@ class makePlots:
 	robfnxy  	= filename.replace('.png','_xyrobin.png')
 	robfnquad  	= filename.replace('.png','_robinquad.png')	
 	robfncartopy	= filename.replace('.png','_robinquad-cartopy.png')		
-	hovquadfn	= filename.replace('.png','_hov.png')			
+	transectquadfn	= filename.replace('.png','_transect.png')			
 	histfnxy 	= filename.replace('.png','_hist.png')
 	histsfnxy 	= filename.replace('.png','_hists.png')				
 	
@@ -456,7 +456,7 @@ class makePlots:
 					scatter=False)
 					
 		if self.depthLevel not in ['Surface','100m','200m','500m','1000m',]:# No point in making these.
-		  if ukp.shouldIMakeFile([self.xfn,self.yfn],hovquadfn,debug=False):
+		  if ukp.shouldIMakeFile([self.xfn,self.yfn],transectquadfn,debug=False):
 			ti1 = getLongName(self.xtype)
 			ti2 =  getLongName(self.ytype)
 			cbarlabel=xunits			
@@ -464,10 +464,10 @@ class makePlots:
 				doLog=False
 			else:	
 				doLog=True
-			print "plotWithSlices:\tHov quad:",[ti1,ti2],False,dmin,dmax
+			print "plotWithSlices:\ttransect quad:",[ti1,ti2],False,dmin,dmax
 			ukp.HovPlotQuad(nmxx,nmxy, nmxz, 
 					datax,datay,
-					hovquadfn,
+					transectquadfn,
 					titles=[ti1,ti2],
 					title  = ' '.join([getLongName(newSlice),getLongName(self.name+self.depthLevel),self.year]),
 					cbarlabel=cbarlabel, 

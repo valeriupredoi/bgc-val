@@ -118,9 +118,10 @@ def analysis_timeseries(jobID = "u-ab671",
 			analysisKeys.append('T')			# WOA Temperature
 			analysisKeys.append('S')			# WOA Salinity
 			analysisKeys.append('MLD')			# iFERMER Mixed Layer Depth - work in prgress
-			analysisKeys.append('TotalIceExtent')		# work in progress	
-			analysisKeys.append('NorthernTotalIceExtent')		# work in progress	
-			analysisKeys.append('SouthernTotalIceExtent')		# work in progress	
+			analysisKeys.append('TotalIceArea')		# work in progress	
+			analysisKeys.append('NorthernTotalIceArea')		# work in progress	
+			analysisKeys.append('SouthernTotalIceArea')		# work in progress	
+			analysisKeys.append('DrakePassageTransport')			# DrakePassageTransport							
 			#####
 			# Switched Off
 
@@ -143,22 +144,24 @@ def analysis_timeseries(jobID = "u-ab671",
                         # Physics switches:
                         analysisKeys.append('T')                        # WOA Temperature
                         analysisKeys.append('S')                        # WOA Salinity
-			analysisKeys.append('TotalIceExtent')		# work in progress	
-			analysisKeys.append('NorthernTotalIceExtent')	# work in progress	
-			analysisKeys.append('SouthernTotalIceExtent')	# work in progress	
-		
+			analysisKeys.append('MLD')			# iFERMER Mixed Layer Depth - work in prgress                        
+			analysisKeys.append('TotalIceArea')		# work in progress	
+			analysisKeys.append('NorthernTotalIceArea')	# work in progress	
+			analysisKeys.append('SouthernTotalIceArea')	# work in progress	
+			analysisKeys.append('DrakePassageTransport')			# DrakePassageTransport				
+					
 		if analysisSuite.lower() in ['debug',]:	
-			#analysisKeys.append('AirSeaFlux')		# work in progress
-			#analysisKeys.append('TotalAirSeaFlux')		# work in progress
+			analysisKeys.append('AirSeaFlux')		# work in progress
+			analysisKeys.append('TotalAirSeaFlux')		# work in progress
 			#analysisKeys.append('TotalOMZVolume')		# work in progress
 			#analysisKeys.append('TotalOMZVolume50')	# work in progress			
 			#analysisKeys.append('OMZThickness')		# work in progress						
 			#analysisKeys.append('DIC')			# work in progress									
-			analysisKeys.append('DrakePassageTransport')			# DrakePassageTransport				
-			#analysisKeys.append('TotalIceExtent')		# work in progress	
-			#analysisKeys.append('NorthernTotalIceExtent')		# work in progress	
-			#analysisKeys.append('SouthernTotalIceExtent')		# work in progress				
-			#analysisKeys.append('TotalIceExtent')		# work in progress							
+			#analysisKeys.append('DrakePassageTransport')			# DrakePassageTransport				
+			#analysisKeys.append('TotalIceArea')		# work in progress	
+			#analysisKeys.append('NorthernTotalIceArea')		# work in progress	
+			#analysisKeys.append('SouthernTotalIceArea')		# work in progress				
+			#analysisKeys.append('TotalIceArea')		# work in progress							
 														
 			#analysisKeys.append('O2')			# work in progress
 			#analysisKeys.append('Iron')			# work in progress	
@@ -688,9 +691,9 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modeldetails'] 	= {'name': name, 'vars':['OXY',], 'convert': modelTotalOMZvol,'units':'m^3'}
 		av[name]['datadetails']  	= {'name': name, 'vars':['o_an',], 'convert': woaTotalOMZvol,'units':'m^3'}
 	
-		av[name]['layers'] 		= ['Surface',] 
-		av[name]['regions'] 		= ['Global',]
-		av[name]['metrics']		= ['sum', ]
+		av[name]['layers'] 		= ['layerless',] 
+		av[name]['regions'] 		= ['regionless',]
+		av[name]['metrics']		= ['metricless', ]
 
 		av[name]['datasource'] 		= 'WOA'
 		av[name]['model']		= 'MEDUSA'
@@ -765,18 +768,19 @@ def analysis_timeseries(jobID = "u-ab671",
 		#nc.close()
 		
 		def eOrcaTotal(nc,keys):
-			factor =  12./1000. #/ 1.E12
+			factor =  12./1000.
 			arr = nc.variables['CO2FLUX'][:].squeeze()	# mmolC/m2/d
 			#if arr.ndim ==3:
 			#	for i in np.arange(arr.shape[0]):
 			#		arr[i] = arr[i]*area
 			#elif arr.ndim ==2: arr = arr*area
 			#else: assert 0
-			return arr * factor
+			return arr * factor 
 					
 		def takaTotal(nc,keys):
 			arr = nc.variables['TFLUXSW06'][:].squeeze()	# 10^12 g Carbon year^-1
 			arr = -1.E12* arr / 365.				#g Carbon/day
+			factor = -1.E12/(365. ) # convert to #/ 1.E12			
 			area = nc.variables['AREA_MKM2'][:].squeeze() *1E12	# 10^6 km^2
 			fluxperarea = arr/area
 			#arr = arr*area #* 1.E24 	# converts area into m^2
@@ -817,7 +821,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		nc.close()
 		
 		def eOrcaTotal(nc,keys):
-			factor =  365.25 * 12./1000. #/ 1.E12
+			factor =  365.25 * 12./1000. / 1.E15
 			arr = nc.variables['CO2FLUX'][:].squeeze() * factor	# mmolC/m2/d
 			if arr.ndim ==3:
 				for i in np.arange(arr.shape[0]):
@@ -828,7 +832,7 @@ def analysis_timeseries(jobID = "u-ab671",
 					
 		def takaTotal(nc,keys):
 			arr = nc.variables['TFLUXSW06'][:].squeeze()	# 10^12 g Carbon year^-1
-			arr = -1.E12* arr #/ 365.				#g Carbon/day
+			arr = -1.E12* arr /1.E15#/ 365.				#g Carbon/day
 			#area = nc.variables['AREA_MKM2'][:].squeeze() *1E12	# 10^6 km^2
 			#fluxperarea = arr/area
 			return arr.sum()
@@ -849,11 +853,11 @@ def analysis_timeseries(jobID = "u-ab671",
 				
 		av[name]['modelcoords'] 	= medusaCoords 	
 		av[name]['datacoords'] 		= takahashiCoords
-		av[name]['modeldetails'] 	= {'name': 'AirSeaFluxCO2', 'vars':['CO2FLUX',], 'convert': eOrcaTotal,'units':'g C/yr'}
-		av[name]['datadetails']  	= {'name': 'AirSeaFluxCO2', 'vars':['TFLUXSW06','AREA_MKM2'], 'convert': takaTotal,'units':'g C/yr'}
-		av[name]['layers'] 		= ['Surface',]
-		av[name]['regions'] 		= ['Global',]
-		av[name]['metrics']		= ['sum',]
+		av[name]['modeldetails'] 	= {'name': 'AirSeaFluxCO2', 'vars':['CO2FLUX',], 'convert': eOrcaTotal,'units':'Pg C/yr'}
+		av[name]['datadetails']  	= {'name': 'AirSeaFluxCO2', 'vars':['TFLUXSW06','AREA_MKM2'], 'convert': takaTotal,'units':'Pg C/yr'}
+		av[name]['layers'] 		= ['layerless',]
+		av[name]['regions'] 		= ['regionless',]
+		av[name]['metrics']		= ['metricless',]
 		av[name]['datasource'] 		= ''
 		av[name]['model']		= 'MEDUSA'
 		av[name]['modelgrid']		= 'eORCA1'
@@ -971,7 +975,7 @@ def analysis_timeseries(jobID = "u-ab671",
 					arr[i] = arr[i]*area
 			elif arr.ndim ==2: arr = arr*area
 			else: assert 0
-			return arr
+			return arr.sum()
 			
 		name = 'TotalIntegratedPrimaryProduction'
 		if annual:
@@ -982,7 +986,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modelcoords'] 	= medusaCoords 	
 		av[name]['datacoords'] 		= glodapCoords
 
-                av[name]['modeldetails']        = {'name': 'IntPP', 'vars':['PRN' ,'PRD'], 'convert': medusadepthInt,'units':'Gt/m2/yr'}
+                av[name]['modeldetails']        = {'name': 'IntPP', 'vars':['PRN' ,'PRD'], 'convert': medusadepthInt,'units':'Gt/yr'}
 		if noOSU: 
 	                av[name]['datadetails']         = {'name': '', 'units':''}
 
@@ -1003,12 +1007,12 @@ def analysis_timeseries(jobID = "u-ab671",
 						arr[i] = arr[i]*osuarea
 				elif arr.ndim ==2: arr = arr*osuarea
 				else: assert 0
-				return arr
-	               	av[name]['datadetails']         = {'name': 'IntPP', 'vars':['NPP',], 'convert': osuconvert,'units':'Gt/m2/yr'}
+				return arr.sum()
+	               	av[name]['datadetails']         = {'name': 'IntPP', 'vars':['NPP',], 'convert': osuconvert,'units':'Gt/yr'}
 
-		av[name]['layers'] 		= ['Surface',]
-		av[name]['regions'] 		= regionList
-		av[name]['metrics']		= ['sum',]
+		av[name]['layers'] 		= ['layerless',]
+		av[name]['regions'] 		= ['regionless',]
+		av[name]['metrics']		= ['metricless',]
 		if noOSU:	av[name]['datasource']          = ''
 		else:		av[name]['datasource'] 		= 'OSU'
 		av[name]['model']		= 'MEDUSA'
@@ -1031,9 +1035,9 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['datacoords'] 		= maredatCoords
 		av[name]['modeldetails'] 	= {'name': name, 'vars':['SDT__100','FDT__100' ,'PRD','PRN',], 'convert': calcExportRatio,'units':''}
 		av[name]['datadetails']  	= {'name':'','units':'',}
-		av[name]['layers'] 		= ['Surface',]
-		av[name]['regions'] 		= ['Global',]
-		av[name]['metrics']		= ['sum',]
+		av[name]['layers'] 		= ['layerless',]
+		av[name]['regions'] 		= ['regionless',]
+		av[name]['metrics']		= ['metricless',]
 		av[name]['datasource'] 		= ''
 		av[name]['model']		= 'MEDUSA'
 		av[name]['modelgrid']		= 'eORCA1'
@@ -1055,7 +1059,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['datacoords'] 		= maredatCoords
 		av[name]['modeldetails'] 	= {'name': name, 'vars':['SDT__100','FDT__100' ,'PRD','PRN',], 'convert': calcExportRatio,'units':''}
 		av[name]['datadetails']  	= {'name':'','units':'',}
-		av[name]['layers'] 		= ['Surface',]#'100m','200m','Surface - 1000m','Surface - 300m',]#'depthint']
+		av[name]['layers'] 		= ['layerless',]#'100m','200m','Surface - 1000m','Surface - 300m',]#'depthint']
 		av[name]['regions'] 		= regionList
 		av[name]['metrics']		= metricList
 		av[name]['datasource'] 		= ''
@@ -1072,7 +1076,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['dataFile'] 		= ""
 		av[name]['modelcoords'] 	= medusaCoords 	
 		av[name]['datacoords'] 		= maredatCoords
-		av[name]['modeldetails']	= {'name': name, 'vars':['FER',], 'convert': ukp.NoChange, 'units':'mmolFe/m3'}
+		av[name]['modeldetails']	= {'name': name, 'vars':['FER',], 'convert': ukp.mul1000, 'units':'umolFe/m3'}
 		av[name]['datadetails']  	= {'name':'','units':'',}
 		av[name]['layers'] 		= layerList
 		av[name]['regions'] 		= regionList
@@ -1199,8 +1203,8 @@ def analysis_timeseries(jobID = "u-ab671",
 			
 
 			
-	if 'NorthernTotalIceExtent' in analysisKeys or 'SouthernTotalIceExtent' in analysisKeys or 'TotalIceExtent' in analysisKeys:
-	    for name in ['NorthernTotalIceExtent','SouthernTotalIceExtent','TotalIceExtent']:
+	if 'NorthernTotalIceArea' in analysisKeys or 'SouthernTotalIceArea' in analysisKeys or 'TotalIceArea' in analysisKeys:
+	    for name in ['NorthernTotalIceArea','SouthernTotalIceArea','TotalIceArea']:
 	    	if name not in analysisKeys:continue
 		
 		nc = Dataset(orcaGridfn,'r')
@@ -1227,15 +1231,15 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modelcoords'] 	= medusaCoords 	
 		av[name]['datacoords'] 		= medusaCoords
 
-	    	if name in ['NorthernTotalIceExtent',]:
+	    	if name in ['NorthernTotalIceArea',]:
 			av[name]['modeldetails'] 	= {'name': name, 'vars':['soicecov',], 'convert': calcTotalIceAreaN,'units':'1E6 km^2'}		    	
 		#	av[name]['regions'] 		=  ['NorthHemisphere',]	
 				
-	    	if name in ['SouthernTotalIceExtent',]:
+	    	if name in ['SouthernTotalIceArea',]:
 			av[name]['modeldetails'] 	= {'name': name, 'vars':['soicecov',], 'convert': calcTotalIceAreaS,'units':'1E6 km^2'}		    	
 		#	av[name]['regions'] 		=  ['SouthHemisphere',]				
 
-	    	if name in ['TotalIceExtent',]:
+	    	if name in ['TotalIceArea',]:
 			av[name]['modeldetails'] 	= {'name': name, 'vars':['soicecov',], 'convert': calcTotalIceArea,'units':'1E6 km^2'}		    	
 		#	av[name]['regions'] 		=  ['Global',]					
 		av[name]['regions'] 		=  ['Global',]		
@@ -1306,10 +1310,10 @@ def analysis_timeseries(jobID = "u-ab671",
 		print "analysis-Timeseries.py:\tBeginning to call timeseriesAnalysis for ", name
 
 		if len(av[name]['modelFiles']) == 0:
-			print "analysis-Timeseries.py:\tWARNING:\tmodel files are not found:",av[name]['modelFiles'] 
+			print "analysis-Timeseries.py:\tWARNING:\tmodel files are not found:",av[name]['modelFiles']
 			if strictFileCheck: assert 0		
 
-		modelfilesexists = [os.path.exists(f) for f in av[name]['modelFiles'] ]
+		modelfilesexists = [os.path.exists(f) for f in av[name]['modelFiles']]
 		if False in modelfilesexists:
 			print "analysis-Timeseries.py:\tWARNING:\tnot model files do not all exist:",av[name]['modelFiles'] 
 			if strictFileCheck: assert 0
