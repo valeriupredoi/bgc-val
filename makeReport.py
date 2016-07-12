@@ -462,7 +462,7 @@ def html5Maker(
 		slices = ['Surface','1000m','Transect',]
 		FileOrder = {}		
 				
-		for key in sorted(l2Fields):
+		for key in l2Fields:
 			#if key not in ['Alkalinity','Nitrate']: continue
 
 
