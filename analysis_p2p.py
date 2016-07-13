@@ -160,8 +160,8 @@ def analysis_p2p(
 		#	analysisKeys.append('DIC')			# Globap tCO2 
                         #####   
                         # Physics switches:
-                        analysisKeys.append('T')                        # WOA Temperature
-                        analysisKeys.append('S')                        # WOA Salinity
+                #        analysisKeys.append('T')                        # WOA Temperature
+                #        analysisKeys.append('S')                        # WOA Salinity
                         analysisKeys.append('MLD')                      # iFERMER Mixed Layer Depth - work in prgress
 
 		

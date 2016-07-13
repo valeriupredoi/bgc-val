@@ -496,6 +496,7 @@ def html5Maker(
 			if key in [	'Chlorophyll_cci', 			   	
 				  	'IntegratedPrimaryProduction_OSU', 
 					'AirSeaFluxCO2',
+					'MLD',
 				  ]:
 				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*robinquad.png'))
 				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*robinquad-cartopy.png'))				  	

@@ -148,20 +148,17 @@ def analysis_timeseries(jobID = "u-ab671",
 			analysisKeys.append('TotalIceArea')		# work in progress	
 			analysisKeys.append('NorthernTotalIceArea')	# work in progress	
 			analysisKeys.append('SouthernTotalIceArea')	# work in progress	
-			analysisKeys.append('DrakePassageTransport')			# DrakePassageTransport				
+			analysisKeys.append('DrakePassageTransport')	# DrakePassageTransport				
 					
 		if analysisSuite.lower() in ['debug',]:	
-			analysisKeys.append('AirSeaFlux')		# work in progress
-			analysisKeys.append('TotalAirSeaFlux')		# work in progress
+			#analysisKeys.append('AirSeaFlux')		# work in progress
+			#analysisKeys.append('TotalAirSeaFlux')		# work in progress
 			#analysisKeys.append('TotalOMZVolume')		# work in progress
 			#analysisKeys.append('TotalOMZVolume50')	# work in progress			
 			#analysisKeys.append('OMZThickness')		# work in progress						
 			#analysisKeys.append('DIC')			# work in progress									
 			#analysisKeys.append('DrakePassageTransport')			# DrakePassageTransport				
 			#analysisKeys.append('TotalIceArea')		# work in progress	
-			#analysisKeys.append('NorthernTotalIceArea')		# work in progress	
-			#analysisKeys.append('SouthernTotalIceArea')		# work in progress				
-			#analysisKeys.append('TotalIceArea')		# work in progress							
 														
 			#analysisKeys.append('O2')			# work in progress
 			#analysisKeys.append('Iron')			# work in progress	
@@ -170,6 +167,9 @@ def analysis_timeseries(jobID = "u-ab671",
                         # Physics switches:
                         #analysisKeys.append('T')                        # WOA Temperature
                         #analysisKeys.append('S')                        # WOA Salinity
+                        analysisKeys.append('NorthernTotalIceArea')            # work in progress      
+                        analysisKeys.append('SouthernTotalIceArea')            # work in progress                              
+                        analysisKeys.append('TotalIceArea')            # work in progress    
 			
 		if analysisSuite.lower() in ['FullDepth',]:
 			#Skip 2D fields
