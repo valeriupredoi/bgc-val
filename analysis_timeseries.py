@@ -1192,7 +1192,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		#av[name]['modeldetails'] 	= {'name': 'mld', 'vars':['votemper',],   'convert': calcMLD,'units':'m'}	
 		av[name]['datadetails']  	= {'name': 'mld', 'vars':['mld','mask',], 'convert': mldapplymask,'units':'m'}
 	
-		av[name]['layers'] 		= ['Surface',]#'Surface - 1000m','Surface - 300m',]#'depthint']
+		av[name]['layers'] 		= ['layerless',]#'Surface - 1000m','Surface - 300m',]#'depthint']
 		av[name]['regions'] 		= regionList
 		av[name]['metrics']		= metricList
 
@@ -1244,12 +1244,12 @@ def analysis_timeseries(jobID = "u-ab671",
 	    	if name in ['TotalIceArea',]:
 			av[name]['modeldetails'] 	= {'name': name, 'vars':['soicecov',], 'convert': calcTotalIceArea,'units':'1E6 km^2'}		    	
 		#	av[name]['regions'] 		=  ['Global',]					
-		av[name]['regions'] 		=  ['Global',]		
+		av[name]['regions'] 		=  ['regionless',]		
 			
 		av[name]['datadetails']  	= {'name':'','units':'',}
 		#av[name]['layers'] 		=  ['Surface',]
-		av[name]['layers'] 		=  ['Surface',]		
-		av[name]['metrics']		= ['sum',]
+		av[name]['layers'] 		=  ['layerless',]		
+		av[name]['metrics']		= ['metricless',]
 		av[name]['datasource'] 		= ''
 		av[name]['model']		= 'CICE'
 		av[name]['modelgrid']		= 'eORCA1'
