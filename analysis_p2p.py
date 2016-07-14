@@ -65,6 +65,7 @@ p2pKeys_annual = ['T','S','MLD', 'Chl_CCI',
 p2pKeys_level2 = ['Chl_CCI',
 		  'N','Si','O2','Alk','DIC','AirSeaFlux',
 		  'IntPP_OSU',
+		'T','S','MLD',
 		  ]
 		  		  		  
 p2pDict = {i:n for i,n in enumerate(p2pKeys)}		  

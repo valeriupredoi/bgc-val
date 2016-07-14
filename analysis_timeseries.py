@@ -50,8 +50,10 @@ timeseriesKeys = ['T','S','MLD', 'Chl_pig','Chl_CCI',
 		  'OMZThickness', 'TotalOMZVolume',		  
 		  ]
 timeseriesDict = {i:n for i,n in enumerate(timeseriesKeys)}
-level1Keys = ['N', 'Si','O2','Alk','DIC','AirSeaFlux','TotalAirSeaFlux','IntPP_OSU','PP_OSU' ,'LocalExportRatio','GlobalExportRatio' ,'TotalOMZVolume','OMZThickness' ,'Iron']
+level1Keys = ['N', 'Si','O2','Alk','DIC','AirSeaFlux','TotalAirSeaFlux','IntPP_OSU','PP_OSU' ,'LocalExportRatio','GlobalExportRatio' ,'TotalOMZVolume','OMZThickness' ,'Iron'
+		'T', 'S','MLD','TotalIceArea', 'NorthernTotalIceArea','SouthernTotalIceArea','DrakePassageTransport',]
 level1KeysDict = {i:n for i,n in enumerate(level1Keys)}	
+
 
 def analysis_timeseries(jobID = "u-ab671",
 			clean = 0,
@@ -165,11 +167,11 @@ def analysis_timeseries(jobID = "u-ab671",
                         #analysisKeys.append('IntPP_OSU')                # OSU Integrated primpary production    
                         #####   
                         # Physics switches:
-                        #analysisKeys.append('T')                        # WOA Temperature
-                        #analysisKeys.append('S')                        # WOA Salinity
-                        analysisKeys.append('NorthernTotalIceArea')            # work in progress      
-                        analysisKeys.append('SouthernTotalIceArea')            # work in progress                              
-                        analysisKeys.append('TotalIceArea')            # work in progress    
+                        analysisKeys.append('T')                        # WOA Temperature
+                        analysisKeys.append('S')                        # WOA Salinity
+                        #analysisKeys.append('NorthernTotalIceArea')            # work in progress      
+                        #analysisKeys.append('SouthernTotalIceArea')            # work in progress                              
+                        #analysisKeys.append('TotalIceArea')            # work in progress    
 			
 		if analysisSuite.lower() in ['FullDepth',]:
 			#Skip 2D fields
