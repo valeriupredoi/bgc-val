@@ -163,12 +163,13 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('TotalIceArea')		# work in progress	
 														
 			#analysisKeys.append('O2')			# work in progress
-			#analysisKeys.append('Iron')			# work in progress	
+			analysisKeys.append('Iron')			# work in progress
+#                        analysisKeys.append('N')                        # WOA Nitrate				
                         #analysisKeys.append('IntPP_OSU')                # OSU Integrated primpary production    
                         #####   
                         # Physics switches:
-                        analysisKeys.append('T')                        # WOA Temperature
-                        analysisKeys.append('S')                        # WOA Salinity
+                        #analysisKeys.append('T')                        # WOA Temperature
+                        #analysisKeys.append('S')                        # WOA Salinity
                         #analysisKeys.append('NorthernTotalIceArea')            # work in progress      
                         #analysisKeys.append('SouthernTotalIceArea')            # work in progress                              
                         #analysisKeys.append('TotalIceArea')            # work in progress    
@@ -277,6 +278,9 @@ def analysis_timeseries(jobID = "u-ab671",
 		GLODAPv2Dir	= ObsFolder+"/GLODAPv2/GLODAPv2_Mapped_Climatologies/"
 		OSUDir		= ObsFolder+"OSU/"
 		CCIDir		= ObsFolder+"CCI/"
+		icFold		= "/data/euryale7/backup/ledm/UKESM/InitialConditions/"		
+
+		
 		orcaGridfn 	= '/data/euryale7/scratch/ledm/UKESM/MEDUSA/mesh_mask_eORCA1_wrk.nc'
 		shelvedir 	= ukp.folder('shelves/timeseries/'+jobID)		
 	#####
@@ -307,7 +311,8 @@ def analysis_timeseries(jobID = "u-ab671",
 		GlodapDir	= ObsFolder+"/GLODAP/"
 		GLODAPv2Dir	= ObsFolder+"/GLODAPv2/GLODAPv2_Mapped_Climatologies/"
 		OSUDir		= ObsFolder+"OSU/"
-		CCIDir		= ObsFolder+"CCI/"				
+		CCIDir		= ObsFolder+"CCI/"
+		icFold		= ObsFolder+"/InitialConditions/"
 		if jobID in ["xkrus",]:
 			# Old school ORCA1 grid
 			orcaGridfn 	='/group_workspaces/jasmin/esmeval/example_data/bgc/mesh_mask_ORCA1_75.nc'
@@ -388,6 +393,7 @@ def analysis_timeseries(jobID = "u-ab671",
 	
 	
 	medusaCoords 	= {'t':'time_counter', 'z':'deptht', 'lat': 'nav_lat',  'lon': 'nav_lon',   'cal': '360_day',}	# model doesn't need time dict.
+	icCoords 	= {'t':'time_counter', 'z':'nav_lev', 'lat': 'nav_lat',  'lon': 'nav_lon',   'cal': '360_day',}	# model doesn't need time dict.	
 	maredatCoords 	= {'t':'index_t', 'z':'DEPTH',  'lat': 'LATITUDE', 'lon': 'LONGITUDE', 'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
 	takahashiCoords	= {'t':'index_t', 'z':'index_z','lat': 'LAT', 'lon': 'LON', 'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}	
 	woaCoords 	= {'t':'index_t', 'z':'depth',  'lat': 'lat', 	   'lon': 'lon',       'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}	
@@ -1075,15 +1081,15 @@ def analysis_timeseries(jobID = "u-ab671",
 		name = 'Iron'
 		av[name]['modelFiles']  = listModelDataFiles(jobID, 'ptrc_T', MEDUSAFolder_pref, annual)								
 				
-		av[name]['dataFile'] 		= ""
+		av[name]['dataFile'] 		= icFold+"/UKESM_fields_1860_eORCA1_small.nc"
 		av[name]['modelcoords'] 	= medusaCoords 	
-		av[name]['datacoords'] 		= maredatCoords
+		av[name]['datacoords'] 		= icCoords
 		av[name]['modeldetails']	= {'name': name, 'vars':['FER',], 'convert': ukp.mul1000, 'units':'umolFe/m3'}
-		av[name]['datadetails']  	= {'name':'','units':'',}
+		av[name]['datadetails']  	= {'name': name, 'vars':['FER',], 'convert': ukp.mul1000, 'units':'umolFe/m3'}
 		av[name]['layers'] 		= layerList
 		av[name]['regions'] 		= regionList
 		av[name]['metrics']		= metricList
-		av[name]['datasource'] 		= ''
+		av[name]['datasource'] 		= 'InititialCondition'
 		av[name]['model']		= 'MEDUSA'
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= orcaGridfn

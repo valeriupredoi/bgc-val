@@ -327,9 +327,9 @@ class profileAnalysis:
 	    	dataD[(r,l,'lat')] = dl.load[(r,l,'lat')]		    	
 	    	dataD[(r,l,'lon')] = dl.load[(r,l,'lon')]
 		if len(dataD[(r,l)])==0:
-			dataD[(r,l)]  = np.ma.array([-999,],mask=[True,])	
-			dataD[(r,l,'lat')]  = np.ma.array([-999,],mask=[True,])	    	
-			dataD[(r,l,'lon')]  = np.ma.array([-999,],mask=[True,])	    	
+			dataD[(r,l)]  = np.ma.masked
+			dataD[(r,l,'lat')]  = np.ma.masked
+			dataD[(r,l,'lon')]  = np.ma.masked
 									    	
     		print "profileAnalysis:\t loadData,\tloading ",(r,l),  dataD[(r,l)].min(),  dataD[(r,l)].max(),  dataD[(r,l)].mean()
     		
@@ -342,6 +342,7 @@ class profileAnalysis:
 		sh.close()
 	except:
 		print "profileAnalysis:\t WARNING.\tSaving shelve failed, trying again.:", self.shelvefn_insitu			
+		print "Data is", dataD
 		shutil.move(self.shelvefn_insitu, self.shelvefn_insitu+'.broken')
 		sh = shOpen(self.shelvefn_insitu)
 		sh['dataD'] 	= dataD
