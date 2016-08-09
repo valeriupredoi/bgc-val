@@ -401,7 +401,7 @@ def multitimeseries(
 			pyplot.plot(tnew,arr_smooth,colours[i],ls=':',label=jobID+' interp',)
 			
 		if lineStyle.lower() in ['','both']:
-			pyplot.plot(times,arr,colours[i],ls=':',label=jobID,)
+			pyplot.plot(times,arr,colours[i],label=jobID,)
 
 	
 	if data != -999:
