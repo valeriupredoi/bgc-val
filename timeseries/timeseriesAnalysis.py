@@ -57,8 +57,9 @@ class timeseriesAnalysis:
 		imageDir	= '',						
 		grid		= '',
 		gridFile	= '',
-		clean		= True,
+		clean		= False,
 		debug		= True,
+		noNewFiles	= False,	# stops loading new files
 		):
 		
 	#####
@@ -86,6 +87,8 @@ class timeseriesAnalysis:
   	self.imageDir 		= imageDir
 	self.debug		= debug
 	self.clean		= clean
+	self.noNewFiles		= noNewFiles
+	
 		
   	self.shelvefn 		= ukp.folder(self.workingDir)+'_'.join([self.jobID,self.dataType,])+'.shelve'
 	self.shelvefn_insitu	= ukp.folder(self.workingDir)+'_'.join([self.jobID,self.dataType,])+'_insitu.shelve'
@@ -97,7 +100,11 @@ class timeseriesAnalysis:
 	#####
 	# Load Model File
   	self.loadModel()  	
-
+  	
+	#####
+	# return Model data without making new images
+	if self.noNewFiles: return
+	
 	#####
 	# Make the plots:
   	self.makePlots()
@@ -153,7 +160,16 @@ class timeseriesAnalysis:
 		print "shelveFn:",self.shelvefn
 		print "readFiles:",readFiles
 
-	
+	#####
+	# No New Files checks - to save time and avoid double work. 
+	if self.noNewFiles:
+		self.modeldataD = modeldataD
+		if self.debug: print "timeseriesAnalysis:\tloadModel.\tno New Files requested. Loaded: ", len(modeldataD.keys()),'Model data'
+		return
+
+		
+		
+		
 	###############
 	# Load files, and calculate fields.
 	openedFiles = 0					

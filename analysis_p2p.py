@@ -792,7 +792,28 @@ def analysis_p2p(
 	
 			av[name]['NEMO']['details']	= {'name': name, 'vars':['somxl010',], 'convert': ukp.NoChange,'units':'m'}			
 			av[name]['Data']['details']	= {'name': name, 'vars':['mld','mask',], 'convert': ukp.applymask,'units':'m'}	# no units?
-			
+
+
+		if 'AOU' in analysisKeys:
+			name = 'AOU'		
+			if annual:	
+				av[name]['NEMO']['File'] 	= sorted(glob(NEMOFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_grid_T.nc"))[0]							
+				av[name]['Data']['File'] 	= MLDFolder+"mld_DT02_c1m_reg2.0-annual.nc"
+			else:	
+				av[name]['Data']['File'] 	= MLDFolder+"mld_DT02_c1m_reg2.0.nc"
+				av[name]['NEMO']['File'] 	= NEMOFolder+jobID+"_"+year+'_MLD.nc'	
+					
+			av[name]['NEMO']['grid'] 		= modelGrid
+			av[name]['depthLevels'] 		= ['',]
+			av[name]['plottingSlices'] 		= tsRegions
+
+			av[name]['Data']['coords'] 	= {'t':'index_t', 'z':'index_z','lat':'lat','lon':'lon','cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
+			av[name]['NEMO']['coords']	= medusaCoords
+			av[name]['Data']['source'] 	= 'IFREMER'
+			av[name]['NEMO']['source']	= 'NEMO'			
+	
+			av[name]['NEMO']['details']	= {'name': name, 'vars':['somxl010',], 'convert': ukp.NoChange,'units':'m'}			
+			av[name]['Data']['details']	= {'name': name, 'vars':['mld','mask',], 'convert': ukp.applymask,'units':'m'}	# no units?			
 		
 		for model in models:
 			workingDir 	= ukp.folder(workDir+model+'-'+jobID+'-'+year)
