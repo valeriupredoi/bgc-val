@@ -170,7 +170,7 @@ def timeseries_compare():
 			else:
 				return sorted(glob(datafolder+jobID+"/"+jobID+"o_1m_*_"+filekey+".nc"))
 
-							
+		av = ukp.AutoVivification()							
 		if 'DrakePassageTransport' in analysisKeys:
 			name = 'DrakePassageTransport'
 			####
