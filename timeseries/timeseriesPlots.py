@@ -415,7 +415,7 @@ def multitimeseries(
 			print np.array(arr).shape, '->',np.array(arr_new).shape
 			counts = np.arange(len(arr))
 			arr_new = np.ma.masked_where((counts<window/2.) + (counts>len(arr)-window/2.) ,arr_new)
-			pyplot.plot(times,arr_new,colours[i],ls='-',label=jobID+' moving average',)
+			pyplot.plot(times,arr_new,colours[i],ls='-',)#label=jobID+' smooth',)
 			
 		#if lineStyle.lower() in ['lowess','all','both',]:
 		#	filtered = lowess(arr, times, is_sorted=True, frac=0.025, it=0)			
