@@ -90,7 +90,7 @@ def timeseries_compare():
 	analysisKeys.append('O2')                       # WOA Oxygen
 	analysisKeys.append('Iron')
 	analysisKeys.append('Alk')	
-	 analysisKeys.append('DIC')
+	analysisKeys.append('DIC')
 	
 	layerList 	= ['Surface',]
 	metricList 	= ['mean',]
