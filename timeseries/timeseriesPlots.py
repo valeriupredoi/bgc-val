@@ -364,7 +364,8 @@ def multitimeseries(
 	):
 	
 	fig = pyplot.figure()
-	
+	fig.set_size_inches(10,6)
+		
 	if plotStyle == 'Together':
 		ax = fig.add_subplot(111)
 	elif plotStyle == 'Separate':
