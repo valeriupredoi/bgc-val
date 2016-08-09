@@ -407,7 +407,11 @@ def multitimeseries(
 			pyplot.plot(tnew,arr_smooth,colours[i],ls='-',label=jobID+' spline',)
 
 		if lineStyle.lower() in ['movingaverage','both','all']:
-			arr_new = movingaverage(arr, 30.)
+			if len(times)>100.: window = 30
+			elif len(times)>30.: window = 10
+			else: window = 1
+			
+			arr_new = movingaverage(arr, window)
 			print np.array(arr).shape, '->',np.array(arr_new).shape
 			pyplot.plot(times,arr_new,colours[i],ls='-',label=jobID+' moving average',)
 			
