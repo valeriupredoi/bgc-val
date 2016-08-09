@@ -154,6 +154,7 @@ def timeseries_compare():
 
 
 	dataD = {}		
+	modeldataD = {}
 		
 	for jobID in jobs:
 	
@@ -253,10 +254,11 @@ def timeseries_compare():
 				noNewFiles	= True,
 			)
 			dataD[(jobID,name )] = tsa.dataD
-	
-	print dataD.keys()
-	for k in dataD.keys():
-		print "Data D:",k,dataD[k]
+			modeldataD[(jobID,name )] = tsa.modeldataD
+	print modeldataD.keys()
+	for k in modeldataD.keys():
+		print "Model Data D:",k,modeldataD[k]
+		
 		
 	
 
