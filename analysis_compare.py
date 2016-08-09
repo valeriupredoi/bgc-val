@@ -87,6 +87,10 @@ def timeseries_compare():
 	
 	analysisKeys.append('Iron')
 	
+	layerList 	= ['Surface',]
+	metricList 	= ['mean',]
+  	regionList	= ['Global',]
+	
 	#####
 	# JASMIN		
 	if gethostname().find('ceda.ac.uk')>-1:
