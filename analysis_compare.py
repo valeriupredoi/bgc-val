@@ -701,7 +701,7 @@ def timeseries_compare():
 			arrD[jobID]	= [mdata[t] for t in timesD[jobID]]
 		
 		for ts in ['Together','Separate']:
-		    for ls in ['Smooth','','Both',]:			
+		    for ls in ['Both',]:#'Smooth','','Both',]:			
 			tsp.multitimeseries(
 				timesD, 		# model times (in floats)
 				arrD,			# model time series
