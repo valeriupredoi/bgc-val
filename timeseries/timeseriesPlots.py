@@ -357,7 +357,7 @@ def simpletimeseries(
 
 def movingaverage(interval, window_size):
     window = np.ones(int(window_size))/float(window_size)
-    return np.convolve(interval, window, 'valid')
+    return np.convolve(interval, window, 'same')
     
 def multitimeseries(
 		timesD, 		# model times (in floats)
@@ -413,6 +413,8 @@ def multitimeseries(
 			
 			arr_new = movingaverage(arr, window)
 			print np.array(arr).shape, '->',np.array(arr_new).shape
+			counts = np.arange(len(arr))
+			arr_new = np.ma.masked_where((counts<window/2.) + (counts>len(arr)-window/2.) ,arr_new)
 			pyplot.plot(times,arr_new,colours[i],ls='-',label=jobID+' moving average',)
 			
 		#if lineStyle.lower() in ['lowess','all','both',]:
