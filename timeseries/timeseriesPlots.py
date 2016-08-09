@@ -30,6 +30,8 @@ from mpl_toolkits.basemap import Basemap
 import cartopy
 import numpy as np 
 from scipy import interpolate 
+from statsmodels.nonparametric.smoothers_lowess import lowess
+
 
 import timeseriesTools as tst
 from bgcvaltools.viridis import viridis,discrete_viridis
@@ -395,12 +397,16 @@ def multitimeseries(
 				axs.append(fig.add_subplot(2,2,i+1))
 				axs[i].set_title(jobID)
 		
-		if lineStyle.lower() in ['smooth','both']:
+		if lineStyle.lower() in ['spline','all']:
 			tnew = np.linspace(times[0],times[-1],60)
 			arr_smooth = interpolate.spline(times,arr,tnew)
-			pyplot.plot(tnew,arr_smooth,colours[i],ls='-',label=jobID+' interp',)
+			pyplot.plot(tnew,arr_smooth,colours[i],ls='-',label=jobID+' spline',)
+
+		if lineStyle.lower() in ['lowess','all','both',]:
+			filtered = lowess(arr, times, is_sorted=True, frac=0.025, it=0)			
+			pyplot.plot(filtered[:,0], filtered[:,1], colour[i],ls='-',label=jobID+' lowess',)
 			
-		if lineStyle.lower() in ['','both']:
+		if lineStyle.lower() in ['','both','all',]:
 			pyplot.plot(times,arr,colours[i],ls=':',label=jobID,)
 
 	
@@ -414,7 +420,7 @@ def multitimeseries(
 		pyplot.title(title)	
 		pyplot.ylabel(units)		
 		pyplot.xlim(xlims)						
-		legend = pyplot.legend(loc='lower center',  numpoints = 1, ncol=2, prop={'size':12}) 
+		legend = pyplot.legend(loc='lower center',  numpoints = 1, ncol=len(timesD.keys()), prop={'size':12}) 
 		legend.draw_frame(False) 
 		legend.get_frame().set_alpha(0.)
 		
