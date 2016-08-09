@@ -253,7 +253,11 @@ def timeseries_compare():
 				noNewFiles	= True,
 			)
 			dataD[(jobID,name )] = tsa.dataD
+	
 	print dataD.keys()
+	for k in dataD.keys():
+		print "Data D:",k,dataD[k]
+		
 	
 
 timeseries_compare()
