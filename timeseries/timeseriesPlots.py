@@ -415,7 +415,8 @@ def multitimeseries(
 			ax.set_ylabel(units)
 			ax.set_xlim(xlims)	
 			ax.set_ylim(ylims)
-			
+		pyplot.suptitle(title)				
+		
 	print "multitimeseries:\tsimpletimeseries:\tSaving:" , filename
 	pyplot.savefig(filename )
 	pyplot.close()	
