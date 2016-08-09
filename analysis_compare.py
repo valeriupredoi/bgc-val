@@ -48,7 +48,9 @@ from pftnames import getLongName
 
 def timeseries_compare():
 	### strategy here is a simple wrapper.
-	#Total Global Primary production, Drake passage transport and Air Sea CO2 flux.
+	# It's a little cheat-y, as I'm copying straight from analysis_timeseries.py
+	
+	
 	jobs = ['u-af123', 'u-af139','u-af420','u-af421']
 	annual = True
 	
@@ -82,6 +84,8 @@ def timeseries_compare():
 	analysisKeys.append('TotalIceArea')		# TotalIceArea	
 	analysisKeys.append('NorthernTotalIceArea')	# North TotalIceArea
 	analysisKeys.append('SouthernTotalIceArea')	# South TotalIceArea
+	
+	analysisKeys.append('Iron')
 	
 	#####
 	# JASMIN		
@@ -412,6 +416,54 @@ def timeseries_compare():
 				av[name]['datasource']  = ''
 							
 
+		if  'Iron' in analysisKeys:
+			name = 'Iron'
+			av[name]['modelFiles']  = listModelDataFiles(jobID, 'ptrc_T', MEDUSAFolder_pref, annual)								
+				
+			av[name]['dataFile'] 		= icFold+"/UKESM_fields_1860_eORCA1_small.nc"
+			av[name]['modelcoords'] 	= medusaCoords 	
+			av[name]['datacoords'] 		= icCoords
+			av[name]['modeldetails']	= {'name': name, 'vars':['FER',], 'convert': ukp.mul1000, 'units':'umolFe/m3'}
+			av[name]['datadetails']  	= {'name': name, 'vars':['FER',], 'convert': ukp.mul1000, 'units':'umolFe/m3'}
+			av[name]['layers'] 		= layerList
+			av[name]['regions'] 		= regionList
+			av[name]['metrics']		= metricList
+			av[name]['datasource'] 		= 'InititialCondition'
+			av[name]['model']		= 'MEDUSA'
+			av[name]['modelgrid']		= 'eORCA1'
+			av[name]['gridFile']		= orcaGridfn
+			av[name]['Dimensions']		= 3
+						
+		if 'T' in analysisKeys:
+			name = 'Temperature'
+			av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', MEDUSAFolder_pref, annual)										
+			if annual:		
+				#av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_grid_T.nc"))
+				av[name]['dataFile'] 		= WOAFolder+'woa13_decav_t00_01v2.nc'
+			else:
+				#av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1m_*_grid_T.nc"))
+				av[name]['dataFile'] 		= WOAFolder+'temperature_monthly_1deg.nc'
+			av[name]['modelcoords'] 	= medusaCoords 	
+			av[name]['datacoords'] 		= woaCoords
+	
+			av[name]['modeldetails'] 	= {'name': name, 'vars':['votemper',], 'convert': ukp.NoChange,'units':'degrees C'}
+			av[name]['datadetails']  	= {'name': name, 'vars':['t_an',], 'convert': ukp.NoChange,'units':'degrees C'}
+	
+			av[name]['layers'] 		=  layerList
+			av[name]['regions'] 		= regionList	
+			av[name]['metrics']		= metricList
+
+			av[name]['datasource'] 		= 'WOA'
+			av[name]['model']		= 'NEMO'
+
+			av[name]['modelgrid']		= 'eORCA1'
+			av[name]['gridFile']		= orcaGridfn
+			av[name]['Dimensions']		= 3
+					
+					
+					
+					
+
 		for name in av.keys():
 			print "------------------------------------------------------------------"	
 			print "analysis-Timeseries.py:\tBeginning to call timeseriesAnalysis for ", name
@@ -469,7 +521,12 @@ def timeseries_compare():
 		arrD	= {}
 		
 		for jobID in jobs:
-			mdata = modeldataD[(jobID,name )][('regionless', 'layerless', 'metricless')]
+			if name in ['Iron','Nitrate','Temperature','Salinity', 'Alkalinity']:
+				mdata = modeldataD[(jobID,name )][('Global', 'Surface', 'mean')]
+				title = ' '.join(['Global', 'Surface', 'mean',  getLongName(name)])
+			else:
+				mdata = modeldataD[(jobID,name )][('regionless', 'layerless', 'metricless')]
+				title = getLongName(name)
 			timesD[jobID] 	= sorted(mdata.keys())
 			arrD[jobID]	= [mdata[t] for t in timesD[jobID]]
 		
@@ -477,8 +534,8 @@ def timeseries_compare():
 			tsp.multitimeseries(
 				timesD, 		# model times (in floats)
 				arrD,			# model time series
-				data = -999,		# in situ data distribution
-				title 	=getLongName(name),
+				data 	= -999,		# in situ data distribution
+				title 	= title,
 				filename='images/TimeseriesCompare/'+name+'_'+ts+'.png',
 				units = '',
 				plotStyle = ts,
