@@ -159,11 +159,11 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('TotalOMZVolume50')	# work in progress			
 			#analysisKeys.append('OMZThickness')		# work in progress						
 			#analysisKeys.append('DIC')			# work in progress									
-			#analysisKeys.append('DrakePassageTransport')			# DrakePassageTransport				
+			analysisKeys.append('DrakePassageTransport')			# DrakePassageTransport				
 			#analysisKeys.append('TotalIceArea')		# work in progress	
 														
 			#analysisKeys.append('O2')			# work in progress
-			analysisKeys.append('Iron')			# work in progress
+			#analysisKeys.append('Iron')			# work in progress
 #                        analysisKeys.append('N')                        # WOA Nitrate				
                         #analysisKeys.append('IntPP_OSU')                # OSU Integrated primpary production    
                         #####   
