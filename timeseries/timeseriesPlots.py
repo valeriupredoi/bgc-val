@@ -370,8 +370,7 @@ def multitimeseries(
 
 	for jobID, times in timesD.items():	
 		arr = arrD[jobID]
-		
-		if len(times.keys()) ==0 or len(arr.keys()) == 0:
+		if len(times) ==0 or len(arr) == 0:
 			print "multitimeseries:\tWARNING:\tdata or time arrays are empty.",len(times),len(arr),title
 			continue
 		if np.ma.is_masked(arr):
