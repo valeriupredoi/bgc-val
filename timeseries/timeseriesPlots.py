@@ -367,9 +367,11 @@ def multitimeseries(
 	
 	if plotStyle == 'Together':
 		ax = fig.add_subplot(111)
+	elif plotStyle == 'Separate':
+		axs = []
 		
 	xlims = [1e20,-1e20]
-
+	ylims = [1e20,-1e20]
 	for i,jobID in enumerate(sorted(timesD.keys())):	
 		times = timesD[jobID]
 		arr = arrD[jobID]
@@ -382,10 +384,13 @@ def multitimeseries(
 		if times[0]  < xlims[0]: 	xlims[0] = times[0]
 		if times[-1] > xlims[1]: 	xlims[1] = times[-1]
 
+		if np.min(arr) < ylims[0]: 	ylims[0] = np.min(arr)
+		if np.max(arr) > ylims[1]: 	ylims[1] = np.max(arr)
+		
 		if plotStyle == 'Separate':
 			if len(timesD.keys()) <= 4:
-				ax = fig.add_subplot(2,2,i+1)
-				ax.set_title(jobID)
+				axs.append(fig.add_subplot(2,2,i+1))
+				ax[i].set_title(jobID)
 			
 		pyplot.plot(times,arr,label=jobID,)
 
@@ -393,15 +398,23 @@ def multitimeseries(
 	if data != -999:
 		pyplot.axhline(y=data,c='k',ls='-',lw=1,label = 'Data')
 	
-	pyplot.xlim(xlims)	
-	pyplot.title(title)	
-	pyplot.ylabel(units)
 
-	if plotStyle == 'Together':					
+
+
+	if plotStyle == 'Together':
+		pyplot.title(title)	
+		pyplot.ylabel(units)		
+		pyplot.xlim(xlims)						
 		legend = pyplot.legend(loc='lower center',  numpoints = 1, ncol=2, prop={'size':12}) 
 		legend.draw_frame(False) 
 		legend.get_frame().set_alpha(0.)
 		
+	elif plotStyle == 'Separate':
+		for ax in axs:
+			ax.set_ylabel(units)
+			ax.set_xlim(xlims)	
+			ax.set_ylim(ylims)
+			
 	print "multitimeseries:\tsimpletimeseries:\tSaving:" , filename
 	pyplot.savefig(filename )
 	pyplot.close()	
