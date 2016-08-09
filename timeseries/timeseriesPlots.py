@@ -408,7 +408,7 @@ def multitimeseries(
 
 		if lineStyle.lower() in ['movingaverage','both','all']:
 			arr_new = movingaverage(arr, 30.)
-			
+			print np.array(arr).shape, '->',np.array(arr_new).shape
 			pyplot.plot(times,arr_new,colours[i],ls='-',label=jobID+' moving average',)
 			
 		#if lineStyle.lower() in ['lowess','all','both',]:
