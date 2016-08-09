@@ -30,7 +30,7 @@ from mpl_toolkits.basemap import Basemap
 import cartopy
 import numpy as np 
 from scipy import interpolate 
-from statsmodels.nonparametric.smoothers_lowess import lowess
+#from statsmodels.nonparametric.smoothers_lowess import lowess
 
 
 import timeseriesTools as tst
@@ -355,6 +355,10 @@ def simpletimeseries(
 	pyplot.close()	
 
 
+def movingaverage(interval, window_size):
+    window = np.ones(int(window_size))/float(window_size)
+    return np.convolve(interval, window, 'same')
+    
 def multitimeseries(
 		timesD, 		# model times (in floats)
 		arrD,		# model time series
@@ -402,9 +406,14 @@ def multitimeseries(
 			arr_smooth = interpolate.spline(times,arr,tnew)
 			pyplot.plot(tnew,arr_smooth,colours[i],ls='-',label=jobID+' spline',)
 
-		if lineStyle.lower() in ['lowess','all','both',]:
-			filtered = lowess(arr, times, is_sorted=True, frac=0.025, it=0)			
-			pyplot.plot(filtered[:,0], filtered[:,1], colour[i],ls='-',label=jobID+' lowess',)
+		if lineStyle.lower() in ['movingaverage','both','all']:
+			arr_new = movingaverage(arr, 30.)
+			
+			pyplot.plot(times,arr_new,colours[i],ls='-',label=jobID+' moving average',)
+			
+		#if lineStyle.lower() in ['lowess','all','both',]:
+		#	filtered = lowess(arr, times, is_sorted=True, frac=0.025, it=0)			
+		#	pyplot.plot(filtered[:,0], filtered[:,1], colour[i],ls='-',label=jobID+' lowess',)
 			
 		if lineStyle.lower() in ['','both','all',]:
 			pyplot.plot(times,arr,colours[i],ls=':',label=jobID,)
