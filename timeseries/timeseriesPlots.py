@@ -353,6 +353,51 @@ def simpletimeseries(
 	pyplot.close()	
 
 
+def multitimeseries(
+		timesD, 		# model times (in floats)
+		arrD,		# model time series
+		data = -999,		# in situ data distribution
+		title 	='',
+		filename='',
+		units = '',
+	):
+	
+	fig = pyplot.figure()
+	
+	ax = fig.add_subplot(111)
+		
+	xlims = [1e20,-1e20]
+
+	for jobID, times in timesD.items():	
+		arr = arrD[jobID]
+		
+		if len(times.keys()) ==0 or len(arr.keys()) == 0:
+			print "multitimeseries:\tWARNING:\tdata or time arrays are empty.",len(times),len(arr),title
+			continue
+		if np.ma.is_masked(arr):
+			print "multitimeseries:\tWARNING:\tdata arrays is masked",len(times),len(arr),title
+			continue
+		if times[0]  < xlims[0]: 	xlims[0] = times[0]
+		if times[-1] > xlims[1]: 	xlims[1] = times[-1]
+
+		pyplot.plot(times,arr,label=jobID,)
+
+	
+	if data != -999:
+		pyplot.axhline(y=data,c='k',ls='-',lw=1,label = 'Data')
+	
+	pyplot.xlim(xlims)	
+	pyplot.title(title)	
+	pyplot.ylabel(units)
+					
+	legend = pyplot.legend(loc='lower center',  numpoints = 1, ncol=2, prop={'size':12}) 
+	legend.draw_frame(False) 
+	legend.get_frame().set_alpha(0.)
+		
+	print "multitimeseries:\tsimpletimeseries:\tSaving:" , filename
+	pyplot.savefig(filename )
+	pyplot.close()	
+	
 
 
 def regrid(data,lat,lon):
