@@ -42,7 +42,7 @@ from getpass import getuser
 import UKESMpython as ukp
 from timeseries import timeseriesAnalysis
 from timeseries import profileAnalysis
-import timeseriesPlots as tsp 
+from timeseries import timeseriesPlots as tsp 
 
 def timeseries_compare():
 	### strategy here is a simple wrapper.
