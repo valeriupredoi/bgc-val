@@ -255,11 +255,32 @@ def timeseries_compare():
 			)
 			dataD[(jobID,name )] = tsa.dataD
 			modeldataD[(jobID,name )] = tsa.modeldataD
+	
+	#####
+	# Data now loaded, making plots next:
+	
 	print modeldataD.keys()
 	for k in modeldataD.keys():
 		print "Model Data D:",k,modeldataD[k]
+	
+	for name in av.keys():
+		timesD  = {}
+		arrD	= {}
 		
-		
+		for jobID in jobs:
+			mdata = modeldataD[(jobID,name )][('regionless', 'layerless', 'metricless')]
+			print 
+			timesD[jobID] 	= sorted(mdata.keys())
+			arrD[jobID]	= [mdata[t] for t in timesD[jobID]]
+			
+		tsp.multitimeseries(
+			timesD, 		# model times (in floats)
+			arrD,		# model time series
+			data = -999,		# in situ data distribution
+			title 	='',
+			filename='',
+			units = '',
+		)
 	
 
 timeseries_compare()
