@@ -43,6 +43,8 @@ import UKESMpython as ukp
 from timeseries import timeseriesAnalysis
 from timeseries import profileAnalysis
 from timeseries import timeseriesPlots as tsp 
+from pftnames import getLongName
+
 
 def timeseries_compare():
 	### strategy here is a simple wrapper.
@@ -275,10 +277,10 @@ def timeseries_compare():
 			
 		tsp.multitimeseries(
 			timesD, 		# model times (in floats)
-			arrD,		# model time series
+			arrD,			# model time series
 			data = -999,		# in situ data distribution
-			title 	='',
-			filename='',
+			title 	=getLongName(name),
+			filename='images/TimeseriesCompare/'+name+'.png',
 			units = '',
 		)
 	
