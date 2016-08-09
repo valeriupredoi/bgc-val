@@ -395,7 +395,7 @@ def multitimeseries(
 				axs[i].set_title(jobID)
 		
 		if lineStyle.lower() in ['smooth','both']:
-			tnew = np.linspace(times[0],times[-1],30)
+			tnew = np.linspace(times[0],times[-1],60)
 			arr_smooth = interpolate.spline(times,arr,tnew)
 			pyplot.plot(tnew,arr_smooth,ls='--',label=jobID+' interp',)
 			
