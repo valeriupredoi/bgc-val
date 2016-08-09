@@ -72,16 +72,17 @@ def timeseries_compare():
 	#                        analysisKeys.append('T')                        # WOA Temperature
 	#                        analysisKeys.append('S')                        # WOA Salinity
 	#			analysisKeys.append('MLD')			# iFERMER Mixed Layer Depth - work in prgress                        
-	#			analysisKeys.append('TotalIceArea')		# work in progress	
-	#			analysisKeys.append('NorthernTotalIceArea')	# work in progress	
-	#			analysisKeys.append('SouthernTotalIceArea')	# work in progress	
+	
 
 
 	analysisKeys.append('DrakePassageTransport')	# DrakePassageTransport		
 	analysisKeys.append('TotalAirSeaFlux')          # work in progress              
 	analysisKeys.append('IntPP_OSU')                # OSU Integrated primpary production    
 	analysisKeys.append('GlobalExportRatio')
-
+	analysisKeys.append('TotalIceArea')		# TotalIceArea	
+	analysisKeys.append('NorthernTotalIceArea')	# North TotalIceArea
+	analysisKeys.append('SouthernTotalIceArea')	# South TotalIceArea
+	
 	#####
 	# JASMIN		
 	if gethostname().find('ceda.ac.uk')>-1:
