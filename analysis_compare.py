@@ -707,7 +707,7 @@ def timeseries_compare():
 				arrD,			# model time series
 				data 	= -999,		# in situ data distribution
 				title 	= title,
-				filename='images/TimeseriesCompare/'+name+'_'+ts+'_'+ls+'.png',
+				filename=ukp.folder('images/TimeseriesCompare/')+name+'_'+ts+'_'+ls+'.png',
 				units = '',
 				plotStyle 	= ts,
 				lineStyle	= ls,

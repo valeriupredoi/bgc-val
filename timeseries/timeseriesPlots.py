@@ -374,6 +374,7 @@ def multitimeseries(
 		
 	xlims = [1e20,-1e20]
 	ylims = [1e20,-1e20]
+	colours = ['b','g','r','o']
 	for i,jobID in enumerate(sorted(timesD.keys())):	
 		times = timesD[jobID]
 		arr = arrD[jobID]
@@ -397,10 +398,10 @@ def multitimeseries(
 		if lineStyle.lower() in ['smooth','both']:
 			tnew = np.linspace(times[0],times[-1],60)
 			arr_smooth = interpolate.spline(times,arr,tnew)
-			pyplot.plot(tnew,arr_smooth,ls='--',label=jobID+' interp',)
+			pyplot.plot(tnew,arr_smooth,colours[i],ls=':',label=jobID+' interp',)
 			
 		if lineStyle.lower() in ['','both']:
-			pyplot.plot(times,arr,label=jobID,)
+			pyplot.plot(times,arr,colours[i],ls=':',label=jobID,)
 
 	
 	if data != -999:
