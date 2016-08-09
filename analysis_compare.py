@@ -48,6 +48,7 @@ def timeseries_compare():
 	### strategy here is a simple wrapper.
 	#Total Global Primary production, Drake passage transport and Air Sea CO2 flux.
 	jobs = ['u-af123', 'u-af139','u-af420','u-af421']
+	annual = True
 	
 	analysisKeys = []
 	#                        analysisKeys.append('N')                        # WOA Nitrate
