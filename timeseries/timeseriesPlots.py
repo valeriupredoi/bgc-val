@@ -390,7 +390,7 @@ def multitimeseries(
 		if plotStyle == 'Separate':
 			if len(timesD.keys()) <= 4:
 				axs.append(fig.add_subplot(2,2,i+1))
-				ax[i].set_title(jobID)
+				axs[i].set_title(jobID)
 			
 		pyplot.plot(times,arr,label=jobID,)
 
