@@ -700,7 +700,8 @@ def timeseries_compare():
 			timesD[jobID] 	= sorted(mdata.keys())
 			arrD[jobID]	= [mdata[t] for t in timesD[jobID]]
 		
-		for ts in ['Together','Separate']:	
+		for ts in ['Together','Separate']:
+		    for sl in [True,False]:			
 			tsp.multitimeseries(
 				timesD, 		# model times (in floats)
 				arrD,			# model time series
@@ -708,8 +709,8 @@ def timeseries_compare():
 				title 	= title,
 				filename='images/TimeseriesCompare/'+name+'_'+ts+'.png',
 				units = '',
-				plotStyle = ts,
-			
+				plotStyle 	= ts,
+				smoothLine	= sl,
 			)
 	
 

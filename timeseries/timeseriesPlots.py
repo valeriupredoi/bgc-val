@@ -360,7 +360,8 @@ def multitimeseries(
 		title 	='',
 		filename='',
 		units = '',
-		plotStyle = 'Together',		
+		plotStyle = 'Together',	
+		smoothLine = False,	
 	):
 	
 	fig = pyplot.figure()
@@ -392,8 +393,13 @@ def multitimeseries(
 			if len(timesD.keys()) <= 4:
 				axs.append(fig.add_subplot(2,2,i+1))
 				axs[i].set_title(jobID)
-			
-		pyplot.plot(times,arr,label=jobID,)
+		
+		if smoothLine:
+			tnew = np.linspace(times[0],times[-1],300)
+			arr_smooth = interpolate.spline(times,arr,tnew)		
+			pyplot.plot(tnew,arr_smooth,label=jobID,)			
+		else:	
+			pyplot.plot(times,arr,label=jobID,)
 
 	
 	if data != -999:
