@@ -361,7 +361,7 @@ def multitimeseries(
 		filename='',
 		units = '',
 		plotStyle = 'Together',	
-		smoothLine = False,	
+		lineStyle = '',	
 	):
 	
 	fig = pyplot.figure()
@@ -394,11 +394,12 @@ def multitimeseries(
 				axs.append(fig.add_subplot(2,2,i+1))
 				axs[i].set_title(jobID)
 		
-		if smoothLine:
+		if lineStyle.lower() in ['smooth','both']:
 			tnew = np.linspace(times[0],times[-1],300)
-			arr_smooth = interpolate.spline(times,arr,tnew)		
-			pyplot.plot(tnew,arr_smooth,label=jobID,)			
-		else:	
+			arr_smooth = interpolate.spline(times,arr,tnew)
+			pyplot.plot(tnew,arr_smooth,ls=':',label=jobID+' interp',)
+			
+		if lineStyle.lower() in ['','both']:
 			pyplot.plot(times,arr,label=jobID,)
 
 	

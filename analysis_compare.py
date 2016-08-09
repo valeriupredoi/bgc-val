@@ -701,16 +701,16 @@ def timeseries_compare():
 			arrD[jobID]	= [mdata[t] for t in timesD[jobID]]
 		
 		for ts in ['Together','Separate']:
-		    for sl in [True,False]:			
+		    for ls in ['Smooth','','Both',]:			
 			tsp.multitimeseries(
 				timesD, 		# model times (in floats)
 				arrD,			# model time series
 				data 	= -999,		# in situ data distribution
 				title 	= title,
-				filename='images/TimeseriesCompare/'+name+'_'+ts+'.png',
+				filename='images/TimeseriesCompare/'+name+'_'+ts+'_'+ls+'.png',
 				units = '',
 				plotStyle 	= ts,
-				smoothLine	= sl,
+				lineStyle	= ls,
 			)
 	
 
