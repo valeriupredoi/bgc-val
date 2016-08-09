@@ -154,7 +154,7 @@ def analysis_timeseries(jobID = "u-ab671",
 					
 		if analysisSuite.lower() in ['debug',]:	
 			#analysisKeys.append('AirSeaFlux')		# work in progress
-			#analysisKeys.append('TotalAirSeaFlux')		# work in progress
+			analysisKeys.append('TotalAirSeaFlux')		# work in progress
 			#analysisKeys.append('TotalOMZVolume')		# work in progress
 			#analysisKeys.append('TotalOMZVolume50')	# work in progress			
 			#analysisKeys.append('OMZThickness')		# work in progress						
@@ -167,8 +167,8 @@ def analysis_timeseries(jobID = "u-ab671",
                         #analysisKeys.append('IntPP_OSU')                # OSU Integrated primpary production    
                         #####   
                         # Physics switches:
-                        analysisKeys.append('T')                        # WOA Temperature
-                        analysisKeys.append('S')                        # WOA Salinity
+                        #analysisKeys.append('T')                        # WOA Temperature
+                        #analysisKeys.append('S')                        # WOA Salinity
                         #analysisKeys.append('NorthernTotalIceArea')            # work in progress      
                         #analysisKeys.append('SouthernTotalIceArea')            # work in progress                              
                         #analysisKeys.append('TotalIceArea')            # work in progress    
@@ -866,7 +866,12 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['gridFile']		= orcaGridfn
 		av[name]['Dimensions']		= 2					
 										
-					
+		noTaka = True
+		if noTaka:
+			av[name]['datadetails'] =  {'name': '',	'units':''}
+			av[name]['dataFile']	= ''
+			av[name]['datasource']  = ''
+			
 
 	if 'IntPP_iMarNet' in analysisKeys:
 		name = 'IntegratedPrimaryProduction_1x1'		
