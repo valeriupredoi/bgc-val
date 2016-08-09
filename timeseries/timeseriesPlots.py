@@ -357,7 +357,7 @@ def simpletimeseries(
 
 def movingaverage(interval, window_size):
     window = np.ones(int(window_size))/float(window_size)
-    return np.convolve(interval, window, 'same')
+    return np.convolve(interval, window, 'valid')
     
 def multitimeseries(
 		timesD, 		# model times (in floats)
