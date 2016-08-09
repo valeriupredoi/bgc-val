@@ -459,9 +459,9 @@ def timeseries_compare():
 	#####
 	# Data now loaded, making plots next:
 	
-	print modeldataD.keys()
-	for k in modeldataD.keys():
-		print "Model Data D:",k,modeldataD[k]
+	#print modeldataD.keys()
+	#for k in modeldataD.keys():
+		print "Model Data D:",k
 	
 	for name in av.keys():
 		timesD  = {}
