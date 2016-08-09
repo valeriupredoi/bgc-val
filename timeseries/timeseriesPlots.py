@@ -398,10 +398,10 @@ def multitimeseries(
 		if lineStyle.lower() in ['smooth','both']:
 			tnew = np.linspace(times[0],times[-1],60)
 			arr_smooth = interpolate.spline(times,arr,tnew)
-			pyplot.plot(tnew,arr_smooth,colours[i],ls=':',label=jobID+' interp',)
+			pyplot.plot(tnew,arr_smooth,colours[i],ls='-',label=jobID+' interp',)
 			
 		if lineStyle.lower() in ['','both']:
-			pyplot.plot(times,arr,colours[i],label=jobID,)
+			pyplot.plot(times,arr,colours[i],ls=':',label=jobID,)
 
 	
 	if data != -999:
