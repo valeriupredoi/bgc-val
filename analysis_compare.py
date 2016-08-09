@@ -84,8 +84,13 @@ def timeseries_compare():
 	analysisKeys.append('TotalIceArea')		# TotalIceArea	
 	analysisKeys.append('NorthernTotalIceArea')	# North TotalIceArea
 	analysisKeys.append('SouthernTotalIceArea')	# South TotalIceArea
-	
+
+	analysisKeys.append('N')                        # WOA Nitrate
+	analysisKeys.append('Si')                       # WOA Siliate
+	analysisKeys.append('O2')                       # WOA Oxygen
 	analysisKeys.append('Iron')
+	analysisKeys.append('Alk')	
+	 analysisKeys.append('DIC')
 	
 	layerList 	= ['Surface',]
 	metricList 	= ['mean',]
@@ -437,6 +442,141 @@ def timeseries_compare():
 			av[name]['modelgrid']		= 'eORCA1'
 			av[name]['gridFile']		= orcaGridfn
 			av[name]['Dimensions']		= 3
+
+		if 'N' in analysisKeys:
+			name = 'Nitrate'
+			av[name]['modelFiles']  = listModelDataFiles(jobID, 'ptrc_T', MEDUSAFolder_pref, annual)				
+			if annual:
+				av[name]['dataFile'] 		=  WOAFolder+'/woa13_all_n00_01.nc'
+			else:
+				av[name]['dataFile'] 		=  WOAFolder+'/nitrate_monthly_1deg.nc'
+				
+			av[name]['modelcoords'] 	= medusaCoords 	
+			av[name]['datacoords'] 		= woaCoords
+	
+			av[name]['modeldetails'] 	= {'name': name, 'vars':['DIN',], 'convert': ukp.NoChange,'units':'mmol N/m^3'}
+			av[name]['datadetails']  	= {'name': name, 'vars':['n_an',], 'convert': ukp.NoChange,'units':'mmol N/m^3'}
+	
+			av[name]['layers'] 		=  layerList
+			av[name]['regions'] 		= regionList
+		
+			#av[name]['layers'] 		= ['Surface','300m',]#'1000m',]#'Surface - 300m',]'100m',
+			#av[name]['regions'] 		= regionList#['Global',]#'NorthAtlanticOcean','SouthAtlanticOcean',]#'NorthAtlantic']
+			av[name]['metrics']		= metricList #['mean','median', ]
+
+			av[name]['datasource'] 		= 'WOA'
+			av[name]['model']		= 'MEDUSA'
+
+			av[name]['modelgrid']		= 'eORCA1'
+			av[name]['gridFile']		= orcaGridfn
+			av[name]['Dimensions']		= 3
+		
+		if 'Si' in analysisKeys:
+			name = 'Silicate'
+			av[name]['modelFiles']  = listModelDataFiles(jobID, 'ptrc_T', MEDUSAFolder_pref, annual)				
+			if annual:	
+				av[name]['dataFile'] 		= WOAFolder+'woa13_all_i00_01.nc'
+			else:
+				av[name]['dataFile'] 		= WOAFolder+'wsilicate_monthly_1deg.nc'
+			av[name]['modelcoords'] 	= medusaCoords 	
+			av[name]['datacoords'] 		= woaCoords
+	
+			av[name]['modeldetails'] 	= {'name': name, 'vars':['SIL',],  'convert': ukp.NoChange,'units':'mmol Si/m^3'}
+			av[name]['datadetails']  	= {'name': name, 'vars':['i_an',], 'convert': ukp.NoChange,'units':'mmol Si/m^3'}
+		
+			av[name]['layers'] 		=  layerList
+			av[name]['regions'] 		= regionList
+			av[name]['metrics']		= metricList
+
+			av[name]['datasource'] 		= 'WOA'
+			av[name]['model']		= 'MEDUSA'
+
+			av[name]['modelgrid']		= 'eORCA1'
+			av[name]['gridFile']		= orcaGridfn
+			av[name]['Dimensions']		= 3		
+	
+		if 'O2' in analysisKeys:
+			name = 'Oxygen'
+			if annual:
+				av[name]['modelFiles']  = listModelDataFiles(jobID, 'ptrc_T', MEDUSAFolder_pref, annual)		
+				av[name]['dataFile'] 		=  WOAFolder+'woa13_all_o00_01.nc'
+				
+			av[name]['modelcoords'] 	= medusaCoords 	
+			av[name]['datacoords'] 		= woaCoords
+	
+			av[name]['modeldetails'] 	= {'name': name, 'vars':['OXY',], 'convert': ukp.NoChange,'units':'mmol O2/m^3'}	
+			av[name]['datadetails']  	= {'name': name, 'vars':['o_an',], 'convert': ukp.oxconvert,'units':'mmol O2/m^3'}
+
+			av[name]['layers'] 		=  layerList
+			av[name]['regions'] 		= regionList
+			av[name]['metrics']		= metricList
+
+			av[name]['datasource'] 		= 'WOA'
+			av[name]['model']		= 'MEDUSA'
+
+			av[name]['modelgrid']		= 'eORCA1'
+			av[name]['gridFile']		= orcaGridfn
+			av[name]['Dimensions']		= 3
+
+
+		if 'DIC' in analysisKeys:
+	
+			def convertkgToM3(nc,keys):
+				return nc.variables[keys[0]][:]* 1.027
+				
+			name = 'DIC'
+		
+			av[name]['modelFiles'] 		= listModelDataFiles(jobID, 'ptrc_T', MEDUSAFolder_pref, annual)				
+			av[name]['dataFile'] 		= GLODAPv2Dir+ 'GLODAPv2.tco2.historic.nc'
+				
+			av[name]['modelcoords'] 	= medusaCoords 	
+			av[name]['datacoords'] 		= glodapv2Coords
+	
+			av[name]['modeldetails'] 	= {'name': 'DIC', 'vars':['DIC',],  'convert': ukp.NoChange,'units':'mmol C/m^3'}
+			av[name]['datadetails']  	= {'name': 'DIC', 'vars':['tco2',], 'convert': ukp.convertkgToM3,'units':'mmol C/m^3'}
+	
+			av[name]['layers'] 		=  layerList
+			av[name]['regions'] 		= regionList
+			av[name]['metrics']		= metricList
+
+			av[name]['datasource'] 		= 'GLODAP'
+			av[name]['model']		= 'MEDUSA'
+
+			av[name]['modelgrid']		= 'eORCA1'
+			av[name]['gridFile']		= orcaGridfn		
+			av[name]['Dimensions']		= 3
+		
+		if 'Alk' in analysisKeys:
+			def convertmeqm3TOumolkg(nc,keys):
+				return nc.variables[keys[0]][:]* 1.027
+		
+			name = 'Alkalinity'
+			if annual:		
+				av[name]['modelFiles']  = listModelDataFiles(jobID, 'ptrc_T', MEDUSAFolder_pref, annual)		
+				av[name]['dataFile'] 	=  GlodapDir+'Alk.nc'
+			else:
+				print "Alkalinity data not available for monthly Analysis"
+				assert 0
+				
+			av[name]['modelcoords'] 	= medusaCoords 	
+			av[name]['datacoords'] 		= glodapCoords
+	
+			av[name]['modeldetails'] 	= {'name': name, 'vars':['ALK',], 'convert': ukp.NoChange,'units':'meq/m^3',}
+			av[name]['datadetails']  	= {'name': name, 'vars':['Alk',], 'convert': convertmeqm3TOumolkg,'units':'meq/m^3',}
+	
+		#	av[name]['layers'] 		=  ['Surface','100m','300m','1000m',]
+		#	av[name]['regions'] 		= regionList
+			av[name]['layers'] 		=  layerList
+			av[name]['regions'] 		= regionList		
+			av[name]['metrics']		= metricList
+
+			av[name]['datasource'] 		= 'GLODAP'
+			av[name]['model']		= 'MEDUSA'
+
+			av[name]['modelgrid']		= 'eORCA1'
+			av[name]['gridFile']		= orcaGridfn
+			av[name]['Dimensions']		= 3		
+		
 						
 		if 'T' in analysisKeys:
 			name = 'Temperature'
@@ -464,7 +604,33 @@ def timeseries_compare():
 			av[name]['gridFile']		= orcaGridfn
 			av[name]['Dimensions']		= 3
 					
-					
+		if 'S' in analysisKeys:
+			name = 'Salinity'
+			av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', MEDUSAFolder_pref, annual)												
+			if annual:
+				#av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_grid_T.nc"))
+				av[name]['dataFile'] 		= WOAFolder+'woa13_decav_s00_01v2.nc'
+			else:
+				#av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1m_*_grid_T.nc"))
+				av[name]['dataFile'] 		= WOAFolder+'salinity_monthly_1deg.nc'
+			
+			av[name]['modelcoords'] 	= medusaCoords 	
+			av[name]['datacoords'] 		= woaCoords
+	
+			av[name]['modeldetails'] 	= {'name': name, 'vars':['vosaline',], 'convert': ukp.NoChange,'units':'PSU'}	
+			av[name]['datadetails']  	= {'name': name, 'vars':['s_an',], 'convert': ukp.NoChange,'units':'PSU'}
+
+			av[name]['layers'] 		=  layerList
+			av[name]['regions'] 		= regionList		
+			av[name]['metrics']		= metricList
+
+			av[name]['datasource'] 		= 'WOA'
+			av[name]['model']		= 'NEMO'
+
+			av[name]['modelgrid']		= 'eORCA1'
+			av[name]['gridFile']		= orcaGridfn
+			av[name]['Dimensions']		= 3
+							
 					
 					
 
@@ -525,9 +691,9 @@ def timeseries_compare():
 		arrD	= {}
 		
 		for jobID in jobs:
-			if name in ['Iron','Nitrate','Temperature','Salinity', 'Alkalinity']:
+			if name in ['Iron','Nitrate','Silicate','Oxygen','Temperature','Salinity', 'Alkalinity','DIC',]:
 				mdata = modeldataD[(jobID,name )][('Global', 'Surface', 'mean')]
-				title = ' '.join(['Global', 'Surface', 'mean',  getLongName(name)])
+				title = ' '.join(['Global', 'Surface', 'Mean',  getLongName(name)])
 			else:
 				mdata = modeldataD[(jobID,name )][('regionless', 'layerless', 'metricless')]
 				title = getLongName(name)
