@@ -460,7 +460,7 @@ def timeseries_compare():
 	# Data now loaded, making plots next:
 	
 	#print modeldataD.keys()
-	#for k in modeldataD.keys():
+	for k in modeldataD.keys():
 		print "Model Data D:",k
 	
 	for name in av.keys():
@@ -469,7 +469,6 @@ def timeseries_compare():
 		
 		for jobID in jobs:
 			mdata = modeldataD[(jobID,name )][('regionless', 'layerless', 'metricless')]
-			print 
 			timesD[jobID] 	= sorted(mdata.keys())
 			arrD[jobID]	= [mdata[t] for t in timesD[jobID]]
 		
