@@ -77,17 +77,17 @@ def timeseries_compare():
 	
 
 
-	analysisKeys.append('DrakePassageTransport')	# DrakePassageTransport		
-	analysisKeys.append('TotalAirSeaFlux')          # work in progress              
-	analysisKeys.append('IntPP_OSU')                # OSU Integrated primpary production    
-	analysisKeys.append('GlobalExportRatio')
-	analysisKeys.append('TotalIceArea')		# TotalIceArea	
-	analysisKeys.append('NorthernTotalIceArea')	# North TotalIceArea
-	analysisKeys.append('SouthernTotalIceArea')	# South TotalIceArea
-
-	analysisKeys.append('N')                        # WOA Nitrate
-	analysisKeys.append('Si')                       # WOA Siliate
-	analysisKeys.append('O2')                       # WOA Oxygen
+#	analysisKeys.append('DrakePassageTransport')	# DrakePassageTransport		
+#	analysisKeys.append('TotalAirSeaFlux')          # work in progress              
+#	analysisKeys.append('IntPP_OSU')                # OSU Integrated primpary production    
+#	analysisKeys.append('GlobalExportRatio')
+#	analysisKeys.append('TotalIceArea')		# TotalIceArea	
+#	analysisKeys.append('NorthernTotalIceArea')	# North TotalIceArea
+#	analysisKeys.append('SouthernTotalIceArea')	# South TotalIceArea
+#
+#	analysisKeys.append('N')                        # WOA Nitrate
+#	analysisKeys.append('Si')                       # WOA Siliate
+#	analysisKeys.append('O2')                       # WOA Oxygen
 	analysisKeys.append('Iron')
 	analysisKeys.append('Alk')	
 	analysisKeys.append('DIC')
