@@ -360,15 +360,18 @@ def multitimeseries(
 		title 	='',
 		filename='',
 		units = '',
+		plotStyle = 'Together',		
 	):
 	
 	fig = pyplot.figure()
 	
-	ax = fig.add_subplot(111)
+	if plotStyle == 'Together':
+		ax = fig.add_subplot(111)
 		
 	xlims = [1e20,-1e20]
 
-	for jobID, times in timesD.items():	
+	for i,jobID in enumerate(sorted(timesD.keys())):	
+		times = timesD[jobID]
 		arr = arrD[jobID]
 		if len(times) ==0 or len(arr) == 0:
 			print "multitimeseries:\tWARNING:\tdata or time arrays are empty.",len(times),len(arr),title
@@ -379,6 +382,10 @@ def multitimeseries(
 		if times[0]  < xlims[0]: 	xlims[0] = times[0]
 		if times[-1] > xlims[1]: 	xlims[1] = times[-1]
 
+		if plotStyle == 'Separate':
+			if len(timesD.keys()) <= 4:
+				ax = fig.add_subplot(2,2,i+1)
+				ax.title(jobID)
 		pyplot.plot(times,arr,label=jobID,)
 
 	
@@ -388,10 +395,11 @@ def multitimeseries(
 	pyplot.xlim(xlims)	
 	pyplot.title(title)	
 	pyplot.ylabel(units)
-					
-	legend = pyplot.legend(loc='lower center',  numpoints = 1, ncol=2, prop={'size':12}) 
-	legend.draw_frame(False) 
-	legend.get_frame().set_alpha(0.)
+
+	if plotStyle == 'Together':					
+		legend = pyplot.legend(loc='lower center',  numpoints = 1, ncol=2, prop={'size':12}) 
+		legend.draw_frame(False) 
+		legend.get_frame().set_alpha(0.)
 		
 	print "multitimeseries:\tsimpletimeseries:\tSaving:" , filename
 	pyplot.savefig(filename )

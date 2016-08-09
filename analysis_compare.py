@@ -472,15 +472,18 @@ def timeseries_compare():
 			print 
 			timesD[jobID] 	= sorted(mdata.keys())
 			arrD[jobID]	= [mdata[t] for t in timesD[jobID]]
+		
+		for ts in ['Together','Separate']:	
+			tsp.multitimeseries(
+				timesD, 		# model times (in floats)
+				arrD,			# model time series
+				data = -999,		# in situ data distribution
+				title 	=getLongName(name),
+				filename='images/TimeseriesCompare/'+name+'_'+ts+'.png',
+				units = '',
+				plotStyle = ts,
 			
-		tsp.multitimeseries(
-			timesD, 		# model times (in floats)
-			arrD,			# model time series
-			data = -999,		# in situ data distribution
-			title 	=getLongName(name),
-			filename='images/TimeseriesCompare/'+name+'.png',
-			units = '',
-		)
+			)
 	
 
 timeseries_compare()
