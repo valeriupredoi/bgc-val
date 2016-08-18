@@ -52,7 +52,7 @@ def timeseries_compare():
 	
 	
 	#jobs = ['u-af123', 'u-af139','u-af420','u-af421', ]
-	jobs = ['u-af725', 'u-af578','u-af420','u-af421', 'u-af586','u-af588',]	
+	jobs = ['u-af725', 'u-af728','u-af420','u-af421', 'u-af586','u-af588',]	
 	annual = True
 	
 	analysisKeys = []
