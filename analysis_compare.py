@@ -707,7 +707,7 @@ def timeseries_compare():
 		    for j in arrD.keys():
 			if j in ['u-ad980','u-af123','u-af725',
 				 'u-ae742','u-af139','u-af578', 'u-af728']:
-				arrD[j] = arrD[j] * 5.09369e-7 
+				arrD[j] = np.ma.array(arrD[j]) * 5.09369e-7 
 		
 		for ts in ['Together','Separate']:
 		    for ls in ['Both',]:#'Smooth','','Both',]:			
