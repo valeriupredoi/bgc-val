@@ -710,7 +710,7 @@ def timeseries_compare():
 				arrD[j] = np.ma.array(arrD[j]) * 5.09369e-7 
 		
 		for ts in ['Together','Separate']:
-		    for ls in ['Both',]:#'Smooth','','Both',]:			
+		    for ls in ['Both','movingaverage',]:#'','Both',]:			
 			tsp.multitimeseries(
 				timesD, 		# model times (in floats)
 				arrD,			# model time series
