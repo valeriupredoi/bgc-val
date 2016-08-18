@@ -380,7 +380,7 @@ def multitimeseries(
 		
 	xlims = [1e20,-1e20]
 	ylims = [1e20,-1e20]
-	colours = ['b','g','r','purple']
+	colours = ['red','orange','green','purple','blue','pink','yellow',]
 	for i,jobID in enumerate(sorted(timesD.keys())):	
 		times = timesD[jobID]
 		arr = arrD[jobID]
