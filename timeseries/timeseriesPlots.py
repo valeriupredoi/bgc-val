@@ -366,6 +366,7 @@ def multitimeseries(
 		title 	='',
 		filename='',
 		units = '',
+		colours = ['red','orange','green','purple','blue','pink','yellow','lime',],
 		plotStyle = 'Together',	
 		lineStyle = '',	
 	):
@@ -380,8 +381,14 @@ def multitimeseries(
 		
 	xlims = [1e20,-1e20]
 	ylims = [1e20,-1e20]
-	colours = ['red','orange','green','purple','blue','pink','yellow',]
-	for i,jobID in enumerate(sorted(timesD.keys())):	
+	if type(colours) == type({'a':'dict',}):pass
+	elif type(colours) == type(['a','list',]):
+		
+		tmpdict = {jobID, c in zip(sorted(timesD.keys()),colours )}
+		colours = tmpdict
+	else:	print "colours isn't working."
+		
+	for i,jobID in enumerate(sorted(timesD.keys())):
 		times = timesD[jobID]
 		arr = arrD[jobID]
 		
