@@ -401,6 +401,9 @@ def multitimeseries(
 			elif len(timesD.keys()) <= 6:	axs.append(fig.add_subplot(2,3,i+1))
 			elif len(timesD.keys()) <= 9:	axs.append(fig.add_subplot(3,3,i+1))
 			elif len(timesD.keys()) <= 12:	axs.append(fig.add_subplot(3,4,i+1))			
+			else:
+				print "Something is wrong here",i,plotStyle,len(timesD.keys()), jobID
+				
 			axs[i].set_title(jobID)						
 		
 		if lineStyle.lower() in ['spline','all']:
