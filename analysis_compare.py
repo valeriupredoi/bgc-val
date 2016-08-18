@@ -51,7 +51,8 @@ def timeseries_compare():
 	# It's a little cheat-y, as I'm copying straight from analysis_timeseries.py
 	
 	
-	jobs = ['u-af123', 'u-af139','u-af420','u-af421']
+	#jobs = ['u-af123', 'u-af139','u-af420','u-af421', ]
+	jobs = ['u-af725', 'u-af578','u-af420','u-af421', 'u-af586','u-af588',]	
 	annual = True
 	
 	analysisKeys = []
@@ -699,6 +700,14 @@ def timeseries_compare():
 				title = getLongName(name)
 			timesD[jobID] 	= sorted(mdata.keys())
 			arrD[jobID]	= [mdata[t] for t in timesD[jobID]]
+		
+		#####
+		# To account for changing units.
+		if name in ['TotalAirSeaFluxCO2', 'TotalAirSeaFlux']: 
+		    for j in arrD.keys():
+			if j in ['u-ad980','u-af123','u-af725',
+				 'u-ae742','u-af139','u-af578', 'u-af728']:
+				arrD[j] = arr[j] * 5.09369e-7 
 		
 		for ts in ['Together','Separate']:
 		    for ls in ['Both',]:#'Smooth','','Both',]:			
