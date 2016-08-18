@@ -80,7 +80,8 @@ def findLastFinishedYear(jobID,dividby=1):
 	print "No correct year, there's probably a problem here findLastFinishedYear(",jobID,")"
 	print "Machine", machine
 	print "outputFold:", outputFold
-	assert 0	
+	return False
+	#assert 0	
 
 
 def downloadMass(jobID,):

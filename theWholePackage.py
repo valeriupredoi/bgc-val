@@ -44,6 +44,7 @@ def p2pParrallel(index):
 
 
 def theWholePackage(jobID):
+        if year == False: year = '*'
 	print "########\nThe Whole Package:\tStarting job", jobID , year
 #	downloadMass(jobID)
 
@@ -53,6 +54,7 @@ def theWholePackage(jobID):
 	suite = 'level1'
 
         print "########\nThe Whole Package:\tmaking Summary report"
+        if year == False: year = '*'
         html5Maker(jobID =jobID,
                    reportdir=folder('reports/'+jobID),
                    year = year,
@@ -73,31 +75,32 @@ def theWholePackage(jobID):
 		analysis_timeseries(jobID =jobID,analysisSuite='level1', )#z_component = 'SurfaceOnly',)
 		
 		
-	print "########\nThe Whole Package:\tRunning point to point analysis of", jobID,"on", year
-	if parrallel:
-		remaining = sorted(p2pDict_level2.keys())[:]
-	   	p1 = Pool(cores)
-	    	p1.map(p2pParrallel,remaining)	
-		p1.close()
+	if year not in ['*', False]:		
+		print "########\nThe Whole Package:\tRunning point to point analysis of", jobID,"on", year
+		if parrallel:
+			remaining = sorted(p2pDict_level2.keys())[:]
+		   	p1 = Pool(cores)
+		    	p1.map(p2pParrallel,remaining)	
+			p1.close()
 		
-		#####
-		# And once over to make the summary target diagrams.
-		analysis_p2p(models	= ['NEMO','MEDUSA',],
-			jobID 	= jobID,
-			years 	= [year,], #'2075','2076',
-			modelGrid = 'eORCA1',
-			annual 	= True,
-			noPlots = True,
-			analysisSuite='level2',) 
-				    	
-	else:	
-		analysis_p2p(models	= ['NEMO','MEDUSA',],
-			jobID 	= jobID,
-			years 	= [year,], #'2075','2076',
-			modelGrid = 'eORCA1',
-			annual 	= True,
-			noPlots = False,
-			analysisSuite='level2',)        
+			#####
+			# And once over to make the summary target diagrams.
+			analysis_p2p(models	= ['NEMO','MEDUSA',],
+				jobID 	= jobID,
+				years 	= [year,], #'2075','2076',
+				modelGrid = 'eORCA1',
+				annual 	= True,
+				noPlots = True,
+				analysisSuite='level2',) 
+					    	
+		else:	
+			analysis_p2p(models	= ['NEMO','MEDUSA',],
+				jobID 	= jobID,
+				years 	= [year,], #'2075','2076',
+				modelGrid = 'eORCA1',
+				annual 	= True,
+				noPlots = False,
+				analysisSuite='level2',)        
 
 
 	
@@ -119,7 +122,8 @@ if __name__=="__main__":
         year = findLastFinishedYear(jobID,dividby=25)		
 	if not ReportOnly:
 		theWholePackage(jobID)
-
+		
+        if year == False: year = '*'
 	print "########\nThe Whole Package:\tmaking Summary report"	
 	html5Maker(jobID =jobID,
 		   reportdir=folder('reports/'+jobID),
