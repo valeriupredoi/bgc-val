@@ -67,9 +67,11 @@ def linkTwoJobs(jobID1,jobID2):
 			netcdfFold2 =	netcdfFold1.replace(jobID1,jobID2)
 			if not os.path.exists(netcdfFold1):
 				print "This folder doesn't exist. Do you have the right jobID 1?", jobID1
+				print netcdfFold1
 				return
 			if not os.path.exists(netcdfFold2):
 				print "This folder doesn't exist. Do you have the right jobID 2?", jobID2
+                                print netcdfFold2
 				return						
 			shelvefold1 = "/group_workspaces/jasmin2/ukesm/BGC_data/"+getuser()+"/shelves/*/"+jobID1
 			shelvefold2 = "/group_workspaces/jasmin2/ukesm/BGC_data/"+getuser()+"/shelves/*/"+jobID2

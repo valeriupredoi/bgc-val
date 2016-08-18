@@ -422,7 +422,7 @@ def multitimeseries(
 		#	pyplot.plot(filtered[:,0], filtered[:,1], colour[i],ls='-',label=jobID+' lowess',)
 			
 		if lineStyle.lower() in ['','both','all',]:
-			pyplot.plot(times,arr,c=colours[i],ls='-',lw=0.5)#label=jobID,)
+			pyplot.plot(times,arr,c=colours[i],ls='-',lw=0.25)#label=jobID,)
 
 	
 	if data != -999:
