@@ -417,7 +417,7 @@ def multitimeseries(
 
 		if lineStyle.lower() in ['movingaverage','both','all']:
 			if len(times)>100.: window = 30
-			elif len(times)>30.: window = 10
+			elif len(times)>30.: window = 15
 			else: window = 1
 			
 			arr_new = movingaverage(arr, window)
