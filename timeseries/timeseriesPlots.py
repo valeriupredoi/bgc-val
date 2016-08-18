@@ -384,6 +384,18 @@ def multitimeseries(
 	for i,jobID in enumerate(sorted(timesD.keys())):	
 		times = timesD[jobID]
 		arr = arrD[jobID]
+		
+		if plotStyle == 'Separate':
+			if len(timesD.keys()) <= 4:	axs.append(fig.add_subplot(2,2,i+1))
+			elif len(timesD.keys()) <= 6:	axs.append(fig.add_subplot(2,3,i+1))
+			elif len(timesD.keys()) <= 9:	axs.append(fig.add_subplot(3,3,i+1))
+			elif len(timesD.keys()) <= 12:	axs.append(fig.add_subplot(3,4,i+1))			
+			else:
+				print "Something is wrong here",i,plotStyle,len(timesD.keys()), jobID
+			print "Separate plots",i,jobID, len(timesD.keys()), len(axs)
+			axs[i].set_title(jobID)	
+			
+		
 		if len(times) ==0 or len(arr) == 0:
 			print "multitimeseries:\tWARNING:\tdata or time arrays are empty.",len(times),len(arr),title
 			continue
@@ -396,15 +408,7 @@ def multitimeseries(
 		if np.min(arr) < ylims[0]: 	ylims[0] = np.min(arr)
 		if np.max(arr) > ylims[1]: 	ylims[1] = np.max(arr)
 		
-		if plotStyle == 'Separate':
-			if len(timesD.keys()) <= 4:	axs.append(fig.add_subplot(2,2,i+1))
-			elif len(timesD.keys()) <= 6:	axs.append(fig.add_subplot(2,3,i+1))
-			elif len(timesD.keys()) <= 9:	axs.append(fig.add_subplot(3,3,i+1))
-			elif len(timesD.keys()) <= 12:	axs.append(fig.add_subplot(3,4,i+1))			
-			else:
-				print "Something is wrong here",i,plotStyle,len(timesD.keys()), jobID
-			print "Separate plots",i,jobID, len(timesD.keys()), len(axs)
-			axs[i].set_title(jobID)						
+					
 		
 		if lineStyle.lower() in ['spline','all']:
 			tnew = np.linspace(times[0],times[-1],60)
