@@ -43,7 +43,7 @@ def p2pParrallel(index):
 
 
 
-def theWholePackage(jobID):
+def theWholePackage(jobID,year=False):
         if year == False: year = '*'
 	print "########\nThe Whole Package:\tStarting job", jobID , year
 #	downloadMass(jobID)
@@ -121,7 +121,7 @@ if __name__=="__main__":
 
         year = findLastFinishedYear(jobID,dividby=25)		
 	if not ReportOnly:
-		theWholePackage(jobID)
+		theWholePackage(jobID,year=year)
 		
         if year == False: year = '*'
 	print "########\nThe Whole Package:\tmaking Summary report"	
