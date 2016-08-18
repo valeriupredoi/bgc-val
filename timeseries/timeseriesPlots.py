@@ -453,7 +453,7 @@ def multitimeseries(
 		pyplot.title(title)	
 		pyplot.ylabel(units)		
 		pyplot.xlim(xlims)						
-		legend = pyplot.legend(loc='lower center',  numpoints = 1, ncol=len(timesD.keys()), prop={'size':12}) 
+		legend = pyplot.legend(loc='best',  numpoints = 1, ncol=len(timesD.keys())/2, prop={'size':12}) 
 		legend.draw_frame(False) 
 		legend.get_frame().set_alpha(0.)
 		
