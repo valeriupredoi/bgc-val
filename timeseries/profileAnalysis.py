@@ -326,7 +326,7 @@ class profileAnalysis:
 	    	dataD[(r,l)] = dl.load[(r,l,)]	
 	    	dataD[(r,l,'lat')] = dl.load[(r,l,'lat')]		    	
 	    	dataD[(r,l,'lon')] = dl.load[(r,l,'lon')]
-		if len(dataD[(r,l)])==0:
+		if len(dataD[(r,l)])==0  or np.ma.is_masked(dataD[(r,l)]):
 			dataD[(r,l)]  = np.ma.masked
 			dataD[(r,l,'lat')]  = np.ma.masked
 			dataD[(r,l,'lon')]  = np.ma.masked
