@@ -178,12 +178,12 @@ def analysis_timeseries(jobID = "u-ab671",
                         #####   
                         # Physics switches:
                         analysisKeys.append('T')                        # WOA Temperature
-                        analysisKeys.append('S')                        # WOA Salinity
-			analysisKeys.append('MLD')			# iFERMER Mixed Layer Depth - work in prgress                        
-			analysisKeys.append('TotalIceArea')		# work in progress	
-			analysisKeys.append('NorthernTotalIceArea')	# work in progress	
-			analysisKeys.append('SouthernTotalIceArea')	# work in progress	
-			analysisKeys.append('DrakePassageTransport')	# DrakePassageTransport	
+                        #analysisKeys.append('S')                        # WOA Salinity
+			#analysisKeys.append('MLD')			# iFERMER Mixed Layer Depth - work in prgress                        
+			#analysisKeys.append('TotalIceArea')		# work in progress	
+			#analysisKeys.append('NorthernTotalIceArea')	# work in progress	
+			#analysisKeys.append('SouthernTotalIceArea')	# work in progress	
+			#analysisKeys.append('DrakePassageTransport')	# DrakePassageTransport	
 						
 
 		
