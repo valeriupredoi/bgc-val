@@ -39,7 +39,7 @@ def getYearFromFile(fn):
 	return False
 	
 	
-def findLastFinishedYear(jobID,dividby=1):
+def findLastFinishedYear(jobID,dividby=1,numberfiles=6):
 	"""
 		command:
 		downloadMass jobID options.
@@ -60,7 +60,7 @@ def findLastFinishedYear(jobID,dividby=1):
 		                        
 	fnDict = {}	
 	files = sorted(glob(outputFold+jobID+'o_1y_????1201_????1130_????_?.nc'))
-	suffixes = ['diad_T.nc', 'grid_T.nc','grid_U.nc','grid_V.nc','grid_W.nc','ptrc_T.nc']
+	#suffixes = ['diad_T.nc', 'grid_T.nc','grid_U.nc','grid_V.nc','grid_W.nc','ptrc_T.nc']
 	for fn in files:
 		yr = getYearFromFile(fn)
 		print fn, yr
@@ -75,7 +75,7 @@ def findLastFinishedYear(jobID,dividby=1):
 		if int(y)%dividby != 0: continue
 		
 		print y,':', fnDict[y]
-		if fnDict[y] == len(suffixes): return y
+		if fnDict[y] >= numberfiles: return y
 		
 	print "No correct year, there's probably a problem here findLastFinishedYear(",jobID,")"
 	print "Machine", machine

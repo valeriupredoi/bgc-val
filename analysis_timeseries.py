@@ -1427,6 +1427,7 @@ def main():
 	if 'debug' in argv[1:]:	suite = 'debug'
 	elif 'all' in argv[1:]:	suite = 'all'
 	elif 'level1' in argv[1:]:suite='level1'
+        elif 'physics' in argv[1:]:suite='physics'
 	else:			suite = 'all'
 		
 	
