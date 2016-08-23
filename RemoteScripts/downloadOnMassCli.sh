@@ -23,7 +23,7 @@ python /home/users/ldemora/workspace/ukesm-validation/RemoteScripts/hello.py $jo
 #ssh -X -A mass-cli1 'python /home/users/ldemora/workspace/ukesm-validation/RemoteScripts/hello.py'
 
 ssh -X -A mass-cli1 "python /home/users/ldemora/workspace/ukesm-validation/downloadFromMass.py $jobid"
-ssh -X -A mass-cli1 "ln -s  /group_workspaces/jasmin2/ukesm/BGC_data/$jobid/*1y*grid_[UVWT]*.nc /group_workspaces/jasmin2/ukesm/BGC_data/$jobid/1y/.; ls -lhrt /group_workspaces/jasmin2/ukesm/BGC_data/$jobid"
+ssh -X -A mass-cli1 "mkdir /group_workspaces/jasmin2/ukesm/BGC_data/$jobid/1y; ln -s  /group_workspaces/jasmin2/ukesm/BGC_data/$jobid/*1y*grid_[UVWT]*.nc /group_workspaces/jasmin2/ukesm/BGC_data/$jobid/1y/.; ls -lhrt /group_workspaces/jasmin2/ukesm/BGC_data/$jobid"
 
 echo "The end of downloadOnMassCli.sh $jobid"
 
