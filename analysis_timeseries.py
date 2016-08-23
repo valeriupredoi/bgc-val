@@ -174,30 +174,18 @@ def analysis_timeseries(jobID = "u-ab671",
                         #analysisKeys.append('NorthernTotalIceArea')            # work in progress      
                         #analysisKeys.append('SouthernTotalIceArea')            # work in progress                              
                         #analysisKeys.append('TotalIceArea')            # work in progress    
-			
-		if analysisSuite.lower() in ['FullDepth',]:
-			#Skip 2D fields
-			#analysisKeys.append('Chl_CCI')			# CCI Chlorophyll	
-			analysisKeys.append('Chl_pig')			# Chlorophyll from pigments (MAREDAT)
-			analysisKeys.append('N')			# WOA Nitrate
-			analysisKeys.append('Si')			# WOA Siliate
-			analysisKeys.append('O2')			# WOA Oxygen
-			analysisKeys.append('Alk')			# Glodap Alkalinity
-			analysisKeys.append('DIC')			# Globap tCO2
-			#analysisKeys.append('AirSeaFlux')		# work in progress
-			#analysisKeys.append('TotalAirSeaFlux')		# work in progress		
-			#analysisKeys.append('IntPP_iMarNet')		# Integrated primpary production from iMarNEt
-			#analysisKeys.append('IntPP_OSU')		# OSU Integrated primpary production	
-			#analysisKeys.append('PP_OSU')			# OSU Integrated primpary production			
-		
-			#analysisKeys.append('LocalExportRatio')		# Export ratio (no data)
-			#analysisKeys.append('GlobalExportRatio')	# Export ratio (no data)
-			
-			#####	
-			# Physics switches:
-			analysisKeys.append('T')			# WOA Temperature
-			analysisKeys.append('S')			# WOA Salinity
-			#analysisKeys.append('MLD')			# iFERMER Mixed Layer Depth - work in prgress
+                if analysisSuite.lower() in ['physics',]:
+                        #####   
+                        # Physics switches:
+                        analysisKeys.append('T')                        # WOA Temperature
+                        analysisKeys.append('S')                        # WOA Salinity
+			analysisKeys.append('MLD')			# iFERMER Mixed Layer Depth - work in prgress                        
+			analysisKeys.append('TotalIceArea')		# work in progress	
+			analysisKeys.append('NorthernTotalIceArea')	# work in progress	
+			analysisKeys.append('SouthernTotalIceArea')	# work in progress	
+			analysisKeys.append('DrakePassageTransport')	# DrakePassageTransport	
+						
+
 		
  	
 	#####
