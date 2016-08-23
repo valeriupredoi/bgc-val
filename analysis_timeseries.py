@@ -393,6 +393,7 @@ def analysis_timeseries(jobID = "u-ab671",
 
 
 	def listModelDataFiles(jobID, filekey, datafolder, annual):
+		print "listing model data files:",jobID, filekey, datafolder, annual
 		if annual:
 			return sorted(glob(datafolder+jobID+"/"+jobID+"o_1y_*_"+filekey+".nc"))
 		else:
@@ -1313,7 +1314,7 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		if len(av[name]['modelFiles']) == 0:
 			print "analysis-Timeseries.py:\tWARNING:\tmodel files are not found:",av[name]['modelFiles']
-			if strictFileCheck: assert 0		
+			if strictFileCheck: assert 0
 
 		modelfilesexists = [os.path.exists(f) for f in av[name]['modelFiles']]
 		if False in modelfilesexists:
