@@ -52,10 +52,11 @@ def timeseries_compare():
 	
 	
 	#jobs = ['u-af123', 'u-af139','u-af420','u-af421', ]
-	jobs = ['u-af725', 'u-af728','u-af420','u-af421', 'u-af586','u-af730',]	
-	colours = {'u-af725':'red', 'u-af728':'orange','u-af420':'blue','u-af421':'purple', 'u-af586':'green','u-af730':'pink',}
+	jobs = ['u-af725', 'u-af728','u-af420','u-af421', 'u-af586','u-af730','u-ae748']	
+	colours = {'u-af725':'red', 'u-af728':'orange','u-af420':'blue','u-af421':'purple', 'u-af586':'green','u-af730':'pink','u-ae748':'black'}
 	annual = True
-	
+	strictFileCheck = False
+
 	analysisKeys = []
 	#                        analysisKeys.append('N')                        # WOA Nitrate
 	#                        analysisKeys.append('Si')                       # WOA Siliate
@@ -641,7 +642,7 @@ def timeseries_compare():
 			print "analysis-Timeseries.py:\tBeginning to call timeseriesAnalysis for ", name
 
 			if len(av[name]['modelFiles']) == 0:
-				print "analysis-Timeseries.py:\tWARNING:\tmodel files are not found:",av[name]['modelFiles']
+				print "analysis-Timeseries.py:\tWARNING:\tmodel files are not found:",av[name]['modelFiles'], jobID
 				if strictFileCheck: assert 0		
 
 			modelfilesexists = [os.path.exists(f) for f in av[name]['modelFiles']]
