@@ -1308,6 +1308,8 @@ def analysis_timeseries(jobID = "u-ab671",
 		nc = Dataset(orcaGridfn,'r')
 		e3v = nc.variables['e3v'][:]	# z level height 3D
 		e1v = nc.variables['e1v'][:]	# 
+		tmask = nc.variables['tmask'][:]
+		
 		nc.close()		
 		
 		# load basin map
@@ -1319,13 +1321,16 @@ def analysis_timeseries(jobID = "u-ab671",
 		maskedArea = np.ones_like(e3v)
 		for z in range(e3v.shape[0]):
 			maskedArea[z] = e1v * tmask * e3v[z]
-
+		maskedArea = np.ma.masked_where((maskedArea==0.) + (tmask==0),maskedArea)
+		
 		def amoc(nc,keys):
-			zv = nc.variables['vomecrty'][:]
-			
+			zv = np.ma.array(nc.variables['vomecrty'][:])
+			zv = np.ma.masked_invalid(zv)
+			zv = np.ma.masked_where(maskedArea.mask +zv.mask,zv)
 			#for z in range(e3v.shape[0]): 		# jk
 			#  for la in range(e3v.shape[1]):	# j, y
- 			#    for lo in range(e3v.shape[2]):	# i , x,			
+ 			#    for lo in range(e3v.shape[2]):	# i , x,	
+ 					
  			zomsf = (- maskedArea *zv).sum(0)/1.E06
 			return zomsf
 								
@@ -1339,7 +1344,7 @@ def analysis_timeseries(jobID = "u-ab671",
 				
 		av[name]['datadetails']  	= {'name':'','units':'',}
 		av[name]['layers'] 		=  ['layerless',]		
-		av[name]['regions'] 		= regionList
+		av[name]['regions'] 		= ['regionless',]
 		av[name]['metrics']		= metricList
 		av[name]['datasource'] 		= ''
 		av[name]['model']		= 'NEMO'
