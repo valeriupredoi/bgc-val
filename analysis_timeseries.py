@@ -1303,18 +1303,19 @@ def analysis_timeseries(jobID = "u-ab671",
 		name = 'AMOC'
 		####
 		# Note that this will only work with the eORCAgrid.
+		LAT=228 # 26N
 		
 		# Load grid data
 		nc = Dataset(orcaGridfn,'r')
-		e3v = nc.variables['e3v'][:]	# z level height 3D
-		e1v = nc.variables['e1v'][:]	# 
-		tmask = nc.variables['tmask'][:]
+		e3v = nc.variables['e3v'][:,LAT,:]	# z level height 3D
+		e1v = nc.variables['e1v'][LAT,:]	# 
+		tmask = nc.variables['tmask'][:,LAT,:]
 		
 		nc.close()		
 		
 		# load basin map
 		nc = Dataset('data/basinlandmask_eORCA1.nc','r')
-		tmask = e2u = nc.variables['tmaskatl'][:]	# 2D Atlantic mask
+		tmask = e2u = nc.variables['tmaskatl'][LAT,:]	# 2D Atlantic mask
 		nc.close()		
 
 		# make appropriate constant field.
@@ -1324,15 +1325,15 @@ def analysis_timeseries(jobID = "u-ab671",
 		maskedArea = np.ma.masked_where((maskedArea==0.) + (tmask==0),maskedArea)
 		
 		def amoc(nc,keys):
-			zv = np.ma.array(nc.variables['vomecrty'][:]) # m/s
-			zv = np.ma.masked_invalid(zv)
+			zv = np.ma.array(nc.variables['vomecrty'][:,:,LAT,:]) # m/s
+			zv = np.ma.masked_invalid(zv).squeeze()
 			zv = np.ma.masked_where(maskedArea.mask +zv.mask,zv)
 			#for z in range(e3v.shape[0]): 		# jk
 			#  for la in range(e3v.shape[1]):	# j, y
  			#    for lo in range(e3v.shape[2]):	# i , x,	
  					
  			zomsf = (- maskedArea *zv).sum(0)/1.E06  # m*2 * m /s 
-			return zomsf
+			return zomsf.sum()
 								
 		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_V', MEDUSAFolder_pref, annual)
 		av[name]['dataFile'] 	= ''
@@ -1345,12 +1346,12 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['datadetails']  	= {'name':'','units':'',}
 		av[name]['layers'] 		=  ['layerless',]		
 		av[name]['regions'] 		= ['regionless',]
-		av[name]['metrics']		= ['sum',]
+		av[name]['metrics']		= ['metricless',]
 		av[name]['datasource'] 		= ''
 		av[name]['model']		= 'NEMO'
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= orcaGridfn
-		av[name]['Dimensions']		= 2
+		av[name]['Dimensions']		= 1
 				
 												
 
