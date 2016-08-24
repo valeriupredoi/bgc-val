@@ -174,7 +174,7 @@ def analysis_timeseries(jobID = "u-ab671",
                         #analysisKeys.append('NorthernTotalIceArea')            # work in progress      
                         #analysisKeys.append('SouthernTotalIceArea')            # work in progress                              
                         #analysisKeys.append('TotalIceArea')            # work in progress    
-                        analysisKeys.append('AMOC')                        # WOA Salinity
+                        analysisKeys.append('AMOC')                        # AMOC
                                                 
                 if analysisSuite.lower() in ['physics',]:
                         #####   
