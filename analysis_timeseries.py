@@ -1320,14 +1320,13 @@ def analysis_timeseries(jobID = "u-ab671",
 			maskedArea[z] = e1v * tmask * e3v[z]
 
 		def amoc(nc,keys):
-			zomsf = np.zeros_like(e3v)
 			zv = nc.variables['vomecrty'][:]
 			
 			#for z in range(e3v.shape[0]): 		# jk
 			#  for la in range(e3v.shape[1]):	# j, y
  			#    for lo in range(e3v.shape[2]):	# i , x,			
  			zomsf = (- maskedArea *zv).sum(0)/1.E06
-			
+			return zomsf
 								
 		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_V', MEDUSAFolder_pref, annual)
 		av[name]['dataFile'] 	= ''
