@@ -1322,7 +1322,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		maskedArea = np.ones_like(e3v)
 		for z in range(e3v.shape[0]):
 			maskedArea[z] = e1v * tmask * e3v[z]
-		maskedArea = np.ma.masked_where((maskedArea==0.) + (tmask==0),maskedArea)
+		maskedArea = np.ma.masked_where((maskedArea==0.) + (tmask==0.),maskedArea)
 		
 		def amoc(nc,keys):
 			zv = np.ma.array(nc.variables['vomecrty'][:,:,LAT,:]) # m/s
@@ -1333,7 +1333,7 @@ def analysis_timeseries(jobID = "u-ab671",
  			#    for lo in range(e3v.shape[2]):	# i , x,	
  					
  			zomsf = (- maskedArea *zv).sum(0)/1.E06  # m*2 * m /s 
-			return zomsf.sum()
+			return np.ma.max(zomsf)
 								
 		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_V', MEDUSAFolder_pref, annual)
 		av[name]['dataFile'] 	= ''
