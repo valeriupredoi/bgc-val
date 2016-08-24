@@ -164,8 +164,8 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('TotalIceArea')		# work in progress	
 														
 			#analysisKeys.append('O2')			# work in progress
-			analysisKeys.append('Iron')			# work in progress
-#                        analysisKeys.append('N')                        # WOA Nitrate				
+			#analysisKeys.append('Iron')			# work in progress
+                       #analysisKeys.append('N')                        # WOA Nitrate				
                         #analysisKeys.append('IntPP_OSU')                # OSU Integrated primpary production    
                         #####   
                         # Physics switches:
@@ -174,6 +174,8 @@ def analysis_timeseries(jobID = "u-ab671",
                         #analysisKeys.append('NorthernTotalIceArea')            # work in progress      
                         #analysisKeys.append('SouthernTotalIceArea')            # work in progress                              
                         #analysisKeys.append('TotalIceArea')            # work in progress    
+                        analysisKeys.append('AMOC')                        # AMOC
+                                                
                 if analysisSuite.lower() in ['physics',]:
                         #####   
                         # Physics switches:
@@ -1294,7 +1296,57 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= orcaGridfn
 		av[name]['Dimensions']		= 1
+
+
+	if 'AMOC' in analysisKeys:
+		name = 'AMOC'
+		####
+		# Note that this will only work with the eORCAgrid.
 		
+		# Load grid data
+		nc = Dataset(orcaGridfn,'r')
+		e3v = nc.variables['e3v'][:]	# z level height 3D
+		e1v = nc.variables['e1v'][:]	# 
+		nc.close()		
+		
+		# load basin map
+		nc = Dataset('data/basinlandmask_eORCA1.nc','r')
+		tmask = e2u = nc.variables['tmaskatl'][:]	# 2D Atlantic mask
+		nc.close()		
+
+		# make appropriate constant field.
+		maskedArea = np.ones_like(e3v)
+		for z in range(e3v.shape[0]):
+			maskedArea[z] = e1v * tmask * e3v[z]
+
+		def amoc(nc,keys):
+			zomsf = np.zeros_like(e3v)
+			zv = nc.variables['vomecrty'][:]
+			
+			#for z in range(e3v.shape[0]): 		# jk
+			#  for la in range(e3v.shape[1]):	# j, y
+ 			#    for lo in range(e3v.shape[2]):	# i , x,			
+ 			zomsf = (- maskedArea *zv).sum(0)/1.E06
+			
+								
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_V', MEDUSAFolder_pref, annual)
+		av[name]['dataFile'] 	= ''
+			
+		av[name]['modelcoords'] = medusaCoords 	
+		av[name]['datacoords'] 	= medusaCoords
+
+		av[name]['modeldetails']= {'name': name, 'vars':['vomecrty',], 'convert': amoc,'units':'Sv'}
+				
+		av[name]['datadetails']  	= {'name':'','units':'',}
+		av[name]['layers'] 		=  ['layerless',]		
+		av[name]['regions'] 		= regionList
+		av[name]['metrics']		= metricList
+		av[name]['datasource'] 		= ''
+		av[name]['model']		= 'NEMO'
+		av[name]['modelgrid']		= 'eORCA1'
+		av[name]['gridFile']		= orcaGridfn
+		av[name]['Dimensions']		= 2
+				
 												
 
   	#####
