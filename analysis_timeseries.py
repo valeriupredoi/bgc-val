@@ -1303,9 +1303,9 @@ def analysis_timeseries(jobID = "u-ab671",
 		name = 'AMOC'
 		####
 		# Note that this will only work with the eORCAgrid.
-		LAT=228 # 26N
+		LAT=227 # 26N
 		Latwidth = 5
-		latslice = slice(LAT-Latwidth , LAT+Latwidth+1) 
+		latslice = slice(227,228) #(LAT-Latwidth , LAT+Latwidth+1) 
 		# Load grid data
 		nc = Dataset(orcaGridfn,'r')
 		e3v = nc.variables['e3v'][:,latslice,:]	# z level height 3D
