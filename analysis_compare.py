@@ -52,8 +52,9 @@ def timeseries_compare():
 	
 	
 	#jobs = ['u-af123', 'u-af139','u-af420','u-af421', ]
-	jobs = ['u-af725', 'u-af728','u-af420','u-af421', 'u-af586','u-af730','u-ae748']	
-	colours = {'u-af725':'red', 'u-af728':'orange','u-af420':'blue','u-af421':'purple', 'u-af586':'green','u-af730':'pink','u-ae748':'black'}
+
+	colours = {'u-af930':'red', 'u-af921':'orange','u-af748':'darkblue','u-af915':'blue','u-af914':'purple', }#'u-af586':'green','u-af730':'pink','u-ae748':'black'}
+	jobs = sorted(colours.keys())#['u-af725', 'u-af728','u-af420','u-af421', 'u-af586','u-af730','u-ae748']	
 	annual = True
 	strictFileCheck = False
 
