@@ -1328,7 +1328,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		from netCDF4 import num2date
 		def amoc(nc,keys):
 			zv = np.ma.array(nc.variables['vomecrty'][:,:,latslice,:]) # m/s
-			t = num2date(nc.variables['time_counter'][:],nc.variables['time_counter'][:].units)[0]
+			t = num2date(nc.variables['time_counter'][:],nc.variables['time_counter'].units)[0]
 			zv = np.ma.masked_invalid(zv).squeeze()
 			print t,"shapes: maskedArea:",maskedArea.shape, 'zv',zv.shape
 			zv = np.ma.masked_where(maskedArea.mask +zv.mask + (maskedArea==0.),zv)
