@@ -1338,7 +1338,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			#  for la in range(e3v.shape[1]):	# j, y
  			#    for lo in range(e3v.shape[2]):	# i , x,	
  			zomsf = (- maskedArea *zv).sum(1)/1.E06  # m*2 * m /s 
- 			pyplot.pcolormesh(maskedArea *zv)
+ 			pyplot.pcolormesh(maskedArea *zv/1.E06)
  			pyplot.colorbar()
  			pyplot.show()
  			assert 0
