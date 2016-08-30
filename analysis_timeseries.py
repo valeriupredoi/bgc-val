@@ -1304,18 +1304,19 @@ def analysis_timeseries(jobID = "u-ab671",
 		####
 		# Note that this will only work with the eORCAgrid.
 		LAT=228 # 26N
-		
+		Latwidth = 5
+		latslice = slice(LAT-Latwidth , LAT+Latwidth+1) 
 		# Load grid data
 		nc = Dataset(orcaGridfn,'r')
-		e3v = nc.variables['e3v'][:,:,:]	# z level height 3D
-		e1v = nc.variables['e1v'][:,:]	# 
-		tmask = nc.variables['tmask'][:,:,:]
+		e3v = nc.variables['e3v'][:,latslice,:]	# z level height 3D
+		e1v = nc.variables['e1v'][latslice,:]	# 
+		tmask = nc.variables['tmask'][:,latslice,:]
 		
 		nc.close()		
 		
 		# load basin map
 		nc = Dataset('data/basinlandmask_eORCA1.nc','r')
-		tmask = e2u = nc.variables['tmaskatl'][:,:]	# 2D Atlantic mask
+		tmask = e2u = nc.variables['tmaskatl'][latslice,:]	# 2D Atlantic mask
 		nc.close()		
 
 		# make appropriate constant field.
@@ -1325,7 +1326,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		maskedArea = np.ma.masked_where((maskedArea==0.) + (tmask==0.),maskedArea)
 		
 		def amoc(nc,keys):
-			zv = np.ma.array(nc.variables['vomecrty'][:,:,:,:]) # m/s
+			zv = np.ma.array(nc.variables['vomecrty'][:,:,latslice,:]) # m/s
 			zv = np.ma.masked_invalid(zv).squeeze()
 			zv = np.ma.masked_where(maskedArea.mask +zv.mask,zv)
 			#for z in range(e3v.shape[0]): 		# jk
