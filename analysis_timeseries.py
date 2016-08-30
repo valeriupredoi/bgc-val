@@ -1335,7 +1335,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			#  for la in range(e3v.shape[1]):	# j, y
  			#    for lo in range(e3v.shape[2]):	# i , x,	
  					
- 			zomsf = (- maskedArea *zv).sum(0)/1.E06  # m*2 * m /s 
+ 			zomsf = (- maskedArea *zv).sum(1)/1.E06  # m*2 * m /s 
 			print "shapes: maskedArea:",maskedArea.shape, 'zv',zv.shape,'zomsf:',zomsf.shape, (zomsf.max()) 			
 			return np.ma.max(zomsf)
 								
