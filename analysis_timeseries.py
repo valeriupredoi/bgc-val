@@ -1334,6 +1334,7 @@ def analysis_timeseries(jobID = "u-ab671",
  			#    for lo in range(e3v.shape[2]):	# i , x,	
  					
  			zomsf = (- maskedArea *zv).sum(0)/1.E06  # m*2 * m /s 
+			print "shapes: maskedArea:",maskedArea.shape, 'zv',zv.shape,'zomsf:',zomsf.shape, (zomsf.max()) 			
 			return np.ma.max(zomsf)
 								
 		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_V', MEDUSAFolder_pref, annual)
