@@ -1316,15 +1316,15 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		# load basin map
 		nc = Dataset('data/basinlandmask_eORCA1.nc','r')
-		tmask = e2u = nc.variables['tmaskatl'][latslice,:]	# 2D Atlantic mask
+		alttmask = e2u = nc.variables['tmaskatl'][latslice,:]	# 2D Atlantic mask
 		nc.close()		
 
 		# make appropriate constant field.
 		maskedArea = np.ones_like(e3v)
 		for z in range(e3v.shape[0]):
-			maskedArea[z] = e1v * tmask[z] * e3v[z]
+			maskedArea[z] = e1v * alttmask * e3v[z]
 		maskedArea = np.ma.masked_where((maskedArea==0.) + (tmask==0.),maskedArea)
-		print "shapes: e3v:",e3v.shape, 'e1v',e1v.shape,'tmask:',tmask.shape,'maskedArea',maskedArea.shape
+		print "shapes: e3v:",e3v.shape, 'e1v',e1v.shape,'tmask:',tmask.shape,'alttmask',alttmask.shape,'maskedArea',maskedArea.shape
 				
 		def amoc(nc,keys):
 			zv = np.ma.array(nc.variables['vomecrty'][:,:,latslice,:]) # m/s
