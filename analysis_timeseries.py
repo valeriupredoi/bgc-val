@@ -1313,7 +1313,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		tmask = nc.variables['tmask'][:,latslice,:]
 		
 		nc.close()		
-		
+		print "shapes: e3v:",e3v.shape, 'e1v',e1v.shape,'tmask:',tmask.shape
 		# load basin map
 		nc = Dataset('data/basinlandmask_eORCA1.nc','r')
 		tmask = e2u = nc.variables['tmaskatl'][latslice,:]	# 2D Atlantic mask
