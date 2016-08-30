@@ -1326,6 +1326,8 @@ def analysis_timeseries(jobID = "u-ab671",
 		maskedArea = np.ma.masked_where((maskedArea==0.) + (tmask==0.),maskedArea).squeeze()
 		print "shapes: e3v:",e3v.shape, 'e1v',e1v.shape,'tmask:',tmask.shape,'alttmask',alttmask.shape,'maskedArea',maskedArea.shape
 		from netCDF4 import num2date
+		from matplotlib import pyplot
+		
 		def amoc(nc,keys):
 			zv = np.ma.array(nc.variables['vomecrty'][:,:,latslice,:]) # m/s
 			t = num2date(nc.variables['time_counter'][:],nc.variables['time_counter'].units)[0]
@@ -1335,9 +1337,13 @@ def analysis_timeseries(jobID = "u-ab671",
 			#for z in range(e3v.shape[0]): 		# jk
 			#  for la in range(e3v.shape[1]):	# j, y
  			#    for lo in range(e3v.shape[2]):	# i , x,	
- 					
  			zomsf = (- maskedArea *zv).sum(1)/1.E06  # m*2 * m /s 
+ 			pyplot.pcolormesh(maskedArea *zv)
+ 			pyplot.colorbar()
+ 			pyplot.show()
+ 			assert 0
 			print t,"shapes: maskedArea:",maskedArea.shape, 'zv',zv.shape,'zomsf:',zomsf.shape
+			print t, "zomsf",zomsf
 			print "MOC: ",t, 'max:',np.ma.max(zomsf)
 			return np.ma.max(zomsf)
 								
