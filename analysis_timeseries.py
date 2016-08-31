@@ -1352,7 +1352,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			t = 0
 			times = num2date(nc.variables['time_counter'][:],nc.variables['time_counter'].units,calendar='360_day')[t]
 			zomsf = np.zeros_like(zv)
-			atlmoc = zomsf[0,:,0,:].squeeze()
+			atlmoc = zomsf[0,:,:,0].squeeze()
 			for la in range(e3v.shape[1]):	#ji, y
  			  for lo in range(e3v.shape[2]):	#jj , x,	
  			    if int(alttmask[la,lo]) == 0: continue
@@ -1360,7 +1360,7 @@ def analysis_timeseries(jobID = "u-ab671",
  			    	if int(tmask[z,la,lo]) == 0: continue
  			    	if np.ma.is_masked(zv[t,z,la,lo]):continue
  			    	#zomsf[t,z,la,lo] =  -e1v[la,lo]*e3v[z,la,lo]*zv[t,z,la,lo]
- 			    	atlmoc[z,lo] = atlmoc[z,lo] - e1v[la,lo]*e3v[z,la,lo]*zv[t,z,la,lo]
+ 			    	atlmoc[z,la] = atlmoc[z,la] - e1v[la,lo]*e3v[z,la,lo]*zv[t,z,la,lo]
  			####
  			# Cumulative sum from the bottom up.
  			for z in range(e3v.shape[0]-2,1,-1):  
