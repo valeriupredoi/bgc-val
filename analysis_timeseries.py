@@ -1366,7 +1366,8 @@ def analysis_timeseries(jobID = "u-ab671",
  			for z in range(e3v.shape[0]-2,1,-1):  
  				#zomsf[:,z] = zomsf[:,z+1]   +zomsf[:,z,:,:]/1.E06  # m*2 * m /s 
  				atlmoc[z,:] = atlmoc[z+1,:] + atlmoc[z,:]
- 			pyplot.pcolormesh(maskedArea *zv/1.E06)
+ 			print 'atlmoc',atlmoc.shape,atlmoc.max()
+ 			pyplot.pcolormesh(atlmoc)
  			pyplot.colorbar()
  			pyplot.show()
  			
