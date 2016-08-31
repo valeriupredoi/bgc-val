@@ -1320,11 +1320,11 @@ def analysis_timeseries(jobID = "u-ab671",
 		nc.close()		
 
 		# make appropriate constant field.
-		maskedArea = np.ones_like(e3v)
-		for z in range(e3v.shape[0]):
-			maskedArea[z] = e1v * alttmask * e3v[z]
-		maskedArea = np.ma.masked_where((maskedArea==0.) + (tmask==0.),maskedArea).squeeze()
-		print "shapes: e3v:",e3v.shape, 'e1v',e1v.shape,'tmask:',tmask.shape,'alttmask',alttmask.shape,'maskedArea',maskedArea.shape
+		#maskedArea = np.ones_like(e3v)
+		#for z in range(e3v.shape[0]):
+		#	maskedArea[z] = e1v * alttmask * e3v[z]
+		#maskedArea = np.ma.masked_where((maskedArea==0.) + (tmask==0.),maskedArea).squeeze()
+		print "shapes: e3v:",e3v.shape, 'e1v',e1v.shape,'tmask:',tmask.shape,'alttmask',alttmask.shape #,'maskedArea',maskedArea.shape
 		from netCDF4 import num2date
 		from matplotlib import pyplot
 		
@@ -1353,6 +1353,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			times = num2date(nc.variables['time_counter'][:],nc.variables['time_counter'].units,calendar='360_day')[t]
 			zomsf = np.zeros_like(zv)
 			atlmoc = np.array(zomsf[0,:,:,0]).squeeze()
+			print zomsf.shape, atlmoc.shape
 			for la in range(e3v.shape[1]):	#ji, y
  			  for lo in range(e3v.shape[2]):	#jj , x,	
  			    if int(alttmask[la,lo]) == 0: continue
