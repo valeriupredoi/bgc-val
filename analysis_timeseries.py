@@ -174,7 +174,8 @@ def analysis_timeseries(jobID = "u-ab671",
                         #analysisKeys.append('NorthernTotalIceArea')            # work in progress      
                         #analysisKeys.append('SouthernTotalIceArea')            # work in progress                              
                         #analysisKeys.append('TotalIceArea')            # work in progress    
-                        analysisKeys.append('AMOC')                        # AMOC
+                        analysisKeys.append('AMOC_32S')                 # AMOC 32S
+                        analysisKeys.append('AMOC_26N')                 # AMOC 26N
                                                 
                 if analysisSuite.lower() in ['physics',]:
                         #####   
@@ -186,8 +187,8 @@ def analysis_timeseries(jobID = "u-ab671",
 			analysisKeys.append('NorthernTotalIceArea')	# work in progress	
 			analysisKeys.append('SouthernTotalIceArea')	# work in progress	
 			analysisKeys.append('DrakePassageTransport')	# DrakePassageTransport	
-                        analysisKeys.append('AMOC')                        # AMOC
-						
+                        analysisKeys.append('AMOC_32S')                 # AMOC 32S
+                        analysisKeys.append('AMOC_26N')                 # AMOC 26N
 
 		
  	
@@ -1299,13 +1300,15 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['Dimensions']		= 1
 
 
-	if 'AMOC' in analysisKeys:
-		name = 'AMOC'
+	if 'AMOC_26N' in analysisKeys or 'AMOC_32S' in analysisKeys:
+	    for name in ['AMOC_26N','AMOC_32S']:
+	    	if name not in analysisKeys:continue
+		
 		####
 		# Note that this will only work with the eORCAgrid.
-		LAT=227 # 26N
-		latslice = slice(None,None,None) #slice(227,228) #(LAT-Latwidth , LAT+Latwidth+1) 
-		latslice = slice(227,228) #(LAT-Latwidth , LAT+Latwidth+1) 		
+		if name in ['AMOC_26N',]: latslice = slice(227,228)
+		if name in ['AMOC_32S',]: latslice = slice(137,138)
+				
 		# Load grid data
 		nc = Dataset(orcaGridfn,'r')
 		e3v = nc.variables['e3v'][:,latslice,:]	# z level height 3D
@@ -1319,63 +1322,25 @@ def analysis_timeseries(jobID = "u-ab671",
 		alttmask = e2u = nc.variables['tmaskatl'][latslice,:]	# 2D Atlantic mask
 		nc.close()		
 
-		# make appropriate constant field.
-		#maskedArea = np.ones_like(e3v)
-		#for z in range(e3v.shape[0]):
-		#	maskedArea[z] = e1v * alttmask * e3v[z]
-		#maskedArea = np.ma.masked_where((maskedArea==0.) + (tmask==0.),maskedArea).squeeze()
-		print "shapes: e3v:",e3v.shape, 'e1v',e1v.shape,'tmask:',tmask.shape,'alttmask',alttmask.shape #,'maskedArea',maskedArea.shape
-		from netCDF4 import num2date
-		from matplotlib import pyplot
-		
-		def amoc(nc,keys):
-			zv = np.ma.array(nc.variables['vomecrty'][...,latslice,:]) # m/s
-			t = num2date(nc.variables['time_counter'][:],nc.variables['time_counter'].units,calendar='360_day')[0]
-			zv = np.ma.masked_invalid(zv).squeeze()
-			print t,"shapes: maskedArea:",maskedArea.shape, 'zv',zv.shape
-			zv = np.ma.masked_where(maskedArea.mask +zv.mask + (maskedArea==0.),zv)
-			#for z in range(e3v.shape[0]): 		# jk
-			#  for la in range(e3v.shape[1]):	# j, y
- 			#    for lo in range(e3v.shape[2]):	# i , x,	
- 			zomsf = (- maskedArea *zv).sum(1)/1.E06  # m*2 * m /s 
- 			pyplot.pcolormesh(maskedArea *zv/1.E06)
- 			pyplot.colorbar()
- 			pyplot.show()
- 			assert 0
-			print t,"shapes: maskedArea:",maskedArea.shape, 'zv',zv.shape,'zomsf:',zomsf.shape
-			print t, "zomsf",zomsf
-			print "MOC: ",t, 'max:',np.ma.max(zomsf)
-			return np.ma.max(zomsf)
-
-		def amoc2(nc,keys):
+	
+		def calc_amoc(nc,keys):
 			zv = np.ma.array(nc.variables['vomecrty'][...,latslice,:]) # m/s
 			t = 0
-			times = num2date(nc.variables['time_counter'][:],nc.variables['time_counter'].units,calendar='360_day')[t]
-			zomsf = np.zeros_like(zv)
-			atlmoc = np.array(zomsf[0,:,:,0])#.squeeze()
-			print zomsf.shape, atlmoc.shape
+			#times = num2date(nc.variables['time_counter'][:],nc.variables['time_counter'].units,calendar='360_day')[t]
+			atlmoc = np.array(np.zeros_like(zv[0,:,:,0]))#.squeeze()
+			#print zomsf.shape, atlmoc.shape
 			for la in range(e3v.shape[1]):	#ji, y
  			  for lo in range(e3v.shape[2]):	#jj , x,	
  			    if int(alttmask[la,lo]) == 0: continue
 			    for z in range(e3v.shape[0]): 		# jk 		
  			    	if int(tmask[z,la,lo]) == 0: continue
  			    	if np.ma.is_masked(zv[t,z,la,lo]):continue
- 			    	#zomsf[t,z,la,lo] =  -e1v[la,lo]*e3v[z,la,lo]*zv[t,z,la,lo]
  			    	atlmoc[z,la] = atlmoc[z,la] - e1v[la,lo]*e3v[z,la,lo]*zv[t,z,la,lo]/1.E06 
+ 			
  			####
  			# Cumulative sum from the bottom up.
  			for z in range(73,1,-1):  
- 				#zomsf[:,z] = zomsf[:,z+1]   +zomsf[:,z,:,:]/1.E06  # m*2 * m /s 
  				atlmoc[z,:] = atlmoc[z+1,:] + atlmoc[z,:]
- 				
- 			print 'atlmoc',atlmoc.shape,atlmoc.max()
- 			#pyplot.pcolormesh(atlmoc)
- 			#pyplot.colorbar()
- 			#pyplot.show()
- 			
- 			
-			print times, "atlmoc",atlmoc
-			print "MOC: ",t, 'max:',np.ma.max(atlmoc)
 			return np.ma.max(atlmoc)
 						
 						
@@ -1387,7 +1352,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modelcoords'] = medusaCoords 	
 		av[name]['datacoords'] 	= medusaCoords
 
-		av[name]['modeldetails']= {'name': name, 'vars':['vomecrty',], 'convert': amoc2,'units':'Sv'}
+		av[name]['modeldetails']= {'name': name, 'vars':['vomecrty',], 'convert': calc_amoc,'units':'Sv'}
 				
 		av[name]['datadetails']  	= {'name':'','units':'',}
 		av[name]['layers'] 		=  ['layerless',]		
