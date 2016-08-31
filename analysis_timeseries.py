@@ -1352,22 +1352,23 @@ def analysis_timeseries(jobID = "u-ab671",
 			t = 0
 			times = num2date(nc.variables['time_counter'][:],nc.variables['time_counter'].units,calendar='360_day')[t]
 			zomsf = np.zeros_like(zv)
-			atlmoc = zomsf[0,:,:,:]
-			for la in range(e3v.shape[1]):	# j, y
- 			  for lo in range(e3v.shape[2]):	# i , x,	
+			atlmoc = zomsf[0,:,0,:].squeeze()
+			for la in range(e3v.shape[1]):	#ji, y
+ 			  for lo in range(e3v.shape[2]):	#jj , x,	
  			    if float(alttmask[la,lo])==0.: continue
 			    for z in range(e3v.shape[0]): 		# jk 		
  			    	if int(tmask[z,la,lo]) == 0: continue
  			    	zomsf[t,z,la,lo] =  -e1v[la,lo]*e3v[z,la,lo]*zv[t,z,la,lo]
- 			    	
+ 			    	atlmoc[z,lo] = atlmoc[z,lo] - -e1v[la,lo]*e3v[z,la,lo]*zv[t,z,la,lo]
  			####
  			# Cumulative sum from the bottom up.
- 			for z in range(e3v.shape[0]-1,0,-1):  
- 				zomsf[z] = zomsf[z+1] +zomsf[z,:,:]/1.E06  # m*2 * m /s 
+ 			for z in range(e3v.shape[0]-2,1,-1):  
+ 				zomsf[:,z] = zomsf[:,z+1] +zomsf[:,z,:,:]/1.E06  # m*2 * m /s 
+ 				atlmoc[z,:] = atlmoc[z+1,:] + atlmoc[z,:]/1.E06 
  			
-			print times, "zomsf",zomsf
-			print "MOC: ",t, 'max:',np.ma.max(zomsf)
-			return np.ma.max(zomsf)
+			print times, "zomsf",atlmoc
+			print "MOC: ",t, 'max:',np.ma.max(atlmoc)
+			return np.ma.max(atlmoc)
 						
 						
 						
