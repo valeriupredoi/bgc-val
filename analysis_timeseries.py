@@ -1305,7 +1305,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		# Note that this will only work with the eORCAgrid.
 		LAT=227 # 26N
 		Latwidth = 5
-		latslice = slice(227,228) #(LAT-Latwidth , LAT+Latwidth+1) 
+		latslice = slice(None,None,None) #slice(227,228) #(LAT-Latwidth , LAT+Latwidth+1) 
 		# Load grid data
 		nc = Dataset(orcaGridfn,'r')
 		e3v = nc.variables['e3v'][:,latslice,:]	# z level height 3D
@@ -1363,7 +1363,7 @@ def analysis_timeseries(jobID = "u-ab671",
  			####
  			# Cumulative sum from the bottom up.
  			for z in range(e3v.shape[0]-2,1,-1):  
- 				zomsf[:,z] = zomsf[:,z+1] +zomsf[:,z,:,:]/1.E06  # m*2 * m /s 
+ 				zomsf[:,z] = zomsf[:,z+1]   +zomsf[:,z,:,:]/1.E06  # m*2 * m /s 
  				atlmoc[z,:] = atlmoc[z+1,:] + atlmoc[z,:]/1.E06 
  			
 			print times, "zomsf",atlmoc
