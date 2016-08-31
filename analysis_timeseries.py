@@ -1355,15 +1355,15 @@ def analysis_timeseries(jobID = "u-ab671",
 			atlmoc = zomsf[0,:,0,:].squeeze()
 			for la in range(e3v.shape[1]):	#ji, y
  			  for lo in range(e3v.shape[2]):	#jj , x,	
- 			    if float(alttmask[la,lo])==0.: continue
+ 			    if int(alttmask[la,lo]) == 0: continue
 			    for z in range(e3v.shape[0]): 		# jk 		
  			    	if int(tmask[z,la,lo]) == 0: continue
- 			    	zomsf[t,z,la,lo] =  -e1v[la,lo]*e3v[z,la,lo]*zv[t,z,la,lo]
+ 			    	#zomsf[t,z,la,lo] =  -e1v[la,lo]*e3v[z,la,lo]*zv[t,z,la,lo]
  			    	atlmoc[z,lo] = atlmoc[z,lo] - e1v[la,lo]*e3v[z,la,lo]*zv[t,z,la,lo]
  			####
  			# Cumulative sum from the bottom up.
  			for z in range(e3v.shape[0]-2,1,-1):  
- 				zomsf[:,z] = zomsf[:,z+1]   +zomsf[:,z,:,:]/1.E06  # m*2 * m /s 
+ 				#zomsf[:,z] = zomsf[:,z+1]   +zomsf[:,z,:,:]/1.E06  # m*2 * m /s 
  				atlmoc[z,:] = atlmoc[z+1,:] + atlmoc[z,:]/1.E06 
  			
 			print times, "zomsf",atlmoc
