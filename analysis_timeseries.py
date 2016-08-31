@@ -151,7 +151,10 @@ def analysis_timeseries(jobID = "u-ab671",
 			analysisKeys.append('NorthernTotalIceArea')	# work in progress	
 			analysisKeys.append('SouthernTotalIceArea')	# work in progress	
 			analysisKeys.append('DrakePassageTransport')	# DrakePassageTransport				
-					
+                        analysisKeys.append('AMOC_32S')                 # AMOC 32S
+                        analysisKeys.append('AMOC_26N')                 # AMOC 26N
+                                                
+                                                					
 		if analysisSuite.lower() in ['debug',]:	
 			#analysisKeys.append('AirSeaFlux')		# work in progress
 			#analysisKeys.append('TotalAirSeaFlux')		# work in progress
