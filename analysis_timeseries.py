@@ -1359,7 +1359,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			    for z in range(e3v.shape[0]): 		# jk 		
  			    	if int(tmask[z,la,lo]) == 0: continue
  			    	zomsf[t,z,la,lo] =  -e1v[la,lo]*e3v[z,la,lo]*zv[t,z,la,lo]
- 			    	atlmoc[z,lo] = atlmoc[z,lo] - -e1v[la,lo]*e3v[z,la,lo]*zv[t,z,la,lo]
+ 			    	atlmoc[z,lo] = atlmoc[z,lo] - e1v[la,lo]*e3v[z,la,lo]*zv[t,z,la,lo]
  			####
  			# Cumulative sum from the bottom up.
  			for z in range(e3v.shape[0]-2,1,-1):  
