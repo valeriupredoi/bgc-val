@@ -1304,8 +1304,8 @@ def analysis_timeseries(jobID = "u-ab671",
 		####
 		# Note that this will only work with the eORCAgrid.
 		LAT=227 # 26N
-		Latwidth = 5
 		latslice = slice(None,None,None) #slice(227,228) #(LAT-Latwidth , LAT+Latwidth+1) 
+		latslice = slice(227,228) #(LAT-Latwidth , LAT+Latwidth+1) 		
 		# Load grid data
 		nc = Dataset(orcaGridfn,'r')
 		e3v = nc.variables['e3v'][:,latslice,:]	# z level height 3D
@@ -1368,9 +1368,9 @@ def analysis_timeseries(jobID = "u-ab671",
  				atlmoc[z,:] = atlmoc[z+1,:] + atlmoc[z,:]
  				
  			print 'atlmoc',atlmoc.shape,atlmoc.max()
- 			pyplot.pcolormesh(atlmoc)
- 			pyplot.colorbar()
- 			pyplot.show()
+ 			#pyplot.pcolormesh(atlmoc)
+ 			#pyplot.colorbar()
+ 			#pyplot.show()
  			
  			
 			print times, "atlmoc",atlmoc
