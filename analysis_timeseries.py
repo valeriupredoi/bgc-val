@@ -1329,8 +1329,8 @@ def analysis_timeseries(jobID = "u-ab671",
 		from matplotlib import pyplot
 		
 		def amoc(nc,keys):
-			zv = np.ma.array(nc.variables['vomecrty'][:,:,latslice,:]) # m/s
-			t = num2date(nc.variables['time_counter'][:],nc.variables['time_counter'].units)[0]
+			zv = np.ma.array(nc.variables['vomecrty'][...,latslice,:]) # m/s
+			t = num2date(nc.variables['time_counter'][:],nc.variables['time_counter'].units,calendar='360_day')[0]
 			zv = np.ma.masked_invalid(zv).squeeze()
 			print t,"shapes: maskedArea:",maskedArea.shape, 'zv',zv.shape
 			zv = np.ma.masked_where(maskedArea.mask +zv.mask + (maskedArea==0.),zv)
@@ -1346,6 +1346,31 @@ def analysis_timeseries(jobID = "u-ab671",
 			print t, "zomsf",zomsf
 			print "MOC: ",t, 'max:',np.ma.max(zomsf)
 			return np.ma.max(zomsf)
+
+		def amoc2(nc,keys):
+			zv = np.ma.array(nc.variables['vomecrty'][...,latslice,:]) # m/s
+			t = 0
+			times = num2date(nc.variables['time_counter'][:],nc.variables['time_counter'].units,calendar='360_day')[t]
+			zomsf = np.zeros_like(zv)
+			atlmoc = zomsf[0,:,LAT,:]
+			for la in range(e3v.shape[1]):	# j, y
+ 			  for lo in range(e3v.shape[2]):	# i , x,	
+ 			    if float(alttmask[la,lo])==0.: continue
+			    for z in range(e3v.shape[0]): 		# jk 		
+ 			    	if int(tmask[z,la,lo]) == 0: continue
+ 			    	zomsf[t,z,la,lo] =  -e1v[la,lo]*e3v[z,la,lo]*zv[t,z,la,lo]
+ 			    	
+ 			####
+ 			# Cumulative sum from the bottom up.
+ 			for z in range(e3v.shape[0]-1,1,-1):  
+ 				zomsf[z] = zomsf[z+1] +zomsf]z,:,:]/1.E06  # m*2 * m /s 
+ 			
+			print times, "zomsf",zomsf
+			print "MOC: ",t, 'max:',np.ma.max(zomsf)
+			return np.ma.max(zomsf)
+						
+						
+						
 								
 		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_V', MEDUSAFolder_pref, annual)
 		av[name]['dataFile'] 	= ''
@@ -1353,7 +1378,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modelcoords'] = medusaCoords 	
 		av[name]['datacoords'] 	= medusaCoords
 
-		av[name]['modeldetails']= {'name': name, 'vars':['vomecrty',], 'convert': amoc,'units':'Sv'}
+		av[name]['modeldetails']= {'name': name, 'vars':['vomecrty',], 'convert': amoc2,'units':'Sv'}
 				
 		av[name]['datadetails']  	= {'name':'','units':'',}
 		av[name]['layers'] 		=  ['layerless',]		
