@@ -1360,12 +1360,12 @@ def analysis_timeseries(jobID = "u-ab671",
  			    	if int(tmask[z,la,lo]) == 0: continue
  			    	if np.ma.is_masked(zv[t,z,la,lo]):continue
  			    	#zomsf[t,z,la,lo] =  -e1v[la,lo]*e3v[z,la,lo]*zv[t,z,la,lo]
- 			    	atlmoc[z,la] = atlmoc[z,la] - e1v[la,lo]*e3v[z,la,lo]*zv[t,z,la,lo]
+ 			    	atlmoc[z,la] = atlmoc[z,la] - e1v[la,lo]*e3v[z,la,lo]*zv[t,z,la,lo]/1.E06 
  			####
  			# Cumulative sum from the bottom up.
  			for z in range(e3v.shape[0]-2,1,-1):  
  				#zomsf[:,z] = zomsf[:,z+1]   +zomsf[:,z,:,:]/1.E06  # m*2 * m /s 
- 				atlmoc[z,:] = atlmoc[z+1,:] + atlmoc[z,:]/1.E06 
+ 				atlmoc[z,:] = atlmoc[z+1,:] + atlmoc[z,:]
  			
 			print times, "atlmoc",atlmoc
 			print "MOC: ",t, 'max:',np.ma.max(atlmoc)
