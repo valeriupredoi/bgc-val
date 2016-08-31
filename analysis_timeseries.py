@@ -1352,7 +1352,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			t = 0
 			times = num2date(nc.variables['time_counter'][:],nc.variables['time_counter'].units,calendar='360_day')[t]
 			zomsf = np.zeros_like(zv)
-			atlmoc = np.array(zomsf[0,:,:,0]).squeeze()
+			atlmoc = np.array(zomsf[0,:,:,0])#.squeeze()
 			print zomsf.shape, atlmoc.shape
 			for la in range(e3v.shape[1]):	#ji, y
  			  for lo in range(e3v.shape[2]):	#jj , x,	
