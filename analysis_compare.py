@@ -53,7 +53,7 @@ def timeseries_compare():
 	
 	#jobs = ['u-af123', 'u-af139','u-af420','u-af421', ]
 
-	colours = {'u-af930':'red', 'u-af921':'orange','u-af748':'darkblue','u-af915':'blue','u-af914':'purple', }#'u-af586':'green','u-af730':'pink','u-ae748':'black'}
+	colours = {'u-af930':'red', 'u-af921':'orange',}#'u-af748':'darkblue','u-af915':'blue','u-af914':'purple', }#'u-af586':'green','u-af730':'pink','u-ae748':'black'}
 	jobs = sorted(colours.keys())#['u-af725', 'u-af728','u-af420','u-af421', 'u-af586','u-af730','u-ae748']	
 	annual = True
 	strictFileCheck = False
@@ -81,23 +81,23 @@ def timeseries_compare():
 	
 
 
-	analysisKeys.append('DrakePassageTransport')	# DrakePassageTransport		
-	analysisKeys.append('TotalAirSeaFlux')          # work in progress              
-	analysisKeys.append('IntPP_OSU')                # OSU Integrated primpary production    
-	analysisKeys.append('GlobalExportRatio')
-	analysisKeys.append('TotalIceArea')		# TotalIceArea	
-	analysisKeys.append('NorthernTotalIceArea')	# North TotalIceArea
-	analysisKeys.append('SouthernTotalIceArea')	# South TotalIceArea
+#	analysisKeys.append('DrakePassageTransport')	# DrakePassageTransport		
+#	analysisKeys.append('TotalAirSeaFlux')          # work in progress              
+#	analysisKeys.append('IntPP_OSU')                # OSU Integrated primpary production    
+#	analysisKeys.append('GlobalExportRatio')
+#	analysisKeys.append('TotalIceArea')		# TotalIceArea	
+#	analysisKeys.append('NorthernTotalIceArea')	# North TotalIceArea
+#	analysisKeys.append('SouthernTotalIceArea')	# South TotalIceArea
 	analysisKeys.append('AMOC_26N')
-	analysisKeys.append('AMOC_32S')
+#	analysisKeys.append('AMOC_32S')
 		
 
-	analysisKeys.append('N')                        # WOA Nitrate
-	analysisKeys.append('Si')                       # WOA Siliate
-	analysisKeys.append('O2')                       # WOA Oxygen
-	analysisKeys.append('Iron')
-	analysisKeys.append('Alk')	
-	analysisKeys.append('DIC')
+#	analysisKeys.append('N')                        # WOA Nitrate
+#	analysisKeys.append('Si')                       # WOA Siliate
+#	analysisKeys.append('O2')                       # WOA Oxygen
+#	analysisKeys.append('Iron')
+#	analysisKeys.append('Alk')	
+#	analysisKeys.append('DIC')
 	
 	layerList 	= ['Surface',]
 	metricList 	= ['mean',]
