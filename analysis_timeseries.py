@@ -1301,41 +1301,41 @@ def analysis_timeseries(jobID = "u-ab671",
 
 
 	if 'AMOC_26N' in analysisKeys or 'AMOC_32S' in analysisKeys:
-	    for name in ['AMOC_26N','AMOC_32S']:
-	    	if name not in analysisKeys:continue
+		# Note that this will only work with the eORCAgrid.	
+		latslice26N = slice(227,228)
+		latslice32S = slice(137,138)
+		e3v,e1v,tmask,alttmask = {},{},{},{}
+	    	for name in ['AMOC_26N','AMOC_32S']:	
+	    		if name not in analysisKeys:continue
 		
-		####
-		# Note that this will only work with the eORCAgrid.
-		if name in ['AMOC_26N',]: latslice = slice(227,228)
-		if name in ['AMOC_32S',]: latslice = slice(137,138)
+			####
+			if name == 'AMOC_26N': 	latslice = latslice26N
+			if name == 'AMOC_32S': 	latslice = latslice32S
 				
-		# Load grid data
-		nc = Dataset(orcaGridfn,'r')
-		e3v = nc.variables['e3v'][:,latslice,:]	# z level height 3D
-		e1v = nc.variables['e1v'][latslice,:]	# 
-		tmask = nc.variables['tmask'][:,latslice,:]
-		
-		nc.close()		
+			# Load grid data
+			nc = Dataset(orcaGridfn,'r')
+			e3v[name] = nc.variables['e3v'][:,latslice,:]	# z level height 3D
+			e1v[name] = nc.variables['e1v'][latslice,:]	# 
+			tmask[name] = nc.variables['tmask'][:,latslice,:]
+			nc.close()		
 
-		# load basin map
-		nc = Dataset('data/basinlandmask_eORCA1.nc','r')
-		alttmask = e2u = nc.variables['tmaskatl'][latslice,:]	# 2D Atlantic mask
-		nc.close()		
-
+			# load basin mask 
+			nc = Dataset('data/basinlandmask_eORCA1.nc','r')
+			alttmask[name] = e2u = nc.variables['tmaskatl'][latslice,:]	# 2D Atlantic mask
+			nc.close()		
 	
-		def calc_amoc(nc,keys):
-			zv = np.ma.array(nc.variables['vomecrty'][...,latslice,:]) # m/s
-			t = 0
-			#times = num2date(nc.variables['time_counter'][:],nc.variables['time_counter'].units,calendar='360_day')[t]
-			atlmoc = np.array(np.zeros_like(zv[0,:,:,0]))#.squeeze()
-			#print zomsf.shape, atlmoc.shape
-			for la in range(e3v.shape[1]):	#ji, y
- 			  for lo in range(e3v.shape[2]):	#jj , x,	
- 			    if int(alttmask[la,lo]) == 0: continue
-			    for z in range(e3v.shape[0]): 		# jk 		
- 			    	if int(tmask[z,la,lo]) == 0: continue
- 			    	if np.ma.is_masked(zv[t,z,la,lo]):continue
- 			    	atlmoc[z,la] = atlmoc[z,la] - e1v[la,lo]*e3v[z,la,lo]*zv[t,z,la,lo]/1.E06 
+		def calc_amoc32S(nc,keys):
+			name = 'AMOC_32S'
+			zv = np.ma.array(nc.variables['vomecrty'][...,latslice32S,:]) # m/s
+			atlmoc = np.array(np.zeros_like(zv[0,:,:,0]))
+			e2vshape = e3v[name].shape
+			for la in range(e2vshape[1]):		#ji, y
+ 			  for lo in range(ee2vshape[2]):	#jj , x,	
+ 			    if int(alttmask[name][la,lo]) == 0: continue
+			    for z in range(e2vshape[0]): 	# jk 		
+ 			    	if int(tmask[name][z,la,lo]) == 0: 	   continue
+ 			    	if np.ma.is_masked(zv[0,z,la,lo]): continue
+ 			    	atlmoc[z,la] = atlmoc[name][z,la] - e1v[name][la,lo]*e3v[name][z,la,lo]*zv[0,z,la,lo]/1.E06 
  			
  			####
  			# Cumulative sum from the bottom up.
@@ -1343,26 +1343,46 @@ def analysis_timeseries(jobID = "u-ab671",
  				atlmoc[z,:] = atlmoc[z+1,:] + atlmoc[z,:]
 			return np.ma.max(atlmoc)
 						
+		def calc_amoc26N(nc,keys):
+			name = 'AMOC_26N'
+			zv = np.ma.array(nc.variables['vomecrty'][...,latslice26N,:]) # m/s
+			atlmoc = np.array(np.zeros_like(zv[0,:,:,0]))
+			e2vshape = e3v[name].shape
+			for la in range(e2vshape[1]):		#ji, y
+ 			  for lo in range(ee2vshape[2]):	#jj , x,	
+ 			    if int(alttmask[name][la,lo]) == 0: continue
+			    for z in range(e2vshape[0]): 	# jk 		
+ 			    	if int(tmask[name][z,la,lo]) == 0: 	   continue
+ 			    	if np.ma.is_masked(zv[0,z,la,lo]): continue
+ 			    	atlmoc[z,la] = atlmoc[name][z,la] - e1v[name][la,lo]*e3v[name][z,la,lo]*zv[0,z,la,lo]/1.E06 
+ 			
+ 			####
+ 			# Cumulative sum from the bottom up.
+ 			for z in range(73,1,-1):  
+ 				atlmoc[z,:] = atlmoc[z+1,:] + atlmoc[z,:]
+			return np.ma.max(atlmoc)						
 						
-						
-								
-		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_V', MEDUSAFolder_pref, annual)
-		av[name]['dataFile'] 	= ''
+	    	for name in ['AMOC_26N','AMOC_32S']:	
+	    		if name not in analysisKeys:continue	 
+	    		   									
+			av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_V', MEDUSAFolder_pref, annual)
+			av[name]['dataFile'] 	= ''
 			
-		av[name]['modelcoords'] = medusaCoords 	
-		av[name]['datacoords'] 	= medusaCoords
+			av[name]['modelcoords'] = medusaCoords 	
+			av[name]['datacoords'] 	= medusaCoords
 
-		av[name]['modeldetails']= {'name': name, 'vars':['vomecrty',], 'convert': calc_amoc,'units':'Sv'}
+			if name == 'AMOC_26N': 	av[name]['modeldetails']= {'name': name, 'vars':['vomecrty',], 'convert': calc_amoc_26N,'units':'Sv'}
+			if name == 'AMOC_32S': 	av[name]['modeldetails']= {'name': name, 'vars':['vomecrty',], 'convert': calc_amoc_32S,'units':'Sv'}
 				
-		av[name]['datadetails']  	= {'name':'','units':'',}
-		av[name]['layers'] 		=  ['layerless',]		
-		av[name]['regions'] 		= ['regionless',]
-		av[name]['metrics']		= ['metricless',]
-		av[name]['datasource'] 		= ''
-		av[name]['model']		= 'NEMO'
-		av[name]['modelgrid']		= 'eORCA1'
-		av[name]['gridFile']		= orcaGridfn
-		av[name]['Dimensions']		= 1
+			av[name]['datadetails']  	= {'name':'','units':'',}
+			av[name]['layers'] 		=  ['layerless',]		
+			av[name]['regions'] 		= ['regionless',]
+			av[name]['metrics']		= ['metricless',]
+			av[name]['datasource'] 		= ''
+			av[name]['model']		= 'NEMO'
+			av[name]['modelgrid']		= 'eORCA1'
+			av[name]['gridFile']		= orcaGridfn
+			av[name]['Dimensions']		= 1
 				
 												
 
