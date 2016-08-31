@@ -1330,12 +1330,12 @@ def analysis_timeseries(jobID = "u-ab671",
 			atlmoc = np.array(np.zeros_like(zv[0,:,:,0]))
 			e2vshape = e3v[name].shape
 			for la in range(e2vshape[1]):		#ji, y
- 			  for lo in range(ee2vshape[2]):	#jj , x,	
+ 			  for lo in range(e2vshape[2]):	#jj , x,	
  			    if int(alttmask[name][la,lo]) == 0: continue
 			    for z in range(e2vshape[0]): 	# jk 		
  			    	if int(tmask[name][z,la,lo]) == 0: 	   continue
  			    	if np.ma.is_masked(zv[0,z,la,lo]): continue
- 			    	atlmoc[z,la] = atlmoc[name][z,la] - e1v[name][la,lo]*e3v[name][z,la,lo]*zv[0,z,la,lo]/1.E06 
+ 			    	atlmoc[z,la] = atlmoc[z,la] - e1v[name][la,lo]*e3v[name][z,la,lo]*zv[0,z,la,lo]/1.E06 
  			
  			####
  			# Cumulative sum from the bottom up.
@@ -1349,12 +1349,12 @@ def analysis_timeseries(jobID = "u-ab671",
 			atlmoc = np.array(np.zeros_like(zv[0,:,:,0]))
 			e2vshape = e3v[name].shape
 			for la in range(e2vshape[1]):		#ji, y
- 			  for lo in range(ee2vshape[2]):	#jj , x,	
+ 			  for lo in range(e2vshape[2]):		#jj , x,	
  			    if int(alttmask[name][la,lo]) == 0: continue
 			    for z in range(e2vshape[0]): 	# jk 		
  			    	if int(tmask[name][z,la,lo]) == 0: 	   continue
  			    	if np.ma.is_masked(zv[0,z,la,lo]): continue
- 			    	atlmoc[z,la] = atlmoc[name][z,la] - e1v[name][la,lo]*e3v[name][z,la,lo]*zv[0,z,la,lo]/1.E06 
+ 			    	atlmoc[z,la] = atlmoc[z,la] - e1v[name][la,lo]*e3v[name][z,la,lo]*zv[0,z,la,lo]/1.E06 
  			
  			####
  			# Cumulative sum from the bottom up.
@@ -1371,8 +1371,8 @@ def analysis_timeseries(jobID = "u-ab671",
 			av[name]['modelcoords'] = medusaCoords 	
 			av[name]['datacoords'] 	= medusaCoords
 
-			if name == 'AMOC_26N': 	av[name]['modeldetails']= {'name': name, 'vars':['vomecrty',], 'convert': calc_amoc_26N,'units':'Sv'}
-			if name == 'AMOC_32S': 	av[name]['modeldetails']= {'name': name, 'vars':['vomecrty',], 'convert': calc_amoc_32S,'units':'Sv'}
+			if name == 'AMOC_26N': 	av[name]['modeldetails']= {'name': name, 'vars':['vomecrty',], 'convert': calc_amoc26N,'units':'Sv'}
+			if name == 'AMOC_32S': 	av[name]['modeldetails']= {'name': name, 'vars':['vomecrty',], 'convert': calc_amoc32S,'units':'Sv'}
 				
 			av[name]['datadetails']  	= {'name':'','units':'',}
 			av[name]['layers'] 		=  ['layerless',]		
