@@ -1363,7 +1363,7 @@ def analysis_timeseries(jobID = "u-ab671",
  			####
  			# Cumulative sum from the bottom up.
  			for z in range(e3v.shape[0]-1,1,-1):  
- 				zomsf[z] = zomsf[z+1] +zomsf]z,:,:]/1.E06  # m*2 * m /s 
+ 				zomsf[z] = zomsf[z+1] +zomsf[z,:,:]/1.E06  # m*2 * m /s 
  			
 			print times, "zomsf",zomsf
 			print "MOC: ",t, 'max:',np.ma.max(zomsf)
