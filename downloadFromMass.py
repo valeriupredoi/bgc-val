@@ -139,7 +139,18 @@ def downloadMass(jobID,):
 	output = process.communicate()[0]
 
 
-
+	#####
+	# The coupled model looses the first two characters of the name in the netcdf file.
+	fns = glob(outputFold+"/"+jobID[2:]+"*.nc")
+	print "Looking for", outputFold+"/"+jobID[2:]+"*.nc"	
+	for fn in sorted(fns):
+		#####
+        	correctfn = fn.replace('/'+jobID[2:], '/'+jobID)
+	        if os.path.exists(correctfn):continue
+                print "Fixing file prefix",
+        	os.symlink(fn,correctfn)
+	        print correctfn
+	
 
 
 if __name__=="__main__":	
