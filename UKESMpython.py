@@ -26,6 +26,7 @@ from string import join
 from netCDF4 import Dataset
 from os.path  import exists,getmtime
 from os import mkdir, makedirs
+import os
 from glob import glob
 from itertools import product,izip
 import numpy as np
@@ -75,9 +76,9 @@ def folder(name):
 def rebaseSymlinks(fn,dryrun=True):
 	#####
 	# fn is a link file
-	if not os.path.exists(fn):
-		print "rebaseSymlinks:\tfile does not exist.",fn
-		return
+	#if not os.path.exists(fn):
+	#	print "rebaseSymlinks:\tfile does not exist.",fn
+	#	return
 	if not os.path.islink(fn):
 		print "rebaseSymlinks:\tfile is not a symlink.",fn
 		return
@@ -88,11 +89,10 @@ def rebaseSymlinks(fn,dryrun=True):
 	
 	if realpath == linkpath: return
 	
-	print "deleting", fn
-	print "linking ",fn,'-->', realpath
+	print "rebaseSymlinks:\tdeleting and re-linking ",fn,'-->', realpath
 	if dryrun:	return
 	os.remove(fn)
-	os.symlink(realpathfn)
+	os.symlink(realpath,fn)
 	
 
 

@@ -586,7 +586,7 @@ def getLongName(text,debug=False):
   	if text == 'DIC500m':	return "DIC (500m deep)"   
   	
   	if text == 'AMOC_26N':	return "AMOC 26N"     	
-  	if text == 'AMOC_32S':	return "AMOC 23S"     	  	
+  	if text == 'AMOC_32S':	return "AMOC 32S"     	  	
   		
 	if text == 'percentiles':	return "Time series"  
 	if text == 'Chlorophyll':	return "Chlorophyll"  

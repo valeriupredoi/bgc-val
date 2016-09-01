@@ -52,7 +52,7 @@ timeseriesKeys = ['T','S','MLD', 'Chl_pig','Chl_CCI',
 		  ]
 timeseriesDict = {i:n for i,n in enumerate(timeseriesKeys)}
 level1Keys = ['N', 'Si','O2','Alk','DIC','AirSeaFlux','TotalAirSeaFlux','IntPP_OSU','PP_OSU' ,'LocalExportRatio','GlobalExportRatio' ,'TotalOMZVolume','OMZThickness' ,'Iron',
-		'T', 'S','MLD','TotalIceArea', 'NorthernTotalIceArea','SouthernTotalIceArea','DrakePassageTransport','AMOC_26N',]
+		'T', 'S','MLD','TotalIceArea', 'NorthernTotalIceArea','SouthernTotalIceArea','DrakePassageTransport','AMOC_26N','AMOC_32S']
 level1KeysDict = {i:n for i,n in enumerate(level1Keys)}	
 
 
@@ -1325,7 +1325,7 @@ def analysis_timeseries(jobID = "u-ab671",
 
 			# load basin mask 
 			nc = Dataset('data/basinlandmask_eORCA1.nc','r')
-			alttmask[name] = e2u = nc.variables['tmaskatl'][latslice,:]	# 2D Atlantic mask
+			alttmask[name] = nc.variables['tmaskatl'][latslice,:]	# 2D Atlantic mask
 			nc.close()		
 	
 		def calc_amoc32S(nc,keys):

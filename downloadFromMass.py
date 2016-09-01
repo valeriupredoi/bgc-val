@@ -38,6 +38,27 @@ def getYearFromFile(fn):
 			      
 	return False
 	
+def rebaseSymlinks(fn,dryrun=True,debug=False):
+        #####
+        # fn is a link file
+        #if not os.path.exists(fn):
+        #       print "rebaseSymlinks:\tfile does not exist.",fn
+        #       return
+        if not os.path.islink(fn):
+                if debug:print "rebaseSymlinks:\tfile is not a symlink.",fn
+                return
+        #####
+        # Real path and first target:
+        realpath = os.path.realpath(fn)         # The final end of the link chin
+        linkpath = os.readlink(fn)              # The first target in the symlink chain
+
+        if realpath == linkpath: return
+
+        print "rebaseSymlinks:\tdeleting and re-linking ",fn,'-->', realpath
+        if dryrun:      return
+        os.remove(fn)
+        os.symlink(realpath,fn)
+
 	
 def findLastFinishedYear(jobID,dividby=1,numberfiles=6):
 	"""
@@ -151,7 +172,9 @@ def downloadMass(jobID,):
         	os.symlink(fn,correctfn)
 	        print correctfn
 	
-
+	#####
+	# This code looks at symoblic links and points them at their ultimate source, removing the long link chains.
+	for fn in glob(outputFold+'/*'): rebaseSymlinks(fn,dryrun=False)
 
 if __name__=="__main__":	
 	
