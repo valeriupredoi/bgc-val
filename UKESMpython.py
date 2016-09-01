@@ -72,6 +72,30 @@ def folder(name):
 		print 'makedirs ', name
 	return name
 
+def rebaseSymlinks(fn,dryrun=True):
+	#####
+	# fn is a link file
+	if not os.path.exists(fn):
+		print "rebaseSymlinks:\tfile does not exist.",fn
+		return
+	if not os.path.islink(fn):
+		print "rebaseSymlinks:\tfile is not a symlink.",fn
+		return
+	#####
+	# Real path and first target:
+	realpath = os.path.realpath(fn)		# The final end of the link chin
+	linkpath = os.readlink(fn)		# The first target in the symlink chain
+	
+	if realpath == linkpath: return
+	
+	print "deleting", fn
+	print "linking ",fn,'-->', realpath
+	if dryrun:	return
+	os.remove(fn)
+	os.symlink(realpathfn)
+	
+
+
 def mnStr(month):
 	mn = '%02d' %  month
 	return mn
