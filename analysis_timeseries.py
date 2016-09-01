@@ -53,11 +53,7 @@ timeseriesKeys = ['T','S','MLD', 'Chl_pig','Chl_CCI',
 timeseriesDict = {i:n for i,n in enumerate(timeseriesKeys)}
 
 level1Keys = ['N', 'Si','O2','Alk','DIC','AirSeaFlux','TotalAirSeaFlux','IntPP_OSU','PP_OSU' ,'LocalExportRatio','GlobalExportRatio' ,'TotalOMZVolume','OMZThickness' ,'Iron',
-<<<<<<< HEAD
-		'T', 'S','MLD','TotalIceArea', 'NorthernTotalIceArea','SouthernTotalIceArea','DrakePassageTransport','AMOC_26N','AMOC_32S']
-=======
 		'T', 'S','MLD','TotalIceArea', 'NorthernTotalIceArea','SouthernTotalIceArea','DrakePassageTransport','AMOC_26N','AMOC_32S',]
->>>>>>> b472e9af54e6b4c39a64feaf5ba1870c7355df7a
 level1KeysDict = {i:n for i,n in enumerate(level1Keys)}	
 physKeys  = ['T', 'S','MLD','TotalIceArea', 'NorthernTotalIceArea','SouthernTotalIceArea','DrakePassageTransport','AMOC_26N','AMOC_32S',]
 physKeysDict = {i:n for i,n in enumerate(physKeys)}	
