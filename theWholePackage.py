@@ -16,7 +16,7 @@ from multiprocessing import Pool
 
 from downloadFromMass import  downloadMass, findLastFinishedYear
 from analysis_timeseries import analysis_timeseries, singleTimeSeries, singleTimeSeriesProfile
-from analysis_timeseries import level1KeysDict, timeseriesDict
+from analysis_timeseries import level1KeysDict, timeseriesDict, physKeysDict
 from analysis_p2p import analysis_p2p, p2pDict_level2, single_p2p
 from makeReport import html5Maker
 from UKESMpython import folder
@@ -34,6 +34,12 @@ def timeseriesParrallelL1(index):
 	singleTimeSeries(jobID, key,)
 	print "timeseriesParrallel",index, jobID, 'SUCESS'	
 
+def timeseriesParrallelPhys(index):
+	print "timeseriesParrallel",index, jobID, 'START'
+	key = physKeysDict[index]
+	singleTimeSeries(jobID, key,)
+	print "timeseriesParrallel",index, jobID, 'SUCESS'
+	
 def p2pParrallel(index):
 	print "p2pParrallel",index, jobID, 'START'
 	key = p2pDict_level2[index]
@@ -43,7 +49,7 @@ def p2pParrallel(index):
 
 
 
-def theWholePackage(jobID,year=False):
+def theWholePackage(jobID,year=False,suite = 'level1'):
         if year == False: year = '*'
 	print "########\nThe Whole Package:\tStarting job", jobID , year
 #	downloadMass(jobID)
@@ -51,7 +57,7 @@ def theWholePackage(jobID,year=False):
 	parrallel = True
 	cores = 8
 	#suite = 'all'
-	suite = 'level1'
+	
 
         print "########\nThe Whole Package:\tmaking Summary report"
         if year == False: year = '*'
@@ -66,16 +72,20 @@ def theWholePackage(jobID,year=False):
 	if parrallel:
 		if suite =='all':	remaining = sorted(timeseriesDict.keys())[:]
 		if suite =='level1':	remaining = sorted(level1KeysDict.keys())[:]
+		if suite =='physics':	remaining = sorted(physKeysDict.keys())[:]		
 			
 	   	p = Pool(cores)
 	    	if suite =='all':	p.map(timeseriesParrallel,  remaining)
 	    	if suite =='level1':	p.map(timeseriesParrallelL1,remaining)
+	    	if suite =='physics':	p.map(timeseriesParrallelPhys,remaining)	    	
 	    	p.close()
 	else:	
-		analysis_timeseries(jobID =jobID,analysisSuite='level1', )#z_component = 'SurfaceOnly',)
+		analysis_timeseries(jobID =jobID,analysisSuite=suite, )#z_component = 'SurfaceOnly',)
 		
 		
-	if year not in ['*', False]:		
+	if year not in ['*', False]:
+		if suite =='physics':pass
+		else:	suite = 'level2'
 		print "########\nThe Whole Package:\tRunning point to point analysis of", jobID,"on", year
 		if parrallel:
 			remaining = sorted(p2pDict_level2.keys())[:]
@@ -91,7 +101,7 @@ def theWholePackage(jobID,year=False):
 				modelGrid = 'eORCA1',
 				annual 	= True,
 				noPlots = True,
-				analysisSuite='level2',) 
+				analysisSuite=suite,) 
 					    	
 		else:	
 			analysis_p2p(models	= ['NEMO','MEDUSA',],
@@ -100,7 +110,7 @@ def theWholePackage(jobID,year=False):
 				modelGrid = 'eORCA1',
 				annual 	= True,
 				noPlots = False,
-				analysisSuite='level2',)        
+				analysisSuite=suite,)        
 
 
 	
@@ -119,9 +129,13 @@ if __name__=="__main__":
 	if 'ReportOnly' in argv[:]:ReportOnly=True
 	else:	ReportOnly = False
 
+	if 'physics' in argv[:]:physicsOnly=True
+	else:	physicsOnly = False
+	
         year = findLastFinishedYear(jobID,dividby=25)		
 	if not ReportOnly:
-		theWholePackage(jobID,year=year)
+		if physicsOnly:	theWholePackage(jobID,year=year,suite='physics')
+		else:		theWholePackage(jobID,year=year)
 		
         if year == False: year = '*'
 	print "########\nThe Whole Package:\tmaking Summary report"	
