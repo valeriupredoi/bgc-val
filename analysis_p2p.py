@@ -152,7 +152,14 @@ def analysis_p2p(
 			analysisKeys.append('S')			# WOA Salinity
 			analysisKeys.append('MLD')			# iFERMER Mixed Layer Depth - work in prgress
 			
-																		
+		if analysisSuite.lower() in ['physics',]:
+			#####	
+			# Physics only switches:
+			analysisKeys.append('T')			# WOA Temperature
+			analysisKeys.append('S')			# WOA Salinity
+			analysisKeys.append('MLD')			# iFERMER Mixed Layer Depth - work in prgress
+			
+																					
 		if analysisSuite.lower() in ['debug',]:	
 		#	analysisKeys.append('AirSeaFlux')			# Globap tCO2
 		#	analysisKeys.append('N')			# WOA Nitrate	
