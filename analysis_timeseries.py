@@ -1412,6 +1412,9 @@ def analysis_timeseries(jobID = "u-ab671",
 		modelfilesexists = [os.path.exists(f) for f in av[name]['modelFiles']]
 		if False in modelfilesexists:
 			print "analysis-Timeseries.py:\tWARNING:\tnot model files do not all exist:",av[name]['modelFiles'] 
+			for f in av[name]['modelFiles']: 
+				if os.path.exists(f):continue
+				print f, 'does not exist'
 			if strictFileCheck: assert 0
 			
 			
