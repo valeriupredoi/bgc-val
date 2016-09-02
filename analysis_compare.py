@@ -92,7 +92,8 @@ def timeseries_compare():
 	analysisKeys.append('SouthernTotalIceArea')	# South TotalIceArea
 	analysisKeys.append('AMOC_26N')
 	analysisKeys.append('AMOC_32S')
-		
+	analysisKeys.append('T')                        # WOA Temperature
+	analysisKeys.append('S')                        # WOA Salinity			
 
 	analysisKeys.append('N')                        # WOA Nitrate
 	analysisKeys.append('Si')                       # WOA Siliate
