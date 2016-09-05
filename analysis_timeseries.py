@@ -419,9 +419,14 @@ def analysis_timeseries(jobID = "u-ab671",
 	#			print "need to figoure out how to implement this."
 	#			assert 0
 #	#			return sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1m_*_"+filekey+".nc"))		
-		
 
+	masknc = Dataset(orcaGridfn,'r')
+	tlandmask = masknc.variables['tmask'][:]
+	masknc.close()
 
+	def applyLandMask(nc,keys):
+		#### works like no change, but applies a mask.
+		return np.ma.masked_where(tlandmask==0,nc.variables[keys[0]][:])
   	
   	#####
   	# The analysis settings:
@@ -1112,7 +1117,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modelcoords'] 	= medusaCoords 	
 		av[name]['datacoords'] 		= woaCoords
 	
-		av[name]['modeldetails'] 	= {'name': name, 'vars':['votemper',], 'convert': ukp.NoChange,'units':'degrees C'}
+		av[name]['modeldetails'] 	= {'name': name, 'vars':['votemper',], 'convert': ukp.applyLandMask,'units':'degrees C'}
 		av[name]['datadetails']  	= {'name': name, 'vars':['t_an',], 'convert': ukp.NoChange,'units':'degrees C'}
 	
 		av[name]['layers'] 		=  layerList
@@ -1139,7 +1144,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modelcoords'] 	= medusaCoords 	
 		av[name]['datacoords'] 		= woaCoords
 	
-		av[name]['modeldetails'] 	= {'name': name, 'vars':['vosaline',], 'convert': ukp.NoChange,'units':'PSU'}	
+		av[name]['modeldetails'] 	= {'name': name, 'vars':['vosaline',], 'convert': ukp.applyLandMask,'units':'PSU'}	
 		av[name]['datadetails']  	= {'name': name, 'vars':['s_an',], 'convert': ukp.NoChange,'units':'PSU'}
 
 		av[name]['layers'] 		=  layerList
