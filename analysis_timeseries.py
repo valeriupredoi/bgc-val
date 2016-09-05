@@ -426,7 +426,7 @@ def analysis_timeseries(jobID = "u-ab671",
 
 	def applyLandMask(nc,keys):
 		#### works like no change, but applies a mask.
-		return np.ma.masked_where(tlandmask==0,nc.variables[keys[0]][:])
+		return np.ma.masked_where(tlandmask==0,nc.variables[keys[0]][:].squeeze())
   	
   	#####
   	# The analysis settings:
@@ -1117,7 +1117,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modelcoords'] 	= medusaCoords 	
 		av[name]['datacoords'] 		= woaCoords
 	
-		av[name]['modeldetails'] 	= {'name': name, 'vars':['votemper',], 'convert': ukp.applyLandMask,'units':'degrees C'}
+		av[name]['modeldetails'] 	= {'name': name, 'vars':['votemper',], 'convert': applyLandMask,'units':'degrees C'}
 		av[name]['datadetails']  	= {'name': name, 'vars':['t_an',], 'convert': ukp.NoChange,'units':'degrees C'}
 	
 		av[name]['layers'] 		=  layerList
@@ -1144,7 +1144,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modelcoords'] 	= medusaCoords 	
 		av[name]['datacoords'] 		= woaCoords
 	
-		av[name]['modeldetails'] 	= {'name': name, 'vars':['vosaline',], 'convert': ukp.applyLandMask,'units':'PSU'}	
+		av[name]['modeldetails'] 	= {'name': name, 'vars':['vosaline',], 'convert': applyLandMask,'units':'PSU'}	
 		av[name]['datadetails']  	= {'name': name, 'vars':['s_an',], 'convert': ukp.NoChange,'units':'PSU'}
 
 		av[name]['layers'] 		=  layerList
@@ -1453,8 +1453,31 @@ def analysis_timeseries(jobID = "u-ab671",
 			#shelves[name] = profa.shelvefn
 			#shelves_insitu[name] = profa.shelvefn_insitu				
 	
+                #####
+                # time series and traffic lights.
+                tsa = timeseriesAnalysis(
+                        av[name]['modelFiles'],
+                        av[name]['dataFile'],
+                        dataType        = name,
+                        modelcoords     = av[name]['modelcoords'],
+                        modeldetails    = av[name]['modeldetails'],
+                        datacoords      = av[name]['datacoords'],
+                        datadetails     = av[name]['datadetails'],
+                        datasource      = av[name]['datasource'],
+                        model           = av[name]['model'],
+                        jobID           = jobID,
+                        layers          = av[name]['layers'],
+                        regions         = av[name]['regions'],
+                        metrics         = av[name]['metrics'],
+                        workingDir      = shelvedir,
+                        imageDir        = imagedir,
+                        grid            = av[name]['modelgrid'],
+                        gridFile        = av[name]['gridFile'],
+                        clean           = clean,
+                )
+
 		#####
-		# Profile plots first	
+		# Profile plots 	
 		if av[name]['Dimensions'] == 3:
 			profa = profileAnalysis(
 				av[name]['modelFiles'], 
@@ -1478,28 +1501,6 @@ def analysis_timeseries(jobID = "u-ab671",
 			)
 			#shelves[name] = profa.shelvefn
 			#shelves_insitu[name] = profa.shelvefn_insitu
-		#####
-		# time series and traffic lights.
-		tsa = timeseriesAnalysis(
-			av[name]['modelFiles'], 
-			av[name]['dataFile'],
-			dataType	= name,
-  			modelcoords 	= av[name]['modelcoords'],
-  			modeldetails 	= av[name]['modeldetails'],
-  			datacoords 	= av[name]['datacoords'],
-  			datadetails 	= av[name]['datadetails'],								
-			datasource	= av[name]['datasource'],
-			model 		= av[name]['model'],
-			jobID		= jobID,
-			layers	 	= av[name]['layers'],
-			regions	 	= av[name]['regions'],			
-			metrics	 	= av[name]['metrics'],
-			workingDir	= shelvedir,
-			imageDir	= imagedir,					
-			grid		= av[name]['modelgrid'],
-			gridFile	= av[name]['gridFile'],
-			clean 		= clean,
-		)
 		
 		#shelves[name] = tsa.shelvefn
 		#shelves_insitu[name] = tsa.shelvefn_insitu
