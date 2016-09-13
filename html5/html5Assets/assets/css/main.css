@@ -1861,41 +1861,40 @@
 	form ::-moz-focus-inner {
 		border: 0;
 	}
-
+	
 /* Table */
 
 	table {
-		width: 100%;
+		width: 90%;
+    		margin-left:5%; 
+    		margin-right:5%;
+		border-bottom: 1px solid #ddd;			    				
 	}
 
 		table.default {
-			width: 100%;
-			text-align: left;
+			text-align: center;
+			border-bottom: 1px solid #ddd;			
 		}
 
-			table.default tbody tr:nth-child(2n+2) {
+			table.default tbody tr:nth-child(2n+1) { /* Table even row*/
 				background: #f4f4f4;
 			}
 
-			table.default td {
+			table.default td { /* Table cell*/
+				padding: 0.01em;
+			}
+			table.default tr { /* Table row */
+				border-bottom: 1px solid #ddd;			
+			}
+			
+			table.default th { /* Table header*/
+				font-weight: bold;			
+				text-align: center;
 				padding: 0.5em 1em 0.5em 1em;
+				border-top: 2.6px solid #ddd;							
+				border-bottom: 2.6px solid #ddd;											
 			}
-
-			table.default th {
-				text-align: left;
-				padding: 0.5em 1em 0.5em 1em;
-				color: #fff;
-				background: #222729 url("images/overlay.png");
-			}
-
-			table.default thead {
-				background: #444;
-				color: #fff;
-			}
-
-			table.default tfoot {
-				background: #eee;
-			}
+			
 
 /* Button */
 

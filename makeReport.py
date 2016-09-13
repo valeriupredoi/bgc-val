@@ -27,8 +27,7 @@ from glob import glob
 from sys import argv
 import os 
 import shutil
-from html5 import html5Tools
-
+from html5 import html5Tools, htmltables
 
 #####
 # makeReport.py:
@@ -151,10 +150,11 @@ def html5Maker(
 	
 	#####
 	# Two switches to turn on Summary section, and groups of plots of field and region.		
-	Level1 = True
-	Level1Regional = True
-	Level1Profiles = True	
-	level2Horizontal = True
+	Level0 = True	
+	Level1 = 0#True
+	Level1Regional = 0#True
+	Level1Profiles = 0#True	
+	level2Horizontal = 0#True
 	level2Physics = False
 	summarySections = False
 	plotbyfieldandregion = False
@@ -176,6 +176,40 @@ def html5Maker(
 		ListofCaveats['IntegratedPrimaryProduction_OSU']= 'Note that the Non-diatom chlorophyll does not contribute to IntPP in this run:'+jobID
 
 
+	if Level0:
+
+		SectionTitle= 'Level 0'
+		href = 'level0-table'
+
+		Description  = 'A set of metrics to describe the current state of the run.'
+		Caption  = 'The caption of the table, showing all fields data sources.'
+				
+		#region = 'Global'		
+		table_data = [
+		    ['Field 1',       '15 +/- 3',        '20 +/- 12'],
+		    ['Field 2',       '200',        '120'],            
+		    ['Field 1',       '15 +/- 3',        '20 +/- 12'],
+		    ['Field 2',       '200',        '120'],  
+		    ['Field 1',       '15 +/- 3',        '20 +/- 12'],
+		    ['Field 2',       '200',        '120'],  		    		    
+		]
+
+		l0htmltable = htmltables.table(table_data,
+			header_row = ['Property',   'Model',   'Data'],
+			#col_width=['30%', '25%', '25%',],
+			#col_align=['center', 'center', 'center'],
+			#col_styles=['', '', '']
+		)
+    
+    
+		html5Tools.AddTableSection(indexhtmlfn,
+				href,
+				SectionTitle,
+				Description=Description,
+				Caption=Caption,
+				tablehtml=l0htmltable)
+				
+				
 
 	if Level1:
 		level1Fields = [

@@ -90,6 +90,7 @@ __author__  = 'Philippe Lagadec'
 #--- CONSTANTS -----------------------------------------------------------------
 
 # Table style to get thin black lines in Mozilla/Firefox instead of 3D borders
+default_HTML_Class = "default" #to use the default css class. 
 TABLE_STYLE_THINBORDER = "border: 1px solid #000000; border-collapse: collapse;"
 #TABLE_STYLE_THINBORDER = "border: 1px solid #000000;"
 
@@ -239,15 +240,15 @@ class Table (object):
     Reference: http://www.w3.org/TR/html4/struct/tables.html#h-11.2.1
     """
 
-    def __init__(self, rows=None, border='1', style=None, width=None,
-                cellspacing=None, cellpadding=4, attribs=None, header_row=None,
+    def __init__(self, rows=None, border=None, tabclass=None, style=None, width=None,
+                cellspacing=None, cellpadding=None, attribs=None, header_row=None,
                 col_width=None, col_align=None, col_valign=None,
                 col_char=None, col_charoff=None, col_styles=None):
         """TableCell constructor"""
         self.border = border
         self.style = style
-        # style for thin borders by default
-        if style == None: self.style = TABLE_STYLE_THINBORDER
+        self.tabclass = tabclass
+        if self.tabclass == None: self.tabclass = default_HTML_Class
         self.width       = width
         self.cellspacing = cellspacing
         self.cellpadding = cellpadding
@@ -266,6 +267,7 @@ class Table (object):
     def __str__(self):
         """return the HTML code for the table as a string"""
         attribs_str = ""
+        if self.tabclass: self.attribs['class'] = self.tabclass        
         if self.border: self.attribs['border'] = self.border
         if self.style:  self.attribs['style'] = self.style
         if self.width:  self.attribs['width'] = self.width
@@ -427,7 +429,8 @@ def list(*args, **kwargs):
 
 if __name__ == '__main__':
 
-    import HTML
+    try:import HTML
+    except:pass
     # open an HTML file to show output in a browser
     f = open('test.html', 'w')
 

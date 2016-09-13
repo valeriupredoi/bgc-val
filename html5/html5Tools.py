@@ -165,6 +165,39 @@ def AddSection(filepath,href,Title, Description='',Files=[]):
 	
 	AddtoFile(filepath,linenumber,outtxt)	
 
+def AddTableSection(filepath,href,Title, Description='',Caption='',tablehtml=[]):
+	"""	Addes a section to the file "filepath."
+	"""
+	#####
+	# Add a link to the side bar
+	writeSideBar(filepath, href, Title)
+
+	##### 
+	# Copy the template and add the images.
+	f = open("html5/section-template.html", "r")
+	contents = f.readlines()
+	f.close()
+
+			
+	#####
+	# Add Title, description and figures to the copied template
+	for l,line in enumerate(contents):
+		if line.find('inserthref')>=0:	contents[l] = contents[l].replace('inserthref',href)
+		if line.find('Title')>=0:	contents[l] = contents[l].replace('Title',Title)
+		if line.find('Description')>=0:	contents[l] = contents[l].replace('Description',Description)				
+		if line.find('Table')>=0:	contents[l+1] += tablehtml
+		if len(Caption) and line.find('TabCaption')>=0:
+						contents[l+1] += '<p>'+Caption+'</p>'
+	
+	#####
+	# Convert the list into a string				
+	outtxt = '\n'.join(contents)
+	
+	#####
+	# Add this into the template file.
+	linenumber = locateLineNumber(filepath, 'AddSectionHere') -1
+	
+	AddtoFile(filepath,linenumber,outtxt)	
 
 def AddSubSections(filepath,hrefs,SectionTitle,SidebarTitles = {},Titles={}, Descriptions={},FileLists={},FileOrder={}):
 	"""	Addes a section and a series of nested subsectionto the file "filepath."
