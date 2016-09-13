@@ -181,8 +181,10 @@ def html5Maker(
 		SectionTitle= 'Level 0'
 		href = 'level0-table'
 
-		Description  = 'A set of metrics to describe the current state of the run.'
-		Caption  = 'The caption of the table, showing all fields data sources.'
+		Description  = 'A set of metrics to describe the state of the run in the year: '+str(year)
+		
+		Caption  = '<br>The caption of the table, showing all fields data sources.'
+		Caption += '<br>Model data was extracted in the year: '+str(year)
 				
 		#region = 'Global'		
 		table_data = [
@@ -193,7 +195,7 @@ def html5Maker(
 		    ['Field 1',       '15 +/- 3',        '20 +/- 12'],
 		    ['Field 2',       '200',        '120'],  		    		    
 		]
-
+		
 		l0htmltable = htmltables.table(table_data,
 			header_row = ['Property',   'Model',   'Data'],
 			#col_width=['30%', '25%', '25%',],
