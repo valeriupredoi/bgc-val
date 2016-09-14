@@ -255,11 +255,11 @@ def html5Maker(
 			  'Silicate',
 			  'DIC',
 			  'Alkalinity',
+			  'TotalOMZVolume',		  
 			  'AMOC_26N',
 			  'DrakePassageTransport',
 			  'NorthernTotalIceExtent',
 			  'SouthernTotalIceExtent',	
-			  'TotalOMZVolume',		  
 			  ]
 		timestrs=[]	
 		for field in fields:
@@ -328,8 +328,7 @@ def html5Maker(
 				table_data.append([longname, modcol,datcol ])
 				
 				if len(source):	Caption+= '<br><b>'+longname+'</b>: The data was taken from: '+source									
-		if len(timestrs):	Caption +='<br><b> Model</b> is the mean of the range '+timestrs[0] +'. '
-		Caption +='<br>All model data are annual means. '	
+		if len(timestrs):	Caption +='<br><b> Model</b> is the mean of the annual means in the range '+timestrs[0] +'. '
 		
 		l0htmltable = htmltables.table(table_data,
 			header_row = ['Property',   'Model',   'Data'],
