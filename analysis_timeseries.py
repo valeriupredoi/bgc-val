@@ -306,37 +306,39 @@ def analysis_timeseries(jobID = "u-ab671",
 	# JASMIN		
 	if gethostname().find('ceda.ac.uk')>-1:
 		print "analysis-timeseries.py:\tBeing run at CEDA on ",gethostname()
-		machinelocation = 'JASMIN'	
+		#machinelocation = 'JASMIN'	
 				
-		ObsFolder 	= "/group_workspaces/jasmin/esmeval/example_data/bgc/"
-		esmvalFolder 	= "/group_workspaces/jasmin2/ukesm/BGC_data/"
+		#ObsFolder 	= "/group_workspaces/jasmin/esmeval/example_data/bgc/"
+		#esmvalFolder 	= "/group_workspaces/jasmin2/ukesm/BGC_data/"
 		shelvedir 	= ukp.folder("/group_workspaces/jasmin2/ukesm/BGC_data/"+getuser()+"/shelves/timeseries/"+jobID)
+		if annual:	WOAFolder = paths.WOAFolder_annual
+		else:		WOAFolder = paths.WOAFolder	
 			
 		#####
 		# Location of model files.	
-		MEDUSAFolder_pref	= ukp.folder(esmvalFolder)
+		#MEDUSAFolder_pref	= ukp.folder(esmvalFolder)
 		
 		#####
 		# Location of data files.
-		if annual:	WOAFolder 	= ukp.folder(ObsFolder+"WOA/annual")
-		else:		WOAFolder 	= ukp.folder(ObsFolder+"WOA/")
+		#if annual:	WOAFolder 	= ukp.folder(ObsFolder+"WOA/annual")
+		#else:		WOAFolder 	= ukp.folder(ObsFolder+"WOA/")
 		
-		MAREDATFolder 	= ObsFolder+"/MAREDAT/MAREDAT/"
-		GEOTRACESFolder = ObsFolder+"/GEOTRACES/GEOTRACES_PostProccessed/"
-		TakahashiFolder = ObsFolder+"/Takahashi2009_pCO2/"
-		MLDFolder	= ObsFolder+"/IFREMER-MLD/"
-		iMarNetFolder	= ObsFolder+"/LestersReportData/"
-		GlodapDir	= ObsFolder+"/GLODAP/"
-		GLODAPv2Dir	= ObsFolder+"/GLODAPv2/GLODAPv2_Mapped_Climatologies/"
-		OSUDir		= ObsFolder+"OSU/"
-		CCIDir		= ObsFolder+"CCI/"
-		icFold		= ObsFolder+"/InitialConditions/"
-		if jobID in ["xkrus",]:
-			# Old school ORCA1 grid
-			orcaGridfn 	='/group_workspaces/jasmin/esmeval/example_data/bgc/mesh_mask_ORCA1_75.nc'
-		else:
-			# New eORCA1 grid		
-			orcaGridfn 	= '/group_workspaces/jasmin/esmeval/example_data/bgc/mesh_mask_eORCA1_wrk.nc'
+		#MAREDATFolder 	= ObsFolder+"/MAREDAT/MAREDAT/"
+		#GEOTRACESFolder = ObsFolder+"/GEOTRACES/GEOTRACES_PostProccessed/"
+		#TakahashiFolder = ObsFolder+"/Takahashi2009_pCO2/"
+		#MLDFolder	= ObsFolder+"/IFREMER-MLD/"
+		#iMarNetFolder	= ObsFolder+"/LestersReportData/"
+		#GlodapDir	= ObsFolder+"/GLODAP/"
+		#GLODAPv2Dir	= ObsFolder+"/GLODAPv2/GLODAPv2_Mapped_Climatologies/"
+		#OSUDir		= ObsFolder+"OSU/"
+		#CCIDir		= ObsFolder+"CCI/"
+		#icFold		= ObsFolder+"/InitialConditions/"
+		#if jobID in ["xkrus",]:
+		#	# Old school ORCA1 grid
+		#	orcaGridfn 	='/group_workspaces/jasmin/esmeval/example_data/bgc/mesh_mask_ORCA1_75.nc'
+		#else:
+		#	# New eORCA1 grid		
+		#	orcaGridfn 	= '/group_workspaces/jasmin/esmeval/example_data/bgc/mesh_mask_eORCA1_wrk.nc'
         # MONSOON                 
         if gethostname().find('monsoon')>-1:
                 print "analysis-timeseries.py:\tBeing run at the Met Office on ",gethostname()
