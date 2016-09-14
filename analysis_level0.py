@@ -55,7 +55,8 @@ def analysis_level0(jobID='',field= "AMOC_26N",region='regionless', layer='layer
 
 	#####
 	# Load data
-	rlmData = modeldata[(region, layer, metric)]
+	try:	rlmData = modeldata[(region, layer, metric)]
+	except:	return False, False,False
 	if debug:print 'analysis_level0:', rlmData
 
 	#####

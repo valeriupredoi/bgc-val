@@ -261,12 +261,13 @@ def html5Maker(
 			  'SouthernTotalIceExtent',	
 			  'TotalOMZVolume',		  
 			  ]
-		
+		timestrs=[]	
 		for field in fields:
 			if field in ['Nitrate','Silicate','DIC','Alkalinity',]:
 			    for (r,l,m) in [('Global', 'Surface', 'mean'),('SouthernOcean', 'Surface', 'mean')]:
 				name, mdata, timestr = analysis_level0(jobID=jobID,field= field,region=r, layer=l, metric=m)
 				if False in [name, mdata, timestr]:continue				
+                                if timestr not in timestrs:timestrs.append(timestr)
 				
 				try:	rdata=realData_dict[field]
 				except:	rdata=''
@@ -292,6 +293,7 @@ def html5Maker(
 
 				name, mdata, timestr = analysis_level0(jobID=jobID,field= field,)#region='regionless', layer='layerless', metric='metricless')
 				if False in [name, mdata, timestr]:continue				
+                                if timestr not in timestrs:timestrs.append(timestr)
 				
 				try:	rdata=realData_dict[field]
 				except:	rdata=''
@@ -314,7 +316,7 @@ def html5Maker(
 				table_data.append([longname, modcol,datcol ])
 				
 				if len(source):	Caption+= '<br><b>'+longname+'</b>: The data was taken from: '+source									
-		if len(timestr):	Caption +='<br><b> Model</b> is the mean of the range '+timestr +'. '
+		if len(timestrs):	Caption +='<br><b> Model</b> is the mean of the range '+timestrs[0] +'. '
 		
 		l0htmltable = htmltables.table(table_data,
 			header_row = ['Property',   'Model',   'Data'],
