@@ -198,10 +198,7 @@ def html5Maker(
 		
 		table_data = []	
 		
-		Description  = 'A set of metrics to describe the state of the run'
-		if year not in ['*','',None]: 
-			Description+=' in the year: '+str(year)+'.'
-		else:	Description+='.'
+		Description  = 'A set of metrics to describe the state of the run.'
 		
 		Caption  = ''
 		
