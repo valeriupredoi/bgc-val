@@ -21,13 +21,14 @@
 # Email:
 # ledm@pml.ac.uk
 
-from UKESMpython import folder, shouldIMakeFile
+from UKESMpython import folder, shouldIMakeFile,round_sig
 from pftnames import getLongName
 from glob import glob
 from sys import argv
 import os 
 import shutil
 from html5 import html5Tools, htmltables
+from analysis_level0 import analysis_level0,analysis_level0_insitu
 
 #####
 # makeReport.py:
@@ -151,10 +152,10 @@ def html5Maker(
 	#####
 	# Two switches to turn on Summary section, and groups of plots of field and region.		
 	Level0 = True	
-	Level1 = 0#True
-	Level1Regional = 0#True
-	Level1Profiles = 0#True	
-	level2Horizontal = 0#True
+	Level1 = True
+	Level1Regional = True
+	Level1Profiles =  True	
+	level2Horizontal = True
 	level2Physics = False
 	summarySections = False
 	plotbyfieldandregion = False
@@ -177,32 +178,148 @@ def html5Maker(
 
 
 	if Level0:
+		# Level 0 metrics
+		# x	1. Globally integrated primary production
+		# x	2. Global average export fraction (i.e. globally integrated export / globally integrated primary production)
+		# x	3. Globally integrated CO2 flux
+		# x	4. Globally averaged surface DIN concentration
+		# x	5. Globally averaged surface silicic acid concentration
+		# x	6. Globally averaged surface DIC concentration
+		#	7. Globally averaged surface alkalinity concentration
+		#	8-11. As 4-7, but for the surface Southern Ocean [*]
+		# x	12. AMOC
+		# x	13. Drake transport
+		# 	14-15. Volume of the Arctic / Antarctic sea-ice
+		#	16-17. Extent of the Arctic / Antarctic sea-ice
+
 
 		SectionTitle= 'Level 0'
 		href = 'level0-table'
-
-		Description  = 'A set of metrics to describe the state of the run in the year: '+str(year)
 		
-		Caption  = '<br>The caption of the table, showing all fields data sources.'
-		Caption += '<br>Model data was extracted in the year: '+str(year)
+		table_data = []	
+		
+		Description  = 'A set of metrics to describe the state of the run'
+		if year not in ['*','',None]: 
+			Description+=' in the year: '+str(year)+'.'
+		else:	Description+='.'
+		
+		Caption  = ''
+		
+		realData_dict	= {
+				   'TotalIntegratedPrimaryProduction':'Target: 30-60',
+				   'ExportRatio':		'?',
+				   'TotalAirSeaFluxCO2':	'Target: 0.',
+				   'Nitrate':			'',
+ 				   'Silicate':			'',
+				   'DIC':			'',
+				   'Alkalinity':		'',						   				   
+				   'AMOC_26N':			'Target: 10-20',
+				   'DrakePassageTransport': 	'136.7 	&#177; 7.8 ', 	#	&#177; is +/-
+				   'NorthernTotalIceExtent':	'?',
+				   'SouthernTotalIceExtent':	'?',	
+			  	   'TotalOMZVolume':		'',			  				   			   				   			   	
+				  }
+		realData_source = {
+				   'TotalIntegratedPrimaryProduction':'',
+				   'ExportRatio':		'',
+				   'TotalAirSeaFluxCO2':		'',
+				   'Nitrate':			'World Ocean Atlas',
+ 				   'Silicate':			'World Ocean Atlas',
+				   'DIC':			'GLODAP',
+				   'Alkalinity':		'',						   
+				   'AMOC_26N':			'',
+				   'DrakePassageTransport': 	'Cunningham, S. A., S. G. Alderson, B. A. King, and M. A. Brandon (2003), Transport and variability of the Antarctic Circumpolar Current in Drake Passage, J. Geophys. Res., 108, 8084, doi:10.1029/2001JC001147, C5.',
+				   'NorthernTotalIceExtent':	'',
+				   'SouthernTotalIceExtent':	'',
+			  	   'TotalOMZVolume':		'World Ocean Atlas',			  				   			   				   				   	
+				  }		
+		units_dict	= {
+				   'TotalIntegratedPrimaryProduction':'Gt/yr',
+				   'ExportRatio':		'',	# no units
+				   'TotalAirSeaFluxCO2':	'Pg C/yr',
+				   'Nitrate':			'mmol N/m&#179;',	# &#179; is superscript 3
+ 				   'Silicate':			'mmol Si/m&#179;',	
+				   'DIC':			'mmol C/m&#179;',
+				   'Alkalinity':		'meq/m&#179;',		
+				   'AMOC_26N':			'Sv',
+				   'DrakePassageTransport':	'Sv',
+				   'NorthernTotalIceExtent':	'x 1E6 km&#178;',	# &#178; is superscript 2
+				   'SouthernTotalIceExtent':	'x 1E6 km&#178;',	
+			  	   'TotalOMZVolume':		'm&#179;',			  				   			   
+				  }
+		
+		fields = ['TotalIntegratedPrimaryProduction',
+			  'ExportRatio',
+			  'TotalAirSeaFluxCO2',
+			  'Nitrate',
+			  'Silicate',
+			  'DIC',
+			  'Alkalinity',
+			  'AMOC_26N',
+			  'DrakePassageTransport',
+			  'NorthernTotalIceExtent',
+			  'SouthernTotalIceExtent',	
+			  'TotalOMZVolume',		  
+			  ]
+		
+		for field in fields:
+			if field in ['Nitrate','Silicate','DIC','Alkalinity',]:
+			    for (r,l,m) in [('Global', 'Surface', 'mean'),('SouthernOcean', 'Surface', 'mean')]:
+				name, mdata, timestr = analysis_level0(jobID=jobID,field= field,region=r, layer=l, metric=m)
+				if False in [name, mdata, timestr]:continue				
 				
-		#region = 'Global'		
-		table_data = [
-		    ['Field 1',       '15 +/- 3',        '20 +/- 12'],
-		    ['Field 2',       '200',        '120'],            
-		    ['Field 1',       '15 +/- 3',        '20 +/- 12'],
-		    ['Field 2',       '200',        '120'],  
-		    ['Field 1',       '15 +/- 3',        '20 +/- 12'],
-		    ['Field 2',       '200',        '120'],  		    		    
-		]
+				try:	rdata=realData_dict[field]
+				except:	rdata=''
+				if  rdata=='':
+					rdata = analysis_level0_insitu(jobID=jobID,field= field,region=r, layer=l, metric=m)
+					if rdata == False:rdata 	= ''
+					else: 		  rdata = round_sig(rdata,4)
+														
+				try:	u 	= ' '+units_dict[field]					
+				except:	u 	= ''
+
+				try:	source 	= realData_source[field]					
+				except:	source 	= ''
+			
+				longname = getLongName(name,debug=1)
+				modcol = str(round_sig(mdata,4))+u
+				datcol = str(rdata)+u
+				table_data.append([longname, modcol,datcol ])
+				
+			    if len(source):	Caption+= '<br><b>'+getLongName(field)+'</b>: The data was taken from: '+source
+					
+			else:
+
+				name, mdata, timestr = analysis_level0(jobID=jobID,field= field,)#region='regionless', layer='layerless', metric='metricless')
+				if False in [name, mdata, timestr]:continue				
+				
+				try:	rdata=realData_dict[field]
+				except:	rdata=''
+				if  rdata=='':
+					rdata = analysis_level0_insitu(jobID=jobID,field= field,region='regionless', layer='layerless', metric='metricless')
+					if rdata == False:rdata 	= ''
+					else: 		  rdata = round_sig(rdata,4)
+								
+				try:	u 	= ' '+units_dict[field]					
+				except:	u 	= ''
+
+				try:	source 	= realData_source[field]					
+				except:	source 	= ''
+			
+				longname = getLongName(name,debug=1)
+				modcol = str(round_sig(mdata,4))+u
+				datcol = str(rdata)+u
+	#			Caption+= '<br><b>'+longname+':</b> Model is the mean of the range '+timestr +'. '+\
+	#							'The data was taken from: '+source
+				table_data.append([longname, modcol,datcol ])
+				
+				if len(source):	Caption+= '<br><b>'+longname+'</b>: The data was taken from: '+source									
+		if len(timestr):	Caption +='<br><b> Model</b> is the mean of the range '+timestr +'. '
 		
 		l0htmltable = htmltables.table(table_data,
 			header_row = ['Property',   'Model',   'Data'],
-			#col_width=['30%', '25%', '25%',],
-			#col_align=['center', 'center', 'center'],
-			#col_styles=['', '', '']
+		        col_align=['left', 'center', 'center'],
 		)
-    
     
 		html5Tools.AddTableSection(indexhtmlfn,
 				href,

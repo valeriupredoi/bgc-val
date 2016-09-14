@@ -358,6 +358,76 @@ def simpletimeseries(
 def movingaverage(interval, window_size):
     window = np.ones(int(window_size))/float(window_size)
     return np.convolve(interval, window, 'same')
+
+def movingaverage2(x,window_len=11,window='hanning',extrapolate='axially'):
+    """smooth the data using a window with requested size.
+    
+    This method is based on the convolution of a scaled window with the signal.
+    The signal is prepared by introducing reflected copies of the signal 
+    (with the window size) in both ends so that transient parts are minimized
+    in the begining and end part of the output signal.
+    
+    input:
+        x: the input signal 
+        window_len: the dimension of the smoothing window; should be an odd integer
+        window: the type of window from 'flat', 'hanning', 'hamming', 'bartlett', 'blackman'
+            flat window will produce a moving average smoothing.
+
+    output:
+        the smoothed signal
+        
+    example:
+
+    t=linspace(-2,2,0.1)
+    x=sin(t)+randn(len(t))*0.1
+    y=smooth(x)
+    
+    see also: 
+    
+    numpy.hanning, numpy.hamming, numpy.bartlett, numpy.blackman, numpy.convolve
+    scipy.signal.lfilter
+ 
+    TODO: the window parameter could be the window itself if an array instead of a string   
+    """
+
+    if x.ndim != 1:
+        raise ValueError("smooth only accepts 1 dimension arrays.")
+
+    if x.size < window_len:
+        raise ValueError("Input vector needs to be bigger than window size.")
+
+
+    if window_len<3:
+        return x
+
+
+    if not window in ['flat', 'hanning', 'hamming', 'bartlett', 'blackman'
+            , 'robust']:
+        raise ValueError("Window is on of 'flat', 'hanning', 'hamming', 'bartlett', 'blackman'")
+
+ # extrapolation by reflection of dat at end point
+    if extrapolate=='axially':
+        s=r_[x[window_len-1::-1],x,x[-1:-window_len:-1]]
+ # extrapolation by rotation of data at end point
+    else:
+        s=r_[2*x[0]-x[window_len-1::-1],x,2*x[-1]-x[-1:-window_len:-1]]
+    #print(len(s))
+    if window == 'flat': #moving average
+        w=ones(window_len,'d')
+    elif window=='robust':
+        pass
+    else:
+        w=eval(window+'(window_len)')
+
+    if window=='robust':
+        y=s.copy()
+        for n in xrange(window_len,len(y)-window_len+1):
+                y[n]=median(s[n-window_len/2:n+window_len/2+1])
+    else:
+        y=convolve(w/w.sum(),s,mode='same')
+    return y[window_len:-window_len+1]
+    
+        
     
 def multitimeseries(
 		timesD, 		# model times (in floats)
@@ -429,7 +499,8 @@ def multitimeseries(
 			elif len(times)>10.: window = 4			
 			else: window = 1
 			
-			arr_new = movingaverage(arr, window)
+			#arr_new = movingaverage(arr, window)
+			arr_new = movingaverage2(arr, window)
 			print np.array(arr).shape, '->',np.array(arr_new).shape
 			counts = np.arange(len(arr))
 			arr_new = np.ma.masked_where((counts<window/2.) + (counts>len(arr)-window/2.) ,arr_new)

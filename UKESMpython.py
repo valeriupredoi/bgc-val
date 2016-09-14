@@ -27,6 +27,7 @@ from netCDF4 import Dataset
 from os.path  import exists,getmtime
 from os import mkdir, makedirs
 import os
+import math
 from glob import glob
 from itertools import product,izip
 import numpy as np
@@ -1126,6 +1127,12 @@ def strRound(val,i=4):
 	if val>10: return str(round(val,i-2))
 	if val>1: return str(round(val,i-1))
 	return str(round(val,i))
+
+
+def round_sig(x, sig=2):
+	if x<0.:return -1.* round(abs(x), sig-int(math.floor(math.log10(abs(x))))-1)		
+   	return round(x, sig-int(math.floor(math.log10(x)))-1)
+
 	
 def addStraightLineFit(ax, x,y,showtext=True, addOneToOne=False,extent = [0,0,0,0]):
 	def getLinRegText(ax, x, y, showtext=True):
