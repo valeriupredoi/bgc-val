@@ -32,9 +32,21 @@ import os
 import numpy as np
 from pftnames import getLongName
 
+def printableName(field,region, layer, metric):
+	#####
+	#Produce a printable name
+	name = field
+	for v in [region, layer, metric]:
+		if v in ['regionless', 'layerless', 'metricless']:continue
+		name += ' ' + getLongName(v)
+	return name	
 
 def analysis_level0(jobID='',field= "AMOC_26N",region='regionless', layer='layerless', metric='metricless',debug=False,):
 
+	#####
+	#Produce a printable name
+	name = printableName(field,region, layer, metric)
+	
 	#####
 	# Start and load shelve
 	if debug:print 'analysis_level0:',jobID,field,region, layer, metric
@@ -43,7 +55,7 @@ def analysis_level0(jobID='',field= "AMOC_26N",region='regionless', layer='layer
 	if debug:print 'analysis_level0:',shelvefn, os.path.exists(shelvefn)
 	if not os.path.exists(shelvefn):
 		print "This shelve fn doesn't exists",shelvefn
-		return False, False,False
+		return name, False,False
 	try:
 		s = shopen(shelvefn)
 		modeldata = s['modeldata']
@@ -51,12 +63,12 @@ def analysis_level0(jobID='',field= "AMOC_26N",region='regionless', layer='layer
 		s.close()
 	except:
 		print "This shelve fn doesn't work properly",shelvefn
-		return False, False,False	
+		return name, False,False	
 
 	#####
 	# Load data
 	try:	rlmData = modeldata[(region, layer, metric)]
-	except:	return False, False,False
+	except:	return name, False,False
 	if debug:print 'analysis_level0:', rlmData
 
 	#####
@@ -76,12 +88,6 @@ def analysis_level0(jobID='',field= "AMOC_26N",region='regionless', layer='layer
 		mean 	= np.ma.mean(tdata)
 		timeRange 	= [times[-30],times[-1]]
 	
-	#####
-	#Produce a printable name
-	name = field
-	for v in [region, layer, metric]:
-		if v in ['regionless', 'layerless', 'metricless']:continue
-		name += ' ' + getLongName(v)
 		
 	timestr = '-'.join([str(int(y)) for y in timeRange])
 	

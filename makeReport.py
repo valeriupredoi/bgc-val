@@ -206,9 +206,9 @@ def html5Maker(
 		Caption  = ''
 		
 		realData_dict	= {
-				   'TotalIntegratedPrimaryProduction':'Target: 30-60',
-				   'ExportRatio':		'?',
-				   'TotalAirSeaFluxCO2':	'Target: 0.',
+				   'TotalIntegratedPrimaryProduction':'Target: 40-60',
+				   'ExportRatio':		'Target: 0.15 - 0.25',
+				   'TotalAirSeaFluxCO2':	'Target: -0.1 - 0.1',
 				   'Nitrate':			'',
  				   'Silicate':			'',
 				   'DIC':			'',
@@ -265,36 +265,39 @@ def html5Maker(
 		for field in fields:
 			if field in ['Nitrate','Silicate','DIC','Alkalinity',]:
 			    for (r,l,m) in [('Global', 'Surface', 'mean'),('SouthernOcean', 'Surface', 'mean')]:
-				name, mdata, timestr = analysis_level0(jobID=jobID,field= field,region=r, layer=l, metric=m)
-				if False in [name, mdata, timestr]:continue				
-                                if timestr not in timestrs:timestrs.append(timestr)
-				
+
+				#####
+				# Data column:
 				try:	rdata=realData_dict[field]
 				except:	rdata=''
 				if  rdata=='':
 					rdata = analysis_level0_insitu(jobID=jobID,field= field,region=r, layer=l, metric=m)
 					if rdata == False:rdata 	= ''
 					else: 		  rdata = round_sig(rdata,4)
-														
+					
 				try:	u 	= ' '+units_dict[field]					
 				except:	u 	= ''
-
 				try:	source 	= realData_source[field]					
 				except:	source 	= ''
-			
+				datcol = str(rdata)+u				
+					
+				name, mdata, timestr = analysis_level0(jobID=jobID,field= field,region=r, layer=l, metric=m)
 				longname = getLongName(name,debug=1)
+				if False in [name, mdata, timestr]:
+					table_data.append([longname, '',datcol ])				
+					continue
+					
+                                if timestr not in timestrs:timestrs.append(timestr)
+				
 				modcol = str(round_sig(mdata,4))+u
-				datcol = str(rdata)+u
+
 				table_data.append([longname, modcol,datcol ])
 				
 			    if len(source):	Caption+= '<br><b>'+getLongName(field)+'</b>: The data was taken from: '+source
 					
 			else:
-
-				name, mdata, timestr = analysis_level0(jobID=jobID,field= field,)#region='regionless', layer='layerless', metric='metricless')
-				if False in [name, mdata, timestr]:continue				
-                                if timestr not in timestrs:timestrs.append(timestr)
-				
+				#####
+				# Data column:
 				try:	rdata=realData_dict[field]
 				except:	rdata=''
 				if  rdata=='':
@@ -304,19 +307,29 @@ def html5Maker(
 								
 				try:	u 	= ' '+units_dict[field]					
 				except:	u 	= ''
-
 				try:	source 	= realData_source[field]					
 				except:	source 	= ''
+				datcol = str(rdata)+u				
+
+				name, mdata, timestr = analysis_level0(jobID=jobID,field= field,)#region='regionless', layer='layerless', metric='metricless')
+				longname = getLongName(name,debug=1)				
+				if False in [name, mdata, timestr]:
+					table_data.append([longname, '',datcol ])				
+					continue				
+                                if timestr not in timestrs:timestrs.append(timestr)
+				
+
 			
 				longname = getLongName(name,debug=1)
 				modcol = str(round_sig(mdata,4))+u
-				datcol = str(rdata)+u
+
 	#			Caption+= '<br><b>'+longname+':</b> Model is the mean of the range '+timestr +'. '+\
 	#							'The data was taken from: '+source
 				table_data.append([longname, modcol,datcol ])
 				
 				if len(source):	Caption+= '<br><b>'+longname+'</b>: The data was taken from: '+source									
 		if len(timestrs):	Caption +='<br><b> Model</b> is the mean of the range '+timestrs[0] +'. '
+		Caption +='<br>All model data are annual means. '	
 		
 		l0htmltable = htmltables.table(table_data,
 			header_row = ['Property',   'Model',   'Data'],
