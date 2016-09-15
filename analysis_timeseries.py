@@ -35,7 +35,7 @@ from glob import glob
 from scipy.interpolate import interp1d
 import numpy as np
 import os,sys
-
+from getpass import getuser
 
 #####	
 # Load specific local code:

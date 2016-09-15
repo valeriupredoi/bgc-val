@@ -69,14 +69,14 @@ def analysis_level0(jobID='',field= "AMOC_26N",region='regionless', layer='layer
 	# Load data
 	try:	rlmData = modeldata[(region, layer, metric)]
 	except:	return name, False,False
-	if debug:print 'analysis_level0:', rlmData
+	#if debug:print 'analysis_level0:', rlmData
 
 	#####
 	# Load times and sorted data array.
 	times = sorted(rlmData.keys())
 	tdata = [rlmData[t] for t in times]
-	if debug:print 'analysis_level0:', "times:", times
-	if debug:print 'analysis_level0:', "data:", tdata
+	#if debug:print 'analysis_level0:', "times:", times
+	#if debug:print 'analysis_level0:', "data:", tdata
 	
 	#####
 	# Deetermine the time range and take the mean of the data.
@@ -84,17 +84,24 @@ def analysis_level0(jobID='',field= "AMOC_26N",region='regionless', layer='layer
 	if len(times)<30:
 		mean 	= np.ma.mean(tdata)
 		timeRange 	= [times[0],times[-1]]
+	        if debug:
+			print 'analysis_level0:', "times:", times
+        		print 'analysis_level0:', "data:", tdata
+	
 	else:
-		mean 	= np.ma.mean(tdata)
+		mean 	= np.ma.mean(tdata[-30:])
 		timeRange 	= [times[-30],times[-1]]
+                if debug:
+                        print 'analysis_level0: (last 30)', "times:", times[-30:]
+                        print 'analysis_level0: (last 30)', "data:", tdata[-30:]
 	
 		
 	timestr = '-'.join([str(int(y)) for y in timeRange])
 	
 	####
 	# Finish up and return fields: name, data, timerange
-	if debug:print 'analysis_level0:',  name, float(tdata[0]), timestr
-	return name, float(tdata[0]), timestr
+	if debug:print 'analysis_level0:',  name, float(mean), timestr
+	return name, float(mean), timestr
 
 
 

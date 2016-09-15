@@ -28,7 +28,8 @@ from matplotlib.colors import LogNorm
 import matplotlib.patches as mpatches
 from mpl_toolkits.basemap import Basemap
 import cartopy
-import numpy as np 
+import numpy as np
+from numpy import hanning,hamming,bartlett,blackman 
 from scipy import interpolate 
 #from statsmodels.nonparametric.smoothers_lowess import lowess
 
@@ -389,7 +390,7 @@ def movingaverage2(x,window_len=11,window='hanning',extrapolate='axially'):
  
     TODO: the window parameter could be the window itself if an array instead of a string   
     """
-
+    x = np.array(x)
     if x.ndim != 1:
         raise ValueError("smooth only accepts 1 dimension arrays.")
 
@@ -403,19 +404,21 @@ def movingaverage2(x,window_len=11,window='hanning',extrapolate='axially'):
 
     if not window in ['flat', 'hanning', 'hamming', 'bartlett', 'blackman'
             , 'robust']:
-        raise ValueError("Window is on of 'flat', 'hanning', 'hamming', 'bartlett', 'blackman'")
+        raise ValueError("Window is one of 'flat', 'hanning', 'hamming', 'bartlett', 'blackman'")
 
  # extrapolation by reflection of dat at end point
     if extrapolate=='axially':
-        s=r_[x[window_len-1::-1],x,x[-1:-window_len:-1]]
+        s=np.r_[x[window_len-1::-1],x,x[-1:-window_len:-1]]
  # extrapolation by rotation of data at end point
     else:
-        s=r_[2*x[0]-x[window_len-1::-1],x,2*x[-1]-x[-1:-window_len:-1]]
+        s=np.r_[2*x[0]-x[window_len-1::-1],x,2*x[-1]-x[-1:-window_len:-1]]
     #print(len(s))
     if window == 'flat': #moving average
-        w=ones(window_len,'d')
+        w=np.ones(window_len,'d')
     elif window=='robust':
         pass
+#    elif window =='hanning':
+ #      w=eval(np.hanning(
     else:
         w=eval(window+'(window_len)')
 
@@ -424,7 +427,7 @@ def movingaverage2(x,window_len=11,window='hanning',extrapolate='axially'):
         for n in xrange(window_len,len(y)-window_len+1):
                 y[n]=median(s[n-window_len/2:n+window_len/2+1])
     else:
-        y=convolve(w/w.sum(),s,mode='same')
+        y=np.convolve(w/w.sum(),s,mode='same')
     return y[window_len:-window_len+1]
     
         
@@ -500,7 +503,7 @@ def multitimeseries(
 			else: window = 1
 			
 			#arr_new = movingaverage(arr, window)
-			arr_new = movingaverage2(arr, window)
+			arr_new = movingaverage2(arr, window_len=window)
 			print np.array(arr).shape, '->',np.array(arr_new).shape
 			counts = np.arange(len(arr))
 			arr_new = np.ma.masked_where((counts<window/2.) + (counts>len(arr)-window/2.) ,arr_new)

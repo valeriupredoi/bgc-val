@@ -307,7 +307,6 @@ def html5Maker(
 				try:	source 	= realData_source[field]					
 				except:	source 	= ''
 				datcol = str(rdata)+u				
-
 				name, mdata, timestr = analysis_level0(jobID=jobID,field= field,)#region='regionless', layer='layerless', metric='metricless')
 				longname = getLongName(name,debug=1)				
 				if False in [name, mdata, timestr]:
