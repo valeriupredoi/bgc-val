@@ -373,6 +373,7 @@ def movingaverage(interval, window_size):
     window = np.ones(int(window_size))/float(window_size)
     return np.convolve(interval, window, 'same')
 
+
 def movingaverage2(x,window_len=11,window='flat',extrapolate='axially'):
     """smooth the data using a window with requested size.
     
@@ -420,11 +421,20 @@ def movingaverage2(x,window_len=11,window='flat',extrapolate='axially'):
         raise ValueError("Window is one of 'flat', 'hanning', 'hamming', 'bartlett', 'blackman'")
 
  # extrapolation by reflection of dat at end point
-    if extrapolate=='axially':
-        s=np.r_[x[window_len-1::-1],x,x[-1:-window_len:-1]]
- # extrapolation by rotation of data at end point
+    wlp1=window_len+1
+ # get stopping index for backward iteration in extrapolation
+    if wlp1>x.size:
+        mwlp1=None
     else:
-        s=np.r_[2*x[0]-x[window_len-1::-1],x,2*x[-1]-x[-1:-window_len:-1]]
+        mwlp1=-wlp1
+    if extrapolate=='axially':
+        s=np.r_[x[window_len-1:0:-1],x,x[-2:mwlp1:-1]]
+ # extrapolation by circular wrapping
+    elif extrapolate=='periodically':
+        s=np.r_[x[-window_len+1:],x,x[:window_len-1]]
+ # extrapolation by rotation of data at end point
+    elif extrapolate=='rotation':
+        s=np.r_[2*x[0]-x[window_len-1:0:-1],x,2*x[-1]-x[-2:mwlp1:-1]]
     #print(len(s))
     if window == 'flat': #moving average
         w=np.ones(window_len,'d')
@@ -437,12 +447,12 @@ def movingaverage2(x,window_len=11,window='flat',extrapolate='axially'):
 
     if window=='robust':
         y=s.copy()
-        for n in xrange(window_len,len(y)-window_len+1):
+        for n in xrange(window_len-1,len(y)-window_len):
                 y[n]=median(s[n-window_len/2:n+window_len/2+1])
     else:
         y=np.convolve(w/w.sum(),s,mode='same')
-    return y[window_len:-window_len+1]
-    
+    return y[window_len-1:-window_len]
+        
         
     
 def multitimeseries(
