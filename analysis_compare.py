@@ -90,6 +90,10 @@ def timeseries_compare():
 	analysisKeys.append('TotalIceArea')		# TotalIceArea	
 	analysisKeys.append('NorthernTotalIceArea')	# North TotalIceArea
 	analysisKeys.append('SouthernTotalIceArea')	# South TotalIceArea
+	analysisKeys.append('TotalIceExtent')		# work in progress	
+	analysisKeys.append('NorthernTotalIceExtent')	# work in progress	
+	analysisKeys.append('SouthernTotalIceExtent')	# work in progress	
+				
 	analysisKeys.append('AMOC_26N')
 	analysisKeys.append('AMOC_32S')
 	analysisKeys.append('T')                        # WOA Temperature
@@ -237,9 +241,9 @@ def timeseries_compare():
 			av[name]['Dimensions']		= 1
 
 
-
-		if 'NorthernTotalIceArea' in analysisKeys or 'SouthernTotalIceArea' in analysisKeys or 'TotalIceArea' in analysisKeys:
-		    for name in ['NorthernTotalIceArea','SouthernTotalIceArea','TotalIceArea']:
+		icekeys = ['NorthernTotalIceArea','SouthernTotalIceArea','TotalIceArea','NorthernTotalIceExtent','SouthernTotalIceExtent','TotalIceExtent']
+		if len(set(icekeys).intersection(set(analysisKeys))):
+		    for name in icekeys:
 		    	if name not in analysisKeys:continue
 		
 			nc = Dataset(orcaGridfn,'r')
@@ -259,6 +263,15 @@ def timeseries_compare():
 			def calcTotalIceAreaS(nc,keys): # South
 				arr = nc.variables[keys[0]][:].squeeze() * area
 				return np.ma.masked_where((tmask==0)+(lat>0.),arr).sum()/1E12
+		
+			def calcTotalIceExtent(nc,keys):	#Global
+				return np.ma.masked_where((tmask==0)+(nc.variables[keys[0]][:].squeeze()<0.15),area).sum()/1E12
+			
+			def calcTotalIceExtentN(nc,keys): # North
+				return np.ma.masked_where((tmask==0)+(nc.variables[keys[0]][:].squeeze()<0.15)+(lat<0.),area).sum()/1E12
+
+			def calcTotalIceExtentS(nc,keys): # South
+				return np.ma.masked_where((tmask==0)+(nc.variables[keys[0]][:].squeeze()<0.15)+(lat>0.),area).sum()/1E12
 								
 			av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', MEDUSAFolder_pref, annual)												
 			av[name]['dataFile'] 		= ''
@@ -277,6 +290,18 @@ def timeseries_compare():
 		    	if name in ['TotalIceArea',]:
 				av[name]['modeldetails'] 	= {'name': name, 'vars':['soicecov',], 'convert': calcTotalIceArea,'units':'1E6 km^2'}		    	
 			#	av[name]['regions'] 		=  ['Global',]					
+		    	if name in ['NorthernTotalIceExtent',]:
+				av[name]['modeldetails'] 	= {'name': name, 'vars':['soicecov',], 'convert': calcTotalIceExtentN,'units':'1E6 km^2'}		    	
+			#	av[name]['regions'] 		=  ['NorthHemisphere',]	
+				
+		    	if name in ['SouthernTotalIceExtent',]:
+				av[name]['modeldetails'] 	= {'name': name, 'vars':['soicecov',], 'convert': calcTotalIceExtentS,'units':'1E6 km^2'}		    	
+			#	av[name]['regions'] 		=  ['SouthHemisphere',]				
+
+		    	if name in ['TotalIceExtent',]:
+				av[name]['modeldetails'] 	= {'name': name, 'vars':['soicecov',], 'convert': calcTotalIceExtent,'units':'1E6 km^2'}		    	
+			#	av[name]['regions'] 		=  ['Global',]	
+					
 			av[name]['regions'] 		=  ['regionless',]		
 			
 			av[name]['datadetails']  	= {'name':'','units':'',}
