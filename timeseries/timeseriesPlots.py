@@ -340,7 +340,13 @@ def simpletimeseries(
 	fig = pyplot.figure()
 	
 	ax = fig.add_subplot(111)	
-	pyplot.plot(times,arr,label='Model',)
+	if len(arr)>30:
+		smoothing = movingaverage2(arr,window_len=30,window='hanning',extrapolate='axially')
+		pyplot.plot(times,arr,c='b',ls='-',lw=1,)	
+		pyplot.plot(times,arr,c='b',ls='-',lw=0.5,label='Model',)		
+	else:
+		pyplot.plot(times,arr,c='b',ls='-',lw=1,label='Model',)	
+		
 	pyplot.xlim(xlims)	
 	pyplot.title(title)	
 	pyplot.ylabel(units)
@@ -360,7 +366,7 @@ def movingaverage(interval, window_size):
     window = np.ones(int(window_size))/float(window_size)
     return np.convolve(interval, window, 'same')
 
-def movingaverage2(x,window_len=11,window='hanning',extrapolate='axially'):
+def movingaverage2(x,window_len=11,window='flat',extrapolate='axially'):
     """smooth the data using a window with requested size.
     
     This method is based on the convolution of a scaled window with the signal.
