@@ -279,7 +279,8 @@ def trafficlightsPlot(
 	
 	ax = fig.add_subplot(111)	
         if len(arr)>30:
-                smoothing = movingaverage2(arr,window_len=30,window='flat',extrapolate='axially')
+                smoothing = movingaverage(arr,30,)
+                #smoothing = movingaverage2(arr,window_len=30,window='flat',extrapolate='axially')
                 pyplot.plot(times,arr,      c='b',ls='-',lw=0.3,)
                 pyplot.plot(times,smoothing,c='b',ls='-',lw=2,label='Model')
         else:
@@ -370,8 +371,10 @@ def simpletimeseries(
 
 
 def movingaverage(interval, window_size):
-    window = np.ones(int(window_size))/float(window_size)
-    return np.convolve(interval, window, 'same')
+	window = np.ones(int(window_size))/float(window_size)
+	counts = np.arange(len(arr))
+	arr = np.convolve(interval, window, 'same')
+	return np.ma.masked_where((counts<window/2.) + (counts>len(arr)-window/2.) ,arr)    
 
 
 def movingaverage2(x,window_len=11,window='flat',extrapolate='axially'):
@@ -525,11 +528,8 @@ def multitimeseries(
 			elif len(times)>10.: window = 4			
 			else: window = 1
 			
-			#arr_new = movingaverage(arr, window)
-			#print np.array(arr).shape, '->',np.array(arr_new).shape
-			#counts = np.arange(len(arr))
-			#arr_new = np.ma.masked_where((counts<window/2.) + (counts>len(arr)-window/2.) ,arr_new)
-                        arr_new = movingaverage2(arr, window_len=window)
+			arr_new = movingaverage(arr, window)
+                        #arr_new = movingaverage2(arr, window_len=window)
 			pyplot.plot(times,arr_new,c=colours[jobID],ls='-',label=jobID,)#label=jobID+' smooth',)
 			
 		#if lineStyle.lower() in ['lowess','all','both',]:
