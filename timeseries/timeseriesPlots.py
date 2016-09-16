@@ -278,7 +278,14 @@ def trafficlightsPlot(
 	fig = pyplot.figure()
 	
 	ax = fig.add_subplot(111)	
-	pyplot.plot(times,arr,label='Model',)
+        if len(arr)>30:
+                smoothing = movingaverage2(arr,window_len=30,window='flat',extrapolate='axially')
+                pyplot.plot(times,arr,      c='b',ls='-',lw=0.3,)
+                pyplot.plot(times,smoothing,c='b',ls='-',lw=2,label='Model')
+        else:
+                pyplot.plot(times,arr,c='b',ls='-',lw=1,label='Model',)
+
+#	pyplot.plot(times,arr,label='Model',)
 	pyplot.xlim(xlims)	
 	pyplot.title(title)	
 	pyplot.ylabel(units)
@@ -342,8 +349,8 @@ def simpletimeseries(
 	ax = fig.add_subplot(111)	
 	if len(arr)>30:
 		smoothing = movingaverage2(arr,window_len=30,window='hanning',extrapolate='axially')
-		pyplot.plot(times,arr,c='b',ls='-',lw=1,)	
-		pyplot.plot(times,arr,c='b',ls='-',lw=0.5,label='Model',)		
+		pyplot.plot(times,arr,      c='b',ls='-',lw=0.2,label='Model1')	
+		pyplot.plot(times,smoothing,c='b',ls='-',lw=2,label='Model2')		
 	else:
 		pyplot.plot(times,arr,c='b',ls='-',lw=1,label='Model',)	
 		
