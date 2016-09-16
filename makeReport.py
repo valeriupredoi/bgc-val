@@ -352,6 +352,7 @@ def html5Maker(
                           'Temperature',
                           'Salinity',
                           'TotalIceArea',
+                          'TotalIceExtent',                          
                           'DrakePassageTransport',
                           'AMOC_26N',
 			 ]
