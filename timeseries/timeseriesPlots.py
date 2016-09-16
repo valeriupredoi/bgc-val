@@ -503,10 +503,10 @@ def multitimeseries(
 			else: window = 1
 			
 			#arr_new = movingaverage(arr, window)
-			arr_new = movingaverage2(arr, window_len=window)
-			print np.array(arr).shape, '->',np.array(arr_new).shape
-			counts = np.arange(len(arr))
-			arr_new = np.ma.masked_where((counts<window/2.) + (counts>len(arr)-window/2.) ,arr_new)
+			#print np.array(arr).shape, '->',np.array(arr_new).shape
+			#counts = np.arange(len(arr))
+			#arr_new = np.ma.masked_where((counts<window/2.) + (counts>len(arr)-window/2.) ,arr_new)
+                        arr_new = movingaverage2(arr, window_len=window)
 			pyplot.plot(times,arr_new,c=colours[jobID],ls='-',label=jobID,)#label=jobID+' smooth',)
 			
 		#if lineStyle.lower() in ['lowess','all','both',]:
