@@ -158,7 +158,7 @@ class timeseriesAnalysis:
 		print "loadModel:post checks:"
 		#print "modeldataD:",modeldataD
 		print "shelveFn:",self.shelvefn
-		print "readFiles:",readFiles
+		print "readFiles: contains ",len(readFiles), "files. Up to ", sorted(readFiles[-1])
 
 	#####
 	# No New Files checks - to save time and avoid double work. 
