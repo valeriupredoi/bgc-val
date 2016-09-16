@@ -212,8 +212,8 @@ def html5Maker(
 				   'Alkalinity':		'',						   				   
 				   'AMOC_26N':			'Target: 10-20',
 				   'DrakePassageTransport': 	'136.7 	&#177; 7.8 ', 	#	&#177; is +/-
-				   'NorthernTotalIceExtent':	'?',
-				   'SouthernTotalIceExtent':	'?',	
+				   'NorthernTotalIceExtent':	'14.9 	&#177; 0.3',
+				   'SouthernTotalIceExtent':	'19.8 	&#177; 0.6',	
 			  	   'TotalOMZVolume':		'',			  				   			   				   			   	
 				  }
 		realData_source = {
@@ -226,8 +226,8 @@ def html5Maker(
 				   'Alkalinity':		'',						   
 				   'AMOC_26N':			'',
 				   'DrakePassageTransport': 	'Cunningham, S. A., S. G. Alderson, B. A. King, and M. A. Brandon (2003), Transport and variability of the Antarctic Circumpolar Current in Drake Passage, J. Geophys. Res., 108, 8084, doi:10.1029/2001JC001147, C5.',
-				   'NorthernTotalIceExtent':	'',
-				   'SouthernTotalIceExtent':	'',
+				   'NorthernTotalIceExtent':	'HadISST: Rayner, N. A.; et al (2003) Global analyses of sea surface temperature, sea ice, and night marine air temperature since the late nineteenth century J. Geophys. Res.Vol. 108, No. D14, 4407 10.1029/2002JD002670',
+				   'SouthernTotalIceExtent':	'HadISST: Rayner, N. A.; et al (2003) Global analyses of sea surface temperature, sea ice, and night marine air temperature since the late nineteenth century J. Geophys. Res.Vol. 108, No. D14, 4407 10.1029/2002JD002670',
 			  	   'TotalOMZVolume':		'World Ocean Atlas',			  				   			   				   				   	
 				  }		
 		units_dict	= {

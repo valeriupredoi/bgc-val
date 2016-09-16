@@ -171,7 +171,7 @@ def analysis_timeseries(jobID = "u-ab671",
                                                 					
 		if analysisSuite.lower() in ['debug',]:	
 			#analysisKeys.append('AirSeaFlux')		# work in progress
-			analysisKeys.append('TotalAirSeaFluxCO2')		# work in progress
+			#analysisKeys.append('TotalAirSeaFluxCO2')		# work in progress
 			#analysisKeys.append('TotalOMZVolume')		# work in progress
 			#analysisKeys.append('TotalOMZVolume')		# work in progress
 			#analysisKeys.append('TotalOMZVolume50')	# work in progress			
@@ -191,9 +191,9 @@ def analysis_timeseries(jobID = "u-ab671",
                         #analysisKeys.append('NorthernTotalIceArea')            # work in progress      
                         #analysisKeys.append('SouthernTotalIceArea')            # work in progress                              
                         #analysisKeys.append('TotalIceArea')            # work in progress    
-			#analysisKeys.append('TotalIceExtent')		# work in progress	
-			#analysisKeys.append('NorthernTotalIceExtent')	# work in progress	
-			#analysisKeys.append('SouthernTotalIceExtent')	# work in progress	                        
+			analysisKeys.append('TotalIceExtent')		# work in progress	
+			analysisKeys.append('NorthernTotalIceExtent')	# work in progress	
+			analysisKeys.append('SouthernTotalIceExtent')	# work in progress	                        
                         #analysisKeys.append('AMOC_32S')                 # AMOC 32S
                         #analysisKeys.append('AMOC_26N')                 # AMOC 26N
                                                 
@@ -1265,13 +1265,13 @@ def analysis_timeseries(jobID = "u-ab671",
 			return np.ma.masked_where((tmask==0)+(lat>0.),arr).sum()/1E12
 
 		def calcTotalIceExtent(nc,keys):	#Global
-			return np.ma.masked_where((tmask==0)+(nc.variables[keys[0]][:].squeeze()>0.15),area).sum()/1E12
+			return np.ma.masked_where((tmask==0)+(nc.variables[keys[0]][:].squeeze()<0.15),area).sum()/1E12
 			
 		def calcTotalIceExtentN(nc,keys): # North
-			return np.ma.masked_where((tmask==0)+(nc.variables[keys[0]][:].squeeze()>0.15)+(lat<0.),area).sum()/1E12
+			return np.ma.masked_where((tmask==0)+(nc.variables[keys[0]][:].squeeze()<0.15)+(lat<0.),area).sum()/1E12
 
 		def calcTotalIceExtentS(nc,keys): # South
-			return np.ma.masked_where((tmask==0)+(nc.variables[keys[0]][:].squeeze()>0.15)+(lat>0.),area).sum()/1E12
+			return np.ma.masked_where((tmask==0)+(nc.variables[keys[0]][:].squeeze()<0.15)+(lat>0.),area).sum()/1E12
 											
 		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)												
 		av[name]['dataFile'] 		= ''
