@@ -451,6 +451,10 @@ def movingaverage2(x,window_len=11,window='flat',extrapolate='axially'):
                 y[n]=median(s[n-window_len/2:n+window_len/2+1])
     else:
         y=np.convolve(w/w.sum(),s,mode='same')
+    returning = y[window_len-1:-window_len]
+    if len(x) != len(returning):
+	print "output array is not the same size as input:\tin:",len(x),'\tout:', len(returning)
+	assert 0
     return y[window_len-1:-window_len]
         
         
