@@ -403,6 +403,68 @@ def shouldIMakeFile(fin,fout,debug = True):
 	return False
 
 
+
+	
+def makemapplot(fig,ax,lons,lats,data,title, zrange=[-100,100],lon0=0.,drawCbar=True,cbarlabel='',doLog=False,drawLand=True,cmap='default'):
+	lons = np.array(lons)
+	lats = np.array(lats)
+	data = np.ma.array(data)	
+	if doLog and zrange[0]*zrange[1] <=0.:
+		print "makemapplot: \tMasking"
+		data = np.ma.masked_less_equal(np.ma.array(data), 0.)
+	print data.min(),lats.min(),lons.min(), data.shape,lats.shape,lons.shape
+	crojp2, data, newLon,newLat = regrid(data,lats,lons)
+	if type(cmap) == type('str'):
+	    if cmap=='default':
+		try:	cmap = pyplot.cm.viridis
+		except: cmap = pyplot.cm.jet
+	    else:
+	    	cmap = pyplot.cm.get_cmap(cmap)
+		
+	if doLog:
+		im = ax.pcolormesh(newLon, newLat,data, cmap=cmap, transform=ccrs.PlateCarree(),norm=LogNorm(vmin=zrange[0],vmax=zrange[1]),)
+	else:	
+		im = ax.pcolormesh(newLon, newLat,data, cmap=cmap, transform=ccrs.PlateCarree(),vmin=zrange[0],vmax=zrange[1])
+	
+	if drawLand: ax.add_feature(cfeature.LAND,  facecolor='0.85')	
+
+
+	if drawCbar:
+	    c1 = fig.colorbar(im,pad=0.05,shrink=0.75)
+	    if len(cbarlabel)>0: c1.set_label(cbarlabel)
+	pyplot.title(title)
+	ax.set_axis_off()
+	pyplot.axis('off')
+	ax.axis('off')
+		
+	return fig, ax,im
+
+
+def robinPlotSingle(lons,lats,data,filename,title, zrange=[-100,100],drawCbar=True,cbarlabel='',doLog=False,dpi=100,):
+	
+	fig = pyplot.figure()
+	fig.set_size_inches(10,6)
+
+	lons = np.array(lons)
+	lats = np.array(lats)
+	data = np.ma.array(data)
+	
+	rbmi = min([data.min(),])
+	rbma = max([data.max(),])
+	
+	if rbmi * rbma >0. and rbma/rbmi > 100.: doLog=True
+
+	print lons.shape,lats.shape,data.shape
+	lon0 = lons.mean()
+	ax = pyplot.subplot(111,projection=ccrs.PlateCarree(central_longitude=lon0, ))
+		
+	fig,ax,im = makemapplot(fig,ax,lons,lats,data,title, zrange=[rbmi,rbma],lon0=lon0,drawCbar=drawCbar,cbarlabel=cbarlabel,doLog=doLog,)
+
+	print "robinPlotSingle.py:\tSaving:" , filename
+	pyplot.savefig(filename ,dpi=dpi)		
+	pyplot.close()
+
+
 	
 def robinPlotPair(lons, lats, data1,data2,filename,titles=['',''],lon0=0.,marble=False,drawCbar=True,cbarlabel='',doLog=False,scatter=True,dpi=100,):#**kwargs):
 
