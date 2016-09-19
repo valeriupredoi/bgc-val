@@ -164,11 +164,13 @@ def downloadMass(jobID,):
 	# The coupled model looses the first two characters of the name in the netcdf file.
 	fns = glob(outputFold+"/"+jobID[2:]+"*.nc")
 	print "Looking for", outputFold+"/"+jobID[2:]+"*.nc"
-	fnd.extend(glob(outputFold+'/MetOffice*'))	# Because ocean assess might use the lisence?	
+	fns.extend(glob(outputFold+'/MetOffice*'))	# Because ocean assess might use the lisence?	
 	for fn in sorted(fns):
 		#####
         	correctfn = fn.replace('/'+jobID[2:], '/'+jobID)
-	        if os.path.exists(correctfn):continue
+	        if os.path.exists(correctfn):
+	        	print "correct path exists.",correctfn
+	        	continue
                 print "Fixing file prefix",
         	os.symlink(fn,correctfn)
 	        print correctfn
