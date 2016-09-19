@@ -42,8 +42,8 @@ def robinPlotCustom(lons,lats,data,filename,title, zrange=[-100,100],drawCbar=Tr
           
           
 	cmap = im.get_cmap()
-	for i in [0,10,100,1000,10000,1000000,100000]:
-		print i, cmap(i), data.min(),data.max()
+	#for i in [0,10,100,1000,10000,1000000,100000]:
+	#	print i, cmap(i), data.min(),data.max()
 		
 	for i,r in enumerate(regionList):
 		c = cmap((i)/5.)
