@@ -83,7 +83,7 @@ def html5Maker(
 		reportdir = 'reports/tmp',
 		year = '*',
 		clean = False,
-		doZip= True,
+		doZip= False,
 	):
 
 	
@@ -151,15 +151,15 @@ def html5Maker(
 	
 	#####
 	# Two switches to turn on Summary section, and groups of plots of field and region.		
-	Level0 = True	
-	Level1 = True
-	Level1Regional = True
-	Level1Profiles =  True	
-	level2Horizontal = True
+	Level0 = 0#True	
+	Level1 = 0#True
+	Level1Regional = 0#True
+	Level1Profiles =  0#True	
+	level2Horizontal = 0#True
 	level2Physics = False
 	summarySections = False
 	plotbyfieldandregion = False
-	
+	regionMap=True
 	
 	
 	
@@ -984,6 +984,24 @@ def html5Maker(
 					FileLists=FileLists)
 
 #			html5Tools.AddSection(indexhtmlfn,key+'-'+region,longnames, Description=longnames+' plots',Files = files)
+
+
+
+	if regionMap:
+		vfiles = []	
+		vfiles.extend(glob('images/maps/Region_Legend.png'))
+		relfns = [addImageToHtml(fn, imagesfold, reportdir) for fn in vfiles]				
+		print relfns
+		href = 'regionMap_default'
+		html5Tools.AddSubSections(
+			indexhtmlfn,
+			[href,],
+			'Legends', 
+			SidebarTitles={href:'Regional legends',},
+			Titles={href:'Regional boundaries legend',},
+			Descriptions={href:'A map showing the boundaries of the regions used elsewhere in this report.',},						
+			FileLists={href:relfns,},						
+			)									
 
 
         tar = "tar cfvz  report-"+jobID+".tar.gz "+reportdir
