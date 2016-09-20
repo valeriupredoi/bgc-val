@@ -798,7 +798,7 @@ def hovmoellerPlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords=
 	for l in sorted(dataZcoords.keys()):
 		if l not in dataslice.keys():continue
 		dyaxis_cc.append(dataZcoords[l])
-		print 'preparing data for hov:',l,dataZcoords[l], dataslice[l]
+		#print 'hovmoellerPlot:\tpreparing data for hov:',l,dataZcoords[l], dataslice[l]
 		dd.append(dataslice[l])
 	if len(dd):
 		dd = np.ma.array(dd)#.squeeze()

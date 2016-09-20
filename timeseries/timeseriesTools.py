@@ -225,7 +225,9 @@ class DataLoader:
    		self.load[(region,layer,'lon')] =  arr_lon
    			   			   			   			
    			
-  		print "DataLoader:\tLoaded",self.name,region, layer, len(self.load[(region,layer)])
+  		print "DataLoader:\tLoaded",self.name, 'in',
+  		print '{:<24} layer: {:<8}'.format(region,layer),
+  		print '\tdata length:',len(self.load[(region,layer)]), '\tmean:',np.ma.mean(self.load[(region,layer)])
   		
   def __getlayerDat__(self,layer):
   	""" Minimise quick load and save to minimise disk-reading time.
@@ -246,7 +248,7 @@ class DataLoader:
   		The leg work is done in UKESMpython.py: makeMask()
   	"""
   	
-  	print 'createDataArray',self.details['name'],region,layer
+  	#print 'DataLoader:\tcreateDataArray:\t',self.details['name'],region,layer
   	
   	self.createOneDDataArray(layer)
   	  	

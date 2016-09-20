@@ -84,7 +84,6 @@ def analysis_timeseries(jobID = "u-ab671",
 			
 		analysisSuite chooses a set of fields to look at.
 		
-		
 		regions selects a list of regions, default is 'all', which is the list supplied by Andy Yool. 
 		
 	"""	
@@ -171,31 +170,31 @@ def analysis_timeseries(jobID = "u-ab671",
                                                 					
 		if analysisSuite.lower() in ['debug',]:	
 			#analysisKeys.append('AirSeaFlux')		# work in progress
-			#analysisKeys.append('TotalAirSeaFluxCO2')		# work in progress
+			#analysisKeys.append('TotalAirSeaFluxCO2')	# work in progress
 			#analysisKeys.append('TotalOMZVolume')		# work in progress
 			#analysisKeys.append('TotalOMZVolume')		# work in progress
 			#analysisKeys.append('TotalOMZVolume50')	# work in progress			
 			#analysisKeys.append('OMZThickness')		# work in progress						
 			#analysisKeys.append('DIC')			# work in progress									
-			#analysisKeys.append('DrakePassageTransport')			# DrakePassageTransport				
+			#analysisKeys.append('DrakePassageTransport')	# DrakePassageTransport				
 			#analysisKeys.append('TotalIceArea')		# work in progress	
 														
 			#analysisKeys.append('O2')			# work in progress
 			#analysisKeys.append('Iron')			# work in progress
-                       #analysisKeys.append('N')                        # WOA Nitrate				
-                        #analysisKeys.append('IntPP_OSU')                # OSU Integrated primpary production    
+                        analysisKeys.append('N')                        # WOA Nitrate				
+                        #analysisKeys.append('IntPP_OSU')               # OSU Integrated primpary production    
                         #####   
                         # Physics switches:
-                        #analysisKeys.append('T')                        # WOA Temperature
-                        #analysisKeys.append('S')                        # WOA Salinity
-                        #analysisKeys.append('NorthernTotalIceArea')            # work in progress      
-                        #analysisKeys.append('SouthernTotalIceArea')            # work in progress                              
+                        #analysisKeys.append('T')                       # WOA Temperature
+                        #analysisKeys.append('S')                       # WOA Salinity
+                        #analysisKeys.append('NorthernTotalIceArea')    # work in progress      
+                        #analysisKeys.append('SouthernTotalIceArea')    # work in progress                              
                         #analysisKeys.append('TotalIceArea')            # work in progress    
-			analysisKeys.append('TotalIceExtent')		# work in progress	
-			analysisKeys.append('NorthernTotalIceExtent')	# work in progress	
-			analysisKeys.append('SouthernTotalIceExtent')	# work in progress	                        
-                        #analysisKeys.append('AMOC_32S')                 # AMOC 32S
-                        #analysisKeys.append('AMOC_26N')                 # AMOC 26N
+			#analysisKeys.append('TotalIceExtent')		# work in progress	
+			#analysisKeys.append('NorthernTotalIceExtent')	# work in progress	
+			#analysisKeys.append('SouthernTotalIceExtent')	# work in progress	                        
+                        #analysisKeys.append('AMOC_32S')                # AMOC 32S
+                        #analysisKeys.append('AMOC_26N')                # AMOC 26N
                                                 
                 if analysisSuite.lower() in ['physics',]:
                         #####   
@@ -1519,6 +1518,7 @@ def analysis_timeseries(jobID = "u-ab671",
                         clean           = clean,
                 )
 
+		
 		#####
 		# Profile plots 	
 		if av[name]['Dimensions'] == 3:
