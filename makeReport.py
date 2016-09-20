@@ -352,24 +352,27 @@ def html5Maker(
 		
 		#region = 'Global'
 		for key in level1Fields:
+			print "Make Report\tLevel 1:",key
 		 	if physicsOnly and key not in lev1physFields:continue
+			print "Make Report\tLevel 1:",key		 	
 			#####
 			# href is the name used for the html 
 			href = 	'L1'+key+'-global'
 			hrefs.append(href)
-			
+			print "Make Report\tLevel 1:",key, href			
 			#####
 			# Title is the main header, SidebarTitles is the side bar title.
 			Titles[href] = 	getLongName(key)
 			SidebarTitles[href] = getLongName(key)	
-						
+			print "Make Report\tLevel 1:",key, Titles[href]			
+									
 			#####
 			# Descriptions is a small sub-header
 			desc = ''
 			if key in ListofCaveats.keys():			desc +=ListofCaveats[key]+'\n'
 			#if region in ListofCaveats_regions.keys():	desc +=ListofCaveats_regions[key]+'\n'			
 			Descriptions[href] = desc
-			
+			print "Make Report\tLevel 1:",key, desc						
 
 			#####
 			# A list of files to put in this group.
@@ -407,7 +410,8 @@ def html5Maker(
 	
 				FileLists[href][relfn] = html5Tools.fnToTitle(relfn) 
 				print "Adding ",relfn,"to script"
-			
+			print "Make Report\tLevel 1:",key, FileLists[href]						
+						
 		html5Tools.AddSubSections(indexhtmlfn,hrefs,SectionTitle,
 				SidebarTitles=SidebarTitles,#
 				Titles=Titles, 
