@@ -57,7 +57,7 @@ def theWholePackage(jobID,year=False,suite = 'level1'):
 	print "########\nThe Whole Package:\tStarting job", jobID , year
 #	downloadMass(jobID)
 
-	parrallel = False
+	parrallel = True
 	cores = 8
 	#suite = 'all'
 	
