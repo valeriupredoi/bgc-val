@@ -279,8 +279,8 @@ def trafficlightsPlot(
 	
 	ax = fig.add_subplot(111)	
         if len(arr)>30:
-                smoothing = movingaverage(arr,30,)
-                #smoothing = movingaverage2(arr,window_len=30,window='flat',extrapolate='axially')
+                #smoothing = movingaverage(arr,30,)
+                smoothing = movingaverage2(arr,window_len=30,window='flat',extrapolate='axially')
                 pyplot.plot(times,arr,      c='b',ls='-',lw=0.3,)
                 pyplot.plot(times,smoothing,c='b',ls='-',lw=2,label='Model')
         else:
@@ -372,7 +372,7 @@ def simpletimeseries(
 
 def movingaverage(interval, window_size):
 	window = np.ones(int(window_size))/float(window_size)
-	counts = np.arange(len(arr))
+	counts = np.arange(len(interval))
 	arr = np.convolve(interval, window, 'same')
 	return np.ma.masked_where((counts<window/2.) + (counts>len(arr)-window/2.) ,arr)    
 
@@ -454,11 +454,14 @@ def movingaverage2(x,window_len=11,window='flat',extrapolate='axially'):
                 y[n]=median(s[n-window_len/2:n+window_len/2+1])
     else:
         y=np.convolve(w/w.sum(),s,mode='same')
-    returning = y[window_len-1:-window_len]
+    returning = y[window_len-1:-window_len+1]
     if len(x) != len(returning):
 	print "output array is not the same size as input:\tin:",len(x),'\tout:', len(returning)
 	assert 0
-    return y[window_len-1:-window_len]
+    counts = np.arange(len(x))
+    return np.ma.masked_where((counts<window_len/2.) + (counts>len(x)-window_len/2.) ,returning)
+
+
         
         
     
@@ -532,8 +535,8 @@ def multitimeseries(
 			elif len(times)>10.: window = 4			
 			else: window = 1
 			
-			arr_new = movingaverage(arr, window)
-                        #arr_new = movingaverage2(arr, window_len=window)
+			#arr_new = movingaverage(arr, window)
+                        arr_new = movingaverage2(arr, window_len=window,window='flat',extrapolate='periodically')
 			pyplot.plot(times,arr_new,c=colours[jobID],ls='-',label=jobID,)#label=jobID+' smooth',)
 			
 		#if lineStyle.lower() in ['lowess','all','both',]:

@@ -1456,7 +1456,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		print "analysis-Timeseries.py:\tBeginning to call timeseriesAnalysis for ", name
 
 		if len(av[name]['modelFiles']) == 0:
-			print "analysis-Timeseries.py:\tWARNING:\tmodel files are not found:",av[name]['modelFiles']
+			print "analysis-Timeseries.py:\tWARNING:\tmodel files are not found:",name,av[name]['modelFiles']
 			if strictFileCheck: assert 0
 
 		modelfilesexists = [os.path.exists(f) for f in av[name]['modelFiles']]
@@ -1559,7 +1559,7 @@ def singleTimeSeriesProfile(jobID,key):
 
 def singleTimeSeries(jobID,key,):
 #	try:
-		analysis_timeseries(jobID =jobID,analysisSuite=[key,], )#clean=1)
+		analysis_timeseries(jobID =jobID,analysisSuite=[key,], strictFileCheck=False)#clean=1)
 #	except:
 #		print "Failed singleTimeSeries",(jobID,key)
 #		print "Error: %s" % sys.exc_info()[0]	
