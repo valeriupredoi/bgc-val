@@ -352,7 +352,7 @@ def html5Maker(
 		
 		#region = 'Global'
 		for key in level1Fields:
-		 	if physicsOnly and field not in lev1physFields:continue
+		 	if physicsOnly and key not in lev1physFields:continue
 			#####
 			# href is the name used for the html 
 			href = 	'L1'+key+'-global'
@@ -441,7 +441,8 @@ def html5Maker(
 		physregionalFields = [
                           'Temperature',
                           'Salinity',
-                          #'TotalIceArea'
+                          'TotalIceArea',
+                          'TotalIceExtent',                          
 			]			
 		SectionTitle= 'Level 1 - regional'
 		hrefs 		= []
