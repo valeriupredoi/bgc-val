@@ -84,6 +84,7 @@ def html5Maker(
 		year = '*',
 		clean = False,
 		doZip= False,
+		physicsOnly=False,
 	):
 
 	
@@ -119,36 +120,7 @@ def html5Maker(
 				descriptionText,
 				)
 
-	#####
-	# Add time series regional plots:
-	#key = 'ignoreInlandSeas'
-	fields = ['Alkalinity', 
-		  'Nitrate',
-		  'Silicate', 
-		  'Temperature', 
-		  'Salinity', 
-		  'Oxygen',
-		  'DIC',
-		  'Chlorophyll_cci', 
-		  'IntegratedPrimaryProduction_OSU', 
-		  'TotalIntegratedPrimaryProduction',
-		  'ExportRatio', 
-		  'LocalExportRatio', 		  
-		  'MLD',
-		  #  'IntegratedPrimaryProduction_1x1' , 
-		  #'Chlorophyll_pig' , 
-		  'AirSeaFluxCO2' , 
-		 ]
-	regions = ['Global',
-		  'SouthernOcean',
-		  'NorthernSubpolarAtlantic',
-		  'NorthernSubpolarPacific',		  	
-		  'Equator10', 
-		  'ArcticOcean',
-		  'Remainder',
-		  'ignoreInlandSeas',		  
-		   ]
-	Transects = ['Transect','PTransect','SOTransect']
+
 	
 	#####
 	# Two switches to turn on Summary section, and groups of plots of field and region.		
@@ -259,8 +231,14 @@ def html5Maker(
 			  'NorthernTotalIceExtent',
 			  'SouthernTotalIceExtent',	
 			  ]
+		physFields = [  'AMOC_26N',
+			  'DrakePassageTransport',
+			  'NorthernTotalIceExtent',
+			  'SouthernTotalIceExtent',	
+			  ]			  
 		timestrs=[]	
 		for field in fields:
+		 	if physicsOnly and field not in physFields:continue
 			if field in ['Nitrate','Silicate','DIC','Alkalinity',]:
 			    for (r,l,m) in [('Global', 'Surface', 'mean'),('SouthernOcean', 'Surface', 'mean')]:
 
@@ -357,7 +335,14 @@ def html5Maker(
                           'DrakePassageTransport',
                           'AMOC_26N',
 			 ]
-		 
+		lev1physFields = [
+                          'Temperature',
+                          'Salinity',
+                          'TotalIceArea',
+                          'TotalIceExtent',                          
+                          'DrakePassageTransport',
+                          'AMOC_26N',
+			 ]		 
 		SectionTitle= 'Level 1'
 		hrefs 	= []
 		Titles	= {}
@@ -367,7 +352,7 @@ def html5Maker(
 		
 		#region = 'Global'
 		for key in level1Fields:
-
+		 	if physicsOnly and field not in lev1physFields:continue
 			#####
 			# href is the name used for the html 
 			href = 	'L1'+key+'-global'
@@ -451,10 +436,13 @@ def html5Maker(
                           'OMZThickness',
                           'Temperature',
                           'Salinity',
-
                           #'TotalIceArea'
-
 			]
+		physregionalFields = [
+                          'Temperature',
+                          'Salinity',
+                          #'TotalIceArea'
+			]			
 		SectionTitle= 'Level 1 - regional'
 		hrefs 		= []
 		Titles		= {}
@@ -463,6 +451,7 @@ def html5Maker(
 		FileLists	= {}
 		FileOrder 	= {}		
 		for key in regionalFields:
+		 	if physicsOnly and key not in physregionalFields:continue		
 			#if key not in ['Alkalinity','Nitrate']: continue
 
 			href = 	'L1region'+key#+'-'+region
@@ -539,6 +528,8 @@ def html5Maker(
                           'Temperature',
                           'Salinity',
 			]
+		physregionalFields = ['Temperature', 'Salinity',]
+				
 		if plottype == 'profile':	SectionTitle= 'Level 1 - Profiles'
 		if plottype == 'profilehov':	SectionTitle= 'Level 1 - Hovmoeller plots'		
 		hrefs 		= []
@@ -548,6 +539,7 @@ def html5Maker(
 		FileLists	= {}
 		FileOrder 	= {}		
 		for key in regionalFields:
+		 	if physicsOnly and key not in physregionalFields:continue				
 			#if key not in ['Alkalinity','Nitrate']: continue
 
 			href = 	'L1'+plottype+'-'+key#+'-'+region
@@ -619,6 +611,7 @@ def html5Maker(
 			  'Salinity', 
 			  'MLD',			  
 			 ]
+		physl2Fields = [ 'Temperature', 'Salinity',  'MLD',]			 
 		hrefs 	= []
 		Titles	= {}
 		SidebarTitles = {}
@@ -630,6 +623,7 @@ def html5Maker(
 		FileOrder = {}		
 				
 		for key in l2Fields:
+		 	if physicsOnly and key not in physl2Fields:continue				
 			#if key not in ['Alkalinity','Nitrate']: continue
 
 
@@ -890,6 +884,37 @@ def html5Maker(
 
 
 	if plotbyfieldandregion:
+		#####
+		# Add time series regional plots:
+		#key = 'ignoreInlandSeas'
+		fields = ['Alkalinity', 
+			  'Nitrate',
+			  'Silicate', 
+			  'Temperature', 
+			  'Salinity', 
+			  'Oxygen',
+			  'DIC',
+			  'Chlorophyll_cci', 
+			  'IntegratedPrimaryProduction_OSU', 
+			  'TotalIntegratedPrimaryProduction',
+			  'ExportRatio', 
+			  'LocalExportRatio', 		  
+			  'MLD',
+			  #  'IntegratedPrimaryProduction_1x1' , 
+			  #'Chlorophyll_pig' , 
+			  'AirSeaFluxCO2' , 
+			 ]
+		regions = ['Global',
+			  'SouthernOcean',
+			  'NorthernSubpolarAtlantic',
+			  'NorthernSubpolarPacific',		  	
+			  'Equator10', 
+			  'ArcticOcean',
+			  'Remainder',
+			  'ignoreInlandSeas',		  
+			   ]
+		Transects = ['Transect','PTransect','SOTransect']
+		
 		for key in sorted(fields):
 			#if key not in ['Alkalinity','Nitrate']: continue
 			SectionTitle= getLongName(key)

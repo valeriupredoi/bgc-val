@@ -204,6 +204,7 @@ def AddSubSections(filepath,hrefs,SectionTitle,SidebarTitles = {},Titles={}, Des
 	"""
 	#####
 	# Add a leading link to the side bar
+	if len(hrefs)==0:return
 	writeSideBar(filepath, hrefs[0], SectionTitle,option ='head')
 	writeSideBar(filepath, '', '',option ='startSub')	
 	

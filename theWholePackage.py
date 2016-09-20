@@ -26,25 +26,28 @@ def timeseriesParrallel(index):
 	print "timeseriesParrallel",index, jobID, 'START'
 	key = timeseriesDict[index]
 	singleTimeSeries(jobID, key,)
-	print "timeseriesParrallel",index, jobID, 'SUCESS'	
+	print "timeseriesParrallel",index, jobID, 'SUCESS',key	
 	
 def timeseriesParrallelL1(index):
 	print "timeseriesParrallel",index, jobID, 'START'
 	key = level1KeysDict[index]
 	singleTimeSeries(jobID, key,)
-	print "timeseriesParrallel",index, jobID, 'SUCESS'	
+	print "timeseriesParrallel",index, jobID, 'SUCESS',key	
 
 def timeseriesParrallelPhys(index):
-	print "timeseriesParrallel",index, jobID, 'START'
 	key = physKeysDict[index]
-	singleTimeSeries(jobID, key,)
-	print "timeseriesParrallel",index, jobID, 'SUCESS'
+	print "timeseriesParrallel",index, jobID, 'START',key,index
+	try:singleTimeSeries(jobID, key,)
+	except:
+		print "timeseriesParrallel failed for",index, jobID, key
+		assert 0
+	print "timeseriesParrallel",index, jobID, 'SUCESS',key
 	
 def p2pParrallel(index):
 	print "p2pParrallel",index, jobID, 'START'
 	key = p2pDict_level2[index]
 	single_p2p(jobID, key, year)
-	print "p2pParrallel",index, jobID, 'SUCESS'
+	print "p2pParrallel",index, jobID, 'SUCESS',key
 	
 
 
@@ -54,17 +57,20 @@ def theWholePackage(jobID,year=False,suite = 'level1'):
 	print "########\nThe Whole Package:\tStarting job", jobID , year
 #	downloadMass(jobID)
 
-	parrallel = True
+	parrallel = False
 	cores = 8
 	#suite = 'all'
 	
 
         print "########\nThe Whole Package:\tmaking Summary report"
         if year == False: year = '*'
+        if suite =='physics':	physicsOnly=True
+        else: 			physicsOnly=False
         html5Maker(jobID =jobID,
                    reportdir=folder('reports/'+jobID),
                    year = year,
                    clean=True,
+                   physicsOnly=physicsOnly
                    )
 #	return			  
 
@@ -143,6 +149,7 @@ if __name__=="__main__":
 		   reportdir=folder('reports/'+jobID),
 		   year = year,
 		   clean=True,
+		   physicsOnly=physicsOnly,
 		   )
 		   
 		   

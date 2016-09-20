@@ -17,7 +17,7 @@ regionList	= [#'Global', 'ignoreInlandSeas',
 		'NorthernSubpolarAtlantic','NorthernSubpolarPacific','ArcticOcean',
 		]
 
-def robinPlotCustom(lons,lats,data,filename,title, zrange=[-100,100],drawCbar=True,cbarlabel='',doLog=False,dpi=100,cmapname='default'):
+def robinPlotCustom(lons,lats,data,filename,title, zrange=[-100,100],drawCbar=True,cbarlabel='',doLog=False,dpi=100,cmapname='default',crude=True):
 	####
 	# Based on robinplotSingle
 	
@@ -35,8 +35,14 @@ def robinPlotCustom(lons,lats,data,filename,title, zrange=[-100,100],drawCbar=Tr
 
 	print lons.shape,lats.shape,data.shape
 	lon0 = 0.#lons.mean()
-	ax = pyplot.subplot(111,projection=ccrs.PlateCarree(central_longitude=lon0, ))
-	fig,ax,im = ukp.makemapplot(fig,ax,lons,lats,data,title, zrange=[rbmi,rbma],lon0=lon0,drawCbar=False,cbarlabel=cbarlabel,doLog=doLog,cmap = cmapname)
+	if crude:
+		ax = pyplot.subplot(111)#,projection=ccrs.PlateCarree(central_longitude=lon0, ))
+		im = pyplot.scatter(lats,lons,c=data,lw=0.,s=3,cmap='viridis',vmin=rbmi,vmax=rbma,)
+		#pyplot.colorbar(im)
+		#title, zrange=[rbmi,rbma],lon0=lon0,drawCbar=False,cbarlabel=cbarlabel,doLog=doLog,cmap = cmapname)	
+	else:
+		ax = pyplot.subplot(111,projection=ccrs.PlateCarree(central_longitude=lon0, ))
+		fig,ax,im = ukp.makemapplot(fig,ax,lons,lats,data,title, zrange=[rbmi,rbma],lon0=lon0,drawCbar=False,cbarlabel=cbarlabel,doLog=doLog,cmap = cmapname)
 
 
           
@@ -73,7 +79,7 @@ def robinPlotCustom(lons,lats,data,filename,title, zrange=[-100,100],drawCbar=Tr
 
 def makeRegionMap():
 
-	plotAll = True	# make plots for all regions
+	plotAll = 0#True	# make plots for all regions
 	imageFold = ukp.folder('images/maps')
 	#####
 	# Load data.
@@ -82,7 +88,7 @@ def makeRegionMap():
 	xy = np.ma.masked_where(bathy==0,nc.variables['nav_lat'][:]).compressed()
 	xx = np.ma.masked_where(bathy==0,nc.variables['nav_lon'][:]).compressed()
 	nc.close()
-		
+	
 	cbathy = np.ma.masked_where(bathy==0,bathy).compressed()
 	xt = np.ones_like(cbathy)
 	xz = np.ones_like(cbathy)
@@ -109,7 +115,7 @@ def makeRegionMap():
 	for c in colourmaps:
 		fn = imageFold+'Region_Legend.png'
 		robinPlotCustom(xy, xx, data,fn,'',drawCbar=False,cbarlabel='',doLog=False,dpi=200,cmapname = c)
-	
+		
 	
 
 if __name__=="__main__":
