@@ -1067,13 +1067,15 @@ def main():
 		
 		reportdir = arg
 			
-
+	if 'physics' in argv[:]:physicsOnly=True
+	else:	physicsOnly = False
 	
 
 	html5Maker(jobID =jobID,
 		   reportdir=reportdir,
 		   year = year,
 		   clean=clean,
+		   physicsOnly=physicsOnly,
 		   )
 		   	
 if __name__=="__main__":	
