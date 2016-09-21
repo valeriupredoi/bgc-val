@@ -305,7 +305,7 @@ class profileAnalysis:
 	    	try:	
 	    		dat = self.dataD[(r,l)]
 	    		#test = (len(),self.dataD[(r,l)].shape)
-	    		print "profileAnalysis:\t loadData\t",(r,l),dat
+	    		print "profileAnalysis:\t loadData\t",(r,l)#,dat
 	    	except: 
 			needtoLoad=True
 			print "profileAnalysis:\t loadData\tUnable to load",(r,l)
@@ -327,17 +327,44 @@ class profileAnalysis:
 	# Loading data for each region.
 	dl = tst.DataLoader(self.dataFile,'',self.datacoords,self.datadetails, regions = self.regions, layers = self.layers,)
 	
+#	#for r in self.regions:
+#	 #   for l in self.layers:
+#	    	dataD[(r,l)] = dl.load[(r,l,)]	
+#	    	dataD[(r,l,'lat')] = dl.load[(r,l,'lat')]		    	
+#	    	dataD[(r,l,'lon')] = dl.load[(r,l,'lon')]
+#		if len(dataD[(r,l)])==0  or np.ma.is_masked(dataD[(r,l)]):
+#			dataD[(r,l)]  = np.ma.masked
+#			dataD[(r,l,'lat')]  = np.ma.masked
+#			dataD[(r,l,'lon')]  = np.ma.masked
+									    	
+
+
+	
 	for r in self.regions:
 	    for l in self.layers:
 	    	dataD[(r,l)] = dl.load[(r,l,)]	
+	    	try:   	
+	    		meandatad = dataD[(r,l)].mean()
+	    		datadmask = (~np.ma.array(dataD[(r,l)]).mask).sum()
+	    	except: 
+	    		meandatad = False
+	    		datadmask = False
+		    	
+    		#print "profileAnalysis:\t load in situ data,\tloaded ",(r,l),  'mean:',meandatad    	
 	    	dataD[(r,l,'lat')] = dl.load[(r,l,'lat')]		    	
 	    	dataD[(r,l,'lon')] = dl.load[(r,l,'lon')]
-		if len(dataD[(r,l)])==0  or np.ma.is_masked(dataD[(r,l)]):
-			dataD[(r,l)]  = np.ma.masked
-			dataD[(r,l,'lat')]  = np.ma.masked
-			dataD[(r,l,'lon')]  = np.ma.masked
-									    	
-    		print "profileAnalysis:\t loadData,\tloading ",(r,l),  dataD[(r,l)].min(),  dataD[(r,l)].max(),  dataD[(r,l)].mean()
+		if not meandatad and not datadmask: #np.ma.is_masked(dataD[(r,l)]):
+			dataD[(r,l)]  = np.ma.array([-999,],mask=[True,])	
+			dataD[(r,l,'lat')]  = np.ma.array([-999,],mask=[True,])	    	
+			dataD[(r,l,'lon')]  = np.ma.array([-999,],mask=[True,])	    	
+		
+		#if meandatad and dataD[(r,l)]  == np.ma.array([-999,],mask=[True,]):
+		#	print "Massive failiure here:",meandatad, dataD[(r,l)] ,dl.load[(r,l,)]
+		#	assert 0
+		
+    		print "profileAnalysis:\t loadData,\tloading ",(r,l),  'mean:',meandatad    	
+    		
+    		
     		
 	###############
 	# Savng shelve		
