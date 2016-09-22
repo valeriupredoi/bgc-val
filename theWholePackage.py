@@ -96,9 +96,10 @@ def theWholePackage(jobID,year=False,suite = 'level1'):
 	if year not in ['*', False]:
 		if suite =='physics':pass
 		else:	suite = 'level2'
-		print "########\nThe Whole Package:\tRunning point to point analysis of", jobID,"on", year
+		
+		print "########\nThe Whole Package:\tRunning point to point analysis of", jobID,"on", year, 'in suite:',suite
+		
 		if parrallel:
-
 		   	p1 = Pool(cores)
 		   	if suite == 'physics':	
 				remaining = sorted(p2pDict_physics.keys())[:]		   	
@@ -127,7 +128,8 @@ def theWholePackage(jobID,year=False,suite = 'level1'):
 				noPlots = False,
 				analysisSuite=suite,)        
 
-
+	else:
+		print "########\nThe Whole Package:\tNot Running point to point analysis of", jobID," because year is:", year
 	
 
 
@@ -153,7 +155,7 @@ if __name__=="__main__":
 		else:		theWholePackage(jobID,year=year)
 		
         if year == False: year = '*'
-	print "########\nThe Whole Package:\tmaking Summary report"	
+	print "########\nThe Whole Package:\tmaking Summary report", jobID,year	
 	html5Maker(jobID =jobID,
 		   reportdir=folder('reports/'+jobID),
 		   year = year,
