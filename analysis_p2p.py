@@ -740,6 +740,7 @@ def analysis_p2p(
 		if 'S' in analysisKeys:
 			name = 'Salinity'
 			if annual:
+				print NEMOFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_grid_T.nc"
 				av[name]['NEMO']['File'] 	= sorted(glob(NEMOFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_grid_T.nc"))[0]
 				av[name]['Data']['File'] 	= WOAFolder+'woa13_decav_s00_01v2.nc'	
 			else:	
