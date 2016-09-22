@@ -57,17 +57,19 @@ def p2pParrallel_phys(index):
 
 
 def theWholePackage(jobID,year=False,suite = 'level1'):
-        if year == False: year = '*'
+
+        #if year in [False,  '*']:
+	#        year = findLastFinishedYear(jobID,dividby=25)
+	#elif type(year) in [type(1000), type(1000.)]:
+	#	year = str(year)
+	
 	print "########\nThe Whole Package:\tStarting job", jobID , year
-#	downloadMass(jobID)
 
 	parrallel = True
 	cores = 8
-	#suite = 'all'
-	
 
         print "########\nThe Whole Package:\tmaking Summary report"
-        if year == False: year = '*'
+        
         if suite =='physics':	physicsOnly=True
         else: 			physicsOnly=False
         html5Maker(jobID =jobID,
@@ -146,10 +148,15 @@ if __name__=="__main__":
 	if 'ReportOnly' in argv[:]:ReportOnly=True
 	else:	ReportOnly = False
 
-	if 'physics' in argv[:]:physicsOnly=True
-	else:	physicsOnly = False
+	if 'physics' in argv[:]:
+		physicsOnly=True
+		numberfiles = 4
+	else:	
+		physicsOnly = False
+		numberfiles = 6
 	
-        year = findLastFinishedYear(jobID,dividby=25)		
+        year = findLastFinishedYear(jobID,dividby=25,numberfiles=numberfiles)
+	
 	if not ReportOnly:
 		if physicsOnly:	theWholePackage(jobID,year=year,suite='physics')
 		else:		theWholePackage(jobID,year=year)
