@@ -27,6 +27,7 @@ from netCDF4 import Dataset
 from os.path  import exists,getmtime
 from os import mkdir, makedirs
 import os
+import math
 from glob import glob
 from itertools import product,izip
 import numpy as np
@@ -400,6 +401,68 @@ def shouldIMakeFile(fin,fout,debug = True):
 		print	'shouldIMakeFile: got to the end somehow:'
 		print type(fin), fin, fout
 	return False
+
+
+
+	
+def makemapplot(fig,ax,lons,lats,data,title, zrange=[-100,100],lon0=0.,drawCbar=True,cbarlabel='',doLog=False,drawLand=True,cmap='default'):
+	lons = np.array(lons)
+	lats = np.array(lats)
+	data = np.ma.array(data)	
+	if doLog and zrange[0]*zrange[1] <=0.:
+		print "makemapplot: \tMasking"
+		data = np.ma.masked_less_equal(np.ma.array(data), 0.)
+	print data.min(),lats.min(),lons.min(), data.shape,lats.shape,lons.shape
+	crojp2, data, newLon,newLat = regrid(data,lats,lons)
+	if type(cmap) == type('str'):
+	    if cmap=='default':
+		try:	cmap = pyplot.cm.viridis
+		except: cmap = pyplot.cm.jet
+	    else:
+	    	cmap = pyplot.cm.get_cmap(cmap)
+		
+	if doLog:
+		im = ax.pcolormesh(newLon, newLat,data, cmap=cmap, transform=ccrs.PlateCarree(),norm=LogNorm(vmin=zrange[0],vmax=zrange[1]),)
+	else:	
+		im = ax.pcolormesh(newLon, newLat,data, cmap=cmap, transform=ccrs.PlateCarree(),vmin=zrange[0],vmax=zrange[1])
+	
+	if drawLand: ax.add_feature(cfeature.LAND,  facecolor='0.85')	
+
+
+	if drawCbar:
+	    c1 = fig.colorbar(im,pad=0.05,shrink=0.75)
+	    if len(cbarlabel)>0: c1.set_label(cbarlabel)
+	pyplot.title(title)
+	ax.set_axis_off()
+	pyplot.axis('off')
+	ax.axis('off')
+		
+	return fig, ax,im
+
+
+def robinPlotSingle(lons,lats,data,filename,title, zrange=[-100,100],drawCbar=True,cbarlabel='',doLog=False,dpi=100,):
+	
+	fig = pyplot.figure()
+	fig.set_size_inches(10,6)
+
+	lons = np.array(lons)
+	lats = np.array(lats)
+	data = np.ma.array(data)
+	
+	rbmi = min([data.min(),])
+	rbma = max([data.max(),])
+	
+	if rbmi * rbma >0. and rbma/rbmi > 100.: doLog=True
+
+	print lons.shape,lats.shape,data.shape
+	lon0 = lons.mean()
+	ax = pyplot.subplot(111,projection=ccrs.PlateCarree(central_longitude=lon0, ))
+		
+	fig,ax,im = makemapplot(fig,ax,lons,lats,data,title, zrange=[rbmi,rbma],lon0=lon0,drawCbar=drawCbar,cbarlabel=cbarlabel,doLog=doLog,)
+
+	print "robinPlotSingle.py:\tSaving:" , filename
+	pyplot.savefig(filename ,dpi=dpi)		
+	pyplot.close()
 
 
 	
@@ -1126,6 +1189,12 @@ def strRound(val,i=4):
 	if val>10: return str(round(val,i-2))
 	if val>1: return str(round(val,i-1))
 	return str(round(val,i))
+
+
+def round_sig(x, sig=2):
+	if x<0.:return -1.* round(abs(x), sig-int(math.floor(math.log10(abs(x))))-1)		
+   	return round(x, sig-int(math.floor(math.log10(x)))-1)
+
 	
 def addStraightLineFit(ax, x,y,showtext=True, addOneToOne=False,extent = [0,0,0,0]):
 	def getLinRegText(ax, x, y, showtext=True):
@@ -1855,7 +1924,7 @@ def makeMask(name,newSlice, xt,xz,xy,xx,xd,debug=False):
 		return np.ma.masked_where( mx,nmask).mask 
 
 	if newSlice == 'NorthernSubpolarAtlantic':
-		mx = np.ma.masked_outside(xx,-80., -3. ).mask + np.ma.masked_outside(xy,40., 60. ).mask
+		mx = np.ma.masked_outside(xx,-74., -3. ).mask + np.ma.masked_outside(xy,40., 60. ).mask
 		mx *= np.ma.masked_outside(xx, -45., 15.).mask + np.ma.masked_outside(xy, 60.,80.).mask
 		return mx	
 

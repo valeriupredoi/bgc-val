@@ -42,20 +42,25 @@ from getpass import getuser
 import UKESMpython as ukp
 from timeseries import timeseriesAnalysis
 from timeseries import profileAnalysis
+import paths	# User defined set of paths pointing towards the datasets.
+
 
 timeseriesKeys = ['T','S','MLD', 'Chl_pig','Chl_CCI',
 		  'N','Si','O2','Alk','DIC','AirSeaFlux','Iron',
-		  'TotalAirSeaFlux','IntPP_iMarNet','IntPP_OSU',
+		  'TotalAirSeaFluxCO2','IntPP_iMarNet','IntPP_OSU',
 		  'PP_OSU','LocalExportRatio','GlobalExportRatio',
 		  'OMZThickness', 'TotalOMZVolume',		
 		  'AMOC_26N','AMOC_32S',  
 		  ]
 timeseriesDict = {i:n for i,n in enumerate(timeseriesKeys)}
 
-level1Keys = ['N', 'Si','O2','Alk','DIC','AirSeaFlux','TotalAirSeaFlux','IntPP_OSU','PP_OSU' ,'LocalExportRatio','GlobalExportRatio' ,'TotalOMZVolume','OMZThickness' ,'Iron',
-		'T', 'S','MLD','TotalIceArea', 'NorthernTotalIceArea','SouthernTotalIceArea','DrakePassageTransport','AMOC_26N','AMOC_32S',]
+level1Keys = ['N', 'Si','O2','Alk','DIC','AirSeaFlux','TotalAirSeaFluxCO2','IntPP_OSU','PP_OSU' ,'LocalExportRatio','GlobalExportRatio' ,'TotalOMZVolume','OMZThickness' ,'Iron',
+		'T', 'S','MLD','TotalIceArea', 'NorthernTotalIceArea','SouthernTotalIceArea',
+		'TotalIceExtent', 'NorthernTotalIceExtent','SouthernTotalIceExtent','DrakePassageTransport','AMOC_26N','AMOC_32S',]
 level1KeysDict = {i:n for i,n in enumerate(level1Keys)}	
-physKeys  = ['T', 'S','MLD','TotalIceArea', 'NorthernTotalIceArea','SouthernTotalIceArea','DrakePassageTransport','AMOC_26N','AMOC_32S',]
+physKeys  = ['T', 'S','MLD','TotalIceArea', 'NorthernTotalIceArea','SouthernTotalIceArea',
+		'TotalIceExtent', 'NorthernTotalIceExtent','SouthernTotalIceExtent',
+		'DrakePassageTransport','AMOC_26N','AMOC_32S',]
 physKeysDict = {i:n for i,n in enumerate(physKeys)}	
 
 def analysis_timeseries(jobID = "u-ab671",
@@ -78,7 +83,6 @@ def analysis_timeseries(jobID = "u-ab671",
 			It fails if the switch is on and the files no not exist.
 			
 		analysisSuite chooses a set of fields to look at.
-		
 		
 		regions selects a list of regions, default is 'all', which is the list supplied by Andy Yool. 
 		
@@ -108,7 +112,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			analysisKeys.append('Alk')			# Glodap Alkalinity
 			analysisKeys.append('DIC')			# Globap tCO2
 			analysisKeys.append('AirSeaFlux')		# work in progress
-			analysisKeys.append('TotalAirSeaFlux')		# work in progress		
+			analysisKeys.append('TotalAirSeaFluxCO2')		# work in progress		
 			analysisKeys.append('IntPP_iMarNet')		# Integrated primpary production from iMarNEt
 			analysisKeys.append('IntPP_OSU')		# OSU Integrated primpary production	
 			analysisKeys.append('PP_OSU')			# OSU Integrated primpary production			
@@ -126,6 +130,9 @@ def analysis_timeseries(jobID = "u-ab671",
 			analysisKeys.append('TotalIceArea')		# work in progress	
 			analysisKeys.append('NorthernTotalIceArea')		# work in progress	
 			analysisKeys.append('SouthernTotalIceArea')		# work in progress	
+			analysisKeys.append('TotalIceExtent')		# work in progress	
+			analysisKeys.append('NorthernTotalIceExtent')		# work in progress	
+			analysisKeys.append('SouthernTotalIceExtent')		# work in progress	
 			analysisKeys.append('DrakePassageTransport')			# DrakePassageTransport							
 			#####
 			# Switched Off
@@ -137,7 +144,7 @@ def analysis_timeseries(jobID = "u-ab671",
                         analysisKeys.append('Alk')                      # Glodap Alkalinity
                         analysisKeys.append('DIC')                      # Globap tCO2
                         analysisKeys.append('AirSeaFlux')               # work in progress
-                        analysisKeys.append('TotalAirSeaFlux')          # work in progress              
+                        analysisKeys.append('TotalAirSeaFluxCO2')          # work in progress              
                         analysisKeys.append('IntPP_OSU')                # OSU Integrated primpary production    
                         analysisKeys.append('PP_OSU')                   # OSU Integrated primpary production                    
                         analysisKeys.append('LocalExportRatio')         # Export ratio (no data)
@@ -153,6 +160,9 @@ def analysis_timeseries(jobID = "u-ab671",
 			analysisKeys.append('TotalIceArea')		# work in progress	
 			analysisKeys.append('NorthernTotalIceArea')	# work in progress	
 			analysisKeys.append('SouthernTotalIceArea')	# work in progress	
+			analysisKeys.append('TotalIceExtent')		# work in progress	
+			analysisKeys.append('NorthernTotalIceExtent')	# work in progress	
+			analysisKeys.append('SouthernTotalIceExtent')	# work in progress	
 			analysisKeys.append('DrakePassageTransport')	# DrakePassageTransport				
                         analysisKeys.append('AMOC_32S')                 # AMOC 32S
                         analysisKeys.append('AMOC_26N')                 # AMOC 26N
@@ -160,28 +170,31 @@ def analysis_timeseries(jobID = "u-ab671",
                                                 					
 		if analysisSuite.lower() in ['debug',]:	
 			#analysisKeys.append('AirSeaFlux')		# work in progress
-			#analysisKeys.append('TotalAirSeaFlux')		# work in progress
+			#analysisKeys.append('TotalAirSeaFluxCO2')	# work in progress
 			#analysisKeys.append('TotalOMZVolume')		# work in progress
 			#analysisKeys.append('TotalOMZVolume')		# work in progress
 			#analysisKeys.append('TotalOMZVolume50')	# work in progress			
 			#analysisKeys.append('OMZThickness')		# work in progress						
 			#analysisKeys.append('DIC')			# work in progress									
-			#analysisKeys.append('DrakePassageTransport')			# DrakePassageTransport				
+			#analysisKeys.append('DrakePassageTransport')	# DrakePassageTransport				
 			#analysisKeys.append('TotalIceArea')		# work in progress	
 														
 			#analysisKeys.append('O2')			# work in progress
-			#analysisKeys.append('Iron')			# work in progress
-                       #analysisKeys.append('N')                        # WOA Nitrate				
-                        #analysisKeys.append('IntPP_OSU')                # OSU Integrated primpary production    
+			analysisKeys.append('Iron')			# work in progress
+                        #analysisKeys.append('N')                        # WOA Nitrate				
+                        #analysisKeys.append('IntPP_OSU')               # OSU Integrated primpary production    
                         #####   
                         # Physics switches:
-                        analysisKeys.append('T')                        # WOA Temperature
-                        analysisKeys.append('S')                        # WOA Salinity
-                        #analysisKeys.append('NorthernTotalIceArea')            # work in progress      
-                        #analysisKeys.append('SouthernTotalIceArea')            # work in progress                              
+                        #analysisKeys.append('T')                       # WOA Temperature
+                        #analysisKeys.append('S')                       # WOA Salinity
+                        #analysisKeys.append('NorthernTotalIceArea')    # work in progress      
+                        #analysisKeys.append('SouthernTotalIceArea')    # work in progress                              
                         #analysisKeys.append('TotalIceArea')            # work in progress    
-                        #analysisKeys.append('AMOC_32S')                 # AMOC 32S
-                        #analysisKeys.append('AMOC_26N')                 # AMOC 26N
+			#analysisKeys.append('TotalIceExtent')		# work in progress	
+			#analysisKeys.append('NorthernTotalIceExtent')	# work in progress	
+			#analysisKeys.append('SouthernTotalIceExtent')	# work in progress	                        
+                        #analysisKeys.append('AMOC_32S')                # AMOC 32S
+                        #analysisKeys.append('AMOC_26N')                # AMOC 26N
                                                 
                 if analysisSuite.lower() in ['physics',]:
                         #####   
@@ -192,6 +205,9 @@ def analysis_timeseries(jobID = "u-ab671",
 			analysisKeys.append('TotalIceArea')		# work in progress	
 			analysisKeys.append('NorthernTotalIceArea')	# work in progress	
 			analysisKeys.append('SouthernTotalIceArea')	# work in progress	
+			analysisKeys.append('TotalIceExtent')		# work in progress	
+			analysisKeys.append('NorthernTotalIceExtent')	# work in progress	
+			analysisKeys.append('SouthernTotalIceExtent')	# work in progress				
 			analysisKeys.append('DrakePassageTransport')	# DrakePassageTransport	
                         analysisKeys.append('AMOC_32S')                 # AMOC 32S
                         analysisKeys.append('AMOC_26N')                 # AMOC 26N
@@ -211,12 +227,12 @@ def analysis_timeseries(jobID = "u-ab671",
 	if regions == 'short':  	
 		regionList 	= ['Global','SouthernHemisphere','NorthernHemisphere',]
 
-
 	#####
 	# The z_component custom command:
 	# This flag sets a list of layers and metrics.
 	# It's not advised to run all the metrics and all the layers, as it'll slow down the analysis.
-	#if z_component in ['SurfaceOnly',]:
+	# if z_component in ['SurfaceOnly',]:
+	
 	layerList = ['Surface','500m','1000m',]
 	metricList = ['mean','median', '10pc','20pc','30pc','40pc','50pc','60pc','70pc','80pc','90pc','min','max']
 
@@ -259,65 +275,69 @@ def analysis_timeseries(jobID = "u-ab671",
 	#####
 	# PML
 	if gethostname().find('pmpc')>-1:	
-		print "analysis-timeseries.py:\tBeing run at PML on ",gethostname()
-		machinelocation = 'PML'
-		MEDUSAFolder_pref	= "/data/euryale7/scratch/ledm/UKESM/MEDUSA/"
-		NEMOFolder_pref		= "/data/euryale7/scratch/ledm/UKESM/MEDUSA/"
-	
-		if annual:	WOAFolder 	= "/data/euryale7/backup/ledm/Observations/WOA/annual/"
-		else:		WOAFolder 	= "/data/euryale7/backup/ledm/Observations/WOA/"
-		
-		ObsFolder = "/data/euryale7/backup/ledm/Observations/"
-		MAREDATFolder 	= ObsFolder+"/MAREDAT/MAREDAT/"
-		GEOTRACESFolder = ObsFolder+"/GEOTRACES/GEOTRACES_PostProccessed/"
-		TakahashiFolder = ObsFolder+"/Takahashi2009_pCO2/"
-		MLDFolder	= ObsFolder+"/IFREMER-MLD/"
-		iMarNetFolder	= ObsFolder+"/LestersReportData/"
-		GlodapDir	= ObsFolder+"/GLODAP/"
-		GLODAPv2Dir	= ObsFolder+"/GLODAPv2/GLODAPv2_Mapped_Climatologies/"
-		OSUDir		= ObsFolder+"OSU/"
-		CCIDir		= ObsFolder+"CCI/"
-		icFold		= "/data/euryale7/backup/ledm/UKESM/InitialConditions/"		
+#		print "analysis-timeseries.py:\tBeing run at PML on ",gethostname()
+#		machinelocation = 'PML'
+#		MEDUSAFolder_pref	= "/data/euryale7/scratch/ledm/UKESM/MEDUSA/"
+#	
+#		if annual:	WOAFolder 	= "/data/euryale7/backup/ledm/Observations/WOA/annual/"
+#		else:		WOAFolder 	= "/data/euryale7/backup/ledm/Observations/WOA/"
+#		
+#		ObsFolder = "/data/euryale7/backup/ledm/Observations/"
+#		MAREDATFolder 	= ObsFolder+"/MAREDAT/MAREDAT/"
+#		GEOTRACESFolder = ObsFolder+"/GEOTRACES/GEOTRACES_PostProccessed/"
+#		TakahashiFolder = ObsFolder+"/Takahashi2009_pCO2/"
+#		MLDFolder	= ObsFolder+"/IFREMER-MLD/"
+#		iMarNetFolder	= ObsFolder+"/LestersReportData/"
+#		GlodapDir	= ObsFolder+"/GLODAP/"
+#		GLODAPv2Dir	= ObsFolder+"/GLODAPv2/GLODAPv2_Mapped_Climatologies/"
+#		OSUDir		= ObsFolder+"OSU/"
+#		CCIDir		= ObsFolder+"CCI/"
+#		icFold		= "/data/euryale7/backup/ledm/UKESM/InitialConditions/"		
+#
+#		
+#		orcaGridfn 	= '/data/euryale7/scratch/ledm/UKESM/MEDUSA/mesh_mask_eORCA1_wrk.nc'
+#		shelvedir 	= ukp.folder('shelves/timeseries/'+jobID)		
 
-		
-		orcaGridfn 	= '/data/euryale7/scratch/ledm/UKESM/MEDUSA/mesh_mask_eORCA1_wrk.nc'
-		shelvedir 	= ukp.folder('shelves/timeseries/'+jobID)		
+		if annual:	WOAFolder = paths.WOAFolder_annual
+		else:		WOAFolder = paths.WOAFolder		
+		shelvedir 	= ukp.folder(paths.shelvedir+'/'+jobID)
 	#####
 	# JASMIN		
 	if gethostname().find('ceda.ac.uk')>-1:
 		print "analysis-timeseries.py:\tBeing run at CEDA on ",gethostname()
-		machinelocation = 'JASMIN'	
+		#machinelocation = 'JASMIN'	
 				
-		ObsFolder 	= "/group_workspaces/jasmin/esmeval/example_data/bgc/"
-		esmvalFolder 	= "/group_workspaces/jasmin2/ukesm/BGC_data/"
+		#ObsFolder 	= "/group_workspaces/jasmin/esmeval/example_data/bgc/"
+		#esmvalFolder 	= "/group_workspaces/jasmin2/ukesm/BGC_data/"
 		shelvedir 	= ukp.folder("/group_workspaces/jasmin2/ukesm/BGC_data/"+getuser()+"/shelves/timeseries/"+jobID)
+		if annual:	WOAFolder = paths.WOAFolder_annual
+		else:		WOAFolder = paths.WOAFolder	
 			
 		#####
 		# Location of model files.	
-		MEDUSAFolder_pref	= ukp.folder(esmvalFolder)
-		NEMOFolder_pref		= ukp.folder(esmvalFolder)
+		#MEDUSAFolder_pref	= ukp.folder(esmvalFolder)
 		
 		#####
 		# Location of data files.
-		if annual:	WOAFolder 	= ukp.folder(ObsFolder+"WOA/annual")
-		else:		WOAFolder 	= ukp.folder(ObsFolder+"WOA/")
+		#if annual:	WOAFolder 	= ukp.folder(ObsFolder+"WOA/annual")
+		#else:		WOAFolder 	= ukp.folder(ObsFolder+"WOA/")
 		
-		MAREDATFolder 	= ObsFolder+"/MAREDAT/MAREDAT/"
-		GEOTRACESFolder = ObsFolder+"/GEOTRACES/GEOTRACES_PostProccessed/"
-		TakahashiFolder = ObsFolder+"/Takahashi2009_pCO2/"
-		MLDFolder	= ObsFolder+"/IFREMER-MLD/"
-		iMarNetFolder	= ObsFolder+"/LestersReportData/"
-		GlodapDir	= ObsFolder+"/GLODAP/"
-		GLODAPv2Dir	= ObsFolder+"/GLODAPv2/GLODAPv2_Mapped_Climatologies/"
-		OSUDir		= ObsFolder+"OSU/"
-		CCIDir		= ObsFolder+"CCI/"
-		icFold		= ObsFolder+"/InitialConditions/"
-		if jobID in ["xkrus",]:
-			# Old school ORCA1 grid
-			orcaGridfn 	='/group_workspaces/jasmin/esmeval/example_data/bgc/mesh_mask_ORCA1_75.nc'
-		else:
-			# New eORCA1 grid		
-			orcaGridfn 	= '/group_workspaces/jasmin/esmeval/example_data/bgc/mesh_mask_eORCA1_wrk.nc'
+		#MAREDATFolder 	= ObsFolder+"/MAREDAT/MAREDAT/"
+		#GEOTRACESFolder = ObsFolder+"/GEOTRACES/GEOTRACES_PostProccessed/"
+		#TakahashiFolder = ObsFolder+"/Takahashi2009_pCO2/"
+		#MLDFolder	= ObsFolder+"/IFREMER-MLD/"
+		#iMarNetFolder	= ObsFolder+"/LestersReportData/"
+		#GlodapDir	= ObsFolder+"/GLODAP/"
+		#GLODAPv2Dir	= ObsFolder+"/GLODAPv2/GLODAPv2_Mapped_Climatologies/"
+		#OSUDir		= ObsFolder+"OSU/"
+		#CCIDir		= ObsFolder+"CCI/"
+		#icFold		= ObsFolder+"/InitialConditions/"
+		#if jobID in ["xkrus",]:
+		#	# Old school ORCA1 grid
+		#	orcaGridfn 	='/group_workspaces/jasmin/esmeval/example_data/bgc/mesh_mask_ORCA1_75.nc'
+		#else:
+		#	# New eORCA1 grid		
+		#	orcaGridfn 	= '/group_workspaces/jasmin/esmeval/example_data/bgc/mesh_mask_eORCA1_wrk.nc'
         # MONSOON                 
         if gethostname().find('monsoon')>-1:
                 print "analysis-timeseries.py:\tBeing run at the Met Office on ",gethostname()
@@ -328,7 +348,6 @@ def analysis_timeseries(jobID = "u-ab671",
                 #####
                 # Location of model files.      
                 MEDUSAFolder_pref       = ukp.folder(ModelFolder)
-                NEMOFolder_pref         = ukp.folder(ModelFolder)
 
                 #####
                 # Location of data files.
@@ -359,7 +378,6 @@ def analysis_timeseries(jobID = "u-ab671",
 		machinelocation = 'NOC'
 		
 		MEDUSAFolder_pref	= "/home/jpp1m13/Documents/WORKING/UKESM/Compar_Atm_forcings/netcdf_files/"
-		NEMOFolder_pref		="/home/jpp1m13/Documents/WORKING/UKESM/Compar_Atm_forcings/netcdf_files/" 
 	
 		if annual:	WOAFolder 	= "/home/jpp1m13/Documents/WORKING/UKESM/Compar_Atm_forcings/netcdf_files/"
 		else:		WOAFolder 	= "/data/euryale7/scratch/ledm/WOA/"
@@ -374,7 +392,7 @@ def analysis_timeseries(jobID = "u-ab671",
 
 	#####
 	# Unable to find location of files/data.	
-	if not machinelocation:
+	if not paths.machinelocation:
 		print "analysis-timeseries.py:\tFATAL:\tWas unable to determine location of host: ",gethostname()
 		assert False
 		
@@ -420,7 +438,7 @@ def analysis_timeseries(jobID = "u-ab671",
 	#			assert 0
 #	#			return sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1m_*_"+filekey+".nc"))		
 
-	masknc = Dataset(orcaGridfn,'r')
+	masknc = Dataset(paths.orcaGridfn,'r')
 	tlandmask = masknc.variables['tmask'][:]
 	masknc.close()
 
@@ -458,8 +476,8 @@ def analysis_timeseries(jobID = "u-ab671",
 	av = ukp.AutoVivification()
 	if 'Chl_pig' in analysisKeys:
 		name = 'Chlorophyll_pig'
-		av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
-		av[name]['dataFile'] 		= MAREDATFolder+"MarEDat20121001Pigments.nc"	
+		av[name]['modelFiles']  	= sorted(glob(paths.ModelFolder_pref+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
+		av[name]['dataFile'] 		= paths.MAREDATFolder+"MarEDat20121001Pigments.nc"	
 				
 		av[name]['modelcoords'] 	= medusaCoords 	
 		av[name]['datacoords'] 		= maredatCoords
@@ -475,19 +493,20 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['model']		= 'MEDUSA'
 
 		av[name]['modelgrid']		= 'eORCA1'
-		av[name]['gridFile']		= orcaGridfn
+		av[name]['gridFile']		= paths.orcaGridfn
 		av[name]['Dimensions']		= 3
+
 
 	if 'Chl_CCI' in analysisKeys:
 		name = 'Chlorophyll_cci'
 		#####
 		# Not that this is the 1 degree resolution dataset, but higher resolution data are also available.
 		
-		av[name]['modelFiles']  = listModelDataFiles(jobID, 'ptrc_T', MEDUSAFolder_pref, annual)		
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'ptrc_T', paths.ModelFolder_pref, annual)		
 		if annual:	
-			av[name]['dataFile'] 	= CCIDir+"ESACCI-OC-L3S-OC_PRODUCTS-CLIMATOLOGY-16Y_MONTHLY_1degree_GEO_PML_OC4v6_QAA-annual-fv2.0.nc"	
-			print MEDUSAFolder_pref+"/"+jobID+"o_1y_*_ptrc_T.nc"
-		else:	av[name]['dataFile'] 	= CCIDir+'ESACCI-OC-L3S-OC_PRODUCTS-CLIMATOLOGY-16Y_MONTHLY_1degree_GEO_PML_OC4v6_QAA-all-fv2.0.nc'
+			av[name]['dataFile'] 	= paths.CCIDir+"ESACCI-OC-L3S-OC_PRODUCTS-CLIMATOLOGY-16Y_MONTHLY_1degree_GEO_PML_OC4v6_QAA-annual-fv2.0.nc"	
+			print paths.ModelFolder_pref+"/"+jobID+"o_1y_*_ptrc_T.nc"
+		else:	av[name]['dataFile'] 	= paths.CCIDir+'ESACCI-OC-L3S-OC_PRODUCTS-CLIMATOLOGY-16Y_MONTHLY_1degree_GEO_PML_OC4v6_QAA-all-fv2.0.nc'
 			
 		av[name]['modelcoords'] 	= medusaCoords 	
 		av[name]['datacoords'] 		= cciCoords
@@ -503,7 +522,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['model']		= 'MEDUSA'
 
 		av[name]['modelgrid']		= 'eORCA1'
-		av[name]['gridFile']		= orcaGridfn
+		av[name]['gridFile']		= paths.orcaGridfn
 		av[name]['Dimensions']		= 2		
 
 
@@ -512,7 +531,7 @@ def analysis_timeseries(jobID = "u-ab671",
 
 	if 'N' in analysisKeys:
 		name = 'Nitrate'
-		av[name]['modelFiles']  = listModelDataFiles(jobID, 'ptrc_T', MEDUSAFolder_pref, annual)				
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'ptrc_T', paths.ModelFolder_pref, annual)				
 		if annual:
 			av[name]['dataFile'] 		=  WOAFolder+'/woa13_all_n00_01.nc'
 		else:
@@ -535,12 +554,12 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['model']		= 'MEDUSA'
 
 		av[name]['modelgrid']		= 'eORCA1'
-		av[name]['gridFile']		= orcaGridfn
+		av[name]['gridFile']		= paths.orcaGridfn
 		av[name]['Dimensions']		= 3
 		
 	if 'Si' in analysisKeys:
 		name = 'Silicate'
-		av[name]['modelFiles']  = listModelDataFiles(jobID, 'ptrc_T', MEDUSAFolder_pref, annual)				
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'ptrc_T', paths.ModelFolder_pref, annual)				
 		if annual:	
 			av[name]['dataFile'] 		= WOAFolder+'woa13_all_i00_01.nc'
 		else:
@@ -559,13 +578,13 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['model']		= 'MEDUSA'
 
 		av[name]['modelgrid']		= 'eORCA1'
-		av[name]['gridFile']		= orcaGridfn
+		av[name]['gridFile']		= paths.orcaGridfn
 		av[name]['Dimensions']		= 3		
 	
 	if 'O2' in analysisKeys:
 		name = 'Oxygen'
 		if annual:
-			av[name]['modelFiles']  = listModelDataFiles(jobID, 'ptrc_T', MEDUSAFolder_pref, annual)		
+			av[name]['modelFiles']  = listModelDataFiles(jobID, 'ptrc_T', paths.ModelFolder_pref, annual)		
 			av[name]['dataFile'] 		=  WOAFolder+'woa13_all_o00_01.nc'
 				
 		av[name]['modelcoords'] 	= medusaCoords 	
@@ -582,7 +601,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['model']		= 'MEDUSA'
 
 		av[name]['modelgrid']		= 'eORCA1'
-		av[name]['gridFile']		= orcaGridfn
+		av[name]['gridFile']		= paths.orcaGridfn
 		av[name]['Dimensions']		= 3
 
 
@@ -591,13 +610,13 @@ def analysis_timeseries(jobID = "u-ab671",
 		name = 'OMZThickness'
 		
 		if annual:
-			av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
+			av[name]['modelFiles']  	= sorted(glob(paths.ModelFolder_pref+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
 			av[name]['dataFile'] 		=  WOAFolder+'woa13_all_o00_01.nc'
 		else:
 			print "OMZ Thickness not implemented for monthly data"
 			assert 0
 			
-		nc = Dataset(orcaGridfn,'r')
+		nc = Dataset(paths.orcaGridfn,'r')
 		thickness   = nc.variables['e3t' ][:]
 		nc.close()			
 
@@ -645,7 +664,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['model']		= 'MEDUSA'
 
 		av[name]['modelgrid']		= 'eORCA1'
-		av[name]['gridFile']		= orcaGridfn	
+		av[name]['gridFile']		= paths.orcaGridfn	
 		av[name]['Dimensions']		= 2		
 		
 		
@@ -655,13 +674,13 @@ def analysis_timeseries(jobID = "u-ab671",
 	    for name in ['TotalOMZVolume','TotalOMZVolume50']:
 	        if name not in analysisKeys: continue
 		if annual:
-			av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
+			av[name]['modelFiles']  	= sorted(glob(paths.ModelFolder_pref+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
 			av[name]['dataFile'] 		=  WOAFolder+'woa13_all_o00_01.nc'
 		else:
 			print "OMZ volume not implemented for monthly data"
 			assert 0
 			
-		nc = Dataset(orcaGridfn,'r')
+		nc = Dataset(paths.orcaGridfn,'r')
 		try:	
 			vol   = nc.variables['pvol' ][:]
 			tmask = nc.variables['tmask'][:]
@@ -712,7 +731,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['model']		= 'MEDUSA'
 
 		av[name]['modelgrid']		= 'eORCA1'
-		av[name]['gridFile']		= orcaGridfn	
+		av[name]['gridFile']		= paths.orcaGridfn	
 		av[name]['Dimensions']		= 1	
 	
 	if 'DIC' in analysisKeys:
@@ -722,8 +741,8 @@ def analysis_timeseries(jobID = "u-ab671",
 				
 		name = 'DIC'
 		
-		av[name]['modelFiles'] 		= listModelDataFiles(jobID, 'ptrc_T', MEDUSAFolder_pref, annual)				
-		av[name]['dataFile'] 		= GLODAPv2Dir+ 'GLODAPv2.tco2.historic.nc'
+		av[name]['modelFiles'] 		= listModelDataFiles(jobID, 'ptrc_T', paths.ModelFolder_pref, annual)				
+		av[name]['dataFile'] 		= paths.GLODAPv2Dir+ 'GLODAPv2.tco2.historic.nc'
 				
 		av[name]['modelcoords'] 	= medusaCoords 	
 		av[name]['datacoords'] 		= glodapv2Coords
@@ -739,7 +758,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['model']		= 'MEDUSA'
 
 		av[name]['modelgrid']		= 'eORCA1'
-		av[name]['gridFile']		= orcaGridfn		
+		av[name]['gridFile']		= paths.orcaGridfn		
 		av[name]['Dimensions']		= 3
 		
 	if 'Alk' in analysisKeys:
@@ -748,8 +767,8 @@ def analysis_timeseries(jobID = "u-ab671",
 		
 		name = 'Alkalinity'
 		if annual:		
-			av[name]['modelFiles']  = listModelDataFiles(jobID, 'ptrc_T', MEDUSAFolder_pref, annual)		
-			av[name]['dataFile'] 	=  GlodapDir+'Alk.nc'
+			av[name]['modelFiles']  = listModelDataFiles(jobID, 'ptrc_T', paths.ModelFolder_pref, annual)		
+			av[name]['dataFile'] 	=  paths.GlodapDir+'Alk.nc'
 		else:
 			print "Alkalinity data not available for monthly Analysis"
 			assert 0
@@ -770,13 +789,13 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['model']		= 'MEDUSA'
 
 		av[name]['modelgrid']		= 'eORCA1'
-		av[name]['gridFile']		= orcaGridfn
+		av[name]['gridFile']		= paths.orcaGridfn
 		av[name]['Dimensions']		= 3					
 
 
 	if 'AirSeaFlux' in analysisKeys:
 	
-		#nc = Dataset(orcaGridfn,'r')
+		#nc = Dataset(paths.orcaGridfn,'r')
 		#area = nc.variables['e1t'][:]*nc.variables['e2t'][:]
 		#nc.close()
 		
@@ -805,14 +824,14 @@ def analysis_timeseries(jobID = "u-ab671",
 			
 		name = 'AirSeaFluxCO2'
 
-		av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', MEDUSAFolder_pref, annual)								
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', paths.ModelFolder_pref, annual)								
 		if annual:
-			av[name]['dataFile'] 		=  TakahashiFolder+'takahashi_2009_Anual_sumflux_2006c_noHead.nc'		
+			av[name]['dataFile'] 		=  paths.TakahashiFolder+'takahashi_2009_Anual_sumflux_2006c_noHead.nc'		
 		else:	
-			av[name]['dataFile'] 		=  TakahashiFolder+'takahashi2009_month_flux_pCO2_2006c_noHead.nc'				
+			av[name]['dataFile'] 		=  paths.TakahashiFolder+'takahashi2009_month_flux_pCO2_2006c_noHead.nc'				
 			print "Air Sea Flux CO2 monthly not implemented"
 			assert 0
-			#av[name]['dataFile'] 		=  TakahashiFolder+'takahashi2009_month_flux_pCO2_2006c_noHead.nc'
+			#av[name]['dataFile'] 		=  paths.TakahashiFolder+'takahashi2009_month_flux_pCO2_2006c_noHead.nc'
 				
 		av[name]['modelcoords'] 	= medusaCoords 	
 		av[name]['datacoords'] 		= takahashiCoords
@@ -824,12 +843,12 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['datasource'] 		= ''
 		av[name]['model']		= 'MEDUSA'
 		av[name]['modelgrid']		= 'eORCA1'
-		av[name]['gridFile']		= orcaGridfn
+		av[name]['gridFile']		= paths.orcaGridfn
 		av[name]['Dimensions']		= 2
 							
-	if 'TotalAirSeaFlux' in analysisKeys:
+	if 'TotalAirSeaFluxCO2' in analysisKeys:
 		name = 'TotalAirSeaFluxCO2'	
-		nc = Dataset(orcaGridfn,'r')
+		nc = Dataset(paths.orcaGridfn,'r')
 		area = nc.variables['e1t'][:]*nc.variables['e2t'][:]
 		nc.close()
 		
@@ -855,14 +874,14 @@ def analysis_timeseries(jobID = "u-ab671",
 			
 
 
-		av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', MEDUSAFolder_pref, annual)								
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', paths.ModelFolder_pref, annual)								
 		if annual:
-			av[name]['dataFile'] 		=  TakahashiFolder+'takahashi_2009_Anual_sumflux_2006c_noHead.nc'		
+			av[name]['dataFile'] 		=  paths.TakahashiFolder+'takahashi_2009_Anual_sumflux_2006c_noHead.nc'		
 		else:	
-			av[name]['dataFile'] 		=  TakahashiFolder+'takahashi2009_month_flux_pCO2_2006c_noHead.nc'				
+			av[name]['dataFile'] 		=  paths.TakahashiFolder+'takahashi2009_month_flux_pCO2_2006c_noHead.nc'				
 			print "Air Sea Flux CO2 monthly not implemented"
 			assert 0
-			#av[name]['dataFile'] 		=  TakahashiFolder+'takahashi2009_month_flux_pCO2_2006c_noHead.nc'
+			#av[name]['dataFile'] 		=  paths.TakahashiFolder+'takahashi2009_month_flux_pCO2_2006c_noHead.nc'
 				
 		av[name]['modelcoords'] 	= medusaCoords 	
 		av[name]['datacoords'] 		= takahashiCoords
@@ -874,7 +893,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['datasource'] 		= ''
 		av[name]['model']		= 'MEDUSA'
 		av[name]['modelgrid']		= 'eORCA1'
-		av[name]['gridFile']		= orcaGridfn
+		av[name]['gridFile']		= paths.orcaGridfn
 		av[name]['Dimensions']		= 2					
 										
 		noTaka = True
@@ -890,9 +909,9 @@ def analysis_timeseries(jobID = "u-ab671",
 		def medusadepthInt(nc,keys):
 			return (nc.variables[keys[0]][:]+ nc.variables[keys[1]][:])* 6.625 * 12.011 / 1000.	
 
-		av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', MEDUSAFolder_pref, annual)										
-		#av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_diad_T.nc"))
-		av[name]['dataFile'] 		= iMarNetFolder+"/PPint_1deg.nc"
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', paths.ModelFolder_pref, annual)										
+		#av[name]['modelFiles']  	= sorted(glob(paths.ModelFolder_pref+jobID+"/"+jobID+"o_1y_*_diad_T.nc"))
+		av[name]['dataFile'] 		= paths.iMarNetFolder+"/PPint_1deg.nc"
 
 				
 		av[name]['modelcoords'] 	= medusaCoords 	
@@ -911,11 +930,11 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['model']		= 'MEDUSA'
 
 		av[name]['modelgrid']		= 'eORCA1'
-		av[name]['gridFile']		= orcaGridfn
+		av[name]['gridFile']		= paths.orcaGridfn
 		av[name]['Dimensions']		= 2		
 		
 	if 'PP_OSU' in analysisKeys:
-		nc = Dataset(orcaGridfn,'r')
+		nc = Dataset(paths.orcaGridfn,'r')
 		area = nc.variables['e1t'][:]*nc.variables['e2t'][:]
 		nc.close()
 		def medusadepthInt(nc,keys):
@@ -933,8 +952,8 @@ def analysis_timeseries(jobID = "u-ab671",
 				
 		name = 'IntegratedPrimaryProduction_OSU'
 		if annual:
-			av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', MEDUSAFolder_pref, annual)								
-			av[name]['dataFile'] 		= OSUDir +"/standard_VGPM.SeaWIFS.global.average.nc"
+			av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', paths.ModelFolder_pref, annual)								
+			av[name]['dataFile'] 		= paths.OSUDir +"/standard_VGPM.SeaWIFS.global.average.nc"
 #		else:
 #			print "" 
 			
@@ -974,14 +993,14 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['datasource'] 		= 'OSU'
 		av[name]['model']		= 'MEDUSA'
 		av[name]['modelgrid']		= 'eORCA1'
-		av[name]['gridFile']		= orcaGridfn
+		av[name]['gridFile']		= paths.orcaGridfn
 		av[name]['Dimensions']		= 2
 
 	#####
 	# Total 
 	if 'IntPP_OSU' in analysisKeys:
 		noOSU = True
-		nc = Dataset(orcaGridfn,'r')
+		nc = Dataset(paths.orcaGridfn,'r')
 		area = nc.variables['e1t'][:]*nc.variables['e2t'][:]
 		nc.close()
 		def medusadepthInt(nc,keys):
@@ -997,9 +1016,9 @@ def analysis_timeseries(jobID = "u-ab671",
 			
 		name = 'TotalIntegratedPrimaryProduction'
 		if annual:
-			av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', MEDUSAFolder_pref, annual)							
+			av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', paths.ModelFolder_pref, annual)							
 			if noOSU:	av[name]['dataFile']            = ''
-			else:		av[name]['dataFile'] 		= OSUDir +"/standard_VGPM.SeaWIFS.global.average.nc"
+			else:		av[name]['dataFile'] 		= paths.OSUDir +"/standard_VGPM.SeaWIFS.global.average.nc"
 			
 		av[name]['modelcoords'] 	= medusaCoords 	
 		av[name]['datacoords'] 		= glodapCoords
@@ -1035,7 +1054,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		else:		av[name]['datasource'] 		= 'OSU'
 		av[name]['model']		= 'MEDUSA'
 		av[name]['modelgrid']		= 'eORCA1'
-		av[name]['gridFile']		= orcaGridfn		
+		av[name]['gridFile']		= paths.orcaGridfn		
 		av[name]['Dimensions']		= 1
 				
 	if 'GlobalExportRatio' in analysisKeys:
@@ -1046,7 +1065,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			return 	a
 			
 		name = 'ExportRatio'
-		av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', MEDUSAFolder_pref, annual)								
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', paths.ModelFolder_pref, annual)								
 				
 		av[name]['dataFile'] 		= ""
 		av[name]['modelcoords'] 	= medusaCoords 	
@@ -1059,7 +1078,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['datasource'] 		= ''
 		av[name]['model']		= 'MEDUSA'
 		av[name]['modelgrid']		= 'eORCA1'
-		av[name]['gridFile']		= orcaGridfn		
+		av[name]['gridFile']		= paths.orcaGridfn		
 		av[name]['Dimensions']		= 1
 		
 	if  'LocalExportRatio' in analysisKeys:
@@ -1070,7 +1089,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			return 	a
 			
 		name = 'LocalExportRatio'
-		av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', MEDUSAFolder_pref, annual)								
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', paths.ModelFolder_pref, annual)								
 				
 		av[name]['dataFile'] 		= ""
 		av[name]['modelcoords'] 	= medusaCoords 	
@@ -1083,15 +1102,15 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['datasource'] 		= ''
 		av[name]['model']		= 'MEDUSA'
 		av[name]['modelgrid']		= 'eORCA1'
-		av[name]['gridFile']		= orcaGridfn	
+		av[name]['gridFile']		= paths.orcaGridfn	
 		av[name]['Dimensions']		= 2
 		
 	if  'Iron' in analysisKeys:
 		
 		name = 'Iron'
-		av[name]['modelFiles']  = listModelDataFiles(jobID, 'ptrc_T', MEDUSAFolder_pref, annual)								
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'ptrc_T', paths.ModelFolder_pref, annual)								
 				
-		av[name]['dataFile'] 		= icFold+"/UKESM_fields_1860_eORCA1_small.nc"
+		av[name]['dataFile'] 		= paths.icFold+"/UKESM_fields_1860_eORCA1_small.nc"
 		av[name]['modelcoords'] 	= medusaCoords 	
 		av[name]['datacoords'] 		= icCoords
 		av[name]['modeldetails']	= {'name': name, 'vars':['FER',], 'convert': ukp.mul1000, 'units':'umolFe/m3'}
@@ -1102,17 +1121,17 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['datasource'] 		= 'InititialCondition'
 		av[name]['model']		= 'MEDUSA'
 		av[name]['modelgrid']		= 'eORCA1'
-		av[name]['gridFile']		= orcaGridfn
+		av[name]['gridFile']		= paths.orcaGridfn
 		av[name]['Dimensions']		= 3
 						
 	if 'T' in analysisKeys:
 		name = 'Temperature'
-		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', MEDUSAFolder_pref, annual)										
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)										
 		if annual:		
-			#av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_grid_T.nc"))
+			#av[name]['modelFiles']  	= sorted(glob(paths.ModelFolder_pref+jobID+"/"+jobID+"o_1y_*_grid_T.nc"))
 			av[name]['dataFile'] 		= WOAFolder+'woa13_decav_t00_01v2.nc'
 		else:
-			#av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1m_*_grid_T.nc"))
+			#av[name]['modelFiles']  	= sorted(glob(paths.ModelFolder_pref+jobID+"/"+jobID+"o_1m_*_grid_T.nc"))
 			av[name]['dataFile'] 		= WOAFolder+'temperature_monthly_1deg.nc'
 		av[name]['modelcoords'] 	= medusaCoords 	
 		av[name]['datacoords'] 		= woaCoords
@@ -1128,17 +1147,17 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['model']		= 'NEMO'
 
 		av[name]['modelgrid']		= 'eORCA1'
-		av[name]['gridFile']		= orcaGridfn
+		av[name]['gridFile']		= paths.orcaGridfn
 		av[name]['Dimensions']		= 3
 					
 	if 'S' in analysisKeys:
 		name = 'Salinity'
-		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', MEDUSAFolder_pref, annual)												
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)												
 		if annual:
-			#av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_grid_T.nc"))
+			#av[name]['modelFiles']  	= sorted(glob(paths.ModelFolder_pref+jobID+"/"+jobID+"o_1y_*_grid_T.nc"))
 			av[name]['dataFile'] 		= WOAFolder+'woa13_decav_s00_01v2.nc'
 		else:
-			#av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1m_*_grid_T.nc"))
+			#av[name]['modelFiles']  	= sorted(glob(paths.ModelFolder_pref+jobID+"/"+jobID+"o_1m_*_grid_T.nc"))
 			av[name]['dataFile'] 		= WOAFolder+'salinity_monthly_1deg.nc'
 			
 		av[name]['modelcoords'] 	= medusaCoords 	
@@ -1155,7 +1174,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['model']		= 'NEMO'
 
 		av[name]['modelgrid']		= 'eORCA1'
-		av[name]['gridFile']		= orcaGridfn
+		av[name]['gridFile']		= paths.orcaGridfn
 		av[name]['Dimensions']		= 3
 		
 	if 'MLD' in analysisKeys:
@@ -1163,7 +1182,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		def mldapplymask(nc,keys):
 			mld = nc.variables[keys[0]][:]
 			return np.ma.masked_where((np.tile(nc.variables[keys[1]][:],(12,1,1))==0.)+mld.mask+(mld==1.E9),mld)	
-		nc = Dataset(orcaGridfn,'r')
+		nc = Dataset(paths.orcaGridfn,'r')
 		depth = nc.variables['nav_lev'][:]#
 		nc.close()
 		
@@ -1195,9 +1214,9 @@ def analysis_timeseries(jobID = "u-ab671",
 
 			
 		name = 'MLD'
-		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', MEDUSAFolder_pref, annual)												
-		#av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_grid_T.nc"))
-		av[name]['dataFile'] 		= MLDFolder+"mld_DT02_c1m_reg2.0.nc"
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)												
+		#av[name]['modelFiles']  	= sorted(glob(paths.ModelFolder_pref+jobID+"/"+jobID+"o_1y_*_grid_T.nc"))
+		av[name]['dataFile'] 		= paths.MLDFolder+"mld_DT02_c1m_reg2.0.nc"
 			#MLD_DT02 = depth where (T = T_10m +/- 0.2 degC)
  	
 				
@@ -1216,16 +1235,17 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['model']		= 'NEMO'
 
 		av[name]['modelgrid']		= 'eORCA1'
-		av[name]['gridFile']		= orcaGridfn
+		av[name]['gridFile']		= paths.orcaGridfn
 		av[name]['Dimensions']		= 2		
 			
 
 			
-	if 'NorthernTotalIceArea' in analysisKeys or 'SouthernTotalIceArea' in analysisKeys or 'TotalIceArea' in analysisKeys:
-	    for name in ['NorthernTotalIceArea','SouthernTotalIceArea','TotalIceArea']:
+	icekeys = ['NorthernTotalIceArea','SouthernTotalIceArea','TotalIceArea','NorthernTotalIceExtent','SouthernTotalIceExtent','TotalIceExtent']
+	if len(set(icekeys).intersection(set(analysisKeys))):
+	    for name in icekeys:
 	    	if name not in analysisKeys:continue
 		
-		nc = Dataset(orcaGridfn,'r')
+		nc = Dataset(paths.orcaGridfn,'r')
 		area = nc.variables['e2t'][:] * nc.variables['e1t'][:]			
 		tmask = nc.variables['tmask'][0,:,:]
 		lat = nc.variables['nav_lat'][:,:]
@@ -1242,8 +1262,17 @@ def analysis_timeseries(jobID = "u-ab671",
 		def calcTotalIceAreaS(nc,keys): # South
 			arr = nc.variables[keys[0]][:].squeeze() * area
 			return np.ma.masked_where((tmask==0)+(lat>0.),arr).sum()/1E12
-								
-		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', MEDUSAFolder_pref, annual)												
+
+		def calcTotalIceExtent(nc,keys):	#Global
+			return np.ma.masked_where((tmask==0)+(nc.variables[keys[0]][:].squeeze()<0.15),area).sum()/1E12
+			
+		def calcTotalIceExtentN(nc,keys): # North
+			return np.ma.masked_where((tmask==0)+(nc.variables[keys[0]][:].squeeze()<0.15)+(lat<0.),area).sum()/1E12
+
+		def calcTotalIceExtentS(nc,keys): # South
+			return np.ma.masked_where((tmask==0)+(nc.variables[keys[0]][:].squeeze()<0.15)+(lat>0.),area).sum()/1E12
+											
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)												
 		av[name]['dataFile'] 		= ''
 			
 		av[name]['modelcoords'] 	= medusaCoords 	
@@ -1259,7 +1288,20 @@ def analysis_timeseries(jobID = "u-ab671",
 
 	    	if name in ['TotalIceArea',]:
 			av[name]['modeldetails'] 	= {'name': name, 'vars':['soicecov',], 'convert': calcTotalIceArea,'units':'1E6 km^2'}		    	
-		#	av[name]['regions'] 		=  ['Global',]					
+		#	av[name]['regions'] 		=  ['Global',]	
+		
+	    	if name in ['NorthernTotalIceExtent',]:
+			av[name]['modeldetails'] 	= {'name': name, 'vars':['soicecov',], 'convert': calcTotalIceExtentN,'units':'1E6 km^2'}		    	
+		#	av[name]['regions'] 		=  ['NorthHemisphere',]	
+				
+	    	if name in ['SouthernTotalIceExtent',]:
+			av[name]['modeldetails'] 	= {'name': name, 'vars':['soicecov',], 'convert': calcTotalIceExtentS,'units':'1E6 km^2'}		    	
+		#	av[name]['regions'] 		=  ['SouthHemisphere',]				
+
+	    	if name in ['TotalIceExtent',]:
+			av[name]['modeldetails'] 	= {'name': name, 'vars':['soicecov',], 'convert': calcTotalIceExtent,'units':'1E6 km^2'}		    	
+		#	av[name]['regions'] 		=  ['Global',]			
+						
 		av[name]['regions'] 		=  ['regionless',]		
 			
 		av[name]['datadetails']  	= {'name':'','units':'',}
@@ -1269,7 +1311,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['datasource'] 		= ''
 		av[name]['model']		= 'CICE'
 		av[name]['modelgrid']		= 'eORCA1'
-		av[name]['gridFile']		= orcaGridfn
+		av[name]['gridFile']		= paths.orcaGridfn
 		av[name]['Dimensions']		= 1
 		
 	if 'DrakePassageTransport' in analysisKeys:
@@ -1282,7 +1324,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		LAT0=79
 		LAT1=109
 		
-		nc = Dataset(orcaGridfn,'r')
+		nc = Dataset(paths.orcaGridfn,'r')
 		e2u = nc.variables['e2u'][LAT0:LAT1,LON]
 		umask = nc.variables['umask'][:,LAT0:LAT1,LON]
 		nc.close()			
@@ -1292,7 +1334,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			velo = nc.variables['vozocrtx'][0,:,LAT0:LAT1,LON]
 			return np.sum(velo*e3u*e2u*umask)*1.e-6			
 								
-		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_U', MEDUSAFolder_pref, annual)
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_U', paths.ModelFolder_pref, annual)
 		av[name]['dataFile'] 	= ''
 			
 		av[name]['modelcoords'] = medusaCoords 	
@@ -1307,7 +1349,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['datasource'] 		= ''
 		av[name]['model']		= 'NEMO'
 		av[name]['modelgrid']		= 'eORCA1'
-		av[name]['gridFile']		= orcaGridfn
+		av[name]['gridFile']		= paths.orcaGridfn
 		av[name]['Dimensions']		= 1
 
 
@@ -1324,7 +1366,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			if name == 'AMOC_32S': 	latslice = latslice32S
 				
 			# Load grid data
-			nc = Dataset(orcaGridfn,'r')
+			nc = Dataset(paths.orcaGridfn,'r')
 			e3v[name] = nc.variables['e3v'][:,latslice,:]	# z level height 3D
 			e1v[name] = nc.variables['e1v'][latslice,:]	# 
 			tmask[name] = nc.variables['tmask'][:,latslice,:]
@@ -1376,7 +1418,7 @@ def analysis_timeseries(jobID = "u-ab671",
 	    	for name in ['AMOC_26N','AMOC_32S']:	
 	    		if name not in analysisKeys:continue	 
 	    		   									
-			av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_V', MEDUSAFolder_pref, annual)
+			av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_V', paths.ModelFolder_pref, annual)
 			av[name]['dataFile'] 	= ''
 			
 			av[name]['modelcoords'] = medusaCoords 	
@@ -1392,7 +1434,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			av[name]['datasource'] 		= ''
 			av[name]['model']		= 'NEMO'
 			av[name]['modelgrid']		= 'eORCA1'
-			av[name]['gridFile']		= orcaGridfn
+			av[name]['gridFile']		= paths.orcaGridfn
 			av[name]['Dimensions']		= 1
 				
 												
@@ -1413,7 +1455,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		print "analysis-Timeseries.py:\tBeginning to call timeseriesAnalysis for ", name
 
 		if len(av[name]['modelFiles']) == 0:
-			print "analysis-Timeseries.py:\tWARNING:\tmodel files are not found:",av[name]['modelFiles']
+			print "analysis-Timeseries.py:\tWARNING:\tmodel files are not found:",name,av[name]['modelFiles']
 			if strictFileCheck: assert 0
 
 		modelfilesexists = [os.path.exists(f) for f in av[name]['modelFiles']]
@@ -1476,6 +1518,7 @@ def analysis_timeseries(jobID = "u-ab671",
                         clean           = clean,
                 )
 
+		
 		#####
 		# Profile plots 	
 		if av[name]['Dimensions'] == 3:
@@ -1516,7 +1559,7 @@ def singleTimeSeriesProfile(jobID,key):
 
 def singleTimeSeries(jobID,key,):
 #	try:
-		analysis_timeseries(jobID =jobID,analysisSuite=[key,], )#clean=1)
+		analysis_timeseries(jobID =jobID,analysisSuite=[key,], strictFileCheck=False)#clean=1)
 #	except:
 #		print "Failed singleTimeSeries",(jobID,key)
 #		print "Error: %s" % sys.exc_info()[0]	

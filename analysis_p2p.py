@@ -67,11 +67,13 @@ p2pKeys_level2 = ['Chl_CCI',
 		  'IntPP_OSU',
 		'T','S','MLD',
 		  ]
-		  		  		  
+
+p2pKeys_physics = ['T','S','MLD',  ]
+		  		  		  		  
 p2pDict = {i:n for i,n in enumerate(p2pKeys)}		  
 p2pDict_annual = {i:n for i,n in enumerate(p2pKeys_annual)}		  
 p2pDict_level2 = {i:n for i,n in enumerate(p2pKeys_level2)}		  
-
+p2pDict_physics = {i:n for i,n in enumerate(p2pKeys_physics)}		  
 def analysis_p2p(
 		models	= ['NEMO','MEDUSA',],
 		jobID 	= 'u-ad980',
@@ -738,6 +740,7 @@ def analysis_p2p(
 		if 'S' in analysisKeys:
 			name = 'Salinity'
 			if annual:
+				print NEMOFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_grid_T.nc"
 				av[name]['NEMO']['File'] 	= sorted(glob(NEMOFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_grid_T.nc"))[0]
 				av[name]['Data']['File'] 	= WOAFolder+'woa13_decav_s00_01v2.nc'	
 			else:	
@@ -882,6 +885,8 @@ if __name__=="__main__":
 		analysisSuite='debug'
 	elif 'level2' in argv[1:]:
 		analysisSuite='level2'
+	elif 'physics' in argv[1:]:
+		analysisSuite='physics'		
 	else:	analysisSuite='annual'
 		
 	analysis_p2p(models	= ['NEMO','MEDUSA',],

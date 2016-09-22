@@ -28,7 +28,8 @@ from matplotlib.colors import LogNorm
 import matplotlib.patches as mpatches
 from mpl_toolkits.basemap import Basemap
 import cartopy
-import numpy as np 
+import numpy as np
+from numpy import hanning,hamming,bartlett,blackman 
 from scipy import interpolate 
 #from statsmodels.nonparametric.smoothers_lowess import lowess
 
@@ -277,7 +278,15 @@ def trafficlightsPlot(
 	fig = pyplot.figure()
 	
 	ax = fig.add_subplot(111)	
-	pyplot.plot(times,arr,label='Model',)
+        if len(arr)>30:
+                #smoothing = movingaverage(arr,30,)
+                smoothing = movingaverage2(arr,window_len=30,window='flat',extrapolate='axially')
+                pyplot.plot(times,arr,      c='b',ls='-',lw=0.3,)
+                pyplot.plot(times,smoothing,c='b',ls='-',lw=2,label='Model')
+        else:
+                pyplot.plot(times,arr,c='b',ls='-',lw=1,label='Model',)
+
+#	pyplot.plot(times,arr,label='Model',)
 	pyplot.xlim(xlims)	
 	pyplot.title(title)	
 	pyplot.ylabel(units)
@@ -339,7 +348,13 @@ def simpletimeseries(
 	fig = pyplot.figure()
 	
 	ax = fig.add_subplot(111)	
-	pyplot.plot(times,arr,label='Model',)
+	if len(arr)>30:
+		smoothing = movingaverage2(arr,window_len=30,window='hanning',extrapolate='axially')
+		pyplot.plot(times,arr,      c='b',ls='-',lw=0.2,label='Model1')	
+		pyplot.plot(times,smoothing,c='b',ls='-',lw=2,label='Model2')		
+	else:
+		pyplot.plot(times,arr,c='b',ls='-',lw=1,label='Model',)	
+		
 	pyplot.xlim(xlims)	
 	pyplot.title(title)	
 	pyplot.ylabel(units)
@@ -356,8 +371,99 @@ def simpletimeseries(
 
 
 def movingaverage(interval, window_size):
-    window = np.ones(int(window_size))/float(window_size)
-    return np.convolve(interval, window, 'same')
+	window = np.ones(int(window_size))/float(window_size)
+	counts = np.arange(len(interval))
+	arr = np.convolve(interval, window, 'same')
+	return np.ma.masked_where((counts<window/2.) + (counts>len(arr)-window/2.) ,arr)    
+
+
+def movingaverage2(x,window_len=11,window='flat',extrapolate='axially'):
+    """smooth the data using a window with requested size.
+    
+    This method is based on the convolution of a scaled window with the signal.
+    The signal is prepared by introducing reflected copies of the signal 
+    (with the window size) in both ends so that transient parts are minimized
+    in the begining and end part of the output signal.
+    
+    input:
+        x: the input signal 
+        window_len: the dimension of the smoothing window; should be an odd integer
+        window: the type of window from 'flat', 'hanning', 'hamming', 'bartlett', 'blackman'
+            flat window will produce a moving average smoothing.
+
+    output:
+        the smoothed signal
+        
+    example:
+
+    t=linspace(-2,2,0.1)
+    x=sin(t)+randn(len(t))*0.1
+    y=smooth(x)
+    
+    see also: 
+    
+    numpy.hanning, numpy.hamming, numpy.bartlett, numpy.blackman, numpy.convolve
+    scipy.signal.lfilter
+ 
+    TODO: the window parameter could be the window itself if an array instead of a string   
+    """
+    x = np.array(x)
+    if x.ndim != 1:
+        raise ValueError("smooth only accepts 1 dimension arrays.")
+
+    if x.size < window_len:
+        raise ValueError("Input vector needs to be bigger than window size.")
+
+
+    if window_len<3:
+        return x
+
+
+    if not window in ['flat', 'hanning', 'hamming', 'bartlett', 'blackman'
+            , 'robust']:
+        raise ValueError("Window is one of 'flat', 'hanning', 'hamming', 'bartlett', 'blackman'")
+
+ # extrapolation by reflection of dat at end point
+    wlp1=window_len+1
+ # get stopping index for backward iteration in extrapolation
+    if wlp1>x.size:
+        mwlp1=None
+    else:
+        mwlp1=-wlp1
+    if extrapolate=='axially':
+        s=np.r_[x[window_len-1:0:-1],x,x[-2:mwlp1:-1]]
+ # extrapolation by circular wrapping
+    elif extrapolate=='periodically':
+        s=np.r_[x[-window_len+1:],x,x[:window_len-1]]
+ # extrapolation by rotation of data at end point
+    elif extrapolate=='rotation':
+        s=np.r_[2*x[0]-x[window_len-1:0:-1],x,2*x[-1]-x[-2:mwlp1:-1]]
+    #print(len(s))
+    if window == 'flat': #moving average
+        w=np.ones(window_len,'d')
+    elif window=='robust':
+        pass
+#    elif window =='hanning':
+ #      w=eval(np.hanning(
+    else:
+        w=eval(window+'(window_len)')
+
+    if window=='robust':
+        y=s.copy()
+        for n in xrange(window_len-1,len(y)-window_len):
+                y[n]=median(s[n-window_len/2:n+window_len/2+1])
+    else:
+        y=np.convolve(w/w.sum(),s,mode='same')
+    returning = y[window_len-1:-window_len+1]
+    if len(x) != len(returning):
+	print "output array is not the same size as input:\tin:",len(x),'\tout:', len(returning)
+	assert 0
+    counts = np.arange(len(x))
+    return np.ma.masked_where((counts<window_len/2.) + (counts>len(x)-window_len/2.) ,returning)
+
+
+        
+        
     
 def multitimeseries(
 		timesD, 		# model times (in floats)
@@ -429,10 +535,8 @@ def multitimeseries(
 			elif len(times)>10.: window = 4			
 			else: window = 1
 			
-			arr_new = movingaverage(arr, window)
-			print np.array(arr).shape, '->',np.array(arr_new).shape
-			counts = np.arange(len(arr))
-			arr_new = np.ma.masked_where((counts<window/2.) + (counts>len(arr)-window/2.) ,arr_new)
+			#arr_new = movingaverage(arr, window)
+                        arr_new = movingaverage2(arr, window_len=window,window='flat',extrapolate='periodically')
 			pyplot.plot(times,arr_new,c=colours[jobID],ls='-',label=jobID,)#label=jobID+' smooth',)
 			
 		#if lineStyle.lower() in ['lowess','all','both',]:
@@ -694,7 +798,7 @@ def hovmoellerPlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords=
 	for l in sorted(dataZcoords.keys()):
 		if l not in dataslice.keys():continue
 		dyaxis_cc.append(dataZcoords[l])
-		print 'preparing data for hov:',l,dataZcoords[l], dataslice[l]
+		#print 'hovmoellerPlot:\tpreparing data for hov:',l,dataZcoords[l], dataslice[l]
 		dd.append(dataslice[l])
 	if len(dd):
 		dd = np.ma.array(dd)#.squeeze()

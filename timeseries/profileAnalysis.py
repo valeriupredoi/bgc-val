@@ -99,6 +99,7 @@ class profileAnalysis:
 	#####
 	# Load Data file	
  	self.loadData()
+	#assert 0
 	
 	#####
 	# Load Model File
@@ -118,13 +119,13 @@ class profileAnalysis:
 	
 	try:
 		if self.clean: 
-			print "User requested clean run. Wiping old data."
+			print "profileAnalysis:\tloadModel:\tUser requested clean run. Wiping old data."
 			assert 0		
 		sh = shOpen(self.shelvefn)
 		readFiles 	= sh['readFiles']
 		modeldataD 	= sh['modeldata']
 		sh.close()
-		print "Opened shelve:", self.shelvefn, '\tread', len(readFiles)
+		print "OprofileAnalysis:\tloadModel:\tpened shelve:", self.shelvefn, '\tread', len(readFiles)
 	except:
 		readFiles = []
 		modeldataD = {}
@@ -133,14 +134,14 @@ class profileAnalysis:
 		  for m in self.metrics:
 		   	modeldataD[(r,l,m)] = {}
 		   	
-		print "Could not open shelve:", self.shelvefn, '\tread', len(readFiles)
+		print "profileAnalysis:\tloadModel:\tCould not open shelve:", self.shelvefn, '\tread', len(readFiles)
 
 	###############
 	# Check whethere there has been a change in what was requested:
 	for r in self.regions:
 	  for l in self.layers:
 	    for m in self.metrics:
-	    	if self.debug:print "Checking: ",[r,l,m,],'\t',
+	    	if self.debug:print "profileAnalysis:\tloadModel:\tChecking: ",[r,l,m,],'\t',
 	    	try:
 	    		if self.debug: print 'has ', len(modeldataD[(r,l,m)].keys()), 'keys'
 	    	except: 
@@ -149,7 +150,7 @@ class profileAnalysis:
 	    		if self.debug: print 'has no keys'
 	    	try:	
 	    	    	if len(modeldataD[(r,l,m)].keys()) == 0: 
-	    	    		print "modeldataD[",(r,l,m),"] has no keys"
+	    	    		print "profileAnalysis:\tloadModel:\tmodeldataD[",(r,l,m),"] has no keys"
 	    	    		readFiles = []
 	    	    		assert 0
 	    	    		
@@ -158,10 +159,12 @@ class profileAnalysis:
 	#####
 	# Summarise checks
 	if self.debug:	
-		print "loadModel:post checks:"
+		print "profileAnalysis:\tloadModel:\tloadModel:post checks:"
 		#print "modeldataD:",modeldataD
-		print "shelveFn:",self.shelvefn
-		print "readFiles:",readFiles[:2],'...',readFiles[-2:]
+		print "profileAnalysis:\tloadModel:\tshelveFn:",self.shelvefn
+		print "profileAnalysis:\tloadModel:\treadFiles:",
+		try:	print readFiles[-1]
+		except: print '...'
 
 	###############
 	# Load files, and calculate fields.
@@ -296,14 +299,17 @@ class profileAnalysis:
 	# Test to find out if we need to load the netcdf, or if we can just return the dict as a self.object.
 	needtoLoad = False
 	for r in self.regions:
-	    if needtoLoad:continue
+	    #if needtoLoad:continue
 	    for l in self.layers:
-		if needtoLoad:continue
+		#if needtoLoad:continue
 	    	try:	
-	    		print r,l, len(self.dataD[(r,l)]),self.dataD[(r,l)].shape
+	    		dat = self.dataD[(r,l)]
+	    		#test = (len(),self.dataD[(r,l)].shape)
+	    		print "profileAnalysis:\t loadData\t",(r,l)#,dat
 	    	except: 
 			needtoLoad=True
-			
+			print "profileAnalysis:\t loadData\tUnable to load",(r,l)
+
 	if needtoLoad: pass	
 	else:
 		self.dataD = dataD	
@@ -321,17 +327,44 @@ class profileAnalysis:
 	# Loading data for each region.
 	dl = tst.DataLoader(self.dataFile,'',self.datacoords,self.datadetails, regions = self.regions, layers = self.layers,)
 	
+#	#for r in self.regions:
+#	 #   for l in self.layers:
+#	    	dataD[(r,l)] = dl.load[(r,l,)]	
+#	    	dataD[(r,l,'lat')] = dl.load[(r,l,'lat')]		    	
+#	    	dataD[(r,l,'lon')] = dl.load[(r,l,'lon')]
+#		if len(dataD[(r,l)])==0  or np.ma.is_masked(dataD[(r,l)]):
+#			dataD[(r,l)]  = np.ma.masked
+#			dataD[(r,l,'lat')]  = np.ma.masked
+#			dataD[(r,l,'lon')]  = np.ma.masked
+									    	
+
+
+	
 	for r in self.regions:
 	    for l in self.layers:
 	    	dataD[(r,l)] = dl.load[(r,l,)]	
+	    	try:   	
+	    		meandatad = dataD[(r,l)].mean()
+	    		datadmask = (~np.ma.array(dataD[(r,l)]).mask).sum()
+	    	except: 
+	    		meandatad = False
+	    		datadmask = False
+		    	
+    		#print "profileAnalysis:\t load in situ data,\tloaded ",(r,l),  'mean:',meandatad    	
 	    	dataD[(r,l,'lat')] = dl.load[(r,l,'lat')]		    	
 	    	dataD[(r,l,'lon')] = dl.load[(r,l,'lon')]
-		if len(dataD[(r,l)])==0  or np.ma.is_masked(dataD[(r,l)]):
-			dataD[(r,l)]  = np.ma.masked
-			dataD[(r,l,'lat')]  = np.ma.masked
-			dataD[(r,l,'lon')]  = np.ma.masked
-									    	
-    		print "profileAnalysis:\t loadData,\tloading ",(r,l),  dataD[(r,l)].min(),  dataD[(r,l)].max(),  dataD[(r,l)].mean()
+		if not meandatad and not datadmask: #np.ma.is_masked(dataD[(r,l)]):
+			dataD[(r,l)]  = np.ma.array([-999,],mask=[True,])	
+			dataD[(r,l,'lat')]  = np.ma.array([-999,],mask=[True,])	    	
+			dataD[(r,l,'lon')]  = np.ma.array([-999,],mask=[True,])	    	
+		
+		#if meandatad and dataD[(r,l)]  == np.ma.array([-999,],mask=[True,]):
+		#	print "Massive failiure here:",meandatad, dataD[(r,l)] ,dl.load[(r,l,)]
+		#	assert 0
+		
+    		print "profileAnalysis:\t loadData,\tloading ",(r,l),  'mean:',meandatad    	
+    		
+    		
     		
 	###############
 	# Savng shelve		
@@ -342,11 +375,14 @@ class profileAnalysis:
 		sh.close()
 	except:
 		print "profileAnalysis:\t WARNING.\tSaving shelve failed, trying again.:", self.shelvefn_insitu			
-		print "Data is", dataD
+		#print "Data is", dataD
 		shutil.move(self.shelvefn_insitu, self.shelvefn_insitu+'.broken')
-		sh = shOpen(self.shelvefn_insitu)
-		sh['dataD'] 	= dataD
-		sh.close()		
+		try:
+			sh = shOpen(self.shelvefn_insitu)
+			sh['dataD'] 	= dataD
+			sh.close()
+		except:
+			print "profileAnalysis:\t WARNING.\tUnable to Save in situ shelve.\tYou'll have to input it each time.",self.shelvefn_insitu	
 	 	
 	self.dataD = dataD
 
@@ -450,7 +486,7 @@ class profileAnalysis:
 				try:	data[l] = np.ma.max(dataslice)
 				except:	data[l] = np.ma.array([-1000,],mask=[True,])				
 			
-			print "makePlots:\tHovmoeller plots:",r,m,l,'\tdata'#,data[l]								
+			#print "makePlots:\tHovmoeller plots:",r,m,l,'\tdata'#,data[l]								
 
 	   	#####
 	   	# Load model layers:

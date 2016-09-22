@@ -21,13 +21,14 @@
 # Email:
 # ledm@pml.ac.uk
 
-from UKESMpython import folder, shouldIMakeFile
+from UKESMpython import folder, shouldIMakeFile,round_sig
 from pftnames import getLongName
 from glob import glob
 from sys import argv
 import os 
 import shutil
 from html5 import html5Tools, htmltables
+from analysis_level0 import analysis_level0,analysis_level0_insitu
 
 #####
 # makeReport.py:
@@ -82,7 +83,8 @@ def html5Maker(
 		reportdir = 'reports/tmp',
 		year = '*',
 		clean = False,
-		doZip= True,
+		doZip= False,
+		physicsOnly=False,
 	):
 
 	
@@ -112,53 +114,25 @@ def html5Maker(
 	#
 	descriptionText = 'Validation of the job: '+jobID
 	if year != '*':	descriptionText+=', in the year: ' +year
+	
 	html5Tools.writeDescription(
 				indexhtmlfn,
 				descriptionText,
 				)
 
-	#####
-	# Add time series regional plots:
-	#key = 'ignoreInlandSeas'
-	fields = ['Alkalinity', 
-		  'Nitrate',
-		  'Silicate', 
-		  'Temperature', 
-		  'Salinity', 
-		  'Oxygen',
-		  'DIC',
-		  'Chlorophyll_cci', 
-		  'IntegratedPrimaryProduction_OSU', 
-		  'TotalIntegratedPrimaryProduction',
-		  'ExportRatio', 
-		  'LocalExportRatio', 		  
-		  'MLD',
-		  #  'IntegratedPrimaryProduction_1x1' , 
-		  #'Chlorophyll_pig' , 
-		  'AirSeaFluxCO2' , 
-		 ]
-	regions = ['Global',
-		  'SouthernOcean',
-		  'NorthernSubpolarAtlantic',
-		  'NorthernSubpolarPacific',		  	
-		  'Equator10', 
-		  'ArcticOcean',
-		  'Remainder',
-		  'ignoreInlandSeas',		  
-		   ]
-	Transects = ['Transect','PTransect','SOTransect']
+
 	
 	#####
 	# Two switches to turn on Summary section, and groups of plots of field and region.		
 	Level0 = True	
-	Level1 = 0#True
-	Level1Regional = 0#True
-	Level1Profiles = 0#True	
-	level2Horizontal = 0#True
+	Level1 = True
+	Level1Regional = True
+	Level1Profiles =  True	
+	level2Horizontal = True
 	level2Physics = False
 	summarySections = False
 	plotbyfieldandregion = False
-	
+	regionMap=True
 	
 	
 	
@@ -177,32 +151,164 @@ def html5Maker(
 
 
 	if Level0:
+		# Level 0 metrics
+		# x	1. Globally integrated primary production
+		# x	2. Global average export fraction (i.e. globally integrated export / globally integrated primary production)
+		# x	3. Globally integrated CO2 flux
+		# x	4. Globally averaged surface DIN concentration
+		# x	5. Globally averaged surface silicic acid concentration
+		# x	6. Globally averaged surface DIC concentration
+		#	7. Globally averaged surface alkalinity concentration
+		#	8-11. As 4-7, but for the surface Southern Ocean [*]
+		# x	12. AMOC
+		# x	13. Drake transport
+		# 	14-15. Volume of the Arctic / Antarctic sea-ice
+		#	16-17. Extent of the Arctic / Antarctic sea-ice
+
 
 		SectionTitle= 'Level 0'
 		href = 'level0-table'
-
-		Description  = 'A set of metrics to describe the state of the run in the year: '+str(year)
 		
-		Caption  = '<br>The caption of the table, showing all fields data sources.'
-		Caption += '<br>Model data was extracted in the year: '+str(year)
+		table_data = []	
+		
+		Description  = 'A set of metrics to describe the state of the run.'
+		
+		Caption  = ''
+		
+		realData_dict	= {
+				   'TotalIntegratedPrimaryProduction':'Target: 40-60',
+				   'ExportRatio':		'Target: 0.15 - 0.25',
+				   'TotalAirSeaFluxCO2':	'Target: -0.1 - 0.1',
+				   'Nitrate':			'',
+ 				   'Silicate':			'',
+				   'DIC':			'',
+				   'Alkalinity':		'',						   				   
+				   'AMOC_26N':			'Target: 10-20',
+				   'DrakePassageTransport': 	'136.7 	&#177; 7.8 ', 	#	&#177; is +/-
+				   'NorthernTotalIceExtent':	'14.9 	&#177; 0.3',
+				   'SouthernTotalIceExtent':	'19.8 	&#177; 0.6',	
+			  	   'TotalOMZVolume':		'',			  				   			   				   			   	
+				  }
+		realData_source = {
+				   'TotalIntegratedPrimaryProduction':'',
+				   'ExportRatio':		'',
+				   'TotalAirSeaFluxCO2':		'',
+				   'Nitrate':			'World Ocean Atlas',
+ 				   'Silicate':			'World Ocean Atlas',
+				   'DIC':			'GLODAP',
+				   'Alkalinity':		'',						   
+				   'AMOC_26N':			'',
+				   'DrakePassageTransport': 	'Cunningham, S. A., S. G. Alderson, B. A. King, and M. A. Brandon (2003), Transport and variability of the Antarctic Circumpolar Current in Drake Passage, J. Geophys. Res., 108, 8084, doi:10.1029/2001JC001147, C5.',
+				   'NorthernTotalIceExtent':	'HadISST: Rayner, N. A.; et al (2003) Global analyses of sea surface temperature, sea ice, and night marine air temperature since the late nineteenth century J. Geophys. Res.Vol. 108, No. D14, 4407 10.1029/2002JD002670',
+				   'SouthernTotalIceExtent':	'HadISST: Rayner, N. A.; et al (2003) Global analyses of sea surface temperature, sea ice, and night marine air temperature since the late nineteenth century J. Geophys. Res.Vol. 108, No. D14, 4407 10.1029/2002JD002670',
+			  	   'TotalOMZVolume':		'World Ocean Atlas',			  				   			   				   				   	
+				  }		
+		units_dict	= {
+				   'TotalIntegratedPrimaryProduction':'Gt/yr',
+				   'ExportRatio':		'',	# no units
+				   'TotalAirSeaFluxCO2':	'Pg C/yr',
+				   'Nitrate':			'mmol N/m&#179;',	# &#179; is superscript 3
+ 				   'Silicate':			'mmol Si/m&#179;',	
+				   'DIC':			'mmol C/m&#179;',
+				   'Alkalinity':		'meq/m&#179;',		
+				   'AMOC_26N':			'Sv',
+				   'DrakePassageTransport':	'Sv',
+				   'NorthernTotalIceExtent':	'x 1E6 km&#178;',	# &#178; is superscript 2
+				   'SouthernTotalIceExtent':	'x 1E6 km&#178;',	
+			  	   'TotalOMZVolume':		'm&#179;',			  				   			   
+				  }
+		
+		fields = ['TotalIntegratedPrimaryProduction',
+			  'ExportRatio',
+			  'TotalAirSeaFluxCO2',
+			  'Nitrate',
+			  'Silicate',
+			  'DIC',
+			  'Alkalinity',
+			  'TotalOMZVolume',		  
+			  'AMOC_26N',
+			  'DrakePassageTransport',
+			  'NorthernTotalIceExtent',
+			  'SouthernTotalIceExtent',	
+			  ]
+		physFields = [  'AMOC_26N',
+			  'DrakePassageTransport',
+			  'NorthernTotalIceExtent',
+			  'SouthernTotalIceExtent',	
+			  ]			  
+		timestrs=[]	
+		for field in fields:
+		 	if physicsOnly and field not in physFields:continue
+			if field in ['Nitrate','Silicate','DIC','Alkalinity',]:
+			    for (r,l,m) in [('Global', 'Surface', 'mean'),('SouthernOcean', 'Surface', 'mean')]:
+
+				#####
+				# Data column:
+				try:	rdata=realData_dict[field]
+				except:	rdata=''
+				if  rdata=='':
+					rdata = analysis_level0_insitu(jobID=jobID,field= field,region=r, layer=l, metric=m)
+					if rdata == False:rdata 	= ''
+					else: 		  rdata = round_sig(rdata,4)
+					
+				try:	u 	= ' '+units_dict[field]					
+				except:	u 	= ''
+				try:	source 	= realData_source[field]					
+				except:	source 	= ''
+				datcol = str(rdata)+u				
+					
+				name, mdata, timestr = analysis_level0(jobID=jobID,field= field,region=r, layer=l, metric=m)
+				longname = getLongName(name,debug=1)
+				if False in [name, mdata, timestr]:
+					table_data.append([longname, '',datcol ])				
+					continue
+					
+                                if timestr not in timestrs:timestrs.append(timestr)
 				
-		#region = 'Global'		
-		table_data = [
-		    ['Field 1',       '15 +/- 3',        '20 +/- 12'],
-		    ['Field 2',       '200',        '120'],            
-		    ['Field 1',       '15 +/- 3',        '20 +/- 12'],
-		    ['Field 2',       '200',        '120'],  
-		    ['Field 1',       '15 +/- 3',        '20 +/- 12'],
-		    ['Field 2',       '200',        '120'],  		    		    
-		]
+				modcol = str(round_sig(mdata,4))+u
+
+				table_data.append([longname, modcol,datcol ])
+				
+			    if len(source):	Caption+= '<br><b>'+getLongName(field)+'</b>: The data was taken from: '+source
+					
+			else:
+				#####
+				# Data column:
+				try:	rdata=realData_dict[field]
+				except:	rdata=''
+				if  rdata=='':
+					rdata = analysis_level0_insitu(jobID=jobID,field= field,region='regionless', layer='layerless', metric='metricless')
+					if rdata == False:rdata 	= ''
+					else: 		  rdata = round_sig(rdata,4)
+								
+				try:	u 	= ' '+units_dict[field]					
+				except:	u 	= ''
+				try:	source 	= realData_source[field]					
+				except:	source 	= ''
+				datcol = str(rdata)+u				
+				name, mdata, timestr = analysis_level0(jobID=jobID,field= field,)#region='regionless', layer='layerless', metric='metricless')
+				longname = getLongName(name,debug=1)				
+				if False in [name, mdata, timestr]:
+					table_data.append([longname, '',datcol ])				
+					continue				
+                                if timestr not in timestrs:timestrs.append(timestr)
+				
+
+			
+				longname = getLongName(name,debug=1)
+				modcol = str(round_sig(mdata,4))+u
+
+	#			Caption+= '<br><b>'+longname+':</b> Model is the mean of the range '+timestr +'. '+\
+	#							'The data was taken from: '+source
+				table_data.append([longname, modcol,datcol ])
+				
+				if len(source):	Caption+= '<br><b>'+longname+'</b>: The data was taken from: '+source									
+		if len(timestrs):	Caption +='<br><b> Model</b> is the mean of the annual means in the range '+timestrs[0] +'. '
 		
 		l0htmltable = htmltables.table(table_data,
 			header_row = ['Property',   'Model',   'Data'],
-			#col_width=['30%', '25%', '25%',],
-			#col_align=['center', 'center', 'center'],
-			#col_styles=['', '', '']
+		        col_align=['left', 'center', 'center'],
 		)
-    
     
 		html5Tools.AddTableSection(indexhtmlfn,
 				href,
@@ -225,10 +331,18 @@ def html5Maker(
                           'Temperature',
                           'Salinity',
                           'TotalIceArea',
+                          'TotalIceExtent',                          
                           'DrakePassageTransport',
                           'AMOC_26N',
 			 ]
-		 
+		lev1physFields = [
+                          'Temperature',
+                          'Salinity',
+                          'TotalIceArea',
+                          'TotalIceExtent',                          
+                          'DrakePassageTransport',
+                          'AMOC_26N',
+			 ]		 
 		SectionTitle= 'Level 1'
 		hrefs 	= []
 		Titles	= {}
@@ -238,24 +352,27 @@ def html5Maker(
 		
 		#region = 'Global'
 		for key in level1Fields:
-
+			#print "Make Report\tLevel 1:",key
+		 	if physicsOnly and key not in lev1physFields:continue
+			#print "Make Report\tLevel 1:",key		 	
 			#####
 			# href is the name used for the html 
 			href = 	'L1'+key+'-global'
 			hrefs.append(href)
-			
+			#print "Make Report\tLevel 1:",key, href			
 			#####
 			# Title is the main header, SidebarTitles is the side bar title.
 			Titles[href] = 	getLongName(key)
 			SidebarTitles[href] = getLongName(key)	
-						
+			#print "Make Report\tLevel 1:",key, Titles[href]			
+									
 			#####
 			# Descriptions is a small sub-header
 			desc = ''
 			if key in ListofCaveats.keys():			desc +=ListofCaveats[key]+'\n'
 			#if region in ListofCaveats_regions.keys():	desc +=ListofCaveats_regions[key]+'\n'			
 			Descriptions[href] = desc
-			
+			#print "Make Report\tLevel 1:",key, desc						
 
 			#####
 			# A list of files to put in this group.
@@ -293,7 +410,8 @@ def html5Maker(
 	
 				FileLists[href][relfn] = html5Tools.fnToTitle(relfn) 
 				print "Adding ",relfn,"to script"
-			
+			#print "Make Report\tLevel 1:",key, FileLists[href]						
+						
 		html5Tools.AddSubSections(indexhtmlfn,hrefs,SectionTitle,
 				SidebarTitles=SidebarTitles,#
 				Titles=Titles, 
@@ -322,10 +440,14 @@ def html5Maker(
                           'OMZThickness',
                           'Temperature',
                           'Salinity',
-
                           #'TotalIceArea'
-
 			]
+		physregionalFields = [
+                          'Temperature',
+                          'Salinity',
+                          'TotalIceArea',
+                          'TotalIceExtent',                          
+			]			
 		SectionTitle= 'Level 1 - regional'
 		hrefs 		= []
 		Titles		= {}
@@ -334,6 +456,7 @@ def html5Maker(
 		FileLists	= {}
 		FileOrder 	= {}		
 		for key in regionalFields:
+		 	if physicsOnly and key not in physregionalFields:continue		
 			#if key not in ['Alkalinity','Nitrate']: continue
 
 			href = 	'L1region'+key#+'-'+region
@@ -410,6 +533,8 @@ def html5Maker(
                           'Temperature',
                           'Salinity',
 			]
+		physregionalFields = ['Temperature', 'Salinity',]
+				
 		if plottype == 'profile':	SectionTitle= 'Level 1 - Profiles'
 		if plottype == 'profilehov':	SectionTitle= 'Level 1 - Hovmoeller plots'		
 		hrefs 		= []
@@ -419,6 +544,7 @@ def html5Maker(
 		FileLists	= {}
 		FileOrder 	= {}		
 		for key in regionalFields:
+		 	if physicsOnly and key not in physregionalFields:continue				
 			#if key not in ['Alkalinity','Nitrate']: continue
 
 			href = 	'L1'+plottype+'-'+key#+'-'+region
@@ -490,6 +616,7 @@ def html5Maker(
 			  'Salinity', 
 			  'MLD',			  
 			 ]
+		physl2Fields = [ 'Temperature', 'Salinity',  'MLD',]			 
 		hrefs 	= []
 		Titles	= {}
 		SidebarTitles = {}
@@ -501,6 +628,7 @@ def html5Maker(
 		FileOrder = {}		
 				
 		for key in l2Fields:
+		 	if physicsOnly and key not in physl2Fields:continue				
 			#if key not in ['Alkalinity','Nitrate']: continue
 
 
@@ -761,6 +889,37 @@ def html5Maker(
 
 
 	if plotbyfieldandregion:
+		#####
+		# Add time series regional plots:
+		#key = 'ignoreInlandSeas'
+		fields = ['Alkalinity', 
+			  'Nitrate',
+			  'Silicate', 
+			  'Temperature', 
+			  'Salinity', 
+			  'Oxygen',
+			  'DIC',
+			  'Chlorophyll_cci', 
+			  'IntegratedPrimaryProduction_OSU', 
+			  'TotalIntegratedPrimaryProduction',
+			  'ExportRatio', 
+			  'LocalExportRatio', 		  
+			  'MLD',
+			  #  'IntegratedPrimaryProduction_1x1' , 
+			  #'Chlorophyll_pig' , 
+			  'AirSeaFluxCO2' , 
+			 ]
+		regions = ['Global',
+			  'SouthernOcean',
+			  'NorthernSubpolarAtlantic',
+			  'NorthernSubpolarPacific',		  	
+			  'Equator10', 
+			  'ArcticOcean',
+			  'Remainder',
+			  'ignoreInlandSeas',		  
+			   ]
+		Transects = ['Transect','PTransect','SOTransect']
+		
 		for key in sorted(fields):
 			#if key not in ['Alkalinity','Nitrate']: continue
 			SectionTitle= getLongName(key)
@@ -858,6 +1017,24 @@ def html5Maker(
 #			html5Tools.AddSection(indexhtmlfn,key+'-'+region,longnames, Description=longnames+' plots',Files = files)
 
 
+
+	if regionMap:
+		vfiles = []	
+		vfiles.extend(glob('images/maps/Region_Legend.png'))
+		relfns = [addImageToHtml(fn, imagesfold, reportdir) for fn in vfiles]				
+		print relfns
+		href = 'regionMap_default'
+		html5Tools.AddSubSections(
+			indexhtmlfn,
+			[href,],
+			'Legends', 
+			SidebarTitles={href:'Regional legends',},
+			Titles={href:'Regional boundaries legend',},
+			Descriptions={href:'A map showing the boundaries of the regions used elsewhere in this report.',},						
+			FileLists={href:relfns,},						
+			)									
+
+
         tar = "tar cfvz  report-"+jobID+".tar.gz "+reportdir
 
 	print "-------------\nSuccess\ntest with:\nfirefox",indexhtmlfn
@@ -876,6 +1053,7 @@ def main():
 	
 	#defaults:
 	clean = False
+	physicsOnly = False	
 	year = '*'
 	reportdir =folder('reports/'+jobID)
 	
@@ -891,6 +1069,10 @@ def main():
 		if arg == 'clean':
 			 clean = True
 			 continue
+
+		if arg == 'physics':
+			physicsOnly=True
+			continue
 		
 		reportdir = arg
 			
@@ -901,6 +1083,7 @@ def main():
 		   reportdir=reportdir,
 		   year = year,
 		   clean=clean,
+		   physicsOnly=physicsOnly,
 		   )
 		   	
 if __name__=="__main__":	
