@@ -67,11 +67,13 @@ p2pKeys_level2 = ['Chl_CCI',
 		  'IntPP_OSU',
 		'T','S','MLD',
 		  ]
-		  		  		  
+
+p2pKeys_physics = ['T','S','MLD',  ]
+		  		  		  		  
 p2pDict = {i:n for i,n in enumerate(p2pKeys)}		  
 p2pDict_annual = {i:n for i,n in enumerate(p2pKeys_annual)}		  
 p2pDict_level2 = {i:n for i,n in enumerate(p2pKeys_level2)}		  
-
+p2pDict_physics = {i:n for i,n in enumerate(p2pKeys_physics)}		  
 def analysis_p2p(
 		models	= ['NEMO','MEDUSA',],
 		jobID 	= 'u-ad980',

@@ -180,8 +180,8 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('TotalIceArea')		# work in progress	
 														
 			#analysisKeys.append('O2')			# work in progress
-			#analysisKeys.append('Iron')			# work in progress
-                        analysisKeys.append('N')                        # WOA Nitrate				
+			analysisKeys.append('Iron')			# work in progress
+                        #analysisKeys.append('N')                        # WOA Nitrate				
                         #analysisKeys.append('IntPP_OSU')               # OSU Integrated primpary production    
                         #####   
                         # Physics switches:

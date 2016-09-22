@@ -375,11 +375,14 @@ class profileAnalysis:
 		sh.close()
 	except:
 		print "profileAnalysis:\t WARNING.\tSaving shelve failed, trying again.:", self.shelvefn_insitu			
-		print "Data is", dataD
+		#print "Data is", dataD
 		shutil.move(self.shelvefn_insitu, self.shelvefn_insitu+'.broken')
-		sh = shOpen(self.shelvefn_insitu)
-		sh['dataD'] 	= dataD
-		sh.close()		
+		try:
+			sh = shOpen(self.shelvefn_insitu)
+			sh['dataD'] 	= dataD
+			sh.close()
+		except:
+			print "profileAnalysis:\t WARNING.\tUnable to Save in situ shelve.\tYou'll have to input it each time.",self.shelvefn_insitu	
 	 	
 	self.dataD = dataD
 

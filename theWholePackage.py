@@ -17,7 +17,7 @@ from multiprocessing import Pool
 from downloadFromMass import  downloadMass, findLastFinishedYear
 from analysis_timeseries import analysis_timeseries, singleTimeSeries, singleTimeSeriesProfile
 from analysis_timeseries import level1KeysDict, timeseriesDict, physKeysDict
-from analysis_p2p import analysis_p2p, p2pDict_level2, single_p2p
+from analysis_p2p import analysis_p2p, p2pDict_level2, p2pDict_physics,single_p2p
 from makeReport import html5Maker
 from UKESMpython import folder
 
@@ -49,7 +49,11 @@ def p2pParrallel(index):
 	single_p2p(jobID, key, year)
 	print "p2pParrallel",index, jobID, 'SUCESS',key
 	
-
+def p2pParrallel_phys(index):
+	print "p2pParrallel_phys",index, jobID, 'START'
+	key = p2pDict_physics[index]
+	single_p2p(jobID, key, year)
+	print "p2pParrallel_phys",index, jobID, 'SUCESS',key
 
 
 def theWholePackage(jobID,year=False,suite = 'level1'):
@@ -94,9 +98,14 @@ def theWholePackage(jobID,year=False,suite = 'level1'):
 		else:	suite = 'level2'
 		print "########\nThe Whole Package:\tRunning point to point analysis of", jobID,"on", year
 		if parrallel:
-			remaining = sorted(p2pDict_level2.keys())[:]
+
 		   	p1 = Pool(cores)
-		    	p1.map(p2pParrallel,remaining)	
+		   	if suite =='physics':	
+				remaining = sorted(p2pDict_physics.keys())[:]		   	
+		   		p1.map(passp2pParrallel_phys,remaining)
+		    	else:	
+				remaining = sorted(p2pDict_level2.keys())[:]
+		    		p1.map(p2pParrallel,remaining)	
 			p1.close()
 		
 			#####
