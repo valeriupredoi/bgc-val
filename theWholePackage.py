@@ -100,9 +100,9 @@ def theWholePackage(jobID,year=False,suite = 'level1'):
 		if parrallel:
 
 		   	p1 = Pool(cores)
-		   	if suite =='physics':	
+		   	if suite == 'physics':	
 				remaining = sorted(p2pDict_physics.keys())[:]		   	
-		   		p1.map(passp2pParrallel_phys,remaining)
+		   		p1.map(p2pParrallel_phys,remaining)
 		    	else:	
 				remaining = sorted(p2pDict_level2.keys())[:]
 		    		p1.map(p2pParrallel,remaining)	
