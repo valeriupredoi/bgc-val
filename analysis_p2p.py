@@ -884,6 +884,8 @@ if __name__=="__main__":
 		analysisSuite='debug'
 	elif 'level2' in argv[1:]:
 		analysisSuite='level2'
+	elif 'physics' in argv[1:]:
+		analysisSuite='physics'		
 	else:	analysisSuite='annual'
 		
 	analysis_p2p(models	= ['NEMO','MEDUSA',],
