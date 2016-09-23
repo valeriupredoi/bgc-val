@@ -2,10 +2,7 @@
 #####
 #
 
-"""
-	In this code, we run the whole package analysis suite.
-	
-"""
+
 
 
 import matplotlib
@@ -58,6 +55,16 @@ def p2pParrallel_phys(index):
 
 def theWholePackage(jobID,year=False,suite = 'level1'):
 
+	"""
+		In theWholePackage, we run the whole package analysis suite.
+		This code takes a jobID, a year, and an analysis suite.
+		This function calls:
+			the html5Maker
+			analysis_timeseries
+			analysis_p2p
+		The options
+		
+	"""
         #if year in [False,  '*']:
 	#        year = findLastFinishedYear(jobID,dividby=25)
 	#elif type(year) in [type(1000), type(1000.)]:
@@ -68,16 +75,16 @@ def theWholePackage(jobID,year=False,suite = 'level1'):
 	parrallel = True
 	cores = 8
 
-        print "########\nThe Whole Package:\tmaking Summary report"
         
         if suite =='physics':	physicsOnly=True
         else: 			physicsOnly=False
-        html5Maker(jobID =jobID,
-                   reportdir=folder('reports/'+jobID),
-                   year = year,
-                   clean=True,
-                   physicsOnly=physicsOnly
-                   )
+#        print "########\nThe Whole Package:\tmaking Summary report"
+ #       html5Maker(jobID =jobID,
+  #                 reportdir=folder('reports/'+jobID),
+   #                year = year,
+    #               clean=True,
+     #              physicsOnly=physicsOnly
+      #             )
 #	return			  
 
 	print "########\nThe Whole Package:\tStarting Time series (surface only)", jobID 	
@@ -134,7 +141,16 @@ def theWholePackage(jobID,year=False,suite = 'level1'):
 		print "########\nThe Whole Package:\tNot Running point to point analysis of", jobID," because year is:", year
 	
 
-
+        print "########\nThe Whole Package:\tmaking Final Summary report"
+        
+        if suite =='physics':	physicsOnly=True
+        else: 			physicsOnly=False
+        html5Maker(jobID =jobID,
+                   reportdir=folder('reports/'+jobID),
+                   year = year,
+                   clean=True,
+                   physicsOnly=physicsOnly
+                   )
 
 
 
@@ -162,14 +178,14 @@ if __name__=="__main__":
 		if physicsOnly:	theWholePackage(jobID,year=year,suite='physics')
 		else:		theWholePackage(jobID,year=year)
 		
-        if year == False: year = '*'
-	print "########\nThe Whole Package:\tmaking Summary report", jobID,year	
-	html5Maker(jobID =jobID,
-		   reportdir=folder('reports/'+jobID),
-		   year = year,
-		   clean=True,
-		   physicsOnly=physicsOnly,
-		   )
+      #  if year == False: year = '*'
+#	print "########\nThe Whole Package:\tmaking Summary report", jobID,year	
+#	html5Maker(jobID =jobID,
+#		   reportdir=folder('reports/'+jobID),
+#		   year = year,
+#		   clean=True,
+#		   physicsOnly=physicsOnly,
+#		   )
 		   
 		   
 		

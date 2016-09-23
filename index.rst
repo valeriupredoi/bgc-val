@@ -12,6 +12,11 @@ Contents:
    :maxdepth: 2
 
 
+.. automodule:: theWholePackage
+
+    .. autofunction:: theWholePackage
+
+
 
 Indices and tables
 ==================
