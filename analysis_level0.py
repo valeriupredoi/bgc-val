@@ -42,7 +42,17 @@ def printableName(field,region, layer, metric):
 	return name	
 
 def analysis_level0(jobID='',field= "AMOC_26N",region='regionless', layer='layerless', metric='metricless',debug=False,):
-
+	"""
+	Analysis_level0 loads the result of the shelves in  
+	
+	The path to the shelves is determined by the path.py symbolic link.
+	
+	:param jobID: A job run ID string
+	:param field: A specific field to analyse.
+	:param region:
+	:param layer:  The depth layer, ie Surface, 1000m, etc
+	:param metric:	Mean, max, median or min. The metric 
+	"""
 	#####
 	#Produce a printable name
 	name = printableName(field,region, layer, metric)

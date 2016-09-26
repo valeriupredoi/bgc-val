@@ -1,7 +1,38 @@
 #!/usr/bin/ipython 
+#
+# Copyright 2014, Plymouth Marine Laboratory
+#
+# This file is part of the bgc-val library.
+#
+# bgc-val is free software: you can redistribute it and/or modify it
+# under the terms of the Revised Berkeley Software Distribution (BSD) 3-clause license. 
+
+# bgc-val is distributed in the hope that it will be useful, but
+# without any warranty; without even the implied warranty of merchantability
+# or fitness for a particular purpose. See the revised BSD license for more details.
+# You should have received a copy of the revised BSD license along with bgc-val.
+# If not, see <http://opensource.org/licenses/BSD-3-Clause>.
+#
+# Address:
+# Plymouth Marine Laboratory
+# Prospect Place, The Hoe
+# Plymouth, PL1 3DH, UK
+#
+# Email:
+# ledm@pml.ac.uk
+#
 #####
 #
 
+"""
+.. module:: theWholePackage
+   :platform: Unix
+   :synopsis: A script 
+
+.. moduleauthor:: Lee de Mora <ledm@pml.ac.uk>
+
+
+"""
 
 
 
@@ -56,13 +87,17 @@ def p2pParrallel_phys(index):
 def theWholePackage(jobID,year=False,suite = 'level1'):
 
 	"""
-		In theWholePackage, we run the whole package analysis suite.
-		This code takes a jobID, a year, and an analysis suite.
-		This function calls:
-			the html5Maker
-			analysis_timeseries
-			analysis_p2p
-		The options
+	theWholePackage function. This function runs the whole default package analysis suite
+	and outputs it to an html report.
+	
+	:param jobID: The jobID of the run.
+	:param year: The year of the run, False will search for a year, '*' will not run point to point.	    
+	:param suite: The type of analysis. Options are 'Physics',
+	
+	This function calls:
+		the html5Maker
+		analysis_timeseries
+		analysis_p2p
 		
 	"""
         #if year in [False,  '*']:

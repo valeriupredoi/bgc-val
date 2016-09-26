@@ -22,7 +22,14 @@
 # Email:
 # ledm@pml.ac.uk
 #
+"""
+.. module:: analysis_timeseires
+   :platform: Unix
+   :synopsis: A script to produce analysis for time series.
 
+.. moduleauthor:: Lee de Mora <ledm@pml.ac.uk>
+
+"""
 
 #####	
 # Load Standard Python modules:
@@ -72,20 +79,26 @@ def analysis_timeseries(jobID = "u-ab671",
 			):
 
 	"""
-		The role of this code is to produce time series analysis.
-		The jobID is the monsoon/UM job id and it looks for files with a specific format
+	The role of this code is to produce time series analysis.
+	The jobID is the monsoon/UM job id and it looks for files with a specific format
 		
-		The clean flag allows you to start the analysis without loading previous data.
+	The clean flag allows you to start the analysis without loading previous data.
 		
-		The annual flag means that we look at annual (True) or monthly (False) data.
+	The annual flag means that we look at annual (True) or monthly (False) data.
 		
-		The strictFileCheck switch checks that the data/model netcdf files exist.
-			It fails if the switch is on and the files no not exist.
+	The strictFileCheck switch checks that the data/model netcdf files exist.
+	It fails if the switch is on and the files no not exist.
 			
-		analysisSuite chooses a set of fields to look at.
+	analysisSuite chooses a set of fields to look at.
 		
-		regions selects a list of regions, default is 'all', which is the list supplied by Andy Yool. 
-		
+	regions selects a list of regions, default is 'all', which is the list supplied by Andy Yool. 
+	
+	:param jobID: the jobID
+	:param clean: deletes old images if true
+	:param annual: Flag for monthly or annual model data.
+	:param strictFileCheck: CStrickt check for model and data files. Asserts if no files are found.
+	:param analysisSuite: Which data to analyse, ie level1, physics only, debug, etc
+	:param regions:
 	"""	
 
 	#print "analysis_p2p:",	jobID,clean, annual,strictFileCheck,analysisSuite,regions
