@@ -29,7 +29,21 @@ import os
 from glob import glob
 from re import findall
 
+
+"""
+This module includes a series of tools to download the UKESM model run data from MASS.
+
+When run as a script, the command is:
+	./downloadFromMass.py jobID
+
+This tool will only work on machines that have mass enabled.
+ 
+"""
+
 def getYearFromFile(fn):
+	""" 
+	Takes a file anem, and looks for 8 consequetive numbers, then removes those that are months, and returns the year.
+	"""
 	a = findall(r'\d\d\d\d\d\d\d\d',fn)
 	for i in a:
 	    if i[-4:] == '1130': 
@@ -39,6 +53,16 @@ def getYearFromFile(fn):
 	return False
 	
 def rebaseSymlinks(fn,dryrun=True,debug=False):
+	""" 
+	:param fn: A full path to a filename. It should be a symbolic link.
+	:param dryrun: A boolean switch to do a trial run of this function.
+
+	This function reduces a chain of symbolic links down to one. It takes a full path, 
+	checks whether it is a sym link, then checks whether the real path is the  target of the link.
+	If not, it replaces the target with the real path.
+	
+	"""
+	
         #####
         # fn is a link file
         #if not os.path.exists(fn):
@@ -62,10 +86,13 @@ def rebaseSymlinks(fn,dryrun=True,debug=False):
 	
 def findLastFinishedYear(jobID,dividby=1,numberfiles=6):
 	"""
-		command:
-		downloadMass jobID options.
-		options:
-			dividby = only outputs every "dividby" years.
+	:param jobID: The job ID, as elsewhere.
+	:param 	dividby: Outputs every "dividby" years.
+	:param numberfiles: The expected number of files per a year. (usually 6, but sometimes 4)
+
+	This tool find the best year to have a close look at the model, by searching through the files
+	and guessing which years are finished.
+	
 	"""
 	if jobID == '': return
 	
@@ -107,10 +134,13 @@ def findLastFinishedYear(jobID,dividby=1,numberfiles=6):
 
 def downloadMass(jobID,):
 	"""
-		command:
-		downloadMass jobID options.
-		options:
-			anymachine : skip check.
+	:param jobID: The job ID
+	
+	This tool takes the jobID, and using the known structure of universally similar MASS and the local filesystem structure
+	from paths.py, downloads the jobID data to the local file structure.
+	
+	This tool will only work on machines that have mass enabled.
+	
 	"""
 	if jobID == '': return
 	

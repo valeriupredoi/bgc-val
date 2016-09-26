@@ -841,6 +841,6 @@ def timeseries_compare():
 				colours		= colours,
 			)
 	
-
-timeseries_compare()
+if __name__=="__main__":
+	timeseries_compare()
 

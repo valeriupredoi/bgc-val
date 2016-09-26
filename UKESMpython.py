@@ -51,9 +51,7 @@ from  bgcvaltools.RobustStatistics import MAD
 try:import yaml 
 except: pass
 
-#local imports
-#from ncdfView import ncdfView
-"""	This is a catch all toolkit for the python methods and shorthands used in this code.
+"""	UKESMpython is a catch all toolkit for the python methods and shorthands used in this code.
 """
 
 try:	defcmap = pyplot.cm.viridis
@@ -75,6 +73,15 @@ def folder(name):
 	return name
 
 def rebaseSymlinks(fn,dryrun=True):
+	""" 
+	:param fn: A full path to a filename. It should be a symbolic link.
+	:param dryrun: A boolean switch to do a trial run of this function.
+
+	This function reduces a chain of symbolic links down to one. It takes a full path, 
+	checks whether it is a sym link, then checks whether the real path is the  target of the link.
+	If not, it replaces the target with the real path.
+	
+	"""
 	#####
 	# fn is a link file
 	#if not os.path.exists(fn):
@@ -98,13 +105,19 @@ def rebaseSymlinks(fn,dryrun=True):
 
 
 def mnStr(month):
+	""" 
+	:param month: An int between 1 and 100.
+	
+	Returns a 2 digit number string with a leading zero, if needed.
+	
+	"""
 	mn = '%02d' %  month
 	return mn
 	
-def getCommandJobIDandTime():
-	jobID = argv[1]	
-	timestamp = argv[2]
-	return jobID,timestamp
+#def getCommandJobIDandTime():
+#	jobID = argv[1]	
+#	timestamp = argv[2]
+#	return jobID,timestamp
 	
 def getFileList(fin):
 	if type(fin)==type('abc') and fin.find('*')<0 and fin.find('?')<0: # fin is a string file:
@@ -118,7 +131,16 @@ def getFileList(fin):
 		return filesout
 
 
-def makeThisSafe(arr,log=False,debug = True, key='',noSqueeze=False):
+def makeThisSafe(arr,debug = True, key='',noSqueeze=False):
+	"""
+	:param arr: The numpy array.
+	:param key: a key, used in debuging.
+	:param noSqueeze: A boolean flag for squeezing the array.
+	
+	This tool takes a numpy array and masks	it where it is a very high value, nan or inf.
+	
+	"""
+	
 	if noSqueeze:pass
 	else: arr=np.ma.array(arr).squeeze()
 	
@@ -138,7 +160,7 @@ def makeThisSafe(arr,log=False,debug = True, key='',noSqueeze=False):
 
 
 def maenumerate(marr):
-	"""	Masked assary enumerate command based on numpy.ndenumerate, which iterates a list of (index, value) for n-dimensional arrays.
+	"""	Masked array enumerate command based on numpy.ndenumerate, which iterates a list of (index, value) for n-dimensional arrays.
 		This version ignores masked values.
 	"""
 	
@@ -160,8 +182,10 @@ class AutoVivification(dict):
             return value
 
 def AutoVivToYaml(av,yamlFile):
-	#####
-	# Saving Nested dictionary or AutoVivification as a yaml readable file.
+	"""
+	Saves Nested dictionary or AutoVivification as a yaml readable file.
+	
+	"""
 	space = 4*' '
 	s = ''	
 	def recursivePrint(d,depth,s):
@@ -184,19 +208,22 @@ def AutoVivToYaml(av,yamlFile):
 	fn.close()
 
 def YamlToDict(yamlFile):
+	"""
+	Opens a yaml file and outputs it as a dictionary.
+	"""
 	print 'YamlToDict:\tLoading:',yamlFile	
 	with open(yamlFile, 'r') as f:
 		d = yaml.load(f)
 	return d
 
 
-def machineName():
-	name = str(socket.gethostname())
-	if name.find('npm')>-1:	return 'PML'
-	if name.find('pmpc')>-1: return 'PML'
-	if name.find('esmval')>-1: return 'esmval'
-	if name.find('ceda')>-1: return 'ceda'
-	return False
+#def machineName():
+#	name = str(socket.gethostname())
+#	if name.find('npm')>-1:	return 'PML'
+#	if name.find('pmpc')>-1: return 'PML'
+#	if name.find('esmval')>-1: return 'esmval'
+#	if name.find('ceda')>-1: return 'ceda'
+#	return False
 	
 class NestedDict(dict):
     """                                                                       
@@ -240,6 +267,10 @@ class NestedDict(dict):
         
         
 def getGridFile(grid):
+	"""
+	Deprecated. 
+	"""
+	assert 0
 	if grid.upper() in ['ORCA1',]:
 		#grid = 'ORCA1'
 		gridFile    = "data/mesh_mask_ORCA1_75.nc"		
@@ -260,112 +291,20 @@ def getGridFile(grid):
 			assert False
         return gridFile
 	
-def sliceA_obsolete(arr,region):
-	# you should already have removed time by now.
-	#assume time 0.
-	#if region == 'DeepestWetCells':return getDeepestWetCells(arr)
-	#if region == 'Lutz': return applyLutzMask(arr)
-#		region = 'Lutz':			
-#		lutzmask = 	
-	arr = makeThisSafe(arr,noSqueeze=True)
-	
 
-	if arr.shape[-2:] != (292,362):
-		print "sliceA:\tERROR:\tThis was not designed for anything except the ORCA1 grid.", arr.shape ,"won't work."
-		assert False
-				 
-	if len(arr.shape) == 2:
-
-		
-	    	if region == 'SEA': 		return arr[100:200,:100]
-	    	elif region == 'Arctic': 	return arr[230:,45:320]
-	    	elif region == 'Antarctic': 	return arr[:80,:]	
-	    	elif region == 'NWAtlantic': 	return arr[205:250,220:250]
-	    	elif region == 'NEPacific': 	return arr[180:243, 130:185]		    	    	
-	    	elif region == 'Med': 		return arr[166:243,268:]	    	
-		elif region == 'Transect': 	print 'NOT POSSIBLE TO TRANSECT A 2D FIELD'
-		elif region == 'Global': 	return arr[:,:]
-		elif region == 'Surface': 	return arr[:,:]
-		elif region == 'NoArtics': 	return arr[80:240,:]
-		elif region == 'SurfaceNoArtics': 	return arr[80:240,:]		
-		elif region == 'TopLayers': 	print 'NOT POSSIBLE TO TRANSECT A 2D FIELD'						
-		elif region == 'All': 		return arr[:,:]				
-		elif region in ['BATS', 'HOT',]:return arr[:,::-1].squeeze().transpose()
-		
-	    	elif region == 'SouthPacificOcean': 	return arr[80:160,70:215]
-	    	elif region == 'NorthAtlanticOcean': 	return arr[185:251,215:286,]
-	    	elif region == 'SouthPacificOcean': 	return arr[80:160,70:215]
-	    	elif region == 'SouthAtlanticOcean': 	return arr[72:157,238:308] 	    		    	
-	    	elif region == 'NorthPacificOcean': 	return arr[170:247,57:187]	    		    	
-	    	elif region == 'IndianOcean': 		return arr[88:187,-40:]    		    		    		    		    			    				 
-
-				 
-				 		    		
-	elif len(arr.shape) == 3:
-	    	if region == 'SEA': 		return arr[0,100:200,:100]
-		elif region == 'Arctic': 	return arr[0,230:,45:320]
-	    	elif region == 'Antarctic': 	return arr[:,:80,:]	
-		elif region == 'Atlantic': 	return arr[::-1,:,260]
-	    	elif region == 'NWAtlantic': 	return arr[:,205:250,220:250]	
-	    	elif region == 'NEPacific': 	return arr[:,180:243, 130:185]	    		
-	    	elif region == 'Med': 		return arr[:,166:243,268:]
-		elif region == 'Transect': 	return arr[::-1,:,115]
-		elif region == 'Global': 	return arr[:,:,:]
-		elif region == 'Surface': 	return arr[0,:,:]
-		elif region == 'NoArtics': 	return arr[:,80:240,:]
-		elif region == 'SurfaceNoArtics': 	return arr[0,80:240,:]					
-		elif region == 'TopLayers': 	return arr[:24,:,:]						
-		elif region == 'Top200m': 	return arr[:31,:,:]
-		elif region == 'Top200mNoArtics': 	return arr[:31,80:240,:]		
-		elif region == 'Top40mNoArtics': 	return arr[:17,80:240,:]				
-		elif region == 'Top40m': 	return arr[:17,:,:]		
-		elif region == 'DeepLayers': 	return arr[24:,:,:]								
-		elif region == 'All': 		return arr[:,:,:]				
-		elif region in ['BATS', 'HOT',]:return arr[:,::-1].squeeze().transpose()
-	    	elif region == 'SouthPacificOcean': 	return arr[:,80:160,70:215]
-	    	elif region == 'NorthAtlanticOcean': 	return arr[:,185:251,215:286,]
-	    	elif region == 'SouthPacificOcean': 	return arr[:,80:160,70:215]
-	    	elif region == 'SouthAtlanticOcean': 	return arr[:,72:157,238:308] 	    		    	
-	    	elif region == 'NorthPacificOcean': 	return arr[:,170:247,57:187]	    		    	
-	    	elif region == 'IndianOcean': 		return arr[:,88:187,-40:]    
-	elif len(arr.shape) == 4:
-	    	if region == 'SEA':		return arr[:,0,100:200,:100].squeeze()
-		elif region == 'Arctic': 	return arr[:,0,230:,45:320].squeeze()
-	    	elif region == 'Antarctic': 	return arr[:,:,:80,:].squeeze()
-		elif region == 'Atlantic': 	return arr[:,::-1,:,260].squeeze()
-	    	elif region == 'NWAtlantic': 	return arr[:,:,205:250,220:250].squeeze()
-	    	elif region == 'NEPacific': 	return arr[:,:,180:243, 130:185]	
-	    	elif region == 'Med': 		return arr[:,:,166:243,268:].squeeze()	    			
-		elif region == 'Transect': 	return arr[:,::-1,:,115].squeeze()
-		elif region == 'Global': 	return arr[:,:,:,:].squeeze()		    			 
-		elif region == 'Surface': 	return arr[:,0,:,:].squeeze()
-		elif region == 'NoArtics': 	return arr[:,:,80:240,:].squeeze()
-		elif region == 'SurfaceNoArtics':return arr[:,0,80:240,:].squeeze()
-		elif region == 'TopLayers': 	return arr[:,0:24:,:,:].squeeze()	
-		elif region == 'Top200m': 	return arr[:,:31,:,:].squeeze()						
-		elif region == 'Top40m': 	return arr[:,:17,:,:].squeeze()	
-		elif region == 'Top200mNoArtics': 	return arr[:,:31,80:240,:]		
-		elif region == 'Top40mNoArtics': 	return arr[:,:17,80:240,:]									
-		elif region == 'DeepLayers': 	return arr[:,24:,:,:].squeeze()					
-		elif region == 'All': 		return arr[:,:,:,:].squeeze()		    			    							
-		elif region in ['BATS', 'HOT',]:return arr[:,::-1].squeeze().transpose()
-	    	elif region == 'SouthPacificOcean': 	return arr[:,:,80:160,70:215]
-	    	elif region == 'NorthAtlanticOcean': 	return arr[:,:,185:251,215:286,]
-	    	elif region == 'SouthPacificOcean': 	return arr[:,:,80:160,70:215]
-	    	elif region == 'SouthAtlanticOcean': 	return arr[:,:,72:157,238:308] 	    		    	
-	    	elif region == 'NorthPacificOcean': 	return arr[:,:,170:247,57:187]	    		    	
-	    	elif region == 'IndianOcean': 		return arr[:,:,88:187,-40:]    
-	else:
-	    	print 'WARNINIG: PLOT SHAPE IS ODD:',arr.shape, region
-	    	assert False
-	print 'Could not slice', region, arr.shape
-	assert False
-	return arr
 
 def shouldIMakeFile(fin,fout,debug = True):
-	""" the idea is to take the file: returns:
-		 True: make the file
-		 False: Don't make the file.
+	""" 
+	:param fin: Files in
+	:param fout: Files out. 
+	
+	
+	Answers the question should I Make this File?
+	returns: True: make the file, or  False: Don't make the file.
+	
+	It looks at the age of the files in and the file out.
+	If the output file doesn't exist. The answer is yes.
+	If the output file exists, but is older than the input files: the answer is yes.
 		 
 	"""
 	if not exists(fout): 
@@ -406,6 +345,9 @@ def shouldIMakeFile(fin,fout,debug = True):
 
 	
 def makemapplot(fig,ax,lons,lats,data,title, zrange=[-100,100],lon0=0.,drawCbar=True,cbarlabel='',doLog=False,drawLand=True,cmap='default'):
+	"""
+	takes a pyplot figre and axes, lat lon, data, and title and then makes a single map. 
+	"""
 	lons = np.array(lons)
 	lats = np.array(lats)
 	data = np.ma.array(data)	
@@ -441,7 +383,9 @@ def makemapplot(fig,ax,lons,lats,data,title, zrange=[-100,100],lon0=0.,drawCbar=
 
 
 def robinPlotSingle(lons,lats,data,filename,title, zrange=[-100,100],drawCbar=True,cbarlabel='',doLog=False,dpi=100,):
-	
+	"""
+	takes a pyplot lat lon, data, and title, and filename and then makes a single map, then saves it.
+	"""	
 	fig = pyplot.figure()
 	fig.set_size_inches(10,6)
 
@@ -467,7 +411,9 @@ def robinPlotSingle(lons,lats,data,filename,title, zrange=[-100,100],drawCbar=Tr
 
 	
 def robinPlotPair(lons, lats, data1,data2,filename,titles=['',''],lon0=0.,marble=False,drawCbar=True,cbarlabel='',doLog=False,scatter=True,dpi=100,):#**kwargs):
-
+	"""
+	takes a pair of lat lon, data, and title, and filename and then makes a pair of maps, then saves the figure.
+	"""	
 	fig = pyplot.figure()
 
 	fig.set_size_inches(10,10)
@@ -553,7 +499,9 @@ def robinPlotPair(lons, lats, data1,data2,filename,titles=['',''],lon0=0.,marble
 
 
 def robinPlotQuad(lons, lats, data1,data2,filename,titles=['',''],title='',lon0=0.,marble=False,drawCbar=True,cbarlabel='',doLog=False,scatter=True,dpi=100,vmin='',vmax='',maptype='Basemap'):#,**kwargs):
-
+	"""
+	takes a pair of lat lon, data, and title, and filename and then makes a quad of maps (data 1, data 2, difference and quotient), then saves the figure.
+	"""
 	fig = pyplot.figure()
 	fig.set_size_inches(10,6)
 
@@ -748,7 +696,10 @@ def HovPlotQuad(lons,lats, depths,
 		lon0=0.,marble=False,drawCbar=True,cbarlabel='',doLog=False,scatter=True,dpi=100,vmin='',vmax='',
 		logy = False
 		):#,**kwargs):
-
+	"""
+	takes a pair of lat lon, depths, data, and title, and filename and then makes a quad of transect plots (data 1, data 2, difference and quotient), then saves the figure.
+	"""
+	
 	fig = pyplot.figure()
 	fig.set_size_inches(10,6)
 	depths = np.array(depths)
@@ -880,8 +831,9 @@ def HovPlotQuad(lons,lats, depths,
 	pyplot.close()
 		
 def arrayify(oldX,oldY,data):
-	#####
-	# Takes three arrays and converts it into mesh grid style coordinates and a 2D array of the data.
+	"""
+	Takes three arrays and converts it into mesh grid style coordinates and a 2D array of the data.
+	"""
 	newXd,newYd,newDatad = {},{},{}
 	
 	if len(oldX) == len(oldY) == len(data): pass
@@ -931,9 +883,9 @@ def mameanaxis(a, axis=None):
         
         
 def determineLimsAndLog(mi,ma):
-	#####
-	# Takes the minimum, the maximum value and retuns wherether it should be a log, 
-	# and the new axis range.
+	"""
+	Takes the minimum, the maximum value and retuns wherether it should be a log, and the new axis range.
+	"""
 	log = True
 	
 	if 0. in [mi,ma]:
@@ -955,10 +907,9 @@ def determineLimsAndLog(mi,ma):
 	return log, mi ,ma		
 
 def determineLimsFromData(data1,data2):
-	#####
-	# Takes the two data sets, and retuns wherether it should be a log, 
-	# and the new axis range.
-	
+	"""
+	Takes the two data sets, and retuns wherether it should be a log, and the new axis range.
+	"""
 	log = True
 	
 	data = np.append(data1.compressed(),data2.compressed(),)
@@ -977,7 +928,9 @@ def determineLimsFromData(data1,data2):
 def histPlot(datax, datay,  filename, Title='', labelx='',labely='',xaxislabel='', logx=False,logy=False,nbins=50,dpi=100,minNumPoints = 6, legendDict= ['mean','mode','std','median','mad']):
 #	try:import seaborn as sb
 #	except:pass
-	
+	"""
+	Produces a histogram pair.
+	"""
 
 	fig = pyplot.figure()		
 	ax = pyplot.subplot(111)
@@ -1065,7 +1018,10 @@ def histPlot(datax, datay,  filename, Title='', labelx='',labely='',xaxislabel='
 
 def histsPlot(datax, datay,  filename, Title='', labelx='',labely='',xaxislabel='', logx=False,logy=False,nbins=50,dpi=100,minNumPoints = 6):
 
-
+	"""
+	Produces a single histogram.
+	"""
+	
 	fig = pyplot.figure()		
 	ax = pyplot.subplot(311)
 	fig.set_size_inches(8,14)	
@@ -1140,6 +1096,10 @@ def histsPlot(datax, datay,  filename, Title='', labelx='',labely='',xaxislabel=
 	
 
 def makeOneDPlot(dates, data, title, filename, minmax=[0.,0.],dpi=100):
+	"""
+	Produces a single time series plot.
+	"""
+	
 	print "makeOneDPlot: ", filename
 	fig = pyplot.figure()
 	ax = fig.add_subplot(111)
@@ -1180,23 +1140,35 @@ def makeOneDPlot(dates, data, title, filename, minmax=[0.,0.],dpi=100):
 	
 		
 		
-def strRound(val,i=4):
-	if round(val,i)==0. and i==4:return ' < 0.0001'
-		
-	if val>10000: return str(int(round(val,i-5)))
-	if val>1000: return str(int(round(val,i-4)))
-	if val>100: return str(round(val,i-3))
-	if val>10: return str(round(val,i-2))
-	if val>1: return str(round(val,i-1))
-	return str(round(val,i))
+#def strRound(val,i=4):
+#	"""
+#	Deprecated
+#	"""
+#	if round(val,i)==0. and i==4:return ' < 0.0001'
+#		
+#	if val>10000: return str(int(round(val,i-5)))
+#	if val>1000: return str(int(round(val,i-4)))
+#	if val>100: return str(round(val,i-3))
+#	if val>10: return str(round(val,i-2))
+#	if val>1: return str(round(val,i-1))
+#	return str(round(val,i))
 
 
 def round_sig(x, sig=2):
+	"""
+	:param x: a float
+	:param sig: number of significant figures
+	
+	rounds a value to a specific number of significant figures.
+	"""
 	if x<0.:return -1.* round(abs(x), sig-int(math.floor(math.log10(abs(x))))-1)		
    	return round(x, sig-int(math.floor(math.log10(x)))-1)
 
 	
 def addStraightLineFit(ax, x,y,showtext=True, addOneToOne=False,extent = [0,0,0,0]):
+	"""
+	Adds a straight line fit to an axis.
+	"""
 	def getLinRegText(ax, x, y, showtext=True):
 		x = [a for a in x if (a is np.ma.masked)==False]
 		y = [a for a in y if (a is np.ma.masked)==False]
@@ -1238,6 +1210,10 @@ def addStraightLineFit(ax, x,y,showtext=True, addOneToOne=False,extent = [0,0,0,
 
 	
 def scatterPlot(datax, datay,  filename, Title='', labelx='',labely='', logx=False,logy=False, hexPlot = True, bestfitLine=True,gridsize=50,set_equal=True,percentileRange = [0,100],dpi=100):
+	"""
+	Produces a scatter plot and saves it.
+	"""
+	
 	fig = pyplot.figure()		
 	ax = pyplot.subplot(111)
 
@@ -1308,8 +1284,8 @@ def scatterPlot(datax, datay,  filename, Title='', labelx='',labely='', logx=Fal
 	pyplot.close()			
 			
 def getOrcaIndexCC(lat,lon, latcc, loncc, debug=True,slowMethod=False,llrange=5.):
-	""" takes a lat and long coordinate, an returns the position of the closest coordinate in the NemoERSEM (ORCA1) grid.
-	    uses the bathymetry file.
+	""" 
+	Takes a lat and long coordinate, an returns the position of the closest coordinate in the grid.
 	"""
 	km = 10.E20
 	la_ind, lo_ind = -1,-1
@@ -1324,24 +1300,29 @@ def getOrcaIndexCC(lat,lon, latcc, loncc, debug=True,slowMethod=False,llrange=5.
 	return la_ind,lo_ind
 
 
-def getORCAdepth(z,depth,debug=True):
-	""" Calculate closest depth. Returns an index
+def getORCAdepth(z,depth_arr,debug=True):
+	""" 
+	:param z: Depth
+	:param depth_arr: depth array.
+	
+	Calculate the closest depth to z in the array, and returns the index.
 	"""
 	d = 1000.
 	best = -1
-	for i,zz in enumerate(depth.squeeze()):
+	for i,zz in enumerate(depth_arr.squeeze()):
 		d2 = abs(abs(z)-abs(zz))
 		if d2<d:
 		   d=d2
 		   best = i
-		   if debug: print 'UKESMPython.getORCAdepth:',i,z,zz,depth.shape, 'best:',best
-	if debug: print 'UKESMPython.getORCAdepth:\tdepth: in situ:', z,'index:', best, 'distance:',d,', closest model:',depth.shape, depth[best]
+		   if debug: print 'UKESMPython.getORCAdepth:',i,z,zz,depth_arr.shape, 'best:',best
+	if debug: print 'UKESMPython.getORCAdepth:\tdepth: in situ:', z,'index:', best, 'distance:',d,', closest model:',depth_arr.shape, depth_arr[best]
 	return best
 
 def getclosestlon(x,lons,debug=True):
-	"""	Code to locate the closets longitude coordinate for transects. 
-		Only works for 1D longitude arrays
-		Returns an index
+	"""	
+	Locate the closets longitude coordinate for transects. 
+	Only works for 1D longitude arrays
+	Returns an index
 	"""
 	d = 1000.
 	best = -1
@@ -1361,9 +1342,9 @@ def getclosestlon(x,lons,debug=True):
 	return best
 	
 def getclosestlat(x,lats,debug=True):
-	"""	Code to locate the closets latitute coordinate for transects. 
-		Only works for 1D latitute arrays
-		Returns an index
+	"""	
+	Locate the closets latitute coordinate for transects. Only works for 1D latitute arrays.
+	Returns an index
 	"""
 	d = 1000.
 	best = -1
@@ -1384,12 +1365,19 @@ def getclosestlat(x,lats,debug=True):
 	
 	
 def makeLonSafe(lon):
+	"""
+	Makes sure that the value is between -180 and 180.
+	"""
 	while True:
 		if -180<lon<=180:return lon
 		if lon<=-180:lon+=360.
 		if lon> 180:lon-=360.		
 	
 def makeLatSafe(lat):
+	"""
+	Makes sure that the value is between -90 and 90.
+	"""
+	
 	#while True:
 	if -90.<=lat<=90.:return lat
 	#print 'You can\'t have a latitude > 90 or <-90',lat
@@ -1403,6 +1391,10 @@ def makeLatSafe(lat):
 	#if lon> 90:lat-=360.		
 	   
 def makeLonSafeArr(lon):
+	"""
+	Makes sure that the entire array is between -180 and 180.
+	"""
+	
 	if lon.ndim == 2:
 	 for l,lon1 in enumerate(lon):
 	  for ll,lon2 in enumerate(lon1):
@@ -1417,6 +1409,10 @@ def makeLonSafeArr(lon):
 
 
 def Area(p1,p2):#lat,lon
+	"""
+	Calculates the area in m^2 between two coordinates points.
+	points are [lat,lon]
+	"""	
 	R=6378000. #m
 	lat1,lon1=p1[0],p1[1]
 	lat2,lon2=p2[0],p2[1]
@@ -1429,6 +1425,10 @@ def Area(p1,p2):#lat,lon
 			
 
 def regrid(data,lon,lat):
+	"""
+	Uses cartopy to transform the data into a new grid.
+	"""
+	
     	nX = np.arange(-179.5,180.5,1.)
     	nY = np.arange( -89.5, 90.5,1.)
     	
@@ -1460,6 +1460,9 @@ def regrid(data,lon,lat):
 			
 
 class shelveMetadata:
+   """
+   A tool to load the metadata of a shelve.
+   """
    def __init__(self,model='',name='',year='',depthLevel='',newSlice='',xkey='',ykey='',shelve = ''):
    	self.model 	= model
    	self.name 	= name
@@ -1547,6 +1550,9 @@ class listShelvesContents:
 					
 
 def getSlicesDict():
+	"""
+	Produces a dictionary of slices. lices is another name for the regional cuts.
+	"""
 	slicesDict = {}
 	standardCuts = ['5-95pc','ignoreInlandSeas','OffShelf','ignoreExtraArtics','aboveZero',]	
 	months = [month_name[i+1] for i in xrange(0,12) ]#{month_name[i+1]:i for i in xrange(0,12) }
@@ -1648,7 +1654,9 @@ def populateSlicesList(#plotallcuts = False,
 		 plotHemispheresSeasons =0,
 		 plotTransects		=0,
  		 plotMisc		=0,):
-				 
+	"""
+	Takes a series of boolean flags, then creates a list of slices for point to point analyses.
+	"""			 
 
 	if plotDefaults:	newSlices = ['All', 'Standard',]# Defaults
 	else:			newSlices = []
@@ -1677,7 +1685,22 @@ def populateSlicesList(#plotallcuts = False,
 	return newSlices
 
 		      	
-def makeMask(name,newSlice, xt,xz,xy,xx,xd,debug=False):	  
+def makeMask(name,newSlice, xt,xz,xy,xx,xd,debug=False):
+	"""
+	:param name: The name of the data. (useful for debugging)
+	:param newSlice: The name of the regional cut (or slice)
+	:param xt: A one-D array of the dataset times.
+	:param xz: A one-D array of the dataset depths.
+	:param xy: A one-D array of the dataset latitudes.
+	:param xx: A one-D array of the dataset longitudes.
+	:param xd: A one-D array of the data.
+	
+	This function produces a mask to hides all points that are not in the requested region.
+	There are a long list of possible values for new Slice, these are all included in the UKESMPython.slicesDict dictonairy. 
+	
+	Note that xt,xz,xy,xx,xd should all be the same shape and size. 
+						
+	"""	  
 	if debug:print "makeMask:\tmakeMask:\tinitialise:\t",name, '\t',newSlice
 		
 	if newSlice in ['OffAxis', 'Overestimate','Underestimate','Matched', 
@@ -1984,19 +2007,58 @@ def makeMask(name,newSlice, xt,xz,xy,xx,xd,debug=False):
 		      		
 ####
 # Some functions for maniulating data:
-def NoChange(nc,keys):	return nc.variables[keys[0]][:]
-def N2Biomass(nc,keys):	return nc.variables[keys[0]][:]* 79.573
-def mul1000(nc,keys):	return nc.variables[keys[0]][:]* 1000.
-def div1000(nc,keys):	return nc.variables[keys[0]][:]/ 1000.	
-def div1e6(nc,keys):	return nc.variables[keys[0]][:]/ 1.e6	
+def NoChange(nc,keys):	
+	""" 
+	Loads keys[0] from the netcdf, but applies no change.
+	"""
+	return nc.variables[keys[0]][:]
+def N2Biomass(nc,keys):	
+	""" 
+	Loads keys[0] from the netcdf, but multiplies by 79.572 (to convert Nitrogen into biomass).
+	"""
+	return nc.variables[keys[0]][:]* 79.573
+def mul1000(nc,keys):		
+	""" 
+	Loads keys[0] from the netcdf, but multiplies by 1000.
+	"""
+	return nc.variables[keys[0]][:]* 1000.
+def div1000(nc,keys):		
+	""" 
+	Loads keys[0] from the netcdf, then divides by 1000.
+	"""
+	return nc.variables[keys[0]][:]/ 1000.	
+def div1e6(nc,keys):		
+	""" 
+	Loads keys[0] from the netcdf, but divides by 1.e6.
+	"""
+	return nc.variables[keys[0]][:]/ 1.e6	
 
-def applymask(nc,keys):	return np.ma.masked_where(nc.variables[keys[1]][:]==0.,nc.variables[keys[0]][:])
+def applymask(nc,keys):		
+	""" 
+	Loads keys[0] from the netcdf, but applies a mask.
+	"""
+	return np.ma.masked_where(nc.variables[keys[1]][:]==0.,nc.variables[keys[0]][:])
+
 def sums(nc,keys):	
+	""" 
+	Loads Key[0] from the netcdf, then sums the other keys.
+	"""
+		
 	a = nc.variables[keys[0]][:]
 	for k in keys[1:]:a += nc.variables[k][:]
 	return a 
-def oxconvert(nc,keys): return nc.variables[keys[0]][:] *44.661
-def convertkgToM3(nc,keys): return nc.variables[keys[0]][:]* 1.027
+	
+def oxconvert(nc,keys): 	
+	""" 
+	Loads keys[0] from the netcdf, but multiplies by 44.771 (to convert oxygen units ).
+	"""
+	return nc.variables[keys[0]][:] *44.661
+	
+def convertkgToM3(nc,keys): 	
+	""" 
+	Loads keys[0] from the netcdf, but multiplies by 1.027 (to convert from density kg to volume).
+	"""
+	return nc.variables[keys[0]][:]* 1.027
 
 # 1 ml/l = 103/22.391 = 44.661 umol/l
 # http://ocean.ices.dk/Tools/UnitConversion.aspx
@@ -2008,10 +2070,10 @@ tdicts = {	'ZeroToZero': {i  :i     for i in xrange(12)},
 	}		      		
 
 def extractData(nc, details,key = ['',]):
-  	""" 	This loads the data based on the instructions from details dictionairy.
-  		If you want to do something funking to the data before plotting it,
-  			just create a new convert function in getMT().
-  		details dict usually contains: {'name': 'Chlorophylla', 'vars':['Chlorophylla',], 'convert': ukp.div1000,'units':'ug/L'}
+  	""" 	
+  	This loads the data based on the instructions from details dictionairy.
+  	If you want to do something funking to the data before plotting it, just create a new convert function in getMT().
+  	details dict usually contains: {'name': 'Chlorophylla', 'vars':['Chlorophylla',], 'convert': ukp.div1000,'units':'ug/L'}
   	"""
   	
 	if isinstance(details,dict): 

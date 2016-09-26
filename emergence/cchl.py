@@ -30,7 +30,7 @@ import numpy as np
 from scipy import optimize
 #Specific local code:
 #from pftnames import pftnames as pn
-from UKESMpython import folder,getFileList,sliceA
+from UKESMpython import folder,getFileList#,sliceA
 from analysis import analysis
 from bgcvaltools import C2Chl
 
