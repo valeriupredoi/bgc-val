@@ -113,13 +113,12 @@ The rest of the cover page shows how to set up the analysis package.
 
 The biogeochemical validation toolkit is build with flexibility in mind.
 
-The structure of this module is:
+The top level structure of this module is:
 	
 	:theWholePackage.py:
 	:makeReport.py:
 	:analysis_timeseries.py:
 	:analysis_p2p.py:
-	:analysis_level0.py:
 	:downloadFromMass.py:
 
 
@@ -127,8 +126,8 @@ Folders:
 	 
 	 :timeseries/: The tools required for the time series analysis.
 	 :p2p/: The point to point analysis tools.
-	 :bgcvaltools/: Miscellaneous tools 
-	 :data/:
+	 :bgcvaltools/: Miscellaneous tools for making
+	 :data/: 
 	 :emergence/:
 	 :html5/: The tools and assets required for the makeReport toolkits.
 	 :Paths/:

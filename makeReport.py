@@ -28,7 +28,7 @@ from sys import argv
 import os 
 import shutil
 from html5 import html5Tools, htmltables
-from analysis_level0 import analysis_level0,analysis_level0_insitu
+from timeseries.analysis_level0 import analysis_level0,analysis_level0_insitu
 
 #####
 # makeReport.py:

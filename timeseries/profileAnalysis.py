@@ -30,15 +30,10 @@ import shutil
 
 #Specific local code:
 import UKESMpython as ukp
-from pftnames import getLongName
 import timeseriesTools as tst 
 import timeseriesPlots as tsp 
-from makeEORCAmasks import makeMaskNC
-#getTimes, loadData
-
-
-
-        
+from bgcvaltools.makeEORCAmasks import makeMaskNC
+from bgcvaltools.pftnames import getLongName
 
 
 class profileAnalysis:
