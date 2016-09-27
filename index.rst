@@ -20,7 +20,7 @@ The code itself is available upon request from the
 `PML-hosted gitlab server. <https://gitlab.ecosystem-modelling.pml.ac.uk/UKESM/bgc-val>`_
 
 Access can be requested via the `Code registration form <http://www.pml.ac.uk/Modelling_at_PML/Access_Code>`_.
-The PML-contact is "Lee de Mora", please select "Other" in the Model code/Tutorial, and please put
+The PML-contact is "Lee de Mora, ledm@pml.ac.uk", please select "Other" in the Model code/Tutorial, and please put
 "Access to BGC-val toolkit" as the main purpose of use.  Note that processing may take a few days.
 
 
@@ -72,10 +72,68 @@ Now, add the following lines to ~/.bahrc or ~/.cshrc ::
         export PYTHONPATH=$PYTHONPATH:/home/username/etc/pathToWorkingSpace/netcdf_manip 
 
 
-BGC-Val
+Required python modules
+------------------------
+
+The following standard python modules are required to run BGC-Val. 
+These modules should already be available, but can be installed using pip, 
+or a similar package manager.
+
+	* numpy
+	* scipy
+	* shelve
+	* os
+	* sys
+	* socket
+	* calendar
+	* shutil
+	* glob
+	* getpass
+	* string
+	* math
+	* itertools
+
+The following modules are also required, but may be more complicated to install. 
+Please see their websites for more details on how to install these packages. 
+Note that these are likely to be pre-installed on post processing machines,
+such as jasmin's  sci1 nodes and monsoon post-processing machines. 
+
+	* `cartopy <http://scitools.org.uk/cartopy/>`_.
+	* `Matplotlib, mpl_toolkits <http://matplotlib.org>`_.
+	* `NetCDF4 <http://unidata.github.io/netcdf4-python/>`_.
+
+The `sphinx module <http://www.sphinx-doc.org>`_ was used to create this documentation, but is not required.
+
+
+
+BGC-Val Structure
 ======================
 
 The rest of the cover page shows how to set up the analysis package. 
+
+The biogeochemical validation toolkit is build with flexibility in mind.
+
+The structure of this module is:
+	
+	:theWholePackage.py:
+	:makeReport.py:
+	:analysis_timeseries.py:
+	:analysis_p2p.py:
+	:analysis_level0.py:
+	:downloadFromMass.py:
+
+
+Folders:
+	 
+	 :timeseries/: The tools required for the time series analysis.
+	 :p2p/: The point to point analysis tools.
+	 :bgcvaltools/: Miscellaneous tools 
+	 :data/:
+	 :emergence/:
+	 :html5/: The tools and assets required for the makeReport toolkits.
+	 :Paths/:
+	 :RemoteScripts/:
+	 
 
 	
 Paths
@@ -139,7 +197,7 @@ Coordinates dictionairies
 
 Coordinates dictionairies are tools that are built into the times series, level0 and point to point analysis toolkits.
 They are dictionairies with very specific contents that allow the analysis package to open, load and save the coordinate fields.
-
+A coordinate dictionairy is required for each model and for each dataset type to be analysed.
 
 The coordinates dictionairy includes the names of each coordinate as they are used in the netcdf file.
 The contents of the coordinates dictionairy are:
@@ -178,6 +236,8 @@ Details dictionairies
 
 Similar to the coordinates dictionairies, details dictionaries are tools that are built into the times series, level0 and point to point analysis toolkits.
 They are dictionairies with very specific contents that allow the analysis package to open, load, and interpret the data fields.
+A details dictionairy is required for each model and for each dataset type to be analysed.
+
 	
 The contents of this dictionairy is:
 	:name: The name of the field, used in plotting, saving fields and elsewhere.

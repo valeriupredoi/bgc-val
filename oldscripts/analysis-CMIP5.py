@@ -33,7 +33,7 @@ from UKESMpython import populateSlicesList, AutoVivification, folder, reducesShe
 from testsuite_p2p import testsuite_p2p
 from p2p import makePatternStatsPlots
 from p2p.patternAnalyses import InterAnnualPatterns,BGCvsPhysics,modelIntercomparisonAnnual
-from pftnames import months
+from bgcvaltools.pftnames import months
 
 
 #####

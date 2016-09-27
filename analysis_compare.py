@@ -43,7 +43,7 @@ import UKESMpython as ukp
 from timeseries import timeseriesAnalysis
 from timeseries import profileAnalysis
 from timeseries import timeseriesPlots as tsp 
-from pftnames import getLongName
+from bgcvaltools.pftnames import getLongName
 
 
 def timeseries_compare():

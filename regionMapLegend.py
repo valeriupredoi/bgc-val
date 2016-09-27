@@ -8,7 +8,7 @@ import numpy as np
 import UKESMpython as ukp
 from matplotlib import pyplot
 import cartopy.crs as ccrs
-from pftnames import getLongName
+from bgcvaltools.pftnames import getLongName
 
 
 regionList	= [#'Global', 'ignoreInlandSeas',

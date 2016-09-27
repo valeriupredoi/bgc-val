@@ -23,7 +23,7 @@
 
 from p2p import makePatternStatsPlots,makeTargets
 from UKESMpython import  folder, reducesShelves,listShelvesContents,getSlicesDict
-from pftnames import months,Ocean_names,SouthHemispheresMonths,NorthHemispheresMonths
+from bgcvaltools.pftnames import months,Ocean_names,SouthHemispheresMonths,NorthHemispheresMonths
 #####
 # This is a toolkit containing a selection of ways to make patterns plots, according to the circumstances.
 

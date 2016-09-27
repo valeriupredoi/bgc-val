@@ -31,7 +31,7 @@ from sys import argv,exit
 from UKESMpython import populateSlicesList, AutoVivification, folder, reducesShelves,mnStr
 	#,getFileList, , AutoVivToYaml,YamlToDict, slicesDict,reducesShelves
 from p2p import makePatternStatsPlots
-from pftnames import months#MaredatTypes,WOATypes,Ocean_names,OceanMonth_names,months, Seasons,Hemispheres,HemispheresMonths, OceanSeason_names,getmt
+from bgcvaltools.pftnames import months#MaredatTypes,WOATypes,Ocean_names,OceanMonth_names,months, Seasons,Hemispheres,HemispheresMonths, OceanSeason_names,getmt
 
 from testsuite_p2p import testsuite_p2p
 #####

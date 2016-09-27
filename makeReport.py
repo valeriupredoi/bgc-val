@@ -22,7 +22,7 @@
 # ledm@pml.ac.uk
 
 from UKESMpython import folder, shouldIMakeFile,round_sig
-from pftnames import getLongName
+from bgcvaltools.pftnames import getLongName
 from glob import glob
 from sys import argv
 import os 

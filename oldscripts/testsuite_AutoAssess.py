@@ -31,7 +31,7 @@ import getpass
 from UKESMpython import folder,getFileList, AutoVivification, NestedDict,AutoVivToYaml,YamlToDict
 from p2p import matchDataAndModel,makePlots,makeTargets, csvFromShelves
 
-from pftnames import MaredatTypes,WOATypes,Ocean_names,getmt
+from bgcvaltools.pftnames import MaredatTypes,WOATypes,Ocean_names,getmt
 
 ###	Potential problems?
 ###		Reliance on ORCA1 grid

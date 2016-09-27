@@ -23,7 +23,7 @@
 # ledm@pml.ac.uk
 
 import os
-from pftnames import getLongName
+from bgcvaltools.pftnames import getLongName
 
 
 def AddtoFile(filepath,linenumber,text):

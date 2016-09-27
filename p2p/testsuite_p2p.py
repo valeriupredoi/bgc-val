@@ -29,7 +29,7 @@ from calendar import month_name
 import UKESMpython as ukp
 from p2p import matchDataAndModel,makePlots,makeTargets, csvFromShelves, makePatternStatsPlots
 #from 
-from pftnames import MaredatTypes,WOATypes,Ocean_names,OceanMonth_names,months, Seasons,Hemispheres,HemispheresMonths, OceanSeason_names
+from bgcvaltools.pftnames import MaredatTypes,WOATypes,Ocean_names,OceanMonth_names,months, Seasons,Hemispheres,HemispheresMonths, OceanSeason_names
 
 ###	Potential problems?
 ###		Reliance on ORCA1 grid

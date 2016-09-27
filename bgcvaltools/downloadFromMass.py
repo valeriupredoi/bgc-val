@@ -33,7 +33,8 @@ from re import findall
 """
 This module includes a series of tools to download the UKESM model run data from MASS.
 
-When run as a script, the command is:
+When run as a script, the command is::
+
 	./downloadFromMass.py jobID
 
 This tool will only work on machines that have mass enabled.

@@ -42,7 +42,7 @@ matplotlib.use('Agg')
 from sys import argv,exit
 from multiprocessing import Pool
 
-from downloadFromMass import  downloadMass, findLastFinishedYear
+from bgcvaltools.downloadFromMass import  downloadMass, findLastFinishedYear
 from analysis_timeseries import analysis_timeseries, singleTimeSeries, singleTimeSeriesProfile
 from analysis_timeseries import level1KeysDict, timeseriesDict, physKeysDict
 from analysis_p2p import analysis_p2p, p2pDict_level2, p2pDict_physics,single_p2p

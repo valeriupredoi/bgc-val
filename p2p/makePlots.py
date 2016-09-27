@@ -43,9 +43,9 @@ from bgcvaltools.StatsDiagram import StatsDiagram
 from bgcvaltools.robust import StatsDiagram as robustStatsDiagram
 import bgcvaltools.unbiasedSymmetricMetrics as usm
 import UKESMpython as ukp 
-from pftnames import getLongName, AutoVivification, fancyUnits,CMIP5models # getmt
+from bgcvaltools.pftnames import getLongName, AutoVivification, fancyUnits,CMIP5models # getmt
 
-#from pftnames import MaredatTypes,IFREMERTypes,WOATypes,GEOTRACESTypes
+#from bgcvaltools.pftnames import MaredatTypes,IFREMERTypes,WOATypes,GEOTRACESTypes
 
 #import seaborn as sb
     
