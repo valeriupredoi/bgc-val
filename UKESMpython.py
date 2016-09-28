@@ -20,7 +20,13 @@
 # Email:
 # ledm@pml.ac.uk
 #
+"""
+.. module:: UKESMpython
+   :platform: Unix
+   :synopsis: A swiss army knife of tools for BGCval.
+.. moduleauthor:: Lee de Mora <ledm@pml.ac.uk>
 
+"""
 from sys import argv
 from string import join
 from netCDF4 import Dataset

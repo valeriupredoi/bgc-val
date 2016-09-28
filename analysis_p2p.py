@@ -22,6 +22,14 @@
 # Email:
 # ledm@pml.ac.uk
 #
+"""
+.. module:: analysis_p2p
+   :platform: Unix
+   :synopsis: A script to produce point to point analysis of model vs data.
+.. moduleauthor:: Lee de Mora <ledm@pml.ac.uk>
+
+"""
+
 
 #Standard Python modules:
 from sys import argv,exit

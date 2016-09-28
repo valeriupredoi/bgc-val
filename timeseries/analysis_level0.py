@@ -22,7 +22,13 @@
 # Email:
 # ledm@pml.ac.uk
 
+"""
+.. module:: analysis_level0
+   :platform: Unix
+   :synopsis: A tool to produce a value for the html5 level 0 table.
+.. moduleauthor:: Lee de Mora <ledm@pml.ac.uk>
 
+"""
 
 
 from paths import shelvedir

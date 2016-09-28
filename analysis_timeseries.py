@@ -23,7 +23,7 @@
 # ledm@pml.ac.uk
 #
 """
-.. module:: analysis_timeseires
+.. module:: analysis_timeseries
    :platform: Unix
    :synopsis: A script to produce analysis for time series.
 

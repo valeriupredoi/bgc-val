@@ -110,29 +110,29 @@ BGC-Val Structure
 ======================
 
 The rest of the cover page shows how to set up the analysis package. 
-
 The biogeochemical validation toolkit is build with flexibility in mind.
 
-The top level structure of this module is:
+The executable top level structure of this module includes the scripts:
 	
-	:theWholePackage.py:
-	:makeReport.py:
-	:analysis_timeseries.py:
-	:analysis_p2p.py:
-	:downloadFromMass.py:
+	:theWholePackage.py: This script runs 
+	:makeReport.py: This script creates an html report.
+	:analysis_timeseries.py: This script runs the time series analysis.
+	:analysis_p2p.py: This script runs the point to point analysis.
+	:downloadFromMass.py: This script is used to download UKESM files from mass.
+	
+These files are set up to run the validation is run for the UK Earth System Model in the eORCA1 grid.
 
 
 Folders:
 	 
 	 :timeseries/: The tools required for the time series analysis.
 	 :p2p/: The point to point analysis tools.
-	 :bgcvaltools/: Miscellaneous tools for making
-	 :data/: 
-	 :emergence/:
+	 :bgcvaltools/: Miscellaneous tools used around the BGC-val toolkit.
+	 :data/: These are data, masks, and coastline files required for some models. They do not include any observational data.
 	 :html5/: The tools and assets required for the makeReport toolkits.
-	 :Paths/:
-	 :RemoteScripts/:
-	 
+	 :Paths/: A set of paths that is used by many of the analyses to locate various datasets.
+	 :RemoteScripts/: A set of scripts that execute the toolkit on jasmin from PML.
+ 
 
 	
 Paths
@@ -167,7 +167,7 @@ There are some standard definitions used accross the software:
 	:region: The regions of the global ocean which to perform the analysis. These are usually assigned as a list of regions. 'Global' indicates the entire earth, but many other regions are available. Regions are defined in the UKESMPython.py file in the function makeMask().
 	:layer:  The depth layer used in the analysis.
 	:suite:  The suite is a set of analysises that 
-	:debug: A boolean flag for printing extra debugging statements.
+	:debug: A boolean flag for printing extra run-time debugging statements.
 	
 These definitions are laregly applicable to marine models. 
 
@@ -257,6 +257,14 @@ The 'name' and 'units' fields are self evident in this exmaple.
 The 'vars' are the chlorophyll concentrations of two plankton functional types in MEDUSA.
 The sum of these two fields is the total chlorophyll concentration.
 The 'convert' function is the sums function in UKESMPython, which produces the sum of all the fields  in the 'vars' item.
+In this case, the sums function is::
+
+	def sums(nc,keys):		
+		a = nc.variables[keys[0]][:]
+		for k in keys[1:]:a += nc.variables[k][:]
+		return a 
+
+
 
 UKESMpython holds many other useful functions to fulfil this role, such as:
 	:NoChange: Loads keys[0] from the netcdf.

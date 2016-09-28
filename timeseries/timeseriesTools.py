@@ -30,7 +30,12 @@ import os
 import UKESMpython as ukp
 from convertToOneDNC import convertToOneDNC
 
-
+"""
+.. module:: timeseriesTools
+   :platform: Unix
+   :synopsis: A swiss army knife set of tools for the time series analysis.
+.. moduleauthor:: Lee de Mora <ledm@pml.ac.uk>
+"""
 
 
 

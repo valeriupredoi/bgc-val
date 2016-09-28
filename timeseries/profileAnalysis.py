@@ -21,6 +21,13 @@
 #
 # Email:
 # ledm@pml.ac.uk
+"""
+.. module:: profileAnalysis
+   :platform: Unix
+   :synopsis: A tool for running a depth-profile time series analysis.
+.. moduleauthor:: Lee de Mora <ledm@pml.ac.uk>
+"""
+
 
 import numpy as np
 from shelve import open as shOpen

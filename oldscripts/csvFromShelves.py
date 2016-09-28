@@ -21,7 +21,12 @@
 # Email:
 # ledm@pml.ac.uk
 #
-
+"""
+.. module:: csvFromShelves
+   :platform: Unix
+   :synopsis: Creates a CSV file from a shelve.
+.. moduleauthor:: Lee de Mora <ledm@pml.ac.uk>
+"""
 
 import numpy as np
 from shelve import open as shOpen

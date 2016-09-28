@@ -27,11 +27,8 @@
 """
 .. module:: theWholePackage
    :platform: Unix
-   :synopsis: A script 
-
+   :synopsis: A script the run the entire suite of analyses and produce an html report.
 .. moduleauthor:: Lee de Mora <ledm@pml.ac.uk>
-
-
 """
 
 

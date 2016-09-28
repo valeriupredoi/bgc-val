@@ -21,6 +21,13 @@
 #
 # Email:
 # ledm@pml.ac.uk
+#
+"""
+.. module:: timeseriesPlots
+   :platform: Unix
+   :synopsis: A swiss army knife set of plotting tools for the time series analysis.
+.. moduleauthor:: Lee de Mora <ledm@pml.ac.uk>
+"""
 
 from matplotlib import pyplot, gridspec
 

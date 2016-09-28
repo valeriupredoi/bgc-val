@@ -22,6 +22,13 @@
 # Email:
 # ledm@pml.ac.uk
 
+"""
+.. module:: timeseriesAnalysis
+   :platform: Unix
+   :synopsis: A tool for running a time series analysis.
+.. moduleauthor:: Lee de Mora <ledm@pml.ac.uk>
+"""
+
 import numpy as np
 from shelve import open as shOpen
 from netCDF4 import Dataset,num2date

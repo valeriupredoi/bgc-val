@@ -22,7 +22,13 @@
 # Email:
 # ledm@pml.ac.uk
 #
+"""
+.. module:: analysis_compare
+   :platform: Unix
+   :synopsis: A script to produce an intercomparison of multiple runs the time series analyses.
+.. moduleauthor:: Lee de Mora <ledm@pml.ac.uk>
 
+"""
 
 #####	
 # Load Standard Python modules:
@@ -46,15 +52,16 @@ from timeseries import timeseriesPlots as tsp
 from bgcvaltools.pftnames import getLongName
 
 
-def timeseries_compare():
+def timeseries_compare(colours):
 	### strategy here is a simple wrapper.
 	# It's a little cheat-y, as I'm copying straight from analysis_timeseries.py
+	
 	
 	
 	#jobs = ['u-af123', 'u-af139','u-af420','u-af421', ]
 
 	#colours = {'u-af930':'red', 'u-af921':'orange',}#'u-af748':'darkblue','u-af915':'blue','u-af914':'purple', }#'u-af586':'green','u-af730':'pink','u-ae748':'black'}
-        colours = {'u-af981':'red', 'u-af982':'orange','u-af983':'blue','u-af984':'purple', }#'u-af586':'green','u-af730':'pink','u-ae748':'black'}
+        #'u-af586':'green','u-af730':'pink','u-ae748':'black'}
 	
 	jobs = sorted(colours.keys())#['u-af725', 'u-af728','u-af420','u-af421', 'u-af586','u-af730','u-ae748']	
 	annual = True
@@ -842,5 +849,6 @@ def timeseries_compare():
 			)
 	
 if __name__=="__main__":
-	timeseries_compare()
+	colours = {'u-af981':'red', 'u-af982':'orange','u-af983':'blue','u-af984':'purple', }
+	timeseries_compare(colours)
 

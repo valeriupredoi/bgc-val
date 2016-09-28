@@ -20,6 +20,13 @@
 #
 # Email:
 # ledm@pml.ac.uk
+"""
+.. module:: makeReport
+   :platform: Unix
+   :synopsis: A script to produce an html5 document summarising a jobs performance.
+.. moduleauthor:: Lee de Mora <ledm@pml.ac.uk>
+
+"""
 
 from UKESMpython import folder, shouldIMakeFile,round_sig
 from bgcvaltools.pftnames import getLongName
