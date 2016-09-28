@@ -21,6 +21,13 @@
 #
 # Email:
 # ledm@pml.ac.uk
+"""
+.. module:: downloadFromMass
+   :platform: Unix
+   :synopsis: A set of tools to download the UKESM model run data from MASS.
+.. moduleauthor:: Lee de Mora <ledm@pml.ac.uk>
+
+"""
 
 from sys import argv 
 import subprocess

@@ -114,13 +114,14 @@ The biogeochemical validation toolkit is build with flexibility in mind.
 
 The executable top level structure of this module includes the scripts:
 	
-	:theWholePackage.py: This script runs 
+	:theWholePackage.py: This script runs a specific
 	:makeReport.py: This script creates an html report.
 	:analysis_timeseries.py: This script runs the time series analysis.
 	:analysis_p2p.py: This script runs the point to point analysis.
 	:downloadFromMass.py: This script is used to download UKESM files from mass.
 	
 These files are set up to run the validation is run for the UK Earth System Model in the eORCA1 grid.
+They can be used as templates for running other models. 
 
 
 Folders:
@@ -132,7 +133,7 @@ Folders:
 	 :html5/: The tools and assets required for the makeReport toolkits.
 	 :Paths/: A set of paths that is used by many of the analyses to locate various datasets.
 	 :RemoteScripts/: A set of scripts that execute the toolkit on jasmin from PML.
- 
+	 :LISENCES/: The software lisence(s).
 
 	
 Paths
@@ -171,8 +172,6 @@ There are some standard definitions used accross the software:
 	
 These definitions are laregly applicable to marine models. 
 
-
-There are also some standardised tools for loading data, and for manipulating 
 
 Autovivification
 -----------------

@@ -20,7 +20,13 @@
 # Email:
 # modm@pml.ac.uk
 #
+"""
+.. module:: robust 
+   :platform: Unix
+   :synopsis: Tool to make a robust statistics plots.
+.. moduleauthor:: Momme Butenschon <momm@pml.ac.uk>
 
+"""
 from numpy import sqrt,arange,sin,cos,pi,abs,arccos,array,median,max
 from scipy.stats import spearmanr
 from matplotlib.pyplot import plot,axis,scatter,xlabel,ylabel,clabel,colorbar,text,subplot,tick_params,xticks,yticks,axhline,axvline

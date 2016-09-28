@@ -20,6 +20,13 @@
 # ledm@pml.ac.uk
 #
 
+"""
+.. module:: summaryTargets
+   :platform: Unix
+   :synopsis: Produces some straightforward summary metrics, using a list of shelves.
+.. moduleauthor:: Lee de Mora <ledm@pml.ac.uk>
+
+"""
 
 
 import UKESMpython as ukp

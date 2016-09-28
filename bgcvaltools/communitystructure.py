@@ -21,8 +21,12 @@
 # ledm@pml.ac.uk
 #
 
-"""	Toolkit for calculating the communicty structure.
-	It should work for single values and for array.	
+"""
+.. module:: UKESMpython
+   :platform: Unix
+   :synopsis: Toolkit for calculating the communicty structure.
+.. moduleauthor:: Lee de Mora <ledm@pml.ac.uk>
+
 """
 
 from numpy import zeros,logspace,log10,exp,min,max,arange,clip

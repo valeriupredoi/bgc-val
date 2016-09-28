@@ -21,7 +21,13 @@
 # Email:
 # ledm@pml.ac.uk
 #
+"""
+.. module:: p2pPlots
+   :platform: Unix
+   :synopsis: A tool to make plots for point to point analysis.
+.. moduleauthor:: Lee de Mora <ledm@pml.ac.uk>
 
+"""
 	
 	
 from netCDF4 import Dataset, num2date

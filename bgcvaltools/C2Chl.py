@@ -20,6 +20,13 @@
 # Email:
 # momm@pml.ac.uk
 #
+"""
+.. module:: C2Chl
+   :platform: Unix
+   :synopsis: A class for relationships of carbon to chlorophyll.
+.. moduleauthor:: Momme Butenschon <momm@pml.ac.uk>
+
+"""
 
 class C2Chl:
     """class for relationships of carbon to chlorophyll following

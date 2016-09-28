@@ -19,7 +19,13 @@
 # Email:
 # ledm@pml.ac.uk
 #
+"""
+.. module:: testsuite_p2p
+   :platform: Unix
+   :synopsis: The tool that does the legwork for the point to point analysis.
+.. moduleauthor:: Lee de Mora <ledm@pml.ac.uk>
 
+"""
 #Standard Python modules:
 from sys import argv,exit
 from os.path import exists

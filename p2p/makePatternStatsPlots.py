@@ -21,7 +21,13 @@
 # Email:
 # ledm@pml.ac.uk
 #
+"""
+.. module:: makePatternStatsPlots
+   :platform: Unix
+   :synopsis: A tool to make pattern statistics plots.
+.. moduleauthor:: Lee de Mora <ledm@pml.ac.uk>
 
+"""
 
 from matplotlib import pyplot
 from glob import glob

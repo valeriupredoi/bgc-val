@@ -21,6 +21,14 @@
 # Email:
 # ledm@pml.ac.uk
 #
+"""
+.. module:: matchDataAndModel
+   :platform: Unix
+   :synopsis: A tool to make matched 1D model-data arrays for point to point analysis.
+.. moduleauthor:: Lee de Mora <ledm@pml.ac.uk>
+
+"""
+
 
 from sys import argv
 from os.path import exists,split, getmtime, basename

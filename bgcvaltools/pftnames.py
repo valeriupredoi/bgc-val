@@ -20,6 +20,13 @@
 # Email:
 # ledm@pml.ac.uk
 #
+"""
+.. module:: pftnames
+   :platform: Unix
+   :synopsis: A list of names used for pretty plots.
+.. moduleauthor:: Lee de Mora <ledm@pml.ac.uk>
+
+"""
 
 from calendar import month_name
 from UKESMpython import AutoVivification,AutoVivToYaml,folder,YamlToDict
@@ -59,7 +66,7 @@ BGCmodels 	= ['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankTOM6','PlankTOM10'
 
 Seasons		= ['JFM','AMJ','JAS','OND'] 
 
-Hemispheres	=['NorthHemisphere','SouthHemisphere',]
+Hemispheres	= ['NorthHemisphere','SouthHemisphere',]
 
 months = [m for m in month_name if m]	# Because months starts at 1, and 0 is empty.
 OceanMonth_names = [o+m for o in Ocean_names for m in months]

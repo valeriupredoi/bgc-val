@@ -20,6 +20,13 @@
 # Email:
 # ledm@pml.ac.uk
 #
+"""
+.. module:: comstrucFit
+   :platform: Unix
+   :synopsis: This code produces a communistruture fit to data, using least squares regression.
+.. moduleauthor:: Lee de Mora <ledm@pml.ac.uk>
+
+"""
 
 from scipy.optimize import curve_fit
 from numpy import ma,exp, arange, logspace,isnan, isinf

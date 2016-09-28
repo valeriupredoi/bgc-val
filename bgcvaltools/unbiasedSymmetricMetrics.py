@@ -1,5 +1,15 @@
 import numpy as _np_
 
+
+"""
+.. module:: unbiasedSymmetricMetrics
+   :platform: Unix
+   :synopsis: Tool to calculate unbiased symmetric metrics.
+.. moduleauthor:: Lee de Mora <ledm@pml.ac.uk>
+
+"""
+
+
 # library of unbiased symmetrics metrics.
 #	Based on:"New unbiased symmetric metrics for evaluation of air quality models"
 #	S. Yu et al.,Atmos. Sci. Let. 7: 26-34 (2006) DOI: 10.1002/asl.125 
