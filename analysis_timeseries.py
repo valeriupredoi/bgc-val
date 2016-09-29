@@ -163,8 +163,9 @@ def analysis_timeseries(jobID = "u-ab671",
                         analysisKeys.append('PP_OSU')                   # OSU Integrated primpary production                    
                         analysisKeys.append('LocalExportRatio')         # Export ratio (no data)
                         analysisKeys.append('GlobalExportRatio')        # Export ratio (no data)
-                        analysisKeys.append('TotalOMZVolume')           # Total OMZ Volume
-                        analysisKeys.append('OMZThickness')             # Total OMZ Volume
+                        analysisKeys.append('TotalOMZVolume')           # Total Oxygen Minimum zone Volume
+                        analysisKeys.append('OMZThickness')             # Oxygen Minimum Zone Thickness
+                        #analysisKeys.append('OMZMeanDepth')             # Oxygen Minimum Zone mean depth                   
                         analysisKeys.append('Iron')                     # Iron
                         #####   
                         # Physics switches:
@@ -188,13 +189,13 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('TotalOMZVolume')		# work in progress
 			#analysisKeys.append('TotalOMZVolume')		# work in progress
 			#analysisKeys.append('TotalOMZVolume50')	# work in progress			
-			#analysisKeys.append('OMZThickness')		# work in progress						
+			analysisKeys.append('OMZMeanDepth')		# work in progress						
 			#analysisKeys.append('DIC')			# work in progress									
 			#analysisKeys.append('DrakePassageTransport')	# DrakePassageTransport				
 			#analysisKeys.append('TotalIceArea')		# work in progress	
 														
 			#analysisKeys.append('O2')			# work in progress
-			analysisKeys.append('Iron')			# work in progress
+			#analysisKeys.append('Iron')			# work in progress
                         #analysisKeys.append('N')                        # WOA Nitrate				
                         #analysisKeys.append('IntPP_OSU')               # OSU Integrated primpary production    
                         #####   
@@ -620,8 +621,9 @@ def analysis_timeseries(jobID = "u-ab671",
 
 
  
-	if 'OMZThickness' in analysisKeys:
-		name = 'OMZThickness'
+	if 'OMZThickness' in analysisKeys or 'OMZMeanDepth' in analysisKeys or 'OMZThickness50' in analysisKeys:
+	    for name in ['OMZThickness','OMZMeanDepth','OMZThickness50']:
+	        if name not in analysisKeys: continue	
 		
 		if annual:
 			av[name]['modelFiles']  	= sorted(glob(paths.ModelFolder_pref+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
@@ -631,11 +633,16 @@ def analysis_timeseries(jobID = "u-ab671",
 			assert 0
 			
 		nc = Dataset(paths.orcaGridfn,'r')
-		thickness   = nc.variables['e3t' ][:]
+		if name in ['OMZThickness', 'OMZThickness50']:		
+			thickness   	= nc.variables['e3t' ][:]
+		elif name in ['OMZMeanDepth',]:		
+			depths   	= nc.variables['gdepw' ][:]		
 		nc.close()			
 
-		if name == 'OMZThickness':	omzthreshold = 20.
-		if name == 'OMZThickness50':	omzthreshold = 50.		
+		#if name == 'OMZThickness':	
+		omzthreshold = 20.
+		if name == 'OMZThickness50':	omzthreshold = 50.
+				
 		def modelOMZthickness(nc,keys):
 			o2 = nc.variables[keys[0]][:].squeeze()
 			totalthick = np.ma.masked_where((o2>omzthreshold)+o2[0].mask,thickness).sum(0).data
@@ -643,7 +650,15 @@ def analysis_timeseries(jobID = "u-ab671",
 			
 			return np.ma.masked_where(totalthick==0., totalthick)
 			#return np.ma.masked_where((arr>omzthreshold) + (arr <0.) + arr.mask,thickness).sum(0)
-	
+
+		def modelMeanOMZdepth(nc,keys):
+			o2 = nc.variables[keys[0]][:].squeeze()
+			meandepth = np.ma.masked_where((o2>omzthreshold)+o2[0].mask,depths).mean(0).data
+			if meandepth.max() in [0.,0]: return np.array([0.,])
+			
+			return np.ma.masked_where(meandepth==0., meandepth)
+			#return np.ma.masked_where((arr>omzthreshold) + (arr <0.) + arr.mask,thickness).sum(0)
+				
 
 			
 		def woaOMZthickness(nc,keys):
@@ -660,15 +675,32 @@ def analysis_timeseries(jobID = "u-ab671",
 			
 			if totalthick.max() in [0.,0]: return np.array([0.,])
 			return np.ma.masked_where(totalthick==0., totalthick)
-						
-			#np.ma.masked_where(o2[0].mask, totalthick)							
-			#return np.ma.masked_where(arr.mask + (arr >omzthreshold)+(arr <0.),pthick).sum(0)
+
+		def woaMeanOMZdepth(nc,keys):
+			o2 = nc.variables[keys[0]][:].squeeze() *44.661
+			pdepths = np.zeros_like(o2) 
+			lons = nc.variables['lon'][:]
+			lats = nc.variables['lat'][:]			
+			wdepths = np.abs(nc.variables['depth'][:])
+			
+			for y,lat in enumerate(lats):
+			    for x,lon in enumerate(lons):			  
+				pdepths[:,y,x] = wdepths
+			wmeanDepth = np.ma.masked_where((o2>omzthreshold)+o2[0].mask,pdepths).mean(0).data
+			
+			if wmeanDepth.max() in [0.,0]: return np.array([0.,])
+			return np.ma.masked_where(wmeanDepth==0., wmeanDepth)
+									
 				
 		av[name]['modelcoords'] 	= medusaCoords 	
 		av[name]['datacoords'] 		= woaCoords
 	
-		av[name]['modeldetails'] 	= {'name': name, 'vars':['OXY',], 'convert': modelOMZthickness,'units':'m'}
-		av[name]['datadetails']  	= {'name': name, 'vars':['o_an',], 'convert': woaOMZthickness,'units':'m'}
+		if name in ['OMZThickness', 'OMZThickness50']:
+			av[name]['modeldetails'] 	= {'name': name, 'vars':['OXY',], 'convert': modelOMZthickness,'units':'m'}
+			av[name]['datadetails']  	= {'name': name, 'vars':['o_an',], 'convert': woaOMZthickness,'units':'m'}
+		elif name in ['OMZMeanDepth',]:
+			av[name]['modeldetails'] 	= {'name': name, 'vars':['OXY',], 'convert': modelMeanOMZdepth,'units':'m'}
+			av[name]['datadetails']  	= {'name': name, 'vars':['o_an',], 'convert': woaMeanOMZdepth,'units':'m'}		
 	
 		av[name]['layers'] 		= ['Surface',] 
 		av[name]['regions'] 		= regionList

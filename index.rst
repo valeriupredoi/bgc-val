@@ -175,7 +175,7 @@ These definitions are laregly applicable to marine models.
 
 Autovivification
 -----------------
-An Autovivification is an object, that behaves like a dictionairy. 
+An Autovivification is an object that behaves like a dictionairy in a dictionairy. 
 It simifies the process of creating a nested dictionairy. ie::
 
 	from UKESMPython import Autovivification
@@ -188,6 +188,9 @@ is similar to::
 	av['three'] = {}
 	av['three']['level'] = {}
 	av['three']['level']['dictionairy'] = 'a string'	
+
+Except the the Autovivification object does not require the user to specific that the
+contents of the dictionary is another dictionairy. 
 
 
 Coordinates dictionairies
