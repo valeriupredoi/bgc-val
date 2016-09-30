@@ -44,7 +44,11 @@ if gethostname().find('ceda.ac.uk')>-1:
 	#####
 	# Post processed Data location
 	shelvedir 	= ukp.folder("/group_workspaces/jasmin2/ukesm/BGC_data/"+getuser()+"/shelves/")
-		
+	
+	#####
+	# Post processed p2p Data location		
+	p2p_ppDir = ukp.folder("/group_workspaces/jasmin2/ukesm/BGC_data/ukesm_postProcessed/")
+	
 	######
 	# Output location for plots.
 	imagedir	 = ukp.folder('images/')
