@@ -20,20 +20,31 @@
 #
 # Email:
 # ledm@pml.ac.uk
+"""
+.. module:: makeReport
+   :platform: Unix
+   :synopsis: A script to produce an html5 document summarising a jobs performance.
+.. moduleauthor:: Lee de Mora <ledm@pml.ac.uk>
+
+"""
 
 from UKESMpython import folder, shouldIMakeFile,round_sig
-from pftnames import getLongName
+try:
+	from bgcvaltools.pftnames import getLongName
+except: from pftnames import getLongName
 from glob import glob
 from sys import argv
 import os 
 import shutil
 from html5 import html5Tools, htmltables
-from analysis_level0 import analysis_level0,analysis_level0_insitu
+try:
+        from bgcvaltools.pftnames import getLongName
+	from timeseries.analysis_level0 import analysis_level0,analysis_level0_insitu
+except: 
+	# old file structure
+	from pftnames import getLongName
+	from analysis_level0 import analysis_level0,analysis_level0_insitu
 
-#####
-# makeReport.py:
-# Usage:
-#	provide a job ID, a year to look at, and a folder location.
 
 
 def copytree(src, dst, symlinks=False, ignore=None):
@@ -438,6 +449,7 @@ def html5Maker(
 			  'Iron',
 			  'IntegratedPrimaryProduction_OSU',
                           'OMZThickness',
+                          'OMZMeanDepth',
                           'Temperature',
                           'Salinity',
                           #'TotalIceArea'
