@@ -957,7 +957,10 @@ def timeseries_compare(colours,physics=True,bio=False,debug=True,):
 		arrD	= {}
 		
 		for jobID in jobs:
-			if name in ['Iron','Nitrate','Silicate','Oxygen','Temperature','Salinity', 'Alkalinity','DIC',]:
+			if name in ['Iron','Nitrate','Silicate',
+					'Oxygen','Temperature','Salinity',
+					 'Alkalinity','DIC',
+					  'OMZThickness', 'OMZMeanDepth',  ]:
 				mdata = modeldataD[(jobID,name )][('Global', 'Surface', 'mean')]
 				title = ' '.join(['Global', 'Surface', 'Mean',  getLongName(name)])
 			else:
