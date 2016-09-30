@@ -46,65 +46,56 @@ from timeseries import timeseriesPlots as tsp
 from pftnames import getLongName
 
 
-def timeseries_compare():
+def timeseries_compare(colours,physics=True,bio=False):
 	### strategy here is a simple wrapper.
 	# It's a little cheat-y, as I'm copying straight from analysis_timeseries.py
 	
 	
 	#jobs = ['u-af123', 'u-af139','u-af420','u-af421', ]
 
-	#colours = {'u-af930':'red', 'u-af921':'orange',}#'u-af748':'darkblue','u-af915':'blue','u-af914':'purple', }#'u-af586':'green','u-af730':'pink','u-ae748':'black'}
-        colours = {'u-af981':'red', 'u-af982':'orange','u-af983':'blue','u-af984':'purple', }#'u-af586':'green','u-af730':'pink','u-ae748':'black'}
-	
+        #colours = {'u-af981':'red', 'u-af982':'orange','u-ae748':'darkblue','u-af983':'blue','u-af984':'purple', }#'u-af586':'green','u-af730':'pink','u-ae748':'black'}
+
+	#colours = {'u-ae748':'darkblue','u-af983':'blue', }	
 	jobs = sorted(colours.keys())#['u-af725', 'u-af728','u-af420','u-af421', 'u-af586','u-af730','u-ae748']	
+
+        imageFolder = 'images/TimeseriesCompare/'
+        if len(jobs)==1:   imageFolder+= jobs[0]
+        elif len(jobs)==2: imageFolder+= jobs[0]+'_and_'+jobs[1]
+        elif len(jobs)==5: imageFolder+= 'AllFiveRuns'
+        else: 		   imageFolder+= 'All'+str(len(jobs))+'Runs'
+
+
+
+
 	annual = True
 	strictFileCheck = False
 
 	analysisKeys = []
-	#                        analysisKeys.append('N')                        # WOA Nitrate
-	#                        analysisKeys.append('Si')                       # WOA Siliate
-	#                        analysisKeys.append('O2')                       # WOA Oxygen
-	#                        analysisKeys.append('Alk')                      # Glodap Alkalinity
-	#                        analysisKeys.append('DIC')                      # Globap tCO2
-	#                        analysisKeys.append('AirSeaFlux')               # work in progress
 
-	#                        analysisKeys.append('PP_OSU')                   # OSU Integrated primpary production                    
-	#                        analysisKeys.append('LocalExportRatio')         # Export ratio (no data)
-	#                        analysisKeys.append('GlobalExportRatio')        # Export ratio (no data)
-	#                        analysisKeys.append('TotalOMZVolume')           # Total OMZ Volume
-	#                        analysisKeys.append('OMZThickness')             # Total OMZ Volume
-	#                        analysisKeys.append('Iron')                     # Iron
+	if physics:
+		analysisKeys.append('DrakePassageTransport')	# DrakePassageTransport		
+	        analysisKeys.append('TotalIceArea')             # TotalIceArea  
+	        analysisKeys.append('NorthernTotalIceArea')     # North TotalIceArea
+	        analysisKeys.append('SouthernTotalIceArea')     # South TotalIceArea
+	        analysisKeys.append('TotalIceExtent')           # work in progress      
+        	analysisKeys.append('NorthernTotalIceExtent')   # work in progress      
+	        analysisKeys.append('SouthernTotalIceExtent')   # work in progress      
 
-		                #####   
-		                # Physics switches:
-	#                        analysisKeys.append('T')                        # WOA Temperature
-	#                        analysisKeys.append('S')                        # WOA Salinity
-	#			analysisKeys.append('MLD')			# iFERMER Mixed Layer Depth - work in prgress                        
-	
+        	analysisKeys.append('AMOC_26N')
+	        analysisKeys.append('AMOC_32S')
+        	analysisKeys.append('T')                        # WOA Temperature
+	        analysisKeys.append('S')                        # WOA Salinity    
+	if bio:
+		analysisKeys.append('TotalAirSeaFlux')          # work in progress              
+		analysisKeys.append('IntPP_OSU')                # OSU Integrated primpary production    
+		analysisKeys.append('GlobalExportRatio')
 
-
-	analysisKeys.append('DrakePassageTransport')	# DrakePassageTransport		
-	analysisKeys.append('TotalAirSeaFlux')          # work in progress              
-	analysisKeys.append('IntPP_OSU')                # OSU Integrated primpary production    
-	analysisKeys.append('GlobalExportRatio')
-	analysisKeys.append('TotalIceArea')		# TotalIceArea	
-	analysisKeys.append('NorthernTotalIceArea')	# North TotalIceArea
-	analysisKeys.append('SouthernTotalIceArea')	# South TotalIceArea
-	analysisKeys.append('TotalIceExtent')		# work in progress	
-	analysisKeys.append('NorthernTotalIceExtent')	# work in progress	
-	analysisKeys.append('SouthernTotalIceExtent')	# work in progress	
-				
-	analysisKeys.append('AMOC_26N')
-	analysisKeys.append('AMOC_32S')
-	analysisKeys.append('T')                        # WOA Temperature
-	analysisKeys.append('S')                        # WOA Salinity			
-
-	analysisKeys.append('N')                        # WOA Nitrate
-	analysisKeys.append('Si')                       # WOA Siliate
-	analysisKeys.append('O2')                       # WOA Oxygen
-	analysisKeys.append('Iron')
-	analysisKeys.append('Alk')	
-	analysisKeys.append('DIC')
+		analysisKeys.append('N')                        # WOA Nitrate
+		analysisKeys.append('Si')                       # WOA Siliate
+		analysisKeys.append('O2')                       # WOA Oxygen
+		analysisKeys.append('Iron')
+		analysisKeys.append('Alk')	
+		analysisKeys.append('DIC')
 	
 	layerList 	= ['Surface',]
 	metricList 	= ['mean',]
@@ -800,8 +791,6 @@ def timeseries_compare():
 	
 	#####
 	# Data now loaded, making plots next:
-	
-	#print modeldataD.keys()
 	for k in modeldataD.keys():
 		print "Model Data D:",k
 	
@@ -827,14 +816,14 @@ def timeseries_compare():
 				 'u-ae742','u-af139','u-af578', 'u-af728']:
 				arrD[j] = np.ma.array(arrD[j]) * 5.09369e-7 
 		
-		for ts in ['Together','Separate']:
+		for ts in ['Together',]:#'Separate']:
 		    for ls in ['Both','movingaverage',]:#'','Both',]:			
 			tsp.multitimeseries(
 				timesD, 		# model times (in floats)
 				arrD,			# model time series
 				data 	= -999,		# in situ data distribution
 				title 	= title,
-				filename=ukp.folder('images/TimeseriesCompare/')+name+'_'+ts+'_'+ls+'.png',
+				filename=ukp.folder(imageFolder)+name+'_'+ts+'_'+ls+'.png',
 				units = '',
 				plotStyle 	= ts,
 				lineStyle	= ls,
@@ -842,5 +831,17 @@ def timeseries_compare():
 			)
 	
 
-timeseries_compare()
+if __name__=="__main__":
+	#colours = {'u-af981':'red', 'u-af982':'orange','u-af983':'blue','u-af984':'purple', }
+	#timeseries_compare(colours)
+
+        colours = {'u-af981':'red', 'u-af982':'orange','u-ae748':'darkblue','u-af983':'blue','u-af984':'purple', }
+        timeseries_compare(colours, physics=True,bio=False)
+
+        colours = {'u-af981':'red', 'u-af982':'orange', }
+        timeseries_compare(colours, physics=False,bio=True)
+
+
+        colours = {'u-ae748':'darkblue','u-af983':'blue', }    
+        timeseries_compare(colours, physics=True,bio=False)
 
