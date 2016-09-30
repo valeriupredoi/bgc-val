@@ -1002,14 +1002,21 @@ def timeseries_compare(colours,physics=True,bio=False,debug=True,):
 	
 	####
 	# Oxygen at Depth:
+  	regionList	= [
+  			'Global', 'ignoreInlandSeas',
+	  		'SouthernOcean','ArcticOcean',
+			'Equator10', 'Remainder',
+  			'NorthernSubpolarAtlantic','NorthernSubpolarPacific',
+  			]	
 	for name in ['Oxygen',]:
+	  for region in regionList:
 	    for layer in ['Surface','500m','1000m']:
 		timesD  = {}
 		arrD	= {}
 		
 		for jobID in jobs:
-			mdata = modeldataD[(jobID,name )][('Global', layer, 'mean')]
-			title = ' '.join(['Global', layer, 'Mean',  getLongName(name)])
+			mdata = modeldataD[(jobID,name )][(region, layer, 'mean')]
+			title = ' '.join([region, layer, 'Mean',  getLongName(name)])
 	
 			timesD[jobID] 	= sorted(mdata.keys())
 			arrD[jobID]	= [mdata[t] for t in timesD[jobID]]
@@ -1021,7 +1028,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=True,):
 				arrD,			# model time series
 				data 	= -999,		# in situ data distribution
 				title 	= title,
-				filename=ukp.folder(imageFolder)+'_'.join([name,layer,ts,ls+'.png']),
+				filename=ukp.folder(imageFolder)+'_'.join([name,region,layer,ts,ls+'.png']),
 				units = '',
 				plotStyle 	= ts,
 				lineStyle	= ls,
