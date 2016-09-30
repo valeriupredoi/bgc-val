@@ -1021,7 +1021,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=True,):
 				arrD,			# model time series
 				data 	= -999,		# in situ data distribution
 				title 	= title,
-				filename=ukp.folder(imageFolder)+name+'_'layer+'_'+ts+'_'+ls+'.png',
+				filename=ukp.folder(imageFolder)+'_'.join([name,layer,ts,ls+'.png'])
 				units = '',
 				plotStyle 	= ts,
 				lineStyle	= ls,
