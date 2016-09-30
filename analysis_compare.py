@@ -955,6 +955,9 @@ def timeseries_compare(colours,physics=True,bio=False,debug=True,):
 	for k in modeldataD.keys():
 		print "Model Data D:",k
 	
+	####
+	# Standard surface:
+	
 	for name in av.keys():
 		timesD  = {}
 		arrD	= {}
@@ -997,6 +1000,35 @@ def timeseries_compare(colours,physics=True,bio=False,debug=True,):
 				colours		= colours,
 			)
 	
+	####
+	# Oxygen at Depth:
+	for name in ['Oxygen',]:
+	    for layer in ['Surface','500m','1000m']:
+		timesD  = {}
+		arrD	= {}
+		
+		for jobID in jobs:
+			mdata = modeldataD[(jobID,name )][('Global', layer, 'mean')]
+			title = ' '.join(['Global', layer, 'Mean',  getLongName(name)])
+	
+			timesD[jobID] 	= sorted(mdata.keys())
+			arrD[jobID]	= [mdata[t] for t in timesD[jobID]]
+		
+		for ts in ['Together',]:#'Separate']:
+		    for ls in ['Both','movingaverage',]:#'','Both',]:			
+			tsp.multitimeseries(
+				timesD, 		# model times (in floats)
+				arrD,			# model time series
+				data 	= -999,		# in situ data distribution
+				title 	= title,
+				filename=ukp.folder(imageFolder)+name+'_'layer+'_'+ts+'_'+ls+'.png',
+				units = '',
+				plotStyle 	= ts,
+				lineStyle	= ls,
+				colours		= colours,
+			)
+	
+
 
 if __name__=="__main__":
 	#colours = {'u-af981':'red', 'u-af982':'orange','u-af983':'blue','u-af984':'purple', }
