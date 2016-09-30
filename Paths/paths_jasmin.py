@@ -19,6 +19,12 @@
 #
 # Email:
 # ledm@pml.ac.uk
+#
+"""
+.. module:: paths
+   :platform: Unix
+   :synopsis: A list of paths to data files.
+.. moduleauthor:: Lee de Mora <ledm@pml.ac.uk>
 
 
 from socket import gethostname
@@ -39,6 +45,10 @@ if gethostname().find('ceda.ac.uk')>-1:
 	# Post processed Data location
 	shelvedir 	= ukp.folder("/group_workspaces/jasmin2/ukesm/BGC_data/"+getuser()+"/shelves/")
 		
+	######
+	# Output location for plots.
+	imagedir	 = ukp.folder('images/')
+
 	#####
 	# Location of model files.
 	esmvalFolder 	= "/group_workspaces/jasmin2/ukesm/BGC_data/"
