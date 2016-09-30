@@ -115,7 +115,9 @@ def timeseries_compare(colours,physics=True,bio=False,debug=True,):
 		analysisKeys = []
        	  	analysisKeys.append('TotalOMZVolume')           # Total Oxygen Minimum zone Volume
        	 	analysisKeys.append('OMZThickness')             # Oxygen Minimum Zone Thickness
-        	analysisKeys.append('OMZMeanDepth')             # Oxygen Minimum Zone mean depth      
+        	analysisKeys.append('OMZMeanDepth')             # Oxygen Minimum Zone mean depth    
+        	if bio ==False:return
+        	if physics == True:return  
                                	
 	layerList 	= ['Surface',]
 	metricList 	= ['mean',]
@@ -963,6 +965,9 @@ def timeseries_compare(colours,physics=True,bio=False,debug=True,):
 					  'OMZThickness', 'OMZMeanDepth',  ]:
 				mdata = modeldataD[(jobID,name )][('Global', 'Surface', 'mean')]
 				title = ' '.join(['Global', 'Surface', 'Mean',  getLongName(name)])
+			elif name in [  'OMZThickness', 'OMZMeanDepth',  ]:
+				mdata = modeldataD[(jobID,name )][('Global', 'layerless', 'metricless')]
+				title = ' '.join(['Global', getLongName(name)])			
 			else:
 				mdata = modeldataD[(jobID,name )][('regionless', 'layerless', 'metricless')]
 				title = getLongName(name)
