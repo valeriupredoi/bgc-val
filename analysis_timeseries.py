@@ -644,9 +644,9 @@ def analysis_timeseries(jobID = "u-ab671",
 			av[name]['modeldetails'] 	= {'name': name, 'vars':['OXY',], 'convert': modelMeanOMZdepth,'units':'m'}
 			av[name]['datadetails']  	= {'name': name, 'vars':['o_an',], 'convert': woaMeanOMZdepth,'units':'m'}		
 	
-		av[name]['layers'] 		= ['Surface',] 
+		av[name]['layers'] 		= ['layerless',] 
 		av[name]['regions'] 		= regionList
-		av[name]['metrics']		= metricList
+		av[name]['metrics']		= ['metricless',]
 
 		av[name]['datasource'] 		= 'WOA'
 		av[name]['model']		= 'MEDUSA'

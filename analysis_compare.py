@@ -54,7 +54,7 @@ except:	from pftnames import getLongName
 
 import paths
 
-def timeseries_compare(colours,physics=True,bio=False):
+def timeseries_compare(colours,physics=True,bio=False,debug=True,):
 	### strategy here is a simple wrapper.
 	# It's a little cheat-y, as I'm copying straight from analysis_timeseries.py
 	
@@ -108,7 +108,15 @@ def timeseries_compare(colours,physics=True,bio=False):
       	  	analysisKeys.append('TotalOMZVolume')           # Total Oxygen Minimum zone Volume
        	 	analysisKeys.append('OMZThickness')             # Oxygen Minimum Zone Thickness
         	analysisKeys.append('OMZMeanDepth')             # Oxygen Minimum Zone mean depth      
-                        	
+        
+        if debug:
+        	####
+        	# Supercedes other flags.
+		analysisKeys = []
+       	  	analysisKeys.append('TotalOMZVolume')           # Total Oxygen Minimum zone Volume
+       	 	analysisKeys.append('OMZThickness')             # Oxygen Minimum Zone Thickness
+        	analysisKeys.append('OMZMeanDepth')             # Oxygen Minimum Zone mean depth      
+                               	
 	layerList 	= ['Surface',]
 	metricList 	= ['mean',]
   	regionList	= ['Global',]
