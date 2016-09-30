@@ -116,6 +116,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=True,):
        	  	analysisKeys.append('TotalOMZVolume')           # Total Oxygen Minimum zone Volume
        	 	analysisKeys.append('OMZThickness')             # Oxygen Minimum Zone Thickness
         	analysisKeys.append('OMZMeanDepth')             # Oxygen Minimum Zone mean depth    
+		analysisKeys.append('O2')                       # WOA Oxygen        	
         	if bio ==False:return
         	if physics == True:return  
                                	
