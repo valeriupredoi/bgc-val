@@ -41,9 +41,16 @@ if gethostname().find('pmpc')>-1:
 	machinelocation = 'PML'
 
 	#####
-	# Post processed Data location
+	# Post processed shelve Data location
 	shelvedir 	= ukp.folder('shelves/')
-
+	
+	#####
+	# Post processed p2p Data location		
+	p2p_ppDir = "/data/euryale7/scratch/ledm/ukesm_postProcessed/"
+	
+	######
+	# Output location for plots.
+	imagedir	 = ukp.folder('images/')
 
 	#####
 	# Location of model files.

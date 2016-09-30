@@ -37,10 +37,6 @@ import shutil
 from html5 import html5Tools, htmltables
 from timeseries.analysis_level0 import analysis_level0,analysis_level0_insitu
 
-#####
-# makeReport.py:
-# Usage:
-#	provide a job ID, a year to look at, and a folder location.
 
 
 def copytree(src, dst, symlinks=False, ignore=None):
@@ -445,6 +441,7 @@ def html5Maker(
 			  'Iron',
 			  'IntegratedPrimaryProduction_OSU',
                           'OMZThickness',
+                          'OMZMeanDepth',
                           'Temperature',
                           'Salinity',
                           #'TotalIceArea'
@@ -657,7 +654,7 @@ def html5Maker(
 			vfiles = []
 			#vfiles = glob('./images/'+jobID+'/timeseries/*/percentiles*'+key+'*'+region+'*10-90pc.png')
                         #vfiles.extend(glob('./images/'+jobID+'/timeseries/*/profile*'+key+'*'+region+'*median.png'))
-           	     	#vfiles.extend(glob('./images/'+jobID+'/timeseries/*/Sum*'+key+'*'+region+'*sum.png'))                        
+            	     	#vfiles.extend(glob('./images/'+jobID+'/timeseries/*/Sum*'+key+'*'+region+'*sum.png'))                        
 			#vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*hist.png'))
 			for s in slices:
 			    if s in ['Surface','1000m',]:

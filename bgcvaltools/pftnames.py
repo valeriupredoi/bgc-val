@@ -272,6 +272,7 @@ def getLongName(text,debug=False):
   	if text == 'TotalOMZVolume':	return 'Total Oxygen minimum zone volume (<20 mmol O2/m^3)'   	
   	if text == 'TotalOMZVolume50':	return 'Total Oxygen minimum zone volume (<50 mmol O2/m^3)'   	  	
   	if text == 'OMZThickness':	return 'Oxygen minimum zone thickness (<20 mmol O2/m^3)'  
+  	if text == 'OMZMeanDepth':	return 'Oxygen minimum zone mean depth (<20 mmol O2/m^3)'    	
   	
   	if text == 'DrakePassageTransport':	return 'Drake Passage Transport'    	
   	if text == 'DPT':			return 'Drake Passage Transport'    	  		

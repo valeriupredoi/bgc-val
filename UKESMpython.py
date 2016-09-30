@@ -1146,18 +1146,7 @@ def makeOneDPlot(dates, data, title, filename, minmax=[0.,0.],dpi=100):
 	
 		
 		
-#def strRound(val,i=4):
-#	"""
-#	Deprecated
-#	"""
-#	if round(val,i)==0. and i==4:return ' < 0.0001'
-#		
-#	if val>10000: return str(int(round(val,i-5)))
-#	if val>1000: return str(int(round(val,i-4)))
-#	if val>100: return str(round(val,i-3))
-#	if val>10: return str(round(val,i-2))
-#	if val>1: return str(round(val,i-1))
-#	return str(round(val,i))
+def strRound(val,i=4): return str(round_sig(val,3))
 
 
 def round_sig(x, sig=2):
@@ -1167,8 +1156,9 @@ def round_sig(x, sig=2):
 	
 	rounds a value to a specific number of significant figures.
 	"""
-	if x<0.:return -1.* round(abs(x), sig-int(math.floor(math.log10(abs(x))))-1)		
-   	return round(x, sig-int(math.floor(math.log10(x)))-1)
+	if x ==0.:	return 0.
+	if x<0.:	return -1.* round(abs(x), sig-int(math.floor(math.log10(abs(x))))-1)	
+	else: 		return      round(x, sig-int(math.floor(math.log10(x)))-1)
 
 	
 def addStraightLineFit(ax, x,y,showtext=True, addOneToOne=False,extent = [0,0,0,0]):
