@@ -25,7 +25,7 @@
    :platform: Unix
    :synopsis: A list of paths to data files.
 .. moduleauthor:: Lee de Mora <ledm@pml.ac.uk>
-
+"""
 
 from socket import gethostname
 import UKESMpython as ukp
