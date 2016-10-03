@@ -1009,6 +1009,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=True,):
   			'NorthernSubpolarAtlantic','NorthernSubpolarPacific',
   			]	
 	for name in ['Oxygen',]:
+	  if name not in av.keys():continue
 	  for region in regionList:
 	    for layer in ['Surface','500m','1000m']:
 		timesD  = {}
