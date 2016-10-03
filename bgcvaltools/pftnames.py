@@ -104,8 +104,8 @@ def getLongName(text,debug=False):
 	if text.lower() in firstLetterCaps:	return text.title()
 
 
-  	if text == 'Transect':		return "Transect"	
-  	if text == 'PTransect':		return "Pacific Transect"
+  	#if text == 'Transect':		return "Transect"	
+  	#if text == 'PTransect':		return "Pacific Transect"
 #  	if text == 'Surface':		return "Surface"
   	if text == '100m':		return "100m deep"  	
   	if text == '200m':		return "200m deep"  	  	  	
@@ -507,8 +507,8 @@ def getLongName(text,debug=False):
   	if text == 'Top40mNoArtics':	return "Top 40m (No Arctics)"
   	if text == 'Top200mNoArtics':	return "Top 200m  (No Arctics)"
 
-  	if text == 'Transect':	return "Pacifc Transect"  	
-  	if text == 'AtlanticTransect':	return "Atlantic Transect"  
+  	if text == 'RegionLegend':	return "Region Legend"
+  	if text == 'TransectsLegend':	return "Transects Legend"
   		  	
   	if text == 'NoShelf':	return "No Shelf"  
   	if text == 'NoShelfTop40':	return "No Shelf (Top 40m)"    	

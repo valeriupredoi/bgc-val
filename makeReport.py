@@ -50,7 +50,7 @@ def copytree(src, dst, symlinks=False, ignore=None):
             try:shutil.copy2(s, d)
             except: pass
 
-def addImageToHtml(fn,imagesfold,reportdir):
+def addImageToHtml(fn,imagesfold,reportdir,debug=True):
 	#####
 	# Note that we use three paths here.
 	# fn: The original file path relative to here
@@ -61,22 +61,19 @@ def addImageToHtml(fn,imagesfold,reportdir):
 	relfn = newfn.replace(reportdir,'./')	
 		
 	if not os.path.exists(newfn):
-		print "cp ",newfn,fn	
+		if debug: print "cp",fn, newfn
 		shutil.copy2(fn, newfn)
 	else:
 		####
 		# Check if the newer file is the same one from images.
-		
 		if os.path.getmtime(fn) == os.path.getmtime(newfn): return relfn
 		####
 		# Check if file is newer than the one in images.		
 		if shouldIMakeFile(fn, newfn,):
-			print "removing old file",fn
+			if debug: print "removing old file",fn
 			os.remove(newfn)
 			shutil.copy2(fn, newfn)			
-			print "cp ",newfn,fn
-			
-
+			if debug: print "cp",fn, newfn
 	return relfn
 
 	
@@ -1024,7 +1021,7 @@ def html5Maker(
 
 	if regionMap:
 		vfiles = []	
-		vfiles.extend(glob('images/maps/Region_Legend.png'))
+		vfiles.extend(glob('html5/html5Assets/images/*Legend.png'))
 		relfns = [addImageToHtml(fn, imagesfold, reportdir) for fn in vfiles]				
 		print relfns
 		href = 'regionMap_default'
@@ -1032,9 +1029,9 @@ def html5Maker(
 			indexhtmlfn,
 			[href,],
 			'Legends', 
-			SidebarTitles={href:'Regional legends',},
-			Titles={href:'Regional boundaries legend',},
-			Descriptions={href:'A map showing the boundaries of the regions used elsewhere in this report.',},						
+			SidebarTitles={href:'Regional and Transect Legends',},
+			Titles={href:'Regional and Transect Legends',},
+			Descriptions={href:'Maps showing the boundaries of the regions and transects used in this report.',},						
 			FileLists={href:relfns,},						
 			)									
 

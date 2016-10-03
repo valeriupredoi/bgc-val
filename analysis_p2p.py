@@ -150,8 +150,7 @@ def analysis_p2p(
 		if analysisSuite.lower() in ['physics',]:		analysisKeys.extend(p2pKeys_physics)
 			
 		if analysisSuite.lower() in ['debug',]:	
-                        analysisKeys.append('MLD')                      
-
+			analysisKeys.append('O2')			# WOA Oxygen
 		
 	#####
 	# Location of data files.

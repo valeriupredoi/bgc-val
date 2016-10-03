@@ -700,27 +700,32 @@ def HovPlotQuad(lons,lats, depths,
 		data1,data2,filename,
 		titles=['',''],title='',
 		lon0=0.,marble=False,drawCbar=True,cbarlabel='',doLog=False,scatter=True,dpi=100,vmin='',vmax='',
-		logy = False
+		logy = False,
+		maskSurface=True,
 		):#,**kwargs):
 	"""
-	takes a pair of lat lon, depths, data, and title, and filename and then makes a quad of transect plots (data 1, data 2, difference and quotient), then saves the figure.
+	:param lons: Longitude array
+	:param lats: Lattitude array	
+	:param depths: Depth array	
+	:param data1: Data  array
+	:param data2: Second data array	
+	takes a pair of lat lon, depths, data, and title, and filename and then makes a quad of transect plots
+	(data 1, data 2, difference and quotient), then saves the figure.
 	"""
 	
 	fig = pyplot.figure()
 	fig.set_size_inches(10,6)
 	depths = np.array(depths)
 	if depths.max() * depths.min() >0. and depths.max()  >0.: depths = -depths
+	
 	lons = np.array(lons)
 	lats = np.array(lats)
 	data1 = np.ma.array(data1)
 	data2 = np.ma.array(data2)
-	
-	#if not vmin: vmin = data1.min()
-	#if not vmax: vmax = data1.max()
-	#vmin = min([data1.min(),data2.min(),vmin])
-	#vmax = max([data1.max(),data2.max(),vmax])
+	if maskSurface:
+		data1 = np.ma.masked_where(depths>-10.,data1)
+		data2 = np.ma.masked_where(depths>-10.,data2)
 		
-	#doLog, vmin,vmax = determineLimsAndLog(vmin,vmax)
 	doLog, vmin,vmax = determineLimsFromData(data1,data2)
 			
 	axs,bms,cbs,ims = [],[],[],[]
@@ -746,7 +751,7 @@ def HovPlotQuad(lons,lats, depths,
 			print spl,i, rbma, max(data1),max(data2)
 			rbmi = -rbma
 		if spl in [224,]:
-			rbma = 10.001 #max(np.ma.abs(data1 -data2))
+			rbma = 10.001 
 			rbmi = 0.0999		
 				
 		if doLogs[i] and rbmi*rbma <=0.:
@@ -755,23 +760,13 @@ def HovPlotQuad(lons,lats, depths,
 			data2 = np.ma.masked_less_equal(ma.array(data2), 0.)
 		data = ''
 		
-		if spl in [221,]:data  = np.ma.clip(data1, 	 rbmi,rbma)
-		if spl in [222,]:data  = np.ma.clip(data2, 	 rbmi,rbma)
-		if spl in [223,]:data  = np.ma.clip(data1-data2, rbmi,rbma)
-		if spl in [224,]:data  = np.ma.clip(data1/data2, rbmi,rbma)
-
-
-		if spl in [221,222,]:cmap= defcmap
-		if spl in [223,224,]:cmap= pyplot.cm.RdBu_r		
+		if spl in [221,]:	data  = np.ma.clip(data1, 	 rbmi,rbma)
+		if spl in [222,]:	data  = np.ma.clip(data2, 	 rbmi,rbma)
+		if spl in [223,]:	data  = np.ma.clip(data1-data2, rbmi,rbma)
+		if spl in [224,]:	data  = np.ma.clip(data1/data2, rbmi,rbma)
+		if spl in [221,222,]:	cmap= defcmap
+		if spl in [223,224,]:	cmap= pyplot.cm.RdBu_r		
 		
-
-						
-		#if doLogs[i]:
-		#	rbmi = np.int(np.log10(rbmi))
-		#	rbma = np.log10(rbma)
-		#	if rbma > np.int(rbma): rbma+=1
-		#	rbma = np.int(rbma)
-
 		axs.append(fig.add_subplot(spl))
 		if scatter:
 			if doLogs[i] and spl in [221,222]:
@@ -781,77 +776,101 @@ def HovPlotQuad(lons,lats, depths,
 				rbma = np.int(rbma)
 					
 			if doLogs[i]:	
-				if len(cbarlabel)>0: 
-					cbarlabel='log$_{10}$('+cbarlabel+')'												
 				ims.append(pyplot.scatter(hovXaxis,depths, c= np.log10(data),cmap=cmap, marker="s",alpha=0.9,linewidth='0',vmin=rbmi, vmax=rbma,))
 			else:	ims.append(pyplot.scatter(hovXaxis,depths, c=          data ,cmap=cmap, marker="s",alpha=0.9,linewidth='0',vmin=rbmi, vmax=rbma,))
-			if drawCbar:
-				if spl in [221,222,223]:
-					if doLogs[i]:	cbs.append(fig.colorbar(ims[i],pad=0.05,shrink=0.5,ticks = np.linspace(rbmi,rbma,rbma-rbmi+1)))
-					else:		cbs.append(fig.colorbar(ims[i],pad=0.05,shrink=0.5,))
-				if spl in [224,]:
-					cbs.append(fig.colorbar(ims[i],pad=0.05,shrink=0.5,))
-					cbs[i].set_ticks ([-1.,0.,1.])
-					cbs[i].set_ticklabels(['0.1','1.','10.'])			
+			
 		else:
 			print "hovXaxis:",hovXaxis.min(),hovXaxis.max(),"\tdepths:",depths.min(),depths.max(),"\tdata:",data.min(),data.max()
 			newX,newY,newData = arrayify(hovXaxis,depths,data)
 			print "newX:",newX.min(),newX.max(),"\tnewY:",newY.min(),newY.max(),"\tnewData:",newData.min(),newData.max() , 'range:', rbmi,rbma			
 			if doLogs[i]:	ims.append(pyplot.pcolormesh(newX,newY, newData, cmap=cmap, norm=LogNorm(vmin=rbmi,vmax=rbma),))
 			else:		ims.append(pyplot.pcolormesh(newX,newY, newData, cmap=cmap, vmin=rbmi, vmax=rbma,))			
-
 		
-			if drawCbar:
-				if spl in [221,222,223]:
-					if doLogs[i]:	cbs.append(fig.colorbar(ims[i],pad=0.05,shrink=0.5,ticks = np.linspace(rbmi,rbma,rbma-rbmi+1)))
-					else:		cbs.append(fig.colorbar(ims[i],pad=0.05,shrink=0.5,))
-				if spl in [224,]:
-					cbs.append(fig.colorbar(ims[i],pad=0.05,shrink=0.5,))
-					cbs[i].set_ticks ([0.1,1.,10.])
-					cbs[i].set_ticklabels(['0.1','1.','10.'])
-		 	
-		 	cbs[i].set_clim(rbmi,rbma)
+		#####
+		# All the tools to make a colour bar
+		if drawCbar:
+			if spl in [221,222,223]:
+				if doLogs[i]:	cbs.append(fig.colorbar(ims[i],pad=0.05,shrink=0.5,ticks = np.linspace(rbmi,rbma,rbma-rbmi+1)))
+				else:		cbs.append(fig.colorbar(ims[i],pad=0.05,shrink=0.5,))
+			if spl in [224,]:
+				cbs.append(fig.colorbar(ims[i],pad=0.05,shrink=0.5,))
+				cbs[i].set_ticks ([0.1,1.,10.])
+				cbs[i].set_ticklabels(['0.1','1.','10.'])
+	 	
+	 		cbs[i].set_clim(rbmi,rbma)
+			if doLogs[i] and len(cbarlabel)>0: cbarlabel='log$_{10}$('+cbarlabel+')'	
 
-		    	if len(cbarlabel)>0 and spl in [221,222,]: cbs[i].set_label(cbarlabel)
-		if i in [0,1]:
-			pyplot.title(titles[i])
+	    		if len(cbarlabel)>0 and spl in [221,222,]: cbs[i].set_label(cbarlabel)
+	    		
+	    	#####
+	    	# Add the titles.	
+		if i in [0,1]:	pyplot.title(titles[i])
 		if i ==2:	pyplot.title('Difference ('+titles[0]+' - '+titles[1]+')')
 		if i ==3:	pyplot.title('Quotient ('  +titles[0]+' / '+titles[1]+')')
 	
-		#if logy: axs[i].set_yscale('log')
-                if logy: axs[i].set_yscale('symlog')
-
+		#####
+		# Add the log scaliing and limts. 
+                if logy: 		axs[i].set_yscale('symlog')	
+		if maskSurface:		axs[i].set_ylim([depths.min(),-10.])
+		axs[i].set_xlim([hovXaxis.min(),hovXaxis.max()])						
+							
 		
-		#if hovXaxis.min() >=-90. and hovXaxis.max()<=90.:
-		#	axs[i].set_xlim([-90.,90.])			
-		#if hovXaxis.min() >=-180. and hovXaxis.max()<=180.:	
-		#	axs[i].set_xlim([180.,180.])
-		#if hovXaxis.min() >=0. and hovXaxis.max()<=360.:	
-		#	axs[i].set_xlim([0.,360.])			
-		
-	if title:
-		fig.text(0.5,0.975,title,horizontalalignment='center',verticalalignment='top')	
+	#####
+	# Add main title
+	if title:	fig.text(0.5,0.975,title,horizontalalignment='center',verticalalignment='top')	
+	
+	#####
+	# Print and save
 	pyplot.tight_layout()		
 	print "UKESMpython:\tHovPlotQuad: \tSaving:" , filename
 	pyplot.savefig(filename ,dpi=dpi)		
 	pyplot.close()
+	
+	
 		
-def arrayify(oldX,oldY,data):
+def arrayify(oldX,oldY,data,fillGaps = True,minimumGap = 3., debug = False):
 	"""
 	Takes three arrays and converts it into mesh grid style coordinates and a 2D array of the data.
+	fillGaps adds x pixels the data has a gap larger than the minimumGap (default is 3) degrees. 
+	This means that land mask data, which has been stripped by np.array.compressed(), can be re-added in a crude way.
 	"""
-	newXd,newYd,newDatad = {},{},{}
 	
+	#####
+	# test for size restrictions.	
 	if len(oldX) == len(oldY) == len(data): pass
 	else:
-		print "Arrays are the wrong size!"
+		print "arrayify:\tArrays are the wrong size!"
 		assert 0
+	#####
+	# Create 1 D arrays for X and Y
+	newXd,newYd,newDatad = {},{},{}		
 	for x, y, d in zip(oldX,oldY,data):
 		newXd[x] = 1
 		newYd[y] = 1		
 		newDatad[(x,y)] = d
 	newX = np.array(sorted(newXd.keys()))
 	newY = np.array(sorted(newYd.keys()))
+
+	#####
+	# Extend the newX grid to include land. 
+	if fillGaps:
+		####
+		# Iterate over 	
+		for i,(x0,x1) in enumerate(zip(newX[:-1], newX[1:])):
+			diff = abs(x1-x0)
+			if diff <minimumGap:continue
+			
+			adding = int(diff) -1
+			interval = diff/adding
+			
+			for a in np.arange(adding):
+				####
+				# Append the new point to the end. (it'll be sorted later)
+				newpoint = x0 + a*interval
+				newX = np.append(newX,newpoint)
+				
+		newX = np.array(sorted(list(newX)))
+	
 	indexX = {x:i for i,x in enumerate(newX)}
 	indexY = {y:i for i,y in enumerate(newY)}
 	

@@ -437,10 +437,9 @@ class makePlots:
 
 		# Robinson projection plots - Cartopy
 		#makeCartopy = True	# Don't need both.	
-		if newSlice=='Global':
+		if newSlice=='Global' and self.depthLevel in ['Surface','100m','200m','500m','1000m',] :
 		   # ####
 		   # Global, as we have interpollation turned on here.
-		   
 		   if ukp.shouldIMakeFile([self.xfn,self.yfn],robfncartopy,debug=False):
 			ti1 = getLongName(self.xtype)
 			ti2 =  getLongName(self.ytype)
