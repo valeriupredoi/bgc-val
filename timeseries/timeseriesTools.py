@@ -30,30 +30,19 @@ import os
 import UKESMpython as ukp
 from convertToOneDNC import convertToOneDNC
 
+"""
+.. module:: timeseriesTools
+   :platform: Unix
+   :synopsis: A swiss army knife set of tools for the time series analysis.
+.. moduleauthor:: Lee de Mora <ledm@pml.ac.uk>
+"""
 
-
-#def getTimeAndData(fn, coords,details, layer='Surface',region = 'Global'):
-#	###
-#	# mostly unused
-#	if type(nc) == type('filename'):
-#		nc = Dataset(nc,'r')
-#	
-#	ts = getTimes(nc,coords)
-#	
-#	if layer in ['Surface','100m','200m','500m','1000m','2000m',]:
-#		data = getHorizontalSlice(nc,coords,details,layer)
-#	if layer == 'depthIntergrated':
-#		data = getDepthIntegrated(nc,coords,details,layer)
-#	if layer == 'Surface - 1000m':
-#		data = getHorizontalSlice(nc,coords,details,'Surface')
-#		data = data - getHorizontalSlice(nc,coords,details,'1000m',)
-#	if region !='Global':
-#		print "Not ready for non-global cuts"
-#	return ts,data		
-#
 
 
 def getTimes(nc, coords):
+	"""
+	Loads the times from the netcdf.
+	"""
 	if type(nc) == type('filename'):
 		nc = Dataset(nc,'r')
 	dtimes = num2date(nc.variables[coords['t']][:], nc.variables[coords['t']].units,calendar=coords['cal'])[:]
@@ -62,6 +51,10 @@ def getTimes(nc, coords):
 
 
 def loadData(nc,details):
+	"""
+	Loads the times from the netcdf.
+	"""
+	
 	if type(nc) == type('filename'):
 		nc = Dataset(nc,'r')
 	return ukp.extractData(nc,details)[:]

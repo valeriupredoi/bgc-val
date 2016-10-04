@@ -21,7 +21,13 @@
 # Email:
 # ledm@pml.ac.uk
 #
+"""
+.. module:: makePatternStatsPlots
+   :platform: Unix
+   :synopsis: A tool to make pattern statistics plots.
+.. moduleauthor:: Lee de Mora <ledm@pml.ac.uk>
 
+"""
 
 from matplotlib import pyplot
 from glob import glob
@@ -41,7 +47,7 @@ from shapely.geometry import shape
 from os.path import basename,exists
 from sys import argv
 from shelve import open as shOpen
-from pftnames import getLongName
+from bgcvaltools.pftnames import getLongName
 
 purple = [125./256., 38./256., 205./256.]
 

@@ -20,7 +20,13 @@
 # Email:
 # modm@pml.ac.uk
 #
+"""
+.. module:: RobustStatistics
+   :platform: Unix
+   :synopsis: Tool to make a robust statistics plots.
+.. moduleauthor:: Momme Butenschon <momm@pml.ac.uk>
 
+"""
 from numpy import median,empty,logical_or,arange
 from numpy.ma import getmaskarray,getdata,masked_where
 #from numpyXtns import nearest

@@ -34,7 +34,7 @@ from calendar import month_name
 from UKESMpython import folder,getFileList, AutoVivification, NestedDict,AutoVivToYaml,YamlToDict
 from p2p import matchDataAndModel,makePlots,makeTargets
 
-from pftnames import MaredatTypes,WOATypes,Ocean_names
+from bgcvaltools.pftnames import MaredatTypes,WOATypes,Ocean_names
 
 #	
 #

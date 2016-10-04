@@ -49,7 +49,10 @@ from getpass import getuser
 import UKESMpython as ukp
 from timeseries import timeseriesAnalysis
 from timeseries import profileAnalysis
-import paths	# User defined set of paths pointing towards the datasets.
+
+#####
+# User defined set of paths pointing towards the datasets.
+import paths	
 
 
 timeseriesKeys = ['T','S','MLD', 'Chl_pig','Chl_CCI',
@@ -264,7 +267,7 @@ def analysis_timeseries(jobID = "u-ab671",
 	#####
 	# Location of images directory
 	# the imagedir is where the analysis images will be saved.
-	imagedir	 = ukp.folder('images/'+jobID+'/timeseries')
+
 	
 	#####
 	# Location of shelves folder
@@ -291,31 +294,13 @@ def analysis_timeseries(jobID = "u-ab671",
 	#####
 	# PML
 	if gethostname().find('pmpc')>-1:	
-#		print "analysis-timeseries.py:\tBeing run at PML on ",gethostname()
-#		machinelocation = 'PML'
-#		MEDUSAFolder_pref	= "/data/euryale7/scratch/ledm/UKESM/MEDUSA/"
-#	
-#		if annual:	WOAFolder 	= "/data/euryale7/backup/ledm/Observations/WOA/annual/"
-#		else:		WOAFolder 	= "/data/euryale7/backup/ledm/Observations/WOA/"
-#		
-#		ObsFolder = "/data/euryale7/backup/ledm/Observations/"
-#		MAREDATFolder 	= ObsFolder+"/MAREDAT/MAREDAT/"
-#		GEOTRACESFolder = ObsFolder+"/GEOTRACES/GEOTRACES_PostProccessed/"
-#		TakahashiFolder = ObsFolder+"/Takahashi2009_pCO2/"
-#		MLDFolder	= ObsFolder+"/IFREMER-MLD/"
-#		iMarNetFolder	= ObsFolder+"/LestersReportData/"
-#		GlodapDir	= ObsFolder+"/GLODAP/"
-#		GLODAPv2Dir	= ObsFolder+"/GLODAPv2/GLODAPv2_Mapped_Climatologies/"
-#		OSUDir		= ObsFolder+"OSU/"
-#		CCIDir		= ObsFolder+"CCI/"
-#		icFold		= "/data/euryale7/backup/ledm/UKESM/InitialConditions/"		
-#
-#		
-#		orcaGridfn 	= '/data/euryale7/scratch/ledm/UKESM/MEDUSA/mesh_mask_eORCA1_wrk.nc'
-#		shelvedir 	= ukp.folder('shelves/timeseries/'+jobID)		
-
+		print "analysis-timeseries.py:\tBeing run at PML on ",gethostname()
+		
+		imagedir	 = ukp.folder(paths.imagedir+'/'+jobID+'/timeseries')
+		
 		if annual:	WOAFolder = paths.WOAFolder_annual
 		else:		WOAFolder = paths.WOAFolder		
+		
 		shelvedir 	= ukp.folder(paths.shelvedir+'/'+jobID)
 	#####
 	# JASMIN		
@@ -323,93 +308,49 @@ def analysis_timeseries(jobID = "u-ab671",
 		print "analysis-timeseries.py:\tBeing run at CEDA on ",gethostname()
 		#machinelocation = 'JASMIN'	
 				
-		#ObsFolder 	= "/group_workspaces/jasmin/esmeval/example_data/bgc/"
-		#esmvalFolder 	= "/group_workspaces/jasmin2/ukesm/BGC_data/"
 		shelvedir 	= ukp.folder("/group_workspaces/jasmin2/ukesm/BGC_data/"+getuser()+"/shelves/timeseries/"+jobID)
 		if annual:	WOAFolder = paths.WOAFolder_annual
 		else:		WOAFolder = paths.WOAFolder	
+		
+		imagedir	 = ukp.folder(paths.imagedir+'/'+jobID+'/timeseries')
 			
-		#####
-		# Location of model files.	
-		#MEDUSAFolder_pref	= ukp.folder(esmvalFolder)
-		
-		#####
-		# Location of data files.
-		#if annual:	WOAFolder 	= ukp.folder(ObsFolder+"WOA/annual")
-		#else:		WOAFolder 	= ukp.folder(ObsFolder+"WOA/")
-		
-		#MAREDATFolder 	= ObsFolder+"/MAREDAT/MAREDAT/"
-		#GEOTRACESFolder = ObsFolder+"/GEOTRACES/GEOTRACES_PostProccessed/"
-		#TakahashiFolder = ObsFolder+"/Takahashi2009_pCO2/"
-		#MLDFolder	= ObsFolder+"/IFREMER-MLD/"
-		#iMarNetFolder	= ObsFolder+"/LestersReportData/"
-		#GlodapDir	= ObsFolder+"/GLODAP/"
-		#GLODAPv2Dir	= ObsFolder+"/GLODAPv2/GLODAPv2_Mapped_Climatologies/"
-		#OSUDir		= ObsFolder+"OSU/"
-		#CCIDir		= ObsFolder+"CCI/"
-		#icFold		= ObsFolder+"/InitialConditions/"
-		#if jobID in ["xkrus",]:
-		#	# Old school ORCA1 grid
-		#	orcaGridfn 	='/group_workspaces/jasmin/esmeval/example_data/bgc/mesh_mask_ORCA1_75.nc'
-		#else:
-		#	# New eORCA1 grid		
-		#	orcaGridfn 	= '/group_workspaces/jasmin/esmeval/example_data/bgc/mesh_mask_eORCA1_wrk.nc'
-        # MONSOON                 
-        if gethostname().find('monsoon')>-1:
-                print "analysis-timeseries.py:\tBeing run at the Met Office on ",gethostname()
-                machinelocation = 'MONSOON'
 
-                ObsFolder       = "/projects/ukesm/ldmora/BGC-data/"
-                ModelFolder       = "/projects/ukesm/ldmora/UKESM"
+        if gethostname().find('monsoon')>-1:
+        	print "Please set up paths.py"
+        	assert 0
+        	
+                #print "analysis-timeseries.py:\tBeing run at the Met Office on ",gethostname()
+                #machinelocation = 'MONSOON'
+
+                #ObsFolder       = "/projects/ukesm/ldmora/BGC-data/"
+                #ModelFolder       = "/projects/ukesm/ldmora/UKESM"
                 #####
                 # Location of model files.      
-                MEDUSAFolder_pref       = ukp.folder(ModelFolder)
+                #MEDUSAFolder_pref       = ukp.folder(ModelFolder)
 
                 #####
                 # Location of data files.
-                if annual:      WOAFolder       = ukp.folder(ObsFolder+"WOA/annual")
-                else:           WOAFolder       = ukp.folder(ObsFolder+"WOA/")
+                #if annual:      WOAFolder       = ukp.folder(ObsFolder+"WOA/annual")
+                #else:           WOAFolder       = ukp.folder(ObsFolder+"WOA/")
 
-                MAREDATFolder   = ObsFolder+"/MAREDAT/MAREDAT/"
-                GEOTRACESFolder = ObsFolder+"/GEOTRACES/GEOTRACES_PostProccessed/"
-                TakahashiFolder = ObsFolder+"/Takahashi2009_pCO2/"
-                MLDFolder       = ObsFolder+"/IFREMER-MLD/"
-                iMarNetFolder   = ObsFolder+"/LestersReportData/"
-                GlodapDir       = ObsFolder+"/GLODAP/"
-                GLODAPv2Dir     = ObsFolder+"/GLODAPv2/GLODAPv2_Mapped_Climatologies/"
-                OSUDir          = ObsFolder+"OSU/"
-                CCIDir          = ObsFolder+"CCI/"
-                if jobID in ["xkrus",]:
-                        # Old school ORCA1 grid
-                        orcaGridfn      =ModelFolder+'/mesh_mask_ORCA1_75.nc'
-                else:
-                        # New eORCA1 grid               
-                        orcaGridfn      = ModelFolder+'/mesh_mask_eORCA1_wrk.nc'
+                #MAREDATFolder   = ObsFolder+"/MAREDAT/MAREDAT/"
+                #GEOTRACESFolder = ObsFolder+"/GEOTRACES/GEOTRACES_PostProccessed/"
+                #TakahashiFolder = ObsFolder+"/Takahashi2009_pCO2/"
+                #MLDFolder       = ObsFolder+"/IFREMER-MLD/"
+                #iMarNetFolder   = ObsFolder+"/LestersReportData/"
+                #GlodapDir       = ObsFolder+"/GLODAP/"
+                #GLODAPv2Dir     = ObsFolder+"/GLODAPv2/GLODAPv2_Mapped_Climatologies/"
+                #OSUDir          = ObsFolder+"OSU/"
+                #CCIDir          = ObsFolder+"CCI/"
+                #orcaGridfn      = ModelFolder+'/mesh_mask_eORCA1_wrk.nc'
 
 
-	#####
-	# NOC		
-	if gethostname().find('charybdis')>-1:	
-		print "analysis-timeseries.py:\tBeing run at NOC on ",gethostname()
-		machinelocation = 'NOC'
-		
-		MEDUSAFolder_pref	= "/home/jpp1m13/Documents/WORKING/UKESM/Compar_Atm_forcings/netcdf_files/"
-	
-		if annual:	WOAFolder 	= "/home/jpp1m13/Documents/WORKING/UKESM/Compar_Atm_forcings/netcdf_files/"
-		else:		WOAFolder 	= "/data/euryale7/scratch/ledm/WOA/"
-		
-		MAREDATFolder 	= ObsFolder+"/MAREDAT/MAREDAT/"
-		GEOTRACESFolder = ObsFolder+"/GEOTRACES/GEOTRACES_PostProccessed/"
-		TakahashiFolder = ObsFolder+"/Takahashi2009_pCO2/"
-		MLDFolder	= ObsFolder+"/IFREMER-MLD/"
-		iMarNetFolder	= ObsFolder+"/LestersReportData/"
-		GlodapDir	= ObsFolder+"/GLODAP/"
-		GLODAPv2Dir	= ObsFolder+"/GLODAPv2/GLODAPv2_Mapped_Climatologies/"		
 
 	#####
 	# Unable to find location of files/data.	
 	if not paths.machinelocation:
 		print "analysis-timeseries.py:\tFATAL:\tWas unable to determine location of host: ",gethostname()
+        	print "Please set up paths.py, based on Paths/paths_template.py"
 		assert False
 		
 
@@ -703,9 +644,9 @@ def analysis_timeseries(jobID = "u-ab671",
 			av[name]['modeldetails'] 	= {'name': name, 'vars':['OXY',], 'convert': modelMeanOMZdepth,'units':'m'}
 			av[name]['datadetails']  	= {'name': name, 'vars':['o_an',], 'convert': woaMeanOMZdepth,'units':'m'}		
 	
-		av[name]['layers'] 		= ['Surface',] 
+		av[name]['layers'] 		= ['layerless',] 
 		av[name]['regions'] 		= regionList
-		av[name]['metrics']		= metricList
+		av[name]['metrics']		= ['metricless',]
 
 		av[name]['datasource'] 		= 'WOA'
 		av[name]['model']		= 'MEDUSA'

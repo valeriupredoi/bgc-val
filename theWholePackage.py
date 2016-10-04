@@ -1,11 +1,36 @@
 #!/usr/bin/ipython 
+#
+# Copyright 2014, Plymouth Marine Laboratory
+#
+# This file is part of the bgc-val library.
+#
+# bgc-val is free software: you can redistribute it and/or modify it
+# under the terms of the Revised Berkeley Software Distribution (BSD) 3-clause license. 
+
+# bgc-val is distributed in the hope that it will be useful, but
+# without any warranty; without even the implied warranty of merchantability
+# or fitness for a particular purpose. See the revised BSD license for more details.
+# You should have received a copy of the revised BSD license along with bgc-val.
+# If not, see <http://opensource.org/licenses/BSD-3-Clause>.
+#
+# Address:
+# Plymouth Marine Laboratory
+# Prospect Place, The Hoe
+# Plymouth, PL1 3DH, UK
+#
+# Email:
+# ledm@pml.ac.uk
+#
 #####
 #
 
 """
-	In this code, we run the whole package analysis suite.
-	
+.. module:: theWholePackage
+   :platform: Unix
+   :synopsis: A script the run the entire suite of analyses and produce an html report.
+.. moduleauthor:: Lee de Mora <ledm@pml.ac.uk>
 """
+
 
 
 import matplotlib
@@ -14,7 +39,7 @@ matplotlib.use('Agg')
 from sys import argv,exit
 from multiprocessing import Pool
 
-from downloadFromMass import  downloadMass, findLastFinishedYear
+from bgcvaltools.downloadFromMass import  downloadMass, findLastFinishedYear
 from analysis_timeseries import analysis_timeseries, singleTimeSeries, singleTimeSeriesProfile
 from analysis_timeseries import level1KeysDict, timeseriesDict, physKeysDict
 from analysis_p2p import analysis_p2p, p2pDict_level2, p2pDict_physics,single_p2p
@@ -58,6 +83,20 @@ def p2pParrallel_phys(index):
 
 def theWholePackage(jobID,year=False,suite = 'level1'):
 
+	"""
+	theWholePackage function. This function runs the whole default package analysis suite
+	and outputs it to an html report.
+	
+	:param jobID: The jobID of the run.
+	:param year: The year of the run, False will search for a year, '*' will not run point to point.	    
+	:param suite: The type of analysis. Options are 'Physics',
+	
+	This function calls:
+		the html5Maker
+		analysis_timeseries
+		analysis_p2p
+		
+	"""
         #if year in [False,  '*']:
 	#        year = findLastFinishedYear(jobID,dividby=25)
 	#elif type(year) in [type(1000), type(1000.)]:
@@ -68,16 +107,16 @@ def theWholePackage(jobID,year=False,suite = 'level1'):
 	parrallel = True
 	cores = 8
 
-        print "########\nThe Whole Package:\tmaking Summary report"
         
         if suite =='physics':	physicsOnly=True
         else: 			physicsOnly=False
-        html5Maker(jobID =jobID,
-                   reportdir=folder('reports/'+jobID),
-                   year = year,
-                   clean=True,
-                   physicsOnly=physicsOnly
-                   )
+#        print "########\nThe Whole Package:\tmaking Summary report"
+ #       html5Maker(jobID =jobID,
+  #                 reportdir=folder('reports/'+jobID),
+   #                year = year,
+    #               clean=True,
+     #              physicsOnly=physicsOnly
+      #             )
 #	return			  
 
 	print "########\nThe Whole Package:\tStarting Time series (surface only)", jobID 	
@@ -134,7 +173,16 @@ def theWholePackage(jobID,year=False,suite = 'level1'):
 		print "########\nThe Whole Package:\tNot Running point to point analysis of", jobID," because year is:", year
 	
 
-
+        print "########\nThe Whole Package:\tmaking Final Summary report"
+        
+        if suite =='physics':	physicsOnly=True
+        else: 			physicsOnly=False
+        html5Maker(jobID =jobID,
+                   reportdir=folder('reports/'+jobID),
+                   year = year,
+                   clean=True,
+                   physicsOnly=physicsOnly
+                   )
 
 
 
@@ -162,14 +210,14 @@ if __name__=="__main__":
 		if physicsOnly:	theWholePackage(jobID,year=year,suite='physics')
 		else:		theWholePackage(jobID,year=year)
 		
-        if year == False: year = '*'
-	print "########\nThe Whole Package:\tmaking Summary report", jobID,year	
-	html5Maker(jobID =jobID,
-		   reportdir=folder('reports/'+jobID),
-		   year = year,
-		   clean=True,
-		   physicsOnly=physicsOnly,
-		   )
+      #  if year == False: year = '*'
+#	print "########\nThe Whole Package:\tmaking Summary report", jobID,year	
+#	html5Maker(jobID =jobID,
+#		   reportdir=folder('reports/'+jobID),
+#		   year = year,
+#		   clean=True,
+#		   physicsOnly=physicsOnly,
+#		   )
 		   
 		   
 		

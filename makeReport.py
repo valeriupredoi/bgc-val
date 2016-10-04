@@ -28,22 +28,19 @@
 
 """
 
-from UKESMpython import folder, shouldIMakeFile,round_sig
-try:
-	from bgcvaltools.pftnames import getLongName
-except: from pftnames import getLongName
+#####	
+# Load Standard Python modules:
 from glob import glob
 from sys import argv
 import os 
 import shutil
+
+#####	
+# Load specific local code:
+from UKESMpython import folder, shouldIMakeFile,round_sig
 from html5 import html5Tools, htmltables
-try:
-        from bgcvaltools.pftnames import getLongName
-	from timeseries.analysis_level0 import analysis_level0,analysis_level0_insitu
-except: 
-	# old file structure
-	from pftnames import getLongName
-	from analysis_level0 import analysis_level0,analysis_level0_insitu
+from bgcvaltools.pftnames import getLongName
+from timeseries.analysis_level0 import analysis_level0,analysis_level0_insitu
 
 
 
@@ -58,7 +55,7 @@ def copytree(src, dst, symlinks=False, ignore=None):
             try:shutil.copy2(s, d)
             except: pass
 
-def addImageToHtml(fn,imagesfold,reportdir):
+def addImageToHtml(fn,imagesfold,reportdir,debug=True):
 	#####
 	# Note that we use three paths here.
 	# fn: The original file path relative to here
@@ -69,22 +66,19 @@ def addImageToHtml(fn,imagesfold,reportdir):
 	relfn = newfn.replace(reportdir,'./')	
 		
 	if not os.path.exists(newfn):
-		print "cp ",newfn,fn	
+		if debug: print "cp",fn, newfn
 		shutil.copy2(fn, newfn)
 	else:
 		####
 		# Check if the newer file is the same one from images.
-		
 		if os.path.getmtime(fn) == os.path.getmtime(newfn): return relfn
 		####
 		# Check if file is newer than the one in images.		
 		if shouldIMakeFile(fn, newfn,):
-			print "removing old file",fn
+			if debug: print "removing old file",fn
 			os.remove(newfn)
 			shutil.copy2(fn, newfn)			
-			print "cp ",newfn,fn
-			
-
+			if debug: print "cp",fn, newfn
 	return relfn
 
 	
@@ -662,7 +656,7 @@ def html5Maker(
 			vfiles = []
 			#vfiles = glob('./images/'+jobID+'/timeseries/*/percentiles*'+key+'*'+region+'*10-90pc.png')
                         #vfiles.extend(glob('./images/'+jobID+'/timeseries/*/profile*'+key+'*'+region+'*median.png'))
-           	     	#vfiles.extend(glob('./images/'+jobID+'/timeseries/*/Sum*'+key+'*'+region+'*sum.png'))                        
+            	     	#vfiles.extend(glob('./images/'+jobID+'/timeseries/*/Sum*'+key+'*'+region+'*sum.png'))                        
 			#vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*hist.png'))
 			for s in slices:
 			    if s in ['Surface','1000m',]:
@@ -1032,7 +1026,7 @@ def html5Maker(
 
 	if regionMap:
 		vfiles = []	
-		vfiles.extend(glob('images/maps/Region_Legend.png'))
+		vfiles.extend(glob('html5/html5Assets/images/*Legend.png'))
 		relfns = [addImageToHtml(fn, imagesfold, reportdir) for fn in vfiles]				
 		print relfns
 		href = 'regionMap_default'
@@ -1040,9 +1034,9 @@ def html5Maker(
 			indexhtmlfn,
 			[href,],
 			'Legends', 
-			SidebarTitles={href:'Regional legends',},
-			Titles={href:'Regional boundaries legend',},
-			Descriptions={href:'A map showing the boundaries of the regions used elsewhere in this report.',},						
+			SidebarTitles={href:'Regional and Transect Legends',},
+			Titles={href:'Regional and Transect Legends',},
+			Descriptions={href:'Maps showing the boundaries of the regions and transects used in this report.',},						
 			FileLists={href:relfns,},						
 			)									
 

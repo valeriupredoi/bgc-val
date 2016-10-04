@@ -22,7 +22,13 @@
 # ledm@pml.ac.uk
 #
 
+"""
+.. module:: prepareERSEMyear
+   :platform: Unix
+   :synopsis: A tool for stiching together multiple months of ERSEM data into one annual file. 
+.. moduleauthor:: Lee de Mora <ledm@pml.ac.uk>
 
+"""
 from glob import glob
 from os.path import basename,exists
 from sys import argv

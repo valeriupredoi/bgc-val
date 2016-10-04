@@ -22,7 +22,13 @@
 # Email:
 # ledm@pml.ac.uk
 #
+"""
+.. module:: analysis_compare
+   :platform: Unix
+   :synopsis: A script to produce an intercomparison of multiple runs the time series analyses.
+.. moduleauthor:: Lee de Mora <ledm@pml.ac.uk>
 
+"""
 
 #####	
 # Load Standard Python modules:
@@ -43,19 +49,17 @@ import UKESMpython as ukp
 from timeseries import timeseriesAnalysis
 from timeseries import profileAnalysis
 from timeseries import timeseriesPlots as tsp 
-from pftnames import getLongName
+try:	from bgcvaltools.pftnames import getLongName
+except:	from pftnames import getLongName
 
+import paths
 
-def timeseries_compare(colours,physics=True,bio=False):
+def timeseries_compare(colours,physics=True,bio=False,debug=True,):
 	### strategy here is a simple wrapper.
 	# It's a little cheat-y, as I'm copying straight from analysis_timeseries.py
 	
 	
-	#jobs = ['u-af123', 'u-af139','u-af420','u-af421', ]
-
-        #colours = {'u-af981':'red', 'u-af982':'orange','u-ae748':'darkblue','u-af983':'blue','u-af984':'purple', }#'u-af586':'green','u-af730':'pink','u-ae748':'black'}
-
-	#colours = {'u-ae748':'darkblue','u-af983':'blue', }	
+	
 	jobs = sorted(colours.keys())#['u-af725', 'u-af728','u-af420','u-af421', 'u-af586','u-af730','u-ae748']	
 
         imageFolder = 'images/TimeseriesCompare/'
@@ -63,8 +67,6 @@ def timeseries_compare(colours,physics=True,bio=False):
         elif len(jobs)==2: imageFolder+= jobs[0]+'_and_'+jobs[1]
         elif len(jobs)==5: imageFolder+= 'AllFiveRuns'
         else: 		   imageFolder+= 'All'+str(len(jobs))+'Runs'
-
-
 
 
 	annual = True
@@ -97,6 +99,21 @@ def timeseries_compare(colours,physics=True,bio=False):
 		analysisKeys.append('Alk')	
 		analysisKeys.append('DIC')
 	
+      	  	analysisKeys.append('TotalOMZVolume')           # Total Oxygen Minimum zone Volume
+       	 	analysisKeys.append('OMZThickness')             # Oxygen Minimum Zone Thickness
+        	analysisKeys.append('OMZMeanDepth')             # Oxygen Minimum Zone mean depth      
+        
+        if debug:
+        	####
+        	# Supercedes other flags.
+		analysisKeys = []
+       	  	analysisKeys.append('TotalOMZVolume')           # Total Oxygen Minimum zone Volume
+       	 	analysisKeys.append('OMZThickness')             # Oxygen Minimum Zone Thickness
+        	analysisKeys.append('OMZMeanDepth')             # Oxygen Minimum Zone mean depth    
+		analysisKeys.append('O2')                       # WOA Oxygen        	
+        	if bio ==False:return
+        	if physics == True:return  
+                               	
 	layerList 	= ['Surface',]
 	metricList 	= ['mean',]
   	regionList	= ['Global',]
@@ -107,30 +124,11 @@ def timeseries_compare(colours,physics=True,bio=False):
 		print "analysis-timeseries.py:\tBeing run at CEDA on ",gethostname()
 		machinelocation = 'JASMIN'	
 				
-		ObsFolder 	= "/group_workspaces/jasmin/esmeval/example_data/bgc/"
-		esmvalFolder 	= "/group_workspaces/jasmin2/ukesm/BGC_data/"
-
-			
-		#####
-		# Location of model files.	
-		MEDUSAFolder_pref	= ukp.folder(esmvalFolder)
-		NEMOFolder_pref		= ukp.folder(esmvalFolder)
-		
 		#####
 		# Location of data files.
-		if annual:	WOAFolder 	= ukp.folder(ObsFolder+"WOA/annual")
-		else:		WOAFolder 	= ukp.folder(ObsFolder+"WOA/")
-		
-		MAREDATFolder 	= ObsFolder+"/MAREDAT/MAREDAT/"
-		GEOTRACESFolder = ObsFolder+"/GEOTRACES/GEOTRACES_PostProccessed/"
-		TakahashiFolder = ObsFolder+"/Takahashi2009_pCO2/"
-		MLDFolder	= ObsFolder+"/IFREMER-MLD/"
-		iMarNetFolder	= ObsFolder+"/LestersReportData/"
-		GlodapDir	= ObsFolder+"/GLODAP/"
-		GLODAPv2Dir	= ObsFolder+"/GLODAPv2/GLODAPv2_Mapped_Climatologies/"
-		OSUDir		= ObsFolder+"OSU/"
-		CCIDir		= ObsFolder+"CCI/"
-		icFold		= ObsFolder+"/InitialConditions/"
+		if annual:	WOAFolder = paths.WOAFolder_annual
+		else:		WOAFolder = paths.WOAFolder		
+				
 
 		# New eORCA1 grid		
 		orcaGridfn 	= '/group_workspaces/jasmin/esmeval/example_data/bgc/mesh_mask_eORCA1_wrk.nc'
@@ -213,7 +211,7 @@ def timeseries_compare(colours,physics=True,bio=False):
 				velo = nc.variables['vozocrtx'][0,:,LAT0:LAT1,LON]
 				return np.sum(velo*e3u*e2u*umask)*1.e-6			
 								
-			av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_U', MEDUSAFolder_pref, annual)
+			av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_U', paths.ModelFolder_pref, annual)
 			av[name]['dataFile'] 	= ''
 			
 			av[name]['modelcoords'] = medusaCoords 	
@@ -264,7 +262,7 @@ def timeseries_compare(colours,physics=True,bio=False):
 			def calcTotalIceExtentS(nc,keys): # South
 				return np.ma.masked_where((tmask==0)+(nc.variables[keys[0]][:].squeeze()<0.15)+(lat>0.),area).sum()/1E12
 								
-			av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', MEDUSAFolder_pref, annual)												
+			av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)												
 			av[name]['dataFile'] 		= ''
 			
 			av[name]['modelcoords'] 	= medusaCoords 	
@@ -315,7 +313,7 @@ def timeseries_compare(colours,physics=True,bio=False):
 				return 	a
 			
 			name = 'ExportRatio'
-			av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', MEDUSAFolder_pref, annual)								
+			av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', paths.ModelFolder_pref, annual)								
 				
 			av[name]['dataFile'] 		= ""
 			av[name]['modelcoords'] 	= medusaCoords 	
@@ -352,9 +350,9 @@ def timeseries_compare(colours,physics=True,bio=False):
 			
 			name = 'TotalIntegratedPrimaryProduction'
 			if annual:
-				av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', MEDUSAFolder_pref, annual)							
+				av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', paths.ModelFolder_pref, annual)							
 				if noOSU:	av[name]['dataFile']            = ''
-				else:		av[name]['dataFile'] 		= OSUDir +"/standard_VGPM.SeaWIFS.global.average.nc"
+				else:		av[name]['dataFile'] 		= paths.OSUDir +"/standard_VGPM.SeaWIFS.global.average.nc"
 			
 			av[name]['modelcoords'] 	= medusaCoords 	
 			av[name]['datacoords'] 		= glodapCoords
@@ -422,14 +420,14 @@ def timeseries_compare(colours,physics=True,bio=False):
 			
 
 
-			av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', MEDUSAFolder_pref, annual)								
+			av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', paths.ModelFolder_pref, annual)								
 			if annual:
-				av[name]['dataFile'] 		=  TakahashiFolder+'takahashi_2009_Anual_sumflux_2006c_noHead.nc'		
+				av[name]['dataFile'] 		=  paths.TakahashiFolder+'takahashi_2009_Anual_sumflux_2006c_noHead.nc'		
 			else:	
-				av[name]['dataFile'] 		=  TakahashiFolder+'takahashi2009_month_flux_pCO2_2006c_noHead.nc'				
+				av[name]['dataFile'] 		=  paths.TakahashiFolder+'takahashi2009_month_flux_pCO2_2006c_noHead.nc'				
 				print "Air Sea Flux CO2 monthly not implemented"
 				assert 0
-				#av[name]['dataFile'] 		=  TakahashiFolder+'takahashi2009_month_flux_pCO2_2006c_noHead.nc'
+				#av[name]['dataFile'] 		=  paths.TakahashiFolder+'takahashi2009_month_flux_pCO2_2006c_noHead.nc'
 				
 			av[name]['modelcoords'] 	= medusaCoords 	
 			av[name]['datacoords'] 		= takahashiCoords
@@ -453,9 +451,9 @@ def timeseries_compare(colours,physics=True,bio=False):
 
 		if  'Iron' in analysisKeys:
 			name = 'Iron'
-			av[name]['modelFiles']  = listModelDataFiles(jobID, 'ptrc_T', MEDUSAFolder_pref, annual)								
+			av[name]['modelFiles']  = listModelDataFiles(jobID, 'ptrc_T', paths.ModelFolder_pref, annual)								
 				
-			av[name]['dataFile'] 		= icFold+"/UKESM_fields_1860_eORCA1_small.nc"
+			av[name]['dataFile'] 		= paths.icFold+"/UKESM_fields_1860_eORCA1_small.nc"
 			av[name]['modelcoords'] 	= medusaCoords 	
 			av[name]['datacoords'] 		= icCoords
 			av[name]['modeldetails']	= {'name': name, 'vars':['FER',], 'convert': ukp.mul1000, 'units':'umolFe/m3'}
@@ -471,7 +469,7 @@ def timeseries_compare(colours,physics=True,bio=False):
 
 		if 'N' in analysisKeys:
 			name = 'Nitrate'
-			av[name]['modelFiles']  = listModelDataFiles(jobID, 'ptrc_T', MEDUSAFolder_pref, annual)				
+			av[name]['modelFiles']  = listModelDataFiles(jobID, 'ptrc_T', paths.ModelFolder_pref, annual)				
 			if annual:
 				av[name]['dataFile'] 		=  WOAFolder+'/woa13_all_n00_01.nc'
 			else:
@@ -499,7 +497,7 @@ def timeseries_compare(colours,physics=True,bio=False):
 		
 		if 'Si' in analysisKeys:
 			name = 'Silicate'
-			av[name]['modelFiles']  = listModelDataFiles(jobID, 'ptrc_T', MEDUSAFolder_pref, annual)				
+			av[name]['modelFiles']  = listModelDataFiles(jobID, 'ptrc_T', paths.ModelFolder_pref, annual)				
 			if annual:	
 				av[name]['dataFile'] 		= WOAFolder+'woa13_all_i00_01.nc'
 			else:
@@ -524,7 +522,7 @@ def timeseries_compare(colours,physics=True,bio=False):
 		if 'O2' in analysisKeys:
 			name = 'Oxygen'
 			if annual:
-				av[name]['modelFiles']  = listModelDataFiles(jobID, 'ptrc_T', MEDUSAFolder_pref, annual)		
+				av[name]['modelFiles']  = listModelDataFiles(jobID, 'ptrc_T', paths.ModelFolder_pref, annual)		
 				av[name]['dataFile'] 		=  WOAFolder+'woa13_all_o00_01.nc'
 				
 			av[name]['modelcoords'] 	= medusaCoords 	
@@ -545,6 +543,163 @@ def timeseries_compare(colours,physics=True,bio=False):
 			av[name]['Dimensions']		= 3
 
 
+		if 'OMZThickness' in analysisKeys or 'OMZMeanDepth' in analysisKeys or 'OMZThickness50' in analysisKeys:
+		    for name in ['OMZThickness','OMZMeanDepth','OMZThickness50']:
+			if name not in analysisKeys: continue	
+		
+			if annual:
+				av[name]['modelFiles']  	= sorted(glob(paths.ModelFolder_pref+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
+				av[name]['dataFile'] 		=  WOAFolder+'woa13_all_o00_01.nc'
+			else:
+				print "OMZ Thickness not implemented for monthly data"
+				assert 0
+			
+			nc = Dataset(paths.orcaGridfn,'r')
+			if name in ['OMZThickness', 'OMZThickness50']:		
+				thickness   	= nc.variables['e3t' ][:]
+			elif name in ['OMZMeanDepth',]:		
+				depths   	= nc.variables['gdepw' ][:]		
+			nc.close()			
+
+			omzthreshold = 20.
+			if name == 'OMZThickness50':	omzthreshold = 50.
+				
+			def modelOMZthickness(nc,keys):
+				o2 = nc.variables[keys[0]][:].squeeze()
+				totalthick = np.ma.masked_where((o2>omzthreshold)+o2[0].mask,thickness).sum(0).data
+				if totalthick.max() in [0.,0]: return np.array([0.,])
+			
+				return np.ma.masked_where(totalthick==0., totalthick)
+				#return np.ma.masked_where((arr>omzthreshold) + (arr <0.) + arr.mask,thickness).sum(0)
+
+			def modelMeanOMZdepth(nc,keys):
+				o2 = nc.variables[keys[0]][:].squeeze()
+				meandepth = np.ma.masked_where((o2>omzthreshold)+o2[0].mask,depths).mean(0).data
+				if meandepth.max() in [0.,0]: return np.array([0.,])
+			
+				return np.ma.masked_where(meandepth==0., meandepth)
+				#return np.ma.masked_where((arr>omzthreshold) + (arr <0.) + arr.mask,thickness).sum(0)
+				
+
+			
+			def woaOMZthickness(nc,keys):
+				o2 = nc.variables[keys[0]][:].squeeze() *44.661
+				pthick = np.zeros_like(o2) 
+				lons = nc.variables['lon'][:]
+				lats = nc.variables['lat'][:]			
+				zthick  = np.abs(nc.variables['depth_bnds'][:,0] - nc.variables['depth_bnds'][:,1])
+
+				for y,lat in enumerate(lats):
+				    for x,lon in enumerate(lons):			  
+					pthick[:,y,x] = zthick
+				totalthick = np.ma.masked_where((o2>omzthreshold)+o2[0].mask,pthick).sum(0).data
+			
+				if totalthick.max() in [0.,0]: return np.array([0.,])
+				return np.ma.masked_where(totalthick==0., totalthick)
+
+			def woaMeanOMZdepth(nc,keys):
+				o2 = nc.variables[keys[0]][:].squeeze() *44.661
+				pdepths = np.zeros_like(o2) 
+				lons = nc.variables['lon'][:]
+				lats = nc.variables['lat'][:]			
+				wdepths = np.abs(nc.variables['depth'][:])
+			
+				for y,lat in enumerate(lats):
+				    for x,lon in enumerate(lons):			  
+					pdepths[:,y,x] = wdepths
+				wmeanDepth = np.ma.masked_where((o2>omzthreshold)+o2[0].mask,pdepths).mean(0).data
+			
+				if wmeanDepth.max() in [0.,0]: return np.array([0.,])
+				return np.ma.masked_where(wmeanDepth==0., wmeanDepth)
+									
+				
+			av[name]['modelcoords'] 	= medusaCoords 	
+			av[name]['datacoords'] 		= woaCoords
+	
+			if name in ['OMZThickness', 'OMZThickness50']:
+				av[name]['modeldetails'] 	= {'name': name, 'vars':['OXY',], 'convert': modelOMZthickness,'units':'m'}
+				av[name]['datadetails']  	= {'name': name, 'vars':['o_an',], 'convert': woaOMZthickness,'units':'m'}
+			elif name in ['OMZMeanDepth',]:
+				av[name]['modeldetails'] 	= {'name': name, 'vars':['OXY',], 'convert': modelMeanOMZdepth,'units':'m'}
+				av[name]['datadetails']  	= {'name': name, 'vars':['o_an',], 'convert': woaMeanOMZdepth,'units':'m'}		
+	
+			av[name]['layers'] 		= ['Surface',] 
+			av[name]['regions'] 		= regionList
+			av[name]['metrics']		= metricList
+
+			av[name]['datasource'] 		= 'WOA'
+			av[name]['model']		= 'MEDUSA'
+
+			av[name]['modelgrid']		= 'eORCA1'
+			av[name]['gridFile']		= paths.orcaGridfn	
+			av[name]['Dimensions']		= 2		
+		
+		
+		
+
+		if 'TotalOMZVolume' in analysisKeys or 'TotalOMZVolume50' in analysisKeys:
+		    for name in ['TotalOMZVolume','TotalOMZVolume50']:
+			if name not in analysisKeys: continue
+			if annual:
+				av[name]['modelFiles']  	= sorted(glob(paths.ModelFolder_pref+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
+				av[name]['dataFile'] 		=  WOAFolder+'woa13_all_o00_01.nc'
+			else:
+				print "OMZ volume not implemented for monthly data"
+				assert 0
+			
+			nc = Dataset(paths.orcaGridfn,'r')
+			try:	
+				vol   = nc.variables['pvol' ][:]
+				tmask = nc.variables['tmask'][:]
+			except:
+				tmask = nc.variables['tmask'][:]			
+				area = nc.variables['e2t'][:] * nc.variables['e1t'][:]
+				pvol = nc.variables['e3t'][:] *area			
+				pvol = np.ma.masked_where(tmask==0,pvol)
+			nc.close()			
+
+			if name == 'TotalOMZVolume':	omzthreshold = 20.
+			if name == 'TotalOMZVolume50':	omzthreshold = 50.		
+			def modelTotalOMZvol(nc,keys):
+				arr = nc.variables[keys[0]][:].squeeze()
+				return np.ma.masked_where((arr>omzthreshold) + pvol.mask,pvol).sum()
+	
+
+			
+			def woaTotalOMZvol(nc,keys):
+				arr = nc.variables[keys[0]][:].squeeze() *44.661
+				pvol = np.zeros_like(arr) 
+				lons = nc.variables['lon'][:]
+				lats = nc.variables['lat'][:]			
+				latbnds = nc.variables['lat_bnds'][:]
+				zthick  = np.abs(nc.variables['depth_bnds'][:,0] - nc.variables['depth_bnds'][:,1])
+			
+				for y,lat in enumerate(lats):
+					area = ukp.Area([latbnds[y,0],0.],[latbnds[y,1],1.])
+					for z,thick in enumerate(zthick):
+						pvol[z,y,:] = np.ones_like(lons)*area*thick
+					
+				return np.ma.masked_where(arr.mask + (arr >omzthreshold)+(arr <0.),pvol).sum()
+				
+			av[name]['modelcoords'] 	= medusaCoords 	
+			av[name]['datacoords'] 		= woaCoords
+	
+			av[name]['modeldetails'] 	= {'name': name, 'vars':['OXY',], 'convert': modelTotalOMZvol,'units':'m^3'}
+			av[name]['datadetails']  	= {'name': name, 'vars':['o_an',], 'convert': woaTotalOMZvol,'units':'m^3'}
+	
+			av[name]['layers'] 		= ['layerless',] 
+			av[name]['regions'] 		= ['regionless',]
+			av[name]['metrics']		= ['metricless', ]
+
+			av[name]['datasource'] 		= 'WOA'
+			av[name]['model']		= 'MEDUSA'
+
+			av[name]['modelgrid']		= 'eORCA1'
+			av[name]['gridFile']		= paths.orcaGridfn	
+			av[name]['Dimensions']		= 1	
+		
+
+
 		if 'DIC' in analysisKeys:
 	
 			def convertkgToM3(nc,keys):
@@ -552,8 +707,8 @@ def timeseries_compare(colours,physics=True,bio=False):
 				
 			name = 'DIC'
 		
-			av[name]['modelFiles'] 		= listModelDataFiles(jobID, 'ptrc_T', MEDUSAFolder_pref, annual)				
-			av[name]['dataFile'] 		= GLODAPv2Dir+ 'GLODAPv2.tco2.historic.nc'
+			av[name]['modelFiles'] 		= listModelDataFiles(jobID, 'ptrc_T', paths.ModelFolder_pref, annual)				
+			av[name]['dataFile'] 		= paths.GLODAPv2Dir+ 'GLODAPv2.tco2.historic.nc'
 				
 			av[name]['modelcoords'] 	= medusaCoords 	
 			av[name]['datacoords'] 		= glodapv2Coords
@@ -578,8 +733,8 @@ def timeseries_compare(colours,physics=True,bio=False):
 		
 			name = 'Alkalinity'
 			if annual:		
-				av[name]['modelFiles']  = listModelDataFiles(jobID, 'ptrc_T', MEDUSAFolder_pref, annual)		
-				av[name]['dataFile'] 	=  GlodapDir+'Alk.nc'
+				av[name]['modelFiles']  = listModelDataFiles(jobID, 'ptrc_T', paths.ModelFolder_pref, annual)		
+				av[name]['dataFile'] 	=  paths.GlodapDir+'Alk.nc'
 			else:
 				print "Alkalinity data not available for monthly Analysis"
 				assert 0
@@ -606,12 +761,12 @@ def timeseries_compare(colours,physics=True,bio=False):
 						
 		if 'T' in analysisKeys:
 			name = 'Temperature'
-			av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', MEDUSAFolder_pref, annual)										
+			av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)										
 			if annual:		
-				#av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_grid_T.nc"))
+				#av[name]['modelFiles']  	= sorted(glob(paths.ModelFolder_pref+jobID+"/"+jobID+"o_1y_*_grid_T.nc"))
 				av[name]['dataFile'] 		= WOAFolder+'woa13_decav_t00_01v2.nc'
 			else:
-				#av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1m_*_grid_T.nc"))
+				#av[name]['modelFiles']  	= sorted(glob(paths.ModelFolder_pref+jobID+"/"+jobID+"o_1m_*_grid_T.nc"))
 				av[name]['dataFile'] 		= WOAFolder+'temperature_monthly_1deg.nc'
 			av[name]['modelcoords'] 	= medusaCoords 	
 			av[name]['datacoords'] 		= woaCoords
@@ -632,12 +787,12 @@ def timeseries_compare(colours,physics=True,bio=False):
 					
 		if 'S' in analysisKeys:
 			name = 'Salinity'
-			av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', MEDUSAFolder_pref, annual)												
+			av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)												
 			if annual:
-				#av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1y_*_grid_T.nc"))
+				#av[name]['modelFiles']  	= sorted(glob(paths.ModelFolder_pref+jobID+"/"+jobID+"o_1y_*_grid_T.nc"))
 				av[name]['dataFile'] 		= WOAFolder+'woa13_decav_s00_01v2.nc'
 			else:
-				#av[name]['modelFiles']  	= sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1m_*_grid_T.nc"))
+				#av[name]['modelFiles']  	= sorted(glob(paths.ModelFolder_pref+jobID+"/"+jobID+"o_1m_*_grid_T.nc"))
 				av[name]['dataFile'] 		= WOAFolder+'salinity_monthly_1deg.nc'
 			
 			av[name]['modelcoords'] 	= medusaCoords 	
@@ -724,7 +879,7 @@ def timeseries_compare(colours,physics=True,bio=False):
 		    	for name in ['AMOC_26N','AMOC_32S']:	
 		    		if name not in analysisKeys:continue	 
 		    		   									
-				av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_V', MEDUSAFolder_pref, annual)
+				av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_V', paths.ModelFolder_pref, annual)
 				av[name]['dataFile'] 	= ''
 			
 				av[name]['modelcoords'] = medusaCoords 	
@@ -794,14 +949,23 @@ def timeseries_compare(colours,physics=True,bio=False):
 	for k in modeldataD.keys():
 		print "Model Data D:",k
 	
+	####
+	# Standard surface:
+	
 	for name in av.keys():
 		timesD  = {}
 		arrD	= {}
 		
 		for jobID in jobs:
-			if name in ['Iron','Nitrate','Silicate','Oxygen','Temperature','Salinity', 'Alkalinity','DIC',]:
+			if name in ['Iron','Nitrate','Silicate',
+					'Oxygen','Temperature','Salinity',
+					 'Alkalinity','DIC',
+					  'OMZThickness', 'OMZMeanDepth',  ]:
 				mdata = modeldataD[(jobID,name )][('Global', 'Surface', 'mean')]
 				title = ' '.join(['Global', 'Surface', 'Mean',  getLongName(name)])
+			elif name in [  'OMZThickness', 'OMZMeanDepth',  ]:
+				mdata = modeldataD[(jobID,name )][('Global', 'layerless', 'metricless')]
+				title = ' '.join(['Global', getLongName(name)])			
 			else:
 				mdata = modeldataD[(jobID,name )][('regionless', 'layerless', 'metricless')]
 				title = getLongName(name)
@@ -830,6 +994,43 @@ def timeseries_compare(colours,physics=True,bio=False):
 				colours		= colours,
 			)
 	
+	####
+	# Oxygen at Depth:
+  	regionList	= [
+  			'Global', 'ignoreInlandSeas',
+	  		'SouthernOcean','ArcticOcean',
+			'Equator10', 'Remainder',
+  			'NorthernSubpolarAtlantic','NorthernSubpolarPacific',
+  			]	
+	for name in ['Oxygen',]:
+	  if name not in av.keys():continue
+	  for region in regionList:
+	    for layer in ['Surface','500m','1000m']:
+		timesD  = {}
+		arrD	= {}
+		
+		for jobID in jobs:
+			mdata = modeldataD[(jobID,name )][(region, layer, 'mean')]
+			title = ' '.join([region, layer, 'Mean',  getLongName(name)])
+	
+			timesD[jobID] 	= sorted(mdata.keys())
+			arrD[jobID]	= [mdata[t] for t in timesD[jobID]]
+		
+		for ts in ['Together',]:#'Separate']:
+		    for ls in ['Both','movingaverage',]:#'','Both',]:			
+			tsp.multitimeseries(
+				timesD, 		# model times (in floats)
+				arrD,			# model time series
+				data 	= -999,		# in situ data distribution
+				title 	= title,
+				filename=ukp.folder(imageFolder)+'_'.join([name,region,layer,ts,ls+'.png']),
+				units = '',
+				plotStyle 	= ts,
+				lineStyle	= ls,
+				colours		= colours,
+			)
+	
+
 
 if __name__=="__main__":
 	#colours = {'u-af981':'red', 'u-af982':'orange','u-af983':'blue','u-af984':'purple', }
@@ -840,7 +1041,6 @@ if __name__=="__main__":
 
         colours = {'u-af981':'red', 'u-af982':'orange', }
         timeseries_compare(colours, physics=False,bio=True)
-
 
         colours = {'u-ae748':'darkblue','u-af983':'blue', }    
         timeseries_compare(colours, physics=True,bio=False)

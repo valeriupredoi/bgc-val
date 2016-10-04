@@ -19,52 +19,51 @@
 #
 # Email:
 # ledm@pml.ac.uk
-#
-"""
-.. module:: paths
-   :platform: Unix
-   :synopsis: A list of paths to data files.
-.. moduleauthor:: Lee de Mora <ledm@pml.ac.uk>
-"""
+
 
 from socket import gethostname
 import UKESMpython as ukp
 from getpass import getuser
 
 #####
-# JASMIN
+# LOCAL_MACHINE_NAME
 machinelocation = ''
 
+
+"""
+	This is a set of paths that is used by BGC_Val to locate various datasets.
+	The idea is that it is set once per machine, and then used in multiple analyses.
+	It also sets the paths for storing the post processed data. 
+	
+	The specific paths are:
+	:shelvedir: A location for post processed data, saved in pythons shelve format.
+	:esmvalFolder: A path for the model data.
+	:ObsFolder: The base folder for many observational datasets. These will vary depending on your path location.
+	
+"""
+
 #####
-# JASMIN		
-if gethostname().find('ceda.ac.uk')>-1:
-	print "analysis-timeseries.py:\tBeing run at CEDA on ",gethostname()
-	machinelocation = 'JASMIN'
+# LOCAL_MACHINE_NAME		
+if gethostname().find('LOCAL_MACHINE_NAME')>-1:
+	print "analysis-timeseries.py:\tBeing run at LOCAL_MACHINE_NAME on ",gethostname()
+	machinelocation = 'LOCAL_MACHINE_NAME'
 			
 	#####
 	# Post processed Data location
-	shelvedir 	= ukp.folder("/group_workspaces/jasmin2/ukesm/BGC_data/"+getuser()+"/shelves/")
-	
-	#####
-	# Post processed p2p Data location		
-	p2p_ppDir = ukp.folder("/group_workspaces/jasmin2/ukesm/BGC_data/ukesm_postProcessed/")
-	
-	######
-	# Output location for plots.
-	imagedir	 = ukp.folder('images/')
-
+	shelvedir 	= ukp.folder("/Path/To/Model/Data/BGC_val_data/"+getuser()+"/shelves/")
+		
 	#####
 	# Location of model files.
-	esmvalFolder 	= "/group_workspaces/jasmin2/ukesm/BGC_data/"
+	esmvalFolder 	= "/Path/To/Model/Data/BGC_data/"
 	ModelFolder_pref	= ukp.folder(esmvalFolder)
 
 	#####
 	# eORCA1 grid		
-	orcaGridfn 	= '/group_workspaces/jasmin/esmeval/example_data/bgc/mesh_mask_eORCA1_wrk.nc'
+	orcaGridfn 	= '/Path/To/Model/Data/mesh_mask_eORCA1_wrk.nc'
 	
 	#####
 	# Location of data files.
-	ObsFolder 	= "/group_workspaces/jasmin/esmeval/example_data/bgc/"
+	ObsFolder 	= "/Path/To/Observation/Data/"
 	WOAFolder_annual= ObsFolder+"WOA/annual/"
 	WOAFolder 	= ObsFolder+"WOA/"
 	MAREDATFolder 	= ObsFolder+"/MAREDAT/MAREDAT/"
@@ -78,7 +77,6 @@ if gethostname().find('ceda.ac.uk')>-1:
 	CCIDir		= ObsFolder+"CCI/"
 	icFold		= ObsFolder+"/InitialConditions/"
 
-print "There may be problems with shelvedir (missing timeseries/jobID at the end) and WOAFolder, which is now WOAFolder and WOAFolder_annual"
 		
 		
 		

@@ -22,7 +22,13 @@
 # Email:
 # ledm@pml.ac.uk
 #
+"""
+.. module:: makeEORCAmasks 
+   :platform: Unix
+   :synopsis: Tool to make a mask netcdf for the regions.
+.. moduleauthor:: Lee de Mora <ledm@pml.ac.uk>
 
+"""
 
 from netCDF4 import Dataset
 import UKESMpython as ukp

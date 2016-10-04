@@ -19,7 +19,13 @@
 # Email:
 # ledm@pml.ac.uk
 #
+"""
+.. module:: testsuite_p2p
+   :platform: Unix
+   :synopsis: The tool that does the legwork for the point to point analysis.
+.. moduleauthor:: Lee de Mora <ledm@pml.ac.uk>
 
+"""
 #Standard Python modules:
 from sys import argv,exit
 from os.path import exists
@@ -27,9 +33,9 @@ from calendar import month_name
 
 #Specific local code:
 import UKESMpython as ukp
-from p2p import matchDataAndModel,makePlots,makeTargets, csvFromShelves, makePatternStatsPlots
+from p2p import matchDataAndModel,makePlots,makeTargets, makePatternStatsPlots
 #from 
-from pftnames import MaredatTypes,WOATypes,Ocean_names,OceanMonth_names,months, Seasons,Hemispheres,HemispheresMonths, OceanSeason_names
+from bgcvaltools.pftnames import MaredatTypes,WOATypes,Ocean_names,OceanMonth_names,months, Seasons,Hemispheres,HemispheresMonths, OceanSeason_names
 
 ###	Potential problems?
 ###		Reliance on ORCA1 grid

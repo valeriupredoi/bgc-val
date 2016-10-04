@@ -1,6 +1,12 @@
 #!/usr/bin/python
 # -*- coding: iso-8859-1 -*-
+
 """
+.. module:: HTML
+   :platform: Unix
+   :synopsis: This module provides a few classes to easily generate HTML code such as tables and lists.
+.. moduleauthor:: Philippe Lagadec
+
 HTML.py - v0.04 2009-07-28 Philippe Lagadec
 
 This module provides a few classes to easily generate HTML code such as tables

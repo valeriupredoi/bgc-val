@@ -21,7 +21,13 @@
 # Email:
 # ledm@pml.ac.uk
 #
+"""
+.. module:: makeTargets
+   :platform: Unix
+   :synopsis: A tool for making Taylor and Target diagrams from the point to point analysis.
+.. moduleauthor:: Lee de Mora <ledm@pml.ac.uk>
 
+"""
 
 from matplotlib import pyplot
 from matplotlib import rc
@@ -43,7 +49,7 @@ from shelve import open as shOpen
 from calendar import month_name
 
 import UKESMpython as ukp
-from pftnames import AutoVivification,getLongName
+from bgcvaltools.pftnames import AutoVivification,getLongName
 
 from bgcvaltools.StatsDiagram import TaylorDiagram, TargetDiagram,TaylorDiagramMulti
 from bgcvaltools.robust import TargetDiagram as robustTargetDiagram #, TargetDiagram,TaylorDiagramMulti

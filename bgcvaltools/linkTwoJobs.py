@@ -21,6 +21,13 @@
 #
 # Email:
 # ledm@pml.ac.uk
+"""
+.. module:: linkTwoJobs
+   :platform: Unix
+   :synopsis: Links two jobs, used when a job fails and is restarted with a new jobID.
+.. moduleauthor:: Lee de Mora <ledm@pml.ac.uk>
+
+"""
 
 from sys import argv 
 import subprocess

@@ -1,5 +1,14 @@
 from matplotlib.colors import ListedColormap,LinearSegmentedColormap
 import numpy as np
+
+"""
+.. module:: viridis
+   :platform: Unix
+   :synopsis: A default colour scale used in matplotlib2.0
+.. moduleauthor:: Lee de Mora <ledm@pml.ac.uk>
+
+"""
+
 """ 	In this code, we copied viridis code straight out of matplotlib.
 	This is because we can not be sure that matplotlib 1.5 or later is available.
 """

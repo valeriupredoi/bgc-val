@@ -20,6 +20,13 @@
 # Email:
 # ledm@pml.ac.uk
 #
+"""
+.. module:: shelveToDictionary
+   :platform: Unix
+   :synopsis: A tool to load a shelvesAV dictionary from the analysis-JASMIN.py and returns a dictionary of the metrics.
+.. moduleauthor:: Lee de Mora <ledm@pml.ac.uk>
+
+"""
 
 from UKESMpython import reducesShelves,listShelvesContents
 from shelve import open as shOpen

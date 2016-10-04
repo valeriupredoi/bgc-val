@@ -20,6 +20,13 @@
 # Email:
 # ledm@pml.ac.uk
 #
+"""
+.. module:: pftnames
+   :platform: Unix
+   :synopsis: A list of names used for pretty plots.
+.. moduleauthor:: Lee de Mora <ledm@pml.ac.uk>
+
+"""
 
 from calendar import month_name
 from UKESMpython import AutoVivification,AutoVivToYaml,folder,YamlToDict
@@ -59,7 +66,7 @@ BGCmodels 	= ['Diat-HadOCC', 'ERSEM','HadOCC', 'MEDUSA','PlankTOM6','PlankTOM10'
 
 Seasons		= ['JFM','AMJ','JAS','OND'] 
 
-Hemispheres	=['NorthHemisphere','SouthHemisphere',]
+Hemispheres	= ['NorthHemisphere','SouthHemisphere',]
 
 months = [m for m in month_name if m]	# Because months starts at 1, and 0 is empty.
 OceanMonth_names = [o+m for o in Ocean_names for m in months]
@@ -69,374 +76,15 @@ SouthHemispheresMonths = [h+m for h in ['SouthHemisphere',] for m in months]
 NorthHemispheresMonths = [h+m for h in ['NorthHemisphere',] for m in months] 	
 
 
-#####
-# Get Match Type: - _obsolete now
-#	
-def getmt_obsolete(loadYaml=False): 
-	"""
-	getmt(): Get Match Type. 
-		returns a Nested Dictionary with the following structure options:
-		
-	Typical usage:
-		mt[ModelName or Data source][variable name] = [list of variable names as they appears in the netcdf]
-		
-		where the mt dict always includes the coordinate names as their appear in the netcdf file too. ie:
-			mt['GEOTRACES']['lat'] 		= 'Latitude'
-	
-		This assumes that all netcdf files from the same source kept the same coordinate names.
-		Similarly, dimensions are treated differently than data.
-		ie data are a list, dimensions are a string.
-		
-	Alternative usage:	
-		It is possible to plot a combination of variables, such the sum of a series of values or the ratio of two.
-		In some cases you may want to divide a value by 1000. 
-		These cases work like this:
-			mt[ModelName or Data source][variable name]['name'] = variable name 
-			mt[ModelName or Data source][variable name]['convert'] = a function defined as defined here	
-			mt[ModelName or Data source][variable name][vars] = [list of variables to combine in the convert function]
-			mt[ModelName or Data source][variable name][new units] = 'mg m^-3' or whatever. (preferable from fancyUnits, below)
-	"""
-	assert False
-	
-	#####
-	# Try to open a yaml file. 
-	# By detault, this is not used.
-	yamlFile = folder('yaml')+'matchMetadata.yaml'
-	if exists(yamlFile) and loadYaml:
-		print 'getmt:\tLoading mt file from ',yamlFile
-		mt = YamlToDict(yamlFile,)
-		return mt
-		print 'getmt:\tCreating mt file:',yamlFile
-
-
-	####
-	# Some functions for maniulating data:
-	def NoChange(nc,keys):	return nc.variables[keys[0]][:]
-	def N2Biomass(nc,keys):	return nc.variables[keys[0]][:]* 79.573
-	def mul1000(nc,keys):	return nc.variables[keys[0]][:]* 1000.
-	def div1000(nc,keys):	return nc.variables[keys[0]][:]/ 1000.	
-	def applymask(nc,keys):	return np.ma.masked_where(nc.variables[keys[1]][:]==0.,nc.variables[keys[0]][:])
-	def sums(nc,keys):	
-		a = nc.variables[keys[0]][:]
-		for k in keys[1:]:a += nc.variables[k][:]
-		return a 
-	def oxconvert(nc,keys): return nc.variables[keys[0]][:] *44.661
-	# 1 ml/l = 103/22.391 = 44.661 umol/l
-	# http://ocean.ices.dk/Tools/UnitConversion.aspx
-		
-	tdicts = {	'ZeroToZero': {i  :i     for i in xrange(12)},		
-			'OneToOne':   {i+1:i+1   for i in xrange(12)},
-			'OneToZero':  {i+1:i     for i in xrange(12)},
-			'ZeroToOne':  {i  :i+1   for i in xrange(12)},			
-		}			
-	#####
-	# Models:
-	mt = AutoVivification() # match type
-	mt['ERSEM']['bac'] 			= ['B1c',]
-	mt['ERSEM']['mesozoo'] 			= ['Z4c',]
-	mt['ERSEM']['diatoms'] 			= ['P1c',]
-	mt['ERSEM']['picophyto'] 		= ['P3c',]
-	mt['ERSEM']['microzoo'] 		= ['Z5c',]			 	
-	mt['ERSEM']['pCO2'] 			= ['pCO2w',]#'fAirSeaC',]
-	mt['ERSEM']['chl'] 			= ['chl',]
-    	mt['ERSEM']['phosphate']  		= ['N1p',]	
-    	mt['ERSEM']['nitrate']  		= ['N3n',]	    	
-    	mt['ERSEM']['silicate']  		= ['N5s',]	
-    	mt['ERSEM']['oxygen']	  		= ['O2o',]	    	
-	mt['ERSEM']['iron'] 			= ['N7f',]
-	mt['ERSEM']['intpp'] 			= ['intpp',]	
-	mt['ERSEM']['t']			= 'index_t'	
-	mt['ERSEM']['z'] 			= 'deptht'
-	mt['ERSEM']['lat'] 			= 'nav_lat'
-	mt['ERSEM']['lon'] 			= 'nav_lon'
-	mt['ERSEM']['cal'] 			= '365_day'
-	
-	    		    	
-	mt['NEMO']['temperature'] 		= ['votemper',]	
- 	mt['NEMO']['salinity'] 			= ['vosaline',]				
-	mt['NEMO']['mld'] 			= ['somxl010',]
-	mt['NEMO']['mld'] 			= ['somxl010',]	
-	mt['NEMO']['mld_DT02'] 			= ['somxl010',]
-	mt['NEMO']['mld_DR003'] 		= ['somxl010',]
-	mt['NEMO']['mld_DReqDTm02'] 		= ['somxl010',]
-	mt['NEMO']['U'] 			= ['vozocrtx',]
-	mt['NEMO']['V'] 			= ['vomecrty',]				
-	mt['NEMO']['t'] 			= 'index_t'	
-	mt['NEMO']['z'] 			= 'deptht'
-	mt['NEMO']['lat'] 			= 'nav_lat'
-	mt['NEMO']['lon'] 			= 'nav_lon'
-	mt['NEMO']['cal']			= '365_day'
-
-
-	#mt['MEDUSA']['chl']['name'] 		=  'CHL'
-	#mt['MEDUSA']['chl']['vars'] 		=  ['CHN','CHD']		
-	#mt['MEDUSA']['chl']['convert'] 		=  sums
-	#mt['MEDUSA']['chl']['units'] 		=  'mg C/m^3'
-	#mt['MEDUSA']['chl'] 			=  ['CHL',]	
-	
-	mt['MEDUSA']['chl']['name'] 		=  'CHL'
-	mt['MEDUSA']['chl']['vars'] 		=  ['CHL',]		
-	mt['MEDUSA']['chl']['convert'] 		=  NoChange
-	mt['MEDUSA']['chl']['units'] 		=  'mg C/m^3'
-	#mt['MEDUSA']['chl'] 			=  ['CHL',]	
-	
-	mt['MEDUSA']['diatoms']['name'] 	=  'PHD'
-	mt['MEDUSA']['diatoms']['vars'] 	=  ['PHD',]		
-	mt['MEDUSA']['diatoms']['convert'] 	=  N2Biomass
-	mt['MEDUSA']['diatoms']['units'] 	=  'mg C/m^3'
-	
-	mt['MEDUSA']['iron']['name']		=  'FER'
-	mt['MEDUSA']['iron']['vars']		=  ['FER',]
-	mt['MEDUSA']['iron']['convert']		=  mul1000
-	mt['MEDUSA']['iron']['units']		=  'umol F/m^3'		
-
-	mt['MEDUSA']['mesozoo']['name'] 	=  'ZME'	
-	mt['MEDUSA']['mesozoo']['vars'] 	=  ['ZME',]				
-	mt['MEDUSA']['mesozoo']['convert'] 	=  N2Biomass	
-	mt['MEDUSA']['mesozoo']['units'] 	=  'mg C/m^3'		
-	
-	mt['MEDUSA']['microzoo']['name'] 	=  'ZMI'
-	mt['MEDUSA']['microzoo']['vars'] 	=  ['ZMI',]					
-	mt['MEDUSA']['microzoo']['convert'] 	=  N2Biomass			
-	mt['MEDUSA']['microzoo']['units'] 	=  'mg C/m^3'
-
-
-	dmsd= {'dms_and':'anderson','dms_ara':'aranamit','dms_hal':'halloran','dms_sim':'simodach'} 
-	for dms in ['dms_and','dms_ara','dms_hal','dms_sim']:	
-		mt['MEDUSA'][dms]['name'] 	=  dmsd[dms]
-		mt['MEDUSA'][dms]['vars'] 	=  [dmsd[dms],]					
-		mt['MEDUSA'][dms]['convert'] 	=  NoChange			
-		mt['MEDUSA'][dms]['units'] 	=  'umol / m3'
-	dmsd= {'dms_p_and':'anderson','dms_p_ara':'aranamit','dms_p_hal':'halloran','dms_p_sim':'simodach'} 
-	for d in ['dms_p_sim','dms_p_and','dms_p_ara','dms_p_hal',]:	
-	  for i in ['','1','2']:
-	  	dms = d+i
-		mt['MEDUSA'][dms]['name'] 	=  dmsd[d]+i
-		mt['MEDUSA'][dms]['vars'] 	=  [dmsd[d]+i,]					
-		mt['MEDUSA'][dms]['convert'] 	=  NoChange			
-		mt['MEDUSA'][dms]['units'] 	=  'umol / m3'
-		
-
-#	mt['MEDUSA']['dms'][
-
-    	mt['MEDUSA']['nitrate'] 	 	= ['DIN',]
-    	mt['MEDUSA']['pCO2']	  		= ['OCN_PCO2',]		    	
-    	mt['MEDUSA']['silicate']	  	= ['SIL',]			
-    	mt['MEDUSA']['oxygen']	  		= ['OXY',]			    	
-	mt['MEDUSA']['t'] 			= 'index_t'	
-	mt['MEDUSA']['z'] 			= 'deptht'
-	mt['MEDUSA']['lat'] 			= 'nav_lat'
-	mt['MEDUSA']['lon'] 			= 'nav_lon'
-	mt['MEDUSA']['cal'] 			= '365_day'
-	#mt['Medusa']				= mt['MEDUSA']
-
-
-
-    	mt['IMARNET']['chl']['vars']  		= ['chl',]
-    	mt['IMARNET']['chl']['name']  		= 'chl'
-	mt['IMARNET']['chl']['units'] 		= 'mg Chl/m3'
-	mt['IMARNET']['chl']['convert'] 	=  NoChange		    	
-    	mt['IMARNET']['nitrate']['vars']  	= ['no3',]
-    	mt['IMARNET']['nitrate']['name']  	= 'Nitrate'
-	mt['IMARNET']['nitrate']['units'] 	= 'mmol/m^3'
-	mt['IMARNET']['nitrate']['convert'] 	=  NoChange				
-
-    	mt['IMARNET']['phosphate']['vars']  	= ['po4',]
-    	mt['IMARNET']['phosphate']['name']  	= 'Phosphate'
-	mt['IMARNET']['phosphate']['units'] 	= 'mmol/m^3'
-	mt['IMARNET']['phosphate']['convert'] 	=  NoChange	
-		
-    	mt['IMARNET']['pCO2']['vars']  		= ['spco2',]
-    	mt['IMARNET']['pCO2']['name']  		= 'Partial pressure pCO2'
-	mt['IMARNET']['pCO2']['units'] 		= 'uatm'
-	mt['IMARNET']['pCO2']['convert'] 	=  NoChange	
-
-    	mt['IMARNET']['intpp']['vars']  	= ['intpp',]
-    	mt['IMARNET']['intpp']['name']  	= 'Integrated Primary Production'
-	mt['IMARNET']['intpp']['units'] 	= 'gC/m2/d'
-	mt['IMARNET']['intpp']['convert'] 	=  mul1000	
-
-    	mt['IMARNET']['oxygen']['vars']  	= ['o2',]
-    	mt['IMARNET']['oxygen']['name']  	= 'Dissolved Oxygen'
-	mt['IMARNET']['oxygen']['units'] 	= 'mmol/m^3'
-	mt['IMARNET']['oxygen']['convert'] 	=  NoChange	
-		
-
-    	mt['IMARNET']['silicate']['vars']  	= ['si',]
-    	mt['IMARNET']['silicate']['name']  	= 'Silicate'
-	mt['IMARNET']['silicate']['units'] 	= 'mmol/m^3'
-	mt['IMARNET']['silicate']['convert'] 	=  NoChange
-				
-	mt['IMARNET']['t'] 			= 'index_t'	
-	mt['IMARNET']['z'] 			= 'index_z' 
-	mt['IMARNET']['lat'] 			= 'nav_lat'
-	mt['IMARNET']['lon'] 			= 'nav_lon'
-	mt['IMARNET']['cal'] 			= '365_day'
-	for model in BGCmodels:
-		mt['IMARNET_'+model] = mt['IMARNET']
-		mt['iMarNet_'+model] = mt['IMARNET']
-
-	mt['CMIP5']['t'] 			= 'time'	
-	mt['CMIP5']['z'] 			= 'lev' 
-	mt['CMIP5']['lat'] 			= 'lat'
-	mt['CMIP5']['lon'] 			= 'lon'
-	mt['CMIP5']['cal'] 			= '365_day'
-    	mt['CMIP5']['oxygen']['vars']  	= ['o2',]
-    	mt['CMIP5']['oxygen']['name']  	= 'Dissolved Oxygen'
-	mt['CMIP5']['oxygen']['units'] 	= 'mmol/m^3'
-	mt['CMIP5']['oxygen']['convert'] =  NoChange	
-
-    	mt['CMIP5']['U']['vars']  	= ['uo',]
-    	mt['CMIP5']['U']['name']  	= 'Zonal Velocity'
-	mt['CMIP5']['U']['units'] 	= 'm/s'
-	mt['CMIP5']['U']['convert'] 	=  NoChange
-	
-    	mt['CMIP5']['V']['vars']  	= ['vo',]
-    	mt['CMIP5']['V']['name']  	= 'Meridional Velocity'
-	mt['CMIP5']['V']['units'] 	= 'm/s'
-	mt['CMIP5']['V']['convert'] 	=  NoChange
-					
-	CMIP5models = [ 'MEDUSA','ERSEM','BNU-ESM', 'IPSL-CM5A-LR', 'CESM1-BGC', 'IPSL-CM5A-MR', 
-			'CMCC-CESM', 'IPSL-CM5B-LR', 'CNRM-CM5', 'MPI-ESM-LR', 
-			'GFDL-ESM2G', 'MPI-ESM-MR', 'GFDL-ESM2M', 'MRI-ESM1', 
-			'HadGEM2-CC', 'NorESM1-ME', 'HadGEM2-ES',]
-	for model in CMIP5models:
-		mt['CMIP5_'+model] = mt['CMIP5']
-		mt['cmip5_'+model] = mt['CMIP5']		
-	#models= ['MEDUSA','NEMO']
-	
-	
-			
-	#####
-	# Data:
-	mt['MAREDAT']['bac'] 			= ['BIOMASS',]
-	mt['MAREDAT']['mesozoo'] 		= ['BIOMASS',]
-	mt['MAREDAT']['diatoms'] 		= ['BIOMASS',]
-	mt['MAREDAT']['picophyto'] 		= ['BIOMASS',]
-	mt['MAREDAT']['microzoo'] 		= ['BIOMASS',]
-	mt['MAREDAT']['PP'] 			= ['PP',]
-	mt['MAREDAT']['intpp'] 			= ['PPint',]	
-	mt['MAREDAT']['chl']['name']		= 'Chlorophylla'
-	mt['MAREDAT']['chl']['vars']		= ['Chlorophylla',]
-	mt['MAREDAT']['chl']['convert']		= div1000	
-	mt['MAREDAT']['chl']['units']		= ['ug/L',]
-	mt['MAREDAT']['t'] 			= 'index_t'
-	mt['MAREDAT']['z'] 			= 'DEPTH'
-	mt['MAREDAT']['lat'] 			= 'LATITUDE'
-	mt['MAREDAT']['lon'] 			= 'LONGITUDE'
-	mt['MAREDAT']['cal'] 			= 'standard'
-	mt['MAREDAT']['tdict']			= tdicts['ZeroToZero']
-	
-	#mt['Maredat'] 				= mt['MAREDAT']
-			
-	mt['WOA']['temperature'] 		= ['t_an',]#'t_mn',
-  	mt['WOA']['salinity'] 			= ['s_an',]#'s_mn',
-  	mt['WOA']['nitrate'] 			= ['n_an',]#'s_mn',  	
-	mt['WOA']['silicate'] 			= ['i_an',]#'i_mn',
-	mt['WOA']['phosphate'] 			= ['p_an',]#'p_mn',	    	  		
-	#mt['WOA']['oxygen'] 			= ['o_an',]#'p_mn',	
-    	mt['WOA']['oxygen']['vars']  		= ['o_an',]
-    	mt['WOA']['oxygen']['name']  		= 'o_an'
-	mt['WOA']['oxygen']['units'] 		= 'mmol/m^3'
-	mt['WOA']['oxygen']['convert'] 		=  oxconvert
-		    	  			
-	mt['WOA']['t'] 				= 'index_t'
-	mt['WOA']['z'] 				= 'depth'
-	mt['WOA']['lat'] 			= 'lat'
-	mt['WOA']['lon'] 			= 'lon'
-	mt['WOA']['cal'] 			= 'standard'    
-	mt['WOA']['tdict']			= tdicts['ZeroToZero']
-	
-
-	mt['TAKAHASHI']['pCO2'] 		= ['PCO2_SW',]#'DELTA_PCO2',]	'TFLUXSW06',
-	mt['TAKAHASHI']['t'] 			= 'TIME'
-	mt['TAKAHASHI']['z'] 			= 'index_z'
-	mt['TAKAHASHI']['lat'] 			= 'LAT'
-	mt['TAKAHASHI']['lon'] 			= 'LON'
-	mt['TAKAHASHI']['cal'] 			= 'standard'
-	mt['TAKAHASHI']['tdict']		= tdicts['ZeroToZero']
-	#mt['intPP']['intPP']			= ['PPint',]	
-								
-	mt['GEOTRACES']['iron']			= ['Fe_D_CONC_BOTTLE',]#'Fe_D_CONC_BOTTLE_FIA','Fe_S_CONC_BOTTLE',]
-	mt['GEOTRACES']['t']			= 'MONTH'
-	mt['GEOTRACES']['z'] 			= 'DEPTH'
-	mt['GEOTRACES']['lat'] 			= 'Latitude'
-	mt['GEOTRACES']['lon'] 			= 'Longitude'
-	mt['GEOTRACES']['cal'] 			= 'standard'
-	mt['GEOTRACES']['tdict']		= tdicts['OneToZero']
-		
-	mt['IFREMER']['mld']['name']		= 'mld'
-	mt['IFREMER']['mld']['vars']		= ['mld','mask']
-	mt['IFREMER']['mld']['convert']		= applymask	
-	mt['IFREMER']['mld']['units']		= ['m',]
-	#mt['IFREMER']['mld_DT02']		= ['mld','mask']
-	#mt['IFREMER']['mld_DR003']		= ['mld','mask']
-	#mt['IFREMER']['mld_DReqDTm02']		= ['mld','mask']
-	mt['IFREMER']['t'] 			= 'index_t'
-	mt['IFREMER']['z'] 			= 'index_z'
-	mt['IFREMER']['lat'] 			= 'lat'
-	mt['IFREMER']['lon'] 			= 'lon'
-	mt['IFREMER']['cal'] 			= 'standard'	
-	mt['IFREMER']['tdict']			= tdicts['ZeroToZero']
-	
-	
-#	mt['DRIFTERS']['U']			= ['U',]
-#	mt['DRIFTERS']['V']			= ['V',]
-#	mt['DRIFTERS']['t']			= 'Time'
-#	mt['DRIFTERS']['z'] 			= 'Depth'
-#	mt['DRIFTERS']['lat'] 			= 'Lat'
-#	mt['DRIFTERS']['lon'] 			= 'Lon'
-#	mt['DRIFTERS']['cal'] 			= 'standard'
-#	mt['DRIFTERS']['tdict']			= tdicts['OneToZero']	
-
-	mt['GODAS']['U']			= ['uo',]
-	mt['GODAS']['V']			= ['vo',]
-	mt['GODAS']['t']			= 'time'
-	mt['GODAS']['z'] 			= 'lev'
-	mt['GODAS']['lat'] 			= 'lat'
-	mt['GODAS']['lon'] 			= 'lon'
-	mt['GODAS']['cal'] 			= 'standard'
-	mt['GODAS']['tdict']			= tdicts['OneToZero']
-	
-		
-	for dms in ['dms_and','dms_ara','dms_hal','dms_sim']:	
-		mt['LANA'][dms]['name'] 	=  'lanaetal'
-		mt['LANA'][dms]['vars'] 	=  ['lanaetal',]					
-		mt['LANA'][dms]['convert'] 	=  NoChange			
-		mt['LANA'][dms]['units'] 	=  'umol / m3'
-	mt['LANA']['t'] 		= 'index_t'
-	mt['LANA']['z'] 		= 'deptht'
-	mt['LANA']['lat'] 		= 'nav_lat'
-	mt['LANA']['lon'] 		= 'nav_lon'
-	mt['LANA']['tdict']		= tdicts['ZeroToZero']	
-
-	for d in ['dms_p_and','dms_p_ara','dms_p_hal','dms_p_sim']:
-	  for i in ['','1','2']:
-	  	dms = d+i
-		mt['LANA_p'][dms]['name'] 	=  'DMS'
-		mt['LANA_p'][dms]['vars'] 	=  ['DMS',]					
-		mt['LANA_p'][dms]['convert'] 	=  NoChange			
-		mt['LANA_p'][dms]['units'] 	=  'nM'
-		
-	mt['LANA_p']['t'] 		= 'index_t'
-	mt['LANA_p']['z'] 		= 'deptht'
-	mt['LANA_p']['lat'] 		= 'nav_lat'
-	mt['LANA_p']['lon'] 		= 'nav_lon'
-	mt['LANA_p']['tdict']		= tdicts['ZeroToZero']	
-	#mt['PP']['PP'] 		= ['PP',]
-	#'AutoVivToYaml(mt,yamlFile)
-	return mt	
-	
-#def getShelveName(workingDir,model,jobID,year,name,newslice,xkey='*',ykey='*'):
-	#workingDir  = "/data/euryale7/scratch/ledm/ukesm_postProcessed/"
-	#Model = "ERSEM"
-	#jobID = "xhonp"
-	#year="1998"
-	#name="pCO2"
-#	shelvename = workingDir + model+'-'+jobID+'-'+year+'/'+name+'_'+newslice+'_'xkey+'vs'+ykey+'.shelve'
-	#return shelve
 
 def getLongName(text,debug=False):
+	""" 
+	:param text: A code-facing string.
+	
+	Converts a code-facing string to a human readible one, using a long list of pre-defined if statements.
+	Clearly, this isn't the best way to do this, but it has worked so far.
+	
+	"""
 	if debug: print "Getting long name:",text
 	if type(text) in [type(['a','b',]),type(('a','b',))]:
 		return ' '.join([getLongName(t) for t in text])
@@ -456,8 +104,8 @@ def getLongName(text,debug=False):
 	if text.lower() in firstLetterCaps:	return text.title()
 
 
-  	if text == 'Transect':		return "Transect"	
-  	if text == 'PTransect':		return "Pacific Transect"
+  	#if text == 'Transect':		return "Transect"	
+  	#if text == 'PTransect':		return "Pacific Transect"
 #  	if text == 'Surface':		return "Surface"
   	if text == '100m':		return "100m deep"  	
   	if text == '200m':		return "200m deep"  	  	  	
@@ -859,8 +507,8 @@ def getLongName(text,debug=False):
   	if text == 'Top40mNoArtics':	return "Top 40m (No Arctics)"
   	if text == 'Top200mNoArtics':	return "Top 200m  (No Arctics)"
 
-  	if text == 'Transect':	return "Pacifc Transect"  	
-  	if text == 'AtlanticTransect':	return "Atlantic Transect"  
+  	if text == 'RegionLegend':	return "Region Legend"
+  	if text == 'TransectsLegend':	return "Transects Legend"
   		  	
   	if text == 'NoShelf':	return "No Shelf"  
   	if text == 'NoShelfTop40':	return "No Shelf (Top 40m)"    	
@@ -951,7 +599,8 @@ def getLongName(text,debug=False):
 	
 	
 def fancyUnits(units,debug=False):
-	"""	Converts ascii units string into latex style formatting.
+	"""	
+	Converts ascii units string into latex style formatting.
 	"""
 	units = units.replace('[','').replace(']','')
 		

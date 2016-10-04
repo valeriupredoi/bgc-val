@@ -21,6 +21,13 @@
 #
 # Email:
 # ledm@pml.ac.uk
+"""
+.. module:: profileAnalysis
+   :platform: Unix
+   :synopsis: A tool for running a depth-profile time series analysis.
+.. moduleauthor:: Lee de Mora <ledm@pml.ac.uk>
+"""
+
 
 import numpy as np
 from shelve import open as shOpen
@@ -30,15 +37,10 @@ import shutil
 
 #Specific local code:
 import UKESMpython as ukp
-from pftnames import getLongName
 import timeseriesTools as tst 
 import timeseriesPlots as tsp 
-from makeEORCAmasks import makeMaskNC
-#getTimes, loadData
-
-
-
-        
+from bgcvaltools.makeEORCAmasks import makeMaskNC
+from bgcvaltools.pftnames import getLongName
 
 
 class profileAnalysis:

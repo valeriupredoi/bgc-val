@@ -19,7 +19,14 @@
 #
 # Email:
 # ledm@pml.ac.uk
+#
+"""
+.. module:: paths
+   :platform: Unix
+   :synopsis: A list of paths to data files.
+.. moduleauthor:: Lee de Mora <ledm@pml.ac.uk>
 
+"""
 
 from socket import gethostname
 import UKESMpython as ukp
@@ -34,9 +41,16 @@ if gethostname().find('pmpc')>-1:
 	machinelocation = 'PML'
 
 	#####
-	# Post processed Data location
+	# Post processed shelve Data location
 	shelvedir 	= ukp.folder('shelves/')
-
+	
+	#####
+	# Post processed p2p Data location		
+	p2p_ppDir = "/data/euryale7/scratch/ledm/ukesm_postProcessed/"
+	
+	######
+	# Output location for plots.
+	imagedir	 = ukp.folder('images/')
 
 	#####
 	# Location of model files.

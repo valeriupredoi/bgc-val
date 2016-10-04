@@ -21,7 +21,13 @@
 # Email:
 # ledm@pml.ac.uk
 #
+"""
+.. module:: p2pPlots
+   :platform: Unix
+   :synopsis: A tool to make plots for point to point analysis.
+.. moduleauthor:: Lee de Mora <ledm@pml.ac.uk>
 
+"""
 	
 	
 from netCDF4 import Dataset, num2date
@@ -43,9 +49,9 @@ from bgcvaltools.StatsDiagram import StatsDiagram
 from bgcvaltools.robust import StatsDiagram as robustStatsDiagram
 import bgcvaltools.unbiasedSymmetricMetrics as usm
 import UKESMpython as ukp 
-from pftnames import getLongName, AutoVivification, fancyUnits,CMIP5models # getmt
+from bgcvaltools.pftnames import getLongName, AutoVivification, fancyUnits,CMIP5models # getmt
 
-#from pftnames import MaredatTypes,IFREMERTypes,WOATypes,GEOTRACESTypes
+#from bgcvaltools.pftnames import MaredatTypes,IFREMERTypes,WOATypes,GEOTRACESTypes
 
 #import seaborn as sb
     
@@ -431,10 +437,9 @@ class makePlots:
 
 		# Robinson projection plots - Cartopy
 		#makeCartopy = True	# Don't need both.	
-		if newSlice=='Global':
+		if newSlice=='Global' and self.depthLevel in ['Surface','100m','200m','500m','1000m',] :
 		   # ####
 		   # Global, as we have interpollation turned on here.
-		   
 		   if ukp.shouldIMakeFile([self.xfn,self.yfn],robfncartopy,debug=False):
 			ti1 = getLongName(self.xtype)
 			ti2 =  getLongName(self.ytype)

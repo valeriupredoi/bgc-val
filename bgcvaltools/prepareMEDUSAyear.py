@@ -21,7 +21,13 @@
 # Email:
 # ledm@pml.ac.uk
 #
+"""
+.. module:: prepareMEDUSAyear
+   :platform: Unix
+   :synopsis: A tool for stiching together multiple months of MEDUSA data into one annual file. 
+.. moduleauthor:: Lee de Mora <ledm@pml.ac.uk>
 
+"""
 
 from glob import glob
 from os.path import basename,exists
@@ -34,6 +40,7 @@ from netCDF4 import Dataset
 from changeNC import changeNC,AutoVivification
 from mergeNC import mergeNC
 from pruneNC import pruneNC
+
 """	The goal of this code is to have a simple way to make climatology dataset.
 """
 

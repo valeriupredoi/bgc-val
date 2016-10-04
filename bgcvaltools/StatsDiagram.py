@@ -20,6 +20,13 @@
 # Email:
 # modm@pml.ac.uk
 #
+"""
+.. module:: StatsDiagrams 
+   :platform: Unix
+   :synopsis: Tool to make a Statistical diagrams.
+.. moduleauthor:: Momme Butenschon <momm@pml.ac.uk>
+
+"""
 
 from numpy import sqrt,arange,sin,cos,pi,abs,arccos,array,max as npmax,abs as npabs
 from scipy.stats import pearsonr

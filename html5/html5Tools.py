@@ -21,9 +21,16 @@
 #
 # Email:
 # ledm@pml.ac.uk
+"""
+.. module:: html5Tools
+   :platform: Unix
+   :synopsis: A swiss army knife of tools for html5 making.
+.. moduleauthor:: Lee de Mora <ledm@pml.ac.uk>
+
+"""
 
 import os
-from pftnames import getLongName
+from bgcvaltools.pftnames import getLongName
 
 
 def AddtoFile(filepath,linenumber,text):
