@@ -408,7 +408,7 @@ def analysis_p2p(
 				if modelGrid == 'ORCA025':	av[name]['MEDUSA']['File'] = ModelFolder+jobID+'_'+ year+"_DIN.nc"							
 			
 			av[name]['MEDUSA']['grid']	= modelGrid		
-			av[name]['depthLevels'] 	= ['Surface','1000m','Transect','PTransect','SOTransect',]
+			av[name]['depthLevels'] 	= ['Surface','1000m','Transect','PTransect','SOTransect','ArcTransect',]
 			if annual:	av[name]['plottingSlices'] 	= tsRegions
 			else:		av[name]['plottingSlices'] 	= HighLatWinter
 			
@@ -432,7 +432,7 @@ def analysis_p2p(
 				av[name]['MEDUSA']['File'] 	= ModelFolder+jobID+'_' + year+"_SIL.nc"
 			
 			av[name]['MEDUSA']['grid']		= modelGrid		
-			av[name]['depthLevels'] 		= ['Surface','1000m','Transect','PTransect','SOTransect']
+			av[name]['depthLevels'] 		= ['Surface','1000m','Transect','PTransect','SOTransect','ArcTransect']
 			if annual:	av[name]['plottingSlices'] 	= tsRegions
 			else:		av[name]['plottingSlices'] 	= HighLatWinter
 			
@@ -480,7 +480,7 @@ def analysis_p2p(
 				av[name]['MEDUSA']['File']	= ModelFolder+jobID+"_"+year+"_OXY.nc"
 			
 			av[name]['MEDUSA']['grid']		= modelGrid		
-			av[name]['depthLevels'] 		= ['Surface','1000m','500m','Transect','PTransect','SOTransect']
+			av[name]['depthLevels'] 		= ['Surface','1000m','500m','Transect','PTransect','SOTransect','ArcTransect',]
 			if annual:	av[name]['plottingSlices'] 	= tsRegions
 			else:		av[name]['plottingSlices'] 	= HighLatWinter
 			
@@ -507,7 +507,7 @@ def analysis_p2p(
 				assert 0
 				
 			av[name]['MEDUSA']['grid']		= modelGrid		
-			av[name]['depthLevels'] 		= ['Surface','1000m','Transect','PTransect','SOTransect']
+			av[name]['depthLevels'] 		= ['Surface','1000m','Transect','PTransect','SOTransect','ArcTransect']
 				
 			alkregions	= ['Global','Equator10', 'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific','ignoreInlandSeas','SouthernOcean',]
 			#### very little arctic alkalinty
@@ -534,7 +534,7 @@ def analysis_p2p(
 				assert 0
 				
 			av[name]['MEDUSA']['grid']		= modelGrid		
-			av[name]['depthLevels'] 		= ['Surface','1000m','Transect','PTransect','SOTransect']
+			av[name]['depthLevels'] 		= ['Surface','1000m','Transect','PTransect','SOTransect','ArcTransect']
 				
 
 			if annual:	av[name]['plottingSlices'] 	= tsRegions
@@ -703,7 +703,7 @@ def analysis_p2p(
 				av[name]['NEMO']['File'] 	= ModelFolder+jobID+"_"+year+'_SAL.nc'	
 
 			av[name]['NEMO']['grid'] 		= modelGrid
-			av[name]['depthLevels'] 		= ['Surface','Transect','PTransect','SOTransect','1000m',]	 
+			av[name]['depthLevels'] 		= ['Surface','Transect','PTransect','SOTransect','ArcTransect','1000m',]	 
 			av[name]['plottingSlices'] 	= tsRegions
 			
 			av[name]['Data']['coords'] 	= woaCoords
@@ -725,7 +725,7 @@ def analysis_p2p(
 				av[name]['NEMO']['File'] 	= ModelFolder+jobID+"_"+year+'_TEMP.nc'	
 
 			av[name]['NEMO']['grid'] 	= modelGrid	
-			av[name]['depthLevels'] 	= ['Surface','Transect','PTransect','SOTransect','1000m',]	
+			av[name]['depthLevels'] 	= ['Surface','Transect','PTransect','SOTransect','ArcTransect','1000m',]	
 			av[name]['plottingSlices'] 	= tsRegions
 
 			av[name]['Data']['coords'] 	= woaCoords

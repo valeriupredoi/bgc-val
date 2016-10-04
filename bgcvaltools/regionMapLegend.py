@@ -152,7 +152,7 @@ def robinPlotTransects(lons,lats,data,filename,title,legends=[], zrange=[-100,10
 			
 		# Put a legend below current axis
 		leg = ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05),
-			  ncol=4,prop={'size':10})
+			  ncol=5,prop={'size':10})
 			  	
 		#leg = pyplot.legend(loc='lower center',ncol=3, )
 		leg.draw_frame(False) 
@@ -222,27 +222,47 @@ def makeTransectsMap():
 			
 	maps = np.zeros(oxy.shape)
 
-	transects= ['Transect', 'PTransect','SOTransect','Equator']
+	transects= ['ArcTransect','Transect', 'Equator','PTransect','SOTransect',]
 	
 	for i,transect in enumerate(transects):
 		i+=1
 		single_map = np.zeros(oxy.shape)	
-		if transect == 'Transect':	x = -28.
-		if transect == 'PTransect': 	x = 200.
+
 	
 		if transect in ['Transect','PTransect']:
+			if transect == 'Transect':	x = -28.
+			if transect == 'PTransect': 	x = 200.		
 			k = ukp.getclosestlon(x,lon,debug=True)
 			maps[:,k]=i	
 			single_map[:,k]=i
 
-		if transect == 'SOTransect':	y = -60.
-		if transect == 'Equator':	y =   0.
 					
 		if transect in ['SOTransect','Equator']:
+			if transect == 'SOTransect':	y = -60.
+			if transect == 'Equator':	y =   0.		
 			k = ukp.getclosestlat(y,lat,debug=True)
 			maps[k,:]=i
 			single_map[k,:]=i
-		singles=False
+		if transect in ['ArcTransect',]:
+			numpoints = 300
+			longi = 0.
+			minlat = 50.
+			maxlat = 90.
+			transectcoords = [(minlat +a*(maxlat-minlat)/numpoints,longi)  for a in np.arange(numpoints)]# lat,lon
+
+			longi = -165.
+			minlat = 60.
+			maxlat = 90.
+			transectcoords.extend([(minlat +a*(maxlat-minlat)/numpoints,longi) for a in np.arange(numpoints)])# lat,lon
+		
+			lon2d,lat2d = np.meshgrid(lon,lat)
+			for (ilat,ilon) in sorted(transectcoords):
+				la,lo = ukp.getOrcaIndexCC(ilat, ilon, lat2d, lon2d, debug=True,)
+				maps[la,lo] = i		
+				single_map[la,lo]=i
+		#####
+		# Make plot
+		singles=True
 		if singles:	
 			fn = ukp.folder(imageFold+'Transects')+transect+'.png'
 			single_map = np.clip(single_map,0,i)		

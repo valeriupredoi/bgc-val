@@ -23,7 +23,7 @@
 """
 .. module:: pftnames
    :platform: Unix
-   :synopsis: A list of names used for pretty plots.
+   :synopsis: A list of names used for makeing text on plots pretty.
 .. moduleauthor:: Lee de Mora <ledm@pml.ac.uk>
 
 """
@@ -292,6 +292,7 @@ def getLongName(text,debug=False):
 
 
   	if text == 'AtlanticTransect':	return "Atlantic Transect"    
+  	if text == 'ArcTransect':	return "Arctic Transect"      	
   	if text == 'PacificTransect':	return "Pacific Transect"    	
   	if text == 'SouthernTransect':	return "Southern Transect"    	
   	if text == 'SOTransect':	return "Southern Transect"    

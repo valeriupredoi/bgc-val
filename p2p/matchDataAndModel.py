@@ -248,28 +248,88 @@ class matchDataAndModel:
 		if self.depthLevel == '500m': 	z = 500.
 		if self.depthLevel == '1000m': 	z = 1000.
 		if self.depthLevel == '2000m': 	z = 2000.
-						
-		k =  ukp.getORCAdepth(np.abs(z),np.abs(nc.variables[self.datacoords['z']][:]),debug=True)
-		mmask[:,k,:,:] = 0
 		
+		if nc.variables[self.datacoords['z']].ndim ==1:
+			k =  ukp.getORCAdepth(np.abs(z),np.abs(nc.variables[self.datacoords['z']][:]),debug=True)
+			mmask[:,k,:,:] = 0
+		else:
+			####
+			# Depth field is the wrong number of dimensions.
+			print 'matchDataAndModel:\tconvertDataTo1D:\tDepth field is the wrong shape:', nc.variables[self.datacoords['z']].shape	
+			assert 0
+			
 	elif self.depthLevel in ['Transect','PTransect',]:
 		print 'matchDataAndModel:\tconvertDataTo1D:\tSlicing along longitude direction.'		
 		if self.depthLevel == 'Transect':	x = -28.
 		if self.depthLevel == 'PTransect': 	x = 200.
-						
-		k =  ukp.getclosestlon(x,nc.variables[self.datacoords['lon']][:],debug=True)
-		if mmask.ndim == 4:	mmask[:,:,:,k] = 0
-		if mmask.ndim == 3:	mmask[:,:,k] = 0							
 
+		if nc.variables[self.datacoords['lon']].ndim ==1:						
+			k =  ukp.getclosestlon(x,nc.variables[self.datacoords['lon']][:],debug=True)
+			if mmask.ndim == 4:	mmask[:,:,:,k] = 0
+			if mmask.ndim == 3:	mmask[:,:,k] = 0							
+		else:
+			####
+			# Depth field is the wrong number of dimensions. (Not yet implemented)
+			print 'matchDataAndModel:\tconvertDataTo1D:\tLongitude field is the wrong shape:',nc.variables[self.datacoords['lon']].shape	
+			assert 0		
+		
 	elif self.depthLevel in ['SOTransect','Equator']:
 		print 'matchDataAndModel:\tconvertDataTo1D:\tSlicing along latitude direction.'			
 		if self.depthLevel == 'SOTransect':	y = -60.
 		if self.depthLevel == 'Equator':	y =   0.
-				
-		k =  ukp.getclosestlat(y,nc.variables[self.datacoords['lat']][:],debug=True)
-		if mmask.ndim == 4:	mmask[:,:,k,:] = 0
-		if mmask.ndim == 3:	mmask[:,k,:] = 0						
+
+		if nc.variables[self.datacoords['lat']].ndim ==1:						
+			k =  ukp.getclosestlat(y,nc.variables[self.datacoords['lat']][:],debug=True)
+			if mmask.ndim == 4:	mmask[:,:,k,:] = 0
+			if mmask.ndim == 3:	mmask[:,k,:] = 0						
+		else:
+			####
+			# Depth field is the wrong number of dimensions. (Not yet implemented)
+			print 'matchDataAndModel:\tconvertDataTo1D:\tLatitude field is the wrong shape:',nc.variables[self.datacoords['lat']].shape	
+			assert 0
+					
+	elif self.depthLevel in ['ArcTransect','AntTransect']:
+		print 'matchDataAndModel:\tconvertDataTo1D:\tSlicing along ',self.depthLevel,' direction.'			
+		####
+		# Combine two lines, then produce a mask along those lines.
+		# long = 0, between lat of 50n and 90N
+		# long = 165W, between 60 and 90N
 		
+		lats = nc.variables[self.datacoords['lat']][:]
+		lons = nc.variables[self.datacoords['lon']][:]
+		if (lats.ndim,lons.ndim) ==(1,1):
+			lon2d,lat2d = np.meshgrid(lons,lats)
+		else:	lon2d,lat2d = lons,lats
+
+		mask2d = np.ones_like(lon2d)
+		
+		if self.depthLevel == 'ArcTransect':
+			numpoints = 300
+			lon = 0.
+			minlat = 50.
+			maxlat = 90.
+			transectcoords = [(minlat +i*(maxlat-minlat)/numpoints,lon)  for i in np.arange(numpoints)]# lat,lon
+
+			lon = -165.
+			minlat = 60.
+			maxlat = 90.
+			transectcoords.extend([(minlat +i*(maxlat-minlat)/numpoints,lon) for i in np.arange(numpoints)])# lat,lon
+		
+		for (lat,lon) in sorted(transectcoords):
+			la,lo = ukp.getOrcaIndexCC(lat, lon, lat2d, lon2d, debug=True,)
+			mask2d[la,lo] = 0
+		
+		if mmask.ndim == 4:
+			mshape = mmask.shape 
+			mmask = np.tile(mask2d,(mshape[0],mshape[1],1,1))
+			
+		if mmask.ndim == 3:
+			mshape = mmask.shape 
+			mmask = np.tile(mask2d,(mshape[0],1,1))	
+		
+		if mmask.shape != mshape:
+			print 'matchDataAndModel:\tERROR:\tconvertDataTo1D:\t',self.depthLevel,'\tMaking mask shape:',mmask.shape
+			assert 0 
 	  		  	
 	mmask +=nc.variables[self.DataVars[0]][:].mask
 	print 'matchDataAndModel:\tconvertDataTo1D:\t',self.depthLevel,'\tMaking mask shape:',mmask.shape		
