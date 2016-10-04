@@ -817,7 +817,7 @@ def HovPlotQuad(lons,lats, depths,
 		
 	#####
 	# Add main title
-	if title:	fig.text(0.5,0.975,title,horizontalalignment='center',verticalalignment='top')	
+	if title:	fig.text(0.5,0.99,title,horizontalalignment='center',verticalalignment='top')	
 	
 	#####
 	# Print and save
