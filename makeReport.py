@@ -1026,7 +1026,7 @@ def html5Maker(
 
 	if regionMap:
 		vfiles = []	
-		vfiles.extend(glob('html5/html5Assets/images/*Legend.png'))
+		vfiles.extend(glob('html5/html5Assets/images/*Legend*.png'))
 		relfns = [addImageToHtml(fn, imagesfold, reportdir) for fn in vfiles]				
 		print relfns
 		href = 'regionMap_default'

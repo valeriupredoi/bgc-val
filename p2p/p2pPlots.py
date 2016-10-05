@@ -470,7 +470,7 @@ class makePlots:
 			else:	
 				doLog=True
 			print "plotWithSlices:\ttransect quad:",[ti1,ti2],False,dmin,dmax
-			if self.depthLevel == 'ArcTransect':
+			if self.depthLevel in ['ArcTransect','AntTransect','CanRusTransect',]:
 				ukp.ArcticTransectPlotQuad(nmxx,nmxy, nmxz, 
 					datax,datay,
 					transectquadfn,
@@ -482,6 +482,7 @@ class makePlots:
 					vmax=dmax,
 					scatter = False,
 					logy=True,
+					transectName  = self.depthLevel,
 					)			
 			else:
 				ukp.HovPlotQuad(nmxx,nmxy, nmxz, 

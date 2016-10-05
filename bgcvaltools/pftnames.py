@@ -293,9 +293,11 @@ def getLongName(text,debug=False):
 
   	if text == 'AtlanticTransect':	return "Atlantic Transect"    
   	if text == 'ArcTransect':	return "Arctic Transect"      	
+  	if text == 'AntTransect':	return "Antarctic Transect"
+  	if text == 'CanRusTransect':	return "Canada-Siberia Arctic Transect"
   	if text == 'PacificTransect':	return "Pacific Transect"    	
   	if text == 'SouthernTransect':	return "Southern Transect"    	
-  	if text == 'SOTransect':	return "Southern Transect"    
+  	if text == 'SOTransect':	return "Southern Ocean Transect"    
   	if text == 'Transect':		return "Atlantic Transect"    
   	if text == 'PTransect':		return "Pacific Transect"      	  		  	
   	

@@ -131,40 +131,7 @@ class matchDataAndModel:
 	else:	self.gridFile = gridFile
 	print "matchDataAndModel:\tINFO:\tGrid:  \t",grid			
 	print "matchDataAndModel:\tINFO:\tGrid File:  \t",gridFile
-
-	#if grid.upper() in ['ORCA1',]:
-	#	self.grid = 'ORCA1'
-	#	self.gridFile    = "data/mesh_mask_ORCA1_75.nc"
-	#if grid.upper() in ['ORCA025',]:	
-	#	self.grid = 'ORCA025'
-		#####
-		# Please add files to link to 
-	#	for orcafn in [ "/data/euryale7/scratch/ledm/UKESM/MEDUSA-ORCA025/mesh_mask_ORCA025_75.nc",	# PML
-	#			"/group_workspaces/jasmin/esmeval/example_data/bgc/mesh_mask_ORCA025_75.nc",]:	# JASMIN
-	#		if exists(orcafn):	self.gridFile  = orcafn
-	#	
-	#	try: 
-	#		if exists(self.gridFile):pass
-	#	except: 
-	#		print "matchDataAndModel:\tERROR:\tIt's not possible to load the ORCA025 grid on this machine. Please add the ORCA025 file to the orcafn list to p2p/matchDataAndModel.py"
-	#		assert False
-	#if grid in ['Flat1deg',]:	
-	#	self.grid = 'Flat1deg'
-	#	self.gridFile = 'data/Flat1deg.nc'
-		
-		#####
-		# Please add files to link to 
-		#for orcafn in [ "/data/euryale7/scratch/ledm/UKESM/MEDUSA-ORCA025/mesh_mask_ORCA025_75.nc",	# PML
-		#		"/group_workspaces/jasmin/esmeval/example_data/bgc/mesh_mask_ORCA025_75.nc",]:	# JASMIN
-		#	if exists(orcafn):	self.gridFile  = orcafn
-		
-		#try: 
-		#	if exists(self.gridFile):pass
-		#except: 
-		#	print "matchDataAndModel:\tERROR:\tIt's not possible to load the ORCA025 grid on this machine. Please add the ORCA025 file to the orcafn list to p2p/matchDataAndModel.py"
-		#	assert False
-						
-		
+	
 	self.matchedShelve 	= ukp.folder(self.workingDir)+self.model+'-'+self.jobID+'_'+self.year+'_'+'_'+self.dataType+'_'+self.depthLevel+'_matched.shelve'
 	self.matchesShelve 	= ukp.folder(self.workingDir)+self.model+'-'+self.jobID+'_'+self.year+'_'+'_'+self.dataType+'_'+self.depthLevel+'_matches.shelve'
 	
@@ -288,15 +255,13 @@ class matchDataAndModel:
 			print 'matchDataAndModel:\tconvertDataTo1D:\tLatitude field is the wrong shape:',nc.variables[self.datacoords['lat']].shape	
 			assert 0
 					
-	elif self.depthLevel in ['ArcTransect','AntTransect']:
+	elif self.depthLevel in ['ArcTransect','AntTransect','CanRusTransect']:
 		print 'matchDataAndModel:\tconvertDataTo1D:\tSlicing along ',self.depthLevel,' direction.'			
 		####
-		# Combine two lines, then produce a mask along those lines.
-		# long = 0, between lat of 50n and 90N
-		# long = 165W, between 60 and 90N
-		
+		# Create a lines, then produce a mask along that line.
 		lats = nc.variables[self.datacoords['lat']][:]
 		lons = nc.variables[self.datacoords['lon']][:]
+		
 		if (lats.ndim,lons.ndim) ==(1,1):
 			lon2d,lat2d = np.meshgrid(lons,lats)
 		else:	lon2d,lat2d = lons,lats
@@ -314,6 +279,25 @@ class matchDataAndModel:
 			minlat = 60.
 			maxlat = 90.
 			transectcoords.extend([(minlat +i*(maxlat-minlat)/numpoints,lon) for i in np.arange(numpoints)])# lat,lon
+			
+		if self.depthLevel == 'CanRusTransect':
+			numpoints = 300
+			lon = 83.5
+			minlat = 65.
+			maxlat = 90.
+			transectcoords = [(minlat +i*(maxlat-minlat)/numpoints,lon)  for i in np.arange(numpoints)]# lat,lon
+
+			lon = -96.
+			minlat = 60.
+			maxlat = 90.
+			transectcoords.extend([(minlat +i*(maxlat-minlat)/numpoints,lon) for i in np.arange(numpoints)])# lat,lon
+		
+		if self.depthLevel == 'AntTransect':
+			numpoints = 500
+			lon = 0.
+			minlat = -89.9
+			maxlat = -40.
+			transectcoords = [(minlat +i*(maxlat-minlat)/numpoints,lon)  for i in np.arange(numpoints)]# lat,lon
 		
 		for (lat,lon) in sorted(transectcoords):
 			la,lo = ukp.getOrcaIndexCC(lat, lon, lat2d, lon2d, debug=True,)
@@ -330,7 +314,11 @@ class matchDataAndModel:
 		if mmask.shape != mshape:
 			print 'matchDataAndModel:\tERROR:\tconvertDataTo1D:\t',self.depthLevel,'\tMaking mask shape:',mmask.shape
 			assert 0 
-	  		  	
+
+	if mmask.min()==1:
+		print 'matchDataAndModel:\tERROR:\tconvertDataTo1D:\t',self.depthLevel,'\tNo data in here.'
+		return 
+			  	
 	mmask +=nc.variables[self.DataVars[0]][:].mask
 	print 'matchDataAndModel:\tconvertDataTo1D:\t',self.depthLevel,'\tMaking mask shape:',mmask.shape		
 	print 'matchDataAndModel:\tconvertDataTo1D:\t',self.depthLevel,'\tMaking flat array:',self.DataFilePruned,'-->',self.DataFile1D	
