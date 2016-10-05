@@ -512,7 +512,8 @@ def getLongName(text,debug=False):
 
   	if text == 'RegionLegend':	return "Region Legend"
   	if text == 'TransectsLegend':	return "Transects Legend"
-  		  	
+  	if text == 'TransectsLegendBoth':return "Transects Legend"
+  	  		  	
   	if text == 'NoShelf':	return "No Shelf"  
   	if text == 'NoShelfTop40':	return "No Shelf (Top 40m)"    	
   	if text == 'NoShelfSurface':	return "No Shelf (Surface)"    	  	
