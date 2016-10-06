@@ -104,20 +104,14 @@ def getLongName(text,debug=False):
 	if text.lower() in firstLetterCaps:	return text.title()
 
 
-  	#if text == 'Transect':		return "Transect"	
-  	#if text == 'PTransect':		return "Pacific Transect"
-#  	if text == 'Surface':		return "Surface"
-  	if text == '100m':		return "100m deep"  	
-  	if text == '200m':		return "200m deep"  	  	  	
-  	if text == '500m':		return "500m deep"  	
-  	if text == '1000m':		return "1000m deep"  	
-
 #  	if text == 'temperature':	return "Temperature" 
 # 	if text == 'salinity':		return "salinity" 
 #  	if text == 'nitrate':		return "nitrate" 
 #  	if text == 'phosphate':		return "phosphate" 
 #  	if text == 'silicate':		return "silicate"   	  	  	
-	  		  	  	
+	
+	
+	
   	if text == 'temperaturePTransect':	return "Pacific Transect Temperature"
   	if text == 'temperatureSOTransect':	return "Southern Ocean Transect Temperature"  	
   	if text == 'temperatureSurface':	return "Surface Temperature"
@@ -136,7 +130,7 @@ def getLongName(text,debug=False):
   	if text == 'Temperature1000m':		return "Temperature (1000m deep)"  
   	  	
   	if text == 'salinityPTransect':		return "Pacific Transect Salinity"
-  	if text == 'salinitySOTransect':		return "Southern Ocean Transect Salinity"  	
+  	if text == 'salinitySOTransect':	return "Southern Ocean Transect Salinity"  	
   	if text == 'salinitySurface':		return "Surface Salinity"
   	if text == 'salinityAll':		return "Salinity"  	
   	if text == 'salinity100m':		return "Salinity (100m deep)"  	
@@ -300,6 +294,10 @@ def getLongName(text,debug=False):
   	if text == 'SOTransect':	return "Southern Ocean Transect"    
   	if text == 'Transect':		return "Atlantic Transect"    
   	if text == 'PTransect':		return "Pacific Transect"      	  		  	
+  	if text == '100m':		return "100m deep"  	
+  	if text == '200m':		return "200m deep"  	  	  	
+  	if text == '500m':		return "500m deep"  	
+  	if text == '1000m':		return "1000m deep"  	
   	
   	if text == '10N':		return "10 degree North Transect"    	
   	if text == '10S':		return "10 degree South Transect"    	  	  	  	  	
