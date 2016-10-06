@@ -121,7 +121,7 @@ def makeLongNameDict():
 	lnd['Chlorophyll_cci'] = "Chlorophyll (CCI)"  
 	lnd['Chlorophyll_pig'] = "Chlorophyll (Pigments)"  
 	lnd['DiatomChlorophyll'] = "Diatom Chlorophyll"
-	lnd['NonDiatomChlorophyll'] = "Non-Diatom Chlorophyll"
+	lnd['NonDiatomChlorophyll'] = "Non-Diatom Chlorophyll"	
 		  	
   	lnd['picophyto'] = 'Picophytoplankton'
   	lnd['microzoo'] = 'Microzooplankton'
@@ -471,7 +471,6 @@ def getLongName(text,debug=False):
 	except: 
 		if debug: print "text.lower() not in dict:", text.lower()
 	print "text not in dict:", text
-	assert 0 
 		
 	return text
 	
