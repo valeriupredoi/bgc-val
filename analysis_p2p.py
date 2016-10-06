@@ -482,7 +482,7 @@ def analysis_p2p(
 				av[name]['MEDUSA']['File']	= ModelFolder+jobID+"_"+year+"_OXY.nc"
 			
 			av[name]['MEDUSA']['grid']		= modelGrid		
-			av[name]['depthLevels'] 		= ['AntTransect',]#depthLevels 
+			av[name]['depthLevels'] 		= depthLevels 
 			if annual:	av[name]['plottingSlices'] 	= tsRegions
 			else:		av[name]['plottingSlices'] 	= HighLatWinter
 			
