@@ -725,7 +725,11 @@ def HovPlotQuad(lons,lats, depths,
 	if maskSurface:
 		data1 = np.ma.masked_where(depths>-10.,data1)
 		data2 = np.ma.masked_where(depths>-10.,data2)
-		
+
+		if len(data1.compressed())==0:
+			print "No hovmoeller for surface only plots."
+			return
+	
 	doLog, vmin,vmax = determineLimsFromData(data1,data2)
 			
 	axs,bms,cbs,ims = [],[],[],[]
