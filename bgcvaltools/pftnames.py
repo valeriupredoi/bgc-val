@@ -76,8 +76,408 @@ SouthHemispheresMonths = [h+m for h in ['SouthHemisphere',] for m in months]
 NorthHemispheresMonths = [h+m for h in ['NorthHemisphere',] for m in months] 	
 
 
+def makeLongNameDict():
+	lnd = {}
+	SameSame = ['temperature', "salinity", "nitrate", "phosphate" ,'silicate','oxygen',
+			'iron','chlorophyll','chl','alkalinity',
+			'surface','oceans','ocean', 
+			'months','month',
+			'depth','depths',
+			'biomass',
+  			'Tropics','Temperate','Arctic','Depth', 
+			'Overestimate','Underestimate','Matched',
+			'Seasons',
+		]
+		
+	
+	for txt in SameSame:
+		title 		 = txt.title()
+		lnd[txt] 	 = title
 
+	
+		 
+
+	##### 
+	#Specific 
+          	
+	#####
+	# Data names:
+  	lnd['intpp'] = 'Integrated Primary Production'  	  	  	
+  	lnd['ppint'] = 'Integrated Primary Production'  	
+   	lnd['PP'] = 'Primary Production'
+   	lnd['netPP'] = 'Net Primary Production' 
+	lnd['IntegratedPrimaryProduction'] = "Integrated Primary Production"  
+	lnd['IntegratedPrimaryProduction_OSU'] = "Integrated Primary Production (OSU)"  
+	lnd['TotalIntegratedPrimaryProduction'] = "Total Integrated Primary Production"
+	
+  	lnd['ZMI'] = 'Microzooplankton'
+  	lnd['ZME'] = 'Mesozooplankton'
+  	lnd['PHD'] = 'Diatoms'
+  	lnd['bac'] = 'Bacteria'
+
+  	lnd['CHL'] = 'Chlorophyll'   	  	
+	lnd['Chlorophyll'] = "Chlorophyll"    	 
+  	lnd['Chlorophylla'] = 'Chlorophyll'  	  
+	lnd['Chlorophyll_cci'] = "Chlorophyll (CCI)"  
+	lnd['Chlorophyll_pig'] = "Chlorophyll (Pigments)"  
+	lnd['DiatomChlorophyll'] = "Diatom Chlorophyll"
+	lnd['NonDiatomChlorophyll'] = "Non-Diatom Chlorophyll"
+		  	
+  	lnd['picophyto'] = 'Picophytoplankton'
+  	lnd['microzoo'] = 'Microzooplankton'
+  	lnd['mesozoo'] = 'Mesozooplankton'
+  	lnd['diatoms'] = 'Diatoms'
+
+  	lnd['Seawifs-micro'] = 'Seawifs Microphyto. chl.'  	  	
+  	lnd['Seawifs-nano'] = 'Seawifs Nanophyto. chl.'  	  	
+  	lnd['Seawifs-pico'] = 'Seawifs Picophyto. chl.'  
+  	lnd['SeawifsBM-micro'] = 'Seawifs Microphyto. Biomass'  	  	
+  	lnd['SeawifsBM-nano'] = 'Seawifs Nanophyto. Biomass'  	  	
+  	lnd['SeawifsBM-pico'] = 'Seawifs Picophyto. Biomass'    		  	
+  	lnd['Seawifs-biomass'] = 'Phytoplankton Biomass'
+  	
+        lnd['AMOC'] = "AMOC"
+  	lnd['AMOC_26N'] = "AMOC 26N"     	
+  	lnd['AMOC_32S'] = "AMOC 32S"     	  	
+
+	lnd['exportRatio'] = "Export Ratio"  
+	lnd['LocalExportRatio'] = "Export Ratio"  		
+	
+	lnd['PCO2_SW'] = 'pCO2'
+	lnd['pCO2'] = 'pCO2'
+
+  	lnd['iron'] = "Iron"  	
+  	lnd['Fe_D_CONC_BOTTLE'] = "Iron (Dissolved)"  
+  		
+	lnd['AirSeaFluxCO2'] = "Air Sea CO2 Flux"  
+	lnd['TotalAirSeaFluxCO2'] = "Total Air Sea CO2 Flux"  
+	lnd['DIC'] = "DIC"  
+	
+  	lnd['OMZ'] = 'Oxygen minimum zone' 
+  	lnd['TotalOMZVolume'] = 'Total Oxygen minimum zone volume (<20 mmol O2/m^3)'   	
+  	lnd['TotalOMZVolume50'] = 'Total Oxygen minimum zone volume (<50 mmol O2/m^3)'   	  	
+  	lnd['OMZThickness'] = 'Oxygen minimum zone thickness (<20 mmol O2/m^3)'  
+  	lnd['OMZMeanDepth'] = 'Oxygen minimum zone mean depth (<20 mmol O2/m^3)'    
+  	
+  	lnd['DrakePassageTransport'] = 'Drake Passage Transport'    	
+  	lnd['DPT'] = 'Drake Passage Transport'    	  		
+	
+  	lnd['t_mn'] = 'Mean Temperature'  	
+  	lnd['t_an'] = 'Temperature'  
+  	lnd['s_mn'] = 'Mean Salinity'  	
+  	lnd['s_an'] = 'Salinity'  
+  	lnd['n_mn'] = 'Mean Nitrate'  	
+  	lnd['n_an'] = 'Nitrate'  
+  	lnd['p_mn'] = 'Mean Phosphate'  	
+  	lnd['p_an'] = 'Phosphate'  
+  	lnd['p_an'] = 'Oxygen'    	
+  	lnd['i_mn'] = 'Mean Silicate'  	
+  	lnd['i_an'] = 'Silicate'  
+  	  	
+  	lnd['NorthernTotalIceExtent'] = 'Northern Hemisphere Ice Extent'
+  	lnd['SouthernTotalIceExtent'] = 'Southern Hemisphere Ice Extent'
+  	lnd['TotalIceExtent'] = 'Total Ice Extent'  	  	
+
+  	lnd['NorthernTotalIceArea'] = 'Northern Hemisphere Ice Area'
+  	lnd['SouthernTotalIceArea'] = 'Southern Hemisphere Ice Area'
+  	lnd['TotalIceArea'] = 'Total Ice Area'  
+  	  		
+	lnd['JFM'] = 'JFM'   	
+	lnd['AMJ'] = 'AMJ'   	
+	lnd['JAS'] = 'JAS'   	
+	lnd['OND'] = 'OND'   			  	
+
+  	lnd['mld'] = 'Mixed Layer Depth'     	
+  	lnd['mld_DT02'] = 'MLD:Fixed Threshold Temperature '
+  	lnd['mld_DR003'] = 'MLD:Fixed Threshold Density'
+  	lnd['mld_DReqDTm02'] = 'MLD:Variable Threshold Density'  	  	
+
+	#####
+	# Depth layers/transects.
+  	lnd['AtlanticTransect'] = "Atlantic Transect"    
+  	lnd['ArcTransect'] = "Arctic Transect"      	
+  	lnd['AntTransect'] = "Antarctic Transect"
+  	lnd['CanRusTransect'] = "Canada-Siberia Arctic Transect"
+  	lnd['PacificTransect'] = "Pacific Transect"    	
+  	lnd['SouthernTransect'] = "Southern Transect"    	
+  	lnd['SOTransect'] = "Southern Ocean Transect"    
+  	lnd['Transect'] = "Atlantic Transect"    
+  	lnd['PTransect'] = "Pacific Transect"      	  		  	
+  	lnd['100m'] = "100m deep"  	
+  	lnd['200m'] = "200m deep"  	  	  	
+  	lnd['500m'] = "500m deep"  	
+  	lnd['1000m'] = "1000m deep"  	
+  	lnd['10N'] = "10 degree North Transect"    	
+  	lnd['10S'] = "10 degree South Transect"  
+
+	#####
+	# Names from plots.
+	lnd['hist'] = "Histogram"  
+	lnd['scatter'] = "scatter diagram"  	
+	lnd['percentiles'] = "Time series"  	
+	lnd['mean'] = "mean"  		
+	lnd['median'] = "median"  			
+	lnd['robinquad'] = "Maps"  
+	lnd['robinquad-cartopy'] = "Interpolated Map"
+	lnd['hov'] = "Hovmoeller"  			
+	lnd['10-90pc'] = ""  				
+	lnd['Target'] = "Target Diagram"  	
+	lnd['Taylor'] = "Taylor Diagram"  	
+	lnd['SummaryTargets'] = "Summary Diagrams"  		
+	lnd['RobustTarget'] = "Robust Statisitcs Target Diagram" 			
+   	lnd['metricless'] = ''    	
+   	lnd['regionless'] = ''    	
+   	lnd['layerless'] = ''    	   	   	
+  	lnd['RegionLegend'] = "Region Legend"
+  	lnd['TransectsLegend'] = "Transects Legend"
+  	lnd['TransectsLegendBoth'] = "Transects Legend"
+  	
+	#####
+	# DMS fields:
+ 	lnd['anderson'] = 'Anderson et al.'
+ 	lnd['dms_and'] = 'Anderson et al.'
+ 	lnd['dms_andSurface'] = 'Anderson et al.'
+ 	lnd['dms_p_and'] = 'Anderson et al.'
+ 	lnd['dms_p_andSurface'] = 'Anderson et al.'
+ 	lnd['dms_p_and1'] = 'DMS (Anderson - all CHL)'
+ 	lnd['dms_p_and1Surface'] = 'DMS (Anderson - all CHL)'
+ 	lnd['dms_p_and2'] = 'DMS (Anderson - CHN only)'
+ 	lnd['dms_p_and2Surface'] = 'DMS (Anderson - CHN only)' 	
+
+ 	lnd['aranamit'] = 'Aranami et al.'
+ 	lnd['dms_ara'] = 'Aranami et al.'
+ 	lnd['dms_araSurface'] = 'Aranami et al.'
+ 	lnd['dms_p_ara'] = 'Aranami et al.'
+ 	lnd['dms_p_araSurface'] = 'Aranami et al.'
+ 	lnd['dms_p_ara1'] = 'DMS (Aranamit - all CHL)'
+ 	lnd['dms_p_ara1Surface'] = 'DMS (Aranamit - all CHL)'
+ 	lnd['dms_p_ara2'] = 'DMS (Aranamit - CHN only)'
+ 	lnd['dms_p_ara2Surface'] = 'DMS (Aranamit - CHN only)' 	
+ 	 	
+ 	lnd['halloran'] = 'Halloran et al.' 	
+ 	lnd['dms_hal'] = 'Halloran et al.' 	
+ 	lnd['dms_halSurface'] = 'Halloran et al.' 	
+ 	lnd['dms_p_hal'] = 'Halloran et al.' 	
+ 	lnd['dms_p_halSurface'] = 'Halloran et al.' 	
+ 	lnd['dms_p_hal1'] = 'DMS (Halloran - all CHL)'
+ 	lnd['dms_p_hal1Surface'] = 'DMS (Halloran - all CHL)'
+ 	lnd['dms_p_hal2'] = 'DMS (Halloran - CHN only)'
+ 	lnd['dms_p_hal2Surface'] = 'DMS (Halloran - CHN only)'
+ 	 	 	
+ 	lnd['simodach'] = 'Simo & Dach'
+ 	lnd['dms_sim'] = 'Simo & Dach'
+ 	lnd['dms_simSurface'] = 'Simo & Dach'
+ 	lnd['dms_p_sim'] = 'Simo & Dach'
+ 	lnd['dms_p_simSurface'] = 'Simo & Dach'
+ 	lnd['dms_p_sim1'] = 'DMS (Simodach - all CHL)'
+ 	lnd['dms_p_sim1Surface'] = 'DMS (Simodach - all CHL)'
+ 	lnd['dms_p_sim2'] = 'DMS (Simodach - CHN only)'
+ 	lnd['dms_p_sim2Surface'] = 'DMS (Simodach - CHN only)'
+
+ 	lnd['LANA'] = 'Lana et al. (extrapolated)'
+ 	lnd['LANA_p'] = 'Lana et al. (pixels)'
+ 	lnd['lanaetal'] = 'DMS extrapolated (Lana et al. 2011)'
+ 	lnd['DMS'] = 'DMS pixels (Lana et al. 2011)'
+	lnd['DMS_p'] = 'DMS (pixels)'
+	lnd['DMS_e'] = 'DMS (extrapolated)'	
+ 
+ 
+  	#####
+  	# Specific regions and slices
+  	lnd['Top40m'] = "Top 40m"
+  	lnd['Top200m'] = "Top 200m"
+  	lnd['Top40mNoArtics'] = "Top 40m (No Arctics)"
+  	lnd['Top200mNoArtics'] = "Top 200m (No Arctics)"
+
+  	lnd['NoShelf'] = "No Shelf"  
+  	lnd['NoShelfTop40'] = "No Shelf (Top 40m)"    	
+  	lnd['NoShelfSurface'] = "No Shelf (Surface)"    	  	
+
+  	lnd['ArcticOcean'] = "Arctic Ocean"	  		  	
+  	lnd['AntarcticOcean'] = "Antarctic Ocean" 		  	
+  	lnd['NorthAtlanticOcean'] = "North Atlantic Ocean"
+  	lnd['SouthAtlanticOcean'] = "South Atlantic Ocean"	  		  	
+  	lnd['NorthPacificOcean'] = "North Pacific Ocean"		  	
+  	lnd['SouthPacificOcean'] = "South Pacific Ocean"	  		  	
+  	lnd['EquatorialAtlanticOcean'] = "Equatorial Atlantic Ocean"	  		  	  	
+  	lnd['EquatorialPacificOcean'] = "Equatorial Pacific Ocean"	  		  	  	  	  	
+  	lnd['IndianOcean'] = "Indian Ocean"
+  	lnd['NorthHemisphere'] = "North Hemisphere"
+  	lnd['SouthHemisphere'] = "South Hemisphere"  
+        lnd['26N'] = "26N"
+        lnd['32S'] = "32S"
+       
+  	lnd['Global'] = "Global"	
+  	lnd['Equator10'] = "Equator (+/-10)"	
+  	lnd['Remainder'] = "Oligotrophic Gyres"
+  	lnd['ArcticOcean'] = "Arctic Ocean"	
+  	lnd['NorthernSubpolarAtlantic'] = "Northern Subpolar Atlantic"	
+  	lnd['NorthernSubpolarPacific'] = "Northern Subpolar Pacific"	
+
+  	lnd['SouthernOcean'] = "Southern Ocean"	  	  	  	  	  	  		
+	
+  	lnd['NorthTemperate'] = "North Temperate"
+  	lnd['SouthTemperate'] = "South Temperate"  	
+  	lnd['NorthTropics'] = "North Tropics"
+  	lnd['SouthTropics'] = "South Tropics"  	
+  	lnd['NorthArctic'] = "North Arctic"
+  	lnd['Antarctic'] = "Antarctic"  	
+  	lnd['Equatorial'] = "Equatorial"  	
+  	lnd['AMT'] = "AMT"  	  	
+  	lnd['AMTTop40m'] = "AMT (Top 40m)"  	  	
+   	lnd['AMTTop200m'] = "AMT (Top 200m)"  	  	 	
+   	
+   	
+  	lnd['BlackSea'] = "Black Sea"  
+  	lnd['RedSea'] = "Red Sea"  
+  	lnd['BalticSea'] = "Baltic Sea"  
+   	lnd['PersianGulf'] = "Persian Gulf"   	
+
+  	lnd['ignoreInlandSeas'] = "No Inland Seas"	  	  	  	 		
+  	lnd['ignoreBlackSea'] = "No Black Sea"  	  	
+  	lnd['ignoreRedSea'] = "No Red Sea"  	  	
+  	lnd['ignoreBalticSea'] = "No Baltic Sea"  
+   	lnd['ignorePersianGulf'] = "No Persian Gulf"   	  		  	
+  	lnd['ignoreInlandSeas'] = "No Inland Seas"
+  	lnd['ignoreMediteranean'] = "No Mediteranean"  
+  	lnd['ignoreExtraArtics'] = "No Arctic Oceans (50 degrees)"  	
+  	lnd['ignoreMoreArtics'] = "No Arctic Oceans (60 degrees)"
+  	lnd['ignoreMidArtics'] = "No Arctic Oceans (65 degrees)"  
+  	lnd['ignoreArtics'] = "No Arctic Oceans (70 degrees)" 
+  	
+  	
+  	lnd['Depth_0-10m'] = 'Depth <10m'
+  	lnd['Depth_10-20m'] = '10m <= Depth < 20m'
+  	lnd['Depth_20-50m'] = '20m <= Depth < 50m'
+  	lnd['Depth_50-100m'] = '50m <= Depth < 100m'
+  	lnd['Depth_100-500m'] = '100m <= Depth < 500m'
+  	lnd['Depth_500m'] = 'Depth > 500m'  	  	
+  	lnd['Depth_1000m'] = 'Depth > 1000m'  	  	
+  	
+  	lnd['Depth_0-50m'] = 'Depth <50m'
+  	lnd['Depth_50-100m'] = '50m <= Depth < 100m'
+  	lnd['Depth_100-200m'] = '100m <= Depth < 200m'
+  	lnd['Depth_200-500m'] = '200m <= Depth < 500m'
+  	lnd['Depth_500-1000m'] = '500m <= Depth < 1000m'
+  	lnd['Depth_1000-2000m'] = '1000m <= Depth < 2000m'  	
+  	lnd['Depth_2000m'] = 'Depth > 2000m'
+  	
+   	lnd['0-1pc'] = '0-1 percentiles' 
+   	lnd['1-5pc'] = '1-5 percentiles' 
+   	lnd['5-25pc'] = '5-25 percentiles' 
+   	lnd['25-40pc'] = '25-40 percentiles' 
+   	lnd['40-60pc'] = '40-60 percentiles' 
+   	lnd['60-75pc'] = '60-75 percentiles' 
+   	lnd['75-95pc'] = '75-95 percentiles' 
+   	lnd['95-99pc'] = '95-99 percentiles' 
+   	lnd['99-100pc'] = '99-100 percentiles' 
+   	lnd['nonZero'] = 'Non zero' 
+   	lnd['aboveZero'] = ''   	
+   	lnd['1-99pc'] = '1-99 percentiles' 
+   	lnd['5-95pc'] = '5-95 percentiles' 
+   	lnd['0-99pc'] = 'up to 99th percentile' 
+   	   	
+  	lnd['All'] = 'Global'
+  	lnd['Best'] = 'Best'  	
+  	lnd['Standard'] = 'Standard'  	  	
+  	lnd['SalArtifact'] = 'Salinity Artifact (<15psu)'
+  	lnd['NitArtifact'] = 'Nitrogen Artifact'  
+   	lnd['TypicalIron'] = 'Iron < 4 umol m^-3'   	
+   	lnd['HighLatWinter'] = 'High Latitude Winter'  		
+  	lnd['OffAxis'] = 'Off Axis'  	
+  	lnd['Depth'] = 'Depth >200m'  	
+  	lnd['Shallow'] = 'Depth <200m'
+
+	lnd['Overestimate_2sig'] = "Overestimate 2 sigma"
+	lnd['Overestimate_3sig'] = "Overestimate 3 sigma"
+	lnd['Underestimate_2sig'] = "Overestimate 2 sigma"
+	lnd['Underestimate_3sig'] = "Overestimate 3 sigma"			
+	   	  	  	
+    	lnd['OceansMonths'] = 'Oceans Months'	 	  	  	  	  		       
+   	lnd['maskBelowBathy'] = 'Masked Below Bathymetery' 
+   	lnd['OnShelf'] = 'On Shelf'
+   	lnd['OffShelf'] = 'Off Shelf'  
+   	
+	#####
+	# Models
+  	lnd['NEMO'] = 'NEMO'  	  	
+  	lnd['CICE'] = 'CICE'  	  	  	
+  	lnd['ERSEM'] = 'ERSEM'  	  	
+  	lnd['MAREDAT'] = 'MAREDAT'  	  	
+  	lnd['MEDUSA'] = 'MEDUSA'    
+  	
+  	#####
+  	# Data sets
+  	lnd['Takahashi'] = 'Takahashi 2009'  	  	  	
+  	lnd['Takahashi2009'] = 'Takahashi 2009'  	  	  	  	
+  	lnd['Seawifs'] = 'Seawifs'
+  	lnd['cci'] = "CCI"  
+	lnd['pig'] = "pigments"  
+	lnd['OSU'] = "(OSU)"  
+	lnd['1x1'] = "(iMarNet)"  
+    	lnd['GEOTRACES'] = "GEOTRACES"  		
+  	lnd['WOA'] = 'WOA'  	   	
+     	lnd['IFREMER'] = "IFREMER"
+  	lnd['InitialConditions'] = 'Initial Conditions'    
+  	lnd['GLODAP'] = 'GLODAP'
+  	lnd['GLODAPv2'] = 'GLODAP v2'  	
+
+	for txt in lnd.keys():
+		longname	 = lnd[txt]
+		lnd[longname]	 = longname
+		lnd[txt.lower()] = longname
+		lnd[txt.upper()] = longname
+		lnd[txt.title()] = longname
+					
+	ThreeDFields = ['DIC','temperature', "salinity", "nitrate", "phosphate" ,'silicate','oxygen',
+			'iron','chl',
+			]
+	depthLevels 	= ['Surface','100m','200m','500m','1000m',
+			   'Transect','PTransect','SOTransect',
+			   'ArcTransect','AntTransect','CanRusTransect',
+			   '10N','10S',] 
+	
+	for f in ThreeDFields:
+	  for d in depthLevels:
+	  	if d in ['100m','200m','500m','1000m',]:
+		  	longname = lnd[f] + ' ('+lnd[d]+')'
+		else:	longname = lnd[d] + ' '+lnd[f]
+		
+		lnd[f+d] = longname
+		lnd[d+f] = longname	
+		lnd[(d+f).upper()] = longname		  	
+		lnd[(f+d).upper()] = longname		  	
+		lnd[(d+f).lower()] = longname			
+		lnd[(f+d).lower()] = longname
+		lnd[f.title()+d.title()] = longname
+		lnd[d.title()+f.title()] = longname		
+		
+	return lnd		   
+		
+
+longNameDict = makeLongNameDict()
 def getLongName(text,debug=False):
+
+	if debug: print "Getting long name:",text
+	
+	if type(text) in [type(['a','b',]),type(('a','b',))]:
+		return ' '.join([getLongName(t) for t in text])
+		#out = ''
+		
+	try: 	return longNameDict[text]
+	except:	
+		if debug: print "text not in dict:", text
+	try: return longNameDict[text.lower()]
+	except: 
+		if debug: print "text.lower() not in dict:", text.lower()
+	print "text not in dict:", text
+	assert 0 
+		
+	return text
+	
+	
+
+def getLongName_old(text,debug=False):
 	""" 
 	:param text: A code-facing string.
 	
@@ -104,20 +504,14 @@ def getLongName(text,debug=False):
 	if text.lower() in firstLetterCaps:	return text.title()
 
 
-  	#if text == 'Transect':		return "Transect"	
-  	#if text == 'PTransect':		return "Pacific Transect"
-#  	if text == 'Surface':		return "Surface"
-  	if text == '100m':		return "100m deep"  	
-  	if text == '200m':		return "200m deep"  	  	  	
-  	if text == '500m':		return "500m deep"  	
-  	if text == '1000m':		return "1000m deep"  	
-
 #  	if text == 'temperature':	return "Temperature" 
 # 	if text == 'salinity':		return "salinity" 
 #  	if text == 'nitrate':		return "nitrate" 
 #  	if text == 'phosphate':		return "phosphate" 
 #  	if text == 'silicate':		return "silicate"   	  	  	
-	  		  	  	
+	
+	
+	
   	if text == 'temperaturePTransect':	return "Pacific Transect Temperature"
   	if text == 'temperatureSOTransect':	return "Southern Ocean Transect Temperature"  	
   	if text == 'temperatureSurface':	return "Surface Temperature"
@@ -136,7 +530,7 @@ def getLongName(text,debug=False):
   	if text == 'Temperature1000m':		return "Temperature (1000m deep)"  
   	  	
   	if text == 'salinityPTransect':		return "Pacific Transect Salinity"
-  	if text == 'salinitySOTransect':		return "Southern Ocean Transect Salinity"  	
+  	if text == 'salinitySOTransect':	return "Southern Ocean Transect Salinity"  	
   	if text == 'salinitySurface':		return "Surface Salinity"
   	if text == 'salinityAll':		return "Salinity"  	
   	if text == 'salinity100m':		return "Salinity (100m deep)"  	
@@ -300,6 +694,10 @@ def getLongName(text,debug=False):
   	if text == 'SOTransect':	return "Southern Ocean Transect"    
   	if text == 'Transect':		return "Atlantic Transect"    
   	if text == 'PTransect':		return "Pacific Transect"      	  		  	
+  	if text == '100m':		return "100m deep"  	
+  	if text == '200m':		return "200m deep"  	  	  	
+  	if text == '500m':		return "500m deep"  	
+  	if text == '1000m':		return "1000m deep"  	
   	
   	if text == '10N':		return "10 degree North Transect"    	
   	if text == '10S':		return "10 degree South Transect"    	  	  	  	  	
