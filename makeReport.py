@@ -332,6 +332,8 @@ def html5Maker(
 			  'Nitrate',
 			  'DIC',			  		  
 			  'Alkalinity', 
+                          'DiatomChlorophyll',
+                          'NonDiatomChlorophyll',			  
 			  'TotalOMZVolume',			  			  
                           'Temperature',
                           'Salinity',
@@ -442,10 +444,13 @@ def html5Maker(
 			  'Silicate', 
 			  'Iron',
 			  'IntegratedPrimaryProduction_OSU',
+                          'DiatomChlorophyll',
+                          'NonDiatomChlorophyll',			  
                           'OMZThickness',
                           'OMZMeanDepth',
                           'Temperature',
                           'Salinity',
+
                           #'TotalIceArea'
 			]
 		physregionalFields = [
