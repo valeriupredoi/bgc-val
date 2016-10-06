@@ -55,7 +55,8 @@ from timeseries import profileAnalysis
 import paths	
 
 
-timeseriesKeys = ['T','S','MLD', 'Chl_pig','Chl_CCI',
+timeseriesKeys = ['T','S','MLD', 
+		  'Chl_pig','Chl_CCI','CHN','CHD',
 		  'N','Si','O2','Alk','DIC','AirSeaFlux','Iron',
 		  'TotalAirSeaFluxCO2','IntPP_iMarNet','IntPP_OSU',
 		  'PP_OSU','LocalExportRatio','GlobalExportRatio',
@@ -66,6 +67,7 @@ timeseriesDict = {i:n for i,n in enumerate(timeseriesKeys)}
 
 level1Keys = ['N', 'Si','O2','Alk','DIC','AirSeaFlux','TotalAirSeaFluxCO2','IntPP_OSU','PP_OSU' ,'LocalExportRatio','GlobalExportRatio' ,
 		'TotalOMZVolume','OMZThickness' ,'OMZMeanDepth','Iron',
+		'CHN','CHD',
 		'T', 'S','MLD','TotalIceArea', 'NorthernTotalIceArea','SouthernTotalIceArea',
 		'TotalIceExtent', 'NorthernTotalIceExtent','SouthernTotalIceExtent','DrakePassageTransport','AMOC_26N','AMOC_32S',]
 level1KeysDict = {i:n for i,n in enumerate(level1Keys)}	
@@ -171,6 +173,9 @@ def analysis_timeseries(jobID = "u-ab671",
                         analysisKeys.append('OMZThickness')             # Oxygen Minimum Zone Thickness
                         analysisKeys.append('OMZMeanDepth')             # Oxygen Minimum Zone mean depth                   
                         analysisKeys.append('Iron')                     # Iron
+			analysisKeys.append('CHN')			
+			analysisKeys.append('CHD')	
+			                        
                         #####   
                         # Physics switches:
                         analysisKeys.append('T')                        # WOA Temperature
@@ -193,11 +198,12 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('TotalOMZVolume')		# work in progress
 			#analysisKeys.append('TotalOMZVolume')		# work in progress
 			#analysisKeys.append('TotalOMZVolume50')	# work in progress			
-			analysisKeys.append('OMZMeanDepth')		# work in progress						
+			#analysisKeys.append('OMZMeanDepth')		# work in progress						
 			#analysisKeys.append('DIC')			# work in progress									
 			#analysisKeys.append('DrakePassageTransport')	# DrakePassageTransport				
 			#analysisKeys.append('TotalIceArea')		# work in progress	
-														
+			analysisKeys.append('CHN')			
+			analysisKeys.append('CHD')									
 			#analysisKeys.append('O2')			# work in progress
 			#analysisKeys.append('Iron')			# work in progress
                         #analysisKeys.append('N')                        # WOA Nitrate				
@@ -483,7 +489,33 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['Dimensions']		= 2		
 
 
+	if 'CHD' in analysisKeys or  'CHN' in analysisKeys:
+	    for key in ['CHD','CHN',]:
+	        if key not in analysisKeys: continue
+	        		
+		if key == 'CHD':	name = 'DiatomChlorophyll'
+		if key == 'CHN':	name = 'NonDiatomChlorophyll'		 
+		
+		av[name]['modelFiles']  	= listModelDataFiles(jobID, 'ptrc_T', paths.ModelFolder_pref, annual)		
+		av[name]['dataFile'] 		= ''
+			
+		av[name]['modelcoords'] 	= medusaCoords 	
+		av[name]['datacoords'] 		= ''
+	
+		av[name]['modeldetails'] 	= {'name': name, 'vars':[key], 'convert': ukp.NoChange,'units':'mg C/m^3'}
+		av[name]['datadetails']  	= {'name': '', 'units':''}
+	
+		av[name]['layers'] 		= ['Surface',] 	# CCI is surface only, it's a satellite product.
+		av[name]['regions'] 		= regionList 
+		av[name]['metrics']		= metricList	#['mean','median', ]
+		
+		av[name]['datasource'] 		= ''
+		av[name]['model']		= 'MEDUSA'
 
+		av[name]['modelgrid']		= 'eORCA1'
+		av[name]['gridFile']		= paths.orcaGridfn
+		av[name]['Dimensions']		= 2		
+		
 
 
 	if 'N' in analysisKeys:
