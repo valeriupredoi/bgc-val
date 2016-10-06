@@ -430,7 +430,7 @@ class makePlots:
 					datax,datay,
 					robfnquad,
 					titles=[ti1,ti2],
-					title  = ' '.join([getLongName(newSlice),getLongName(self.name+self.depthLevel),self.year]),
+					title  = ' '.join([getLongName(newSlice),getLongName(self.name),getLongName(self.depthLevel),self.year]),
 					cbarlabel=cbarlabel, 
 					doLog=doLog,
 					vmin=dmin,vmax=dmax,)
@@ -453,7 +453,7 @@ class makePlots:
 					datax,datay,
 					robfncartopy,
 					titles=[ti1,ti2],
-					title  = ' '.join([getLongName(newSlice),getLongName(self.name+self.depthLevel),self.year]),
+					title  = ' '.join([getLongName(self.name),getLongName(self.depthLevel),self.year]),
 					cbarlabel=cbarlabel, 
 					doLog=doLog,
 					vmin=dmin,vmax=dmax,
@@ -470,11 +470,26 @@ class makePlots:
 			else:	
 				doLog=True
 			print "plotWithSlices:\ttransect quad:",[ti1,ti2],False,dmin,dmax
-			ukp.HovPlotQuad(nmxx,nmxy, nmxz, 
+			if self.depthLevel in ['ArcTransect','AntTransect','CanRusTransect',]:
+				ukp.ArcticTransectPlotQuad(nmxx,nmxy, nmxz, 
 					datax,datay,
 					transectquadfn,
 					titles=[ti1,ti2],
-					title  = ' '.join([getLongName(newSlice),getLongName(self.name+self.depthLevel),self.year]),
+					title  = ' '.join([getLongName(self.name),getLongName(self.depthLevel),self.year]),
+					cbarlabel=cbarlabel, 
+					doLog=doLog,
+					vmin=dmin,
+					vmax=dmax,
+					scatter = False,
+					logy=True,
+					transectName  = self.depthLevel,
+					)			
+			else:
+				ukp.HovPlotQuad(nmxx,nmxy, nmxz, 
+					datax,datay,
+					transectquadfn,
+					titles=[ti1,ti2],
+					title  = ' '.join([getLongName(self.name),getLongName(self.depthLevel),self.year]),
 					cbarlabel=cbarlabel, 
 					doLog=doLog,
 					vmin=dmin,

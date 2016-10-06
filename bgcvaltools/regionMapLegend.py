@@ -36,6 +36,7 @@ import numpy as np
 import UKESMpython as ukp
 from matplotlib import pyplot
 import cartopy.crs as ccrs
+from cartopy import img_transform, feature as cfeature	
 from bgcvaltools.pftnames import getLongName
 
 
@@ -45,7 +46,7 @@ regionList	= [#'Global', 'ignoreInlandSeas',
 		'NorthernSubpolarAtlantic','NorthernSubpolarPacific','ArcticOcean',
 		]
 
-def robinPlotCustom(lons,lats,data,filename,title, zrange=[-100,100],drawCbar=True,cbarlabel='',doLog=False,dpi=100,cmapname='default',crude=False):
+def robinPlotCustom(lons,lats,data,filename,title, zrange=[-100,100],drawCbar=True,cbarlabel='',doLog=False,dpi=100,cmapname='default',crude=0):
 	####
 	# Based on robinplotSingle
 	
@@ -66,14 +67,19 @@ def robinPlotCustom(lons,lats,data,filename,title, zrange=[-100,100],drawCbar=Tr
 	if crude:
 		ax = pyplot.subplot(111)#,projection=ccrs.PlateCarree(central_longitude=lon0, ))
 		im = pyplot.scatter(lats,lons,c=data,lw=0.,s=3,cmap='viridis',vmin=rbmi,vmax=rbma,)
+		pyplot.axvline(80.)		
+		pyplot.axvline(83.5)
+						
+		pyplot.axvline(-100.)
+		#pyplot.axvline(-105.)		
+		pyplot.axvline( -96.)				
+				
 		#pyplot.colorbar(im)
 		#title, zrange=[rbmi,rbma],lon0=lon0,drawCbar=False,cbarlabel=cbarlabel,doLog=doLog,cmap = cmapname)	
 	else:
 		ax = pyplot.subplot(111,projection=ccrs.PlateCarree(central_longitude=lon0, ))
 		fig,ax,im = ukp.makemapplot(fig,ax,lons,lats,data,title, zrange=[rbmi,rbma],lon0=lon0,drawCbar=False,cbarlabel=cbarlabel,doLog=doLog,cmap = cmapname)
 
-
-          
           
 	cmap = im.get_cmap()
 	#for i in [0,10,100,1000,10000,1000000,100000]:
@@ -103,13 +109,10 @@ def robinPlotCustom(lons,lats,data,filename,title, zrange=[-100,100],drawCbar=Tr
 	pyplot.close()
 
 
-def robinPlotTransects(lons,lats,data,filename,title,legends=[], zrange=[-100,100],drawCbar=True,cbarlabel='',doLog=False,dpi=100,cmapname='default',crude=False):
+def robinPlotTransects(lons,lats,data,filename,title,legends=[], zrange=[-100,100],drawCbar=True,cbarlabel='',doLog=False,dpi=100,cmapname='jet',proj='Arctic'):
 	####
 	# Based on robinplotSingle
 	
-	fig = pyplot.figure()
-	fig.set_size_inches(10,5)
-
 	lons = np.array(lons)
 	lats = np.array(lats)
 	data = np.ma.array(data)
@@ -121,39 +124,80 @@ def robinPlotTransects(lons,lats,data,filename,title,legends=[], zrange=[-100,10
 
 	print lons.shape,lats.shape,data.shape
 	lon0 = 0.#lons.mean()
-	if crude:
-		ax = pyplot.subplot(111)#,projection=ccrs.PlateCarree(central_longitude=lon0, ))
-		im = pyplot.scatter(lats,lons,c=data,lw=0.,s=3,cmap='viridis',vmin=rbmi,vmax=rbma,)
-		#pyplot.colorbar(im)
-		#title, zrange=[rbmi,rbma],lon0=lon0,drawCbar=False,cbarlabel=cbarlabel,doLog=doLog,cmap = cmapname)	
-	else:
+	if proj in ['Arctic', 'Antartic']:
+		fig = pyplot.figure()
+		print lons.shape,lats.shape,data.shape, [rbmi,rbma]
+		lat2d,lon2d = np.meshgrid(lats,lons)
+
+		if proj in ['Arctic',]:	  ax = pyplot.axes(projection=ccrs.Orthographic(-10, 70))#central_longitude=lon0, ))
+		if proj in ['Antartic',]: ax = pyplot.axes(projection=ccrs.Orthographic(-10, -70))#central_longitude=lon0, ))		
+		
+		m = data.mask						
+		lon2d = np.ma.masked_where(m,lon2d).compressed()
+		lat2d = np.ma.masked_where(m,lat2d).compressed()
+		data = np.ma.masked_where(m,data).compressed()				
+		im = ax.scatter(lat2d,lon2d,c=data,lw=0.,s=8.,marker='s',cmap=cmapname,transform=ccrs.PlateCarree())#vmin=rbmi,vmax=rbma,s=3,
+		
+		#im = ax.pcolormesh(lat2d,lon2d,data,cmap=cmapname,transform=ccrs.PlateCarree())#vmin=rbmi,vmax=rbma,s=3,		
+		
+		ax.add_feature(cfeature.LAND,  facecolor='0.85')	
+	if proj in ['Both']:
+		fig = pyplot.figure()
+		fig.set_size_inches(10,5)		
+		print lons.shape,lats.shape,data.shape, [rbmi,rbma]
+		lat2d,lon2d = np.meshgrid(lats,lons)
+
+
+		m = data.mask						
+		lon2d = np.ma.masked_where(m,lon2d).compressed()
+		lat2d = np.ma.masked_where(m,lat2d).compressed()
+		data = np.ma.masked_where(m,data).compressed()	
+		
+		ax1 = pyplot.subplot(121,projection=ccrs.Orthographic(-10, 70))#central_longitude=lon0, ))
+		im1 = ax1.scatter(lat2d,lon2d,c=data,lw=0.,s=10.,marker='s',cmap=cmapname,transform=ccrs.PlateCarree())#vmin=rbmi,vmax=rbma,s=3,
+		ax1.add_feature(cfeature.LAND,  facecolor='0.85')	
+		
+		ax = pyplot.subplot(122,projection=ccrs.Orthographic(-10, -70))#central_longitude=lon0, ))		
+		im = ax.scatter(lat2d,lon2d,c=data,lw=0.,s=10.,marker='s',cmap=cmapname,transform=ccrs.PlateCarree())#vmin=rbmi,vmax=rbma,s=3,							
+
+		#im = ax.pcolormesh(lat2d,lon2d,data,cmap=cmapname,transform=ccrs.PlateCarree())#vmin=rbmi,vmax=rbma,s=3,		
+		
+		ax.add_feature(cfeature.LAND,  facecolor='0.85')	
+		
+	if proj == 'robin':	
+		fig = pyplot.figure()
+		fig.set_size_inches(10,5)
 		ax = pyplot.subplot(111,projection=ccrs.PlateCarree(central_longitude=lon0, ))
-		fig,ax,im = ukp.makemapplot(fig,ax,lons,lats,data,title, zrange=[rbmi,rbma],lon0=lon0,drawCbar=False,cbarlabel=cbarlabel,doLog=doLog,cmap = cmapname)
+		fig,ax,im = ukp.makemapplot(fig,ax,lons,lats,data,title, zrange=[rbmi,rbma],lon0=lon0,drawCbar=False,cbarlabel=cbarlabel,doLog=doLog,cmap = cmapname)			
 
-
-          
-          
-	cmap = im.get_cmap()
-	#for i in [0,10,100,1000,10000,1000000,100000]:
-	#	print i, cmap(i), data.min(),data.max()
 	leg=True
 	if leg:
-		
+		cmap = im.get_cmap()
 
 		# Shrink current axis's height by 10% on the bottom
 		box = ax.get_position()
 		ax.set_position([box.x0, box.y0 + box.height * 0.1,
 				 box.width, box.height * 0.9])
-
+		if proj =='Both':
+			box1 = ax1.get_position()
+			ax1.set_position([box1.x0, box1.y0 + box1.height * 0.1, box1.width, box1.height * 0.9])
+			
 		for i,r in enumerate(legends):
 			c = cmap((i)/(len(legends)-1.))
 			print 'making transect legend:',i,r,c
 			pyplot.plot([],[],color=c,lw=8,label=getLongName(r))
 			
 		# Put a legend below current axis
-		leg = ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05),
+
+		if proj in ['robin',]:
+			leg = ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05),
 			  ncol=4,prop={'size':10})
-			  	
+		elif proj in ['Both']:
+			leg = ax.legend(loc='upper center', bbox_to_anchor=(0.0, -0.05),
+			  ncol=4,prop={'size':10})			  
+		else:
+			leg = ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05),
+			  ncol=4,prop={'size':9})		  	
 		#leg = pyplot.legend(loc='lower center',ncol=3, )
 		leg.draw_frame(False) 
 		leg.get_frame().set_alpha(0.)		
@@ -204,7 +248,7 @@ def makeRegionMap():
 		robinPlotCustom(xy, xx, data,fn,'',drawCbar=False,cbarlabel='',doLog=False,dpi=200,cmapname = c)
 		
 
-def makeTransectsMap():
+def makeTransectsMap(proj='robin'):
 	"""
 	Makes a plot of the transect lines.
 	"""
@@ -221,27 +265,68 @@ def makeTransectsMap():
 	nc.close()
 			
 	maps = np.zeros(oxy.shape)
-
-	transects= ['Transect', 'PTransect','SOTransect','Equator']
-	
+	transects= ['ArcTransect','AntTransect','Transect','CanRusTransect', 'Equator','PTransect','SOTransect',]
+	fn = imageFold+'Transects_legend_'+proj+'.png'
+					
 	for i,transect in enumerate(transects):
 		i+=1
 		single_map = np.zeros(oxy.shape)	
-		if transect == 'Transect':	x = -28.
-		if transect == 'PTransect': 	x = 200.
+
 	
 		if transect in ['Transect','PTransect']:
+			if transect == 'Transect':	x = -28.
+			if transect == 'PTransect': 	x = 200.		
 			k = ukp.getclosestlon(x,lon,debug=True)
 			maps[:,k]=i	
 			single_map[:,k]=i
 
-		if transect == 'SOTransect':	y = -60.
-		if transect == 'Equator':	y =   0.
 					
 		if transect in ['SOTransect','Equator']:
+			if transect == 'SOTransect':	y = -60.
+			if transect == 'Equator':	y =   0.		
 			k = ukp.getclosestlat(y,lat,debug=True)
 			maps[k,:]=i
 			single_map[k,:]=i
+		if transect in ['ArcTransect','AntTransect','CanRusTransect',]:
+			numpoints = 300
+			if transect in ['ArcTransect',]:
+				longi = 0.
+				minlat = 50.
+				maxlat = 90.
+				transectcoords = [(minlat +a*(maxlat-minlat)/numpoints,longi)  for a in np.arange(numpoints)]# lat,lon
+
+				longi = -165.
+				minlat = 60.
+				maxlat = 90.
+				transectcoords.extend([(minlat +a*(maxlat-minlat)/numpoints,longi) for a in np.arange(numpoints)])# lat,lon
+
+			if transect == 'AntTransect':
+				longi = 0.
+				minlat = -90.
+				maxlat = -40.
+				transectcoords = [(minlat +a*(maxlat-minlat)/numpoints,longi)  for a in np.arange(numpoints)]# lat,lon
+		
+					
+			if transect == 'CanRusTransect':
+				longi = 83.5
+				minlat = 65.
+				maxlat = 90.
+				transectcoords = [(minlat +a*(maxlat-minlat)/numpoints,longi)  for a in np.arange(numpoints)]# lat,lon
+
+				longi = -96.
+				minlat = 60.
+				maxlat = 90.
+				transectcoords.extend([(minlat +a*(maxlat-minlat)/numpoints,longi) for a in np.arange(numpoints)])# lat,lon
+			
+		
+		
+			lon2d,lat2d = np.meshgrid(lon,lat)
+			for (ilat,ilon) in sorted(transectcoords):
+				la,lo = ukp.getOrcaIndexCC(ilat, ilon, lat2d, lon2d, debug=True,)
+				maps[la,lo] = i		
+				single_map[la,lo]=i
+		#####
+		# Make plot
 		singles=False
 		if singles:	
 			fn = ukp.folder(imageFold+'Transects')+transect+'.png'
@@ -251,11 +336,11 @@ def makeTransectsMap():
 	#maps = np.clip(maps,0,i)
 	
 	maps = np.ma.masked_where(maps==0,maps)#.compessed()
-	fn = imageFold+'Transects_legend.png'
-	robinPlotTransects(lat, lon, maps,fn, '',legends=transects,drawCbar=False,cbarlabel='',doLog=False,dpi=200,)
+	robinPlotTransects(lat, lon, maps,fn, '',legends=transects,drawCbar=False,cbarlabel='',doLog=False,dpi=200,proj=proj)
 
 if __name__=="__main__":
-	makeTransectsMap()
+	for proj in ['Both','robin',]:#'Arctic', 'Antartic', ]:
+		makeTransectsMap(proj=proj)
 	
-	makeRegionMap()		
+	#makeRegionMap()		
 	

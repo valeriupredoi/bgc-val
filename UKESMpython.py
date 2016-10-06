@@ -387,6 +387,46 @@ def makemapplot(fig,ax,lons,lats,data,title, zrange=[-100,100],lon0=0.,drawCbar=
 		
 	return fig, ax,im
 
+def makePolarmapplot(fig,ax,lons,lats,data,title, zrange=[-100,100],lon0=0.,drawCbar=True,cbarlabel='',doLog=False,drawLand=True,cmap='default'):
+	"""
+	takes a pyplot figre and axes, lat lon, data, and title and then makes a single polar map. 
+	"""
+	lons = np.array(lons)
+	lats = np.array(lats)
+	data = np.ma.array(data)	
+	if doLog and zrange[0]*zrange[1] <=0.:
+		print "makemapplot: \tMasking"
+		data = np.ma.masked_less_equal(np.ma.array(data), 0.)
+	print data.min(),lats.min(),lons.min(), data.shape,lats.shape,lons.shape
+	
+	crojp2, data, newLon,newLat = regrid(data,lats,lons)
+	
+	if type(cmap) == type('str'):
+	    if cmap=='default':
+		try:	cmap = pyplot.cm.viridis
+		except: cmap = pyplot.cm.jet
+	    else:
+	    	cmap = pyplot.cm.get_cmap(cmap)
+		
+	if doLog:
+		im = ax.pcolormesh(newLon, newLat,data, cmap=cmap, transform=ccrs.NorthPolarStereo(),norm=LogNorm(vmin=zrange[0],vmax=zrange[1]),)
+	else:	
+		im = ax.pcolormesh(newLon, newLat,data, cmap=cmap, transform=ccrs.NorthPolarStereo(),vmin=zrange[0],vmax=zrange[1])
+	
+	if drawLand: ax.add_feature(cfeature.LAND,  facecolor='0.85')	
+
+
+	if drawCbar:
+	    c1 = fig.colorbar(im,pad=0.05,shrink=0.75)
+	    if len(cbarlabel)>0: c1.set_label(cbarlabel)
+	pyplot.title(title)
+	ax.set_axis_off()
+	pyplot.axis('off')
+	ax.axis('off')
+		
+	return fig, ax,im
+
+
 
 def robinPlotSingle(lons,lats,data,filename,title, zrange=[-100,100],drawCbar=True,cbarlabel='',doLog=False,dpi=100,):
 	"""
@@ -743,7 +783,7 @@ def HovPlotQuad(lons,lats, depths,
 	if lon_std<lat_std:
 		hovXaxis = lats
 	else:	hovXaxis = lons
-	
+			
 	
 	for i,spl in enumerate([221,222,223,224]):	
 		
@@ -830,6 +870,178 @@ def HovPlotQuad(lons,lats, depths,
 	pyplot.savefig(filename ,dpi=dpi)		
 	pyplot.close()
 	
+	
+def ArcticTransectPlotQuad(lons,lats, depths, 
+		data1,data2,filename,
+		titles=['',''],title='',
+		lon0=0.,marble=False,drawCbar=True,cbarlabel='',doLog=False,scatter=True,dpi=100,vmin='',vmax='',
+		logy = False,
+		maskSurface=True,
+		transectName  = 'ArcTransect',
+		):#,**kwargs):
+	"""
+	:param lons: Longitude array
+	:param lats: Lattitude array	
+	:param depths: Depth array	
+	:param data1: Data  array
+	:param data2: Second data array	
+	takes a pair of lat lon, depths, data, and title, and filename and then makes a quad of transect plots
+	(data 1, data 2, difference and quotient), then saves the figure.
+	This only applies to the Arctic Transect plot
+	"""
+	
+	fig = pyplot.figure()
+	fig.set_size_inches(10,6)
+	depths = np.array(depths)
+	if depths.max() * depths.min() >0. and depths.max()  >0.: depths = -depths
+	
+	lons = np.array(lons)
+	lats = np.array(lats)
+	data1 = np.ma.array(data1)
+	data2 = np.ma.array(data2)
+
+	
+	if transectName=='AntTransect':
+		####
+		# Custom request from Katya for this specific figure.
+		data1 = np.ma.array(np.ma.masked_where(depths<-500.,data1).compressed())
+		data2 = np.ma.array(np.ma.masked_where(depths<-500.,data2).compressed())
+		lats = np.ma.masked_where(depths<-500.,lats).compressed()
+		lons = np.ma.masked_where(depths<-500.,lons).compressed()
+		depths = np.ma.masked_where(depths<-500.,depths).compressed()
+		print lons.shape,lats.shape, depths.shape, data1.shape,data2.shape
+		logy = False
+		maskSurface = False
+		
+	if maskSurface:
+		data1 = np.ma.masked_where(depths>-10.,data1)
+		data2 = np.ma.masked_where(depths>-10.,data2)
+						
+	doLog, vmin,vmax = determineLimsFromData(data1,data2)
+			
+	axs,bms,cbs,ims = [],[],[],[]
+	doLogs = [doLog,doLog,False,True]
+	print "ArcticTransectPlotQuad:\t",len(depths),len(lats),len(data1),len(data2)
+
+	#####
+	# Artificially build an x axis coordinate list for the Arctic.
+	hovXaxis = []
+	meanlon = np.mean(lons)
+	if transectName in ['ArcTransect','CanRusTransect'] :
+		for i,(la,lo) in enumerate(zip(lats,lons)):
+			if lo <= meanlon: #lowest lo transect goes first.
+				hovXaxis.append(la)
+			else:	
+				nl = 90.+ abs((90.-la))
+				hovXaxis.append(nl)
+	else:
+		hovXaxis = lats
+		
+	hovXaxis = np.array(hovXaxis)				
+
+	for i,spl in enumerate([221,222,223,224]):	
+		
+		if spl in [221,222]:
+			rbmi = vmin
+			rbma = vmax
+		if spl in [223,]:
+			rbma =3*np.ma.std(data1 -data2)
+			print spl,i, rbma, max(data1),max(data2)
+			rbmi = -rbma
+		if spl in [224,]:
+			rbma = 10.001 
+			rbmi = 0.0999		
+				
+		if doLogs[i] and rbmi*rbma <=0.:
+			print "UKESMpython:\tArcticTransectPlotQuad: \tMasking",
+			data1 = np.ma.masked_less_equal(ma.array(data1), 0.)
+			data2 = np.ma.masked_less_equal(ma.array(data2), 0.)
+		data = ''
+		
+		if spl in [221,]:	data  = np.ma.clip(data1, 	 rbmi,rbma)
+		if spl in [222,]:	data  = np.ma.clip(data2, 	 rbmi,rbma)
+		if spl in [223,]:	data  = np.ma.clip(data1-data2, rbmi,rbma)
+		if spl in [224,]:	data  = np.ma.clip(data1/data2, rbmi,rbma)
+		if spl in [221,222,]:	cmap= defcmap
+		if spl in [223,224,]:	cmap= pyplot.cm.RdBu_r		
+		
+		axs.append(fig.add_subplot(spl))
+		if scatter:
+			if doLogs[i] and spl in [221,222]:
+				rbmi = np.int(np.log10(rbmi))
+				rbma = np.log10(rbma)
+				if rbma > np.int(rbma): rbma+=1
+				rbma = np.int(rbma)
+					
+			if doLogs[i]:	
+				ims.append(pyplot.scatter(hovXaxis,depths, c= np.log10(data),cmap=cmap, marker="s",alpha=0.9,linewidth='0',vmin=rbmi, vmax=rbma,))
+			else:	ims.append(pyplot.scatter(hovXaxis,depths, c=          data ,cmap=cmap, marker="s",alpha=0.9,linewidth='0',vmin=rbmi, vmax=rbma,))
+			
+		else:
+			print "ArcticTransectPlotQuad: hovXaxis:",hovXaxis.min(),hovXaxis.max(),"\tdepths:",depths.min(),depths.max(),"\tdata:",data.min(),data.max()
+			newX,newY,newData = arrayify(hovXaxis,depths,data)
+			print "ArcticTransectPlotQuad: newX:",newX.min(),newX.max(),"\tnewY:",newY.min(),newY.max(),"\tnewData:",newData.min(),newData.max() , 'range:', rbmi,rbma			
+			if doLogs[i]:	ims.append(pyplot.pcolormesh(newX,newY, newData, cmap=cmap, norm=LogNorm(vmin=rbmi,vmax=rbma),))
+			else:		ims.append(pyplot.pcolormesh(newX,newY, newData, cmap=cmap, vmin=rbmi, vmax=rbma,))			
+
+		if transectName == 'ArcTransect':		
+			xticks 		= [ 60.,	    75.,  90.,         105., 120.]
+			xtickslabs 	= ['Bering Strait','75N','North Pole','75N','Shetland']
+			pyplot.xticks(xticks,xtickslabs)#,labelsize=8)
+			pyplot.tick_params(axis='x', which='both', labelsize=9)
+
+		if transectName == 'CanRusTransect':		
+			xticks 		= [ 75.,     80.,  85.,  90.,      95., 100.,  105.]
+			xtickslabs 	= ['Canada','80N','85N','N. Pole','85N','80N','Siberia']
+			pyplot.xticks(xticks,xtickslabs)#,labelsize=8)
+			pyplot.tick_params(axis='x', which='both', labelsize=9)
+		if transectName == 'AntTransect':
+			pyplot.xlabel('Latitude')
+	
+								
+		#####
+		# All the tools to make a colour bar
+		if drawCbar:
+			if spl in [221,222,223]:
+				if doLogs[i]:	cbs.append(fig.colorbar(ims[i],pad=0.05,shrink=0.5,ticks = np.linspace(rbmi,rbma,rbma-rbmi+1)))
+				else:		cbs.append(fig.colorbar(ims[i],pad=0.05,shrink=0.5,))
+			if spl in [224,]:
+				cbs.append(fig.colorbar(ims[i],pad=0.05,shrink=0.5,))
+				cbs[i].set_ticks ([0.1,1.,10.])
+				cbs[i].set_ticklabels(['0.1','1.','10.'])
+	 	
+	 		cbs[i].set_clim(rbmi,rbma)
+			if doLogs[i] and len(cbarlabel)>0: cbarlabel='log$_{10}$('+cbarlabel+')'	
+
+	    		if len(cbarlabel)>0 and spl in [221,222,]: cbs[i].set_label(cbarlabel)
+	    		
+	    	#####
+	    	# Add the titles.	
+		if i in [0,1]:	pyplot.title(titles[i])
+		if i ==2:	pyplot.title('Difference ('+titles[0]+' - '+titles[1]+')')
+		if i ==3:	pyplot.title('Quotient ('  +titles[0]+' / '+titles[1]+')')
+	
+		#####
+		# Add the log scaliing and limts. 
+                if logy: 		axs[i].set_yscale('symlog')	
+		if maskSurface:		axs[i].set_ylim([depths.min(),-10.])
+		axs[i].set_xlim([hovXaxis.min(),hovXaxis.max()])						
+							
+		
+	#####
+	# Add main title
+	if title:	fig.text(0.5,0.99,title,horizontalalignment='center',verticalalignment='top')	
+	
+	#####
+	# Print and save
+	pyplot.tight_layout()		
+	print "UKESMpython:\tArcticTransectPlotQuad: \tSaving:" , filename
+	pyplot.savefig(filename ,dpi=dpi)		
+	pyplot.close()
+
+
+
+
 	
 		
 def arrayify(oldX,oldY,data,fillGaps = True,minimumGap = 3., debug = False):
@@ -1302,7 +1514,7 @@ def scatterPlot(datax, datay,  filename, Title='', labelx='',labely='', logx=Fal
 	pyplot.savefig(filename ,dpi=dpi)
 	pyplot.close()			
 			
-def getOrcaIndexCC(lat,lon, latcc, loncc, debug=True,slowMethod=False,llrange=5.):
+def getOrcaIndexCC(lat,lon, latcc, loncc, debug=True,):	#slowMethod=False,llrange=5.):
 	""" 
 	Takes a lat and long coordinate, an returns the position of the closest coordinate in the grid.
 	"""
@@ -1345,6 +1557,7 @@ def getclosestlon(x,lons,debug=True):
 	"""
 	d = 1000.
 	best = -1
+	lons = np.array(lons)
 	if lons.ndim >1: 
 		print "getclosestlon:\tFATAL:\tThis code only works for 1D longitude arrays"
 		assert False
