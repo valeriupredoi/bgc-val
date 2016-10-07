@@ -175,7 +175,7 @@ def analysis_timeseries(jobID = "u-ab671",
                         analysisKeys.append('Iron')                     # Iron
 			analysisKeys.append('CHN')			
 			analysisKeys.append('CHD')	
-			                        
+			analysisKeys.append('DiaFrac')			# work in progress			                        
                         #####   
                         # Physics switches:
                         analysisKeys.append('T')                        # WOA Temperature

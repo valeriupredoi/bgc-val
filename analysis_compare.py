@@ -98,7 +98,11 @@ def timeseries_compare(colours,physics=True,bio=False,debug=True,):
 		analysisKeys.append('Iron')
 		analysisKeys.append('Alk')	
 		analysisKeys.append('DIC')
-	
+
+		analysisKeys.append('CHD')
+		analysisKeys.append('CHN')
+		analysisKeys.append('DiaFrac')
+					
       	  	analysisKeys.append('TotalOMZVolume')           # Total Oxygen Minimum zone Volume
        	 	analysisKeys.append('OMZThickness')             # Oxygen Minimum Zone Thickness
         	analysisKeys.append('OMZMeanDepth')             # Oxygen Minimum Zone mean depth      
@@ -107,10 +111,13 @@ def timeseries_compare(colours,physics=True,bio=False,debug=True,):
         	####
         	# Supercedes other flags.
 		analysisKeys = []
-       	  	analysisKeys.append('TotalOMZVolume')           # Total Oxygen Minimum zone Volume
-       	 	analysisKeys.append('OMZThickness')             # Oxygen Minimum Zone Thickness
-        	analysisKeys.append('OMZMeanDepth')             # Oxygen Minimum Zone mean depth    
-		analysisKeys.append('O2')                       # WOA Oxygen        	
+		analysisKeys.append('CHD')
+		analysisKeys.append('CHN')
+		analysisKeys.append('DiaFrac')		
+#       	  	analysisKeys.append('TotalOMZVolume')           # Total Oxygen Minimum zone Volume
+ #      	 	analysisKeys.append('OMZThickness')             # Oxygen Minimum Zone Thickness
+  #      	analysisKeys.append('OMZMeanDepth')             # Oxygen Minimum Zone mean depth    
+#		analysisKeys.append('O2')                       # WOA Oxygen        	
         	if bio ==False:return
         	if physics == True:return  
                                	
@@ -448,7 +455,58 @@ def timeseries_compare(colours,physics=True,bio=False,debug=True,):
 				av[name]['dataFile']	= ''
 				av[name]['datasource']  = ''
 							
+		if 'CHD' in analysisKeys or  'CHN' in analysisKeys:
+		    for name in ['CHD','CHN',]:
+			if name not in analysisKeys: continue
+		
+			av[name]['modelFiles']  	= listModelDataFiles(jobID, 'ptrc_T', paths.ModelFolder_pref, annual)		
+			av[name]['dataFile'] 		= ''
+			
+			av[name]['modelcoords'] 	= medusaCoords 	
+			av[name]['datacoords'] 		= ''
+	
+			av[name]['modeldetails'] 	= {'name': name, 'vars':[name,], 'convert': ukp.NoChange,'units':'mg C/m^3'}
+			av[name]['datadetails']  	= {'name': '', 'units':''}
+	
+			av[name]['layers'] 		= ['Surface','100m',] 	# CCI is surface only, it's a satellite product.
+			av[name]['regions'] 		= regionList 
+			av[name]['metrics']		= metricList	#['mean','median', ]
+		
+			av[name]['datasource'] 		= ''
+			av[name]['model']		= 'MEDUSA'
 
+			av[name]['modelgrid']		= 'eORCA1'
+			av[name]['gridFile']		= paths.orcaGridfn
+			av[name]['Dimensions']		= 2		
+		
+		if 'DiaFrac' in analysisKeys:
+					
+			name = 'DiaFrac'
+			def caldiafrac(nc,keys):
+				return 100.*nc.variables[keys[0]][:].squeeze()/(nc.variables[keys[0]][:].squeeze()+nc.variables[keys[1]][:].squeeze())
+		
+			av[name]['modelFiles']  	= listModelDataFiles(jobID, 'ptrc_T', paths.ModelFolder_pref, annual)		
+			av[name]['dataFile'] 		= ''
+			
+			av[name]['modelcoords'] 	= medusaCoords 	
+			av[name]['datacoords'] 		= ''
+	
+			av[name]['modeldetails'] 	= {'name': name, 'vars':['CHD','CHN',], 'convert': caldiafrac,'units':'%'}
+			av[name]['datadetails']  	= {'name': '', 'units':''}
+	
+			av[name]['layers'] 		= ['Surface','100m',] 	# CCI is surface only, it's a satellite product.
+			av[name]['regions'] 		= regionList 
+			av[name]['metrics']		= metricList	#['mean','median', ]
+		
+			av[name]['datasource'] 		= ''
+			av[name]['model']		= 'MEDUSA'
+
+			av[name]['modelgrid']		= 'eORCA1'
+			av[name]['gridFile']		= paths.orcaGridfn
+			av[name]['Dimensions']		= 2	
+		
+		
+		
 		if  'Iron' in analysisKeys:
 			name = 'Iron'
 			av[name]['modelFiles']  = listModelDataFiles(jobID, 'ptrc_T', paths.ModelFolder_pref, annual)								
