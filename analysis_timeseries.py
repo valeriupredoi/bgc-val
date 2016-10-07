@@ -490,11 +490,8 @@ def analysis_timeseries(jobID = "u-ab671",
 
 
 	if 'CHD' in analysisKeys or  'CHN' in analysisKeys:
-	    for key in ['CHD','CHN',]:
-	        if key not in analysisKeys: continue
-	        		
-		if key == 'CHD':	name = 'DiatomChlorophyll'
-		if key == 'CHN':	name = 'NonDiatomChlorophyll'		 
+	    for name in ['CHD','CHN',]:
+	        if name not in analysisKeys: continue
 		
 		av[name]['modelFiles']  	= listModelDataFiles(jobID, 'ptrc_T', paths.ModelFolder_pref, annual)		
 		av[name]['dataFile'] 		= ''
@@ -502,7 +499,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modelcoords'] 	= medusaCoords 	
 		av[name]['datacoords'] 		= ''
 	
-		av[name]['modeldetails'] 	= {'name': name, 'vars':[key], 'convert': ukp.NoChange,'units':'mg C/m^3'}
+		av[name]['modeldetails'] 	= {'name': name, 'vars':[name,], 'convert': ukp.NoChange,'units':'mg C/m^3'}
 		av[name]['datadetails']  	= {'name': '', 'units':''}
 	
 		av[name]['layers'] 		= ['Surface',] 	# CCI is surface only, it's a satellite product.

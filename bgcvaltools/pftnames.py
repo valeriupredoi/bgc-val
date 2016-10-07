@@ -120,6 +120,8 @@ def makeLongNameDict():
   	lnd['Chlorophylla'] = 'Chlorophyll'  	  
 	lnd['Chlorophyll_cci'] = "Chlorophyll (CCI)"  
 	lnd['Chlorophyll_pig'] = "Chlorophyll (Pigments)"  
+	lnd['CHD'] = "Diatom Chlorophyll"
+	lnd['CHN'] = "Non-Diatom Chlorophyll"		
 	lnd['DiatomChlorophyll'] = "Diatom Chlorophyll"
 	lnd['NonDiatomChlorophyll'] = "Non-Diatom Chlorophyll"	
 	lnd['DiaFrac'] = "Diatom Fraction"	
