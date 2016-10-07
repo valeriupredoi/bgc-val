@@ -202,9 +202,9 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('DIC')			# work in progress									
 			#analysisKeys.append('DrakePassageTransport')	# DrakePassageTransport				
 			#analysisKeys.append('TotalIceArea')		# work in progress	
-			analysisKeys.append('CHN')			
-			analysisKeys.append('CHD')									
-			#analysisKeys.append('O2')			# work in progress
+			#analysisKeys.append('CHN')			
+			#analysisKeys.append('CHD')									
+			analysisKeys.append('DiaFrac')			# work in progress
 			#analysisKeys.append('Iron')			# work in progress
                         #analysisKeys.append('N')                        # WOA Nitrate				
                         #analysisKeys.append('IntPP_OSU')               # OSU Integrated primpary production    
@@ -516,7 +516,32 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['gridFile']		= paths.orcaGridfn
 		av[name]['Dimensions']		= 2		
 		
+	if 'DiaFrac' in analysisKeys:
+	        		
+		name = 'DiaFrac'
+		def caldiafrac(nc,keys):
+			return 100.*nc.variables[keys[0]][:].squeeze()/(nc.variables[keys[0]][:].squeeze()+nc.variables[keys[1]][:].squeeze())
+		
+		av[name]['modelFiles']  	= listModelDataFiles(jobID, 'ptrc_T', paths.ModelFolder_pref, annual)		
+		av[name]['dataFile'] 		= ''
+			
+		av[name]['modelcoords'] 	= medusaCoords 	
+		av[name]['datacoords'] 		= ''
+	
+		av[name]['modeldetails'] 	= {'name': name, 'vars':['CHD','CHN',], 'convert': caldiafrac,'units':'%'}
+		av[name]['datadetails']  	= {'name': '', 'units':''}
+	
+		av[name]['layers'] 		= ['Surface',] 	# CCI is surface only, it's a satellite product.
+		av[name]['regions'] 		= regionList 
+		av[name]['metrics']		= metricList	#['mean','median', ]
+		
+		av[name]['datasource'] 		= ''
+		av[name]['model']		= 'MEDUSA'
 
+		av[name]['modelgrid']		= 'eORCA1'
+		av[name]['gridFile']		= paths.orcaGridfn
+		av[name]['Dimensions']		= 2		
+		
 
 	if 'N' in analysisKeys:
 		name = 'Nitrate'
