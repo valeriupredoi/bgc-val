@@ -1082,13 +1082,43 @@ def timeseries_compare(colours,physics=True,bio=False,debug=True,):
 				arrD,			# model time series
 				data 	= -999,		# in situ data distribution
 				title 	= title,
-				filename=ukp.folder(imageFolder)+'_'.join([name,region,layer,ts,ls+'.png']),
+				filename=ukp.folder(imageFolder+'Oxygen')+'_'.join([name,region,layer,ts,ls+'.png']),
+				units = '',
+				plotStyle 	= ts,
+				lineStyle	= ls,
+				colours		= colours,
+			)
+
+	for name in ['CHD','CHN','DiaFrac',]:
+	  if name not in av.keys():continue
+	  for region in regionList:
+	    for layer in ['Surface','100m']:
+	    
+		timesD  = {}
+		arrD	= {}
+		
+		for jobID in jobs:
+			mdata = modeldataD[(jobID,name )][(region, layer, 'mean')]
+			title = ' '.join([region, layer, 'Mean',  getLongName(name)])
+	
+			timesD[jobID] 	= sorted(mdata.keys())
+			arrD[jobID]	= [mdata[t] for t in timesD[jobID]]
+		
+		for ts in ['Together',]:#'Separate']:
+		    for ls in ['Both','movingaverage',]:#'','Both',]:			
+			tsp.multitimeseries(
+				timesD, 		# model times (in floats)
+				arrD,			# model time series
+				data 	= -999,		# in situ data distribution
+				title 	= title,
+				filename=ukp.folder(imageFolder+'Chl')+'_'.join([name,region,layer,ts,ls+'.png']),
 				units = '',
 				plotStyle 	= ts,
 				lineStyle	= ls,
 				colours		= colours,
 			)
 	
+		
 
 
 if __name__=="__main__":
