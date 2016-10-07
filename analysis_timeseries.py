@@ -502,7 +502,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modeldetails'] 	= {'name': name, 'vars':[name,], 'convert': ukp.NoChange,'units':'mg C/m^3'}
 		av[name]['datadetails']  	= {'name': '', 'units':''}
 	
-		av[name]['layers'] 		= ['Surface',] 	# CCI is surface only, it's a satellite product.
+		av[name]['layers'] 		= ['Surface','100m',] 	# CCI is surface only, it's a satellite product.
 		av[name]['regions'] 		= regionList 
 		av[name]['metrics']		= metricList	#['mean','median', ]
 		
@@ -511,7 +511,7 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= paths.orcaGridfn
-		av[name]['Dimensions']		= 2		
+		av[name]['Dimensions']		= 3		
 		
 	if 'DiaFrac' in analysisKeys:
 	        		
@@ -528,7 +528,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modeldetails'] 	= {'name': name, 'vars':['CHD','CHN',], 'convert': caldiafrac,'units':'%'}
 		av[name]['datadetails']  	= {'name': '', 'units':''}
 	
-		av[name]['layers'] 		= ['Surface',] 	# CCI is surface only, it's a satellite product.
+		av[name]['layers'] 		= ['Surface','100m',] 	# CCI is surface only, it's a satellite product.
 		av[name]['regions'] 		= regionList 
 		av[name]['metrics']		= metricList	#['mean','median', ]
 		
@@ -537,7 +537,7 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= paths.orcaGridfn
-		av[name]['Dimensions']		= 2		
+		av[name]['Dimensions']		= 3		
 		
 
 	if 'N' in analysisKeys:
