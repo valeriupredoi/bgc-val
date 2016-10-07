@@ -175,7 +175,7 @@ def analysis_timeseries(jobID = "u-ab671",
                         analysisKeys.append('Iron')                     # Iron
 			analysisKeys.append('CHN')			
 			analysisKeys.append('CHD')	
-			                        
+			analysisKeys.append('DiaFrac')			# work in progress			                        
                         #####   
                         # Physics switches:
                         analysisKeys.append('T')                        # WOA Temperature
@@ -502,7 +502,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modeldetails'] 	= {'name': name, 'vars':[name,], 'convert': ukp.NoChange,'units':'mg C/m^3'}
 		av[name]['datadetails']  	= {'name': '', 'units':''}
 	
-		av[name]['layers'] 		= ['Surface',] 	# CCI is surface only, it's a satellite product.
+		av[name]['layers'] 		= ['Surface','100m',] 	# CCI is surface only, it's a satellite product.
 		av[name]['regions'] 		= regionList 
 		av[name]['metrics']		= metricList	#['mean','median', ]
 		
@@ -528,7 +528,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modeldetails'] 	= {'name': name, 'vars':['CHD','CHN',], 'convert': caldiafrac,'units':'%'}
 		av[name]['datadetails']  	= {'name': '', 'units':''}
 	
-		av[name]['layers'] 		= ['Surface',] 	# CCI is surface only, it's a satellite product.
+		av[name]['layers'] 		= ['Surface','100m',] 	# CCI is surface only, it's a satellite product.
 		av[name]['regions'] 		= regionList 
 		av[name]['metrics']		= metricList	#['mean','median', ]
 		
