@@ -1098,7 +1098,8 @@ def timeseries_compare(colours,physics=True,bio=False,debug=True,):
 		arrD	= {}
 		
 		for jobID in jobs:
-			mdata = modeldataD[(jobID,name )][(region, layer, 'mean')]
+			try:mdata = modeldataD[(jobID,name )][(region, layer, 'mean')]
+			except: continue
 			title = ' '.join([region, layer, 'Mean',  getLongName(name)])
 	
 			timesD[jobID] 	= sorted(mdata.keys())
