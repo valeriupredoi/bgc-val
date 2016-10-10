@@ -1082,14 +1082,14 @@ def timeseries_compare(colours,physics=True,bio=False,debug=True,):
 				arrD,			# model time series
 				data 	= -999,		# in situ data distribution
 				title 	= title,
-				filename=ukp.folder(imageFolder+'Oxygen')+'_'.join([name,region,layer,ts,ls+'.png']),
+				filename=ukp.folder(imageFolder+'/Oxygen')+'_'.join([name,region,layer,ts,ls+'.png']),
 				units = '',
 				plotStyle 	= ts,
 				lineStyle	= ls,
 				colours		= colours,
 			)
 
-	for name in ['CHD','CHN','DiaFrac',]:
+	for name in ['DiaFrac','CHD','CHN',]:
 	  if name not in av.keys():continue
 	  for region in regionList:
 	    for layer in ['Surface','100m']:
@@ -1111,7 +1111,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=True,):
 				arrD,			# model time series
 				data 	= -999,		# in situ data distribution
 				title 	= title,
-				filename=ukp.folder(imageFolder+'Chl')+'_'.join([name,region,layer,ts,ls+'.png']),
+				filename=ukp.folder(imageFolder+'/Chl')+'_'.join([name,region,layer,ts,ls+'.png']),
 				units = '',
 				plotStyle 	= ts,
 				lineStyle	= ls,

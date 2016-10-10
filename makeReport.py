@@ -332,6 +332,7 @@ def html5Maker(
 			  'Nitrate',
 			  'DIC',			  		  
 			  'Alkalinity', 
+			  'DiaFrac',
                           'DiatomChlorophyll',
                           'NonDiatomChlorophyll',			  
 			  'TotalOMZVolume',			  			  
