@@ -1082,7 +1082,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=True,):
 				arrD,			# model time series
 				data 	= -999,		# in situ data distribution
 				title 	= title,
-				filename=ukp.folder(imageFolder+'Oxygen')+'_'.join([name,region,layer,ts,ls+'.png']),
+				filename=ukp.folder(imageFolder+'/Oxygen')+'_'.join([name,region,layer,ts,ls+'.png']),
 				units = '',
 				plotStyle 	= ts,
 				lineStyle	= ls,
@@ -1098,7 +1098,8 @@ def timeseries_compare(colours,physics=True,bio=False,debug=True,):
 		arrD	= {}
 		
 		for jobID in jobs:
-			mdata = modeldataD[(jobID,name )][(region, layer, 'mean')]
+			try:mdata = modeldataD[(jobID,name )][(region, layer, 'mean')]
+			except: continue
 			title = ' '.join([region, layer, 'Mean',  getLongName(name)])
 	
 			timesD[jobID] 	= sorted(mdata.keys())
@@ -1111,7 +1112,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=True,):
 				arrD,			# model time series
 				data 	= -999,		# in situ data distribution
 				title 	= title,
-				filename=ukp.folder(imageFolder+'Chl')+'_'.join([name,region,layer,ts,ls+'.png']),
+				filename=ukp.folder(imageFolder+'/Chl')+'_'.join([name,region,layer,ts,ls+'.png']),
 				units = '',
 				plotStyle 	= ts,
 				lineStyle	= ls,
