@@ -202,8 +202,8 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('DIC')			# work in progress									
 			#analysisKeys.append('DrakePassageTransport')	# DrakePassageTransport				
 			#analysisKeys.append('TotalIceArea')		# work in progress	
-			analysisKeys.append('CHN')			
-			analysisKeys.append('CHD')									
+			#analysisKeys.append('CHN')			
+			#analysisKeys.append('CHD')									
 			analysisKeys.append('DiaFrac')			# work in progress
 			#analysisKeys.append('Iron')			# work in progress
                         #analysisKeys.append('N')                        # WOA Nitrate				
