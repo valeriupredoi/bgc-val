@@ -173,8 +173,8 @@ def analysis_timeseries(jobID = "u-ab671",
                         analysisKeys.append('OMZThickness')             # Oxygen Minimum Zone Thickness
                         analysisKeys.append('OMZMeanDepth')             # Oxygen Minimum Zone mean depth                   
                         analysisKeys.append('Iron')                     # Iron
-			analysisKeys.append('CHN')			
-			analysisKeys.append('CHD')	
+			#analysisKeys.append('CHN')			
+			#analysisKeys.append('CHD')	
 			analysisKeys.append('DiaFrac')			# work in progress			                        
                         #####   
                         # Physics switches:
@@ -202,8 +202,8 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('DIC')			# work in progress									
 			#analysisKeys.append('DrakePassageTransport')	# DrakePassageTransport				
 			#analysisKeys.append('TotalIceArea')		# work in progress	
-			analysisKeys.append('CHN')			
-			analysisKeys.append('CHD')									
+			#analysisKeys.append('CHN')			
+			#analysisKeys.append('CHD')									
 			analysisKeys.append('DiaFrac')			# work in progress
 			#analysisKeys.append('Iron')			# work in progress
                         #analysisKeys.append('N')                        # WOA Nitrate				
@@ -502,7 +502,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modeldetails'] 	= {'name': name, 'vars':[name,], 'convert': ukp.NoChange,'units':'mg C/m^3'}
 		av[name]['datadetails']  	= {'name': '', 'units':''}
 	
-		av[name]['layers'] 		= ['Surface','100m',] 	# CCI is surface only, it's a satellite product.
+		av[name]['layers'] 		= ['Surface',]#'100m',] 	# CCI is surface only, it's a satellite product.
 		av[name]['regions'] 		= regionList 
 		av[name]['metrics']		= metricList	#['mean','median', ]
 		
