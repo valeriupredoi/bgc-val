@@ -54,7 +54,7 @@ except:	from pftnames import getLongName
 
 import paths
 
-def timeseries_compare(colours,physics=True,bio=False,debug=True,):
+def timeseries_compare(colours,physics=True,bio=False,debug=False,):
 	### strategy here is a simple wrapper.
 	# It's a little cheat-y, as I'm copying straight from analysis_timeseries.py
 	
@@ -1130,7 +1130,7 @@ if __name__=="__main__":
         timeseries_compare(colours, physics=True,bio=False)
 
         colours = {'u-ag543':'red', 'u-ag544':'orange', }
-        timeseries_compare(colours, physics=False,bio=True,debug = True)
+        timeseries_compare(colours, physics=False,bio=True,debug = False)
 
         colours = {'u-ae748':'darkblue','u-af983':'blue', }    
         timeseries_compare(colours, physics=True,bio=False)
