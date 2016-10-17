@@ -600,44 +600,91 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,):
 			av[name]['gridFile']		= orcaGridfn
 			av[name]['Dimensions']		= 3
 
-
-		if 'OMZThickness' in analysisKeys or 'OMZMeanDepth' in analysisKeys or 'OMZThickness50' in analysisKeys:
-		    for name in ['OMZThickness','OMZMeanDepth','OMZThickness50']:
-			if name not in analysisKeys: continue	
-		
+		if 'OMZMeanDepth' in analysisKeys:
 			if annual:
-				av[name]['modelFiles']  	= sorted(glob(paths.ModelFolder_pref+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
-				av[name]['dataFile'] 		=  WOAFolder+'woa13_all_o00_01.nc'
+				av['OMZMeanDepth']['modelFiles']  	= sorted(glob(paths.ModelFolder_pref+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
+				av['OMZMeanDepth']['dataFile'] 		=  WOAFolder+'woa13_all_o00_01.nc'
 			else:
 				print "OMZ Thickness not implemented for monthly data"
 				assert 0
 			
 			nc = Dataset(paths.orcaGridfn,'r')
-			if name in ['OMZThickness', 'OMZThickness50']:		
-				thickness   	= nc.variables['e3t' ][:]
-			elif name in ['OMZMeanDepth',]:		
-				depths   	= nc.variables['gdepw' ][:]		
+			depths   	= np.abs(nc.variables['gdepw' ][:])
+			tmask 		= nc.variables['tmask'][:]						
 			nc.close()			
 
 			omzthreshold = 20.
-			if name == 'OMZThickness50':	omzthreshold = 50.
+				
+			def modelMeanOMZdepth(nc,keys):
+				o2 = nc.variables[keys[0]][:].squeeze()
+				meandepth = np.ma.masked_where((o2>omzthreshold)+o2.mask + (tmask==0),depths).mean(0)
+				if meandepth.max() in [0.,0]: return np.array([0.,])						
+				return np.ma.masked_where(meandepth==0., meandepth)
+
+			def woaMeanOMZdepth(nc,keys):
+				o2 = nc.variables[keys[0]][:].squeeze() *44.661
+				pdepths = np.zeros_like(o2) 
+				lons = nc.variables['lon'][:]
+				lats = nc.variables['lat'][:]			
+				wdepths = np.abs(nc.variables['depth'][:])
+			
+				for y,lat in enumerate(lats):
+				    for x,lon in enumerate(lons):			  
+					pdepths[:,y,x] = wdepths
+				wmeanDepth = np.ma.masked_where((o2>omzthreshold)+o2.mask,pdepths).mean(0).data
+				print "woaMeanOMZdepth",wmeanDepth.min(),wmeanDepth.mean(),wmeanDepth.max()
+				#assert 0
+			
+				if wmeanDepth.max() in [0.,0]: return np.array([1000.,])
+				return np.ma.masked_where(wmeanDepth==0., wmeanDepth)
+				
+			av['OMZMeanDepth']['modelcoords'] 	= medusaCoords 	
+			av['OMZMeanDepth']['datacoords'] 	= woaCoords
+	
+			av['OMZMeanDepth']['modeldetails'] 	= {'name': 'OMZMeanDepth', 'vars':['OXY',],  'convert': modelMeanOMZdepth,'units':'m'}
+			av['OMZMeanDepth']['datadetails']  	= {'name': 'OMZMeanDepth', 'vars':['o_an',], 'convert': woaMeanOMZdepth,'units':'m'}		
+	
+			av['OMZMeanDepth']['layers'] 		= ['layerless',] 
+			av['OMZMeanDepth']['regions'] 		= regionList
+			av['OMZMeanDepth']['metrics']		= metricList
+
+			av['OMZMeanDepth']['datasource'] 	= 'WOA'
+			av['OMZMeanDepth']['model']		= 'MEDUSA'
+
+			av['OMZMeanDepth']['modelgrid']		= 'eORCA1'
+			av['OMZMeanDepth']['gridFile']		= paths.orcaGridfn	
+			av['OMZMeanDepth']['Dimensions']	= 2		
+		
+		
+		
+		if 'OMZThickness' in analysisKeys or 'OMZThickness50' in analysisKeys:
+			if 'OMZThickness' in analysisKeys and 'OMZThickness50' in analysisKeys:
+				print "Only run one of these at a time"
+				assert 0
+			
+		
+			if annual:
+				av['OMZThickness']['modelFiles']  	= sorted(glob(paths.ModelFolder_pref+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
+				av['OMZThickness']['dataFile'] 		=  WOAFolder+'woa13_all_o00_01.nc'
+			else:
+				print "OMZ Thickness not implemented for monthly data"
+				assert 0
+			
+			nc = Dataset(paths.orcaGridfn,'r')
+			thickness   	= nc.variables['e3t' ][:]
+			tmask 		= nc.variables['tmask'][:]								
+			nc.close()			
+
+			if 'OMZThickness' in analysisKeys: 	omzthreshold = 20.
+			if 'OMZThickness50' in analysisKeys: 	omzthreshold = 50.
 				
 			def modelOMZthickness(nc,keys):
 				o2 = nc.variables[keys[0]][:].squeeze()
-				totalthick = np.ma.masked_where((o2>omzthreshold)+o2[0].mask,thickness).sum(0).data
+				totalthick = np.ma.masked_where((o2>omzthreshold)+o2.mask+ (tmask==0),thickness).sum(0).data
 				if totalthick.max() in [0.,0]: return np.array([0.,])
 			
 				return np.ma.masked_where(totalthick==0., totalthick)
 				#return np.ma.masked_where((arr>omzthreshold) + (arr <0.) + arr.mask,thickness).sum(0)
-
-			def modelMeanOMZdepth(nc,keys):
-				o2 = nc.variables[keys[0]][:].squeeze()
-				meandepth = np.ma.masked_where((o2>omzthreshold)+o2[0].mask,depths).mean(0).data
-				if meandepth.max() in [0.,0]: return np.array([0.,])
-			
-				return np.ma.masked_where(meandepth==0., meandepth)
-				#return np.ma.masked_where((arr>omzthreshold) + (arr <0.) + arr.mask,thickness).sum(0)
-				
 
 			
 			def woaOMZthickness(nc,keys):
@@ -650,64 +697,46 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,):
 				for y,lat in enumerate(lats):
 				    for x,lon in enumerate(lons):			  
 					pthick[:,y,x] = zthick
-				totalthick = np.ma.masked_where((o2>omzthreshold)+o2[0].mask,pthick).sum(0).data
+				totalthick = np.ma.masked_where((o2>omzthreshold)+o2.mask,pthick).sum(0).data
 			
 				if totalthick.max() in [0.,0]: return np.array([0.,])
 				return np.ma.masked_where(totalthick==0., totalthick)
 
-			def woaMeanOMZdepth(nc,keys):
-				o2 = nc.variables[keys[0]][:].squeeze() *44.661
-				pdepths = np.zeros_like(o2) 
-				lons = nc.variables['lon'][:]
-				lats = nc.variables['lat'][:]			
-				wdepths = np.abs(nc.variables['depth'][:])
-			
-				for y,lat in enumerate(lats):
-				    for x,lon in enumerate(lons):			  
-					pdepths[:,y,x] = wdepths
-				wmeanDepth = np.ma.masked_where((o2>omzthreshold)+o2[0].mask,pdepths).mean(0).data
-			
-				if wmeanDepth.max() in [0.,0]: return np.array([0.,])
-				return np.ma.masked_where(wmeanDepth==0., wmeanDepth)
-									
-				
-			av[name]['modelcoords'] 	= medusaCoords 	
-			av[name]['datacoords'] 		= woaCoords
+			av['OMZThickness']['modelcoords'] 	= medusaCoords 	
+			av['OMZThickness']['datacoords'] 		= woaCoords
 	
-			if name in ['OMZThickness', 'OMZThickness50']:
-				av[name]['modeldetails'] 	= {'name': name, 'vars':['OXY',], 'convert': modelOMZthickness,'units':'m'}
-				av[name]['datadetails']  	= {'name': name, 'vars':['o_an',], 'convert': woaOMZthickness,'units':'m'}
-			elif name in ['OMZMeanDepth',]:
-				av[name]['modeldetails'] 	= {'name': name, 'vars':['OXY',], 'convert': modelMeanOMZdepth,'units':'m'}
-				av[name]['datadetails']  	= {'name': name, 'vars':['o_an',], 'convert': woaMeanOMZdepth,'units':'m'}		
+			av['OMZThickness']['modeldetails'] 	= {'name': 'OMZThickness', 'vars':['OXY',], 'convert': modelOMZthickness,'units':'m'}
+			av['OMZThickness']['datadetails']  	= {'name': 'OMZThickness', 'vars':['o_an',], 'convert': woaOMZthickness,'units':'m'}
 	
-			av[name]['layers'] 		= ['Surface',] 
-			av[name]['regions'] 		= regionList
-			av[name]['metrics']		= metricList
+			av['OMZThickness']['layers'] 		= ['layerless',] 
+			av['OMZThickness']['regions'] 		= regionList
+			av['OMZThickness']['metrics']		= metricList
 
-			av[name]['datasource'] 		= 'WOA'
-			av[name]['model']		= 'MEDUSA'
+			av['OMZThickness']['datasource'] 		= 'WOA'
+			av['OMZThickness']['model']		= 'MEDUSA'
 
-			av[name]['modelgrid']		= 'eORCA1'
-			av[name]['gridFile']		= paths.orcaGridfn	
-			av[name]['Dimensions']		= 2		
+			av['OMZThickness']['modelgrid']		= 'eORCA1'
+			av['OMZThickness']['gridFile']		= paths.orcaGridfn	
+			av['OMZThickness']['Dimensions']		= 2		
 		
 		
 		
 
 		if 'TotalOMZVolume' in analysisKeys or 'TotalOMZVolume50' in analysisKeys:
-		    for name in ['TotalOMZVolume','TotalOMZVolume50']:
-			if name not in analysisKeys: continue
+			if 'TotalOMZVolume' in analysisKeys and 'TotalOMZVolume50' in analysisKeys:
+				print "Only run one of these at a time"
+				assert 0
+				
 			if annual:
-				av[name]['modelFiles']  	= sorted(glob(paths.ModelFolder_pref+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
-				av[name]['dataFile'] 		=  WOAFolder+'woa13_all_o00_01.nc'
+				av['TotalOMZVolume']['modelFiles']  	= sorted(glob(paths.ModelFolder_pref+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
+				av['TotalOMZVolume']['dataFile'] 		=  WOAFolder+'woa13_all_o00_01.nc'
 			else:
 				print "OMZ volume not implemented for monthly data"
 				assert 0
 			
 			nc = Dataset(paths.orcaGridfn,'r')
 			try:	
-				vol   = nc.variables['pvol' ][:]
+				pvol   = nc.variables['pvol' ][:]
 				tmask = nc.variables['tmask'][:]
 			except:
 				tmask = nc.variables['tmask'][:]			
@@ -716,19 +745,22 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,):
 				pvol = np.ma.masked_where(tmask==0,pvol)
 			nc.close()			
 
-			if name == 'TotalOMZVolume':	omzthreshold = 20.
-			if name == 'TotalOMZVolume50':	omzthreshold = 50.		
+			if 'TotalOMZVolume' in analysisKeys:	omzthreshold = 20.
+			if 'TotalOMZVolume50' in analysisKeys:	omzthreshold = 50.	
+			
 			def modelTotalOMZvol(nc,keys):
-				arr = nc.variables[keys[0]][:].squeeze()
-				return np.ma.masked_where((arr>omzthreshold) + pvol.mask,pvol).sum()
+				arr = np.ma.array(nc.variables[keys[0]][:].squeeze())
+				return np.ma.masked_where((arr>omzthreshold) + pvol.mask + arr.mask,pvol).sum()
 	
-
 			
 			def woaTotalOMZvol(nc,keys):
 				arr = nc.variables[keys[0]][:].squeeze() *44.661
+				#area = np.zeros_like(arr[0])
 				pvol = np.zeros_like(arr) 
+				#np.ma.masked_wjhere(arr.mask + (arr <0.)+(arr >1E10),np.zeros_like(arr))
 				lons = nc.variables['lon'][:]
 				lats = nc.variables['lat'][:]			
+				#lonbnds = nc.variables['lon_bnds'][:]
 				latbnds = nc.variables['lat_bnds'][:]
 				zthick  = np.abs(nc.variables['depth_bnds'][:,0] - nc.variables['depth_bnds'][:,1])
 			
@@ -739,23 +771,23 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,):
 					
 				return np.ma.masked_where(arr.mask + (arr >omzthreshold)+(arr <0.),pvol).sum()
 				
-			av[name]['modelcoords'] 	= medusaCoords 	
-			av[name]['datacoords'] 		= woaCoords
+			av['TotalOMZVolume']['modelcoords'] 	= medusaCoords 	
+			av['TotalOMZVolume']['datacoords'] 		= woaCoords
 	
-			av[name]['modeldetails'] 	= {'name': name, 'vars':['OXY',], 'convert': modelTotalOMZvol,'units':'m^3'}
-			av[name]['datadetails']  	= {'name': name, 'vars':['o_an',], 'convert': woaTotalOMZvol,'units':'m^3'}
+			av['TotalOMZVolume']['modeldetails'] 	= {'name': 'TotalOMZVolume', 'vars':['OXY',], 'convert': modelTotalOMZvol,'units':'m^3'}
+			av['TotalOMZVolume']['datadetails']  	= {'name': 'TotalOMZVolume', 'vars':['o_an',], 'convert': woaTotalOMZvol,'units':'m^3'}
 	
-			av[name]['layers'] 		= ['layerless',] 
-			av[name]['regions'] 		= ['regionless',]
-			av[name]['metrics']		= ['metricless', ]
+			av['TotalOMZVolume']['layers'] 		= ['layerless',] 
+			av['TotalOMZVolume']['regions'] 	= ['regionless',]
+			av['TotalOMZVolume']['metrics']		= ['metricless', ]
 
-			av[name]['datasource'] 		= 'WOA'
-			av[name]['model']		= 'MEDUSA'
+			av['TotalOMZVolume']['datasource'] 		= 'WOA'
+			av['TotalOMZVolume']['model']		= 'MEDUSA'
 
-			av[name]['modelgrid']		= 'eORCA1'
-			av[name]['gridFile']		= paths.orcaGridfn	
-			av[name]['Dimensions']		= 1	
-		
+			av['TotalOMZVolume']['modelgrid']		= 'eORCA1'
+			av['TotalOMZVolume']['gridFile']		= paths.orcaGridfn	
+			av['TotalOMZVolume']['Dimensions']		= 1	
+			
 
 
 		if 'DIC' in analysisKeys:
