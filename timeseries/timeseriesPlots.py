@@ -272,7 +272,6 @@ def trafficlightsPlot(
 	):
 	#####
 	# This is exclusively used for sums now.
-	
 	if len(times) ==0 or len(arr) == 0:
 		print "trafficlightsPlot:\tWARNING:\tdata or time arrays are empty.",len(times),len(arr),title
 		return
@@ -286,14 +285,12 @@ def trafficlightsPlot(
 	
 	ax = fig.add_subplot(111)	
         if len(arr)>30:
-                #smoothing = movingaverage(arr,30,)
                 smoothing = movingaverage2(arr,window_len=30,window='flat',extrapolate='axially')
-                pyplot.plot(times,arr,      c='b',ls='-',lw=0.3,)
-                pyplot.plot(times,smoothing,c='b',ls='-',lw=2,label='Model')
+                pyplot.plot(times,arr,      c='k',ls='-',lw=0.3,)
+                pyplot.plot(times,smoothing,c='k',ls='-',lw=2,label='Model')
         else:
-                pyplot.plot(times,arr,c='b',ls='-',lw=1,label='Model',)
+                pyplot.plot(times,arr,c='k',ls='-',lw=1,label='Model',)
 
-#	pyplot.plot(times,arr,label='Model',)
 	pyplot.xlim(xlims)	
 	pyplot.title(title)	
 	pyplot.ylabel(units)
@@ -316,17 +313,20 @@ def trafficlightsPlot(
 		if greyband:
 			ax  	= drawgreyband(ax,xlims, [pcmin,pc1],)
 			ax  	= drawgreyband(ax,xlims, [pc6,pcmax],)
+	
 				
 	if len(dataslice) and metric == 'sum':
-		
-		pyplot.axhline(y=np.ma.sum(dataslice),c='k',ls='-',lw=1,label ='Data')#+str(np.ma.sum(dataslice)))#alpha=0.5)		
-#		pyplot.legend()
+		pyplot.axhline(y=np.ma.sum(dataslice),c='b',ls='-',lw=1,label ='Data')#+str(np.ma.sum(dataslice)))#alpha=0.5)		
+
+	if len(dataslice) and metric == 'mean':
+		pyplot.axhline(y=np.ma.mean(dataslice),c='b',ls='-',lw=1,label ='Data')#+str(np.ma.sum(dataslice)))#alpha=0.5)		
+	
 
 	legend = pyplot.legend(loc='lower center',  numpoints = 1, ncol=2, prop={'size':12}) 
 	legend.draw_frame(False) 
 	legend.get_frame().set_alpha(0.)
 		
-	print "timeseriesPlots:\tscatterPlot:\tSaving:" , filename
+	print "timeseriesPlots:\ttrafficlightsPlot:\tSaving:" , filename
 	pyplot.savefig(filename )
 	pyplot.close()	
 

@@ -468,7 +468,7 @@ class timeseriesAnalysis:
 			times = sorted(modeldataDict.keys())
 			modeldata = [modeldataDict[t] for t in times]
 			title = ' '.join([getLongName(t) for t in [r,str(l),m,self.dataType]])
-	
+			
 			tsp.trafficlightsPlot(times,modeldata,dataslice,metric = m, title = title,filename=filename,units = self.modeldetails['units'],greyband=False)
 	    
 	    #####
