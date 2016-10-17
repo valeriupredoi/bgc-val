@@ -483,7 +483,9 @@ def multitimeseries(
 		plotStyle = 'Together',	
 		lineStyle = '',	
 	):
-	
+
+        if 0 in [len(timesD) , len(timeD.keys()]:return
+        	
 	fig = pyplot.figure()
 	fig.set_size_inches(10,6)
 		
@@ -501,6 +503,9 @@ def multitimeseries(
 		tmpdict = {jobID, c in zip(sorted(timesD.keys()),colours )}
 		colours = tmpdict
 	else:	print "colours isn't working."
+
+
+
 		
 	for i,jobID in enumerate(sorted(timesD.keys())):
 		times = timesD[jobID]
