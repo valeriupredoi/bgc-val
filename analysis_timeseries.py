@@ -56,7 +56,7 @@ import paths
 
 
 timeseriesKeys = ['T','S','MLD', 
-		  'Chl_pig','Chl_CCI','CHN','CHD',
+		  'Chl_pig','Chl_CCI', 'DiaFrac', 
 		  'N','Si','O2','Alk','DIC','AirSeaFlux','Iron',
 		  'TotalAirSeaFluxCO2','IntPP_iMarNet','IntPP_OSU',
 		  'PP_OSU','LocalExportRatio','GlobalExportRatio',
@@ -67,7 +67,7 @@ timeseriesDict = {i:n for i,n in enumerate(timeseriesKeys)}
 
 level1Keys = ['N', 'Si','O2','Alk','DIC','AirSeaFlux','TotalAirSeaFluxCO2','IntPP_OSU','PP_OSU' ,'LocalExportRatio','GlobalExportRatio' ,
 		'TotalOMZVolume','OMZThickness' ,'OMZMeanDepth','Iron',
-		'CHN','CHD',
+		'DiaFrac', #'CHN','CHD',
 		'T', 'S','MLD','TotalIceArea', 'NorthernTotalIceArea','SouthernTotalIceArea',
 		'TotalIceExtent', 'NorthernTotalIceExtent','SouthernTotalIceExtent','DrakePassageTransport','AMOC_26N','AMOC_32S',]
 level1KeysDict = {i:n for i,n in enumerate(level1Keys)}	
@@ -195,16 +195,16 @@ def analysis_timeseries(jobID = "u-ab671",
 		if analysisSuite.lower() in ['debug',]:	
 			#analysisKeys.append('AirSeaFlux')		# work in progress
 			#analysisKeys.append('TotalAirSeaFluxCO2')	# work in progress
-			#analysisKeys.append('TotalOMZVolume')		# work in progress
-			#analysisKeys.append('TotalOMZVolume')		# work in progress
+			analysisKeys.append('TotalOMZVolume')		# work in progress
+			analysisKeys.append('TotalOMZVolume')		# work in progress
 			#analysisKeys.append('TotalOMZVolume50')	# work in progress			
-			#analysisKeys.append('OMZMeanDepth')		# work in progress						
+			analysisKeys.append('OMZMeanDepth')		# work in progress						
 			#analysisKeys.append('DIC')			# work in progress									
 			#analysisKeys.append('DrakePassageTransport')	# DrakePassageTransport				
 			#analysisKeys.append('TotalIceArea')		# work in progress	
 			#analysisKeys.append('CHN')			
 			#analysisKeys.append('CHD')									
-			analysisKeys.append('DiaFrac')			# work in progress
+			#analysisKeys.append('DiaFrac')			# work in progress
 			#analysisKeys.append('Iron')			# work in progress
                         #analysisKeys.append('N')                        # WOA Nitrate				
                         #analysisKeys.append('IntPP_OSU')               # OSU Integrated primpary production    

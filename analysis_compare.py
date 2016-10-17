@@ -111,12 +111,12 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,):
         	####
         	# Supercedes other flags.
 		analysisKeys = []
-		analysisKeys.append('CHD')
-		analysisKeys.append('CHN')
-		analysisKeys.append('DiaFrac')		
-#       	  	analysisKeys.append('TotalOMZVolume')           # Total Oxygen Minimum zone Volume
- #      	 	analysisKeys.append('OMZThickness')             # Oxygen Minimum Zone Thickness
-  #      	analysisKeys.append('OMZMeanDepth')             # Oxygen Minimum Zone mean depth    
+#		analysisKeys.append('CHD')
+#		analysisKeys.append('CHN')
+#		analysisKeys.append('DiaFrac')		
+       	  	analysisKeys.append('TotalOMZVolume')           # Total Oxygen Minimum zone Volume
+       	 	analysisKeys.append('OMZThickness')             # Oxygen Minimum Zone Thickness
+        	analysisKeys.append('OMZMeanDepth')             # Oxygen Minimum Zone mean depth    
 #		analysisKeys.append('O2')                       # WOA Oxygen        	
         	if bio ==False:return
         	if physics == True:return  
@@ -1126,12 +1126,12 @@ if __name__=="__main__":
 	#colours = {'u-af981':'red', 'u-af982':'orange','u-af983':'blue','u-af984':'purple', }
 	#timeseries_compare(colours)
 
-        colours = {'u-ag543':'red', 'u-ag544':'orange','u-ae748':'darkblue','u-af983':'blue','u-af984':'purple', }
-        timeseries_compare(colours, physics=True,bio=False)
+#        colours = {'u-ag543':'red', 'u-ag914':'orange','u-ae748':'darkblue','u-af983':'blue','u-af984':'purple', }
+#        timeseries_compare(colours, physics=True,bio=False)
 
-        colours = {'u-ag543':'red', 'u-ag544':'orange', }
-        timeseries_compare(colours, physics=False,bio=True,debug = False)
+        colours = {'u-ag543':'red', 'u-ag914':'orange', }
+        timeseries_compare(colours, physics=False,bio=True,debug = True)
 
-        colours = {'u-ae748':'darkblue','u-af983':'blue', }    
-        timeseries_compare(colours, physics=True,bio=False)
+#        colours = {'u-ae748':'darkblue','u-af983':'blue', }    
+#        timeseries_compare(colours, physics=True,bio=False)
 
