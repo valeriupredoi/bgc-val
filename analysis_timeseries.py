@@ -1526,8 +1526,8 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modelcoords'] 	= medusaCoords 	
 		av[name]['datacoords'] 		= dmsCoords
 	
-		av[name]['modeldetails'] 	= {'name': name, 'vars':['DMS_ARAN',], 'convert': ukp.NoChange,'units':'mol/m3'}
-		av[name]['datadetails']  	= {'name': name, 'vars':['DMS',], 'convert': ukp.NoChange,'units':''}
+		av[name]['modeldetails'] 	= {'name': name, 'vars':['DMS_ARAN',], 'convert': ukp.mul1000000,'units':'umol/m3'}
+		av[name]['datadetails']  	= {'name': name, 'vars':['DMS',], 'convert': ukp.NoChange,'units':'umol/m3'}
 	
 		av[name]['layers'] 		= ['layerless',]
 		av[name]['regions'] 		= regionList	

@@ -2254,6 +2254,13 @@ def mul1000(nc,keys):
 	Loads keys[0] from the netcdf, but multiplies by 1000.
 	"""
 	return nc.variables[keys[0]][:]* 1000.
+
+def mul1000000(nc,keys):		
+	""" 
+	Loads keys[0] from the netcdf, but multiplies by 1000000.
+	"""
+	return nc.variables[keys[0]][:]* 1000000.
+		
 def div1000(nc,keys):		
 	""" 
 	Loads keys[0] from the netcdf, then divides by 1000.
