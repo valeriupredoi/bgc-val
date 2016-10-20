@@ -384,8 +384,8 @@ class timeseriesAnalysis:
 		if not len(modeldata): continue
 		
 	  	print "mapplotsRegionsLayers:\t",r,l, "model contains",len(modeldata),'model data'
-	  	print "mapplotsRegionsLayers:\t",r,l, "model lat:",modellat.min(),modellat.mean(),modellat.max()
-	  	print "mapplotsRegionsLayers:\t",r,l, "model lon:",modellon.min(),modellon.mean(),modellon.max() 
+	  	print "mapplotsRegionsLayers:\t",r,l, "model lat:",len(modellat),modellat.min(),modellat.mean(),modellat.max()
+	  	print "mapplotsRegionsLayers:\t",r,l, "model lon:",len(modellon),modellon.min(),modellon.mean(),modellon.max() 
   	  	
 		if self.dataFile:
 		    	datadata	= self.dataD[(r,l)] 
