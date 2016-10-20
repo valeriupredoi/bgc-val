@@ -129,11 +129,11 @@ def html5Maker(
 	
 	#####
 	# Two switches to turn on Summary section, and groups of plots of field and region.		
-	Level0 = True	
-	Level1 = True
+	Level0 = 0#True	
+	Level1 = 0#True
 	Level1Regional = True
-	Level1Profiles =  True	
-	level2Horizontal = True
+	Level1Profiles =  0#True	
+	level2Horizontal = 0#True
 	level2Physics = False
 	summarySections = False
 	plotbyfieldandregion = False
@@ -452,7 +452,6 @@ def html5Maker(
                           'OMZMeanDepth',
                           'Temperature',
                           'Salinity',
-
                           #'TotalIceArea'
 			]
 		physregionalFields = [
@@ -490,6 +489,8 @@ def html5Maker(
 			for region in l1regions:				
 				vfiles.extend(glob('./images/'+jobID+'/timeseries/*/percentiles*'+key+'*'+region+'*10-90pc.png'))
 		                vfiles.extend(glob('./images/'+jobID+'/timeseries/*/mean*'+key+'*'+region+'*mean.png'))                             
+		                print "Adding",'./images/'+jobID+'/timeseries/*/percentiles*'+key+'*'+region+'*10-90pc.png'
+		                print "Adding",'./images/'+jobID+'/timeseries/*/mean*'+key+'*'+region+'*mean.png'		                
 			#####
 			# Create plot headers for each file.
 			count=0
@@ -497,7 +498,7 @@ def html5Maker(
 				#####
 				# Skip transects, they'll be added below.
 				if fn.find('Transect') >-1: continue
-				if fn.lower().find('surface')<0:continue
+				#if fn.lower().find('surface')<0 or fn.lower().find('layerless')<0:continue
 				#####
 				# Copy image to image folder and return relative path.
 				relfn = addImageToHtml(fn, imagesfold, reportdir)
