@@ -484,7 +484,7 @@ def multitimeseries(
 		lineStyle = '',	
 	):
 
-        if 0 in [len(timesD) , len(timeD.keys()]:return
+        if 0 in [len(timesD) , len(timesD.keys())]:return
         	
 	fig = pyplot.figure()
 	fig.set_size_inches(10,6)
@@ -568,10 +568,12 @@ def multitimeseries(
 	if plotStyle == 'Together':
 		pyplot.title(title)	
 		pyplot.ylabel(units)		
-		pyplot.xlim(xlims)						
-		legend = pyplot.legend(loc='best',  numpoints = 1, ncol=len(timesD.keys())/2, prop={'size':12}) 
-		legend.draw_frame(False) 
-		legend.get_frame().set_alpha(0.)
+		pyplot.xlim(xlims)					
+		try:	
+			legend = pyplot.legend(loc='best',  numpoints = 1, ncol=len(timesD.keys())/2, prop={'size':12}) 
+			legend.draw_frame(False) 
+			legend.get_frame().set_alpha(0.)
+		except:pass
 		
 	elif plotStyle == 'Separate':
 		for ax in axs:

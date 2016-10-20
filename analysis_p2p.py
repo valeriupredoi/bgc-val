@@ -265,6 +265,8 @@ def analysis_p2p(
 	tsRegions	= ['Global','Equator10', 'Remainder','ArcticOcean','NorthernSubpolarAtlantic','NorthernSubpolarPacific','ignoreInlandSeas','SouthernOcean',]
 	
 	depthLevels 	= ['Surface','500m','1000m','Transect','PTransect','SOTransect','ArcTransect','AntTransect','CanRusTransect',]
+        if analysisSuite.lower() in ['debug',]:
+	        depthLevels     = ['500m',]
 					
 	medusaCoords 	= {'t':'index_t', 'z':'deptht', 'lat': 'nav_lat',  'lon': 'nav_lon',   'cal': '360_day',}	# model doesn't need time dict.
 	maredatCoords 	= {'t':'index_t', 'z':'DEPTH',  'lat': 'LATITUDE', 'lon': 'LONGITUDE', 'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
