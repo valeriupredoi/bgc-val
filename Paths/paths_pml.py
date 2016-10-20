@@ -63,17 +63,18 @@ if gethostname().find('pmpc')>-1:
 	#####
 	# Location of data files.
 	ObsFolder 	= "/data/euryale7/backup/ledm/Observations/"
-	WOAFolder_annual= ObsFolder+"WOA/annual/"
-	WOAFolder 	= ObsFolder+"WOA/"
-	MAREDATFolder 	= ObsFolder+"/MAREDAT/MAREDAT/"
+	CCIDir		= ObsFolder+"CCI/"
+	DMSDir		= ObsFolder+"/DMS_Lana2011nc/"
 	GEOTRACESFolder = ObsFolder+"/GEOTRACES/GEOTRACES_PostProccessed/"
-	TakahashiFolder = ObsFolder+"/Takahashi2009_pCO2/"
-	MLDFolder	= ObsFolder+"/IFREMER-MLD/"
-	iMarNetFolder	= ObsFolder+"/LestersReportData/"
 	GlodapDir	= ObsFolder+"/GLODAP/"
 	GLODAPv2Dir	= ObsFolder+"/GLODAPv2/GLODAPv2_Mapped_Climatologies/"
+	iMarNetFolder	= ObsFolder+"/LestersReportData/"
+	MAREDATFolder 	= ObsFolder+"/MAREDAT/MAREDAT/"
+	MLDFolder	= ObsFolder+"/IFREMER-MLD/"
 	OSUDir		= ObsFolder+"OSU/"
-	CCIDir		= ObsFolder+"CCI/"
+	TakahashiFolder = ObsFolder+"/Takahashi2009_pCO2/"
+	WOAFolder_annual= ObsFolder+"WOA/annual/"
+	WOAFolder 	= ObsFolder+"WOA/"
 	icFold		= "/data/euryale7/backup/ledm/UKESM/InitialConditions/"		
 
 

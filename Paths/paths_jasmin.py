@@ -67,6 +67,7 @@ if gethostname().find('ceda.ac.uk')>-1:
 	ObsFolder 	= "/group_workspaces/jasmin/esmeval/example_data/bgc/"
 	WOAFolder_annual= ObsFolder+"WOA/annual/"
 	WOAFolder 	= ObsFolder+"WOA/"
+	DMSDir		= ObsFolder+"/DMS_Lana2011nc/"	
 	MAREDATFolder 	= ObsFolder+"/MAREDAT/MAREDAT/"
 	GEOTRACESFolder = ObsFolder+"/GEOTRACES/GEOTRACES_PostProccessed/"
 	TakahashiFolder = ObsFolder+"/Takahashi2009_pCO2/"

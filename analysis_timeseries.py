@@ -190,7 +190,11 @@ def analysis_timeseries(jobID = "u-ab671",
 			analysisKeys.append('DrakePassageTransport')	# DrakePassageTransport				
                         analysisKeys.append('AMOC_32S')                 # AMOC 32S
                         analysisKeys.append('AMOC_26N')                 # AMOC 26N
-                                                
+
+
+		if analysisSuite.lower() in ['level3',]:	
+                        analysisKeys.append('DMS_ARAN')                 # DMS Aranami Tsunogai
+                        
                                                 					
 		if analysisSuite.lower() in ['debug',]:	
 			#analysisKeys.append('AirSeaFlux')		# work in progress
@@ -381,7 +385,8 @@ def analysis_timeseries(jobID = "u-ab671",
 	woaCoords 	= {'t':'index_t', 'z':'depth',  'lat': 'lat', 	   'lon': 'lon',       'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}	
 	glodapCoords	= {'t':'index_t', 'z':'depth',  'lat': 'latitude', 'lon': 'longitude', 'cal': 'standard','tdict':[] }
 	glodapv2Coords	= {'t':'time',    'z':'Pressure','lat':'lat',      'lon':'lon',        'cal': '',        'tdict':{0:0,} }
-	mldCoords	= {'t':'index_t', 'z':'index_z','lat':'lat','lon': 'lon','cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
+	mldCoords	= {'t':'index_t', 'z':'index_z','lat':'lat',       'lon': 'lon','cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
+	dmsCoords	= {'t':'time',    'z':'depth',  'lat':'Latitude',  'lon': 'Longitude','cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}	
 	cciCoords	= {'t':'index_t', 'z':'index_z','lat': 'lat',      'lon': 'lon', 'cal': 'standard','tdict':['ZeroToZero'] }
 
 
@@ -1509,8 +1514,33 @@ def analysis_timeseries(jobID = "u-ab671",
 			av[name]['modelgrid']		= 'eORCA1'
 			av[name]['gridFile']		= paths.orcaGridfn
 			av[name]['Dimensions']		= 1
-				
-												
+
+	if 'DMS_ARAN' in analysisKeys:
+		name = 'DMS'
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', paths.ModelFolder_pref, annual)
+		if annual:		
+			av[name]['dataFile'] 		= paths.DMSDir+'DMSclim_mean.nc'
+		else:
+			av[name]['dataFile'] 		= ''
+			
+		av[name]['modelcoords'] 	= medusaCoords 	
+		av[name]['datacoords'] 		= dmsCoords
+	
+		av[name]['modeldetails'] 	= {'name': name, 'vars':['DMS_ARAN',], 'convert': ukp.NoChange,'units':'mol/m3'}
+		av[name]['datadetails']  	= {'name': name, 'vars':['DMS',], 'convert': ukp.NoChange,'units':''}
+	
+		av[name]['layers'] 		= ['layerless',]
+		av[name]['regions'] 		= regionList	
+		av[name]['metrics']		= metricList
+
+		av[name]['datasource'] 		= 'Lana'
+		av[name]['model']		= 'MEDUSA'
+
+		av[name]['modelgrid']		= 'eORCA1'
+		av[name]['gridFile']		= paths.orcaGridfn
+		av[name]['Dimensions']		= 2				
+	
+											
 
   	#####
   	# Calling timeseriesAnalysis
@@ -1647,6 +1677,7 @@ def main():
 	if 'debug' in argv[1:]:	suite = 'debug'
 	elif 'all' in argv[1:]:	suite = 'all'
 	elif 'level1' in argv[1:]:suite='level1'
+	elif 'level3' in argv[1:]:suite='level3'
         elif 'physics' in argv[1:]:suite='physics'
 	else:			suite = 'all'
 		
