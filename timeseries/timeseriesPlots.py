@@ -286,10 +286,10 @@ def trafficlightsPlot(
 	ax = fig.add_subplot(111)	
         if len(arr)>30:
                 smoothing = movingaverage2(arr,window_len=30,window='flat',extrapolate='axially')
-                pyplot.plot(times,arr,      c='k',ls='-',lw=0.3,)
-                pyplot.plot(times,smoothing,c='k',ls='-',lw=2,label='Model')
+                pyplot.plot(times,arr,      c='b',ls='-',lw=0.3,)
+                pyplot.plot(times,smoothing,c='b',ls='-',lw=2,label='Model')
         else:
-                pyplot.plot(times,arr,c='k',ls='-',lw=1,label='Model',)
+                pyplot.plot(times,arr,c='b',ls='-',lw=1,label='Model',)
 
 	pyplot.xlim(xlims)	
 	pyplot.title(title)	
@@ -711,7 +711,8 @@ def mapPlotPair(lons1, lats1, data1,lons2,lats2,data2,filename,titles=['',''],lo
  		except:pass
  		return
 
-	if 0 in [len(data1.compressed()),len(np.ma.array(lons1).compressed()),len(np.ma.array(lats1).compressed()), ]:return
+	if 0 in [len(data1.compressed()),len(data2.compressed()),len(np.ma.array(lons1).compressed()),len(np.ma.array(lats1).compressed()),]:
+		return
 		
 	ax1 = pyplot.subplot(211,projection=cartopy.crs.PlateCarree(central_longitude=0.0, ))
 		
