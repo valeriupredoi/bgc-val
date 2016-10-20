@@ -42,6 +42,7 @@ from html5 import html5Tools, htmltables
 from bgcvaltools.pftnames import getLongName
 from timeseries.analysis_level0 import analysis_level0,analysis_level0_insitu
 
+from paths import imagedir
 
 
 def copytree(src, dst, symlinks=False, ignore=None):
@@ -129,11 +130,11 @@ def html5Maker(
 	
 	#####
 	# Two switches to turn on Summary section, and groups of plots of field and region.		
-	Level0 = 0#True	
-	Level1 = 0#True
+	Level0 = True	
+	Level1 = True
 	Level1Regional = True
-	Level1Profiles =  0#True	
-	level2Horizontal = 0#True
+	Level1Profiles =  True	
+	level2Horizontal = True
 	level2Physics = False
 	summarySections = False
 	plotbyfieldandregion = False
@@ -387,17 +388,17 @@ def html5Maker(
 			FileLists[href] = {}
 			#####
 			# Determine the list of files:
-			vfiles = glob('./images/'+jobID+'/timeseries/*/percentiles*'+key+'*'+'Global*10-90pc.png')
-	                #vfiles.extend(glob('./images/'+jobID+'/timeseries/*/profile*'+key+'*'+region+'*median.png'))
-	                #vfiles.extend(glob('./images/'+jobID+'/timeseries/*/Sum*'+key+'*'+region+'*sum.png'))      
-	                vfiles.extend(glob('./images/'+jobID+'/timeseries/*/sum*'+key+'*'+'Global*sum.png'))                                                                  
-	                vfiles.extend(glob('./images/'+jobID+'/timeseries/*/mean*'+key+'*'+'Global*mean.png'))                                                                  	                
-	                vfiles.extend(glob('./images/'+jobID+'/timeseries/*/*'+key+'*'+'regionless*metricless.png'))     
+			vfiles = glob(imagedir+'/'+jobID+'/timeseries/*/percentiles*'+key+'*'+'Global*10-90pc.png')
+	                #vfiles.extend(glob(imagedir+'/'+jobID+'/timeseries/*/profile*'+key+'*'+region+'*median.png'))
+	                #vfiles.extend(glob(imagedir+'/'+jobID+'/timeseries/*/Sum*'+key+'*'+region+'*sum.png'))      
+	                vfiles.extend(glob(imagedir+'/'+jobID+'/timeseries/*/sum*'+key+'*'+'Global*sum.png'))                                                                  
+	                vfiles.extend(glob(imagedir+'/'+jobID+'/timeseries/*/mean*'+key+'*'+'Global*mean.png'))                                                                  	                
+	                vfiles.extend(glob(imagedir+'/'+jobID+'/timeseries/*/*'+key+'*'+'regionless*metricless.png'))     
 
-			#vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*hist.png'))
-			#vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*robinquad.png'))
-			#vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*scatter.png'))
-			#vfiles.extend(glob('./images/'+jobID+'/Targets/'+year+'/*'+key+'*/BGCVal/*.png'))
+			#vfiles.extend(glob(imagedir+'/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*hist.png'))
+			#vfiles.extend(glob(imagedir+'/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*robinquad.png'))
+			#vfiles.extend(glob(imagedir+'/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*scatter.png'))
+			#vfiles.extend(glob(imagedir+'/'+jobID+'/Targets/'+year+'/*'+key+'*/BGCVal/*.png'))
 			
 						
 		
@@ -483,14 +484,21 @@ def html5Maker(
 			Descriptions[href] = desc
 			FileLists[href] = {}
 			FileOrder[href] = {}
+			
 			#####
 			# Determine the list of files:
+			# It preferentially plots 
+			
 			vfiles = []
 			for region in l1regions:				
-				vfiles.extend(glob('./images/'+jobID+'/timeseries/*/percentiles*'+key+'*'+region+'*10-90pc.png'))
-		                vfiles.extend(glob('./images/'+jobID+'/timeseries/*/mean*'+key+'*'+region+'*mean.png'))                             
-		                print "Adding",'./images/'+jobID+'/timeseries/*/percentiles*'+key+'*'+region+'*10-90pc.png'
-		                print "Adding",'./images/'+jobID+'/timeseries/*/mean*'+key+'*'+region+'*mean.png'		                
+				regfiles = glob(imagedir+'/'+jobID+'/timeseries/*/percentiles*'+key+'*'+region+'*10-90pc.png')
+		                print "Adding",imagedir+'/'+jobID+'/timeseries/*/percentiles*'+key+'*'+region+'*10-90pc.png'
+				vfiles.extend(regfiles)
+
+				if len(regfiles): continue
+				
+		                vfiles.extend(glob(imagedir+'/'+jobID+'/timeseries/*/mean*'+key+'*'+region+'*mean.png'))                             
+		                print "Adding",imagedir+'/'+jobID+'/timeseries/*/mean*'+key+'*'+region+'*mean.png'		                
 			#####
 			# Create plot headers for each file.
 			count=0
@@ -577,9 +585,9 @@ def html5Maker(
 			# Determine the list of files:
 			vfiles = []
 			for region in l1regions:
-				#vfiles.extend(glob('./images/'+jobID+'/timeseries/*/percentiles*'+key+'*'+region+'*10-90pc.png'))
-		                if plottype == 'profile':	vfiles.extend(glob('./images/'+jobID+'/timeseries/*/profile_*'+key+'*'+region+'*mean.png'))
-		                if plottype == 'profilehov':	vfiles.extend(glob('./images/'+jobID+'/timeseries/*/profilehov_*'+key+'*'+region+'*mean.png'))		                
+				#vfiles.extend(glob(imagedir+'/'+jobID+'/timeseries/*/percentiles*'+key+'*'+region+'*10-90pc.png'))
+		                if plottype == 'profile':	vfiles.extend(glob(imagedir+'/'+jobID+'/timeseries/*/profile_*'+key+'*'+region+'*mean.png'))
+		                if plottype == 'profilehov':	vfiles.extend(glob(imagedir+'/'+jobID+'/timeseries/*/profilehov_*'+key+'*'+region+'*mean.png'))		                
 			#####
 			# Create plot headers for each file.
 			count=0
@@ -662,23 +670,23 @@ def html5Maker(
 			#####
 			# Determine the list of files:
 			vfiles = []
-			#vfiles = glob('./images/'+jobID+'/timeseries/*/percentiles*'+key+'*'+region+'*10-90pc.png')
-                        #vfiles.extend(glob('./images/'+jobID+'/timeseries/*/profile*'+key+'*'+region+'*median.png'))
-            	     	#vfiles.extend(glob('./images/'+jobID+'/timeseries/*/Sum*'+key+'*'+region+'*sum.png'))                        
-			#vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*hist.png'))
+			#vfiles = glob(imagedir+'/'+jobID+'/timeseries/*/percentiles*'+key+'*'+region+'*10-90pc.png')
+                        #vfiles.extend(glob(imagedir+'/'+jobID+'/timeseries/*/profile*'+key+'*'+region+'*median.png'))
+            	     	#vfiles.extend(glob(imagedir+'/'+jobID+'/timeseries/*/Sum*'+key+'*'+region+'*sum.png'))                        
+			#vfiles.extend(glob(imagedir+'/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*hist.png'))
 			for s in slices:
 			    if s in ['Surface','1000m',]:
-				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+s+'*'+region+'*'+key+'*'+year+'*robinquad.png'))	
-				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+s+'*'+region+'*'+key+'*'+year+'*robinquad-cartopy.png'))						
+				vfiles.extend(glob(imagedir+'/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+s+'*'+region+'*'+key+'*'+year+'*robinquad.png'))	
+				vfiles.extend(glob(imagedir+'/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+s+'*'+region+'*'+key+'*'+year+'*robinquad-cartopy.png'))						
 			    if s in ['Transect',]:
-				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*Transect/*/*'+s+'*'+region+'*'+key+'*'+year+'*transect.png'))
+				vfiles.extend(glob(imagedir+'/'+jobID+'/P2Pplots/*/*'+key+'*Transect/*/*'+s+'*'+region+'*'+key+'*'+year+'*transect.png'))
 			if key in [	'Chlorophyll_cci', 			   	
 				  	'IntegratedPrimaryProduction_OSU', 
 					'AirSeaFluxCO2',
 					'MLD',
 				  ]:
-				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*robinquad.png'))
-				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*robinquad-cartopy.png'))				  	
+				vfiles.extend(glob(imagedir+'/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*robinquad.png'))
+				vfiles.extend(glob(imagedir+'/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*robinquad-cartopy.png'))				  	
 				  
 			#####
 			# Create plot headers for each file.
@@ -749,23 +757,23 @@ def html5Maker(
 			#####
 			# Determine the list of files:
 			vfiles = []
-			#vfiles = glob('./images/'+jobID+'/timeseries/*/percentiles*'+key+'*'+region+'*10-90pc.png')
-                        #vfiles.extend(glob('./images/'+jobID+'/timeseries/*/profile*'+key+'*'+region+'*median.png'))
-           	     	#vfiles.extend(glob('./images/'+jobID+'/timeseries/*/Sum*'+key+'*'+region+'*sum.png'))                        
-			#vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*hist.png'))
+			#vfiles = glob(imagedir+'/'+jobID+'/timeseries/*/percentiles*'+key+'*'+region+'*10-90pc.png')
+                        #vfiles.extend(glob(imagedir+'/'+jobID+'/timeseries/*/profile*'+key+'*'+region+'*median.png'))
+           	     	#vfiles.extend(glob(imagedir+'/'+jobID+'/timeseries/*/Sum*'+key+'*'+region+'*sum.png'))                        
+			#vfiles.extend(glob(imagedir+'/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*hist.png'))
 			for s in slices:
 			    if s in ['Surface','1000m',]:
-				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+s+'*'+region+'*'+key+'*'+year+'*robinquad.png'))	
-				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+s+'*'+region+'*'+key+'*'+year+'*robinquad-cartopy.png'))						
+				vfiles.extend(glob(imagedir+'/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+s+'*'+region+'*'+key+'*'+year+'*robinquad.png'))	
+				vfiles.extend(glob(imagedir+'/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+s+'*'+region+'*'+key+'*'+year+'*robinquad-cartopy.png'))						
 			    if s in ['Transect',]:
-				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*Transect/*/*'+s+'*'+region+'*'+key+'*'+year+'*transect.png'))
+				vfiles.extend(glob(imagedir+'/'+jobID+'/P2Pplots/*/*'+key+'*Transect/*/*'+s+'*'+region+'*'+key+'*'+year+'*transect.png'))
 			if key in [	'Chlorophyll_cci', 			   	
 				  	'IntegratedPrimaryProduction_OSU', 
 					'AirSeaFluxCO2',
 					'MLD',
 				  ]:
-				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*robinquad.png'))
-				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*robinquad-cartopy.png'))				  	
+				vfiles.extend(glob(imagedir+'/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*robinquad.png'))
+				vfiles.extend(glob(imagedir+'/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*robinquad-cartopy.png'))				  	
 				  
 			#####
 			# Create plot headers for each file.
@@ -857,18 +865,18 @@ def html5Maker(
 			# A list of files to put in this group.
 			FileLists[href] = {}
 			if key == 'SummaryTargets':
-				vfiles = glob('./images/'+jobID+'/Targets/'+year+'/Summary/*'+region+'*.png')			
+				vfiles = glob(imagedir+'/'+jobID+'/Targets/'+year+'/Summary/*'+region+'*.png')			
 			else:
 				#####
 				# Determine the list of files:
-				vfiles = glob('./images/'+jobID+'/timeseries/*/percentiles*'+key+'*'+region+'*10-90pc.png')
-		                vfiles.extend(glob('./images/'+jobID+'/timeseries/*/profile*'+key+'*'+region+'*median.png'))
-		                vfiles.extend(glob('./images/'+jobID+'/timeseries/*/Sum*'+key+'*'+region+'*sum.png'))      
-		                vfiles.extend(glob('./images/'+jobID+'/timeseries/*/Sum*'+key+'*'+'Global*sum.png'))                                                                  
-				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*hist.png'))
-				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*robinquad.png'))
-				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*scatter.png'))
-				vfiles.extend(glob('./images/'+jobID+'/Targets/'+year+'/*'+key+'*/BGCVal/*.png'))
+				vfiles = glob(imagedir+'/'+jobID+'/timeseries/*/percentiles*'+key+'*'+region+'*10-90pc.png')
+		                vfiles.extend(glob(imagedir+'/'+jobID+'/timeseries/*/profile*'+key+'*'+region+'*median.png'))
+		                vfiles.extend(glob(imagedir+'/'+jobID+'/timeseries/*/Sum*'+key+'*'+region+'*sum.png'))      
+		                vfiles.extend(glob(imagedir+'/'+jobID+'/timeseries/*/Sum*'+key+'*'+'Global*sum.png'))                                                                  
+				vfiles.extend(glob(imagedir+'/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*hist.png'))
+				vfiles.extend(glob(imagedir+'/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*robinquad.png'))
+				vfiles.extend(glob(imagedir+'/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*scatter.png'))
+				vfiles.extend(glob(imagedir+'/'+jobID+'/Targets/'+year+'/*'+key+'*/BGCVal/*.png'))
 			
 						
 		
@@ -957,13 +965,13 @@ def html5Maker(
 				
 				#####
 				# Determine the list of files:
-				vfiles = glob('./images/'+jobID+'/timeseries/*/percentiles*'+key+'*'+region+'*10-90pc.png')
- 	                        vfiles.extend(glob('./images/'+jobID+'/timeseries/*/profile*'+key+'*'+region+'*median.png'))
-                   	     	vfiles.extend(glob('./images/'+jobID+'/timeseries/*/Sum*'+key+'*'+region+'*sum.png'))                        
-				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*hist.png'))
-				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*robinquad.png'))			
-				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*scatter.png'))							
-				#vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+'*Transect/*/*'+region+'*'+key+'*'+year+'*hov.png'))
+				vfiles = glob(imagedir+'/'+jobID+'/timeseries/*/percentiles*'+key+'*'+region+'*10-90pc.png')
+ 	                        vfiles.extend(glob(imagedir+'/'+jobID+'/timeseries/*/profile*'+key+'*'+region+'*median.png'))
+                   	     	vfiles.extend(glob(imagedir+'/'+jobID+'/timeseries/*/Sum*'+key+'*'+region+'*sum.png'))                        
+				vfiles.extend(glob(imagedir+'/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*hist.png'))
+				vfiles.extend(glob(imagedir+'/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*robinquad.png'))			
+				vfiles.extend(glob(imagedir+'/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*scatter.png'))							
+				#vfiles.extend(glob(imagedir+'/'+jobID+'/P2Pplots/*/*'+key+'*Transect/*/*'+region+'*'+key+'*'+year+'*hov.png'))
 
 				#####
 				# Create plot headers for each file.
@@ -999,13 +1007,13 @@ def html5Maker(
 				# Determine the list of files:
 				region = 'Global'
 				vfiles = []
-				#vfiles = glob('./images/'+jobID+'/timeseries/*/percentiles*'+key+'*'+region+'*10-90pc.png')
- 	                        #vfiles.extend(glob('./images/'+jobID+'/timeseries/*/profile*'+key+'*'+region+'*median.png'))
-                   	     	#vfiles.extend(glob('./images/'+jobID+'/timeseries/*/Sum*'+key+'*'+region+'*sum.png'))                        
-				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+transect+'/*/'+key+transect+'*'+region+'*'+key+'*'+year+'*hist.png'))
-				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+transect+'/*/'+key+transect+'*'+region+'*'+key+'*'+year+'*robinquad.png'))			
-				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+transect+'/*/'+key+transect+'*'+region+'*'+key+'*'+year+'*scatter.png'))		
-				vfiles.extend(glob('./images/'+jobID+'/P2Pplots/*/*'+key+transect+'/*/'+key+transect+'*'+region+'*'+key+'*'+year+'*hov.png'))
+				#vfiles = glob(imagedir+'/'+jobID+'/timeseries/*/percentiles*'+key+'*'+region+'*10-90pc.png')
+ 	                        #vfiles.extend(glob(imagedir+'/'+jobID+'/timeseries/*/profile*'+key+'*'+region+'*median.png'))
+                   	     	#vfiles.extend(glob(imagedir+'/'+jobID+'/timeseries/*/Sum*'+key+'*'+region+'*sum.png'))                        
+				vfiles.extend(glob(imagedir+'/'+jobID+'/P2Pplots/*/*'+key+transect+'/*/'+key+transect+'*'+region+'*'+key+'*'+year+'*hist.png'))
+				vfiles.extend(glob(imagedir+'/'+jobID+'/P2Pplots/*/*'+key+transect+'/*/'+key+transect+'*'+region+'*'+key+'*'+year+'*robinquad.png'))			
+				vfiles.extend(glob(imagedir+'/'+jobID+'/P2Pplots/*/*'+key+transect+'/*/'+key+transect+'*'+region+'*'+key+'*'+year+'*scatter.png'))		
+				vfiles.extend(glob(imagedir+'/'+jobID+'/P2Pplots/*/*'+key+transect+'/*/'+key+transect+'*'+region+'*'+key+'*'+year+'*hov.png'))
 
 				#####
 				# Create plot headers for each file.
