@@ -399,7 +399,7 @@ class timeseriesAnalysis:
 
 	  	print "mapplotsRegionsLayers:\t",r,l, "contains",len(datadata),'in situ data'
 	  	print "mapplotsRegionsLayers:\t",r,l, "data lat:",len(datalat),datalat.min(),datalat.mean(),datalat.max()
-	  	print "mapplotsRegionsLayers:\t",r,l, "data lon:",len(datalon),datalon.min(),datalon.mean(),datalon.max() 	
+	  	print "mapplotsRegionsLayers:\t",r,l, "data lon:",len(datalon),datalon.min(),datalon.mean(),datalon.max()
 	
 		titles = [' '.join([getLongName(t) for t in [self.model,'('+self.jobID+')',str(l),self.modeldetails['name']]]),
 			  ' '.join([getLongName(t) for t in [self.datasource,str(l),self.datadetails['name']]])]

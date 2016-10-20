@@ -689,14 +689,11 @@ def mapPlotSingle(lons1, lats1, data1,filename,titles=['',],lon0=0.,drawCbar=Tru
 def mapPlotPair(lons1, lats1, data1,lons2,lats2,data2,filename,titles=['',''],lon0=0.,drawCbar=True,cbarlabel='',doLog=False,dpi=100,):#**kwargs):
 
 	fig = pyplot.figure()
-
 	fig.set_size_inches(10,10)
-
 	
 	lons1 = np.array(lons1)
 	lats1 = np.array(lats1)
 	data1 = np.ma.array(data1)
-
 		
 	lons2 = np.array(lons2)
 	lats2 = np.array(lats2)
@@ -715,7 +712,6 @@ def mapPlotPair(lons1, lats1, data1,lons2,lats2,data2,filename,titles=['',''],lo
 		return
 		
 	ax1 = pyplot.subplot(211,projection=cartopy.crs.PlateCarree(central_longitude=0.0, ))
-		
 	fig,ax1 = makemapplot(fig,ax1,lons1,lats1,data1,titles[0], zrange=[rbmi,rbma],lon0=0.,drawCbar=True,cbarlabel='',doLog=doLog,)
 	ax1.set_extent([-180.,180.,-90.,90.])	
 
@@ -723,15 +719,17 @@ def mapPlotPair(lons1, lats1, data1,lons2,lats2,data2,filename,titles=['',''],lo
 	try:
 		fig,ax2 = makemapplot(fig,ax2,lons2,lats2,data2,titles[1], zrange=[rbmi,rbma],lon0=0.,drawCbar=True,cbarlabel='',doLog=doLog,)
 		if False in [fig, ax2]: assert False
+		ax2.set_extent([-180.,180.,-90.,90.])
+		
+		print "mapPlotPair: \tSaving:" , filename
+		pyplot.savefig(filename ,dpi=dpi)		
+		pyplot.close()		
 	except: 
 		try:mapPlotSingle(lons1, lats1, data1,filename,titles=titles,lon0=lon0,drawCbar=drawCbar,cbarlabel=cbarlabel,doLog=doLog,dpi=dpi)
 		except:pass
 		return
-	ax2.set_extent([-180.,180.,-90.,90.])	
-		
-	print "mapPlotPair: \tSaving:" , filename
-	pyplot.savefig(filename ,dpi=dpi)		
-	pyplot.close()
+
+
 
 
 def hovmoellerAxis(fig,ax,title,xaxis,yaxis,data,vmin='',vmax='',cmap = defcmap ,debug = False):
