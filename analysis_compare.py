@@ -102,6 +102,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,):
 		analysisKeys.append('CHD')
 		analysisKeys.append('CHN')
 		analysisKeys.append('DiaFrac')
+                analysisKeys.append('DMS')
 					
       	  	analysisKeys.append('TotalOMZVolume')           # Total Oxygen Minimum zone Volume
        	 	analysisKeys.append('OMZThickness')             # Oxygen Minimum Zone Thickness
@@ -113,10 +114,12 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,):
 		analysisKeys = []
 #		analysisKeys.append('CHD')
 #		analysisKeys.append('CHN')
-#		analysisKeys.append('DiaFrac')		
-       	  	analysisKeys.append('TotalOMZVolume')           # Total Oxygen Minimum zone Volume
-       	 	analysisKeys.append('OMZThickness')             # Oxygen Minimum Zone Thickness
-        	analysisKeys.append('OMZMeanDepth')             # Oxygen Minimum Zone mean depth    
+#		analysisKeys.append('DiaFrac')	
+                analysisKeys.append('DMS')
+
+#       	  	analysisKeys.append('TotalOMZVolume')           # Total Oxygen Minimum zone Volume
+#       	 	analysisKeys.append('OMZThickness')             # Oxygen Minimum Zone Thickness
+#        	analysisKeys.append('OMZMeanDepth')             # Oxygen Minimum Zone mean depth    
 #		analysisKeys.append('O2')                       # WOA Oxygen        	
         	if bio ==False:return
         	if physics == True:return  
@@ -124,7 +127,8 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,):
 	layerList 	= ['Surface',]
 	metricList 	= ['mean',]
   	regionList	= ['Global',]
-	
+
+	level3 = ['DMS',]	
 	#####
 	# JASMIN		
 	if gethostname().find('ceda.ac.uk')>-1:
@@ -172,7 +176,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,):
 	glodapv2Coords	= {'t':'time',    'z':'Pressure','lat':'lat',      'lon':'lon',        'cal': '',        'tdict':{0:0,} }
 	mldCoords	= {'t':'index_t', 'z':'index_z','lat':'lat','lon': 'lon','cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
 	cciCoords	= {'t':'index_t', 'z':'index_z','lat': 'lat',      'lon': 'lon', 'cal': 'standard','tdict':['ZeroToZero'] }
-
+	dmsCoords	= {'t':'time',    'z':'depth',  'lat':'Latitude',  'lon': 'Longitude','cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
 
 
 			
@@ -988,6 +992,30 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,):
 				av[name]['gridFile']		= orcaGridfn
 				av[name]['Dimensions']		= 1					
 					
+		if 'DMS' in analysisKeys:
+			name = 'DMS'
+			av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', paths.ModelFolder_pref, annual)[::30]
+			if annual:		
+				av[name]['dataFile'] 		= paths.DMSDir+'DMSclim_mean.nc'
+			else:	av[name]['dataFile'] 		= ''
+			
+			av[name]['modelcoords'] 	= medusaCoords 	
+			av[name]['datacoords'] 		= dmsCoords
+	
+			av[name]['modeldetails'] 	= {'name': name, 'vars':['DMS_ARAN',], 'convert': ukp.mul1000000,'units':'umol/m3'}
+			av[name]['datadetails']  	= {'name': name, 'vars':['DMS',], 'convert': ukp.NoChange,'units':'umol/m3'}
+	
+			av[name]['layers'] 		= ['layerless',]
+			av[name]['regions'] 		= regionList	
+			av[name]['metrics']		= metricList
+
+			av[name]['datasource'] 		= 'Lana'
+			av[name]['model']		= 'MEDUSA'
+
+			av[name]['modelgrid']		= 'eORCA1'
+			av[name]['gridFile']		= paths.orcaGridfn
+			av[name]['Dimensions']		= 2				
+	
 
 		for name in av.keys():
 			print "------------------------------------------------------------------"	
@@ -1053,7 +1081,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,):
 					 'CHD','CHN','DiaFrac',]:
 				mdata = modeldataD[(jobID,name )][('Global', 'Surface', 'mean')]
 				title = ' '.join(['Global', 'Surface', 'Mean',  getLongName(name)])
-			elif name in [  'OMZThickness', 'OMZMeanDepth',  ]:
+			elif name in [  'OMZThickness', 'OMZMeanDepth', 'DMS', ]:
 				mdata = modeldataD[(jobID,name )][('Global', 'layerless', 'mean')]
 				title = ' '.join(['Global', getLongName(name)])			
 			else:
@@ -1069,9 +1097,18 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,):
 			if j in ['u-ad980','u-af123','u-af725',
 				 'u-ae742','u-af139','u-af578', 'u-af728']:
 				arrD[j] = np.ma.array(arrD[j]) * 5.09369e-7 
+               
+		if name in ['DMS',]:
+                    for j in arrD.keys():
+                        if j in ['u-ag914',]:
+                                for i,(t,d) in enumerate(zip(timesD[jobID], arrD[jobID])):
+                                        if float(t) < 1600.:continue
+                                        arrD[j][i] =d/1000000.
 		
 		for ts in ['Together',]:#'Separate']:
-		    for ls in ['Both','movingaverage',]:#'','Both',]:			
+		    for ls in ['Both','movingaverage','']:#'','Both',]:			
+                        if ls=='' and name not in level3: continue
+
 			tsp.multitimeseries(
 				timesD, 		# model times (in floats)
 				arrD,			# model time series
@@ -1156,13 +1193,18 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,):
 if __name__=="__main__":
 	#colours = {'u-af981':'red', 'u-af982':'orange','u-af983':'blue','u-af984':'purple', }
 	#timeseries_compare(colours)
+	debug = True
+	if debug:
+                colours = {'u-ag543':'red', 'u-ag914':'orange', }
+                timeseries_compare(colours, physics=False,bio=True,debug = debug)
 
-        colours = {'u-ag543':'red', 'u-ag914':'orange','u-ae748':'darkblue','u-af983':'blue','u-af984':'purple', }
-        timeseries_compare(colours, physics=True,bio=False)
+	else:
+	        colours = {'u-ag543':'red', 'u-ag914':'orange','u-ae748':'darkblue','u-af983':'blue','u-af984':'purple', }
+        	timeseries_compare(colours, physics=True,bio=False)
 
-        colours = {'u-ag543':'red', 'u-ag914':'orange', }
-        timeseries_compare(colours, physics=False,bio=True,debug = True)
+	        colours = {'u-ag543':'red', 'u-ag914':'orange', }
+	        timeseries_compare(colours, physics=False,bio=True,debug = debug)
 
-        colours = {'u-ae748':'darkblue','u-af983':'blue', }    
-        timeseries_compare(colours, physics=True,bio=False)
+	        colours = {'u-ae748':'darkblue','u-af983':'blue', }    
+	        timeseries_compare(colours, physics=True,bio=False)
 

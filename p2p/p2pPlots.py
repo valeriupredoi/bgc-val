@@ -449,7 +449,8 @@ class makePlots:
 			else:	
 				doLog=True
 			print "plotWithSlices:\tROBIN QUAD:",[ti1,ti2],False,dmin,dmax
-			ukp.robinPlotQuad(nmxx, nmxy, 
+			try:
+				ukp.robinPlotQuad(nmxx, nmxy, 
 					datax,datay,
 					robfncartopy,
 					titles=[ti1,ti2],
@@ -459,7 +460,9 @@ class makePlots:
 					vmin=dmin,vmax=dmax,
 					maptype = 'Cartopy',
 					scatter=False)
-					
+			except:
+				print "Cartopy is broken again, can't make: ",robfncartopy
+	
 		if self.depthLevel not in ['Surface','100m','200m','500m','1000m',]:# No point in making these.
 		  if ukp.shouldIMakeFile([self.xfn,self.yfn],transectquadfn,debug=False):
 			ti1 = getLongName(self.xtype)

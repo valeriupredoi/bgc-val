@@ -193,8 +193,8 @@ if __name__=="__main__":
 	except:	
 		print "Please provide a job ID"
 		exit()
-	if 'ReportOnly' in argv[:]:ReportOnly=True
-	else:	ReportOnly = False
+	#if 'ReportOnly' in argv[:]:ReportOnly=True
+	#else:	ReportOnly = False
 
 	if 'physics' in argv[:]:
 		physicsOnly=True
@@ -206,9 +206,9 @@ if __name__=="__main__":
         year = findLastFinishedYear(jobID,dividby=25,numberfiles=numberfiles)
         print "########\nThe Whole Package:\tmain:", jobID,year
 
-	if not ReportOnly:
-		if physicsOnly:	theWholePackage(jobID,year=year,suite='physics')
-		else:		theWholePackage(jobID,year=year)
+	#if not ReportOnly:
+	if physicsOnly:	theWholePackage(jobID,year=year,suite='physics')
+	else:		theWholePackage(jobID,year=year)
 		
       #  if year == False: year = '*'
 #	print "########\nThe Whole Package:\tmaking Summary report", jobID,year	

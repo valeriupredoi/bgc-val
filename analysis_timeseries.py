@@ -1517,7 +1517,7 @@ def analysis_timeseries(jobID = "u-ab671",
 
 	if 'DMS_ARAN' in analysisKeys:
 		name = 'DMS'
-		av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', paths.ModelFolder_pref, annual)[:,:,30]
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', paths.ModelFolder_pref, annual)[::30]
 		if annual:		
 			av[name]['dataFile'] 		= paths.DMSDir+'DMSclim_mean.nc'
 		else:
