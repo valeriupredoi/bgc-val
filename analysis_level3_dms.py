@@ -87,7 +87,7 @@ def analysis_dms(jobID=''):
 					        			
 
 	for name in ['DMS_ARAN','DMS_ANDR','DMS_SIMO','DMS_HALL']:
-		analysisDict['modelFiles']  = listModelDataFiles(jobID, 'diad_T', paths.ModelFolder_pref, annual)[:3]#[::60]
+		analysisDict['modelFiles']  = listModelDataFiles(jobID, 'diad_T', paths.ModelFolder_pref, annual)[::100]
 		if annual:		
 			analysisDict['dataFile'] = paths.DMSDir+'DMSclim_mean.nc'
 		else:	analysisDict['dataFile'] = ''
