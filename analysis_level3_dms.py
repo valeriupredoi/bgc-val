@@ -86,8 +86,13 @@ def analysis_dms(jobID=''):
 			return sorted(glob(datafolder+jobID+"/"+jobID+"o_1m_*_"+filekey+".nc"))
 					        			
 
+
+
+	#####
+	# A time series analysis for the DMS fields.
+	
 	for name in ['DMS_ARAN','DMS_ANDR','DMS_SIMO','DMS_HALL']:
-		analysisDict['modelFiles']  = listModelDataFiles(jobID, 'diad_T', paths.ModelFolder_pref, annual)[:3]#[::60]
+		analysisDict['modelFiles']  = listModelDataFiles(jobID, 'diad_T', paths.ModelFolder_pref, annual)#[::60]
 		if annual:		
 			analysisDict['dataFile'] = paths.DMSDir+'DMSclim_mean.nc'
 		else:	analysisDict['dataFile'] = ''
@@ -136,6 +141,9 @@ def analysis_dms(jobID=''):
 		modeldataD[name] = tsa.modeldataD
 
 
+	#####
+	# Prepare a time series comparison of the four DMS types.
+	
 	timesD  = {}
 	arrD	= {}
 	

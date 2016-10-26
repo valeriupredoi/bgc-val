@@ -157,11 +157,11 @@ def percentilesPlot(
 	# Make, resize and divide the figure into an uneven grid/
 	fig = pyplot.figure()
 	fig.set_size_inches(10,6)
-	gs = gridspec.GridSpec(1, 2, width_ratios=[1, 12], wspace=0.0, hspace=0.0) 		
+	gs = gridspec.GridSpec(1, 2, width_ratios=[12,1], wspace=0.0, hspace=0.0) 		
 	
 	#####
-	# Data plot to the left.
-	axd = pyplot.subplot(gs[0])	
+	# Data plot to the r.
+	axd = pyplot.subplot(gs[1])	
 	if len(dataslice):
 		pc1 = np.array([np.percentile(dataslice,20.) for i in xlims])
 		pc2 = np.array([np.percentile(dataslice,30.) for i in xlims])
@@ -186,13 +186,46 @@ def percentilesPlot(
 			pcmax 	= np.array([np.percentile(dataslice,90.) for i in xlims])
 			axd  	= drawgreyband(axd,xlims, [pcmin,pc1],)
 			axd  	= drawgreyband(axd,xlims, [pc6,pcmax],)			
-		pyplot.title('Data')	
-		pyplot.ylabel(units)
 		
-			
+		#pyplot.title('Data')	
+
+	
+	# Add a legend
+	box = axd.get_position()
+	axd.set_position([box.x0,
+			  box.y0 ,
+			  box.width*0.8, 
+			  box.height ])
+		
+
+	labels = ['10-20','20-30','30-40','40-60','60-70','70-80','80-90',]
+	pyplot.fill_between([],[],[],alpha = 0.,	color='w',label='%ile')				
+	pyplot.fill_between([],[],[],alpha = 0.05,	color='k',label=labels[6])			
+	pyplot.fill_between([],[],[],alpha = 0.2,	color='r',label=labels[5])
+	pyplot.fill_between([],[],[],alpha = 0.2,	color='DarkOrange',label=labels[4])			
+	pyplot.fill_between([],[],[],alpha = 0.2,	color='g',label=labels[3])
+	pyplot.fill_between([],[],[],alpha = 0.2,	color='DarkOrange',label=labels[2])			
+	pyplot.fill_between([],[],[],alpha = 0.2,	color='r',label=labels[1])									
+	pyplot.fill_between([],[],[],alpha = 0.05,	color='k',label=labels[0])
+												
+	legd = axd.legend(loc='center left', ncol=1,prop={'size':9},bbox_to_anchor=(0.9, 0.5))
+	legd.draw_frame(False) 
+	legd.get_frame().set_alpha(0.)	
+
+	axd.text(0.5,0.985,'Data',
+		va='top',ha='center',
+		transform=axd.transAxes)
+
+
+
 	#####
-	# Model plot to the right.	
-	axm = pyplot.subplot(gs[1])	
+	# Model plot to the left.	
+	axm = pyplot.subplot(gs[0])	
+
+	axm.text(1.,0.985,'Model  ',
+		va='top',ha='right',
+		transform=axm.transAxes)
+
 
 	pyplot.plot(timesDict['mean'],  modeldataDict['mean']  ,'k--',lw=1,label='mean')
 	pyplot.plot(timesDict['median'],modeldataDict['median'],'k-', lw=1,label='median')	
@@ -231,21 +264,43 @@ def percentilesPlot(
 	#	axm.set_yscale('log')	
 	#	axd.set_yscale('log')
 
-	axm.get_yaxis().set_ticklabels([])			
-	axd.get_xaxis().set_ticks([])	
+	modelleft = 0#True
+	if modelleft:
+		axm.get_yaxis().set_ticklabels([])			
+		axd.get_xaxis().set_ticks([])	
 	
-	if greyband == 'MinMax':
-		ytickLabels	= ['min',  '20pc','30pc','40pc','60pc','70pc','80pc','max']
-	elif greyband == '10-90pc':	
-		ytickLabels	= ['10pc', '20pc','30pc','40pc','60pc','70pc','80pc','90pc']
+		if greyband == 'MinMax':
+			ytickLabels	= ['min',  '20pc','30pc','40pc','60pc','70pc','80pc','max']
+		elif greyband == '10-90pc':	
+			ytickLabels	= ['10pc', '20pc','30pc','40pc','60pc','70pc','80pc','90pc']
+		else:
+			ytickLabels	= [        '20pc','30pc','40pc','60pc','70pc','80pc',]			
+
+		yticks = [ modeldataDict[m][-1]	for m in ytickLabels]
+		axm.set_yticks(yticks)
+		axm.set_yticklabels(ytickLabels,fontsize=10)
+		axm.yaxis.tick_right()		
 	else:
-		ytickLabels	= [        '20pc','30pc','40pc','60pc','70pc','80pc',]			
+		#axm.get_yaxis().set_ticklabels([])			
+		axd.get_xaxis().set_ticks([])	
+		axm.set_ylabel(units)
 
-	yticks = [ modeldataDict[m][-1]	for m in ytickLabels]
-	axm.set_yticks(yticks)
-	axm.set_yticklabels(ytickLabels,fontsize=10)
-	axm.yaxis.tick_right()		
 
+
+				
+					
+		#if greyband == 'MinMax':
+	#	#	ytickLabels	= ['min',  '20pc','30pc','40pc','60pc','70pc','80pc','max']
+		#elif greyband == '10-90pc':	
+		#	ytickLabels	= ['10pc', '20pc','30pc','40pc','60pc','70pc','80pc','90pc']
+		#else:
+		#	ytickLabels	= [        '20pc','30pc','40pc','60pc','70pc','80pc',]			
+
+		#yticks = [ modeldataDict[m][-1]	for m in ytickLabels]
+		#axm.set_yticks(yticks)
+		#axm.set_yticklabels(ytickLabels,fontsize=10)
+		#axm.yaxis.tick_right()	
+		
 	
 	print "timeseriesPlots:\tpercentilesPlot:\tSaving:" , filename
 	try:pyplot.savefig(filename )
