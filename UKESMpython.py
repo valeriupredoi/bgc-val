@@ -136,6 +136,53 @@ def getFileList(fin):
 			filesout.extend(glob(f))
 		return filesout
 
+def listFiles(a, want=100, listType = 'even' ,first = 30,last = 30):
+	"""
+	:param a: A list, usually made of paths to a filename. 
+	:param want: An estimate of the number of filesout
+	:param listType: Three options available:
+			'even': evenly distribute data. 
+			'frontloaded': Log scale with most of the data at the front.
+			'backloaded': Log scale with most of the data at the end.	
+	:param first: All the "first" number of items from the front of the list.
+	:param last: All the "last" number of items from the end of the list.	
+	"""
+	
+	l = len(a)
+	a = sorted(a)
+	want = int(want)
+
+	#####
+	# Look at them evenly.
+	if len(a) > want:
+		if listType=='even': 
+			newlist = list(a[::int(l/float(want))])
+		if listType=='frontloaded':
+			newlist = [a[int(f)] for f in np.logspace(0,np.log10(l-1),want,)]
+		if listType=='backloaded':
+			
+			newlist = [a[l-int(f)] for f in np.logspace(0,np.log10(l),want,)]		
+	else:
+		newlist = a	
+
+	#####
+	# Add the last 30 files
+	if last and len(a)>last: 
+		newlist.extend(a[-last:])
+	else:
+		newlist.append(a[-1])		
+	#####
+	# Add the first 30 files
+	if first and len(a)>first: 
+		newlist.extend(a[:first])
+	else:
+		newlist.append(a[0])
+		
+	#####
+	# remove duplicates and sort
+	newlist =sorted({n:True for n in newlist}.keys())
+	return newlist
+	
 
 def makeThisSafe(arr,debug = True, key='',noSqueeze=False):
 	"""
