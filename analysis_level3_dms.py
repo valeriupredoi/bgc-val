@@ -92,9 +92,13 @@ def analysis_dms(jobID=''):
 	# A time series analysis for the DMS fields.
 	
 	for name in ['DMS_ARAN','DMS_ANDR','DMS_SIMO','DMS_HALL']:
-		rate = 90
-		if name == 'DMS_ARAN':	rate = 1
-		analysisDict['modelFiles']  = listModelDataFiles(jobID, 'diad_T', paths.ModelFolder_pref, annual)[::rate]
+
+
+		dmsfiles = listModelDataFiles(jobID, 'diad_T', paths.ModelFolder_pref, annual)
+		if name == 'DMS_ARAN':	
+			analysisDict['modelFiles'] = dmsfiles
+		else:
+			analysisDict['modelFiles'] = ukp.listFiles(dmsfiles, want=100, listType='backloaded',first=30,last=10)
 		
 		if annual:		
 			analysisDict['dataFile'] = paths.DMSDir+'DMSclim_mean.nc'
