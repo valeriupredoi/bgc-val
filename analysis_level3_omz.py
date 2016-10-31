@@ -79,8 +79,10 @@ def analysis_omz(jobID=''):
 		for f in files:
 			lnfile = shelvedir+os.basename(f)
 			if os.path.exists(lnfile):continue
+			print "linking ",f,lnfile
+			assert 0
 			os.symlink(f,lnfile)
-		
+
 	
 	regionList	= ['Global', 'ignoreInlandSeas',
 	  		'SouthernOcean','ArcticOcean',
@@ -316,6 +318,7 @@ def analysis_omz(jobID=''):
 		av['TotalOMZVolume']['modelgrid']		= 'eORCA1'
 		av['TotalOMZVolume']['gridFile']		= paths.orcaGridfn	
 		av['TotalOMZVolume']['Dimensions']		= 1	
+	
 	
   	#####
   	# Calling timeseriesAnalysis
