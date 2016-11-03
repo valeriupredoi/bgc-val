@@ -1643,7 +1643,7 @@ def analysis_timeseries(jobID = "u-ab671",
 				imageDir	= imagedir,					
 				grid		= av[name]['modelgrid'],
 				gridFile	= av[name]['gridFile'],
-				clean 		= clean,
+				clean 		= False,
 			)
 			#shelves[name] = profa.shelvefn
 			#shelves_insitu[name] = profa.shelvefn_insitu
