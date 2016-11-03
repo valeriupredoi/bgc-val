@@ -284,9 +284,11 @@ def analysis_omz(jobID=''):
 			if np.max(tmpmd)>20.:
 				pyplot.ylim([0.,np.max(tmpmd)*1.1])
 			else:	pyplot.ylim([0.,20.])	
-		
-			#pyplot.title(title)	
-			#pyplot.ylabel(units)
+
+			pyplot.xlim(xlims)
+			
+			pyplot.title('AMOC, Sv')	
+			pyplot.xlabel('Year')
 		
 			#pyplot.axhline(y='',c='k',ls='-',lw=1,label = 'data')
 				
@@ -312,10 +314,11 @@ def analysis_omz(jobID=''):
 		if np.max(modeldata)>20.:
 			pyplot.ylim([0.,np.max(modeldata)*1.1])
 		else:	pyplot.ylim([0.,20.])	
-		
-		#pyplot.title(title)	
-		#pyplot.ylabel(units)
-		
+
+		pyplot.xlim(xlims)
+		pyplot.title('AMOC, Sv')	
+		pyplot.xlabel('Year')		
+
 		#pyplot.axhline(y='',c='k',ls='-',lw=1,label = 'data')
 				
 		
