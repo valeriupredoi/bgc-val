@@ -65,6 +65,7 @@ if gethostname().find('ceda.ac.uk')>-1:
 	#####
 	# Location of data files.
 	ObsFolder 	= "/group_workspaces/jasmin/esmeval/example_data/bgc/"
+	Dustdir		= ObsFolder+"/MahowaldDust/"		
 	WOAFolder_annual= ObsFolder+"WOA/annual/"
 	WOAFolder 	= ObsFolder+"WOA/"
 	DMSDir		= ObsFolder+"/DMS_Lana2011nc/"	
@@ -79,7 +80,6 @@ if gethostname().find('ceda.ac.uk')>-1:
 	CCIDir		= ObsFolder+"CCI/"
 	icFold		= ObsFolder+"/InitialConditions/"
 
-print "There may be problems with shelvedir (missing timeseries/jobID at the end) and WOAFolder, which is now WOAFolder and WOAFolder_annual"
 		
 		
 		

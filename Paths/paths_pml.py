@@ -82,7 +82,6 @@ if gethostname().find('pmpc')>-1:
 
 
 	
-print "There may be problems with shelvedir (missing timeseries/jobID at the end) and WOAFolder, which is now WOAFolder and WOAFolder_annual"
 
 
 
