@@ -1082,12 +1082,15 @@ def profilePlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords= {}
 		
 	####
 	# Add model data
+	plotDetails = {}
 	for i in sorted(profileTimes.keys()):
 		print 'profilePlot',i,profileTimes[i], md[:,i].shape,yaxis_cc.shape
 		lw =1
 		if i == lastyr: 	lw =2
 		color = defcmap((float(profileTimes[i])-times_cc[0])/(float(times_cc[-1]-times_cc[0])))
-		pyplot.plot(md[:,i], yaxis_cc, c=color, lw = lw, label=str(int(profileTimes[i])))
+		label = str(int(profileTimes[i]))
+		plotDetails[i] = {'c': color, 'label':label, 'lw':lw,}
+		pyplot.plot(md[:,i], yaxis_cc, c=color, lw = lw, )#label=label)
 
 	pyplot.xlabel(xaxislabel)
 	pyplot.ylabel('Depth')
@@ -1111,14 +1114,35 @@ def profilePlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords= {}
 	# Add data:
 	if len(dd.squeeze().compressed())!=0:
 		print "Adding data profile."	
-		pyplot.plot(dd, dyaxis_cc, 'k', lw=2, label='Data')
+		pyplot.plot(dd, dyaxis_cc, 'k', lw=2, )#label='Data')
 
-	legend = pyplot.legend(loc='best',  numpoints = 1, ncol=2, prop={'size':10}) 
-	legend.draw_frame(False) 
-	legend.get_frame().set_alpha(0.)
+	#####
+	# Add legend:
+	legendSize = len(plotDetails.keys())+1
+	ncols = int(legendSize/25)+1
+	box = ax1.get_position()
+	ax1.set_position([box.x0,
+			  box.y0 ,
+			  box.width*(1.-0.1*ncols), 
+			  box.height ])
+
+	if len(dd.squeeze().compressed())!=0:
+		pyplot.plot([], [], 'k', lw=2, label='Data')
+
+	for i in sorted(plotDetails.keys()):
+		pyplot.plot([], [], c=plotDetails[i]['c'], lw = plotDetails[i]['lw'], label=plotDetails[i]['label'])
+	
+												
+	legd = ax1.legend(loc='center left', ncol=1,prop={'size':10},bbox_to_anchor=(1., 0.5))
+	legd.draw_frame(False) 
+	legd.get_frame().set_alpha(0.)	
+		
+	#legend = pyplot.legend(loc='best',  numpoints = 1, ncol=2, prop={'size':10}) 
+	#legend.draw_frame(False) 
+	#legend.get_frame().set_alpha(0.)
 					
 	
-	pyplot.tight_layout()			
+	#pyplot.tight_layout()			
 	print "profilePlot.py: \tSaving:" , filename
 	pyplot.savefig(filename ,dpi=dpi)		
 	pyplot.close()	

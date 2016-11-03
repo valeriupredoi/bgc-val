@@ -201,10 +201,10 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('TotalAirSeaFluxCO2')	# work in progress
 			#analysisKeys.append('TotalOMZVolume')		# work in progress
 			#analysisKeys.append('TotalOMZVolume50')	# work in progress			
-			analysisKeys.append('OMZMeanDepth')		# work in progress	
-			analysisKeys.append('OMZThickness')             # Oxygen Minimum Zone Thickness					
-			analysisKeys.append('TotalOMZVolume')		# work in progress			
-
+			#analysisKeys.append('OMZMeanDepth')		# work in progress	
+			#analysisKeys.append('OMZThickness')             # Oxygen Minimum Zone Thickness					
+			#analysisKeys.append('TotalOMZVolume')		# work in progress			
+                        analysisKeys.append('O2')                       # WOA Oxygen
 			#analysisKeys.append('DIC')			# work in progress									
 			#analysisKeys.append('DrakePassageTransport')	# DrakePassageTransport				
 			#analysisKeys.append('TotalIceArea')		# work in progress	
