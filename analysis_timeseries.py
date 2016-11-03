@@ -1577,12 +1577,15 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modelcoords'] 	= medusaCoords 	
 		av[name]['datacoords'] 		= medusaCoords
 
+		nc = Dataset(paths.orcaGridfn,'r')
+		masked_area = nc.variables['e2t'][:] * nc.variables['e1t'][:]*nc.variables['tmask'][:]
+		nc.close()
 
 		def datadustsum(nc,keys): 
-			return nc.variables[keys[0]][:].sum() * (24.*60.*60.) * 17.9
+			return masked_area*nc.variables[keys[0]][:].sum() * (24.*60.*60.) * 17.9
 					
 		def modeldustsum(nc,keys): 
-			return nc.variables[keys[0]][:].sum() 
+			return masked_area*nc.variables[keys[0]][:].sum() 
 
 		av[name]['modeldetails'] 	= {'name': name, 'vars':['AEOLIAN',], 'convert': modeldustsum,'units':'mmol Fe/m2/d'}			
 		if annual:
