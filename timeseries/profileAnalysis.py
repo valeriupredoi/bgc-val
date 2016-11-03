@@ -97,7 +97,7 @@ class profileAnalysis:
 	self.shelvefn_insitu	= ukp.folder(self.workingDir)+'_'.join(['profile',self.jobID,self.dataType,])+'_insitu.shelve'
 
 	self._masksLoaded_ 	= False
-	
+	self.doHov		= False
 	#####
 	# Load Data file	
  	self.loadData()
@@ -511,14 +511,14 @@ class profileAnalysis:
 		if  ukp.shouldIMakeFile([self.shelvefn, self.shelvefn_insitu],profilefn,debug=False):					    	
 			tsp.profilePlot(modeldata,data,profilefn, modelZcoords = modelZcoords, dataZcoords= dataZcoords, xaxislabel = axislabel,title = title,)			
 			
-			
-	    	hovfilename = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join(['profilehov',self.jobID,self.dataType,r,m,])+'.png'
-		if  ukp.shouldIMakeFile([self.shelvefn, self.shelvefn_insitu],hovfilename,debug=False):				
-			tsp.hovmoellerPlot(modeldata,data,hovfilename, modelZcoords = modelZcoords, dataZcoords= dataZcoords, title = title,zaxislabel =axislabel, diff=False)		
+		if self.doHov:	
+		    	hovfilename = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join(['profilehov',self.jobID,self.dataType,r,m,])+'.png'
+			if  ukp.shouldIMakeFile([self.shelvefn, self.shelvefn_insitu],hovfilename,debug=False):				
+				tsp.hovmoellerPlot(modeldata,data,hovfilename, modelZcoords = modelZcoords, dataZcoords= dataZcoords, title = title,zaxislabel =axislabel, diff=False)		
 	
-	    	hovfilename_diff = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join(['profileDiff',self.jobID,self.dataType,r,m,])+'.png'
-		if  ukp.shouldIMakeFile([self.shelvefn, self.shelvefn_insitu],hovfilename_diff,debug=False):					    	
-			tsp.hovmoellerPlot(modeldata,data,hovfilename_diff, modelZcoords = modelZcoords, dataZcoords= dataZcoords, title = title,zaxislabel =axislabel,diff=True)		
+		    	hovfilename_diff = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join(['profileDiff',self.jobID,self.dataType,r,m,])+'.png'
+			if  ukp.shouldIMakeFile([self.shelvefn, self.shelvefn_insitu],hovfilename_diff,debug=False):					    	
+				tsp.hovmoellerPlot(modeldata,data,hovfilename_diff, modelZcoords = modelZcoords, dataZcoords= dataZcoords, title = title,zaxislabel =axislabel,diff=True)		
 	
 
 

@@ -64,6 +64,7 @@ if gethostname().find('pmpc')>-1:
 	# Location of data files.
 	ObsFolder 	= "/data/euryale7/backup/ledm/Observations/"
 	CCIDir		= ObsFolder+"CCI/"
+	Dustdir		= ObsFolder+"/MahowaldDust/"	
 	DMSDir		= ObsFolder+"/DMS_Lana2011nc/"
 	GEOTRACESFolder = ObsFolder+"/GEOTRACES/GEOTRACES_PostProccessed/"
 	GlodapDir	= ObsFolder+"/GLODAP/"
@@ -81,7 +82,6 @@ if gethostname().find('pmpc')>-1:
 
 
 	
-print "There may be problems with shelvedir (missing timeseries/jobID at the end) and WOAFolder, which is now WOAFolder and WOAFolder_annual"
 
 
 

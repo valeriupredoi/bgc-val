@@ -1125,7 +1125,7 @@ def profilePlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords= {}
 			  box.y0 ,
 			  box.width*(1.-0.1*ncols), 
 			  box.height ])
-
+	
 	if len(dd.squeeze().compressed())!=0:
 		pyplot.plot([], [], 'k', lw=2, label='Data')
 

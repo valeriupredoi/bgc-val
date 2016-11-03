@@ -204,7 +204,9 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('OMZMeanDepth')		# work in progress	
 			#analysisKeys.append('OMZThickness')             # Oxygen Minimum Zone Thickness					
 			#analysisKeys.append('TotalOMZVolume')		# work in progress			
-                        analysisKeys.append('O2')                       # WOA Oxygen
+                        #analysisKeys.append('O2')                       # WOA Oxygen
+                        analysisKeys.append('Dust')                     # Dust
+                        analysisKeys.append('TotalDust')                     # Total Dust                        
 			#analysisKeys.append('DIC')			# work in progress									
 			#analysisKeys.append('DrakePassageTransport')	# DrakePassageTransport				
 			#analysisKeys.append('TotalIceArea')		# work in progress	
@@ -1539,8 +1541,64 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= paths.orcaGridfn
 		av[name]['Dimensions']		= 2				
+
+	if 'Dust' in analysisKeys:
+		name = 'Dust'
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', paths.ModelFolder_pref, annual)[::10]
+		av[name]['dataFile'] 		= paths.Dustdir+'mahowald.orca100_annual.nc'
+			
+		av[name]['modelcoords'] 	= medusaCoords 	
+		av[name]['datacoords'] 		= medusaCoords
+		av[name]['modeldetails'] 	= {'name': name, 'vars':['AEOLIAN',], 'convert': ukp.NoChange,'units':'mmol Fe/m2/d'}
+		
+		def ConvertKgFeperSec_To_mmolFeperday(nc,keys): 
+			return nc.variables[keys[0]][:] * (24.*60.*60.) * 17.9
+			
+		if annual:
+			av[name]['datadetails']  	= {'name': name, 'vars':['dust_ann',], 'convert': ConvertKgFeperSec_To_mmolFeperday,'units':'mmol Fe/m2/d'}
+		else:	av[name]['datadetails']  	= {'name': name, 'vars':['dust',], 'convert': ConvertKgFeperSec_To_mmolFeperday,'units':'mmol Fe/m2/d'}	#kg / m2 / s  	
 	
-											
+		av[name]['layers'] 		= ['layerless',]
+		av[name]['regions'] 		= regionList	
+		av[name]['metrics']		= metricList
+
+		av[name]['datasource'] 		= 'Mahowald'
+		av[name]['model']		= 'MEDUSA'
+
+		av[name]['modelgrid']		= 'eORCA1'
+		av[name]['gridFile']		= paths.orcaGridfn
+		av[name]['Dimensions']		= 2	
+			
+	if 'TotalDust' in analysisKeys:
+		name = 'TotalDust'
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', paths.ModelFolder_pref, annual)[::10]
+		av[name]['dataFile'] 	= paths.Dustdir+'mahowald.orca100_annual.nc'
+			
+		av[name]['modelcoords'] 	= medusaCoords 	
+		av[name]['datacoords'] 		= medusaCoords
+
+
+		def datadustsum(nc,keys): 
+			return nc.variables[keys[0]][:].sum() * (24.*60.*60.) * 17.9
+					
+		def modeldustsum(nc,keys): 
+			return nc.variables[keys[0]][:].sum() 
+
+		av[name]['modeldetails'] 	= {'name': name, 'vars':['AEOLIAN',], 'convert': modeldustsum,'units':'mmol Fe/m2/d'}			
+		if annual:
+			av[name]['datadetails']  	= {'name': name, 'vars':['dust_ann',], 'convert': datadustsum,'units':'mmol Fe/m2/d'}
+		else:	av[name]['datadetails']  	= {'name': name, 'vars':['dust',], 'convert': datadustsum,'units':'mmol Fe/m2/d'}	#kg / m2 / s  	
+	
+		av[name]['layers'] 		= ['layerless',]
+		av[name]['regions'] 		= ['regionless',]	
+		av[name]['metrics']		= ['metricless',]
+
+		av[name]['datasource'] 		= 'Mahowald'
+		av[name]['model']		= 'MEDUSA'
+
+		av[name]['modelgrid']		= 'eORCA1'
+		av[name]['gridFile']		= paths.orcaGridfn
+		av[name]['Dimensions']		= 1												
 
   	#####
   	# Calling timeseriesAnalysis
