@@ -165,18 +165,19 @@ def analysis_dms(jobID=''):
 
 	colours = {'DMS_ARAN':'red', 'DMS_SIMO':'orange','DMS_ANDR':'blue','DMS_HALL':'purple', }
 	title = 'DMS ' + region		
-
-	tsp.multitimeseries(
-		timesD, 		# model times (in floats)
-		arrD,			# model time series
-		data 	= -999,		# in situ data distribution
-		title 	= title,
-		filename=ukp.folder(imagedir)+'DMS_'+region+'.png',
-		units = '',
-		plotStyle 	= 'Together',
-		lineStyle	= 'Both',
-		colours		= colours,
-	)
+	
+	for ls in ['Both','smoothed','movingaverage']:
+		tsp.multitimeseries(
+			timesD, 		# model times (in floats)
+			arrD,			# model time series
+			data 	= -999,		# in situ data distribution
+			title 	= title,
+			filename=ukp.folder(imagedir)+'DMS_'+region+'_'+ls+'.png',
+			units = '',
+			plotStyle 	= 'Together',
+			lineStyle	= ls,
+			colours		= colours,
+		)
 			
 			
 

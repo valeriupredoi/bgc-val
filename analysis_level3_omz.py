@@ -70,6 +70,8 @@ def analysis_omz(jobID=''):
 	analysisDict = {}
 	imagedir	= ukp.folder(paths.imagedir +'/'+jobID+'/Level3/OMZ')
 	shelvedir 	= ukp.folder(paths.shelvedir+'/'+jobID+'/Level3/OMZ')
+	if annual:	WOAFolder = paths.WOAFolder_annual
+	else:		WOAFolder = paths.WOAFolder	
 
 	#####
 	# make a link to the time series
@@ -77,10 +79,10 @@ def analysis_omz(jobID=''):
 		level1shelveFold =  paths.shelvedir+'/timeseries/'+jobID
 		files = glob(level1shelveFold+'/*'+a+'*')
 		for f in files:
-			lnfile = shelvedir+os.basename(f)
+			lnfile = shelvedir+os.path.basename(f)
 			if os.path.exists(lnfile):continue
 			print "linking ",f,lnfile
-			assert 0
+			#assert 0
 			os.symlink(f,lnfile)
 
 	
@@ -89,7 +91,8 @@ def analysis_omz(jobID=''):
 			'Equator10', 'Remainder',
 			'NorthernSubpolarAtlantic','NorthernSubpolarPacific',
 			]
-  	metricList = ['mean',]			
+	layerList = ['Surface','500m','1000m',]
+	metricList = ['mean','median', '10pc','20pc','30pc','40pc','50pc','60pc','70pc','80pc','90pc','min','max']	
 	dataD = {}		
 	modeldataD = {}
 
@@ -104,7 +107,9 @@ def analysis_omz(jobID=''):
 
 	
 	medusaCoords 	= {'t':'time_counter', 'z':'deptht', 'lat': 'nav_lat',  'lon': 'nav_lon',   'cal': '360_day',}	# model doesn't need time dict.
+	woaCoords 	= {'t':'index_t', 'z':'depth',  'lat': 'lat', 	   'lon': 'lon',       'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}	
 	
+	av = ukp.AutoVivification()
 	
 	if 'O2' in analysisKeys:
 		name = 'Oxygen'
@@ -374,7 +379,7 @@ def analysis_omz(jobID=''):
                         imageDir        = imagedir,
                         grid            = av[name]['modelgrid'],
                         gridFile        = av[name]['gridFile'],
-                        clean           = clean,
+                        clean           = False,
                 )
 
 		
@@ -399,7 +404,7 @@ def analysis_omz(jobID=''):
 				imageDir	= imagedir,					
 				grid		= av[name]['modelgrid'],
 				gridFile	= av[name]['gridFile'],
-				clean 		= clean,
+				clean 		= False,
 			)
 			#shelves[name] = profa.shelvefn
 			#shelves_insitu[name] = profa.shelvefn_insitu
