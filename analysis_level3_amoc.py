@@ -265,10 +265,10 @@ def analysis_omz(jobID=''):
 		modeldata = [modeldataDict[t] for t in times]
 		
 
-		if len(times)>100.:
+		if len(times)>150.:
 			filename = ukp.folder(imagedir)+'_'.join([name,jobID,])+'_first100yrs.png'		
-			tmpt = times[:100]
-			tmpmd = modeldata[:100]			
+			tmpt = times[:150]
+			tmpmd = modeldata[:150]			
 			xlims= [tmpt[0],tmpt[-1]]
 	
 			fig = pyplot.figure()
@@ -287,7 +287,7 @@ def analysis_omz(jobID=''):
 
 			pyplot.xlim(xlims)
 			
-			pyplot.title('AMOC, Sv')	
+			pyplot.ylabel('AMOC, Sv')	
 			pyplot.xlabel('Year')
 		
 			#pyplot.axhline(y='',c='k',ls='-',lw=1,label = 'data')
@@ -316,7 +316,7 @@ def analysis_omz(jobID=''):
 		else:	pyplot.ylim([0.,20.])	
 
 		pyplot.xlim(xlims)
-		pyplot.title('AMOC, Sv')	
+		pyplot.ylabel('AMOC, Sv')	
 		pyplot.xlabel('Year')		
 
 		#pyplot.axhline(y='',c='k',ls='-',lw=1,label = 'data')
