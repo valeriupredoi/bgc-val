@@ -265,10 +265,10 @@ def analysis_omz(jobID=''):
 		modeldata = [modeldataDict[t] for t in times]
 		
 
-		if len(times)>150.:
+		if len(times)>120.:
 			filename = ukp.folder(imagedir)+'_'.join([name,jobID,])+'_first100yrs.png'		
-			tmpt = times[:150]
-			tmpmd = modeldata[:150]			
+			tmpt = times[:120]
+			tmpmd = modeldata[:120]			
 			xlims= [tmpt[0],tmpt[-1]]
 	
 			fig = pyplot.figure()
