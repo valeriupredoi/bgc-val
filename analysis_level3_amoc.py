@@ -274,12 +274,12 @@ def analysis_omz(jobID=''):
 			fig = pyplot.figure()
 			ax = fig.add_subplot(111)	
 		
-			if len(tmpmd)>30:
-				smoothing = tsp.movingaverage2(tmpmd,window_len=30,window='hanning',extrapolate='axially')
-				pyplot.plot(tmpt,tmpmd,      c='b',ls='-',lw=0.2)
-				pyplot.plot(tmpt,smoothing,c='b',ls='-',lw=2,label='Model')		
-			else:
-				pyplot.plot(tmpt,tmpmd,c='b',ls='-',lw=1,label='Model',)	
+			#if len(tmpmd)>30:
+			#	smoothing = tsp.movingaverage2(tmpmd,window_len=30,window='hanning',extrapolate='axially')
+			#	pyplot.plot(tmpt,tmpmd,      c='b',ls='-',lw=0.2)
+			#	pyplot.plot(tmpt,smoothing,c='b',ls='-',lw=2,label='Model')		
+			#else:
+			pyplot.plot(tmpt,tmpmd,c='b',ls='-',lw=2,label='Model',)	
 		
 			if np.max(tmpmd)>20.:
 				pyplot.ylim([0.,np.max(tmpmd)*1.1])
