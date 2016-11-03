@@ -64,6 +64,7 @@ if gethostname().find('pmpc')>-1:
 	# Location of data files.
 	ObsFolder 	= "/data/euryale7/backup/ledm/Observations/"
 	CCIDir		= ObsFolder+"CCI/"
+	Dustdir		= ObsFolder+"/MahowaldDust/"	
 	DMSDir		= ObsFolder+"/DMS_Lana2011nc/"
 	GEOTRACESFolder = ObsFolder+"/GEOTRACES/GEOTRACES_PostProccessed/"
 	GlodapDir	= ObsFolder+"/GLODAP/"

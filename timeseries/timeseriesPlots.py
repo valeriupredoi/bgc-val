@@ -1125,7 +1125,7 @@ def profilePlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords= {}
 			  box.y0 ,
 			  box.width*(1.-0.1*ncols), 
 			  box.height ])
-
+	
 	if len(dd.squeeze().compressed())!=0:
 		pyplot.plot([], [], 'k', lw=2, label='Data')
 
@@ -1133,7 +1133,7 @@ def profilePlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords= {}
 		pyplot.plot([], [], c=plotDetails[i]['c'], lw = plotDetails[i]['lw'], label=plotDetails[i]['label'])
 	
 												
-	legd = ax1.legend(loc='center left', ncol=1,prop={'size':10},bbox_to_anchor=(1., 0.5))
+	legd = ax1.legend(loc='center left', ncol=ncols,prop={'size':10},bbox_to_anchor=(1., 0.5))
 	legd.draw_frame(False) 
 	legd.get_frame().set_alpha(0.)	
 		
