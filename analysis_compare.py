@@ -1205,6 +1205,6 @@ if __name__=="__main__":
 	        colours = {'u-ag543':'red', 'u-ag914':'orange', }
 	        timeseries_compare(colours, physics=False,bio=True,debug = debug)
 
-	        colours = {'u-ae748':'darkblue','u-af983':'blue', }    
+	        colours = {'u-ae748':'darkblue','u-af983':'blue', 'u-ah308':'darkgreen',}    
 	        timeseries_compare(colours, physics=True,bio=False)
 
