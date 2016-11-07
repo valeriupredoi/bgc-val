@@ -205,8 +205,8 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('OMZThickness')             # Oxygen Minimum Zone Thickness					
 			#analysisKeys.append('TotalOMZVolume')		# work in progress			
                         #analysisKeys.append('O2')                       # WOA Oxygen
-                        analysisKeys.append('Dust')                     # Dust
-                        analysisKeys.append('TotalDust')                     # Total Dust                        
+                        #analysisKeys.append('Dust')                     # Dust
+                        #analysisKeys.append('TotalDust')                     # Total Dust                        
 			#analysisKeys.append('DIC')			# work in progress									
 			#analysisKeys.append('DrakePassageTransport')	# DrakePassageTransport				
 			#analysisKeys.append('TotalIceArea')		# work in progress	
@@ -227,7 +227,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('NorthernTotalIceExtent')	# work in progress	
 			#analysisKeys.append('SouthernTotalIceExtent')	# work in progress	                        
                         #analysisKeys.append('AMOC_32S')                # AMOC 32S
-                        #analysisKeys.append('AMOC_26N')                # AMOC 26N
+                        analysisKeys.append('AMOC_26N')                # AMOC 26N
                                                 
                 if analysisSuite.lower() in ['physics',]:
                         #####   
@@ -1571,7 +1571,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			
 	if 'TotalDust' in analysisKeys:
 		name = 'TotalDust'
-		av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', paths.ModelFolder_pref, annual)[::10]
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', paths.ModelFolder_pref, annual)[::30]
 		av[name]['dataFile'] 	= paths.Dustdir+'mahowald.orca100_annual.nc'
 			
 		av[name]['modelcoords'] 	= medusaCoords 	
@@ -1602,6 +1602,13 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= paths.orcaGridfn
 		av[name]['Dimensions']		= 1												
+
+		noData=True
+		if noData:
+		        av[name]['datasource']  = ''
+			av[name]['dataFile']	= ''
+			av[name]['datadetails']         = {'name': '','units':''}
+
 
   	#####
   	# Calling timeseriesAnalysis
