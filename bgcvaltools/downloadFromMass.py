@@ -127,6 +127,11 @@ def findLastFinishedYear(jobID,dividby=1,numberfiles=6):
 	years.reverse()
 	
 	print years, fnDict
+	
+	if len(years)< dividby:
+		print "findLastFinishedYear:\tLess than",dividby,"years of model run, returning first year:",years[-1]
+		return years[0]
+	
 	for y in years:
 		if int(y)%dividby != 0: continue
 		
