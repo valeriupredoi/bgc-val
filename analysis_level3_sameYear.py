@@ -101,6 +101,7 @@ def analysis_sy(jobID1 = 'u-af983',jobID2 = 'u-ah531', ):
 	analysisKeys = []
 #	analysisKeys.append('SST')		
 #	analysisKeys.append('SSS')	
+#        analysisKeys.append('Ice')
 	analysisKeys.append('votemper')
 	analysisKeys.append('votemper2')
 	analysisKeys.append('vosaline')
@@ -155,7 +156,7 @@ def analysis_sy(jobID1 = 'u-af983',jobID2 = 'u-ah531', ):
 	plotDetails = {}
 #	plotDetails['SST'] = {'name'='SST', 'key' = 'votemper', 'longname' = 'Sea Surface Temperature'}
 #	plotDetails['SSS'] = {'name'='SSS', 'key' = 'vosaline', 'longname' = 'Sea Surface Salinity'}
-	
+#        plotDetails['Ice'] = {'name':'Ice', 'key':'soicecov', 'ndim':4, 'longname':'Ice fraction'}	
 	
 	plotDetails['votemper'] = {'name':'votemper', 'key':'votemper', 'ndim:' 4 'longname': ' temperature '}
 	plotDetails['votemper2'] = {'name':'votemper2', 'key':'votemper2', 'ndim:' 4 'longname': ' temperature '}
@@ -197,10 +198,14 @@ def analysis_sy(jobID1 = 'u-af983',jobID2 = 'u-ah531', ):
 		for n in analysisKeys:
 
 			filename = imagedir+plotDetails[n]['name']+'_'+ystr+'.png'
-
-			data1 = nc1.variables[plotDetails[n]['key']][0,0]
-			data2 = nc2.variables[plotDetails[n]['key']][0,0]
+			if plotDetails[n]['ndim']==4:
+				data1 = nc1.variables[plotDetails[n]['key']][0,0]
+				data2 = nc2.variables[plotDetails[n]['key']][0,0]
+                        if plotDetails[n]['ndim']==3:
+                                data1 = nc1.variables[plotDetails[n]['key']][0]
+                                data2 = nc2.variables[plotDetails[n]['key']][0]
 			
+
 			lons, lats, data1,data2 = maskAndCompress(lons_cc,lats_cc,data1,data2)
 			
 			ukp.robinPlotQuad(lons, lats, data1,data2,
