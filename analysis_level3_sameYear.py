@@ -70,12 +70,12 @@ def overlapyears(files1,files2):
 		Finds out which years overlap.
 	"""	
 	filepairs = {}	
-	files2_bn= [os.path.basename(f) for f in sorted(files2)]
 	for f1 in sorted(files1):
-	    f1 = os.path.basename(f1)
-	    f1y = re.findall(r'\d+', f1)[2]
-	    for f2 in files2_bn:
-	 	f2y = re.findall(r'\d+', f2)[2]
+	    f1b= os.path.basename(f1)
+	    f1y = re.findall(r'\d+', f1b)[2]
+	    for f2 in files2:
+		f2b =  os.path.basename(f2)
+	 	f2y = re.findall(r'\d+', f2b)[2]
 	 	
 	 	if f2y == f1y: 	filepairs[f2y] = [f1,f2]
 	return filepairs
@@ -87,15 +87,14 @@ def maskAndCompress(la,lo,d1,d2):
 	return np.ma.masked_where(m,la).compressed(), np.ma.masked_where(m,lo).compressed(), np.ma.masked_where(m,d1).compressed(), np.ma.masked_where(m,d2).compressed()
 			
 
-def analysis_sy(jobID1 =jobID1,jobID2 =jobID2, ):
-
+def analysis_sy(jobID1 = 'u-af983',jobID2 = 'u-ah531', ):
 	annual = True
 	
 	analysisKeys = []
 	analysisKeys.append('SST')		
 				
 	analysisDict = {}
-	imagedir	= ukp.folder(paths.imagedir +'/'+jobID+'/Level3/'+jobID1+'-'+jobID2)
+	imagedir	= ukp.folder(paths.imagedir +'/'+jobID1+'-'+jobID2+'/Level3/')
 	#shelvedir 	= ukp.folder(paths.shelvedir+'/'+jobID+'/Level3/'+jobID1+'-'+jobID2)
 
 	dataD = {}		
@@ -108,6 +107,7 @@ def analysis_sy(jobID1 =jobID1,jobID2 =jobID2, ):
 	filepairs = overlapyears(files1,files2)
 
 	for ystr, [fp1,fp2] in filepairs.items():
+		print ystr,[fp1,fp2]
 		nc1 = Dataset(fp1, 'r')
 		nc2 = Dataset(fp2, 'r')
 	
@@ -118,12 +118,12 @@ def analysis_sy(jobID1 =jobID1,jobID2 =jobID2, ):
 		if 'SST' in analysisKeys:
 			filename = imagedir+'SST'+ystr+'.png'
 
-			data1 = nc1.variables['nvotemper'][0,0]
-			data2 = nc2.variables['nvotemper'][0,0]			
+			data1 = nc1.variables['votemper'][0,0]
+			data2 = nc2.variables['votemper'][0,0]			
 			
 			lons, lats, data1,data2 = maskAndCompress(lons_cc,lats_cc,data1,data2)
 			
-			robinPlotQuad(lons, lats, data1,data2,
+			ukp.robinPlotQuad(lons, lats, data1,data2,
 					filename,
 					titles=[jobID1,jobID2], 
 					title='',
