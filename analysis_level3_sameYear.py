@@ -92,7 +92,7 @@ def analysis_sy(jobID1 = 'u-af983',jobID2 = 'u-ah531', ):
 	
 	analysisKeys = []
 	analysisKeys.append('SST')		
-				
+	analysisKeys.append('SSS')						
 	analysisDict = {}
 	imagedir	= ukp.folder(paths.imagedir +'/'+jobID1+'-'+jobID2+'/Level3/')
 	#shelvedir 	= ukp.folder(paths.shelvedir+'/'+jobID+'/Level3/'+jobID1+'-'+jobID2)
@@ -106,6 +106,10 @@ def analysis_sy(jobID1 = 'u-af983',jobID2 = 'u-ah531', ):
 	
 	filepairs = overlapyears(files1,files2)
 
+	plotDetails = {}
+	plotDetails['SST'] = {'name'='SST', 'key' = 'votemper', 'longname' = 'Sea Surface Temperature'}
+	plotDetails['SSS'] = {'name'='SSS', 'key' = 'vosaline', 'longname' = 'Sea Surface Salinity'}
+		
 	for ystr, [fp1,fp2] in filepairs.items():
 		print ystr,[fp1,fp2]
 		nc1 = Dataset(fp1, 'r')
@@ -115,18 +119,19 @@ def analysis_sy(jobID1 = 'u-af983',jobID2 = 'u-ah531', ):
 		lats_cc = nc1.variables['nav_lat'][:]		
 	
 	
-		if 'SST' in analysisKeys:
-			filename = imagedir+'SST'+ystr+'.png'
+		for n in analysisKeys:
 
-			data1 = nc1.variables['votemper'][0,0]
-			data2 = nc2.variables['votemper'][0,0]			
+			filename = imagedir+plotDetails[n]['name']+'_'+ystr+'.png'
+
+			data1 = nc1.variables[plotDetails[n]['key']][0,0]
+			data2 = nc2.variables[plotDetails[n]['key']][0,0]
 			
 			lons, lats, data1,data2 = maskAndCompress(lons_cc,lats_cc,data1,data2)
 			
 			ukp.robinPlotQuad(lons, lats, data1,data2,
 					filename,
 					titles=[jobID1,jobID2], 
-					title='',
+					title=plotDetails[n]['longname']+' ' + ystr[:4]+'-'+ystr[5:7]+'-'+ystr[7:],
 					vmin='',vmax='',)#maptype='Basemap')
 	
 		
