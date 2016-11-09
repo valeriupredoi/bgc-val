@@ -147,43 +147,45 @@ def analysis_sy(jobID1 = 'u-af983',jobID2 = 'u-ah531', ):
 	for k in nc.variables.keys():
 		ndim = nc.variables[k].ndim
 		if ndim<=2:continue
-		print "plotDetails['"+k+"'] = {'name':'"+k+"', 'key':'"+k+", 'ndim:'",
-		try: print nc.variables[k].ndim,"'longname': '",
+		print "plotDetails['"+k+"'] = {'name':'"+k+"', 'key':'"+k+"', 'ndim':",
+		try: print nc.variables[k].ndim,", 'longname': '",
 		except: print "'longname': '",
 		try: print nc.variables[k].long_name,"'}"
 		except: print "'}"
+
 	"""
 	plotDetails = {}
 #	plotDetails['SST'] = {'name'='SST', 'key' = 'votemper', 'longname' = 'Sea Surface Temperature'}
 #	plotDetails['SSS'] = {'name'='SSS', 'key' = 'vosaline', 'longname' = 'Sea Surface Salinity'}
 #        plotDetails['Ice'] = {'name':'Ice', 'key':'soicecov', 'ndim':4, 'longname':'Ice fraction'}	
 	
-	plotDetails['votemper'] = {'name':'votemper', 'key':'votemper', 'ndim:' 4 'longname': ' temperature '}
-	plotDetails['votemper2'] = {'name':'votemper2', 'key':'votemper2', 'ndim:' 4 'longname': ' temperature '}
-	plotDetails['vosaline'] = {'name':'vosaline', 'key':'vosaline', 'ndim:' 4 'longname': ' salinity '}
-	plotDetails['vosaline2'] = {'name':'vosaline2', 'key':'vosaline2', 'ndim:' 4 'longname': ' salinity '}
-	plotDetails['ttrd_ldf'] = {'name':'ttrd_ldf', 'key':'ttrd_ldf', 'ndim:' 4 'longname': ' temperature-trend: lateral  diffusion '}
-	plotDetails['ttrd_zdf'] = {'name':'ttrd_zdf', 'key':'ttrd_zdf', 'ndim:' 4 'longname': ' temperature-trend: vertical diffusion '}
-	plotDetails['strd_ldf'] = {'name':'strd_ldf', 'key':'strd_ldf', 'ndim:' 4 'longname': ' salinity   -trend: lateral  diffusion '}
-	plotDetails['strd_zdf'] = {'name':'strd_zdf', 'key':'strd_zdf', 'ndim:' 4 'longname': ' salinity   -trend: vertical diffusion '}
-	plotDetails['sossheig'] = {'name':'sossheig', 'key':'sossheig', 'ndim:' 3 'longname': ' sea surface height '}
-	plotDetails['zossq'] = {'name':'zossq', 'key':'zossq', 'ndim:' 3 'longname': ' square of sea surface height '}
-	plotDetails['sowaflup'] = {'name':'sowaflup', 'key':'sowaflup', 'ndim:' 3 'longname': ' Net Upward Water Flux '}
-	plotDetails['sosafldo'] = {'name':'sosafldo', 'key':'sosafldo', 'ndim:' 3 'longname': ' Downward salt flux '}
-	plotDetails['sohefldo'] = {'name':'sohefldo', 'key':'sohefldo', 'ndim:' 3 'longname': ' Net Downward Heat Flux '}
-	plotDetails['soshfldo'] = {'name':'soshfldo', 'key':'soshfldo', 'ndim:' 3 'longname': ' Shortwave Radiation '}
-	plotDetails['somixhgt'] = {'name':'somixhgt', 'key':'somixhgt', 'ndim:' 3 'longname': ' Turbocline depth (Kz = 5e-4) '}
-	plotDetails['somxl010'] = {'name':'somxl010', 'key':'somxl010', 'ndim:' 3 'longname': ' Mixed Layer Depth (dsigma = 0.01 wrt 10m) '}
-	plotDetails['sokaraml'] = {'name':'sokaraml', 'key':'sokaraml', 'ndim:' 3 'longname': ' Mixed Layer Depth interpolated '}
-	plotDetails['somlddbm'] = {'name':'somlddbm', 'key':'somlddbm', 'ndim:' 3 'longname': ' Mixed Layer Depth interpolated '}
-	plotDetails['soicecov'] = {'name':'soicecov', 'key':'soicecov', 'ndim:' 3 'longname': ' Ice fraction '}
-	plotDetails['sowindsp'] = {'name':'sowindsp', 'key':'sowindsp', 'ndim:' 3 'longname': ' wind speed module '}
-	plotDetails['sohflisf'] = {'name':'sohflisf', 'key':'sohflisf', 'ndim:' 3 'longname': ' Ice Shelf Heat Flux '}
-	plotDetails['sowflisf'] = {'name':'sowflisf', 'key':'sowflisf', 'ndim:' 3 'longname': ' Ice shelf melting '}
-	plotDetails['berg_total_melt'] = {'name':'berg_total_melt', 'key':'berg_total_melt', 'ndim:' 3 'longname': ' icb melt rate 2 of icebergs '}
-	plotDetails['berg_total_heat_flux'] = {'name':'berg_total_heat_flux', 'key':'berg_total_heat_flux', 'ndim:' 3 'longname': ' icb latent heat of melting of icebergs '}
-	plotDetails['sorunoff'] = {'name':'sorunoff', 'key':'sorunoff', 'ndim:' 3 'longname': ' River Runoffs '}
 
+
+	plotDetails['votemper'] = {'name':'votemper', 'key':'votemper', 'ndim': 4 , 'longname': ' temperature '}
+	plotDetails['votemper2'] = {'name':'votemper2', 'key':'votemper2', 'ndim': 4 , 'longname': ' temperature '}
+	plotDetails['vosaline'] = {'name':'vosaline', 'key':'vosaline', 'ndim': 4 , 'longname': ' salinity '}
+	plotDetails['vosaline2'] = {'name':'vosaline2', 'key':'vosaline2', 'ndim': 4 , 'longname': ' salinity '}
+	plotDetails['ttrd_ldf'] = {'name':'ttrd_ldf', 'key':'ttrd_ldf', 'ndim': 4 , 'longname': ' temperature-trend: lateral  diffusion '}
+	plotDetails['ttrd_zdf'] = {'name':'ttrd_zdf', 'key':'ttrd_zdf', 'ndim': 4 , 'longname': ' temperature-trend: vertical diffusion '}
+	plotDetails['strd_ldf'] = {'name':'strd_ldf', 'key':'strd_ldf', 'ndim': 4 , 'longname': ' salinity   -trend: lateral  diffusion '}
+	plotDetails['strd_zdf'] = {'name':'strd_zdf', 'key':'strd_zdf', 'ndim': 4 , 'longname': ' salinity   -trend: vertical diffusion '}
+	plotDetails['sossheig'] = {'name':'sossheig', 'key':'sossheig', 'ndim': 3 , 'longname': ' sea surface height '}
+	plotDetails['zossq'] = {'name':'zossq', 'key':'zossq', 'ndim': 3 , 'longname': ' square of sea surface height '}
+	plotDetails['sowaflup'] = {'name':'sowaflup', 'key':'sowaflup', 'ndim': 3 , 'longname': ' Net Upward Water Flux '}
+	plotDetails['sosafldo'] = {'name':'sosafldo', 'key':'sosafldo', 'ndim': 3 , 'longname': ' Downward salt flux '}
+	plotDetails['sohefldo'] = {'name':'sohefldo', 'key':'sohefldo', 'ndim': 3 , 'longname': ' Net Downward Heat Flux '}
+	plotDetails['soshfldo'] = {'name':'soshfldo', 'key':'soshfldo', 'ndim': 3 , 'longname': ' Shortwave Radiation '}
+	plotDetails['somixhgt'] = {'name':'somixhgt', 'key':'somixhgt', 'ndim': 3 , 'longname': ' Turbocline depth (Kz = 5e-4) '}
+	plotDetails['somxl010'] = {'name':'somxl010', 'key':'somxl010', 'ndim': 3 , 'longname': ' Mixed Layer Depth (dsigma = 0.01 wrt 10m) '}
+	plotDetails['sokaraml'] = {'name':'sokaraml', 'key':'sokaraml', 'ndim': 3 , 'longname': ' Mixed Layer Depth interpolated '}
+	plotDetails['somlddbm'] = {'name':'somlddbm', 'key':'somlddbm', 'ndim': 3 , 'longname': ' Mixed Layer Depth interpolated '}
+	plotDetails['soicecov'] = {'name':'soicecov', 'key':'soicecov', 'ndim': 3 , 'longname': ' Ice fraction '}
+	plotDetails['sowindsp'] = {'name':'sowindsp', 'key':'sowindsp', 'ndim': 3 , 'longname': ' wind speed module '}
+	plotDetails['sohflisf'] = {'name':'sohflisf', 'key':'sohflisf', 'ndim': 3 , 'longname': ' Ice Shelf Heat Flux '}
+	plotDetails['sowflisf'] = {'name':'sowflisf', 'key':'sowflisf', 'ndim': 3 , 'longname': ' Ice shelf melting '}
+	plotDetails['berg_total_melt'] = {'name':'berg_total_melt', 'key':'berg_total_melt', 'ndim': 3 , 'longname': ' icb melt rate 2 of icebergs '}
+	plotDetails['berg_total_heat_flux'] = {'name':'berg_total_heat_flux', 'key':'berg_total_heat_flux', 'ndim': 3 , 'longname': ' icb latent heat of melting of icebergs '}
+	plotDetails['sorunoff'] = {'name':'sorunoff', 'key':'sorunoff', 'ndim': 3 , 'longname': ' River Runoffs '}
 
 		
 	for ystr, [fp1,fp2] in filepairs.items():
