@@ -263,7 +263,10 @@ def analysis_omz(jobID=''):
 		modeldataDict = modeldataD[(r,l,m)]
 		times = sorted(modeldataDict.keys())
 		modeldata = [modeldataDict[t] for t in times]
-		
+
+		substract1000time = False
+		if substract1000time:
+			times = [t-1000. for t in times]
 
 		if len(times)>120.:
 			filename = ukp.folder(imagedir)+'_'.join([name,jobID,])+'_first100yrs.png'		
@@ -334,7 +337,7 @@ def analysis_omz(jobID=''):
 def main():
 	try:	jobID = argv[1]
 	except:	
-		jobID = "u-ad371"
+		jobID = "u-ag543"
 
 	if 'debug' in argv[1:]:	suite = 'debug'
 		

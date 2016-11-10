@@ -199,7 +199,7 @@ def analysis_sy(jobID1 = 'u-af983',jobID2 = 'u-ah531', ):
 	
 		for n in analysisKeys:
 
-			filename = imagedir+plotDetails[n]['name']+'_'+ystr+'.png'
+			filename = ukp.folder(imagedir+ystr)+plotDetails[n]['name']+'_'+ystr+'.png'
 			if plotDetails[n]['ndim']==4:
 				data1 = nc1.variables[plotDetails[n]['key']][0,0]
 				data2 = nc2.variables[plotDetails[n]['key']][0,0]
@@ -210,12 +210,12 @@ def analysis_sy(jobID1 = 'u-af983',jobID2 = 'u-ah531', ):
 
 			lons, lats, data1,data2 = maskAndCompress(lons_cc,lats_cc,data1,data2)
 			
-			ukp.robinPlotQuad(lons, lats, data1,data2,
+			try:	ukp.robinPlotQuad(lons, lats, data1,data2,
 					filename,
 					titles=[jobID1,jobID2], 
 					title=plotDetails[n]['longname']+' ' + ystr[:4]+'-'+ystr[5:7]+'-'+ystr[7:],
 					vmin='',vmax='',)#maptype='Basemap')
-	
+			except: print "didn't work:",filename
 		
 
 def main():
