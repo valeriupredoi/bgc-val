@@ -51,6 +51,7 @@ import UKESMpython as ukp
 from timeseries import timeseriesAnalysis
 from timeseries import profileAnalysis
 from timeseries import timeseriesPlots as tsp 
+from timeseries import extentMaps
 
 #####
 # User defined set of paths pointing towards the datasets.
@@ -65,6 +66,7 @@ def analysis_omz(jobID=''):
 	analysisKeys.append('OMZMeanDepth')		# OMZ mean depth
 	analysisKeys.append('OMZThickness')             # Oxygen Minimum Zone Thickness					
 	analysisKeys.append('TotalOMZVolume')		# Total OMZ volume
+	analysisKeys.append('OMZExtent')             # Oxygen Minimum Zone Thickness					
 			
 				
 	analysisDict = {}
@@ -76,10 +78,10 @@ def analysis_omz(jobID=''):
 	#####
 	# make a link to the time series
 	for a in analysisKeys:
-		level1shelveFold =  paths.shelvedir+'/timeseries/'+jobID
+		level1shelveFold =  os.path.abspath(paths.shelvedir+'/timeseries/'+jobID)
 		files = glob(level1shelveFold+'/*'+a+'*')
 		for f in files:
-			lnfile = shelvedir+os.path.basename(f)
+			lnfile =  os.path.abspath(shelvedir)+os.path.basename(f)
 			if os.path.exists(lnfile):continue
 			print "linking ",f,lnfile
 			#assert 0
@@ -256,6 +258,63 @@ def analysis_omz(jobID=''):
 		av['OMZThickness']['Dimensions']		= 2		
 		
 		
+	if 'OMZExtent' in analysisKeys:
+		
+		if annual:
+			av['OMZExtent']['modelFiles']  	= sorted(glob(paths.ModelFolder_pref+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
+			av['OMZExtent']['dataFile'] 		=  WOAFolder+'woa13_all_o00_01.nc'
+		else:
+			print "OMZ Thickness not implemented for monthly data"
+			assert 0
+			
+		nc = Dataset(paths.orcaGridfn,'r')
+		thickness   	= nc.variables['e3t' ][:]
+		tmask 		= nc.variables['tmask'][:]								
+		nc.close()			
+
+		if 'OMZExtent' in analysisKeys: 	omzthreshold = 20.
+				
+		def modelOMZthickness(nc,keys):
+			o2 = nc.variables[keys[0]][:].squeeze()
+			totalthick = np.ma.masked_where((o2>omzthreshold)+o2.mask+ (tmask==0),thickness).sum(0)#.data
+			if totalthick.max() in [0.,0]: return np.array([0.,])
+			
+			return totalthick #np.ma.masked_where(totalthick==0., totalthick)
+			
+		def woaOMZthickness(nc,keys):
+			o2 = nc.variables[keys[0]][:].squeeze() *44.661
+			pthick = np.zeros_like(o2) 
+			lons = nc.variables['lon'][:]
+			lats = nc.variables['lat'][:]			
+			zthick  = np.abs(nc.variables['depth_bnds'][:,0] - nc.variables['depth_bnds'][:,1])
+
+			for y,lat in enumerate(lats):
+			    for x,lon in enumerate(lons):			  
+				pthick[:,y,x] = zthick
+			totalthick = np.ma.masked_where((o2>omzthreshold)+o2.mask,pthick).sum(0).data
+			if totalthick.max() in [0.,0]: return np.array([0.,])
+			return totalthick# np.ma.masked_where(totalthick==0., totalthick)
+
+		av['OMZExtent']['modelcoords'] 	= medusaCoords 	
+		av['OMZExtent']['datacoords'] 		= woaCoords
+	
+		av['OMZExtent']['modeldetails'] 	= {'name': 'OMZExtent', 'vars':['OXY',], 'convert': modelOMZthickness,'units':'m'}
+		av['OMZExtent']['datadetails']  	= {'name': 'OMZExtent', 'vars':['o_an',], 'convert': woaOMZthickness,'units':'m'}
+	
+		av['OMZExtent']['layers'] 		= ['layerless',] 
+		av['OMZExtent']['regions'] 		= regionList
+		av['OMZExtent']['metrics']		= metricList
+
+		av['OMZExtent']['datasource'] 		= 'WOA'
+		av['OMZExtent']['model']		= 'MEDUSA'
+
+		av['OMZExtent']['modelgrid']		= 'eORCA1'
+		av['OMZExtent']['gridFile']		= paths.orcaGridfn	
+		av['OMZExtent']['Dimensions']		= 2	
+		
+		
+		
+		
 		
 
 	if 'TotalOMZVolume' in analysisKeys or 'TotalOMZVolume50' in analysisKeys:
@@ -337,6 +396,7 @@ def analysis_omz(jobID=''):
 	shelves = {}
 	shelves_insitu={}
 	for name in av.keys():
+		continue
 		print "------------------------------------------------------------------"	
 		print "analysis-Timeseries.py:\tBeginning to call timeseriesAnalysis for ", name
 
@@ -411,7 +471,63 @@ def analysis_omz(jobID=''):
 		
 		#shelves[name] = tsa.shelvefn
 		#shelves_insitu[name] = tsa.shelvefn_insitu
+	
 
+	#####
+	# Map of OMZs
+	# idea here is to produce a plot showing the various regions maps
+	# we want to run it under various regions
+	# we want to 
+	
+	# all we need is a model dataset, a data set, a depth
+
+        #####
+        # time series and traffic lights.
+        name = 'OMZExtent'
+        em = extentMaps(
+                av[name]['modelFiles'],
+                av[name]['dataFile'],
+                dataType        = name,
+                modelcoords     = av[name]['modelcoords'],
+                modeldetails    = av[name]['modeldetails'],
+                datacoords      = av[name]['datacoords'],
+                datadetails     = av[name]['datadetails'],
+                datasource      = av[name]['datasource'],
+                model           = av[name]['model'],
+                jobID           = jobID,
+                layers          = ['layerless',],
+                regions         = ['Global',],
+                workingDir      = shelvedir,
+                imageDir        = imagedir,
+                contours	= [1.,10.,100.],
+                grid            = av[name]['modelgrid'],
+                gridFile        = av[name]['gridFile'],
+                debug           = True,
+        )	
+
+        
+        name = 'Oxygen'
+        em = extentMaps(
+                av[name]['modelFiles'],
+                av[name]['dataFile'],
+                dataType        = name,
+                modelcoords     = av[name]['modelcoords'],
+                modeldetails    = av[name]['modeldetails'],
+                datacoords      = av[name]['datacoords'],
+                datadetails     = av[name]['datadetails'],
+                datasource      = av[name]['datasource'],
+                model           = av[name]['model'],
+                jobID           = jobID,
+                layers          = ['1000m','500m',],
+                regions         = ['Global',],
+                workingDir      = shelvedir,
+                imageDir        = imagedir,
+                contours	= [0.,20.,400.],
+                grid            = av[name]['modelgrid'],
+                gridFile        = av[name]['gridFile'],
+                debug           = True,
+        )
+               	
 
 
 def main():

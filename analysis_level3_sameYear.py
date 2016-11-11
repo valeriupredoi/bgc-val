@@ -213,7 +213,7 @@ def analysis_sy(jobID1 = 'u-af983',jobID2 = 'u-ah531', ):
 			ukp.robinPlotQuad(lons, lats, data1,data2,
 					filename,
 					titles=[jobID1,jobID2], 
-					title=plotDetails[n]['longname']+' ' + ystr[:4]+'-'+ystr[5:7]+'-'+ystr[7:],
+					title=plotDetails[n]['longname']+' ' + ystr[:4]+'-'+ystr[4:6]+'-'+ystr[6:],
 					vmin='',vmax='',)#maptype='Basemap')
 	
 		
