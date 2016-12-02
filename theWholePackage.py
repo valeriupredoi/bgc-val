@@ -202,9 +202,12 @@ if __name__=="__main__":
 	else:	
 		physicsOnly = False
 		numberfiles = 6
-        	
-        year = findLastFinishedYear(jobID,dividby=25,numberfiles=numberfiles)
-        print "########\nThe Whole Package:\tmain:", jobID,year
+        
+	year = False
+	for divby in [25, 10, 5, 1]:
+		if year: continue 
+	        year = findLastFinishedYear(jobID,dividby=divby,numberfiles=numberfiles)
+	print "########\nThe Whole Package:\tmain:", jobID,year
 
 	#if not ReportOnly:
 	if physicsOnly:	theWholePackage(jobID,year=year,suite='physics')
