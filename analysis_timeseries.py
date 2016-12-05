@@ -227,7 +227,10 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('NorthernTotalIceExtent')	# work in progress	
 			#analysisKeys.append('SouthernTotalIceExtent')	# work in progress	                        
                         #analysisKeys.append('AMOC_32S')                # AMOC 32S
-                        analysisKeys.append('AMOC_26N')                # AMOC 26N
+                        #analysisKeys.append('AMOC_26N')                # AMOC 26N
+                       	analysisKeys.append('U')                	# Zonal Veloctity
+                       	analysisKeys.append('V')                	# Meridional Veloctity
+                       	analysisKeys.append('W')                	# Vertical Veloctity                       	                       	                    
                                                 
                 if analysisSuite.lower() in ['physics',]:
                         #####   
@@ -381,6 +384,10 @@ def analysis_timeseries(jobID = "u-ab671",
 	
 	
 	medusaCoords 	= {'t':'time_counter', 'z':'deptht', 'lat': 'nav_lat',  'lon': 'nav_lon',   'cal': '360_day',}	# model doesn't need time dict.
+	medusaUCoords 	= {'t':'time_counter', 'z':'depthu', 'lat': 'nav_lat',  'lon': 'nav_lon',   'cal': '360_day',}	# model doesn't need time dict.
+	medusaVCoords 	= {'t':'time_counter', 'z':'depthv', 'lat': 'nav_lat',  'lon': 'nav_lon',   'cal': '360_day',}	# model doesn't need time dict.
+	medusaWCoords 	= {'t':'time_counter', 'z':'depthw', 'lat': 'nav_lat',  'lon': 'nav_lon',   'cal': '360_day',}	# model doesn't need time dict.
+				
 	icCoords 	= {'t':'time_counter', 'z':'nav_lev', 'lat': 'nav_lat',  'lon': 'nav_lon',   'cal': '360_day',}	# model doesn't need time dict.	
 	maredatCoords 	= {'t':'index_t', 'z':'DEPTH',  'lat': 'LATITUDE', 'lon': 'LONGITUDE', 'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
 	takahashiCoords	= {'t':'index_t', 'z':'index_z','lat': 'LAT', 'lon': 'LON', 'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}	
@@ -390,7 +397,7 @@ def analysis_timeseries(jobID = "u-ab671",
 	mldCoords	= {'t':'index_t', 'z':'index_z','lat':'lat',       'lon': 'lon','cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
 	dmsCoords	= {'t':'time',    'z':'depth',  'lat':'Latitude',  'lon': 'Longitude','cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}	
 	cciCoords	= {'t':'index_t', 'z':'index_z','lat': 'lat',      'lon': 'lon', 'cal': 'standard','tdict':['ZeroToZero'] }
-
+	godasCoords 	= {'t':'time',    'z':'level',  'lat': 'lat',      'lon': 'lon', 'cal': 'standard','tdict':['ZeroToZero'] }
 
 	def listModelDataFiles(jobID, filekey, datafolder, annual):
 		print "listing model data files:",jobID, filekey, datafolder, annual
@@ -1256,6 +1263,79 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= paths.orcaGridfn
 		av[name]['Dimensions']		= 3
+
+
+	if 'U' in analysisKeys:
+		name = 'U'
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_U', paths.ModelFolder_pref, annual)												
+		if annual:
+			av[name]['dataFile'] 		= paths.GODASFolder+'ucur.clim.nc'
+			
+		av[name]['modelcoords'] 	= medusaUCoords 	
+		av[name]['datacoords'] 		= godasCoords
+	
+		av[name]['modeldetails'] 	= {'name': name, 'vars':['vozocrtx',], 'convert': ukp.mul1000,'units':'mm/s'}	
+		av[name]['datadetails']  	= {'name': name, 'vars':['ucur',], 'convert': ukp.NoChange,'units':'mm/s'}
+
+		av[name]['layers'] 		= layerList
+		av[name]['regions'] 		= regionList		
+		av[name]['metrics']		= metricList
+
+		av[name]['datasource'] 		= 'GODAS'
+		av[name]['model']		= 'NEMO'
+
+		av[name]['modelgrid']		= 'eORCA1'
+		av[name]['gridFile']		= paths.orcaGridfn
+		av[name]['Dimensions']		= 3
+		
+
+	if 'V' in analysisKeys:
+		name = 'V'
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_V', paths.ModelFolder_pref, annual)												
+		if annual:
+			av[name]['dataFile'] 		= paths.GODASFolder+'vcur.clim.nc'
+			
+		av[name]['modelcoords'] 	= medusaVCoords 	
+		av[name]['datacoords'] 		= godasCoords
+	
+		av[name]['modeldetails'] 	= {'name': name, 'vars':['vomecrty',], 'convert': ukp.mul1000,'units':'mm/s'}	
+		av[name]['datadetails']  	= {'name': name, 'vars':['vcur',], 'convert': ukp.NoChange,'units':'mm/s'}
+
+		av[name]['layers'] 		= layerList
+		av[name]['regions'] 		= regionList		
+		av[name]['metrics']		= metricList
+
+		av[name]['datasource'] 		= 'GODAS'
+		av[name]['model']		= 'NEMO'
+
+		av[name]['modelgrid']		= 'eORCA1'
+		av[name]['gridFile']		= paths.orcaGridfn
+		av[name]['Dimensions']		= 3
+			
+	if 'W' in analysisKeys:
+		name = 'W'
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_W', paths.ModelFolder_pref, annual)												
+		if annual:
+			av[name]['dataFile'] 		= paths.GODASFolder+'dzdt.clim.nc'
+			
+		av[name]['modelcoords'] 	= medusaWCoords 	
+		av[name]['datacoords'] 		= godasCoords
+	
+		av[name]['modeldetails'] 	= {'name': name, 'vars':['vovecrtz',], 'convert': ukp.mul1000,'units':'mm/s'}	
+		av[name]['datadetails']  	= {'name': name, 'vars':['dzdt',], 'convert': ukp.NoChange,'units':'mm/s'}
+
+		av[name]['layers'] 		= layerList
+		av[name]['regions'] 		= regionList		
+		av[name]['metrics']		= metricList
+
+		av[name]['datasource'] 		= 'GODAS'
+		av[name]['model']		= 'NEMO'
+
+		av[name]['modelgrid']		= 'eORCA1'
+		av[name]['gridFile']		= paths.orcaGridfn
+		av[name]['Dimensions']		= 3
+			
+
 		
 	if 'MLD' in analysisKeys:
 		

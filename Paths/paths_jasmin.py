@@ -71,6 +71,7 @@ if gethostname().find('ceda.ac.uk')>-1:
 	DMSDir		= ObsFolder+"/DMS_Lana2011nc/"	
 	MAREDATFolder 	= ObsFolder+"/MAREDAT/MAREDAT/"
 	GEOTRACESFolder = ObsFolder+"/GEOTRACES/GEOTRACES_PostProccessed/"
+	GODASFolder 	= ObsFolder+"/GODAS/"
 	TakahashiFolder = ObsFolder+"/Takahashi2009_pCO2/"
 	MLDFolder	= ObsFolder+"/IFREMER-MLD/"
 	iMarNetFolder	= ObsFolder+"/LestersReportData/"

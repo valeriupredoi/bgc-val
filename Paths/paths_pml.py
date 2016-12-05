@@ -69,6 +69,7 @@ if gethostname().find('pmpc')>-1:
 	GEOTRACESFolder = ObsFolder+"/GEOTRACES/GEOTRACES_PostProccessed/"
 	GlodapDir	= ObsFolder+"/GLODAP/"
 	GLODAPv2Dir	= ObsFolder+"/GLODAPv2/GLODAPv2_Mapped_Climatologies/"
+	GODASFolder 	= ObsFolder+"/GODAS/clim/"	
 	iMarNetFolder	= ObsFolder+"/LestersReportData/"
 	MAREDATFolder 	= ObsFolder+"/MAREDAT/MAREDAT/"
 	MLDFolder	= ObsFolder+"/IFREMER-MLD/"
@@ -76,6 +77,7 @@ if gethostname().find('pmpc')>-1:
 	TakahashiFolder = ObsFolder+"/Takahashi2009_pCO2/"
 	WOAFolder_annual= ObsFolder+"WOA/annual/"
 	WOAFolder 	= ObsFolder+"WOA/"
+
 	icFold		= "/data/euryale7/backup/ledm/UKESM/InitialConditions/"		
 
 
