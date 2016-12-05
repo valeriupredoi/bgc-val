@@ -41,7 +41,7 @@ from datetime import datetime
 from UKESMpython import folder
 from getpass import getuser
 
-def linkTwoJobs(jobID1,jobID2):
+def linkTwoJobs(jobID1,jobID2, copyShelves = False):
 	"""
 		command:
 		linkTwoJobs jobID1 jobID2.
@@ -59,7 +59,7 @@ def linkTwoJobs(jobID1,jobID2):
 	#	copy the shelve files.
 	
 	linkNetcdfs = True
-	copyShelves = True
+	#copyShelves = True
 	linkchain   = True
 
 	#####
@@ -186,8 +186,14 @@ if __name__=="__main__":
 		jobID1 = ''
 		jobID2 = ''
 		os.exit()
-				
-	linkTwoJobs(jobID1,jobID2)
+
+	copyShelves = False
+	try:
+		key = argv[3]
+		if str(key) in ['True',1,'1','copyShelves']:
+			copyShelves = True				
+	except:copyShelves = False
+	linkTwoJobs(jobID1,jobID2,copyShelves=copyShelves)
 		
 	
 	

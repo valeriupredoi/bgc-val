@@ -1197,9 +1197,11 @@ if __name__=="__main__":
 	if debug:
 #                colours = {'u-ag543':'red', 'u-ag914':'orange', }
  #               timeseries_compare(colours, physics=False,bio=True,debug = debug)
-
-                colours = {'u-ae748':'darkblue', 'u-af983':'darkgreen','u-ah531':'purple'}
+	        colours = {'u-ah531':'red', 'u-ah847':'orange', 'u-ah846':'blue','u-ah882':'purple', }
                 timeseries_compare(colours, physics=True,bio=False)
+
+#                colours = {'u-ae748':'darkblue', 'u-af983':'darkgreen','u-ah531':'purple'}
+#                timeseries_compare(colours, physics=True,bio=False)
 
 	else:
 	        colours = {'u-ag543':'red', 'u-ag914':'orange','u-ae748':'darkblue','u-af983':'blue','u-af984':'purple', }

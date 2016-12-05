@@ -119,11 +119,12 @@ def analysis_p2p(
 	# This lets up give a list of keys one at a time, or in parrallel.
 	if type(analysisSuite) == type(['Its','A','list!']):
 		analysisKeys = analysisSuite
-
+		print "analysisSuite is a list", analysisSuite, analysisKeys
 	#####
 	# Switches:
 	# These are some preset switches to run in series. 
 	if type(analysisSuite) == type('Its_A_string'):
+		
 		analysisKeys = []
 		if analysisSuite.lower() in ['all','default',]:	
 			analysisKeys.append('Chl_CCI')			# CCI Chlorophyll	
@@ -153,6 +154,7 @@ def analysis_p2p(
 			
 		if analysisSuite.lower() in ['debug',]:	
 			analysisKeys.append('O2')			# WOA Oxygen
+                print "analysisSuite is a string", analysisSuite, analysisKeys
 		
 	#####
 	# Location of data files.
@@ -265,8 +267,9 @@ def analysis_p2p(
 	tsRegions	= ['Global','Equator10', 'Remainder','ArcticOcean','NorthernSubpolarAtlantic','NorthernSubpolarPacific','ignoreInlandSeas','SouthernOcean',]
 	
 	depthLevels 	= ['Surface','500m','1000m','Transect','PTransect','SOTransect','ArcTransect','AntTransect','CanRusTransect',]
-        if analysisSuite.lower() in ['debug',]:
-	        depthLevels     = ['Surface',] 
+
+        if type(analysisSuite)==type('String'):
+		if analysisSuite.lower() in ['debug',]:        depthLevels     = ['Surface',] 
 					
 	medusaCoords 	= {'t':'index_t', 'z':'deptht', 'lat': 'nav_lat',  'lon': 'nav_lon',   'cal': '360_day',}	# model doesn't need time dict.
 	maredatCoords 	= {'t':'index_t', 'z':'DEPTH',  'lat': 'LATITUDE', 'lon': 'LONGITUDE', 'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
@@ -820,6 +823,7 @@ def analysis_p2p(
 
 
 def single_p2p(jobID, key, year):
+	print "single_p2p:",jobID, key, year
 	try:
 		analysis_p2p(models	= ['NEMO','MEDUSA',],
 			jobID 	= jobID,
