@@ -404,7 +404,7 @@ def analysis_timeseries(jobID = "u-ab671",
 	mldCoords	= {'t':'index_t', 'z':'index_z','lat':'lat',       'lon': 'lon','cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
 	dmsCoords	= {'t':'time',    'z':'depth',  'lat':'Latitude',  'lon': 'Longitude','cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}	
 	cciCoords	= {'t':'index_t', 'z':'index_z','lat': 'lat',      'lon': 'lon', 'cal': 'standard','tdict':['ZeroToZero'] }
-	godasCoords 	= {'t':'time',    'z':'level',  'lat': 'lat',      'lon': 'lon', 'cal': 'standard','tdict':['ZeroToZero'] }
+	godasCoords 	= {'t':'index_t',    'z':'level',  'lat': 'lat',      'lon': 'lon', 'cal': 'standard','tdict':['ZeroToZero'] }
 
 	def listModelDataFiles(jobID, filekey, datafolder, annual):
 		print "listing model data files:",jobID, filekey, datafolder, annual
@@ -1328,8 +1328,8 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modelcoords'] 	= medusaWCoords 	
 		av[name]['datacoords'] 		= godasCoords
 	
-		av[name]['modeldetails'] 	= {'name': name, 'vars':['vovecrtz',], 'convert': ukp.mul1000,'units':'mm/s'}	
-		av[name]['datadetails']  	= {'name': name, 'vars':['dzdt',], 'convert': ukp.NoChange,'units':'mm/s'}
+		av[name]['modeldetails'] 	= {'name': name, 'vars':['vovecrtz',], 'convert': ukp.mul1000000,'units':'um/s'}
+		av[name]['datadetails']  	= {'name': name, 'vars':['dzdt',], 'convert': ukp.NoChange,'units':'um/s'}
 
 		av[name]['layers'] 		= layerList
 		av[name]['regions'] 		= regionList		

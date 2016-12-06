@@ -88,10 +88,12 @@ p2pKeys_level2 = [
 		  'Alk','DIC','AirSeaFlux',
 		  'IntPP_OSU',
 		  'T','S','MLD',
+		  'ZonalCurrent','MeridionalCurrent','VerticalCurrent'			  
 		  ]
 
 p2pKeys_physics = [
 		   'T','S','MLD', 
+		  'ZonalCurrent','MeridionalCurrent','VerticalCurrent'			  		   
 		  ]
 		  
 		  		  		  		  
@@ -153,7 +155,9 @@ def analysis_p2p(
 		if analysisSuite.lower() in ['physics',]:		analysisKeys.extend(p2pKeys_physics)
 			
 		if analysisSuite.lower() in ['debug',]:	
-			analysisKeys.append('O2')			# WOA Oxygen
+                       	analysisKeys.append('ZonalCurrent')             # Zonal Veloctity
+                       	analysisKeys.append('MeridionalCurrent')        # Meridional Veloctity
+                       	analysisKeys.append('VerticalCurrent')          # Vertical Veloctity			
                 print "analysisSuite is a string", analysisSuite, analysisKeys
 		
 	#####
@@ -272,6 +276,10 @@ def analysis_p2p(
 		if analysisSuite.lower() in ['debug',]:        depthLevels     = ['Surface',] 
 					
 	medusaCoords 	= {'t':'index_t', 'z':'deptht', 'lat': 'nav_lat',  'lon': 'nav_lon',   'cal': '360_day',}	# model doesn't need time dict.
+	medusaUCoords 	= {'t':'index_t', 'z':'depthu', 'lat': 'nav_lat',  'lon': 'nav_lon',   'cal': '360_day',}	# model doesn't need time dict.
+	medusaVCoords 	= {'t':'index_t', 'z':'depthv', 'lat': 'nav_lat',  'lon': 'nav_lon',   'cal': '360_day',}	# model doesn't need time dict.
+	medusaWCoords 	= {'t':'index_t', 'z':'depthw', 'lat': 'nav_lat',  'lon': 'nav_lon',   'cal': '360_day',}	# model doesn't need time dict.
+		
 	maredatCoords 	= {'t':'index_t', 'z':'DEPTH',  'lat': 'LATITUDE', 'lon': 'LONGITUDE', 'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
 	woaCoords 	= {'t':'index_t', 'z':'depth',  'lat': 'lat', 	   'lon': 'lon',       'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}		
 	cciCoords	= {'t':'index_t', 'z':'index_z','lat': 'lat',      'lon': 'lon',       'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
@@ -279,7 +287,7 @@ def analysis_p2p(
 	osuCoords	= {'t':'index_t', 'z':'index_z','lat': 'latitude', 'lon': 'longitude', 'cal': 'standard','tdict':ukp.tdicts['ZeroToZero'] }		
 	glodapv2Coords	= {'t':'index_t', 'z':'Pressure','lat':'lat',      'lon': 'lon',       'cal': '',        'tdict':{0:0,} }	
 	takahashiCoords	= {'t':'index_t', 'z':'index_z','lat': 'LAT',      'lon': 'LON',       'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
-		
+	godasCoords 	= {'t':'index_t',    'z':'level',  'lat': 'lat',      'lon': 'lon', 'cal': 'standard',   'tdict':ukp.tdicts['ZeroToZero'] }		
 	shelvesAV = []	
 	
 	for year in years:		
@@ -744,7 +752,75 @@ def analysis_p2p(
 	
 			av[name]['NEMO']['details']	= {'name': name, 'vars':['votemper',], 'convert': ukp.NoChange,}			
 			av[name]['Data']['details']	= {'name': name, 'vars':['t_an',], 'convert': ukp.NoChange,}	# no units?
+
+		if 'ZonalCurrent' in analysisKeys:
+			name = 'ZonalCurrent'
+			if annual:
+				av[name]['NEMO']['File'] 	= sorted(glob(ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_grid_U.nc"))[0]				
+				av[name]['Data']['File'] 	=  paths.GODASFolder+'ucur.clim.nc'
+			else:	
+				assert 0
+#				av[name]['Data']['File'] 	= WOAFolder+'temperature_monthly_1deg.nc'	
+#				av[name]['NEMO']['File'] 	= ModelFolder+jobID+"_"+year+'_TEMP.nc'	
+
+			av[name]['NEMO']['grid'] 	= modelGrid	
+			av[name]['depthLevels'] 	= depthLevels#['Surface','Transect','PTransect','SOTransect','ArcTransect','1000m',]	
+			av[name]['plottingSlices'] 	= tsRegions
+
+			av[name]['Data']['coords'] 	= godasCoords
+			av[name]['NEMO']['coords']	= medusaUCoords
+			av[name]['Data']['source'] 	= 'GODAS'
+			av[name]['NEMO']['source']	= 'NEMO'			
+	
+			av[name]['NEMO']['details']	= {'name': name, 'vars':['vozocrtx',], 'convert': ukp.mul1000,'units':'mm/s'}			
+			av[name]['Data']['details']	= {'name': name, 'vars':['ucur',], 'convert': ukp.NoChange,'units':'mm/s'}
 			
+		if 'MeridionalCurrent' in analysisKeys:
+			name = 'MeridionalCurrent'
+			if annual:
+				av[name]['NEMO']['File'] 	= sorted(glob(ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_grid_V.nc"))[0]				
+				av[name]['Data']['File'] 	=  paths.GODASFolder+'vcur.clim.nc'
+			else:	
+				assert 0
+#				av[name]['Data']['File'] 	= WOAFolder+'temperature_monthly_1deg.nc'	
+#				av[name]['NEMO']['File'] 	= ModelFolder+jobID+"_"+year+'_TEMP.nc'	
+
+			av[name]['NEMO']['grid'] 	= modelGrid	
+			av[name]['depthLevels'] 	= depthLevels#['Surface','Transect','PTransect','SOTransect','ArcTransect','1000m',]	
+			av[name]['plottingSlices'] 	= tsRegions
+
+			av[name]['Data']['coords'] 	= godasCoords
+			av[name]['NEMO']['coords']	= medusaVCoords
+			av[name]['Data']['source'] 	= 'GODAS'
+			av[name]['NEMO']['source']	= 'NEMO'			
+	
+			av[name]['NEMO']['details'] 	= {'name': name, 'vars':['vomecrty',], 'convert': ukp.mul1000,'units':'mm/s'}	
+			av[name]['Data']['details']  	= {'name': name, 'vars':['vcur',], 'convert': ukp.NoChange,'units':'mm/s'}			
+
+			
+		if 'VerticalCurrent' in analysisKeys:
+			name = 'VerticalCurrent'
+			if annual:
+				av[name]['NEMO']['File'] 	= sorted(glob(ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_grid_W.nc"))[0]				
+				av[name]['Data']['File'] 	=  paths.GODASFolder+'dzdt.clim.nc'
+			else:	
+				assert 0
+#				av[name]['Data']['File'] 	= WOAFolder+'temperature_monthly_1deg.nc'	
+#				av[name]['NEMO']['File'] 	= ModelFolder+jobID+"_"+year+'_TEMP.nc'	
+
+			av[name]['NEMO']['grid'] 	= modelGrid	
+			av[name]['depthLevels'] 	= depthLevels#['Surface','Transect','PTransect','SOTransect','ArcTransect','1000m',]	
+			av[name]['plottingSlices'] 	= tsRegions
+
+			av[name]['Data']['coords'] 	= godasCoords
+			av[name]['NEMO']['coords']	= medusaWCoords
+			av[name]['Data']['source'] 	= 'GODAS'
+			av[name]['NEMO']['source']	= 'NEMO'			
+	
+			av[name]['NEMO']['details'] 	=  {'name': name, 'vars':['vovecrtz',], 'convert': ukp.mul1000000,'units':'um/s'}
+			av[name]['Data']['details']  	= {'name': name, 'vars':['dzdt',], 'convert': ukp.NoChange,'units':'um/s'}
+						
+												
 						   
 		if 'MLD' in analysisKeys:
 			name = 'MLD'		

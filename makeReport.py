@@ -343,7 +343,7 @@ def html5Maker(
                           'TotalIceExtent',                          
                           'DrakePassageTransport',
                           'AMOC_26N',
-                          'U','V','W',                          
+                          'ZonalCurrent','MeridionalCurrent','VerticalCurrent',
 			 ]
 		lev1physFields = [
                           'Temperature',
@@ -352,7 +352,7 @@ def html5Maker(
                           'TotalIceExtent',                          
                           'DrakePassageTransport',
                           'AMOC_26N',
-                          'U','V','W',
+		  	  'ZonalCurrent','MeridionalCurrent','VerticalCurrent',			  
 			 ]		 
 		SectionTitle= 'Level 1'
 		hrefs 	= []
