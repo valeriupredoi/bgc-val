@@ -343,6 +343,7 @@ def html5Maker(
                           'TotalIceExtent',                          
                           'DrakePassageTransport',
                           'AMOC_26N',
+                          'U','V','W',                          
 			 ]
 		lev1physFields = [
                           'Temperature',
@@ -351,6 +352,7 @@ def html5Maker(
                           'TotalIceExtent',                          
                           'DrakePassageTransport',
                           'AMOC_26N',
+                          'U','V','W',
 			 ]		 
 		SectionTitle= 'Level 1'
 		hrefs 	= []
@@ -453,13 +455,15 @@ def html5Maker(
                           'OMZMeanDepth',
                           'Temperature',
                           'Salinity',
+                          'U','V','W',                          
                           #'TotalIceArea'
 			]
 		physregionalFields = [
                           'Temperature',
                           'Salinity',
                           'TotalIceArea',
-                          'TotalIceExtent',                          
+                          'TotalIceExtent',   
+                          'U','V','W',                                                 
 			]			
 		SectionTitle= 'Level 1 - regional'
 		hrefs 		= []
@@ -554,8 +558,10 @@ def html5Maker(
 			  'Oxygen',
                           'Temperature',
                           'Salinity',
+                          'U','V','W',                          
 			]
-		physregionalFields = ['Temperature', 'Salinity',]
+		physregionalFields = ['Temperature', 'Salinity',
+			              'U','V','W',]
 				
 		if plottype == 'profile':	SectionTitle= 'Level 1 - Profiles'
 		if plottype == 'profilehov':	SectionTitle= 'Level 1 - Hovmoeller plots'		

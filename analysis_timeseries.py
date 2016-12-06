@@ -62,6 +62,7 @@ timeseriesKeys = ['T','S','MLD',
 		  'PP_OSU','LocalExportRatio','GlobalExportRatio',
 		  'OMZThickness', 'TotalOMZVolume','OMZMeanDepth',	
 		  'AMOC_26N','AMOC_32S',  
+		  'ZonalCurrent','MeridionalCurrent','VerticalCurrent'			  
 		  ]
 timeseriesDict = {i:n for i,n in enumerate(timeseriesKeys)}
 
@@ -69,11 +70,13 @@ level1Keys = ['N', 'Si','O2','Alk','DIC','AirSeaFlux','TotalAirSeaFluxCO2','IntP
 		'TotalOMZVolume','OMZThickness' ,'OMZMeanDepth','Iron',
 		'DiaFrac', #'CHN','CHD',
 		'T', 'S','MLD','TotalIceArea', 'NorthernTotalIceArea','SouthernTotalIceArea',
-		'TotalIceExtent', 'NorthernTotalIceExtent','SouthernTotalIceExtent','DrakePassageTransport','AMOC_26N','AMOC_32S',]
+		'TotalIceExtent', 'NorthernTotalIceExtent','SouthernTotalIceExtent','DrakePassageTransport','AMOC_26N','AMOC_32S',
+		'ZonalCurrent','MeridionalCurrent','VerticalCurrent']
 level1KeysDict = {i:n for i,n in enumerate(level1Keys)}	
 physKeys  = ['T', 'S','MLD','TotalIceArea', 'NorthernTotalIceArea','SouthernTotalIceArea',
 		'TotalIceExtent', 'NorthernTotalIceExtent','SouthernTotalIceExtent',
-		'DrakePassageTransport','AMOC_26N','AMOC_32S',]
+		'DrakePassageTransport','AMOC_26N','AMOC_32S',
+		'ZonalCurrent','MeridionalCurrent','VerticalCurrent']
 physKeysDict = {i:n for i,n in enumerate(physKeys)}	
 
 def analysis_timeseries(jobID = "u-ab671",
@@ -190,7 +193,9 @@ def analysis_timeseries(jobID = "u-ab671",
 			analysisKeys.append('DrakePassageTransport')	# DrakePassageTransport				
                         analysisKeys.append('AMOC_32S')                 # AMOC 32S
                         analysisKeys.append('AMOC_26N')                 # AMOC 26N
-
+                       	analysisKeys.append('ZonalCurrent')             # Zonal Veloctity
+                       	analysisKeys.append('MeridionalCurrent')        # Meridional Veloctity
+                       	analysisKeys.append('VerticalCurrent')          # Vertical Veloctity  
 
 		if analysisSuite.lower() in ['level3',]:	
                         analysisKeys.append('DMS_ARAN')                 # DMS Aranami Tsunogai
@@ -228,9 +233,9 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('SouthernTotalIceExtent')	# work in progress	                        
                         #analysisKeys.append('AMOC_32S')                # AMOC 32S
                         #analysisKeys.append('AMOC_26N')                # AMOC 26N
-                       	analysisKeys.append('U')                	# Zonal Veloctity
-                       	analysisKeys.append('V')                	# Meridional Veloctity
-                       	analysisKeys.append('W')                	# Vertical Veloctity                       	                       	                    
+                       	analysisKeys.append('ZonalCurrent')             # Zonal Veloctity
+                       	analysisKeys.append('MeridionalCurrent')        # Meridional Veloctity
+                       	analysisKeys.append('VerticalCurrent')          # Vertical Veloctity                       	                       	                    
                                                 
                 if analysisSuite.lower() in ['physics',]:
                         #####   
@@ -247,7 +252,9 @@ def analysis_timeseries(jobID = "u-ab671",
 			analysisKeys.append('DrakePassageTransport')	# DrakePassageTransport	
                         analysisKeys.append('AMOC_32S')                 # AMOC 32S
                         analysisKeys.append('AMOC_26N')                 # AMOC 26N
-
+                       	analysisKeys.append('ZonalCurrent')             # Zonal Veloctity
+                       	analysisKeys.append('MeridionalCurrent')        # Meridional Veloctity
+                       	analysisKeys.append('VerticalCurrent')          # Vertical Veloctity  
 		
  	
 	#####
@@ -1265,8 +1272,8 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['Dimensions']		= 3
 
 
-	if 'U' in analysisKeys:
-		name = 'U'
+	if 'ZonalCurrent' in analysisKeys:
+		name = 'ZonalCurrent'
 		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_U', paths.ModelFolder_pref, annual)												
 		if annual:
 			av[name]['dataFile'] 		= paths.GODASFolder+'ucur.clim.nc'
@@ -1289,8 +1296,8 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['Dimensions']		= 3
 		
 
-	if 'V' in analysisKeys:
-		name = 'V'
+	if 'MeridionalCurrent' in analysisKeys:
+		name = 'MeridionalCurrent'
 		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_V', paths.ModelFolder_pref, annual)												
 		if annual:
 			av[name]['dataFile'] 		= paths.GODASFolder+'vcur.clim.nc'
@@ -1312,8 +1319,8 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['gridFile']		= paths.orcaGridfn
 		av[name]['Dimensions']		= 3
 			
-	if 'W' in analysisKeys:
-		name = 'W'
+	if 'VerticalCurrent' in analysisKeys:
+		name = 'VerticalCurrent'
 		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_W', paths.ModelFolder_pref, annual)												
 		if annual:
 			av[name]['dataFile'] 		= paths.GODASFolder+'dzdt.clim.nc'

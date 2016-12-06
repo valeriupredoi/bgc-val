@@ -143,6 +143,10 @@ def makeLongNameDict():
   	lnd['AMOC_26N'] = "AMOC 26N"     	
   	lnd['AMOC_32S'] = "AMOC 32S"     	  	
 
+        lnd['ZonalCurrent'] 	= "Zonal Current"
+        lnd['MeridionalCurrent']= "Meridional Current"
+        lnd['VerticalCurrent'] 	= "Vertical Current"        
+	
 	lnd['exportRatio'] = "Export Ratio"  
 	lnd['LocalExportRatio'] = "Export Ratio"  		
 	
@@ -634,6 +638,8 @@ def getLongName_old(text,debug=False):
   	if text == 'AMOC_32S':	return "AMOC 32S"     	  	
         if text == '26N':  return "26N"
         if text == '32S':  return "32S"
+  	
+
   		
 	if text == 'percentiles':	return "Time series"  
 	if text == 'Chlorophyll':	return "Chlorophyll"  
