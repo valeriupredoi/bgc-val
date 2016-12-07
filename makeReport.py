@@ -561,7 +561,7 @@ def html5Maker(
                           'ZonalCurrent','MeridionalCurrent','VerticalCurrent',
 			]
 		physregionalFields = ['Temperature', 'Salinity',
-			              'U','V','W',]
+			              'ZonalCurrent','MeridionalCurrent','VerticalCurrent',]
 				
 		if plottype == 'profile':	SectionTitle= 'Level 1 - Profiles'
 		if plottype == 'profilehov':	SectionTitle= 'Level 1 - Hovmoeller plots'		
