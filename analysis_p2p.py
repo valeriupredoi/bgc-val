@@ -287,7 +287,7 @@ def analysis_p2p(
 	osuCoords	= {'t':'index_t', 'z':'index_z','lat': 'latitude', 'lon': 'longitude', 'cal': 'standard','tdict':ukp.tdicts['ZeroToZero'] }		
 	glodapv2Coords	= {'t':'index_t', 'z':'Pressure','lat':'lat',      'lon': 'lon',       'cal': '',        'tdict':{0:0,} }	
 	takahashiCoords	= {'t':'index_t', 'z':'index_z','lat': 'LAT',      'lon': 'LON',       'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
-	godasCoords 	= {'t':'index_t',    'z':'level',  'lat': 'lat',      'lon': 'lon', 'cal': 'standard',   'tdict':ukp.tdicts['ZeroToZero'] }		
+	godasCoords 	= {'t':'index_t', 'z':'level',  'lat': 'lat',      'lon': 'lon', 'cal': 'standard',   'tdict':ukp.tdicts['ZeroToZero'] }		
 	shelvesAV = []	
 	
 	for year in years:		
