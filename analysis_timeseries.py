@@ -1280,8 +1280,9 @@ def analysis_timeseries(jobID = "u-ab671",
 			
 		av[name]['modelcoords'] 	= medusaUCoords 	
 		av[name]['datacoords'] 		= godasCoords
-	
-		av[name]['modeldetails'] 	= {'name': name, 'vars':['vozocrtx',], 'convert': ukp.mul1000,'units':'mm/s'}	
+		def applyLandMask1e3(nc,keys):
+			return applyLandMask(nc,keys)*1000.	
+		av[name]['modeldetails'] 	= {'name': name, 'vars':['vozocrtx',], 'convert': applyLandMask1e3,'units':'mm/s'}	
 		av[name]['datadetails']  	= {'name': name, 'vars':['ucur',], 'convert': ukp.NoChange,'units':'mm/s'}
 
 		av[name]['layers'] 		= layerList
@@ -1305,7 +1306,10 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modelcoords'] 	= medusaVCoords 	
 		av[name]['datacoords'] 		= godasCoords
 	
-		av[name]['modeldetails'] 	= {'name': name, 'vars':['vomecrty',], 'convert': ukp.mul1000,'units':'mm/s'}	
+		def applyLandMask1e3(nc,keys):
+			return applyLandMask(nc,keys)*1000.
+				
+		av[name]['modeldetails'] 	= {'name': name, 'vars':['vomecrty',], 'convert': applyLandMask1e3,'units':'mm/s'}	
 		av[name]['datadetails']  	= {'name': name, 'vars':['vcur',], 'convert': ukp.NoChange,'units':'mm/s'}
 
 		av[name]['layers'] 		= layerList
@@ -1324,11 +1328,16 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_W', paths.ModelFolder_pref, annual)												
 		if annual:
 			av[name]['dataFile'] 		= paths.GODASFolder+'dzdt.clim.nc'
+		
+
 			
 		av[name]['modelcoords'] 	= medusaWCoords 	
 		av[name]['datacoords'] 		= godasCoords
-	
-		av[name]['modeldetails'] 	= {'name': name, 'vars':['vovecrtz',], 'convert': ukp.mul1000000,'units':'um/s'}
+		
+		def applyLandMask1e6(nc,keys):
+			return applyLandMask(nc,keys)*1000000.
+				
+		av[name]['modeldetails'] 	= {'name': name, 'vars':['vovecrtz',], 'convert': applyLandMask1e6,'units':'um/s'}
 		av[name]['datadetails']  	= {'name': name, 'vars':['dzdt',], 'convert': ukp.NoChange,'units':'um/s'}
 
 		av[name]['layers'] 		= layerList
