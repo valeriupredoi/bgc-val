@@ -272,8 +272,8 @@ def analysis_p2p(
 	
 	depthLevels 	= ['Surface','500m','1000m','Transect','PTransect','SOTransect','ArcTransect','AntTransect','CanRusTransect',]
 
-        if type(analysisSuite)==type('String'):
-		if analysisSuite.lower() in ['debug',]:        depthLevels     = ['Surface',] 
+#        if type(analysisSuite)==type('String'):
+#		if analysisSuite.lower() in ['debug',]:        depthLevels     = ['Surface',] 
 					
 	medusaCoords 	= {'t':'index_t', 'z':'deptht', 'lat': 'nav_lat',  'lon': 'nav_lon',   'cal': '360_day',}	# model doesn't need time dict.
 	medusaUCoords 	= {'t':'index_t', 'z':'depthu', 'lat': 'nav_lat',  'lon': 'nav_lon',   'cal': '360_day',}	# model doesn't need time dict.
@@ -764,7 +764,7 @@ def analysis_p2p(
 #				av[name]['NEMO']['File'] 	= ModelFolder+jobID+"_"+year+'_TEMP.nc'	
 
 			av[name]['NEMO']['grid'] 	= modelGrid	
-			av[name]['depthLevels'] 	= depthLevels#['Surface','Transect','PTransect','SOTransect','ArcTransect','1000m',]	
+			av[name]['depthLevels'] 	= depthLevels #['Surface','Transect','PTransect','SOTransect','ArcTransect','1000m',]	
 			av[name]['plottingSlices'] 	= tsRegions
 
 			av[name]['Data']['coords'] 	= godasCoords
@@ -786,7 +786,7 @@ def analysis_p2p(
 #				av[name]['NEMO']['File'] 	= ModelFolder+jobID+"_"+year+'_TEMP.nc'	
 
 			av[name]['NEMO']['grid'] 	= modelGrid	
-			av[name]['depthLevels'] 	= depthLevels#['Surface','Transect','PTransect','SOTransect','ArcTransect','1000m',]	
+			av[name]['depthLevels'] 	= depthLevels #['Surface','Transect','PTransect','SOTransect','ArcTransect','1000m',]	
 			av[name]['plottingSlices'] 	= tsRegions
 
 			av[name]['Data']['coords'] 	= godasCoords
@@ -809,7 +809,7 @@ def analysis_p2p(
 #				av[name]['NEMO']['File'] 	= ModelFolder+jobID+"_"+year+'_TEMP.nc'	
 
 			av[name]['NEMO']['grid'] 	= modelGrid	
-			av[name]['depthLevels'] 	= depthLevels#['Surface','Transect','PTransect','SOTransect','ArcTransect','1000m',]	
+			av[name]['depthLevels'] 	= depthLevels #['Surface','Transect','PTransect','SOTransect','ArcTransect','1000m',]	
 			av[name]['plottingSlices'] 	= tsRegions
 
 			av[name]['Data']['coords'] 	= godasCoords

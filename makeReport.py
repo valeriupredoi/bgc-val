@@ -455,7 +455,7 @@ def html5Maker(
                           'OMZMeanDepth',
                           'Temperature',
                           'Salinity',
-                          'U','V','W',                          
+                          'ZonalCurrent','MeridionalCurrent','VerticalCurrent',
                           #'TotalIceArea'
 			]
 		physregionalFields = [
@@ -463,7 +463,7 @@ def html5Maker(
                           'Salinity',
                           'TotalIceArea',
                           'TotalIceExtent',   
-                          'U','V','W',                                                 
+                          'ZonalCurrent','MeridionalCurrent','VerticalCurrent',
 			]			
 		SectionTitle= 'Level 1 - regional'
 		hrefs 		= []
@@ -558,7 +558,7 @@ def html5Maker(
 			  'Oxygen',
                           'Temperature',
                           'Salinity',
-                          'U','V','W',                          
+                          'ZonalCurrent','MeridionalCurrent','VerticalCurrent',
 			]
 		physregionalFields = ['Temperature', 'Salinity',
 			              'U','V','W',]
@@ -642,9 +642,10 @@ def html5Maker(
 			  #'TotalAirSeaFluxCO2' ,
 			  'Temperature', 
 			  'Salinity', 
-			  'MLD',			  
+			  'MLD',
+                          'ZonalCurrent','MeridionalCurrent','VerticalCurrent',			  
 			 ]
-		physl2Fields = [ 'Temperature', 'Salinity',  'MLD',]			 
+		physl2Fields = [ 'Temperature', 'Salinity',  'MLD','ZonalCurrent','MeridionalCurrent','VerticalCurrent',]			 
 		hrefs 	= []
 		Titles	= {}
 		SidebarTitles = {}
@@ -733,6 +734,7 @@ def html5Maker(
 			  'Temperature', 
 			  'Salinity', 
 			  'MLD',
+                          'ZonalCurrent','MeridionalCurrent','VerticalCurrent',
 			 ]
 		hrefs 	= []
 		Titles	= {}
