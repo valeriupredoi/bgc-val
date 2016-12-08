@@ -337,7 +337,7 @@ def html5Maker(
                           #'DiatomChlorophyll',
                           #'NonDiatomChlorophyll',			  
 			  'TotalOMZVolume',			  			  
-                          'Temperature',
+                          'Temperature','GlobalMeanTemperature', 'IcelessMeanSST',
                           'Salinity',
                           'TotalIceArea',
                           'TotalIceExtent',                          
@@ -347,6 +347,7 @@ def html5Maker(
 			 ]
 		lev1physFields = [
                           'Temperature',
+                          'GlobalMeanTemperature', 'IcelessMeanSST',
                           'Salinity',
                           'TotalIceArea',
                           'TotalIceExtent',                          
@@ -453,7 +454,7 @@ def html5Maker(
                           #'NonDiatomChlorophyll',			  
                           'OMZThickness',
                           'OMZMeanDepth',
-                          'Temperature',
+                          'Temperature', 
                           'Salinity',
                           'ZonalCurrent','MeridionalCurrent','VerticalCurrent',
                           #'TotalIceArea'
