@@ -197,6 +197,8 @@ def analysis_timeseries(jobID = "u-ab671",
                        	analysisKeys.append('MeridionalCurrent')        # Meridional Veloctity
                        	analysisKeys.append('VerticalCurrent')          # Vertical Veloctity  
                        	analysisKeys.append('GlobalMeanTemperature')    # Global Mean Temperature
+                       	analysisKeys.append('IcelessMeanSST')    	# Global Mean Surface Temperature with no ice
+                       	                       	
 		if analysisSuite.lower() in ['level3',]:	
                         analysisKeys.append('DMS_ARAN')                 # DMS Aranami Tsunogai
                         
@@ -260,7 +262,8 @@ def analysis_timeseries(jobID = "u-ab671",
                        	analysisKeys.append('MeridionalCurrent')        # Meridional Veloctity
                        	analysisKeys.append('VerticalCurrent')          # Vertical Veloctity  
                        	analysisKeys.append('GlobalMeanTemperature')    # Global Mean Temperature		
- 	
+                       	analysisKeys.append('IcelessMeanSST')    	# Global Mean Surface Temperature with no ice
+                       	 	
 	#####
 	# Some lists of region.
 	# This are pre-made lists of regions that can be investigated.
