@@ -612,6 +612,7 @@ def robinPlotQuad(lons, lats, data1,data2,filename,titles=['',''],title='',lon0=
 	#doLog, vmin,vmax = determineLimsAndLog(vmin,vmax)
 	doLog, vmin,vmax = determineLimsFromData(data1,data2)
 	
+	
 	doLogs = [doLog,doLog,False,True]
 	print "robinPlotQuad:\t",len(lons),len(lats),len(data1),len(data2)
 	for i,spl in enumerate([221,222,223,224]):	
@@ -621,11 +622,11 @@ def robinPlotQuad(lons, lats, data1,data2,filename,titles=['',''],title='',lon0=
 			rbma = vmax
 			
 		if spl in [223,]:
-			
-			rbma =3*np.ma.std(data1 -data2)
-			print spl,i, rbma, max(data1),max(data2)
+			rbmi,rbma = symetricAroundZero(data1,data2)
+			#rbma =3*np.ma.std(data1 -data2)
+			#print spl,i, rbma, max(data1),max(data2)
 			#assert False
-			rbmi = -rbma
+			#rbmi = -rbma
 		if spl in [224,]:
 			rbma = 10. #max(np.ma.abs(data1 -data2))
 			rbmi = 0.1		
@@ -641,9 +642,11 @@ def robinPlotQuad(lons, lats, data1,data2,filename,titles=['',''],title='',lon0=
 		if spl in [223,]:data  = np.ma.clip(data1-data2, rbmi,rbma)
 		if spl in [224,]:data  = np.ma.clip(data1/data2, rbmi,rbma)
 
-
-		if spl in [221,222,]:cmap= defcmap
-		if spl in [223,224,]:cmap= pyplot.cm.RdBu_r		
+		
+		if spl in [221,222,]:
+			if rbmi == -rbma: 	cmap= pyplot.cm.RdBu_r
+			else:			cmap= defcmap
+		if spl in [223,224,]:		cmap= pyplot.cm.RdBu_r		
 		
 
 			
@@ -838,9 +841,10 @@ def HovPlotQuad(lons,lats, depths,
 			rbmi = vmin
 			rbma = vmax
 		if spl in [223,]:
-			rbma =3*np.ma.std(data1 -data2)
-			print spl,i, rbma, max(data1),max(data2)
-			rbmi = -rbma
+			rbmi,rbma = symetricAroundZero(data1,data2)
+			#rbma =3*np.ma.std(data1 -data2)
+			#print spl,i, rbma, max(data1),max(data2)
+			#rbmi = -rbma
 		if spl in [224,]:
 			rbma = 10.001 
 			rbmi = 0.0999		
@@ -992,9 +996,10 @@ def ArcticTransectPlotQuad(lons,lats, depths,
 			rbmi = vmin
 			rbma = vmax
 		if spl in [223,]:
-			rbma =3*np.ma.std(data1 -data2)
-			print spl,i, rbma, max(data1),max(data2)
-			rbmi = -rbma
+			rbmi,rbma = symetricAroundZero(data1,data2)
+			#			rbma =3.*np.ma.std(data1 -data2)
+			#print spl,i, rbma, max(data1),max(data2)
+			#rbmi = -rbma
 		if spl in [224,]:
 			rbma = 10.001 
 			rbmi = 0.0999		
@@ -1209,9 +1214,17 @@ def determineLimsFromData(data1,data2):
 		log=False		
 	elif ma/mi < 500.:
 		log=False
-		
+	
+	if -2.<ma/mi <-0.5:
+		m = np.max([np.abs(mi),np.abs(ma)])
+		return log, -m,m
 	return log, mi ,ma
-			
+
+def symetricAroundZero(data1,data2):
+	# rbmi,rbma = symetricAroundZero(data1,data2)
+	rbma =3.*np.ma.std(data1 -data2)
+	rbmi = -rbma
+	return rbmi,rbma					
 
 def histPlot(datax, datay,  filename, Title='', labelx='',labely='',xaxislabel='', logx=False,logy=False,nbins=50,dpi=100,minNumPoints = 6, legendDict= ['mean','mode','std','median','mad']):
 #	try:import seaborn as sb

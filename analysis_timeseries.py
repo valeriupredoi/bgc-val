@@ -233,9 +233,11 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('SouthernTotalIceExtent')	# work in progress	                        
                         #analysisKeys.append('AMOC_32S')                # AMOC 32S
                         #analysisKeys.append('AMOC_26N')                # AMOC 26N
-                       	analysisKeys.append('ZonalCurrent')             # Zonal Veloctity
-                       	analysisKeys.append('MeridionalCurrent')        # Meridional Veloctity
-                       	analysisKeys.append('VerticalCurrent')          # Vertical Veloctity                       	                       	                    
+                       	analysisKeys.append('GlobalMeanTemperature')    # Global Mean Temperature
+                        
+                       	#analysisKeys.append('ZonalCurrent')             # Zonal Veloctity
+                       	#analysisKeys.append('MeridionalCurrent')        # Meridional Veloctity
+                       	#analysisKeys.append('VerticalCurrent')          # Vertical Veloctity                       	                       	                    
                                                 
                 if analysisSuite.lower() in ['physics',]:
                         #####   
@@ -1217,6 +1219,51 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= paths.orcaGridfn
 		av[name]['Dimensions']		= 3
+
+	if 'GlobalMeanTemperature' in analysisKeys:
+		name = 'GlobalMeanTemperature'
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)										
+		av[name]['dataFile'] 	= ''		
+		#if annual:		
+		#	av[name]['dataFile'] 		= WOAFolder+'woa13_decav_t00_01v2.nc'
+		#else:
+		#	av[name]['dataFile'] 		= WOAFolder+'temperature_monthly_1deg.nc'
+			
+		av[name]['modelcoords'] 	= medusaCoords 	
+		av[name]['datacoords'] 		= woaCoords
+
+		nc = Dataset(paths.orcaGridfn,'r')
+		try:	
+			pvol   = nc.variables['pvol' ][:]
+			tmask = nc.variables['tmask'][:]
+		except:
+			tmask = nc.variables['tmask'][:]			
+			area = nc.variables['e2t'][:] * nc.variables['e1t'][:]
+			pvol = nc.variables['e3t'][:] *area			
+			pvol = np.ma.masked_where(tmask==0,pvol)
+		nc.close()
+		
+		def sumMeanLandMask(nc,keys):
+			#### works like no change, but applies a mask.
+			temperature = np.ma.masked_where(tmask==0,nc.variables[keys[0]][:].squeeze())
+			return (temperature*pvol).sum()/(pvol.sum())
+		
+			
+		av[name]['modeldetails'] 	= {'name': name, 'vars':['votemper',], 'convert': sumMeanLandMask,'units':'degrees C'}
+		av[name]['datadetails']  	= {'name': '', 'units':''}		
+		#av[name]['datadetails']  	= {'name': name, 'vars':['t_an',], 'convert': ukp.NoChange,'units':'degrees C'}
+	
+		av[name]['layers'] 		= ['layerless',]
+		av[name]['regions'] 		= ['regionless',]
+		av[name]['metrics']		= ['metricless',]
+
+		av[name]['datasource'] 		= ''
+		av[name]['model']		= 'NEMO'
+
+		av[name]['modelgrid']		= 'eORCA1'
+		av[name]['gridFile']		= paths.orcaGridfn
+		av[name]['Dimensions']		= 1
+		
 						
 	if 'T' in analysisKeys:
 		name = 'Temperature'
