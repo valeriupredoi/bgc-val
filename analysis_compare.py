@@ -90,7 +90,8 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,):
 	         
                	analysisKeys.append('ZonalCurrent')             # Zonal Veloctity
                	analysisKeys.append('MeridionalCurrent')        # Meridional Veloctity
-               	analysisKeys.append('VerticalCurrent')          # Vertical Veloctity   	        
+               	analysisKeys.append('VerticalCurrent')          # Vertical Veloctity   	       
+               	analysisKeys.append('GlobalMeanTemperature')    # Global Mean Temperature	
 	if bio:
 		analysisKeys.append('TotalAirSeaFlux')          # work in progress              
 		analysisKeys.append('IntPP_OSU')                # OSU Integrated primpary production    
