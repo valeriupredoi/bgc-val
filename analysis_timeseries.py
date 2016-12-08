@@ -1282,7 +1282,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		def calcIcelessMeanSST(nc,keys):
 			#### works like no change, but applies a mask.
 			icecov = nc.variables['soicecov'][:].squeeze()
-			sst = nc.variables['votemper'][:,0,].squeeze()
+			sst = np.ma.array(nc.variables['votemper'][:,0,].squeeze())
 			sst = np.ma.masked_where((tmask[0]==0)+(icecov>0.15)+sst.mask,sst)
 			area=  np.ma.masked_where(sst.mask,area_full)
 			val = (sst*area).sum()/(area.sum())
