@@ -146,7 +146,8 @@ def makeLongNameDict():
         lnd['ZonalCurrent'] 	= "Zonal Current"
         lnd['MeridionalCurrent']= "Meridional Current"
         lnd['VerticalCurrent'] 	= "Vertical Current"        
-	
+        lnd['GlobalMeanTemperature'] 	= "Global Mean Temperature"        
+                       		
 	lnd['exportRatio'] = "Export Ratio"  
 	lnd['LocalExportRatio'] = "Export Ratio"  		
 	

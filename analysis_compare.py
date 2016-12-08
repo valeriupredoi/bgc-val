@@ -886,6 +886,44 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,):
 			av[name]['modelgrid']		= 'eORCA1'
 			av[name]['gridFile']		= orcaGridfn
 			av[name]['Dimensions']		= 3
+
+		if 'GlobalMeanTemperature' in analysisKeys:
+			name = 'GlobalMeanTemperature'
+			av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)										
+			av[name]['dataFile'] 	= ''		
+			
+			av[name]['modelcoords'] 	= medusaCoords 	
+			av[name]['datacoords'] 		= woaCoords
+
+			nc = Dataset(paths.orcaGridfn,'r')
+			try:	
+				pvol   = nc.variables['pvol' ][:]
+				tmask = nc.variables['tmask'][:]
+			except:
+				tmask = nc.variables['tmask'][:]			
+				area = nc.variables['e2t'][:] * nc.variables['e1t'][:]
+				pvol = nc.variables['e3t'][:] *area			
+				pvol = np.ma.masked_where(tmask==0,pvol)
+			nc.close()
+		
+			def sumMeanLandMask(nc,keys):
+				temperature = np.ma.masked_where(tmask==0,nc.variables[keys[0]][:].squeeze())
+				return (temperature*pvol).sum()/(pvol.sum())
+			
+			av[name]['modeldetails'] 	= {'name': name, 'vars':['votemper',], 'convert': sumMeanLandMask,'units':'degrees C'}
+			av[name]['datadetails']  	= {'name': '', 'units':''}		
+	
+			av[name]['layers'] 		= ['layerless',]
+			av[name]['regions'] 		= ['regionless',]
+			av[name]['metrics']		= ['metricless',]
+
+			av[name]['datasource'] 		= ''
+			av[name]['model']		= 'NEMO'
+
+			av[name]['modelgrid']		= 'eORCA1'
+			av[name]['gridFile']		= paths.orcaGridfn
+			av[name]['Dimensions']		= 1
+		
 					
 		if 'S' in analysisKeys:
 			name = 'Salinity'

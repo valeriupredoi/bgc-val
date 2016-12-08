@@ -196,7 +196,7 @@ def analysis_timeseries(jobID = "u-ab671",
                        	analysisKeys.append('ZonalCurrent')             # Zonal Veloctity
                        	analysisKeys.append('MeridionalCurrent')        # Meridional Veloctity
                        	analysisKeys.append('VerticalCurrent')          # Vertical Veloctity  
-
+                       	analysisKeys.append('GlobalMeanTemperature')    # Global Mean Temperature
 		if analysisSuite.lower() in ['level3',]:	
                         analysisKeys.append('DMS_ARAN')                 # DMS Aranami Tsunogai
                         
@@ -257,7 +257,7 @@ def analysis_timeseries(jobID = "u-ab671",
                        	analysisKeys.append('ZonalCurrent')             # Zonal Veloctity
                        	analysisKeys.append('MeridionalCurrent')        # Meridional Veloctity
                        	analysisKeys.append('VerticalCurrent')          # Vertical Veloctity  
-		
+                       	analysisKeys.append('GlobalMeanTemperature')    # Global Mean Temperature		
  	
 	#####
 	# Some lists of region.
