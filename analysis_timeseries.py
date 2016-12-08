@@ -233,7 +233,9 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('SouthernTotalIceExtent')	# work in progress	                        
                         #analysisKeys.append('AMOC_32S')                # AMOC 32S
                         #analysisKeys.append('AMOC_26N')                # AMOC 26N
-                       	analysisKeys.append('GlobalMeanTemperature')    # Global Mean Temperature
+
+                       	#analysisKeys.append('GlobalMeanTemperature')    # Global Mean Temperature
+                       	analysisKeys.append('IcelessMeanSST')    	# Global Mean Surface Temperature with no ice
                         
                        	#analysisKeys.append('ZonalCurrent')             # Zonal Veloctity
                        	#analysisKeys.append('MeridionalCurrent')        # Meridional Veloctity
@@ -1264,6 +1266,47 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['gridFile']		= paths.orcaGridfn
 		av[name]['Dimensions']		= 1
 		
+	if 'IcelessMeanSST' in analysisKeys:
+		name = 'IcelessMeanSST'
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)										
+		av[name]['dataFile'] 	= ''		
+			
+		av[name]['modelcoords'] 	= medusaCoords 	
+		av[name]['datacoords'] 		= woaCoords
+
+		nc = Dataset(paths.orcaGridfn,'r')
+		tmask = nc.variables['tmask'][:]			
+		area_full = nc.variables['e2t'][:] * nc.variables['e1t'][:]
+		nc.close()
+		
+		def calcIcelessMeanSST(nc,keys):
+			#### works like no change, but applies a mask.
+			icecov = nc.variables['soicecov'][:].squeeze()
+			sst = nc.variables['votemper'][:,0,].squeeze()
+			sst = np.ma.masked_where((tmask[0]==0)+(icecov>0.15)+sst.mask,sst)
+			area=  np.ma.masked_where(sst.mask,area_full)
+			val = (sst*area).sum()/(area.sum())
+			print "calcIcelessMeanSST", sst.shape,area.shape, val
+			
+			return val
+		
+			
+		av[name]['modeldetails'] 	= {'name': name, 'vars':['soicecov','votemper',], 'convert': calcIcelessMeanSST,'units':'degrees C'}
+		av[name]['datadetails']  	= {'name': '', 'units':''}		
+		#av[name]['datadetails']  	= {'name': name, 'vars':['t_an',], 'convert': ukp.NoChange,'units':'degrees C'}
+	
+		av[name]['layers'] 		= ['layerless',]
+		av[name]['regions'] 		= ['regionless',]
+		av[name]['metrics']		= ['metricless',]
+
+		av[name]['datasource'] 		= ''
+		av[name]['model']		= 'NEMO'
+
+		av[name]['modelgrid']		= 'eORCA1'
+		av[name]['gridFile']		= paths.orcaGridfn
+		av[name]['Dimensions']		= 1
+		
+
 						
 	if 'T' in analysisKeys:
 		name = 'Temperature'
