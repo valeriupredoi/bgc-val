@@ -1159,7 +1159,8 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,):
 			if name in ['Iron','Nitrate','Silicate',
 					'Oxygen','Temperature','Salinity',
 					 'Alkalinity','DIC',
-					 'CHD','CHN','DiaFrac',]:
+					 'CHD','CHN','DiaFrac',
+	 			 	 'ZonalCurrent','MeridionalCurrent','VerticalCurrent']:
 				mdata = modeldataD[(jobID,name )][('Global', 'Surface', 'mean')]
 				title = ' '.join(['Global', 'Surface', 'Mean',  getLongName(name)])
 			elif name in [  'OMZThickness', 'OMZMeanDepth', 'DMS', ]:
