@@ -1287,7 +1287,6 @@ def analysis_timeseries(jobID = "u-ab671",
 			area=  np.ma.masked_where(sst.mask,area_full)
 			val = (sst*area).sum()/(area.sum())
 			print "calcIcelessMeanSST", sst.shape,area.shape, val
-			
 			return val
 		
 			
