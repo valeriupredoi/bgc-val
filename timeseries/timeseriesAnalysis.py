@@ -474,7 +474,7 @@ class timeseriesAnalysis:
 	    #####
 	    # Mean plots.
 	    for m in self.metrics:  
-	    		if m not in ['mean']: continue
+	    		if m not in ['mean',]: continue
 			filename = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join([m,self.jobID,self.dataType,r,str(l),m,])+'.png'
 			if not ukp.shouldIMakeFile([self.shelvefn, self.shelvefn_insitu],filename,debug=False):	continue
 				    		
