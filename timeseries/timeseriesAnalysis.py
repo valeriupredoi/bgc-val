@@ -421,11 +421,10 @@ class timeseriesAnalysis:
 	# Trafficlight and percentiles plots:
 	for r in self.regions:
 	    for l in self.layers:
-		print r,l
 		#####
 		# Don't make pictures for each integer or float layer, only the ones that are strings. 
 		if type(l) in [type(0),type(0.)]:continue
-                if self.debug: print "timeseriesAnalysis:\t makePlots.\t",r,l
+                if self.debug: print "\ntimeseriesAnalysis:\t makePlots.\t",r,l
 		    
 		#####
 		# Test for presence/absence of in situ data.
@@ -453,7 +452,6 @@ class timeseriesAnalysis:
 		    			if np.ma.is_masked(v): modeldataDict[m].append(0.)
 		    			else:	modeldataDict[m].append(v)
 		    	
-			#print '\n\n',r,l,m, timesDict[m] ,	modeldataDict[m]    	
 		title = ' '.join([getLongName(t) for t in [r,str(l),self.datasource, self.dataType]])
 		for greyband in  ['10-90pc',]: #'MinMax', 
 			filename = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join(['percentiles',self.jobID,self.dataType,r,str(l),greyband])+'.png'
@@ -484,9 +482,7 @@ class timeseriesAnalysis:
 	    		if m not in ['mean', 'metricless',]: continue
 			filename = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join([m,self.jobID,self.dataType,r,str(l),m,])+'.png'
 		        if self.debug: print "timeseriesAnalysis:\t makePlots.\tInvestigating:",filename
-			print '\n\n',m,self.jobID,self.dataType,r,str(l),m			
 			if not ukp.shouldIMakeFile([self.shelvefn, self.shelvefn_insitu],filename,debug=False):	continue
-                        if self.debug: print "timeseriesAnalysis:\t makePlots.\tMaking:",filename,'\n\n'
 			    		
 			modeldataDict = self.modeldataD[(r,l,m)]
 			times = sorted(modeldataDict.keys())
