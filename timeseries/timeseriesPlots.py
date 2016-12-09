@@ -412,8 +412,8 @@ def simpletimeseries(
 	ax = fig.add_subplot(111)	
 	if len(arr)>30:
 		smoothing = movingaverage2(arr,window_len=30,window='hanning',extrapolate='axially')
-		pyplot.plot(times,arr,      c='b',ls='-',lw=0.2,label='Model1')	
-		pyplot.plot(times,smoothing,c='b',ls='-',lw=2,label='Model2')		
+		pyplot.plot(times,arr,      c='b',ls='-',lw=0.2,)	
+		pyplot.plot(times,smoothing,c='b',ls='-',lw=2,label='Model')		
 	else:
 		pyplot.plot(times,arr,c='b',ls='-',lw=1,label='Model',)	
 		

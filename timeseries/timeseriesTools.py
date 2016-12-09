@@ -183,41 +183,49 @@ class DataLoader:
 	
   def run(self):
   	self.load = {}
-   	try:	depth = {i:z for i,z in enumerate(self.nc.variables[self.coords[z]][:])} 
+   	try:	depths = {i:z for i,z in enumerate(self.nc.variables[self.coords['z']][:])} 
    	except: depths = {}
+   	#print "self.nc.variables[self.coords[z]][:]", self.nc.variables[self.coords['z']][:]
+   	#print "self.coords[z]", self.coords['z']
+   	#print "depths",depths
+   	#print "layers",self.layers
    	
-   	 	
-    	for layer in self.layers: 
-  	    if type(layer) == type(1):
-                
- 		if layer not in depths.keys():
-                    for region in self.regions:
-			a = np.ma.array([-999,],mask=[True,])
-		
-   			self.load[(region,layer)] =  a 
-   			self.load[(region,layer,'t')] =  a
-	   		self.load[(region,layer,'z')] =  a
-   			self.load[(region,layer,'lat')] =  a 
-   			self.load[(region,layer,'lon')] =  a
-   	            return	   		
-   			   			   				
+ #  	assert 0
+   	lays = self.layers[:]
+   	lays.reverse()
+   	maskedValue = np.ma.array([-999.,],mask=[True,])
+    	for l in lays:#self.layers: 
+    	    try:	layer = int(l)
+    	    except:	layer = l
+    	    
+    	    print l,layer,type(layer), type(layer) in [type(1),type(1.),], layer not in depths.keys()
+ 	    if type(layer) in [type(1),type(1.),] and layer not in depths.keys():
+               	print "DataLoader: layer not in depths. Insetad, setting:",layer, 'to', maskedValue
+            	for region in self.regions:
+   			self.load[(region,layer)] =  maskedValue 
+   			self.load[(region,layer,'t')] =  maskedValue
+	   		self.load[(region,layer,'z')] =  maskedValue
+   			self.load[(region,layer,'lat')] =  maskedValue
+   			self.load[(region,layer,'lon')] = maskedValue
+	  		print "DataLoader:\tLoaded empty",self.name, 'in',
+	  		print '{:<24} layer: {:<8}'.format(region,layer),
+	  		print '\tdata length:',len(self.load[(region,layer)]), '\tmean:',np.ma.mean(self.load[(region,layer)])
+  		   			
+   	    	continue 
+   	        #return	   		
+   	    #assert 0
+   	    #continue
+   	    
   	    for region in self.regions:
   	    
-  	    	#if region in  ['Global','All']:
-  	    	#	dat = self.__getlayerDat__(layer)
-  	    		
-   		#	self.load[(region,layer)] =  dat
-   		#	print "Loading Global Data", (region,layer), dat.min(),dat.max(),dat.mean()
-   		#	#getHorizontalSlice(self.nc,self.coords,self.details,layer,data = self.Fulldata)
-		#else:
 		arr, arr_t, arr_z, arr_lat, arr_lon 	= self.createDataArray(region,layer)
+		#print "DataLoader:",layer,region, np.ma.mean(arr)
    		self.load[(region,layer)] =  arr 
    		self.load[(region,layer,'t')] =  arr_t
    		self.load[(region,layer,'z')] =  arr_z
    		self.load[(region,layer,'lat')] =  arr_lat 
    		self.load[(region,layer,'lon')] =  arr_lon
    			   			   			   			
-   			
   		print "DataLoader:\tLoaded",self.name, 'in',
   		print '{:<24} layer: {:<8}'.format(region,layer),
   		print '\tdata length:',len(self.load[(region,layer)]), '\tmean:',np.ma.mean(self.load[(region,layer)])
@@ -280,7 +288,7 @@ class DataLoader:
 		l = len(dat)
 		print "createOneDDataArray: \tWarning:\tdata was a single float:",self.name,dat, l, dat.shape,dat.ndim
 	if l == 0:
-		a = np.ma.array([-999,],mask=[True,])
+		a = np.ma.array([-999.,],mask=[True,])
 		return a,a,a,a,a
 
 		
@@ -419,93 +427,3 @@ def calcCuSum(times,arr):
 	
 	
 	
-	
-	
-	
-	
-	
-	
-	
-class DataLoader_1Darrays:
-  def __init__(self,fn,nc,coords,details, regions = ['Global',], layers = ['Surface',],data = ''):
-  	assert False
-  	self.fn = fn
-	if type(nc) == type('filename'):
-		nc = Dataset(nc,'r')  
-  	self.nc 	= nc
-  	self.coords 	= coords
-  	self.details 	= details
-  	self.regions 	= regions
-  	self.layers 	= layers
-	if data == '': data = ukp.extractData(nc,self.details)  	
-  	self.Fulldata 	= data
-	
-	for r in self.regions:
-		if r in ['Global','All',]: 
-			print "Loading global file 1D. "
-			assert 0 
-			continue
-		tmpname = ukp.folder('tmp/')+os.path.basename(self.fn).replace('.nc','-'+self.details['name']+'.nc')
-		if ukp.shouldIMakeFile(self.fn,tmpname,):
-			c = convertToOneDNC(self.fn, tmpname, variables=self.details['vars'], debug=True)
-		self.loadXYZArrays(tmpname)
-		break
-
-	self.run()
-	
-  def run(self):
-  	self.load = {}
-  	for region in self.regions:
-  	    for layer in self.layers:  	
-  	    	#if region in  ['Global','All']:
-   		#	self.load[(region,layer)] =  getHorizontalSlice(self.nc,self.coords,self.details,layer,data = self.Fulldata)
-		#else:
-   			self.load[(region,layer)] =  self.applyRegionMask(region,layer)
-		
-		
-  def loadXYZArrays(self,fn1d):
-  	"""	This code loads the lat, lon, depth arrays.
-  		For masking.
-  	"""
-  	nc1d = Dataset(fn1d,'r')
-  	
-	self.t = np.ma.array(nc1d.variables[self.coords['t']][:])
-	self.z = np.ma.array(nc1d.variables[self.coords['z']][:])
-	self.z_index = np.ma.array(nc1d.variables['index_z'][:])
-	#lat and lon
-	self.y = np.ma.array(nc1d.variables[self.coords['lat']][:])
-	self.x = np.ma.array(nc1d.variables[self.coords['lon']][:])
-	
-	self.d = np.ma.array(ukp.extractData(nc1d,self.details)[:])
-	imask = np.ma.masked_invalid(self.d).mask
-	
-	self.m = self.d.mask + self.z.mask + self.t.mask + self.y.mask + self.x.mask + imask
-  	nc1d.close()
-  
-  def applyRegionMask(self,region,layer):
-  	"""	This code loads the lat, lon, depth arrays.
-  		For masking.
-  	""" 
-  	mask = self.m
-  	
-	if layer in ['Surface','100m','200m','300m','500m','1000m','2000m',]:	
-		if layer == 'Surface':	z = 0.
-		if layer == '100m': 	z = 100.			
-		if layer == '200m': 	z = 200.
-		if layer == '300m': 	z = 300.		
-		if layer == '500m': 	z = 500.
-		if layer == '1000m': 	z = 1000.
-		if layer == '2000m': 	z = 2000.
-		k =  ukp.getORCAdepth(z,self.nc.variables[self.coords['z']][:],debug=False)
-		mask += np.ma.masked_where(self.z_index!=k,self.z).mask
-		z = np.ma.masked_where(mask,self.z).compressed()
-		y = np.ma.masked_where(mask,self.y).compressed()
-		x = np.ma.masked_where(mask,self.x).compressed()
-		t = np.ma.masked_where(mask,self.t).compressed()
-		d = np.ma.masked_where(mask,self.d).compressed()
-		m = ukp.makeMask(self.details['name'],region, t,z,y,x,d)
-		return np.ma.masked_where(m,d).compressed()
-	else:
-  		assert 0
-  		
-  		

@@ -111,7 +111,8 @@ class profileAnalysis:
 	# Make the plots:
   	self.makePlots()
   	
-  	
+        if self.debug:print "profileAnalysis:\tsafely finished ",self.dataType, (self.modeldetails['name'])
+  		
   	
   	
   def loadModel(self):
@@ -371,24 +372,29 @@ class profileAnalysis:
 	###############
 	# Savng shelve		
 	print "profileAnalysis:\t loadData.\tSaving shelve:", self.shelvefn_insitu			
-	try:
-		sh = shOpen(self.shelvefn_insitu)
-		sh['dataD'] 	= dataD
-		sh.close()
-	except:
-		print "profileAnalysis:\t WARNING.\tSaving shelve failed, trying again.:", self.shelvefn_insitu			
-		#print "Data is", dataD
-		shutil.move(self.shelvefn_insitu, self.shelvefn_insitu+'.broken')
-		try:
-			sh = shOpen(self.shelvefn_insitu)
-			sh['dataD'] 	= dataD
-			sh.close()
-		except:
-			print "profileAnalysis:\t WARNING.\tUnable to Save in situ shelve.\tYou'll have to input it each time.",self.shelvefn_insitu	
+#	try:
+	if self.debug:
+		for k in sorted(dataD.keys()):	print k, np.ma.mean(dataD[k])
+	sh = shOpen(self.shelvefn_insitu)
+	sh['dataD'] 	= dataD
+	sh.close()
+
+	print "Saved it!"
+#	assert 0
+#	except:
+#		print "profileAnalysis:\t WARNING.\tSaving shelve failed, trying again.:", self.shelvefn_insitu			
+#		#print "Data is", dataD
+#		shutil.move(self.shelvefn_insitu, self.shelvefn_insitu+'.broken')
+#		try:
+#			sh = shOpen(self.shelvefn_insitu)
+#			sh['dataD'] 	= dataD
+#			sh.close()
+#		except:
+#			print "profileAnalysis:\t WARNING.\tUnable to Save in situ shelve.\tYou'll have to input it each time.",self.shelvefn_insitu	
 	 	
 	self.dataD = dataD
 
-
+	
  	
 
   def mapplotsRegionsLayers(self,):
@@ -447,10 +453,12 @@ class profileAnalysis:
   	mnc.close()  
 
 	if self.dataFile:
-	  	dnc = Dataset(self.dataFile,'r')	
+	  	dnc = Dataset(self.dataFile,'r')
+                if self.debug: print "profileAnalysis:\t makePlots\tOpening", self.dataFile	
 	  	dataZcoords = {i:z for i,z in enumerate(dnc.variables[self.datacoords['z']][:])}
                 if self.debug: print "profileAnalysis:\t makePlots\tOpened", self.dataFile
 
+                if self.debug: print "profileAnalysis:\t makePlots\tloaded", dataZcoords
 	  	dnc.close()  	
 	else: 	dataZcoords = {}
 
@@ -459,7 +467,7 @@ class profileAnalysis:
 	for r in self.regions:
 	    for m in self.metrics: 
 	    	if m not in ['mean','median','min','max',]:continue
-
+		if self.debug: print "profileAnalysis:\t makePlots\t",r,m
 	   	#####
 	   	# Load data layers:
 		data = {}
@@ -489,7 +497,7 @@ class profileAnalysis:
 				try:	data[l] = np.ma.max(dataslice)
 				except:	data[l] = np.ma.array([-1000,],mask=[True,])				
 			
-			#print "makePlots:\tHovmoeller plots:",r,m,l,'\tdata'#,data[l]								
+	#		if self.debug: print "profileAnalysis:\tmakePlots:\tHovmoeller plots:",r,m,l,'\tdata'#,data[l]								
 
 	   	#####
 	   	# Load model layers:
@@ -498,7 +506,8 @@ class profileAnalysis:
 	  		if type(l) == type('str'):continue	# no strings, only numbered layers.
 	  		if l > max(modelZcoords.keys()): continue
 			modeldata[l] = self.modeldataD[(r,l,m)]
-			
+                if self.debug: print "profileAnalysis:\tmakePlots:\tHovmoeller plots:",r,m,'\tloaded model data'
+	
 		#####
 		# check that multiple layers were requested.
 		#if len(data.keys())<1: continue
