@@ -225,7 +225,7 @@ def analysis_timeseries(jobID = "u-ab671",
                         #analysisKeys.append('IntPP_OSU')               # OSU Integrated primpary production    
                         #####   
                         # Physics switches:
-                        analysisKeys.append('T')                       # WOA Temperature
+                        #analysisKeys.append('T')                       # WOA Temperature
                         #analysisKeys.append('S')                       # WOA Salinity
                         #analysisKeys.append('NorthernTotalIceArea')    # work in progress      
                         #analysisKeys.append('SouthernTotalIceArea')    # work in progress                              
@@ -239,7 +239,7 @@ def analysis_timeseries(jobID = "u-ab671",
                        	#analysisKeys.append('GlobalMeanTemperature')    # Global Mean Temperature
                        	#analysisKeys.append('IcelessMeanSST')    	# Global Mean Surface Temperature with no ice
                         
-                       	#analysisKeys.append('ZonalCurrent')             # Zonal Veloctity
+                       	analysisKeys.append('ZonalCurrent')             # Zonal Veloctity
                        	#analysisKeys.append('MeridionalCurrent')        # Meridional Veloctity
                        	#analysisKeys.append('VerticalCurrent')          # Vertical Veloctity                       	                       	                    
                                                 
@@ -276,6 +276,9 @@ def analysis_timeseries(jobID = "u-ab671",
   				]
 	if regions == 'short':  	
 		regionList 	= ['Global','SouthernHemisphere','NorthernHemisphere',]
+
+	#if analysisSuite.lower() in ['debug',]:
+        #        regionList      = ['Global', 'ArcticOcean',]
 
 	#####
 	# The z_component custom command:
@@ -1240,17 +1243,17 @@ def analysis_timeseries(jobID = "u-ab671",
 		nc = Dataset(paths.orcaGridfn,'r')
 		try:	
 			pvol   = nc.variables['pvol' ][:]
-			tmask = nc.variables['tmask'][:]
+			gmttmask = nc.variables['tmask'][:]
 		except:
-			tmask = nc.variables['tmask'][:]			
+			gmttmask = nc.variables['tmask'][:]			
 			area = nc.variables['e2t'][:] * nc.variables['e1t'][:]
 			pvol = nc.variables['e3t'][:] *area			
-			pvol = np.ma.masked_where(tmask==0,pvol)
+			pvol = np.ma.masked_where(gmttmask==0,pvol)
 		nc.close()
 		
 		def sumMeanLandMask(nc,keys):
 			#### works like no change, but applies a mask.
-			temperature = np.ma.masked_where(tmask==0,nc.variables[keys[0]][:].squeeze())
+			temperature = np.ma.masked_where(gmttmask==0,nc.variables[keys[0]][:].squeeze())
 			return (temperature*pvol).sum()/(pvol.sum())
 		
 			

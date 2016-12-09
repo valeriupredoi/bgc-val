@@ -372,24 +372,29 @@ class profileAnalysis:
 	###############
 	# Savng shelve		
 	print "profileAnalysis:\t loadData.\tSaving shelve:", self.shelvefn_insitu			
-	try:
-		sh = shOpen(self.shelvefn_insitu)
-		sh['dataD'] 	= dataD
-		sh.close()
-	except:
-		print "profileAnalysis:\t WARNING.\tSaving shelve failed, trying again.:", self.shelvefn_insitu			
-		#print "Data is", dataD
-		shutil.move(self.shelvefn_insitu, self.shelvefn_insitu+'.broken')
-		try:
-			sh = shOpen(self.shelvefn_insitu)
-			sh['dataD'] 	= dataD
-			sh.close()
-		except:
-			print "profileAnalysis:\t WARNING.\tUnable to Save in situ shelve.\tYou'll have to input it each time.",self.shelvefn_insitu	
+#	try:
+	if self.debug:
+		for k in sorted(dataD.keys()):	print k, np.ma.mean(dataD[k])
+	sh = shOpen(self.shelvefn_insitu)
+	sh['dataD'] 	= dataD
+	sh.close()
+
+	print "SAved it!"
+	assert 0
+#	except:
+#		print "profileAnalysis:\t WARNING.\tSaving shelve failed, trying again.:", self.shelvefn_insitu			
+#		#print "Data is", dataD
+#		shutil.move(self.shelvefn_insitu, self.shelvefn_insitu+'.broken')
+#		try:
+#			sh = shOpen(self.shelvefn_insitu)
+#			sh['dataD'] 	= dataD
+#			sh.close()
+#		except:
+#			print "profileAnalysis:\t WARNING.\tUnable to Save in situ shelve.\tYou'll have to input it each time.",self.shelvefn_insitu	
 	 	
 	self.dataD = dataD
 
-
+	
  	
 
   def mapplotsRegionsLayers(self,):
