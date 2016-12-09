@@ -111,7 +111,8 @@ class profileAnalysis:
 	# Make the plots:
   	self.makePlots()
   	
-  	
+        if self.debug:print "profileAnalysis:\tsafely finished ",self.dataType, (self.modeldetails['name'])
+  		
   	
   	
   def loadModel(self):
@@ -447,9 +448,10 @@ class profileAnalysis:
   	mnc.close()  
 
 	if self.dataFile:
-	  	dnc = Dataset(self.dataFile,'r')	
+	  	dnc = Dataset(self.dataFile,'r')
+                if self.debug: print "profileAnalysis:\t makePlots\tOpening", self.dataFile	
 	  	dataZcoords = {i:z for i,z in enumerate(dnc.variables[self.datacoords['z']][:])}
-	  	print 
+                if self.debug: print "profileAnalysis:\t makePlots\tloaded", dataZcoords
 	  	dnc.close()  	
 	else: 	dataZcoords = {}
 
@@ -458,7 +460,7 @@ class profileAnalysis:
 	for r in self.regions:
 	    for m in self.metrics: 
 	    	if m not in ['mean','median','min','max',]:continue
-
+		if self.debug: print "profileAnalysis:\t makePlots\t",r,m
 	   	#####
 	   	# Load data layers:
 		data = {}
@@ -488,7 +490,7 @@ class profileAnalysis:
 				try:	data[l] = np.ma.max(dataslice)
 				except:	data[l] = np.ma.array([-1000,],mask=[True,])				
 			
-			#print "makePlots:\tHovmoeller plots:",r,m,l,'\tdata'#,data[l]								
+	#		if self.debug: print "profileAnalysis:\tmakePlots:\tHovmoeller plots:",r,m,l,'\tdata'#,data[l]								
 
 	   	#####
 	   	# Load model layers:
@@ -497,7 +499,8 @@ class profileAnalysis:
 	  		if type(l) == type('str'):continue	# no strings, only numbered layers.
 	  		if l > max(modelZcoords.keys()): continue
 			modeldata[l] = self.modeldataD[(r,l,m)]
-			
+                if self.debug: print "profileAnalysis:\tmakePlots:\tHovmoeller plots:",r,m,'\tloaded model data'
+	
 		#####
 		# check that multiple layers were requested.
 		#if len(data.keys())<1: continue

@@ -117,6 +117,7 @@ class timeseriesAnalysis:
 	# Make the plots:
   	self.makePlots()
   	
+        if self.debug:print "timeseriesAnalysis:\tsafely finished ",self.dataType, (self.modeldetails['name'])
   	
   	
   	
@@ -420,9 +421,11 @@ class timeseriesAnalysis:
 	# Trafficlight and percentiles plots:
 	for r in self.regions:
 	    for l in self.layers:
+		print r,l
 		#####
 		# Don't make pictures for each integer or float layer, only the ones that are strings. 
 		if type(l) in [type(0),type(0.)]:continue
+                if self.debug: print "timeseriesAnalysis:\t makePlots.\t",r,l
 		    
 		#####
 		# Test for presence/absence of in situ data.
@@ -454,14 +457,18 @@ class timeseriesAnalysis:
 		title = ' '.join([getLongName(t) for t in [r,str(l),self.datasource, self.dataType]])
 		for greyband in  ['10-90pc',]: #'MinMax', 
 			filename = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join(['percentiles',self.jobID,self.dataType,r,str(l),greyband])+'.png'
+                        if self.debug: print "timeseriesAnalysis:\t makePlots.\tInvestigating:",filename
+
 			if not ukp.shouldIMakeFile([self.shelvefn, self.shelvefn_insitu],filename,debug=False):continue
 			tsp.percentilesPlot(timesDict,modeldataDict,dataslice,title = title,filename=filename,units =self.modeldetails['units'],greyband=greyband)
  	    
-	    #####
-	    # Percentiles plots.		  	    
-	    for m in self.metrics:  
+	   	#####
+	    	# Percentiles plots.		  	    
+	    	for m in self.metrics:  
 	    		if m not in ['sum', 'metricless',]: continue 
 			filename = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join([m,self.jobID,self.dataType,r,str(l),m,])+'.png'
+                        if self.debug: print "timeseriesAnalysis:\t makePlots.\tInvestigating:",filename
+
 			if not ukp.shouldIMakeFile([self.shelvefn, self.shelvefn_insitu],filename,debug=False):	continue
 				    		
 			modeldataDict = self.modeldataD[(r,l,m)]
@@ -471,13 +478,16 @@ class timeseriesAnalysis:
 			
 			tsp.trafficlightsPlot(times,modeldata,dataslice,metric = m, title = title,filename=filename,units = self.modeldetails['units'],greyband=False)
 	    
-	    #####
-	    # Mean plots.
-	    for m in self.metrics:  
-	    		if m not in ['mean',]: continue
+	    	#####
+	    	# Mean plots.
+	    	for m in self.metrics:  
+	    		if m not in ['mean', 'metricless',]: continue
 			filename = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join([m,self.jobID,self.dataType,r,str(l),m,])+'.png'
+		        if self.debug: print "timeseriesAnalysis:\t makePlots.\tInvestigating:",filename
+			print '\n\n',m,self.jobID,self.dataType,r,str(l),m			
 			if not ukp.shouldIMakeFile([self.shelvefn, self.shelvefn_insitu],filename,debug=False):	continue
-				    		
+                        if self.debug: print "timeseriesAnalysis:\t makePlots.\tMaking:",filename,'\n\n'
+			    		
 			modeldataDict = self.modeldataD[(r,l,m)]
 			times = sorted(modeldataDict.keys())
 			modeldata = [modeldataDict[t] for t in times]
