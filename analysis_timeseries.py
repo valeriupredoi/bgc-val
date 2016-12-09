@@ -1877,7 +1877,6 @@ def analysis_timeseries(jobID = "u-ab671",
                         clean           = clean,
                 )
 
-		assert 0	
 		#####
 		# Profile plots 	
 		if av[name]['Dimensions'] == 3:
