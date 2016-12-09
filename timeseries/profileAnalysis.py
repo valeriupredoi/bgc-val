@@ -373,14 +373,11 @@ class profileAnalysis:
 	# Savng shelve		
 	print "profileAnalysis:\t loadData.\tSaving shelve:", self.shelvefn_insitu			
 #	try:
-	if self.debug:
-		for k in sorted(dataD.keys()):	print k, np.ma.mean(dataD[k])
 	sh = shOpen(self.shelvefn_insitu)
 	sh['dataD'] 	= dataD
 	sh.close()
 
-	print "Saved it!"
-#	assert 0
+	print "profileAnalysis:\t loadData.\tSaved shelve:", self.shelvefn_insitu			
 #	except:
 #		print "profileAnalysis:\t WARNING.\tSaving shelve failed, trying again.:", self.shelvefn_insitu			
 #		#print "Data is", dataD

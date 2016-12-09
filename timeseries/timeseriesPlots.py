@@ -1075,10 +1075,17 @@ def profilePlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords= {}
 	profileTimes = {}
 	firstyr = sorted(times_cc)[0]
 	lastyr = len(times_cc) -1
+	if   lastyr<10:	plotEvery = 1
+	elif lastyr<25:	plotEvery = 2
+	elif lastyr<50:	plotEvery = 5	
+	elif lastyr<100:plotEvery = 10		
+	elif lastyr<500:plotEvery = 20			
+	else:		plotEvery = 50
+	
 	for i,t in enumerate(times_cc):
 		if i == 0: 		profileTimes[i] = t	# First year
 		if i == lastyr: 	profileTimes[i] = t	# Last year		
-		if int(t)%50==0:  	profileTimes[i] = t	# Every 50 years
+		if int(t)%plotEvery==0:  	profileTimes[i] = t	# Every 50 years
 		
 	####
 	# Add model data
