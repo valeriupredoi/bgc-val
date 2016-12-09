@@ -449,7 +449,8 @@ class profileAnalysis:
 	if self.dataFile:
 	  	dnc = Dataset(self.dataFile,'r')	
 	  	dataZcoords = {i:z for i,z in enumerate(dnc.variables[self.datacoords['z']][:])}
-	  	print 
+                if self.debug: print "profileAnalysis:\t makePlots\tOpened", self.dataFile
+
 	  	dnc.close()  	
 	else: 	dataZcoords = {}
 
