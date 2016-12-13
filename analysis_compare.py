@@ -121,14 +121,14 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
 #		analysisKeys.append('CHD')
 #		analysisKeys.append('CHN')
 #		analysisKeys.append('DiaFrac')	
-                analysisKeys.append('DMS')
+                analysisKeys.append('GlobalMeanTemperature')
 
 #       	  	analysisKeys.append('TotalOMZVolume')           # Total Oxygen Minimum zone Volume
 #       	 	analysisKeys.append('OMZThickness')             # Oxygen Minimum Zone Thickness
 #        	analysisKeys.append('OMZMeanDepth')             # Oxygen Minimum Zone mean depth    
 #		analysisKeys.append('O2')                       # WOA Oxygen        	
-        	if bio ==False:return
-        	if physics == True:return  
+#       	if bio ==False:return
+#       	if physics == True:return  
                                	
 	layerList 	= ['Surface',]
 	metricList 	= ['mean',]
@@ -1233,7 +1233,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
 	for name in av.keys():
 		timesD  = {}
 		arrD	= {}
-		
+		units = av[name]['modeldetails']['units']	
 		for jobID in jobs:
 			if name in ['Iron','Nitrate','Silicate',
 					'Oxygen','Temperature','Salinity',
@@ -1250,6 +1250,10 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
 				title = getLongName(name)
 
 			if year0:
+				if len(mdata.keys())==0:
+					timesD[jobID]=[]
+                                        arrD[jobID]=[]
+					continue
 				t0 = float(sorted(mdata.keys())[0])
 				times = []
 				datas = []
@@ -1287,8 +1291,8 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
 				arrD,			# model time series
 				data 	= -999,		# in situ data distribution
 				title 	= title,
-				filename=ukp.folder(imageFolder)+name+'_'+ts+'_'+ls+'.png',
-				units = '',
+				filename= ukp.folder(imageFolder)+name+'_'+ts+'_'+ls+'.png',
+				units 	= units,
 				plotStyle 	= ts,
 				lineStyle	= ls,
 				colours		= colours,
@@ -1369,11 +1373,13 @@ if __name__=="__main__":
 	debug = True
 	if debug:
 
+
 #	        colours = {'u-ah531':'red', 'u-ah847':'orange', 'u-ah846':'blue','u-ah882':'purple', }
-#                timeseries_compare(colours, physics=True,bio=False)
+ #               timeseries_compare(colours, physics=True,bio=False,year0=1)
+
 
 	        colours = {'u-af872':'green','u-ah882':'purple', }
-                timeseries_compare(colours, physics=True,bio=False,year0=True)
+                timeseries_compare(colours, physics=True,bio=False,year0=True,debug=0)
                 
 	else:
 	        colours = {'u-ag543':'red', 'u-ag914':'orange','u-ae748':'darkblue','u-af983':'blue','u-af984':'purple', }
