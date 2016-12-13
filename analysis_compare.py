@@ -54,7 +54,7 @@ except:	from pftnames import getLongName
 
 import paths
 
-def timeseries_compare(colours,physics=True,bio=False,debug=False,):
+def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
 	### strategy here is a simple wrapper.
 	# It's a little cheat-y, as I'm copying straight from analysis_timeseries.py
 	
@@ -1248,8 +1248,20 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,):
 			else:
 				mdata = modeldataD[(jobID,name )][('regionless', 'layerless', 'metricless')]
 				title = getLongName(name)
-			timesD[jobID] 	= sorted(mdata.keys())
-			arrD[jobID]	= [mdata[t] for t in timesD[jobID]]
+
+			if year0:
+				t0 = float(sorted(mdata.keys())[0])
+				times = []
+				datas = []
+				for t in sorted(mdata.keys()):
+					times.append(float(t)-t0)
+					datas.append(mdata[t])
+				timesD[jobID] 	= times
+				arrD[jobID]	= datas
+						
+			else:
+				timesD[jobID] 	= sorted(mdata.keys())
+				arrD[jobID]	= [mdata[t] for t in timesD[jobID]]
 		
 		#####
 		# To account for changing units.
@@ -1356,14 +1368,13 @@ if __name__=="__main__":
 	#timeseries_compare(colours)
 	debug = True
 	if debug:
-#                colours = {'u-ag543':'red', 'u-ag914':'orange', }
- #               timeseries_compare(colours, physics=False,bio=True,debug = debug)
-	        colours = {'u-ah531':'red', 'u-ah847':'orange', 'u-ah846':'blue','u-ah882':'purple', }
-                timeseries_compare(colours, physics=True,bio=False)
 
-#                colours = {'u-ae748':'darkblue', 'u-af983':'darkgreen','u-ah531':'purple'}
+#	        colours = {'u-ah531':'red', 'u-ah847':'orange', 'u-ah846':'blue','u-ah882':'purple', }
 #                timeseries_compare(colours, physics=True,bio=False)
 
+	        colours = {'u-af872':'green','u-ah882':'purple', }
+                timeseries_compare(colours, physics=True,bio=False,year0=True)
+                
 	else:
 	        colours = {'u-ag543':'red', 'u-ag914':'orange','u-ae748':'darkblue','u-af983':'blue','u-af984':'purple', }
         	timeseries_compare(colours, physics=True,bio=False)
