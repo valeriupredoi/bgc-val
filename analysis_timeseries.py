@@ -226,7 +226,6 @@ def analysis_timeseries(jobID = "u-ab671",
                         #####   
                         # Physics switches:
                         #analysisKeys.append('T')                       # WOA Temperature
-                        
                         #analysisKeys.append('S')                       # WOA Salinity
                         #analysisKeys.append('NorthernTotalIceArea')    # work in progress      
                         #analysisKeys.append('SouthernTotalIceArea')    # work in progress                              

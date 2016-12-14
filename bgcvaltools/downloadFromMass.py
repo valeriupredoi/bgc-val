@@ -186,25 +186,25 @@ def downloadMass(jobID,):
 		return
 	
 	
-
+	doLs = False
+	doDL = True
 	
+	if doLs:	
+		print "Looking at the following files:"
 	
-	print "Looking at the following files:"
-	
-	bashCommand = "moo ls moose:/crum/"+jobID+"/ony.nc.file/*.nc "
-	print "running the command:",bashCommand
+		bashCommand = "moo ls moose:/crum/"+jobID+"/ony.nc.file/*.nc "
+		print "running the command:",bashCommand
 		
-	process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
-	output = process.communicate()[0]
+		process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
+		output = process.communicate()[0]
 
 
-
-	print "Downloading at the following files:"
-	
-	bashCommand = "moo get --fill-gaps moose:/crum/"+jobID+"/ony.nc.file/*.nc "+outputFold
-	print "running the command:",bashCommand
-	process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
-	output = process.communicate()[0]
+	if doDL:
+		print "Downloading at the following files:"
+		bashCommand = "moo get --fill-gaps moose:/crum/"+jobID+"/ony.nc.file/*.nc "+outputFold
+		print "running the command:",bashCommand
+		process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
+		output = process.communicate()[0]
 
 
 	#####

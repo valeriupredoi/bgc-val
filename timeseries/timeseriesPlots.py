@@ -621,7 +621,8 @@ def multitimeseries(
 
 
 	if plotStyle == 'Together':
-		pyplot.title(title)	
+		pyplot.title(title)
+                pyplot.xlabel('Year')
 		pyplot.ylabel(units)		
 		pyplot.xlim(xlims)					
 		try:	

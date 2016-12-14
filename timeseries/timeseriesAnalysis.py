@@ -440,10 +440,10 @@ class timeseriesAnalysis:
 
 		#####
 		# Percentiles plots.
-  	    	if '20pc' not in self.metrics: continue
-		modeldataDict	= {}
-		timesDict	= {}
-		for m in self.metrics:
+  	    	if '20pc' in self.metrics: #continue
+	 	    modeldataDict	= {}
+		    timesDict	= {}
+		    for m in self.metrics:
 			timesDict[m] 	 = sorted(self.modeldataD[(r,l,m)].keys())
 		    	#modeldataDict[m] = [self.modeldataD[(r,l,m)][t] for t in timesDict[m]]
 		    	modeldataDict[m] = []
@@ -452,17 +452,17 @@ class timeseriesAnalysis:
 		    			if np.ma.is_masked(v): modeldataDict[m].append(0.)
 		    			else:	modeldataDict[m].append(v)
 		    	
-		title = ' '.join([getLongName(t) for t in [r,str(l),self.datasource, self.dataType]])
-		for greyband in  ['10-90pc',]: #'MinMax', 
+		    title = ' '.join([getLongName(t) for t in [r,str(l),self.datasource, self.dataType]])
+		    for greyband in  ['10-90pc',]: #'MinMax', 
 			filename = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join(['percentiles',self.jobID,self.dataType,r,str(l),greyband])+'.png'
                         if self.debug: print "timeseriesAnalysis:\t makePlots.\tInvestigating:",filename
 
 			if not ukp.shouldIMakeFile([self.shelvefn, self.shelvefn_insitu],filename,debug=False):continue
 			tsp.percentilesPlot(timesDict,modeldataDict,dataslice,title = title,filename=filename,units =self.modeldetails['units'],greyband=greyband)
  	    
-	   	#####
-	    	# Percentiles plots.		  	    
-	    	for m in self.metrics:  
+	   	    #####
+	    	    # Percentiles plots.		  	    
+	    	    for m in self.metrics: 
 	    		if m not in ['sum', 'metricless',]: continue 
 			filename = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join([m,self.jobID,self.dataType,r,str(l),m,])+'.png'
                         if self.debug: print "timeseriesAnalysis:\t makePlots.\tInvestigating:",filename

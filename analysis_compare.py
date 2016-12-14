@@ -121,14 +121,14 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
 #		analysisKeys.append('CHD')
 #		analysisKeys.append('CHN')
 #		analysisKeys.append('DiaFrac')	
-                analysisKeys.append('DMS')
-
+                analysisKeys.append('GlobalMeanTemperature')
+               	analysisKeys.append('quickSST')    		# Area Weighted Mean Surface Temperature
 #       	  	analysisKeys.append('TotalOMZVolume')           # Total Oxygen Minimum zone Volume
 #       	 	analysisKeys.append('OMZThickness')             # Oxygen Minimum Zone Thickness
 #        	analysisKeys.append('OMZMeanDepth')             # Oxygen Minimum Zone mean depth    
 #		analysisKeys.append('O2')                       # WOA Oxygen        	
-        	if bio ==False:return
-        	if physics == True:return  
+#       	if bio ==False:return
+#       	if physics == True:return  
                                	
 	layerList 	= ['Surface',]
 	metricList 	= ['mean',]
@@ -926,6 +926,49 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
 			av[name]['gridFile']		= paths.orcaGridfn
 			av[name]['Dimensions']		= 1
 
+		if 'quickSST' in analysisKeys:
+			name = 'quickSST'
+			av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)										
+		
+
+			nc = Dataset(paths.orcaGridfn,'r')
+			ssttmask = nc.variables['tmask'][0]			
+			area = nc.variables['e2t'][:] * nc.variables['e1t'][:]
+			area = np.ma.masked_where(ssttmask==0,area)
+			nc.close()
+		
+			def meanLandMask(nc,keys):
+				#### works like no change, but applies a mask.
+				#print "meanLandMask:",ssttmask.shape,nc.variables[keys[0]][0,0].shape
+				temperature = np.ma.masked_where(ssttmask==0,nc.variables[keys[0]][0,0].squeeze())
+				print "meanLandMask:",nc.variables['time_counter'][:],temperature.mean(),(temperature*area).sum()/(area.sum())
+				return (temperature*area).sum()/(area.sum())
+			
+					
+			if annual:		
+				#av[name]['modelFiles']  	= sorted(glob(paths.ModelFolder_pref+jobID+"/"+jobID+"o_1y_*_grid_T.nc"))
+				av[name]['dataFile'] 		= ''#WOAFolder+'woa13_decav_t00_01v2.nc'
+			else:
+				#av[name]['modelFiles']  	= sorted(glob(paths.ModelFolder_pref+jobID+"/"+jobID+"o_1m_*_grid_T.nc"))
+				av[name]['dataFile'] 		= ''#WOAFolder+'temperature_monthly_1deg.nc'
+			
+			av[name]['modelcoords'] 	= medusaCoords 	
+			av[name]['datacoords'] 		= woaCoords
+	
+			av[name]['modeldetails'] 	= {'name': name, 'vars':['votemper',], 'convert': meanLandMask,'units':'degrees C'}
+			av[name]['datadetails']  	= {'name': '', 'units':''}
+	
+			av[name]['layers'] 		= ['layerless',]
+			av[name]['regions'] 		= ['regionless',]	
+			av[name]['metrics']		= ['metricless',]
+
+			av[name]['datasource'] 		= ''
+			av[name]['model']		= 'NEMO'
+
+			av[name]['modelgrid']		= 'eORCA1'
+			av[name]['gridFile']		= paths.orcaGridfn
+			av[name]['Dimensions']		= 1
+
 		if 'IcelessMeanSST' in analysisKeys:
 			name = 'IcelessMeanSST'
 			av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)										
@@ -1233,7 +1276,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
 	for name in av.keys():
 		timesD  = {}
 		arrD	= {}
-		
+		units = av[name]['modeldetails']['units']	
 		for jobID in jobs:
 			if name in ['Iron','Nitrate','Silicate',
 					'Oxygen','Temperature','Salinity',
@@ -1250,6 +1293,10 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
 				title = getLongName(name)
 
 			if year0:
+				if len(mdata.keys())==0:
+					timesD[jobID]=[]
+                                        arrD[jobID]=[]
+					continue
 				t0 = float(sorted(mdata.keys())[0])
 				times = []
 				datas = []
@@ -1287,8 +1334,8 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
 				arrD,			# model time series
 				data 	= -999,		# in situ data distribution
 				title 	= title,
-				filename=ukp.folder(imageFolder)+name+'_'+ts+'_'+ls+'.png',
-				units = '',
+				filename= ukp.folder(imageFolder)+name+'_'+ts+'_'+ls+'.png',
+				units 	= units,
 				plotStyle 	= ts,
 				lineStyle	= ls,
 				colours		= colours,
@@ -1369,11 +1416,13 @@ if __name__=="__main__":
 	debug = True
 	if debug:
 
+
 #	        colours = {'u-ah531':'red', 'u-ah847':'orange', 'u-ah846':'blue','u-ah882':'purple', }
-#                timeseries_compare(colours, physics=True,bio=False)
+ #               timeseries_compare(colours, physics=True,bio=False,year0=1)
+
 
 	        colours = {'u-af872':'green','u-ah882':'purple', }
-                timeseries_compare(colours, physics=True,bio=False,year0=True)
+                timeseries_compare(colours, physics=True,bio=False,year0=True,debug=1)
                 
 	else:
 	        colours = {'u-ag543':'red', 'u-ag914':'orange','u-ae748':'darkblue','u-af983':'blue','u-af984':'purple', }
