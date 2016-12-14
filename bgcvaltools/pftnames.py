@@ -149,6 +149,7 @@ def makeLongNameDict():
         
         lnd['GlobalMeanTemperature'] 	= "Global Volume-weighted Mean Temperature"        
         lnd['IcelessMeanSST'] 		= "Global Area-weighted Mean SST (masked above 15% ice coverage)"
+        lnd['quickSST']           = "Global Area-weighted Mean SST"
 
 	lnd['exportRatio'] = "Export Ratio"  
 	lnd['LocalExportRatio'] = "Export Ratio"  		
