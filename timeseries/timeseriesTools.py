@@ -217,7 +217,6 @@ class DataLoader:
    	    #continue
    	    
   	    for region in self.regions:
-  	    
 		arr, arr_t, arr_z, arr_lat, arr_lon 	= self.createDataArray(region,layer)
 		#print "DataLoader:",layer,region, np.ma.mean(arr)
    		self.load[(region,layer)] =  arr 

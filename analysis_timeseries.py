@@ -239,7 +239,7 @@ def analysis_timeseries(jobID = "u-ab671",
 
                        	#analysisKeys.append('GlobalMeanTemperature')    # Global Mean Temperature
                        	#analysisKeys.append('IcelessMeanSST')    	# Global Mean Surface Temperature with no ice
-                       	analysisKeys.append('quickSST')    		# Mean Surface Temperature
+                       	analysisKeys.append('quickSST')    		# Area Weighted Mean Surface Temperature
                         
                        	#analysisKeys.append('ZonalCurrent')             # Zonal Veloctity
                        	#analysisKeys.append('MeridionalCurrent')        # Meridional Veloctity
@@ -1314,48 +1314,48 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['Dimensions']		= 1
 		
 
-	if 'quickSST' in analysisKeys:
-		name = 'quickSST'
-		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)										
+		if 'quickSST' in analysisKeys:
+			name = 'quickSST'
+			av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)										
 		
 
-		nc = Dataset(paths.orcaGridfn,'r')
-		ssttmask = nc.variables['tmask'][0]			
-		area = nc.variables['e2t'][:] * nc.variables['e1t'][:]
-		area = np.ma.masked_where(ssttmask==0,area)
-		nc.close()
+			nc = Dataset(paths.orcaGridfn,'r')
+			ssttmask = nc.variables['tmask'][0]			
+			area = nc.variables['e2t'][:] * nc.variables['e1t'][:]
+			area = np.ma.masked_where(ssttmask==0,area)
+			nc.close()
 		
-		def meanLandMask(nc,keys):
-			#### works like no change, but applies a mask.
-			#print "meanLandMask:",ssttmask.shape,nc.variables[keys[0]][0,0].shape
-			temperature = np.ma.masked_where(ssttmask==0,nc.variables[keys[0]][0,0].squeeze())
-			print "meanLandMask:",nc.variables['time_counter'][:],temperature.mean(),(temperature*area).sum()/(area.sum())
-			return (temperature*area).sum()/(area.sum())
+			def meanLandMask(nc,keys):
+				#### works like no change, but applies a mask.
+				#print "meanLandMask:",ssttmask.shape,nc.variables[keys[0]][0,0].shape
+				temperature = np.ma.masked_where(ssttmask==0,nc.variables[keys[0]][0,0].squeeze())
+				print "meanLandMask:",nc.variables['time_counter'][:],temperature.mean(),(temperature*area).sum()/(area.sum())
+				return (temperature*area).sum()/(area.sum())
 			
 					
-		if annual:		
-			#av[name]['modelFiles']  	= sorted(glob(paths.ModelFolder_pref+jobID+"/"+jobID+"o_1y_*_grid_T.nc"))
-			av[name]['dataFile'] 		= ''#WOAFolder+'woa13_decav_t00_01v2.nc'
-		else:
-			#av[name]['modelFiles']  	= sorted(glob(paths.ModelFolder_pref+jobID+"/"+jobID+"o_1m_*_grid_T.nc"))
-			av[name]['dataFile'] 		= ''#WOAFolder+'temperature_monthly_1deg.nc'
+			if annual:		
+				#av[name]['modelFiles']  	= sorted(glob(paths.ModelFolder_pref+jobID+"/"+jobID+"o_1y_*_grid_T.nc"))
+				av[name]['dataFile'] 		= ''#WOAFolder+'woa13_decav_t00_01v2.nc'
+			else:
+				#av[name]['modelFiles']  	= sorted(glob(paths.ModelFolder_pref+jobID+"/"+jobID+"o_1m_*_grid_T.nc"))
+				av[name]['dataFile'] 		= ''#WOAFolder+'temperature_monthly_1deg.nc'
 			
-		av[name]['modelcoords'] 	= medusaCoords 	
-		av[name]['datacoords'] 		= woaCoords
+			av[name]['modelcoords'] 	= medusaCoords 	
+			av[name]['datacoords'] 		= woaCoords
 	
-		av[name]['modeldetails'] 	= {'name': name, 'vars':['votemper',], 'convert': meanLandMask,'units':'degrees C'}
-		av[name]['datadetails']  	= {'name': '', 'units':''}
+			av[name]['modeldetails'] 	= {'name': name, 'vars':['votemper',], 'convert': meanLandMask,'units':'degrees C'}
+			av[name]['datadetails']  	= {'name': '', 'units':''}
 	
-		av[name]['layers'] 		= ['layerless',]
-		av[name]['regions'] 		= ['regionless',]	
-		av[name]['metrics']		= ['metricless',]
+			av[name]['layers'] 		= ['layerless',]
+			av[name]['regions'] 		= ['regionless',]	
+			av[name]['metrics']		= ['metricless',]
 
-		av[name]['datasource'] 		= ''
-		av[name]['model']		= 'NEMO'
+			av[name]['datasource'] 		= ''
+			av[name]['model']		= 'NEMO'
 
-		av[name]['modelgrid']		= 'eORCA1'
-		av[name]['gridFile']		= paths.orcaGridfn
-		av[name]['Dimensions']		= 1
+			av[name]['modelgrid']		= 'eORCA1'
+			av[name]['gridFile']		= paths.orcaGridfn
+			av[name]['Dimensions']		= 1
 		
 
 						

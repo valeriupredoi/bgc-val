@@ -145,7 +145,7 @@ class timeseriesAnalysis:
 		print "timeseriesAnalysis:\tloadModel\tCould not open shelve:", self.shelvefn, '\tread', len(readFiles)	
 
 	###############
-	# Check whethere there has been a change in what was requested:
+	# Check whether there has been a change in what was requested:
 	for r in self.regions:
 	  for l in self.layers:
 	    for m in self.metrics:
