@@ -641,7 +641,7 @@ def analysis_p2p(
 			else:		av[name]['plottingSlices'] 	= HighLatWinter
 						
 			av[name]['Data']['source'] 	= 'OSU'
-			av[name]['MEDUSA']['source']	= 'MEDUSA'			
+			av[name]['MEDUSA']['source']	= 'MEDUSA'
 			
 			av[name]['MEDUSA']['details'] 	= {'name': name, 'vars':['PRN' ,'PRD'], 'convert': medusadepthInt,'units':'mgC/m^2/day'}
 			av[name]['Data']['details']  	= {'name': name, 'vars':['NPP',], 'convert': osuconvert,'units':'mgC/m^2/day'}
