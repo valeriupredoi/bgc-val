@@ -413,7 +413,8 @@ def makeArea(fn,coordsdict):
 		meanLonDiff = np.abs(lons[:-1]-lons[1:]).mean()
 		for a in np.arange(len(lats)):
 			#area[a] = np.ones(len(lats)*calculateArea(lats[a]-meanLatDiff,lats[a]+meanLatDiff,-meanLonDiff,meanLonDiff))
-			area[:,a] = np.ones(len(lats))*ukp.Area([lats[a]-meanLatDiff/2.,-meanLonDiff/2.],[lats[a]+meanLatDiff/2.,meanLonDiff/2.])
+			print a, area.shape, len(lats),len(lons)
+			area[a,:] = np.ones(len(lons))*ukp.Area([lats[a]-meanLatDiff/2.,-meanLonDiff/2.],[lats[a]+meanLatDiff/2.,meanLonDiff/2.])
 		return area
 	else:
 		assert 0 , 'timeseriesTools.py:\tNot implemeted makeArea for uneven grids.'

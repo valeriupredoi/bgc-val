@@ -103,12 +103,12 @@ class timeseriesAnalysis:
 
 	#####
 	# Load Data file
-	self.AddDataArea()					
+	self.__madeDataArea__ = False
  	self.loadData()
 	
 	#####
 	# Load Model File
-	self.loadWeightsList()
+	self.loadModelWeightsDict()
   	self.loadModel()  	
 	#assert 0
   	
@@ -227,7 +227,7 @@ class timeseriesAnalysis:
 		    	#####
 		    	# can't skip it, need to load it.
 			layerdata = DL.load[(r,l)]
-			
+			print "0 len(layerdata):",len(layerdata)
 			#####
 			# get Weights:
 			volumeWeightedLayers = ['All', 'Transect']
@@ -246,16 +246,27 @@ class timeseriesAnalysis:
 						except: 
 							#print "timeseriesAnalysis:\tloadModel\tunable to load area",la,lo,da, 'adding 0. weight'
 							weights.append(0.)
+							
 			else:	weights = np.ones_like(layerdata)
 			
+			
+			print "1 len(layerdata):",len(layerdata),'\tlen(weights):', len(weights)
+			
 			if type(layerdata) == type(np.ma.array([1,-999,],mask=[False, True,])):
-				layerdata = layerdata.compressed()
 				weights = np.ma.array(weights)
-				weights = np.ma.masked_where((weights==0.)+weights.mask,weights).compressed()
+				#print weights.mean(),weights.min(),weights.max()
+				weights = np.ma.masked_where((weights==0.)+weights.mask+layerdata.mask,weights).compressed()
+				layerdata = layerdata.compressed()
+				if len(	layerdata)!= len(weights):
+					print "1.b len(	layerdata)!= len(weights)", len(layerdata),'!=', len(weights)
+					assert 0				
+
+			print "2 len(layerdata):",len(layerdata),'\tlen(weights):', len(weights)
+							
 			if len(layerdata)==0:
 				for m in self.metrics:
 					modeldataD[(r,l,m)][meantime] = np.ma.masked #np.ma.array([-999,],mask=[True,])
-					
+				continue
 #		  	for m in self.metrics:
 #		  		try:
 #		  			a = modeldataD[(r,l,m)][meantime]
@@ -272,6 +283,7 @@ class timeseriesAnalysis:
 #					modeldataD[(r,l,m)][meantime] = np.percentile(layerdata,pc)
 #					
 #		  		print "timeseriesAnalysis:\tloadModel\tLoaded metric:", int(meantime),'\t',[(r,l,m)], '\t',modeldataD[(r,l,m)][meantime]
+
 			if 'mean' 	in self.metrics:	modeldataD[(r,l,'mean')][meantime] = np.ma.average(layerdata,weights=weights)
 			if 'sum' 	in self.metrics:   	modeldataD[(r,l,'sum') ][meantime] = np.ma.sum(layerdata)			
 			if 'min'	in self.metrics:   	modeldataD[(r,l,'min') ][meantime] = np.ma.min(layerdata)
@@ -312,14 +324,11 @@ class timeseriesAnalysis:
 	if self.debug: print "timeseriesAnalysis:\tloadModel.\t Model loaded:",	self.modeldataD.keys()[:3], '...', len(self.modeldataD.keys())	
 
 
-  def loadWeightsList(self,):
+  def loadModelWeightsDict(self,):
   	"""
   	Adding Area dictionany for Model.
   	"""
   	  
-	self.weightsDict={}	
-	#self.weightsDict[(np.ma.masked,np.ma.masked)] = np.ma.masked
-	#self.weightsDict[(np.ma.masked,np.ma.masked,np.ma.masked)] = np.ma.masked	
 	nc = Dataset(self.gridFile,'r')
 	tmask = nc.variables['tmask'][:]
 	area = nc.variables['e2t'][:] * nc.variables['e1t'][:]
@@ -328,20 +337,23 @@ class timeseriesAnalysis:
 	area  = np.ma.masked_where(tmask[0]==0,area )
 	pvol = np.ma.masked_where(tmask==0,pvol)	
 	
-	print "timeseriesAnalysis:\t loadWeightsList\tWARNING:\t this is a hack added at the last minute for the nemo-medusa ukesm run and will not work elsewhere."
+	print "timeseriesAnalysis:\t loadModelWeightsDict\tWARNING:\t this is a hack added at the last minute for the nemo-medusa ukesm run and will not work elsewhere."
 	lats = nc.variables['nav_lat'][:]
 	lons = nc.variables['nav_lon'][:]
 	nc.close()
+
+	self.weightsDict={}	
 	if lats.ndim ==2:
 		for (i,j), a in np.ndenumerate(area):
 			#if np.ma.is_masked(a):continue
 			self.weightsDict[(lats[i,j],lons[i,j])] = a
+			
 	if lats.ndim ==1:
 		for (i,j), a in np.ndenumerate(area):
 			#if np.ma.is_masked(a):continue
 			self.weightsDict[(lats[i],lons[j])] = a
 					
-	if self.debug: print "timeseriesAnalysis:\t loadWeightsList.",self.weightsDict.keys()[0]		
+	if self.debug: print "timeseriesAnalysis:\t loadModelWeightsDict.",self.weightsDict.keys()[0]		
 
 
   def AddDataArea(self,):
@@ -366,7 +378,8 @@ class timeseriesAnalysis:
 		for (i,j), a in np.ndenumerate(area):
 			#if np.ma.is_masked(a):continue
 			self.dataAreaDict[(lats[i],lons[j])] = a
-
+	self.__madeDataArea__ = True
+	
   def loadDataAreas(self,lats,lons):
   	"""
   	Adding Area for each region.
@@ -435,7 +448,7 @@ class timeseriesAnalysis:
 	###############
 	# Loading data for each region.
 	dl = tst.DataLoader(self.dataFile,'',self.datacoords,self.datadetails, regions = self.regions, layers = self.layers,)
-	
+	if not self.__madeDataArea__: self.AddDataArea()
 	for r in self.regions:
 	    for l in self.layers:
 	    	dataD[(r,l)] = dl.load[(r,l,)]	
@@ -449,7 +462,10 @@ class timeseriesAnalysis:
     		print "timeseriesAnalysis:\t load in situ data,\tloaded ",(r,l),  'mean:',meandatad    	
 	    	dataD[(r,l,'lat')] = dl.load[(r,l,'lat')]		    	
 	    	dataD[(r,l,'lon')] = dl.load[(r,l,'lon')]
-	    	dataD[(r,l,'area')] = self.loadDataAreas(dataD[(r,l,'lat')],dataD[(r,l,'lon')])
+		if len(ukp.intersection(['mean','median','sum',], self.metrics)):	    	
+		    	dataD[(r,l,'area')] = self.loadDataAreas(dataD[(r,l,'lat')],dataD[(r,l,'lon')])
+		else:	dataD[(r,l,'area')] = np.ones_like(dataD[(r,l,'lon')])
+		
 		if not meandatad and not datadmask: #np.ma.is_masked(dataD[(r,l)]):
 			dataD[(r,l)]  = np.ma.array([-999,],mask=[True,])	
 			dataD[(r,l,'lat')]  = np.ma.array([-999,],mask=[True,])	    	

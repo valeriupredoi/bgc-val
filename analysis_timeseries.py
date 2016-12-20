@@ -179,12 +179,12 @@ def analysis_timeseries(jobID = "u-ab671",
                         analysisKeys.append('Iron')                     # Iron
 			#analysisKeys.append('CHN')
 			#analysisKeys.append('CHD')
-			analysisKeys.append('DiaFrac')			# work in progress
+			#analysisKeys.append('DiaFrac')			# work in progress
                         #####
                         # Physics switches:
                         analysisKeys.append('T')                        # WOA Temperature
                         analysisKeys.append('S')                        # WOA Salinity
-			analysisKeys.append('MLD')			# iFERMER Mixed Layer Depth - work in prgress
+			#analysisKeys.append('MLD')			# iFERMER Mixed Layer Depth - work in prgress
 			analysisKeys.append('TotalIceArea')		# work in progress
 			analysisKeys.append('NorthernTotalIceArea')	# work in progress
 			analysisKeys.append('SouthernTotalIceArea')	# work in progress
@@ -194,9 +194,9 @@ def analysis_timeseries(jobID = "u-ab671",
 			analysisKeys.append('DrakePassageTransport')	# DrakePassageTransport
                         analysisKeys.append('AMOC_32S')                 # AMOC 32S
                         analysisKeys.append('AMOC_26N')                 # AMOC 26N
-                       	analysisKeys.append('ZonalCurrent')             # Zonal Veloctity
-                       	analysisKeys.append('MeridionalCurrent')        # Meridional Veloctity
-                       	analysisKeys.append('VerticalCurrent')          # Vertical Veloctity
+#                       	analysisKeys.append('ZonalCurrent')             # Zonal Veloctity
+#                       	analysisKeys.append('MeridionalCurrent')        # Meridional Veloctity
+#                       	analysisKeys.append('VerticalCurrent')          # Vertical Veloctity
                        	analysisKeys.append('GlobalMeanTemperature')    # Global Mean Temperature
                        	analysisKeys.append('IcelessMeanSST')    	# Global Mean Surface Temperature with no ice
 
@@ -781,7 +781,7 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		if annual:
 			av['TotalOMZVolume']['modelFiles']  	= sorted(glob(paths.ModelFolder_pref+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
-			av['TotalOMZVolume']['dataFile'] 		=  WOAFolder+'woa13_all_o00_01.nc'
+			av['TotalOMZVolume']['dataFile'] 	=  WOAFolder+'woa13_all_o00_01.nc'
 		else:
 			print "OMZ volume not implemented for monthly data"
 			assert 0
@@ -824,7 +824,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			return np.ma.masked_where(arr.mask + (arr >omzthreshold)+(arr <0.),pvol).sum()
 
 		av['TotalOMZVolume']['modelcoords'] 	= medusaCoords
-		av['TotalOMZVolume']['datacoords'] 		= woaCoords
+		av['TotalOMZVolume']['datacoords'] 	= woaCoords
 
 		av['TotalOMZVolume']['modeldetails'] 	= {'name': 'TotalOMZVolume', 'vars':['OXY',], 'convert': modelTotalOMZvol,'units':'m^3'}
 		av['TotalOMZVolume']['datadetails']  	= {'name': 'TotalOMZVolume', 'vars':['o_an',], 'convert': woaTotalOMZvol,'units':'m^3'}
@@ -1283,7 +1283,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['datacoords'] 		= woaCoords
 
 		nc = Dataset(paths.orcaGridfn,'r')
-		tmask = nc.variables['tmask'][:]
+		icetmask = nc.variables['tmask'][:]
 		area_full = nc.variables['e2t'][:] * nc.variables['e1t'][:]
 		nc.close()
 
@@ -1291,7 +1291,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			#### works like no change, but applies a mask.
 			icecov = nc.variables['soicecov'][:].squeeze()
 			sst = np.ma.array(nc.variables['votemper'][:,0,].squeeze())
-			sst = np.ma.masked_where((tmask[0]==0)+(icecov>0.15)+sst.mask,sst)
+			sst = np.ma.masked_where((icetmask[0]==0)+(icecov>0.15)+sst.mask,sst)
 			area=  np.ma.masked_where(sst.mask,area_full)
 			val = (sst*area).sum()/(area.sum())
 			print "calcIcelessMeanSST", sst.shape,area.shape, val
@@ -1533,7 +1533,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		name = 'MLD'
 		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)
 		#av[name]['modelFiles']  	= sorted(glob(paths.ModelFolder_pref+jobID+"/"+jobID+"o_1y_*_grid_T.nc"))
-		av[name]['dataFile'] 		= paths.MLDFolder+"mld_DT02_c1m_reg2.0.nc"
+		av[name]['dataFile'] 		= paths.MLDFolder+"mld_DT02_c1m_reg2.0-annual.nc"	#mld_DT02_c1m_reg2.0.nc"
 			#MLD_DT02 = depth where (T = T_10m +/- 0.2 degC)
 
 
