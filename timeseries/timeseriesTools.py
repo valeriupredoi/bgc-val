@@ -404,7 +404,7 @@ def makeArea(fn,coordsdict):
 	nc = Dataset(fn,'r')
 	lats = nc.variables[coordsdict['lat']][:]	
 	lons = nc.variables[coordsdict['lon']][:]	
-	depths = nc.variables[coordsdict['z']][:]
+	#depths = nc.variables[coordsdict['z']][:]
 	nc.close()
 	if lats.ndim ==1:
 		#lat2d,lon2d = np.meshgrid(lats,lons)
@@ -416,8 +416,13 @@ def makeArea(fn,coordsdict):
 			print a, area.shape, len(lats),len(lons)
 			area[a,:] = np.ones(len(lons))*ukp.Area([lats[a]-meanLatDiff/2.,-meanLonDiff/2.],[lats[a]+meanLatDiff/2.,meanLonDiff/2.])
 		return area
+	elif lats.ndim ==2:
+		print "timeseriesTools.py:\tWARNING: Setting area to flat for uneven grid! "
+		return np.ones_like(lats)
+
 	else:
-		assert 0 , 'timeseriesTools.py:\tNot implemeted makeArea for uneven grids.'
+		print "timeseriesTools.py:\tNot implemeted makeArea for this grid. ",lats.ndim, coordsdict
+		assert 0 , 'timeseriesTools.py:\tNot implemeted makeArea for this grid. '+str(lats.ndim)
 
 def calculateArea(lat0,lat1,lon0,lon1):
 		co = {"type": "Polygon", "coordinates": [

@@ -411,7 +411,8 @@ def analysis_timeseries(jobID = "u-ab671",
 	maredatCoords 	= {'t':'index_t', 'z':'DEPTH',  'lat': 'LATITUDE', 'lon': 'LONGITUDE', 'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
 	takahashiCoords	= {'t':'index_t', 'z':'index_z','lat': 'LAT', 'lon': 'LON', 'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
 	woaCoords 	= {'t':'index_t', 'z':'depth',  'lat': 'lat', 	   'lon': 'lon',       'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
-	glodapCoords	= {'t':'index_t', 'z':'depth',  'lat': 'latitude', 'lon': 'longitude', 'cal': 'standard','tdict':[] }
+	osuCoords	= {'t':'index_t', 'z':'',  	'lat': 'latitude', 'lon': 'longitude', 'cal': 'standard','tdict':[] }
+	glodapCoords	= {'t':'index_t', 'z':'depth',  'lat': 'latitude', 'lon': 'longitude', 'cal': 'standard','tdict':[] }	
 	glodapv2Coords	= {'t':'time',    'z':'Pressure','lat':'lat',      'lon':'lon',        'cal': '',        'tdict':{0:0,} }
 	mldCoords	= {'t':'index_t', 'z':'index_z','lat':'lat',       'lon': 'lon','cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
 	dmsCoords	= {'t':'time',    'z':'depth',  'lat':'Latitude',  'lon': 'Longitude','cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
@@ -1064,7 +1065,7 @@ def analysis_timeseries(jobID = "u-ab671",
 #			print ""
 
 		av[name]['modelcoords'] 	= medusaCoords
-		av[name]['datacoords'] 		= glodapCoords
+		av[name]['datacoords'] 		= osuCoords
 
 
 
@@ -1090,8 +1091,8 @@ def analysis_timeseries(jobID = "u-ab671",
 
 
 
-		av[name]['modeldetails'] 	= {'name': 'IntPP', 'vars':['PRN' ,'PRD'], 'convert': medusadepthInt,'units':'mgC/m^2/day'}
-		av[name]['datadetails']  	= {'name': 'IntPP', 'vars':['NPP',], 'convert': osuconvert,'units':'mgC/m^2/day'}
+		av[name]['modeldetails'] 	= {'name': name, 'vars':['PRN' ,'PRD'], 'convert': medusadepthInt,'units':'mgC/m^2/day'}
+		av[name]['datadetails']  	= {'name': name, 'vars':['NPP',], 'convert': osuconvert,'units':'mgC/m^2/day'}
 
 		av[name]['layers'] 		= ['Surface',]
 		av[name]['regions'] 		= regionList
@@ -1129,7 +1130,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modelcoords'] 	= medusaCoords
 		av[name]['datacoords'] 		= glodapCoords
 
-                av[name]['modeldetails']        = {'name': 'IntPP', 'vars':['PRN' ,'PRD'], 'convert': medusadepthInt,'units':'Gt/yr'}
+                av[name]['modeldetails']        = {'name': 'IntPP_OSU', 'vars':['PRN' ,'PRD'], 'convert': medusadepthInt,'units':'Gt/yr'}
 		if noOSU:
 	                av[name]['datadetails']         = {'name': '', 'units':''}
 
@@ -1151,7 +1152,7 @@ def analysis_timeseries(jobID = "u-ab671",
 				elif arr.ndim ==2: arr = arr*osuarea
 				else: assert 0
 				return arr.sum()
-	               	av[name]['datadetails']         = {'name': 'IntPP', 'vars':['NPP',], 'convert': osuconvert,'units':'Gt/yr'}
+	               	av[name]['datadetails']         = {'name': 'IntPP_OSU', 'vars':['NPP',], 'convert': osuconvert,'units':'Gt/yr'}
 
 		av[name]['layers'] 		= ['layerless',]
 		av[name]['regions'] 		= ['regionless',]
