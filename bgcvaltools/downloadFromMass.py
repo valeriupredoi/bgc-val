@@ -221,6 +221,48 @@ def downloadMass(jobID,):
                 print "Fixing file prefix",
         	os.symlink(fn,correctfn)
 	        print correctfn
+
+
+        #####
+        # Some runs have nemo/medusa as a preface to the file name.
+	for pref in ['nemo_','medusa_']:
+		#nemo_u-ai886o_1y_26291201-26301201_grid-V.nc
+	        fns = glob(outputFold+"/"+pref+jobID+"*.nc")
+        	print "Looking for new prefix:",pref, outputFold+"/"+pref+jobID+"*.nc"
+	        for fn in sorted(fns):
+        	        #####
+                	correctfn = os.path.dirname(fn) +'/'+ os.path.basename(fn).replace(pref,'')
+	                if os.path.exists(correctfn):
+        	                print "correct path exists.",correctfn
+                	        continue
+	                print "Fixing file prefix",pref,
+	                os.symlink(fn,correctfn)
+        	        print correctfn
+
+
+        #####
+        # Some runs have nemo/medusa as a preface to the file name.
+        suffDict= {'grid_T':'grid-T',
+		    'grid_U':'grid-U',
+                    'grid_V':'grid-V',
+                    'grid_W':'grid-W',
+                    'diaptr':'diad-T',
+                    'ptrc_T':'ptrc-T',
+		    }
+	for suff, badsuff in suffDict.items():
+                #nemo_u-ai886o_1y_26291201-26301201_grid-V.nc
+                fns = glob(outputFold+"/"+jobID+"*"+badsuff+".nc")
+                print "Looking for new suff:",badsuff, outputFold+"/"+jobID+"*"+badsuff+".nc"
+                for fn in sorted(fns):
+                        #####
+                        correctfn = os.path.dirname(fn) +'/'+ os.path.basename(fn).replace(badsuff,suff)
+                        if os.path.exists(correctfn):
+                                print "correct path exists.",correctfn
+                                continue
+                        print "Fixing file suffix",badsuff,'->',suff,
+                        os.symlink(fn,correctfn)
+                        print correctfn
+
 	
 	#####
 	# This code looks at symoblic links and points them at their ultimate source, removing the long link chains.
