@@ -66,8 +66,10 @@ def analysis_omz(jobID=''):
 	analysisKeys.append('OMZMeanDepth')		# OMZ mean depth
 	analysisKeys.append('OMZThickness')             # Oxygen Minimum Zone Thickness					
 	analysisKeys.append('TotalOMZVolume')		# Total OMZ volume
-	analysisKeys.append('OMZExtent')             # Oxygen Minimum Zone Thickness					
-			
+	analysisKeys.append('OMZExtent')             	# Oxygen Minimum Zone Thickness					
+       	analysisKeys.append('ZonalCurrent')             # Zonal Veloctity
+       	analysisKeys.append('MeridionalCurrent')        # Meridional Veloctity
+       	analysisKeys.append('VerticalCurrent')          # Vertical Veloctity			
 				
 	analysisDict = {}
 	imagedir	= ukp.folder(paths.imagedir +'/'+jobID+'/Level3/OMZ')
@@ -107,10 +109,28 @@ def analysis_omz(jobID=''):
 			return sorted(glob(datafolder+jobID+"/"+jobID+"o_1m_*_"+filekey+".nc"))
 					        			
 
-	
+	#####
+	# Adding land mask for model
+	masknc = Dataset(paths.orcaGridfn,'r')
+	tlandmask = masknc.variables['tmask'][:]
+	masknc.close()
+	def applyLandMask(nc,keys):
+		#### works like no change, but applies a mask.
+		return np.ma.masked_where(tlandmask==0,nc.variables[keys[0]][:].squeeze())
+
+
+
+	#####
+	# 	
 	medusaCoords 	= {'t':'time_counter', 'z':'deptht', 'lat': 'nav_lat',  'lon': 'nav_lon',   'cal': '360_day',}	# model doesn't need time dict.
-	woaCoords 	= {'t':'index_t', 'z':'depth',  'lat': 'lat', 	   'lon': 'lon',       'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}	
+	medusaUCoords 	= {'t':'time_counter', 'z':'depthu', 'lat': 'nav_lat',  'lon': 'nav_lon',   'cal': '360_day',}	# model doesn't need time dict.
+	medusaVCoords 	= {'t':'time_counter', 'z':'depthv', 'lat': 'nav_lat',  'lon': 'nav_lon',   'cal': '360_day',}	# model doesn't need time dict.
+	medusaWCoords 	= {'t':'time_counter', 'z':'depthw', 'lat': 'nav_lat',  'lon': 'nav_lon',   'cal': '360_day',}	# model doesn't need time dict.
 	
+	woaCoords 	= {'t':'index_t', 'z':'depth',  'lat': 'lat', 	   'lon': 'lon',       'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}	
+	godasCoords 	= {'t':'index_t',    'z':'level',  'lat': 'lat',      'lon': 'lon', 'cal': 'standard','tdict':['ZeroToZero'] }
+	
+		
 	av = ukp.AutoVivification()
 	
 	if 'O2' in analysisKeys:
@@ -331,7 +351,7 @@ def analysis_omz(jobID=''):
 			
 		nc = Dataset(paths.orcaGridfn,'r')
 		try:	
-			pvol   = nc.variables['pvol' ][:]
+			pvol  = nc.variables['pvol' ][:]
 			tmask = nc.variables['tmask'][:]
 		except:
 			tmask = nc.variables['tmask'][:]			
@@ -383,7 +403,87 @@ def analysis_omz(jobID=''):
 		av['TotalOMZVolume']['gridFile']		= paths.orcaGridfn	
 		av['TotalOMZVolume']['Dimensions']		= 1	
 	
-	
+	if 'ZonalCurrent' in analysisKeys:
+		name = 'ZonalCurrent'
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_U', paths.ModelFolder_pref, annual)
+		if annual:
+			av[name]['dataFile'] 		= paths.GODASFolder+'ucur.clim.nc'
+
+		av[name]['modelcoords'] 	= medusaUCoords
+		av[name]['datacoords'] 		= godasCoords
+		def applyLandMask1e3(nc,keys):
+			return applyLandMask(nc,keys)*1000.
+		av[name]['modeldetails'] 	= {'name': name, 'vars':['vozocrtx',], 'convert': applyLandMask1e3,'units':'mm/s'}
+		av[name]['datadetails']  	= {'name': name, 'vars':['ucur',], 'convert': ukp.NoChange,'units':'mm/s'}
+
+		av[name]['layers'] 		= layerList
+		av[name]['regions'] 		= regionList
+		av[name]['metrics']		= metricList
+
+		av[name]['datasource'] 		= 'GODAS'
+		av[name]['model']		= 'NEMO'
+
+		av[name]['modelgrid']		= 'eORCA1'
+		av[name]['gridFile']		= './data/eORCA1_gridU_mesh.nc'
+		av[name]['Dimensions']		= 3
+
+
+	if 'MeridionalCurrent' in analysisKeys:
+		name = 'MeridionalCurrent'
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_V', paths.ModelFolder_pref, annual)
+		if annual:
+			av[name]['dataFile'] 		= paths.GODASFolder+'vcur.clim.nc'
+
+		av[name]['modelcoords'] 	= medusaVCoords
+		av[name]['datacoords'] 		= godasCoords
+
+		def applyLandMask1e3(nc,keys):
+			return applyLandMask(nc,keys)*1000.
+
+		av[name]['modeldetails'] 	= {'name': name, 'vars':['vomecrty',], 'convert': applyLandMask1e3,'units':'mm/s'}
+		av[name]['datadetails']  	= {'name': name, 'vars':['vcur',], 'convert': ukp.NoChange,'units':'mm/s'}
+
+		av[name]['layers'] 		= layerList
+		av[name]['regions'] 		= regionList
+		av[name]['metrics']		= metricList
+
+		av[name]['datasource'] 		= 'GODAS'
+		av[name]['model']		= 'NEMO'
+
+		av[name]['modelgrid']		= 'eORCA1'
+		av[name]['gridFile']		= './data/eORCA1_gridV_mesh.nc'
+		av[name]['Dimensions']		= 3
+
+	if 'VerticalCurrent' in analysisKeys:
+		name = 'VerticalCurrent'
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_W', paths.ModelFolder_pref, annual)
+		if annual:
+			av[name]['dataFile'] 		= paths.GODASFolder+'dzdt.clim.nc'
+
+
+
+		av[name]['modelcoords'] 	= medusaWCoords
+		av[name]['datacoords'] 		= godasCoords
+
+		def applyLandMask1e6(nc,keys):
+			return applyLandMask(nc,keys)*1000000.
+
+		av[name]['modeldetails'] 	= {'name': name, 'vars':['vovecrtz',], 'convert': applyLandMask1e6,'units':'um/s'}
+		av[name]['datadetails']  	= {'name': name, 'vars':['dzdt',], 'convert': ukp.NoChange,'units':'um/s'}
+
+		av[name]['layers'] 		= layerList
+		av[name]['regions'] 		= regionList
+		av[name]['metrics']		= metricList
+
+		av[name]['datasource'] 		= 'GODAS'
+		av[name]['model']		= 'NEMO'
+
+		av[name]['modelgrid']		= 'eORCA1'
+		av[name]['gridFile']		= './data/eORCA1_gridW_mesh.nc'
+		av[name]['Dimensions']		= 3
+		
+		
+			
   	#####
   	# Calling timeseriesAnalysis
 	# This is where the above settings is passed to timeseriesAnalysis, for the actual work to begin.
@@ -397,6 +497,7 @@ def analysis_omz(jobID=''):
 	shelves_insitu={}
 	for name in av.keys():
 		continue
+		
 		print "------------------------------------------------------------------"	
 		print "analysis-Timeseries.py:\tBeginning to call timeseriesAnalysis for ", name
 
@@ -498,14 +599,14 @@ def analysis_omz(jobID=''):
                 layers          = ['layerless',],
                 regions         = ['Global',],
                 workingDir      = shelvedir,
-                imageDir        = imagedir,
-                contours	= [1.,10.,100.],
+                imageDir        = ukp.folder(imagedir +'ExtentMaps/OMZ'), 
+                contours	= [20.,],
+                zrange		= 'auto',
                 grid            = av[name]['modelgrid'],
                 gridFile        = av[name]['gridFile'],
                 debug           = True,
         )	
 
-        
         name = 'Oxygen'
         em = extentMaps(
                 av[name]['modelFiles'],
@@ -518,16 +619,16 @@ def analysis_omz(jobID=''):
                 datasource      = av[name]['datasource'],
                 model           = av[name]['model'],
                 jobID           = jobID,
-                layers          = ['1000m','500m',],
+                layers          = ['1000m','500m','Surface',],
                 regions         = ['Global',],
                 workingDir      = shelvedir,
-                imageDir        = imagedir,
-                contours	= [0.,20.,400.],
+                imageDir        = ukp.folder(imagedir +'ExtentMaps/Oxygen'),
+                contours	= [20.,],
+                 zrange		= [0.,400.],
                 grid            = av[name]['modelgrid'],
                 gridFile        = av[name]['gridFile'],
                 debug           = True,
         )
-               	
 
 
 def main():
