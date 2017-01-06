@@ -1435,7 +1435,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['model']		= 'NEMO'
 
 		av[name]['modelgrid']		= 'eORCA1'
-		av[name]['gridFile']		= paths.orcaGridfn
+		av[name]['gridFile']		= './data/eORCA1_gridU_mesh.nc'
 		av[name]['Dimensions']		= 3
 
 
@@ -1462,7 +1462,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['model']		= 'NEMO'
 
 		av[name]['modelgrid']		= 'eORCA1'
-		av[name]['gridFile']		= paths.orcaGridfn
+		av[name]['gridFile']		= './data/eORCA1_gridV_mesh.nc'
 		av[name]['Dimensions']		= 3
 
 	if 'VerticalCurrent' in analysisKeys:
@@ -1490,7 +1490,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['model']		= 'NEMO'
 
 		av[name]['modelgrid']		= 'eORCA1'
-		av[name]['gridFile']		= paths.orcaGridfn
+		av[name]['gridFile']		= './data/eORCA1_gridW_mesh.nc'
 		av[name]['Dimensions']		= 3
 
 
