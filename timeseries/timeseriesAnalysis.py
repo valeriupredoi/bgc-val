@@ -255,7 +255,9 @@ class timeseriesAnalysis:
 			if type(layerdata) == type(np.ma.array([1,-999,],mask=[False, True,])):
 				weights = np.ma.array(weights)
 				#print weights.mean(),weights.min(),weights.max()
-				weights = np.ma.masked_where((weights==0.)+weights.mask+layerdata.mask,weights).compressed()
+				weights = np.ma.masked_where((weights==0.)+weights.mask+layerdata.mask,weights)#.compressed()
+				layerdata = np.ma.masked_where((weights==0.)+weights.mask+layerdata.mask,layerdata)#.compressed()				
+				weights = weights.compressed()				
 				layerdata = layerdata.compressed()
 				if len(	layerdata)!= len(weights):
 					print "1.b len(	layerdata)!= len(weights)", len(layerdata),'!=', len(weights)
@@ -331,9 +333,12 @@ class timeseriesAnalysis:
   	  
 	nc = Dataset(self.gridFile,'r')
 	tmask = nc.variables['tmask'][:]
-	area = nc.variables['e2t'][:] * nc.variables['e1t'][:]
-	
-	pvol = nc.variables['e3t'][:] *area
+	try:	
+		pvol  = nc.variables['pvol' ][:]	
+		area  = nc.variables['area' ][:]		
+	except:
+		area = nc.variables['e2t'][:] * nc.variables['e1t'][:]
+		pvol = nc.variables['e3t'][:] *area
 	area  = np.ma.masked_where(tmask[0]==0,area )
 	pvol = np.ma.masked_where(tmask==0,pvol)	
 	
