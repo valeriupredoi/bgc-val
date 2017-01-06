@@ -246,7 +246,7 @@ def downloadMass(jobID,):
 		    'grid_U':'grid-U',
                     'grid_V':'grid-V',
                     'grid_W':'grid-W',
-                    'diaptr':'diad-T',
+                    'diad_T':'diad-T',
                     'ptrc_T':'ptrc-T',
 		    }
 	for suff, badsuff in suffDict.items():

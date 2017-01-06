@@ -41,7 +41,7 @@ from multiprocessing import Pool
 
 from bgcvaltools.downloadFromMass import  downloadMass, findLastFinishedYear
 from analysis_timeseries import analysis_timeseries, singleTimeSeries, singleTimeSeriesProfile
-from analysis_timeseries import level1KeysDict, timeseriesDict, physKeysDict
+from analysis_timeseries import level1KeysDict, timeseriesDict, physKeysDict,keymetricsfirstDict
 from analysis_p2p import analysis_p2p, p2pDict_level2, p2pDict_physics,single_p2p
 from makeReport import html5Maker
 from UKESMpython import folder
@@ -58,6 +58,13 @@ def timeseriesParrallelL1(index):
 	key = level1KeysDict[index]
 	singleTimeSeries(jobID, key,)
 	print "timeseriesParrallel",index, jobID, 'SUCESS',key	
+
+def timeseriesParrallelKMF(index):
+        print "timeseriesParrallel",index, jobID, 'START'
+        key = keymetricsfirstDict[index]
+        singleTimeSeries(jobID, key,)
+        print "timeseriesParrallel",index, jobID, 'SUCESS',key
+
 
 def timeseriesParrallelPhys(index):
 	key = physKeysDict[index]
@@ -121,6 +128,16 @@ def theWholePackage(jobID,year=False,suite = 'level1'):
 
 	print "########\nThe Whole Package:\tStarting Time series (surface only)", jobID 	
 	if parrallel:
+
+		#####
+		# Running key metrics first.
+		if suite =='level1': 
+	                remaining = sorted(keymetricsfirstDict.keys())[:]
+        	        p = Pool(cores)
+                	p.map(timeseriesParrallelKMF,remaining)
+	                p.close()
+
+
 		if suite =='all':	remaining = sorted(timeseriesDict.keys())[:]
 		if suite =='level1':	remaining = sorted(level1KeysDict.keys())[:]
 		if suite =='physics':	remaining = sorted(physKeysDict.keys())[:]		

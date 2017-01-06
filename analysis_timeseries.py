@@ -73,6 +73,15 @@ level1Keys = ['N', 'Si','O2','Alk','DIC','AirSeaFlux','TotalAirSeaFluxCO2','IntP
 		'TotalIceExtent', 'NorthernTotalIceExtent','SouthernTotalIceExtent','DrakePassageTransport','AMOC_26N','AMOC_32S',
 		'ZonalCurrent','MeridionalCurrent','VerticalCurrent']
 level1KeysDict = {i:n for i,n in enumerate(level1Keys)}
+
+
+keymetricsfirstKeys = ['TotalAirSeaFluxCO2','IntPP_OSU','GlobalExportRatio',
+                'TotalIceExtent', 'NorthernTotalIceExtent','SouthernTotalIceExtent',
+		'DrakePassageTransport','AMOC_26N',]
+keymetricsfirstDict = {i:n for i,n in enumerate(keymetricsfirstKeys)}
+
+
+
 physKeys  = ['T', 'S','MLD','TotalIceArea', 'NorthernTotalIceArea','SouthernTotalIceArea',
 		'TotalIceExtent', 'NorthernTotalIceExtent','SouthernTotalIceExtent',
 		'DrakePassageTransport','AMOC_26N','AMOC_32S',
@@ -159,6 +168,18 @@ def analysis_timeseries(jobID = "u-ab671",
 			analysisKeys.append('DrakePassageTransport')			# DrakePassageTransport
 			#####
 			# Switched Off
+
+                if analysisSuite.lower() in ['keymetricsfirst',]:
+			#####
+			# The crucial metrics that should be run first to be added to the report.
+                        analysisKeys.append('AirSeaFlux')               # work in progress
+                        analysisKeys.append('GlobalExportRatio')        # Export ratio (no data)
+                        analysisKeys.append('DrakePassageTransport')    # DrakePassageTransport
+                        analysisKeys.append('AMOC_26N')                 # AMOC 26N
+                        analysisKeys.append('TotalIceExtent')           # work in progress
+                        analysisKeys.append('NorthernTotalIceExtent')   # work in progress
+                        analysisKeys.append('SouthernTotalIceExtent')   # work in progress
+                        analysisKeys.append('IntPP_OSU')                # OSU Integrated primpary production
 
 
                 if analysisSuite.lower() in ['level1',]:
