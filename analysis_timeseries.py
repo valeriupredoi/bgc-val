@@ -1838,6 +1838,7 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		nc = Dataset(paths.orcaGridfn,'r')
 		masked_area = nc.variables['e2t'][:] * nc.variables['e1t'][:]*nc.variables['tmask'][:]
+		
 		nc.close()
 
 		def datadustsum(nc,keys):
