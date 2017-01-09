@@ -1850,14 +1850,14 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['datacoords'] 		= medusaCoords
 
 		nc = Dataset(paths.orcaGridfn,'r')
-		masked_area = nc.variables['e2t'][:] * nc.variables['e1t'][:]*nc.variables['tmask'][:]
+		masked_area = nc.variables['e2t'][:] * nc.variables['e1t'][:]*nc.variables['tmask'][0]
 		nc.close()
 
 		def datadustsum(nc,keys):
 			#factors are:
 			# 0.035: iron as a fraction of total dust
 			# 1e6: convert from kmol -> mmol
-			# 0.00532: solubility factor or iron
+			# 0.00532: solubility factor for iron
 			# 55.845: atmoic mass of iron (g>mol conversion)
 			# (24.*60.*60.): per second to per day
 			dust = nc.variables[keys[0]][:]
