@@ -68,7 +68,7 @@ timeseriesDict = {i:n for i,n in enumerate(timeseriesKeys)}
 
 level1Keys = ['N', 'Si','O2','Alk','DIC','AirSeaFlux','TotalAirSeaFluxCO2','IntPP_OSU','PP_OSU' ,'LocalExportRatio','GlobalExportRatio' ,
 		'TotalOMZVolume','OMZThickness' ,'OMZMeanDepth','Iron',
-		'DiaFrac', #'CHN','CHD',
+		'Dust','TotalDust','DiaFrac', #'CHN','CHD',
 		'T', 'S','MLD','TotalIceArea', 'NorthernTotalIceArea','SouthernTotalIceArea',
 		'TotalIceExtent', 'NorthernTotalIceExtent','SouthernTotalIceExtent','DrakePassageTransport','AMOC_26N','AMOC_32S',
 		'ZonalCurrent','MeridionalCurrent','VerticalCurrent']
@@ -198,6 +198,9 @@ def analysis_timeseries(jobID = "u-ab671",
                         analysisKeys.append('OMZThickness')             # Oxygen Minimum Zone Thickness
                         analysisKeys.append('OMZMeanDepth')             # Oxygen Minimum Zone mean depth
                         analysisKeys.append('Iron')                     # Iron
+                        analysisKeys.append('Dust')                     # Dust
+                        analysisKeys.append('TotalDust')                # Total Dust
+
 			#analysisKeys.append('CHN')
 			#analysisKeys.append('CHD')
 			#analysisKeys.append('DiaFrac')			# work in progress
@@ -234,8 +237,8 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('OMZThickness')             # Oxygen Minimum Zone Thickness
 			#analysisKeys.append('TotalOMZVolume')		# work in progress
                         #analysisKeys.append('O2')                       # WOA Oxygen
-                        #analysisKeys.append('Dust')                     # Dust
-                        #analysisKeys.append('TotalDust')                     # Total Dust
+                        analysisKeys.append('Dust')                     # Dust
+                        analysisKeys.append('TotalDust')                     # Total Dust
 			#analysisKeys.append('DIC')			# work in progress
 			#analysisKeys.append('DrakePassageTransport')	# DrakePassageTransport
 			#analysisKeys.append('TotalIceArea')		# work in progress
@@ -247,7 +250,7 @@ def analysis_timeseries(jobID = "u-ab671",
                         #analysisKeys.append('IntPP_OSU')               # OSU Integrated primpary production
                         #####
                         # Physics switches:
-                        analysisKeys.append('T')                       # WOA Temperature
+                        #analysisKeys.append('T')                       # WOA Temperature
                         #analysisKeys.append('S')                       # WOA Salinity
                         #analysisKeys.append('NorthernTotalIceArea')    # work in progress
                         #analysisKeys.append('SouthernTotalIceArea')    # work in progress
@@ -1519,8 +1522,10 @@ def analysis_timeseries(jobID = "u-ab671",
 	if 'MLD' in analysisKeys:
 
 		def mldapplymask(nc,keys):
-			mld = nc.variables[keys[0]][:]
-			return np.ma.masked_where((np.tile(nc.variables[keys[1]][:],(12,1,1))==0.)+mld.mask+(mld==1.E9),mld)
+			mld = np.ma.array(nc.variables[keys[0]][:])
+			return np.ma.masked_where((nc.variables[keys[1]][:]==0.)+mld.mask+(mld==1.E9),mld)
+                        #eturn np.ma.masked_where((np.tile(nc.variables[keys[1]][:],(12,1,1))==0.)+mld.mask+(mld==1.E9),mld)
+
 		nc = Dataset(paths.orcaGridfn,'r')
 		depth = nc.variables['nav_lev'][:]#
 		nc.close()
@@ -1810,12 +1815,20 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['datacoords'] 		= medusaCoords
 		av[name]['modeldetails'] 	= {'name': name, 'vars':['AEOLIAN',], 'convert': ukp.NoChange,'units':'mmol Fe/m2/d'}
 
-		def ConvertKgFeperSec_To_mmolFeperday(nc,keys):
-			return nc.variables[keys[0]][:] * (24.*60.*60.) * 17.9
+                def mahodatadust(nc,keys):
+                        #factors are:
+                        # 0.035: iron as a fraction of total dust
+                        # 1e6: convert from kmol -> mmol
+                        # 0.00532: solubility factor or iron
+                        # 55.845: atmoic mass of iron (g>mol conversion)
+                        # (24.*60.*60.): per second to per day
+                        dust = nc.variables[keys[0]][:]
+                        dust[194:256,295:348] = 0.
+                        dust[194:208,285:295] = 0.
+                        dust[188:216,290:304] = 0.
+                        return dust *0.035 * 1.e6 *0.00532*(24.*60.*60.) / 55.845
 
-		if annual:
-			av[name]['datadetails']  	= {'name': name, 'vars':['dust_ann',], 'convert': ConvertKgFeperSec_To_mmolFeperday,'units':'mmol Fe/m2/d'}
-		else:	av[name]['datadetails']  	= {'name': name, 'vars':['dust',], 'convert': ConvertKgFeperSec_To_mmolFeperday,'units':'mmol Fe/m2/d'}	#kg / m2 / s
+		av[name]['datadetails']  	= {'name': name, 'vars':['dust_ann',], 'convert': mahodatadust ,'units':'mmol Fe/m2/d'}
 
 		av[name]['layers'] 		= ['layerless',]
 		av[name]['regions'] 		= regionList
@@ -1830,7 +1843,7 @@ def analysis_timeseries(jobID = "u-ab671",
 
 	if 'TotalDust' in analysisKeys:
 		name = 'TotalDust'
-		av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', paths.ModelFolder_pref, annual)[::30]
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', paths.ModelFolder_pref, annual)[:]
 		av[name]['dataFile'] 	= paths.Dustdir+'mahowald.orca100_annual.nc'
 
 		av[name]['modelcoords'] 	= medusaCoords
@@ -1841,15 +1854,27 @@ def analysis_timeseries(jobID = "u-ab671",
 		nc.close()
 
 		def datadustsum(nc,keys):
-			return masked_area*nc.variables[keys[0]][:].sum() * (24.*60.*60.) * 17.9
+			#factors are:
+			# 0.035: iron as a fraction of total dust
+			# 1e6: convert from kmol -> mmol
+			# 0.00532: solubility factor or iron
+			# 55.845: atmoic mass of iron (g>mol conversion)
+			# (24.*60.*60.): per second to per day
+			dust = nc.variables[keys[0]][:]
+			dust[194:256,295:348] = 0.
+ 			dust[194:208,285:295] = 0.
+  			dust[188:216,290:304] = 0.
+			return (masked_area*dust).sum() *0.035 * 1.e6 *0.00532*(24.*60.*60.) / 55.845
 
 		def modeldustsum(nc,keys):
-			return masked_area*nc.variables[keys[0]][:].sum()
+                        dust = nc.variables[keys[0]][:]
+                        dust[:,194:256,295:348] = 0.
+                        dust[:,194:208,285:295] = 0.
+                        dust[:,188:216,290:304] = 0.
+			return (masked_area*dust).sum()  
 
-		av[name]['modeldetails'] 	= {'name': name, 'vars':['AEOLIAN',], 'convert': modeldustsum,'units':'mmol Fe/m2/d'}
-		if annual:
-			av[name]['datadetails']  	= {'name': name, 'vars':['dust_ann',], 'convert': datadustsum,'units':'mmol Fe/m2/d'}
-		else:	av[name]['datadetails']  	= {'name': name, 'vars':['dust',], 'convert': datadustsum,'units':'mmol Fe/m2/d'}	#kg / m2 / s
+		av[name]['modeldetails'] 	= {'name': name, 'vars':['AEOLIAN',], 'convert': modeldustsum,'units':'mmol Fe/d'}
+		av[name]['datadetails']  	= {'name': name, 'vars':['dust_ann',], 'convert': datadustsum,'units':'mmol Fe/d'}
 
 		av[name]['layers'] 		= ['layerless',]
 		av[name]['regions'] 		= ['regionless',]
@@ -1861,12 +1886,6 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= paths.orcaGridfn
 		av[name]['Dimensions']		= 1
-
-		noData=True
-		if noData:
-		        av[name]['datasource']  = ''
-			av[name]['dataFile']	= ''
-			av[name]['datadetails']         = {'name': '','units':''}
 
 
   	#####
