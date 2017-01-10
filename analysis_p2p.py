@@ -782,7 +782,7 @@ def analysis_p2p(
 		if 'MeridionalCurrent' in analysisKeys:
 			name = 'MeridionalCurrent'
 			if annual:
-				av[name]['NEMO']['File'] 	= listModelDataFiles(jobID, 'grid_U', paths.ModelFolder_pref, annual)
+				av[name]['NEMO']['File'] 	= listModelDataFiles(jobID, 'grid_V', paths.ModelFolder_pref, annual)
 				av[name]['Data']['File'] 	=  paths.GODASFolder+'vcur.clim.nc'
 			else:	
 				assert 0
