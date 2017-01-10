@@ -54,10 +54,10 @@ def getYearFromFile(fn):
 	"""
 	a = findall(r'\d\d\d\d\d\d\d\d',fn)
 	for i in a:
-	    if i[-4:] == '1130': 
+	    if i[-4:] in ['1130','1201']: 
 	    	yr = i[:4]
 	      	return yr
-			      
+	    			      
 	return False
 	
 def rebaseSymlinks(fn,dryrun=True,debug=False):
@@ -115,11 +115,11 @@ def findLastFinishedYear(jobID,dividby=1,numberfiles=6):
                 outputFold = "/data/euryale7/scratch/ledm/UKESM/MEDUSA/"+jobID+'/'		
 		                        
 	fnDict = {}	
-	files = sorted(glob(outputFold+jobID+'o_1y_????1201_????1130_????_?.nc'))
-	#suffixes = ['diad_T.nc', 'grid_T.nc','grid_U.nc','grid_V.nc','grid_W.nc','ptrc_T.nc']
+	files = sorted(glob(outputFold+jobID+'o_1y_*_????_?.nc'))
+	
 	for fn in files:
 		yr = getYearFromFile(fn)
-		print fn, yr
+		print "getYearFromFile:",fn, yr
 		try: 	fnDict[yr]+=1
 		except:	fnDict[yr] =1
 	

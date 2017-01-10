@@ -326,9 +326,9 @@ def analysis_p2p(
 		if 'Chl_CCI' in analysisKeys:						
 			name = 'Chlorophyll_cci'
 			if annual:
-				print ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_ptrc_T.nc"
+				print ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"????_ptrc_T.nc"
 				av[name]['Data']['File'] 	= paths.CCIDir+"ESACCI-OC-L3S-OC_PRODUCTS-CLIMATOLOGY-16Y_MONTHLY_1degree_GEO_PML_OC4v6_QAA-annual-fv2.0.nc"	
-				av[name]['MEDUSA']['File'] 	= sorted(glob(ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_ptrc_T.nc"))[0]					
+				av[name]['MEDUSA']['File'] 	= sorted(glob(ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"????_ptrc_T.nc"))[0]					
 			else:
 				av[name]['Data']['File'] 	= paths.CCIDir+'ESACCI-OC-L3S-OC_PRODUCTS-CLIMATOLOGY-16Y_MONTHLY_1degree_GEO_PML_OC4v6_QAA-all-fv2.0.nc'
 				av[name]['MEDUSA']['File'] 	= ModelFolder+jobID+'_' + year+"_CHL.nc"
@@ -418,7 +418,7 @@ def analysis_p2p(
 			name = 'Nitrate'		
 			if annual:	
 				av[name]['Data']['File'] 	= WOAFolder+'woa13_all_n00_01.nc'
-				av[name]['MEDUSA']['File'] 	= sorted(glob(ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_ptrc_T.nc"))[0]	
+				av[name]['MEDUSA']['File'] 	= sorted(glob(ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"????_ptrc_T.nc"))[0]	
 			else:		
 				av[name]['Data']['File'] 	= WOAFolder+'nitrate_monthly_1deg.nc'	
 				if modelGrid == 'ORCA1':	av[name]['MEDUSA']['File'] = ModelFolder+jobID+'_' + year+"_DIN.nc"	
@@ -443,7 +443,7 @@ def analysis_p2p(
 			name = 'Silicate'
 			if annual:
 				av[name]['Data']['File'] 	= WOAFolder+'woa13_all_i00_01.nc'
-				av[name]['MEDUSA']['File'] 	= sorted(glob(ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_ptrc_T.nc"))[0]					
+				av[name]['MEDUSA']['File'] 	= sorted(glob(ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"????_ptrc_T.nc"))[0]					
 			else:
 				av[name]['Data']['File'] 	= WOAFolder+'silicate_monthly_1deg.nc'	
 				av[name]['MEDUSA']['File'] 	= ModelFolder+jobID+'_' + year+"_SIL.nc"
@@ -490,7 +490,7 @@ def analysis_p2p(
 		if 'O2' in analysisKeys:
 			name = 'Oxygen'		
 			if annual:
-				av[name]['MEDUSA']['File'] 	= sorted(glob(ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_ptrc_T.nc"))[0]					
+				av[name]['MEDUSA']['File'] 	= sorted(glob(ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"????_ptrc_T.nc"))[0]					
 				av[name]['Data']['File'] 	=  WOAFolder+'woa13_all_o00_01.nc'
 			else:	
 				av[name]['Data']['File'] 	=  WOAFolder+'oxygen-woa13.nc'
@@ -517,7 +517,7 @@ def analysis_p2p(
 				return nc.variables[keys[0]][:]* 1.027
 		
 			if annual:		
-				av[name]['MEDUSA']['File'] 	= sorted(glob(ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_ptrc_T.nc"))[0]
+				av[name]['MEDUSA']['File'] 	= sorted(glob(ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"????_ptrc_T.nc"))[0]
 				av[name]['Data']['File'] 		=  paths.GlodapDir+'Alk.nc'
 			else:
 				print "Alkalinity data not available for monthly Analysis"
@@ -544,7 +544,7 @@ def analysis_p2p(
 			name = 'DIC'
 		
 			if annual:		
-				av[name]['MEDUSA']['File'] 	= sorted(glob(ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_ptrc_T.nc"))[0]
+				av[name]['MEDUSA']['File'] 	= sorted(glob(ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"????_ptrc_T.nc"))[0]
 				av[name]['Data']['File'] 	=  paths.GLODAPv2Dir+'GLODAPv2.tco2.historic.nc'
 			else:
 				print "DIC data not available for monthly Analysis"
@@ -575,7 +575,7 @@ def analysis_p2p(
 			#####
 			# Files:
 			if annual:
-				av[name]['MEDUSA']['File']  	= sorted(glob(ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_diad_T.nc"))[0]				
+				av[name]['MEDUSA']['File']  	= sorted(glob(ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"????_diad_T.nc"))[0]				
 				av[name]['Data']['File']  	= paths.OSUDir +"/standard_VGPM.SeaWIFS.global.average.nc"
 			else:
 				print "IntegratedPrimaryProduction (OSU) data not available for monthly Analysis"
@@ -657,7 +657,7 @@ def analysis_p2p(
 	
 			name = 'AirSeaFluxCO2'
 			if annual:
-				av[name]['MEDUSA']['File'] 	= sorted(glob(ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_diad_T.nc"))[0]			
+				av[name]['MEDUSA']['File'] 	= sorted(glob(ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"????_diad_T.nc"))[0]			
 				av[name]['Data']['File'] 	=  paths.TakahashiFolder+'takahashi_2009_Anual_sumflux_2006c_noHead.nc'							
 			else:	
 				av[name]['Data']['File'] 	=  paths.TakahashiFolder+'takahashi2009_month_flux_pCO2_2006c_noHead.nc'			
@@ -712,8 +712,8 @@ def analysis_p2p(
 		if 'S' in analysisKeys:
 			name = 'Salinity'
 			if annual:
-				print ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_grid_T.nc"
-				av[name]['NEMO']['File'] 	= sorted(glob(ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_grid_T.nc"))[0]
+				print ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"????_grid_T.nc"
+				av[name]['NEMO']['File'] 	= sorted(glob(ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"????_grid_T.nc"))[0]
 				av[name]['Data']['File'] 	= WOAFolder+'woa13_decav_s00_01v2.nc'	
 			else:	
 				av[name]['Data']['File'] 	= WOAFolder+'salinity_monthly_1deg.nc'	
@@ -735,7 +735,7 @@ def analysis_p2p(
 		if 'T' in analysisKeys:
 			name = 'Temperature'
 			if annual:
-				av[name]['NEMO']['File'] 	= sorted(glob(ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_grid_T.nc"))[0]				
+				av[name]['NEMO']['File'] 	= sorted(glob(ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"????_grid_T.nc"))[0]				
 				av[name]['Data']['File'] 	= WOAFolder+'woa13_decav_t00_01v2.nc'	
 			else:	
 				av[name]['Data']['File'] 	= WOAFolder+'temperature_monthly_1deg.nc'	
@@ -756,7 +756,7 @@ def analysis_p2p(
 		if 'ZonalCurrent' in analysisKeys:
 			name = 'ZonalCurrent'
 			if annual:
-				av[name]['NEMO']['File'] 	= sorted(glob(ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_grid_U.nc"))[0]				
+				av[name]['NEMO']['File'] 	= sorted(glob(ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"????_grid_U.nc"))[0]				
 				av[name]['Data']['File'] 	=  paths.GODASFolder+'ucur.clim.nc'
 			else:	
 				assert 0
@@ -778,7 +778,7 @@ def analysis_p2p(
 		if 'MeridionalCurrent' in analysisKeys:
 			name = 'MeridionalCurrent'
 			if annual:
-				av[name]['NEMO']['File'] 	= sorted(glob(ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_grid_V.nc"))[0]				
+				av[name]['NEMO']['File'] 	= sorted(glob(ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"????_grid_V.nc"))[0]				
 				av[name]['Data']['File'] 	=  paths.GODASFolder+'vcur.clim.nc'
 			else:	
 				assert 0
@@ -801,7 +801,7 @@ def analysis_p2p(
 		if 'VerticalCurrent' in analysisKeys:
 			name = 'VerticalCurrent'
 			if annual:
-				av[name]['NEMO']['File'] 	= sorted(glob(ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_grid_W.nc"))[0]				
+				av[name]['NEMO']['File'] 	= sorted(glob(ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"????_grid_W.nc"))[0]				
 				av[name]['Data']['File'] 	=  paths.GODASFolder+'dzdt.clim.nc'
 			else:	
 				assert 0
@@ -825,7 +825,7 @@ def analysis_p2p(
 		if 'MLD' in analysisKeys:
 			name = 'MLD'		
 			if annual:	
-				av[name]['NEMO']['File'] 	= sorted(glob(ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_grid_T.nc"))[0]							
+				av[name]['NEMO']['File'] 	= sorted(glob(ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"????_grid_T.nc"))[0]							
 				av[name]['Data']['File'] 	= paths.MLDFolder+"mld_DT02_c1m_reg2.0-annual.nc"
 			else:	
 				av[name]['Data']['File'] 	= paths.MLDFolder+"mld_DT02_c1m_reg2.0.nc"
@@ -847,7 +847,7 @@ def analysis_p2p(
 		if 'AOU' in analysisKeys:
 			name = 'AOU'		
 			if annual:	
-				av[name]['NEMO']['File'] 	= sorted(glob(ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_grid_T.nc"))[0]							
+				av[name]['NEMO']['File'] 	= sorted(glob(ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"????_grid_T.nc"))[0]							
 				av[name]['Data']['File'] 	= paths.MLDFolder+"mld_DT02_c1m_reg2.0-annual.nc"
 			else:	
 				av[name]['Data']['File'] 	= paths.MLDFolder+"mld_DT02_c1m_reg2.0.nc"
