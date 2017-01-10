@@ -68,7 +68,7 @@ timeseriesDict = {i:n for i,n in enumerate(timeseriesKeys)}
 
 level1Keys = ['N', 'Si','O2','Alk','DIC','AirSeaFlux','TotalAirSeaFluxCO2','IntPP_OSU','PP_OSU' ,'LocalExportRatio','GlobalExportRatio' ,
 		'TotalOMZVolume','OMZThickness' ,'OMZMeanDepth','Iron',
-		'Dust','TotalDust','DiaFrac', #'CHN','CHD',
+		'Dust','TotalDust','TotalDust_nomask','DiaFrac', #'CHN','CHD',
 		'T', 'S','MLD','TotalIceArea', 'NorthernTotalIceArea','SouthernTotalIceArea',
 		'TotalIceExtent', 'NorthernTotalIceExtent','SouthernTotalIceExtent','DrakePassageTransport','AMOC_26N','AMOC_32S',
 		'ZonalCurrent','MeridionalCurrent','VerticalCurrent']
@@ -239,6 +239,7 @@ def analysis_timeseries(jobID = "u-ab671",
                         #analysisKeys.append('O2')                       # WOA Oxygen
                         analysisKeys.append('Dust')                     # Dust
                         analysisKeys.append('TotalDust')                     # Total Dust
+                        analysisKeys.append('TotalDust_nomask')
 			#analysisKeys.append('DIC')			# work in progress
 			#analysisKeys.append('DrakePassageTransport')	# DrakePassageTransport
 			#analysisKeys.append('TotalIceArea')		# work in progress
@@ -1857,24 +1858,26 @@ def analysis_timeseries(jobID = "u-ab671",
 			#factors are:
 			# 0.035: iron as a fraction of total dust
 			# 1e6: convert from kmol -> mmol
+			# 1e-12: convert from mol to Gmol
 			# 0.00532: solubility factor for iron
 			# 55.845: atmoic mass of iron (g>mol conversion)
-			# (24.*60.*60.): per second to per day
+			# (24.*60.*60.*365.25): per second to per year
+
 			dust = nc.variables[keys[0]][:]
-			dust[194:256,295:348] = 0.
- 			dust[194:208,285:295] = 0.
-  			dust[188:216,290:304] = 0.
-			return (masked_area*dust).sum() *0.035 * 1.e6 *0.00532*(24.*60.*60.) / 55.845
+			dust[234:296,295:348] = 0.
+ 			dust[234:248,285:295] = 0.
+  			dust[228:256,290:304] = 0.
+			return (masked_area*dust).sum() *0.035 * 1.e6*1.e-12 *0.00532*(24.*60.*60. *365.25)/  55.845
 
 		def modeldustsum(nc,keys):
                         dust = nc.variables[keys[0]][:]
-                        dust[:,194:256,295:348] = 0.
-                        dust[:,194:208,285:295] = 0.
-                        dust[:,188:216,290:304] = 0.
-			return (masked_area*dust).sum()  
+                        dust[:,234:296,295:348] = 0.
+                        dust[:,234:248,285:295] = 0.
+                        dust[:,228:256,290:304] = 0.
+			return (masked_area*dust).sum() *1.E-12 *365.25
 
-		av[name]['modeldetails'] 	= {'name': name, 'vars':['AEOLIAN',], 'convert': modeldustsum,'units':'mmol Fe/d'}
-		av[name]['datadetails']  	= {'name': name, 'vars':['dust_ann',], 'convert': datadustsum,'units':'mmol Fe/d'}
+		av[name]['modeldetails'] 	= {'name': name, 'vars':['AEOLIAN',], 'convert': modeldustsum,'units':'Gmol Fe/yr'}
+		av[name]['datadetails']  	= {'name': name, 'vars':['dust_ann',], 'convert': datadustsum,'units':'Gmol Fe/yr'}
 
 		av[name]['layers'] 		= ['layerless',]
 		av[name]['regions'] 		= ['regionless',]
@@ -1886,6 +1889,54 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= paths.orcaGridfn
 		av[name]['Dimensions']		= 1
+
+        if 'TotalDust_nomask' in analysisKeys:
+                name = 'TotalDust_nomask'
+                av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', paths.ModelFolder_pref, annual)[:]
+                av[name]['dataFile']    = paths.Dustdir+'mahowald.orca100_annual.nc'
+
+                av[name]['modelcoords']         = medusaCoords
+                av[name]['datacoords']          = medusaCoords
+
+                nc = Dataset(paths.orcaGridfn,'r')
+                masked_area = nc.variables['e2t'][:] * nc.variables['e1t'][:]*nc.variables['tmask'][0]
+                nc.close()
+
+                def datadustsum(nc,keys):
+                        #factors are:
+                        # 0.035: iron as a fraction of total dust
+                        # 1e6: convert from kmol -> mmol
+                        # 1e-12: convert from mol to Gmol
+                        # 0.00532: solubility factor for iron
+                        # 55.845: atmoic mass of iron (g>mol conversion)
+                        # (24.*60.*60.*365.25): per second to per year
+
+                        dust = nc.variables[keys[0]][:]
+                        #dust[194:256,295:348] = 0.
+                        #dust[194:208,285:295] = 0.
+                        #dust[188:216,290:304] = 0.
+                        return (masked_area*dust).sum() *0.035 * 1.e6*1.e-12 *0.00532*(24.*60.*60. *365.25)/  55.845
+
+                def modeldustsum(nc,keys):
+                        dust = nc.variables[keys[0]][:]
+                        #dust[:,194:256,295:348] = 0.
+                        #dust[:,194:208,285:295] = 0.
+                        #dust[:,188:216,290:304] = 0.
+                        return (masked_area*dust).sum() *1.E-12 *365.25
+
+                av[name]['modeldetails']        = {'name': name, 'vars':['AEOLIAN',], 'convert': modeldustsum,'units':'Gmol Fe/yr'}
+                av[name]['datadetails']         = {'name': name, 'vars':['dust_ann',], 'convert': datadustsum,'units':'Gmol Fe/yr'}
+
+                av[name]['layers']              = ['layerless',]
+                av[name]['regions']             = ['regionless',]
+                av[name]['metrics']             = ['metricless',]
+
+                av[name]['datasource']          = 'Mahowald'
+                av[name]['model']               = 'MEDUSA'
+
+                av[name]['modelgrid']           = 'eORCA1'
+                av[name]['gridFile']            = paths.orcaGridfn
+                av[name]['Dimensions']          = 1
 
 
   	#####

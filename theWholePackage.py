@@ -110,7 +110,6 @@ def theWholePackage(jobID,year=False,suite = 'level1'):
 	#	year = str(year)
 	
 	print "########\nThe Whole Package:\tStarting job", jobID , year
-
 	parrallel = True
 	cores = 8
 
@@ -222,6 +221,7 @@ if __name__=="__main__":
         
 	year = False
 	for divby in [25, 10, 5, 1]:
+                print "main", divby, year
 		if year: continue 
 	        year = findLastFinishedYear(jobID,dividby=divby,numberfiles=numberfiles)
 	print "########\nThe Whole Package:\tmain:", jobID,year
