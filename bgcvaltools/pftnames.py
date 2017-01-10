@@ -163,6 +163,8 @@ def makeLongNameDict():
 	lnd['AirSeaFluxCO2'] = "Air Sea CO2 Flux"  
 	lnd['TotalAirSeaFluxCO2'] = "Total Air Sea CO2 Flux"  
 	lnd['DIC'] = "DIC"  
+
+	lnd['TotalDust'] = 'Total Dust'
 	
   	lnd['OMZ'] = 'Oxygen minimum zone' 
   	lnd['TotalOMZVolume'] = 'Total Oxygen minimum zone volume (<20 mmol O2/m^3)'   	

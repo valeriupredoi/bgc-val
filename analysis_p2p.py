@@ -272,8 +272,6 @@ def analysis_p2p(
 	
 	depthLevels 	= ['Surface','500m','1000m','Transect','PTransect','SOTransect','ArcTransect','AntTransect','CanRusTransect',]
 
-#        if type(analysisSuite)==type('String'):
-#		if analysisSuite.lower() in ['debug',]:        depthLevels     = ['Surface',] 
 					
 	medusaCoords 	= {'t':'index_t', 'z':'deptht', 'lat': 'nav_lat',  'lon': 'nav_lon',   'cal': '360_day',}	# model doesn't need time dict.
 	medusaUCoords 	= {'t':'index_t', 'z':'depthu', 'lat': 'nav_lat',  'lon': 'nav_lon',   'cal': '360_day',}	# model doesn't need time dict.
@@ -288,8 +286,18 @@ def analysis_p2p(
 	glodapv2Coords	= {'t':'index_t', 'z':'Pressure','lat':'lat',      'lon': 'lon',       'cal': '',        'tdict':{0:0,} }	
 	takahashiCoords	= {'t':'index_t', 'z':'index_z','lat': 'LAT',      'lon': 'LON',       'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
 	godasCoords 	= {'t':'index_t', 'z':'level',  'lat': 'lat',      'lon': 'lon', 'cal': 'standard',   'tdict':ukp.tdicts['ZeroToZero'] }		
+
+	def listModelDataFiles(jobID, filekey, datafolder, annual):
+		print "listing model data files:",jobID, filekey, datafolder, annual
+		if annual:
+			keystr = datafolder+jobID+"/"+jobID+"o_1y_*1201[-_]"+year+'????_'+filekey+".nc"
+			print keystr
+			return sorted(glob(keystr))[0]
+		else:
+			return sorted(glob(datafolder+jobID+"/"+jobID+"o_1m_*"+year+"????_"+filekey+".nc"))[-1]
+			
+
 	shelvesAV = []	
-	
 	for year in years:		
 		#####
 		# Location of model files.
@@ -304,34 +312,31 @@ def analysis_p2p(
 		# We use AutoVivification here to determine which files to analyse and which fields in those files.
 		# depthLevel is added, because some WOA files are huges and my desktop can not run the p2p analysis of that data.
 		av = ukp.AutoVivification()
-		if 'Chl_pig' in analysisKeys:
-			name = 'Chlorophyll_pig'		
-			av[name]['Data']['File'] 		= paths.MAREDATFolder+"MarEDat20121001Pigments.nc"	
-			if modelGrid == 'ORCA1':		av[name]['MEDUSA']['File'] 	= ModelFolder+jobID+'_' + year+"_CHL.nc"
-			if modelGrid == 'ORCA025':		av[name]['MEDUSA']['File']	= ModelFolder+"xjwki_1979_CH.nc"
-			
-			av[name]['Data']['coords'] 		= maredatCoords
-			av[name]['MEDUSA']['coords']		= medusaCoords
-			
-			av[name]['MEDUSA']['details']		= {'name': 'CHL', 'vars':['CHL',], 'convert': ukp.NoChange,'units':'mg C/m^3'}			
-			av[name]['Data']['details']		= {'name': 'Chlorophylla', 'vars':['Chlorophylla',], 'convert': ukp.div1000,'units':'ug/L'}			
-
-			av[name]['Data']['source'] 		= 'MAREDAT'
-			av[name]['MEDUSA']['source']		= 'MEDUSA'
-
-			av[name]['depthLevels'] 		= ['',]
-			av[name]['MEDUSA']['grid']		= modelGrid		
-			av[name]['plottingSlices'] 		= tsRegions
+		#if 'Chl_pig' in analysisKeys:
+		#	name = 'Chlorophyll_pig'		
+		#	av[name]['Data']['File'] 		= paths.MAREDATFolder+"MarEDat20121001Pigments.nc"	
+		#	if modelGrid == 'ORCA1':		av[name]['MEDUSA']['File'] 	= ModelFolder+jobID+'_' + year+"_CHL.nc"
+		#	if modelGrid == 'ORCA025':		av[name]['MEDUSA']['File']	= ModelFolder+"xjwki_1979_CH.nc"
+		#	
+		#	av[name]['Data']['coords'] 		= maredatCoords
+		#	av[name]['MEDUSA']['coords']		= medusaCoords
+		#	
+		#	av[name]['MEDUSA']['details']		= {'name': 'CHL', 'vars':['CHL',], 'convert': ukp.NoChange,'units':'mg C/m^3'}			
+		#	av[name]['Data']['details']		= {'name': 'Chlorophylla', 'vars':['Chlorophylla',], 'convert': ukp.div1000,'units':'ug/L'}			
+		#	av[name]['Data']['source'] 		= 'MAREDAT'
+		#	av[name]['MEDUSA']['source']		= 'MEDUSA'
+		#	av[name]['depthLevels'] 		= ['',]
+		#	av[name]['MEDUSA']['grid']		= modelGrid		
+		#	av[name]['plottingSlices'] 		= tsRegions
 
 		if 'Chl_CCI' in analysisKeys:						
 			name = 'Chlorophyll_cci'
 			if annual:
-				print ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_ptrc_T.nc"
 				av[name]['Data']['File'] 	= paths.CCIDir+"ESACCI-OC-L3S-OC_PRODUCTS-CLIMATOLOGY-16Y_MONTHLY_1degree_GEO_PML_OC4v6_QAA-annual-fv2.0.nc"	
-				av[name]['MEDUSA']['File'] 	= sorted(glob(ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_ptrc_T.nc"))[0]					
-			else:
-				av[name]['Data']['File'] 	= paths.CCIDir+'ESACCI-OC-L3S-OC_PRODUCTS-CLIMATOLOGY-16Y_MONTHLY_1degree_GEO_PML_OC4v6_QAA-all-fv2.0.nc'
-				av[name]['MEDUSA']['File'] 	= ModelFolder+jobID+'_' + year+"_CHL.nc"
+				av[name]['MEDUSA']['File'] 	= listModelDataFiles(jobID, 'ptrc_T', paths.ModelFolder_pref, annual)				
+#			else:
+#				av[name]['Data']['File'] 	= paths.CCIDir+'ESACCI-OC-L3S-OC_PRODUCTS-CLIMATOLOGY-16Y_MONTHLY_1degree_GEO_PML_OC4v6_QAA-all-fv2.0.nc'
+#				av[name]['MEDUSA']['File'] 	= ModelFolder+jobID+'_' + year+"_CHL.nc"
 			
 			av[name]['MEDUSA']['grid']		= modelGrid		
 			av[name]['depthLevels'] 		= ['',]
@@ -418,7 +423,7 @@ def analysis_p2p(
 			name = 'Nitrate'		
 			if annual:	
 				av[name]['Data']['File'] 	= WOAFolder+'woa13_all_n00_01.nc'
-				av[name]['MEDUSA']['File'] 	= sorted(glob(ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_ptrc_T.nc"))[0]	
+				av[name]['MEDUSA']['File'] 	= listModelDataFiles(jobID, 'ptrc_T', paths.ModelFolder_pref, annual)	
 			else:		
 				av[name]['Data']['File'] 	= WOAFolder+'nitrate_monthly_1deg.nc'	
 				if modelGrid == 'ORCA1':	av[name]['MEDUSA']['File'] = ModelFolder+jobID+'_' + year+"_DIN.nc"	
@@ -443,7 +448,7 @@ def analysis_p2p(
 			name = 'Silicate'
 			if annual:
 				av[name]['Data']['File'] 	= WOAFolder+'woa13_all_i00_01.nc'
-				av[name]['MEDUSA']['File'] 	= sorted(glob(ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_ptrc_T.nc"))[0]					
+				av[name]['MEDUSA']['File'] 	= listModelDataFiles(jobID, 'ptrc_T', paths.ModelFolder_pref, annual)					
 			else:
 				av[name]['Data']['File'] 	= WOAFolder+'silicate_monthly_1deg.nc'	
 				av[name]['MEDUSA']['File'] 	= ModelFolder+jobID+'_' + year+"_SIL.nc"
@@ -470,7 +475,7 @@ def analysis_p2p(
 				assert 0
 				
 			av[name]['Data']['File'] 		= paths.GEOTRACESFolder+"Iron_GEOTRACES_IDP2014_Discrete_Sample_Data_ascii.nc"
-			av[name]['MEDUSA']['File'] 		= ModelFolder+jobID+'_' + year+"_FER.nc"	
+			av[name]['MEDUSA']['File'] 		= listModelDataFiles(jobID, 'ptrc_T', paths.ModelFolder_pref, annual)		
 			
 			av[name]['depthLevels'] 		= ['',]
 			av[name]['MEDUSA']['grid']		= modelGrid		
@@ -490,7 +495,7 @@ def analysis_p2p(
 		if 'O2' in analysisKeys:
 			name = 'Oxygen'		
 			if annual:
-				av[name]['MEDUSA']['File'] 	= sorted(glob(ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_ptrc_T.nc"))[0]					
+				av[name]['MEDUSA']['File'] 	= listModelDataFiles(jobID, 'ptrc_T', paths.ModelFolder_pref, annual)	
 				av[name]['Data']['File'] 	=  WOAFolder+'woa13_all_o00_01.nc'
 			else:	
 				av[name]['Data']['File'] 	=  WOAFolder+'oxygen-woa13.nc'
@@ -517,8 +522,8 @@ def analysis_p2p(
 				return nc.variables[keys[0]][:]* 1.027
 		
 			if annual:		
-				av[name]['MEDUSA']['File'] 	= sorted(glob(ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_ptrc_T.nc"))[0]
-				av[name]['Data']['File'] 		=  paths.GlodapDir+'Alk.nc'
+				av[name]['MEDUSA']['File'] 	= listModelDataFiles(jobID, 'ptrc_T', paths.ModelFolder_pref, annual)	
+				av[name]['Data']['File'] 	=  paths.GlodapDir+'Alk.nc'
 			else:
 				print "Alkalinity data not available for monthly Analysis"
 				assert 0
@@ -544,7 +549,7 @@ def analysis_p2p(
 			name = 'DIC'
 		
 			if annual:		
-				av[name]['MEDUSA']['File'] 	= sorted(glob(ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_ptrc_T.nc"))[0]
+				av[name]['MEDUSA']['File'] 	= listModelDataFiles(jobID, 'ptrc_T', paths.ModelFolder_pref, annual)	
 				av[name]['Data']['File'] 	=  paths.GLODAPv2Dir+'GLODAPv2.tco2.historic.nc'
 			else:
 				print "DIC data not available for monthly Analysis"
@@ -575,7 +580,7 @@ def analysis_p2p(
 			#####
 			# Files:
 			if annual:
-				av[name]['MEDUSA']['File']  	= sorted(glob(ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_diad_T.nc"))[0]				
+				av[name]['MEDUSA']['File']  	= listModelDataFiles(jobID, 'diad_T', paths.ModelFolder_pref, annual)	
 				av[name]['Data']['File']  	= paths.OSUDir +"/standard_VGPM.SeaWIFS.global.average.nc"
 			else:
 				print "IntegratedPrimaryProduction (OSU) data not available for monthly Analysis"
@@ -641,7 +646,7 @@ def analysis_p2p(
 			else:		av[name]['plottingSlices'] 	= HighLatWinter
 						
 			av[name]['Data']['source'] 	= 'OSU'
-			av[name]['MEDUSA']['source']	= 'MEDUSA'			
+			av[name]['MEDUSA']['source']	= 'MEDUSA'
 			
 			av[name]['MEDUSA']['details'] 	= {'name': name, 'vars':['PRN' ,'PRD'], 'convert': medusadepthInt,'units':'mgC/m^2/day'}
 			av[name]['Data']['details']  	= {'name': name, 'vars':['NPP',], 'convert': osuconvert,'units':'mgC/m^2/day'}
@@ -657,7 +662,7 @@ def analysis_p2p(
 	
 			name = 'AirSeaFluxCO2'
 			if annual:
-				av[name]['MEDUSA']['File'] 	= sorted(glob(ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_diad_T.nc"))[0]			
+				av[name]['MEDUSA']['File'] 	= listModelDataFiles(jobID, 'diad_T', paths.ModelFolder_pref, annual)
 				av[name]['Data']['File'] 	=  paths.TakahashiFolder+'takahashi_2009_Anual_sumflux_2006c_noHead.nc'							
 			else:	
 				av[name]['Data']['File'] 	=  paths.TakahashiFolder+'takahashi2009_month_flux_pCO2_2006c_noHead.nc'			
@@ -712,8 +717,7 @@ def analysis_p2p(
 		if 'S' in analysisKeys:
 			name = 'Salinity'
 			if annual:
-				print ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_grid_T.nc"
-				av[name]['NEMO']['File'] 	= sorted(glob(ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_grid_T.nc"))[0]
+				av[name]['NEMO']['File'] 	= listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)
 				av[name]['Data']['File'] 	= WOAFolder+'woa13_decav_s00_01v2.nc'	
 			else:	
 				av[name]['Data']['File'] 	= WOAFolder+'salinity_monthly_1deg.nc'	
@@ -735,7 +739,7 @@ def analysis_p2p(
 		if 'T' in analysisKeys:
 			name = 'Temperature'
 			if annual:
-				av[name]['NEMO']['File'] 	= sorted(glob(ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_grid_T.nc"))[0]				
+				av[name]['NEMO']['File'] 	= listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)
 				av[name]['Data']['File'] 	= WOAFolder+'woa13_decav_t00_01v2.nc'	
 			else:	
 				av[name]['Data']['File'] 	= WOAFolder+'temperature_monthly_1deg.nc'	
@@ -756,7 +760,7 @@ def analysis_p2p(
 		if 'ZonalCurrent' in analysisKeys:
 			name = 'ZonalCurrent'
 			if annual:
-				av[name]['NEMO']['File'] 	= sorted(glob(ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_grid_U.nc"))[0]				
+				av[name]['NEMO']['File'] 	= listModelDataFiles(jobID, 'grid_U', paths.ModelFolder_pref, annual)
 				av[name]['Data']['File'] 	=  paths.GODASFolder+'ucur.clim.nc'
 			else:	
 				assert 0
@@ -778,7 +782,7 @@ def analysis_p2p(
 		if 'MeridionalCurrent' in analysisKeys:
 			name = 'MeridionalCurrent'
 			if annual:
-				av[name]['NEMO']['File'] 	= sorted(glob(ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_grid_V.nc"))[0]				
+				av[name]['NEMO']['File'] 	= listModelDataFiles(jobID, 'grid_V', paths.ModelFolder_pref, annual)
 				av[name]['Data']['File'] 	=  paths.GODASFolder+'vcur.clim.nc'
 			else:	
 				assert 0
@@ -801,7 +805,7 @@ def analysis_p2p(
 		if 'VerticalCurrent' in analysisKeys:
 			name = 'VerticalCurrent'
 			if annual:
-				av[name]['NEMO']['File'] 	= sorted(glob(ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_grid_W.nc"))[0]				
+				av[name]['NEMO']['File'] 	= listModelDataFiles(jobID, 'grid_W', paths.ModelFolder_pref, annual)
 				av[name]['Data']['File'] 	=  paths.GODASFolder+'dzdt.clim.nc'
 			else:	
 				assert 0
@@ -825,7 +829,7 @@ def analysis_p2p(
 		if 'MLD' in analysisKeys:
 			name = 'MLD'		
 			if annual:	
-				av[name]['NEMO']['File'] 	= sorted(glob(ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_grid_T.nc"))[0]							
+				av[name]['NEMO']['File'] 	= listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)
 				av[name]['Data']['File'] 	= paths.MLDFolder+"mld_DT02_c1m_reg2.0-annual.nc"
 			else:	
 				av[name]['Data']['File'] 	= paths.MLDFolder+"mld_DT02_c1m_reg2.0.nc"
@@ -844,26 +848,26 @@ def analysis_p2p(
 			av[name]['Data']['details']	= {'name': name, 'vars':['mld','mask',], 'convert': ukp.applymask,'units':'m'}	# no units?
 
 
-		if 'AOU' in analysisKeys:
-			name = 'AOU'		
-			if annual:	
-				av[name]['NEMO']['File'] 	= sorted(glob(ModelFolder_pref+jobID+"/"+jobID+"o_1y_*1201_"+year+"1130_grid_T.nc"))[0]							
-				av[name]['Data']['File'] 	= paths.MLDFolder+"mld_DT02_c1m_reg2.0-annual.nc"
-			else:	
-				av[name]['Data']['File'] 	= paths.MLDFolder+"mld_DT02_c1m_reg2.0.nc"
-				av[name]['NEMO']['File'] 	= ModelFolder+jobID+"_"+year+'_MLD.nc'	
+		#if 'AOU' in analysisKeys:
+		#	name = 'AOU'		
+		#	if annual:	
+		#		av[name]['NEMO']['File'] 	= listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)
+		#		av[name]['Data']['File'] 	= paths.MLDFolder+"mld_DT02_c1m_reg2.0-annual.nc"
+		#	else:	
+		#		av[name]['Data']['File'] 	= paths.MLDFolder+"mld_DT02_c1m_reg2.0.nc"
+		#		av[name]['NEMO']['File'] 	= ModelFolder+jobID+"_"+year+'_MLD.nc'	
 					
-			av[name]['NEMO']['grid'] 		= modelGrid
-			av[name]['depthLevels'] 		= ['',]
-			av[name]['plottingSlices'] 		= tsRegions
+		#	av[name]['NEMO']['grid'] 		= modelGrid
+		#	av[name]['depthLevels'] 		= ['',]
+		#	av[name]['plottingSlices'] 		= tsRegions
 
-			av[name]['Data']['coords'] 	= {'t':'index_t', 'z':'index_z','lat':'lat','lon':'lon','cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
-			av[name]['NEMO']['coords']	= medusaCoords
-			av[name]['Data']['source'] 	= 'IFREMER'
-			av[name]['NEMO']['source']	= 'NEMO'			
+		#	av[name]['Data']['coords'] 	= {'t':'index_t', 'z':'index_z','lat':'lat','lon':'lon','cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
+		#	av[name]['NEMO']['coords']	= medusaCoords
+		#	av[name]['Data']['source'] 	= 'IFREMER'
+		#	av[name]['NEMO']['source']	= 'NEMO'			
 	
-			av[name]['NEMO']['details']	= {'name': name, 'vars':['somxl010',], 'convert': ukp.NoChange,'units':'m'}			
-			av[name]['Data']['details']	= {'name': name, 'vars':['mld','mask',], 'convert': ukp.applymask,'units':'m'}	# no units?			
+		#	av[name]['NEMO']['details']	= {'name': name, 'vars':['somxl010',], 'convert': ukp.NoChange,'units':'m'}			
+		#	av[name]['Data']['details']	= {'name': name, 'vars':['mld','mask',], 'convert': ukp.applymask,'units':'m'}	# no units?			
 		
 		for model in models:
 			workingDir 	= ukp.folder(paths.p2p_ppDir+'/'+model+'-'+jobID+'-'+year)
@@ -892,10 +896,6 @@ def analysis_p2p(
 		summaryTargets(shelvesAV, imageFold, year)
 
 		
-	#BGCvsPhysics(shelvesAV, jobID, modelGrid )
-	#if len(years)>1: InterAnnualPatterns(shelvesAV, jobID, years,modelGrid)	# plots interannual comparison and time series.
-#	def outPutForJASMIN(shelvesAV):
-#	outdict = shelveToDictionary(shelvesAV)
 
 
 def single_p2p(jobID, key, year):

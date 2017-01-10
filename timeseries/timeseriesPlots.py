@@ -43,6 +43,7 @@ from scipy import interpolate
 
 import timeseriesTools as tst
 from bgcvaltools.viridis import viridis,discrete_viridis
+import UKESMpython as ukp
 
 try:	
 	defcmap = pyplot.cm.jet
@@ -82,6 +83,7 @@ def percentilesPlot(
 		timesDict,		# model times dict
 		modeldataDict,		# model data dictionairy
 		dataslice,		# in situ data distribution
+		dataweights = [],	# in situ data weights (approx cell area)
 		title 	='',
 		filename='',
 		units = '',		
@@ -92,9 +94,11 @@ def percentilesPlot(
 	metrics = sorted(timesDict.keys())
 
 	#####
-	# Determine the x axis and y axis corners.	
+	# Determine the x axis limts.	
 	mint = np.ma.min(timesDict[metrics[0]])
 	maxt = np.ma.max(timesDict[metrics[0]])
+	xlims= [mint,maxt]	
+	
 	if greyband == 'MinMax':
 		miny = np.ma.min(modeldataDict['min'])
 		maxy = np.ma.max(modeldataDict['max'])
@@ -109,49 +113,8 @@ def percentilesPlot(
 		print "percentilesPlot:\tIt is not possible to make this plot,(",title,"), as the min values are no plottable:",miny
 		return
 		
-	#for m in metrics:
-	#	if np.ma.min(timesDict[m]) < mint: mint = np.ma.min(timesDict[m])
-	#	if np.ma.max(timesDict[m]) > maxt: maxt = np.ma.max(timesDict[m])
-	#	if np.ma.min(modeldataDict[m]) < miny: miny = np.ma.min(modeldataDict[m])
-	#	if np.ma.max(modeldataDict[m]) > maxy: maxy = np.ma.max(modeldataDict[m])
 		
-	if len(dataslice):	
-		try:	dataslice = dataslice.compressed()
-		except:	pass
-		if greyband == 'MinMax':
-			 miny_dat = np.ma.min(dataslice)
-			 maxy_dat = np.ma.max(dataslice)			 
-		elif greyband == '10-90pc':
-			 miny_dat = np.percentile(dataslice,10.)
-			 maxy_dat = np.percentile(dataslice,90.)
-		else:
-			 miny_dat = np.percentile(dataslice,20.)
-			 maxy_dat = np.percentile(dataslice,80.)
-		if miny_dat < miny: miny = miny_dat
-		if maxy_dat > maxy: maxy = maxy_dat		
-
-	xlims= [mint,maxt]
-	ylims= [miny,maxy]
-
-
-#	if dolog and ylims[0] *ylims[-1] <=0.:
-#		print "zero (or less) in ylims", ylims,
-#		smallestNonZeroModel = getSmallestAboveZero(modeldataDict['min'])
-#		smallestNonZeroData = getSmallestAboveZero(dataslice)
-#		ylims[0] = getSmallestAboveZero([smallestNonZeroModel, smallestNonZeroData])
-#		print "new ylims:",ylims
-		#assert 0
-		
-	if np.ma.max(ylims)/np.ma.min(ylims)>20.:	
-		#####
-		# log
-		ylims[0] = ylims[0]*0.6
-		ylims[1] = ylims[1]*1.4	
-	else:	#####
-		# not log
-		diff = abs(ylims[1] - ylims[0])
-		ylims[0] = ylims[0]-diff/20.
-		ylims[1] = ylims[1]+diff/20.	
+	
 			
 	#####
 	# Make, resize and divide the figure into an uneven grid/
@@ -162,33 +125,64 @@ def percentilesPlot(
 	#####
 	# Data plot to the r.
 	axd = pyplot.subplot(gs[1])	
+
 	if len(dataslice):
-		pc1 = np.array([np.percentile(dataslice,20.) for i in xlims])
-		pc2 = np.array([np.percentile(dataslice,30.) for i in xlims])
-		pc3 = np.array([np.percentile(dataslice,40.) for i in xlims])
-		pc4 = np.array([np.percentile(dataslice,60.) for i in xlims])
-		pc5 = np.array([np.percentile(dataslice,70.) for i in xlims])
-		pc6 = np.array([np.percentile(dataslice,80.) for i in xlims])
+		if not len(dataweights): dataweights = np.ma.ones_like(dataslice)	
+		
+		#dataslice   = np.ma.masked_where(dataslice.mask + dataweights.mask,dataslice)
+		#dataweights = np.ma.masked_where(dataslice.mask + dataweights.mask,dataweights)		
+		pcs = [10.,20.,30.,40.,50.,60.,70.,80.,90.]
+		out_pc = ukp.weighted_percentiles(dataslice, pcs, weights = dataweights)
+		datapcs = {p:o for p,o in zip(pcs,out_pc)}
+		
+		pc1 = np.array([datapcs[20.] for i in xlims])
+		pc2 = np.array([datapcs[30.] for i in xlims])
+		pc3 = np.array([datapcs[40.] for i in xlims])
+		pc4 = np.array([datapcs[60.] for i in xlims])
+		pc5 = np.array([datapcs[70.] for i in xlims])
+		pc6 = np.array([datapcs[80.] for i in xlims])
 		labels = ['20-30 pc','30-40 pc','40-60 pc','60-70 pc','70-80 pc',]
 		axd = trafficlights(axd,xlims, [pc1,pc2,pc3,pc4,pc5,pc6],labels=labels,drawlegend=False)
 
-		axd.axhline(y=np.ma.mean(dataslice),  c='k',ls='--',lw=1.5,)
-		axd.axhline(y=np.ma.median(dataslice),c='k',ls='-', lw=1.5,)#alpha=0.5)	
+		axd.axhline(y=np.ma.average(dataslice,weights=dataweights),  c='k',ls='--',lw=1.5,)
+		axd.axhline(y=datapcs[50.],c='k',ls='-', lw=1.5,)
 				
-
 		if greyband == 'MinMax':
 			pcmin 	= np.array([dataslice.min() for i in xlims])
 			pcmax 	= np.array([dataslice.max() for i in xlims])
 			axd  	= drawgreyband(axd,xlims, [pcmin,pc1],)
 			axd  	= drawgreyband(axd,xlims, [pc6,pcmax],)
-		if greyband == '10-90pc':
-			pcmin 	= np.array([np.percentile(dataslice,10.) for i in xlims])
-			pcmax 	= np.array([np.percentile(dataslice,90.) for i in xlims])
+			miny_dat = np.ma.min(dataslice)
+			maxy_dat = np.ma.max(dataslice)
+		elif greyband == '10-90pc':
+			pcmin 	= np.array([datapcs[10.] for i in xlims])
+			pcmax 	= np.array([datapcs[90.] for i in xlims])
 			axd  	= drawgreyband(axd,xlims, [pcmin,pc1],)
-			axd  	= drawgreyband(axd,xlims, [pc6,pcmax],)			
-		
-		#pyplot.title('Data')	
+			axd  	= drawgreyband(axd,xlims, [pc6,pcmax],)	
+			miny_dat = datapcs[10.]
+			maxy_dat = datapcs[90.]					
+		else:
+			 miny_dat = datapcs[20.]
+			 maxy_dat = datapcs[80.]
+		if miny_dat < miny: miny = miny_dat
+		if maxy_dat > maxy: maxy = maxy_dat		
+	ylims= [miny,maxy]
 
+	#####
+	# Widen the ylims.
+	if np.ma.max(ylims)/np.ma.min(ylims)>20.:	
+		#####
+		# log
+		ylims[0] = ylims[0]*0.6
+		ylims[1] = ylims[1]*1.4	
+	else:	#####
+		# not log
+		diff = abs(ylims[1] - ylims[0])
+		ylims[0] = ylims[0]-diff/20.
+		ylims[1] = ylims[1]+diff/20.
+		
+		
+		
 	
 	# Add a legend
 	box = axd.get_position()
@@ -306,7 +300,6 @@ def percentilesPlot(
 	try:pyplot.savefig(filename )
 	except:	print "WARNING: THIS PLOT FAILED:",filename , '(probably beaucse of all masks/ infs./nans)'
 	pyplot.close()	
-
 
 def getSmallestAboveZero(arr):
 	arr = np.array(arr)
@@ -944,7 +937,7 @@ def hovmoellerPlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords=
 	else:
 		ax2max	= rbma
 		ax2min	= rbmi
-		if defcmapstr =='viridis':
+		if defcmfareaapstr =='viridis':
 			cmapax2 = discrete_viridis(bins)
 		else:	cmapax2 = pyplot.cm.get_cmap(defcmap, bins)    
 		title = 'Model: '+title

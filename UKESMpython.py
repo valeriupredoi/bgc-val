@@ -212,6 +212,9 @@ def makeThisSafe(arr,debug = True, key='',noSqueeze=False):
 
 
 
+def intersection(a, b):
+    return list(set(a) & set(b))
+
 def maenumerate(marr):
 	"""	Masked array enumerate command based on numpy.ndenumerate, which iterates a list of (index, value) for n-dimensional arrays.
 		This version ignores masked values.
@@ -1704,11 +1707,11 @@ def Area(p1,p2):#lat,lon
 	"""
 	Calculates the area in m^2 between two coordinates points.
 	points are [lat,lon]
-	"""	
+	"""
+	
 	R=6378000. #m
 	lat1,lon1=p1[0],p1[1]
 	lat2,lon2=p2[0],p2[1]
-
 	A = (np.pi/180.)*R*R* abs(np.sin(lat1*np.pi/180.)-np.sin(lat2*np.pi/180.))*abs(lon1-lon2)
 	print 'Area:',lat1,'N->',lat2,'N\t',lon1,'E->',lon2,'E,\tA=',A
 
@@ -1749,6 +1752,44 @@ def regrid(data,lon,lat):
 	return crojp2, a, newLon,newLat
 	
 	
+
+def weighted_percentiles(values, percentiles, weights=None, values_sorted=False, old_style=False):
+    """ Very close to np.percentile, but supports weights.
+    NOTE: quantiles should be in [0, 1]!
+    :param values: np.array with data
+    :param percentiles: array-like with many percentiles needed
+    :param weights: array-like of the same length as `array`
+    :param values_sorted: bool, if True, then will avoid sorting of initial array
+    :param old_style: if True, will correct output to be consistent with np.percentile.
+    :return: np.array with computed quantiles.
+    from https://stackoverflow.com/questions/21844024/weighted-percentile-using-numpy
+    """
+    values = np.array(values)
+    quantiles = np.array(percentiles)/100.
+    
+    if weights is None:
+        weights = np.ones(len(values))
+    weights = np.array(weights)
+    assert np.all(quantiles >= 0) and np.all(quantiles <= 1), 'percentiles should be in [0, 100]'
+
+    if not values_sorted:
+        sorter = np.argsort(values)
+        values = values[sorter]
+        weights = weights[sorter]
+
+    weighted_quantiles = np.cumsum(weights) - 0.5 * weights
+    if old_style:
+        # To be convenient with np.percentile
+        weighted_quantiles -= weighted_quantiles[0]
+        weighted_quantiles /= weighted_quantiles[-1]
+    else:
+        weighted_quantiles /= np.sum(weights)
+    return np.interp(quantiles, weighted_quantiles, values)
+    
+    
+    
+    
+    
 			
 
 class shelveMetadata:

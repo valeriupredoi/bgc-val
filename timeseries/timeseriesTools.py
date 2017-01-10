@@ -25,6 +25,7 @@
 import numpy as np
 from netCDF4 import Dataset,num2date
 import os 
+#from pyproj import Proj
 
 #Specific local code:
 import UKESMpython as ukp
@@ -217,7 +218,6 @@ class DataLoader:
    	    #continue
    	    
   	    for region in self.regions:
-  	    
 		arr, arr_t, arr_z, arr_lat, arr_lon 	= self.createDataArray(region,layer)
 		#print "DataLoader:",layer,region, np.ma.mean(arr)
    		self.load[(region,layer)] =  arr 
@@ -400,10 +400,49 @@ class DataLoader:
   	
   	
   
- 		
- 		
-  	
+def makeArea(fn,coordsdict):
+	nc = Dataset(fn,'r')
+	lats = nc.variables[coordsdict['lat']][:]	
+	lons = nc.variables[coordsdict['lon']][:]	
+	#depths = nc.variables[coordsdict['z']][:]
+	nc.close()
+	if lats.ndim ==1:
+		#lat2d,lon2d = np.meshgrid(lats,lons)
+		area = np.zeros((len(lats),len(lons)))
+		meanLatDiff = np.abs(lats[:-1]-lats[1:]).mean()
+		meanLonDiff = np.abs(lons[:-1]-lons[1:]).mean()
+		for a in np.arange(len(lats)):
+			#area[a] = np.ones(len(lats)*calculateArea(lats[a]-meanLatDiff,lats[a]+meanLatDiff,-meanLonDiff,meanLonDiff))
+			print a, area.shape, len(lats),len(lons)
+			area[a,:] = np.ones(len(lons))*ukp.Area([lats[a]-meanLatDiff/2.,-meanLonDiff/2.],[lats[a]+meanLatDiff/2.,meanLonDiff/2.])
+		return area
+	elif lats.ndim ==2:
+		print "timeseriesTools.py:\tWARNING: Setting area to flat for uneven grid! "
+		return np.ones_like(lats)
 
+	else:
+		print "timeseriesTools.py:\tNot implemeted makeArea for this grid. ",lats.ndim, coordsdict
+		assert 0 , 'timeseriesTools.py:\tNot implemeted makeArea for this grid. '+str(lats.ndim)
+
+#def calculateArea(lat0,lat1,lon0,lon1):
+#		co = {"type": "Polygon", "coordinates": [
+#		    [(lon0, lat0), #('lon', 'lat')
+#		     (lon0, lat1),
+#		     (lon1, lat1),
+#		     (lon1, lat0),		     
+#		     (lon0, lat0)]]}
+#		clon, clat = zip(*co['coordinates'][0])
+#
+#		pa = Proj("+proj=aea +lat_1="+str(lat0)+" +lat_2="+str(lat1)+"+lon_0="+str(lon0)+" +lon_1="+str(lon0))		
+#		x, y = pa(clon, clat)
+#		cop = {"type": "Polygon", "coordinates": [zip(x, y)]}
+#		area = shape(cop).area  
+#		return area	
+#		
+#		
+#def calculateVol(lat0,lat1,lon0,lon1,d0,d1):
+#		a = calculateArea(lat0,lat1,lon0,lon1)
+#		return area*abs(d1-d0)
 
 
 

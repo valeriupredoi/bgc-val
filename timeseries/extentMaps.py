@@ -66,10 +66,31 @@ def regrid(data,lat,lon):
                              target_x_points=newLon,
                              target_y_points=newLat
                              )
-       # print 'newregid shape:',a.shape                     
+                             
+        # print 'newregid shape:',a.shape                     
 	return crojp2, a, newLon,newLat
 	
 
+
+def remask(data,lat,lon,regiddata, regridLat,regridLon, res=1.):
+	#####
+	# This is neccesairy as the img_tranform above doesn't see gaps in the data and fills it in.
+	# We could do with re
+	if len(data) == len(lat) ==len(lon): pass
+	else:	assert "The data,lat,lon aren't the same length!"
+	
+	print data.shape,lat.shape,lon.shape,regridLat.shape,regridLon.shape
+	newmask = np.zeros_like(regiddata)
+	for (i,j), la in np.ndenumerate(regridLat):
+		latdiff = np.abs(lat- la)
+		londiff = np.abs(lon - regridLon[i,j])
+		mdistance = np.min(np.power(latdiff,2.)+np.power(londiff,2.))
+		if mdistance > res: newmask[i,j]+=1.
+			
+	return np.ma.masked_where( newmask>=1., regiddata)
+
+
+			
 def makeExtentPlot(
 	modeldata,
 	modellat,
@@ -81,38 +102,55 @@ def makeExtentPlot(
 	filename,
 	title='',
 	labels='',
+	zrange = '',
+	colourmesh = True,
+	contour	= True,
 	):
 	
 	print modeldata.shape, modellat.shape,modellon.shape
-			
+	
+	zmin = min([modeldata.min(),realdata.min()])
+	zmax = max([modeldata.max(),realdata.max()])
+	
+	if zrange in ['', 'auto',]:
+		zrange = [zmin,zmax  ]
+	
+	if len(contours)==1:
+		print "makeExtentPlot:\t adding min and max to contours."
+		contours = [zmin, contours[0],zmax]
 
 	fig = pyplot.figure()
 	fig.set_size_inches(14,8)
-
 	ax = pyplot.subplot(111,projection=ccrs.PlateCarree(central_longitude=0., ))
 
 	crojp2, mdregid, newmLon, newmLat  = regrid(modeldata,modellat,modellon)
-	crojp2, rdregid, newdLon, newdLat  = regrid(realdata,reallat,reallon)		
+	crojp2, rdregid, newdLon, newdLat  = regrid(realdata,reallat,reallon)
 
- 	pyplot.pcolormesh(newmLon, newmLat,mdregid,transform=ccrs.PlateCarree(),vmin=0.,vmax=400.)
-	pyplot.colorbar()
+	mdregid = remask(modeldata,modellat,modellon,mdregid, newmLat,newmLon)
 	
- 	ax.contour(newmLon,newmLat,mdregid,contours,colors=['darkblue',],linewidths=[1.5,],linestyles=['-',],transform=ccrs.PlateCarree(),zorder=1)
- 	ax.contour(newdLon,newdLat,rdregid,contours,colors=['black',],   linewidths=[1.5,],linestyles=['-',],transform=ccrs.PlateCarree(),zorder=1) 	
- 	pyplot.legend('best')
-	ax.add_feature(cfeature.LAND,  facecolor='white',zorder=2)	
-	ax.coastlines(lw=0.5,zorder=3)		 			
-#    	pyplot.axhline(y= 10.,c='k',ls='--')
- #   	pyplot.axhline(y=-10.,c='k',ls='--')  			
-#	pyplot.yticks([-60.,-30.,-10.,10.,30.,60.])
+#	mdregid = np.ma.masked_where((mdregid < modeldata.min()) + (mdregid > modeldata.max()), mdregid)
+#	rdregid = np.ma.masked_where((rdregid < realdata.min())  + (rdregid > realdata.max()) , rdregid)	
+	
+#	print 'overall:',zmin,zmax, 'model', [modeldata.min(),modeldata.max()], 'data', [realdata.min(),realdata.max()]
+#	print 'regridded:', 'model', [mdregid.min(),mdregid.max()], 'data', [rdregid.min(),rdregid.max()]	
+	
+ 	if colourmesh:
+ 		pyplot.pcolormesh(newmLon, newmLat,mdregid,transform=ccrs.PlateCarree(),vmin=zrange[0],vmax=zrange[1])
+		pyplot.colorbar()
+		
+	if contour:
+	 	ax.contour(newmLon,newmLat,mdregid,contours,colors=['darkblue',],linewidths=[1.5,],linestyles=['-',],transform=ccrs.PlateCarree(),zorder=1)
+ 		#ax.contour(newdLon,newdLat,rdregid,contours,colors=['black',],   linewidths=[1.5,],linestyles=['-',],transform=ccrs.PlateCarree(),zorder=1)
+ 		
+	ax.add_feature(cfeature.LAND,  facecolor='white',zorder=2)
+	ax.coastlines(lw=0.5,zorder=3)
 	pyplot.title(title)
-
 
 	print "saving",filename
 	pyplot.savefig(filename )		
 	pyplot.close()
-			
-
+	
+	
 
 class extentMaps:
   def __init__(self,
@@ -130,6 +168,7 @@ class extentMaps:
 		regions	 	= '',			
 #		metrics	 	= '',
                 contours	= '',	
+		zrange 		= '',
 		workingDir	= '',
 		imageDir	= '',						
 		grid		= '',
@@ -155,6 +194,7 @@ class extentMaps:
 	self.layers	 	= layers
 	self.regions	 	= regions			
 	self.contours		= contours
+	self.zrange		= zrange	
 	#self.metrics	 	= metrics						
 	self.grid		= grid
 	self.gridFile		= gridFile
@@ -196,19 +236,24 @@ class extentMaps:
 			modellat = modelDL.load[(r,l,'lat')]
 			modellon = modelDL.load[(r,l,'lon')]
 		
-		    	realdata = dataDL.load[(r,l,)]	
+		    	realdata = dataDL.load[(r,l,)]
 		    	reallat = dataDL.load[(r,l,'lat')]
 		    	reallon = dataDL.load[(r,l,'lon')]
 		    	
-		    	filename = ukp.folder(self.imageDir)+'_'.join([self.jobID,self.dataType,l,r,str(meantime)])+'.png'
-			    		
-	    		
-	    		makeExtentPlot(	modeldata, modellat, modellon,
+		    		
+	    		for mesh in [1,]:
+			    	
+			    	if mesh: filename = ukp.folder(self.imageDir)+'_'.join([self.jobID,self.dataType,l,r,str(meantime), 'mesh',])+'.png'
+			    	else:	 filename = ukp.folder(self.imageDir)+'_'.join([self.jobID,self.dataType,l,r,str(meantime)])+'.png'	    		
+			    	
+		    		makeExtentPlot(	modeldata, modellat, modellon,
 	    				realdata, reallat, reallon,
 	    				self.contours,
 	    				filename,
-	    				title=' '.join([self.jobID, self.dataType,str(meantime) ]),
+	    				title=' '.join([getLongName(na) for na in [self.jobID, self.dataType, l, str(meantime) ]]),
 	    				labels='',
+	    				zrange = self.zrange,
+	    				colourmesh = mesh,
 	    				)
   	
   	  	
