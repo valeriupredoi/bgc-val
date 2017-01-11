@@ -641,6 +641,7 @@ def html5Maker(
 			  #'TotalIntegratedPrimaryProduction',
 			  'IntegratedPrimaryProduction_OSU', 
 			  'AirSeaFluxCO2',
+			  'Dust',
 			  #'TotalOMZVolume',
 			  #'TotalAirSeaFluxCO2' ,
 			  'Temperature', 
