@@ -1784,7 +1784,7 @@ def analysis_timeseries(jobID = "u-ab671",
 
 	if 'DMS_ARAN' in analysisKeys:
 		name = 'DMS'
-		av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', paths.ModelFolder_pref, annual)[::10]
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', paths.ModelFolder_pref, annual)[:]
 		if annual:
 			av[name]['dataFile'] 		= paths.DMSDir+'DMSclim_mean.nc'
 		else:
@@ -1809,7 +1809,7 @@ def analysis_timeseries(jobID = "u-ab671",
 
 	if 'Dust' in analysisKeys:
 		name = 'Dust'
-		av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', paths.ModelFolder_pref, annual)[::10]
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', paths.ModelFolder_pref, annual)[:]
 		av[name]['dataFile'] 		= paths.Dustdir+'mahowald.orca100_annual.nc'
 
 		av[name]['modelcoords'] 	= medusaCoords
@@ -1824,9 +1824,9 @@ def analysis_timeseries(jobID = "u-ab671",
                         # 55.845: atmoic mass of iron (g>mol conversion)
                         # (24.*60.*60.): per second to per day
                         dust = nc.variables[keys[0]][:]
-                        dust[194:256,295:348] = 0.
-                        dust[194:208,285:295] = 0.
-                        dust[188:216,290:304] = 0.
+                        dust[0,0,194:256,295:348] = 0.
+                        dust[0,0,194:208,285:295] = 0.
+                        dust[0,0,188:216,290:304] = 0.
                         return dust *0.035 * 1.e6 *0.00532*(24.*60.*60.) / 55.845
 
 		av[name]['datadetails']  	= {'name': name, 'vars':['dust_ann',], 'convert': mahodatadust ,'units':'mmol Fe/m2/d'}
@@ -1864,9 +1864,9 @@ def analysis_timeseries(jobID = "u-ab671",
 			# (24.*60.*60.*365.25): per second to per year
 
 			dust = nc.variables[keys[0]][:]
-			dust[234:296,295:348] = 0.
- 			dust[234:248,285:295] = 0.
-  			dust[228:256,290:304] = 0.
+			dust[:,:,234:296,295:348] = 0.
+ 			dust[:,:,234:248,285:295] = 0.
+  			dust[:,:,228:256,290:304] = 0.
 			return (masked_area*dust).sum() *0.035 * 1.e6*1.e-12 *0.00532*(24.*60.*60. *365.25)/  55.845
 
 		def modeldustsum(nc,keys):

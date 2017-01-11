@@ -87,6 +87,7 @@ p2pKeys_level2 = [
 		  'N','Si','O2',
 		  'Alk','DIC','AirSeaFlux',
 		  'IntPP_OSU',
+		  'Dust',
 		  'T','S','MLD',
 		  'ZonalCurrent','MeridionalCurrent','VerticalCurrent'			  
 		  ]
@@ -155,9 +156,11 @@ def analysis_p2p(
 		if analysisSuite.lower() in ['physics',]:		analysisKeys.extend(p2pKeys_physics)
 			
 		if analysisSuite.lower() in ['debug',]:	
-                       	analysisKeys.append('ZonalCurrent')             # Zonal Veloctity
-                       	analysisKeys.append('MeridionalCurrent')        # Meridional Veloctity
-                       	analysisKeys.append('VerticalCurrent')          # Vertical Veloctity			
+                       	#analysisKeys.append('ZonalCurrent')             # Zonal Veloctity
+                       	#analysisKeys.append('MeridionalCurrent')        # Meridional Veloctity
+                       	#analysisKeys.append('VerticalCurrent')          # Vertical Veloctity	
+                       	analysisKeys.append('Dust')          # Vertical Veloctity	                       	
+		                       			
                 print "analysisSuite is a string", analysisSuite, analysisKeys
 		
 	#####
@@ -273,7 +276,7 @@ def analysis_p2p(
 	depthLevels 	= ['Surface','500m','1000m','Transect','PTransect','SOTransect','ArcTransect','AntTransect','CanRusTransect',]
 
 					
-	medusaCoords 	= {'t':'index_t', 'z':'deptht', 'lat': 'nav_lat',  'lon': 'nav_lon',   'cal': '360_day',}	# model doesn't need time dict.
+	medusaCoords 	= {'t':'index_t', 'z':'deptht', 'lat': 'nav_lat',  'lon': 'nav_lon',   'cal': '360_day','tdict':ukp.tdicts['ZeroToZero']}	# model doesn't need time dict.
 	medusaUCoords 	= {'t':'index_t', 'z':'depthu', 'lat': 'nav_lat',  'lon': 'nav_lon',   'cal': '360_day',}	# model doesn't need time dict.
 	medusaVCoords 	= {'t':'index_t', 'z':'depthv', 'lat': 'nav_lat',  'lon': 'nav_lon',   'cal': '360_day',}	# model doesn't need time dict.
 	medusaWCoords 	= {'t':'index_t', 'z':'depthw', 'lat': 'nav_lat',  'lon': 'nav_lon',   'cal': '360_day',}	# model doesn't need time dict.
@@ -848,6 +851,52 @@ def analysis_p2p(
 			av[name]['Data']['details']	= {'name': name, 'vars':['mld','mask',], 'convert': ukp.applymask,'units':'m'}	# no units?
 
 
+		if 'Dust' in analysisKeys:
+			name = 'Dust'
+			av[name]['MEDUSA']['File']   	= listModelDataFiles(jobID, 'diad_T', paths.ModelFolder_pref, annual)
+			av[name]['Data']['File']     	= paths.Dustdir+'mahowald.orca100_annual.nc'
+
+			av[name]['MEDUSA']['coords'] 	= medusaCoords
+			av[name]['Data']['coords']  	= medusaCoords
+			
+			av[name]['MEDUSA']['details'] 	= {'name': name, 'vars':['AEOLIAN',], 'convert': ukp.NoChange,'units':'mmol Fe/m2/d'}
+
+			def mahodatadust(nc,keys):
+				#factors are:
+				# 0.035: iron as a fraction of total dust
+				# 1e6: convert from kmol -> mmol
+				# 0.00532: solubility factor or iron
+				# 55.845: atmoic mass of iron (g>mol conversion)
+				# (24.*60.*60.): per second to per day
+				dust = nc.variables[keys[0]][:]
+		#		dust[:,:,194:256,295:348] = 0.
+		#		dust[:,:,194:208,285:295] = 0.
+		#		dust[:,:,188:216,290:304] = 0.
+				return dust *0.035 * 1.e6 *0.00532*(24.*60.*60.) / 55.845
+			def modeldustsum(nc,keys):
+		                dust = nc.variables[keys[0]][:]
+		  #              dust[:,234:296,295:348] = 0.
+		   #             dust[:,234:248,285:295] = 0.
+		    #            dust[:,228:256,290:304] = 0.
+				return dust *1.E-12 *365.25
+
+			if annual:	av[name]['Data']['details']  	= {'name': name, 'vars':['dust_ann',], 'convert': mahodatadust ,'units':'mmol Fe/m2/d'}
+			else:		av[name]['Data']['details']  	= {'name': name, 'vars':['dust',], 'convert': mahodatadust ,'units':'mmol Fe/m2/d'}
+			
+			av[name]['Data']['source'] 	= 'Mahowald'
+			av[name]['MEDUSA']['source']	= 'MEDUSA'
+
+			av[name]['MEDUSA']['grid'] 		= modelGrid
+			av[name]['depthLevels'] 		= ['',]
+			av[name]['plottingSlices'] 		= tsRegions
+			
+			
+			
+			
+	
+	
+		
+		
 		#if 'AOU' in analysisKeys:
 		#	name = 'AOU'		
 		#	if annual:	
