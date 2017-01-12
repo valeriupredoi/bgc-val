@@ -120,9 +120,11 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
 		analysisKeys = []
 #		analysisKeys.append('CHD')
 #		analysisKeys.append('CHN')
-#		analysisKeys.append('DiaFrac')	
-                analysisKeys.append('GlobalMeanTemperature')
-               	analysisKeys.append('quickSST')    		# Area Weighted Mean Surface Temperature
+#		analysisKeys.append('DiaFrac')
+                analysisKeys.append('AMOC_26N')
+	
+#                analysisKeys.append('GlobalMeanTemperature')
+#               	analysisKeys.append('quickSST')    		# Area Weighted Mean Surface Temperature
 #       	  	analysisKeys.append('TotalOMZVolume')           # Total Oxygen Minimum zone Volume
 #       	 	analysisKeys.append('OMZThickness')             # Oxygen Minimum Zone Thickness
 #        	analysisKeys.append('OMZMeanDepth')             # Oxygen Minimum Zone mean depth    
@@ -1292,7 +1294,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
 				mdata = modeldataD[(jobID,name )][('regionless', 'layerless', 'metricless')]
 				title = getLongName(name)
 
-			if year0:
+			if year0 in ['True', True]:
 				if len(mdata.keys())==0:
 					timesD[jobID]=[]
                                         arrD[jobID]=[]
@@ -1305,7 +1307,20 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
 					datas.append(mdata[t])
 				timesD[jobID] 	= times
 				arrD[jobID]	= datas
-						
+                        elif year0=='u-ai567-minus3':      
+                                if len(mdata.keys())==0:
+                                        timesD[jobID]=[]
+                                        arrD[jobID]=[]
+                                        continue
+                                t0 = float(sorted(mdata.keys())[0])
+                                if jobID =='u-ai567': t0 = t0+3
+                                times = []
+                                datas = []
+                                for t in sorted(mdata.keys()):
+                                        times.append(float(t)-t0)
+                                        datas.append(mdata[t])
+                                timesD[jobID]   = times
+                                arrD[jobID]     = datas    						
 			else:
 				timesD[jobID] 	= sorted(mdata.keys())
 				arrD[jobID]	= [mdata[t] for t in timesD[jobID]]
@@ -1424,8 +1439,8 @@ if __name__=="__main__":
 #	        colours = {'u-ai945':'green','u-aj010':'purple', }
 #                timeseries_compare(colours, physics=True,bio=False,year0=True,debug=0)
 
-                colours = {'u-aj073':'green','u-aj010':'purple', }
-                timeseries_compare(colours, physics=True,bio=False,year0=True,debug=0)
+                colours = {'u-aj073':'green','u-aj010':'purple', 'u-ai567':'blue',}
+                timeseries_compare(colours, physics=True,bio=False,year0='u-ai567-minus3',debug=0)
 
                 
 	else:
