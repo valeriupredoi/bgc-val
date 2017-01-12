@@ -99,6 +99,25 @@ def remask(data,lat,lon,regiddata, regridLat,regridLon, res=1.):
 			
 	return np.ma.masked_where( newmask>=1., regiddata)
 
+def zeromask(data,lat,lon,regiddata, regridLat,regridLon, res=1.):
+	#####
+	# This is neccesairy as the img_tranform above doesn't see gaps in the data and fills it in.
+	# But replaces the masked array with zeros, instead of masked elements.
+	
+	if len(data) == len(lat) ==len(lon): pass
+	else:	assert "The data,lat,lon aren't the same length!"
+	
+	print data.shape,lat.shape,lon.shape,regridLat.shape,regridLon.shape
+	newmask = np.zeros_like(regiddata)
+	for (i,j), la in np.ndenumerate(regridLat):
+		latdiff = np.abs(lat- la)
+		londiff = np.abs(lon - regridLon[i,j])
+		mdistance = np.min(np.power(latdiff,2.)+np.power(londiff,2.))
+		if mdistance > res: newmask[i,j]+=1.
+
+	regiddata[newmask>=1.] =0.
+	return regiddata
+	#return np.ma.masked_where( newmask>=1., regiddata)
 
 			
 def makeExtentPlot(
@@ -115,6 +134,7 @@ def makeExtentPlot(
 	zrange = '',
 	colourmesh = True,
 	contour	= True,
+	maskOrZero	= 'mask',
 	):
 	
 	print modeldata.shape, modellat.shape,modellon.shape
@@ -139,7 +159,10 @@ def makeExtentPlot(
 	crojp2, mdregid, newmLon, newmLat  = regrid(modeldata,modellat,modellon)
 	crojp2, rdregid, newdLon, newdLat  = regrid(realdata,reallat,reallon)
 
-	mdregid = remask(modeldata,modellat,modellon,mdregid, newmLat,newmLon)
+	if maskOrZero=='mask':
+		mdregid = remask(modeldata,modellat,modellon,mdregid, newmLat,newmLon)
+	if maskOrZero=='zero':
+		mdregid = zeromask(modeldata,modellat,modellon,mdregid, newmLat,newmLon)
 	
 #	mdregid = np.ma.masked_where((mdregid < modeldata.min()) + (mdregid > modeldata.max()), mdregid)
 #	rdregid = np.ma.masked_where((rdregid < realdata.min())  + (rdregid > realdata.max()) , rdregid)	
@@ -179,6 +202,7 @@ def interannualExtendMap(
 		#colourmesh = True,
 		showdata	= True,
 		addLegend	= True,
+		maskOrZero	= 'mask'
 		):	
 	keys = sorted(	modeldata.keys())
 		
@@ -220,7 +244,11 @@ def interannualExtendMap(
  	# Add model contours	
 	for key in keys:
 		crojp2, mdregid, newmLon, newmLat  = regrid(modeldata[key],modellat[key],modellon[key])
-		mdregid = remask(modeldata[key],modellat[key],modellon[key],mdregid, newmLat,newmLon)
+		if maskOrZero=='mask':
+			mdregid = remask(modeldata[key],modellat[key],modellon[key],mdregid, newmLat,newmLon)
+		if maskOrZero=='zero':
+			mdregid = zeromask(modeldata[key],modellat[key],modellon[key],mdregid, newmLat,newmLon)
+						
 	 	ax.contour(
 	 		newmLon,newmLat,mdregid,
 	 		contours,
@@ -306,7 +334,9 @@ class extentMaps:
 		imageDir	= '',						
 		grid		= '',
 		gridFile	= '',
+		maskOrZero	= 'mask',
 		debug		= True,
+		
 		):
 	#####
 	#	This is the class that does most of the legwork.
@@ -333,6 +363,7 @@ class extentMaps:
 	self.gridFile		= gridFile
 	self.workingDir		= workingDir
   	self.imageDir 		= imageDir
+	self.maskOrZero		= maskOrZero
 	self.debug		= debug
 	
 		
@@ -378,9 +409,26 @@ class extentMaps:
 			modellat[meantime] = modelDL.load[(r,l,'lat')]
 			modellon[meantime] = modelDL.load[(r,l,'lon')]
 			nc.close()
+
+	    		for mesh in [1,]:
+			    	if mesh: filename = ukp.folder(self.imageDir)+'_'.join([self.jobID,self.dataType,l,r,str(meantime), 'mesh',])+'.png'
+			    	else:	 filename = ukp.folder(self.imageDir)+'_'.join([self.jobID,self.dataType,l,r,str(meantime)])+'.png'	    		
+			    	
+		    		makeExtentPlot(	modeldata[meantime], modellat[meantime], modellon[meantime],
+	    				realdata, reallat, reallon,
+	    				self.contours,
+	    				filename,
+	    				title=' '.join([getLongName(na) for na in [self.jobID, self.dataType, l, str(meantime) ]]),
+	    				labels='',
+	    				zrange = self.zrange,
+	    				colourmesh = mesh,
+					maskOrZero=self.maskOrZero,	    				
+	    				)
+	    				
+	    				
 		    		
 		filename = ukp.folder(self.imageDir)+'_'.join([self.jobID,self.dataType,l,r])+'.png'	    		
-	    	title = ' '.join([getLongName(na) for na in [self.jobID, self.dataType, l, str(meantime) ]])
+	    	title = ' '.join([getLongName(na) for na in [self.jobID, self.dataType, l  ]])
     		interannualExtendMap(
     			modeldata, modellat, modellon,
 			realdata, reallat, reallon,
@@ -389,43 +437,10 @@ class extentMaps:
 			title= title,
 			labels='',
 			zrange = self.zrange,
+			maskOrZero=self.maskOrZero,
 			)
 	
 
-	for mfile in self.modelFiles:
-		nc = Dataset(mfile,'r')
-		ts = tst.getTimes(nc,self.modelcoords)
-		meantime = int(np.mean(ts))
-		print "\ttime:",meantime
-		
-		modelDL = tst.DataLoader(mfile,nc,self.modelcoords,self.modeldetails, regions = self.regions, layers = self.layers,)	
-	
-		for l in self.layers:		
-		    for r in self.regions:
-		    
-			modeldata = modelDL.load[(r,l)]
-			modellat = modelDL.load[(r,l,'lat')]
-			modellon = modelDL.load[(r,l,'lon')]
-		
-		    	realdata = dataDL.load[(r,l,)]
-		    	reallat = dataDL.load[(r,l,'lat')]
-		    	reallon = dataDL.load[(r,l,'lon')]
-		    	
-		    		
-	    		for mesh in [1,]:
-			    	
-			    	if mesh: filename = ukp.folder(self.imageDir)+'_'.join([self.jobID,self.dataType,l,r,str(meantime), 'mesh',])+'.png'
-			    	else:	 filename = ukp.folder(self.imageDir)+'_'.join([self.jobID,self.dataType,l,r,str(meantime)])+'.png'	    		
-			    	
-		    		makeExtentPlot(	modeldata, modellat, modellon,
-	    				realdata, reallat, reallon,
-	    				self.contours,
-	    				filename,
-	    				title=' '.join([getLongName(na) for na in [self.jobID, self.dataType, l, str(meantime) ]]),
-	    				labels='',
-	    				zrange = self.zrange,
-	    				colourmesh = mesh,
-	    				)
   	
   	  	
   	
