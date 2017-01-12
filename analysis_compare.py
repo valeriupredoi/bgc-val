@@ -1421,8 +1421,8 @@ if __name__=="__main__":
  #               timeseries_compare(colours, physics=True,bio=False,year0=1)
 
 
-	        colours = {'u-af872':'green','u-ah882':'purple', }
-                timeseries_compare(colours, physics=True,bio=False,year0=True,debug=1)
+	        colours = {'u-ai945':'green','u-aj010':'purple', }
+                timeseries_compare(colours, physics=True,bio=False,year0=True,debug=0)
                 
 	else:
 	        colours = {'u-ag543':'red', 'u-ag914':'orange','u-ae748':'darkblue','u-af983':'blue','u-af984':'purple', }

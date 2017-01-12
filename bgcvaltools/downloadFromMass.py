@@ -242,14 +242,15 @@ def downloadMass(jobID,):
 
         #####
         # Some runs have nemo/medusa as a preface to the file name.
-        suffDict= {'grid_T':'grid-T',
-		    'grid_U':'grid-U',
-                    'grid_V':'grid-V',
-                    'grid_W':'grid-W',
-                    'diad_T':'diad-T',
-                    'ptrc_T':'ptrc-T',
-		    }
-	for suff, badsuff in suffDict.items():
+        suffDict= {'grid-T':'grid_T',
+                    'grid-U':'grid_U',
+                    'grid-V': 'grid_V',
+                    'grid-W':'grid_W',
+                    'diad-T':'diad_T',
+                    'ptrc-T':'ptrc_T',
+                    #'diaptr':'diad_T', # diaptr is not the same as BGC diad-T
+                    }
+	for badsuff, suff in suffDict.items():
                 #nemo_u-ai886o_1y_26291201-26301201_grid-V.nc
                 fns = glob(outputFold+"/"+jobID+"*"+badsuff+".nc")
                 print "Looking for new suff:",badsuff, outputFold+"/"+jobID+"*"+badsuff+".nc"
