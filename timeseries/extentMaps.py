@@ -49,10 +49,20 @@ from bgcvaltools.pftnames import getLongName
 import timeseriesTools as tst 
 import timeseriesPlots as tsp 
 
+
+try:	
+	defcmap = pyplot.cm.jet
+	defcmapstr = 'jet'
+except:	
+	defcmap = viridis
+	defcmapstr = 'viridis'	
+	
+	
+
 def regrid(data,lat,lon):
         #print 'old regid shape:',data.shape, lat.shape,lon.shape               
-    	nX = np.arange(-179.5,180.5,1.)
-    	nY = np.arange( -89.5, 90.5,1.)
+    	nX = np.arange(-179.5,180.5,2.5)
+    	nY = np.arange( -89.5, 90.5,2.5)
     	newLon, newLat = np.meshgrid(nX,nY)
     	
     	crojp1 = ccrs.PlateCarree(central_longitude=180.0, )#central_latitude=300.0)
@@ -109,15 +119,18 @@ def makeExtentPlot(
 	
 	print modeldata.shape, modellat.shape,modellon.shape
 	
+	
 	zmin = min([modeldata.min(),realdata.min()])
-	zmax = max([modeldata.max(),realdata.max()])
+	zmax = max([modeldata.max(),realdata.max()])	
+
 	
 	if zrange in ['', 'auto',]:
 		zrange = [zmin,zmax  ]
 	
 	if len(contours)==1:
 		print "makeExtentPlot:\t adding min and max to contours."
-		contours = [zmin, contours[0],zmax]
+		if zmin < contours[0] < zmax:
+			contours = [zmin, contours[0],zmax]
 
 	fig = pyplot.figure()
 	fig.set_size_inches(14,8)
@@ -149,7 +162,127 @@ def makeExtentPlot(
 	print "saving",filename
 	pyplot.savefig(filename )		
 	pyplot.close()
+
 	
+def interannualExtendMap(
+		modeldata,
+		modellat,
+		modellon,
+		realdata,
+		reallat,
+		reallon,
+		contours,
+		filename,
+		title='',
+		labels='',
+		zrange = '',
+		#colourmesh = True,
+		showdata	= True,
+		addLegend	= True,
+		):	
+	keys = sorted(	modeldata.keys())
+		
+	zmin = [realdata.min(),]
+	zmax = [realdata.max(),]
+	for key in keys:
+		zmin.append(np.ma.min(modeldata[key]))
+		zmax.append(np.ma.max(modeldata[key]))
+	zmin = np.ma.min(zmin)
+	zmax = np.ma.max(zmax)	
+
+	####
+	# Add plot details
+	pd = {}
+	pd['Data'] = {'label':'Data','c': ['k',],  'lw':[2,],'ls':['-',]}		
+	for i,key in enumerate(keys):
+		lw =1
+		color = defcmap(float(i)/float(len(keys)))
+		label = key
+		pd[key] = {'label':label,'c': [color,],  'lw':[lw,],'ls':['-',],}
+		
+		
+	
+	if zrange in ['', 'auto',]:
+		zrange = [zmin,zmax  ]	
+	
+	if len(contours)==1:
+		print "makeExtentPlot:\t adding min and max to contours."
+		if zmin < contours[0] < zmax:
+			contours = [zmin, contours[0],zmax]
+
+	fig = pyplot.figure()
+	fig.set_size_inches(14,8)
+	ax = pyplot.subplot(111,projection=ccrs.PlateCarree(central_longitude=0., ))
+
+	crojp2, rdregid, newdLon, newdLat  = regrid(realdata,reallat,reallon)
+
+ 	#####
+ 	# Add model contours	
+	for key in keys:
+		crojp2, mdregid, newmLon, newmLat  = regrid(modeldata[key],modellat[key],modellon[key])
+		mdregid = remask(modeldata[key],modellat[key],modellon[key],mdregid, newmLat,newmLon)
+	 	ax.contour(
+	 		newmLon,newmLat,mdregid,
+	 		contours,
+	 		colors=pd[key]['c'],
+	 		linewidths=pd[key]['lw'],
+	 		linestyles=pd[key]['ls'],
+	 		transform=ccrs.PlateCarree(),
+	 		zorder=1,
+	 		)
+ 	#####
+ 	# Add data
+	if showdata:	
+	 	ax.contour(
+	 		newdLon,newdLat,rdregid,
+	 		contours,
+	 		colors=pd['Data']['c'],
+	 		linewidths=pd['Data']['lw'],
+	 		linestyles=pd['Data']['ls'],
+	 		transform=ccrs.PlateCarree(),
+	 		zorder=1,
+	 		)
+	#####
+	# Add land:	 	
+	ax.add_feature(cfeature.LAND,  facecolor='white',zorder=2)
+	ax.coastlines(lw=0.5,zorder=3)
+	pyplot.title(title)
+
+
+	#####
+	# Add legend:
+	if addLegend:
+		legendSize = len(pd.keys())+1
+		ncols = int(legendSize/5)+1
+		box = ax.get_position()
+		ax.set_position([box.x0,
+				  box.y0 ,
+				  box.width*(1.-0.1*ncols), 
+				  box.height ])
+	
+		for i in sorted(pd.keys()):
+			pyplot.plot(
+				[], [], 
+				c    = pd[i]['c'][0], 
+				lw   = pd[i]['lw'][0], 
+				ls   = pd[i]['ls'][0], 
+				label= pd[i]['label'],
+				)
+												
+		legd = ax.legend(loc='center left', ncol=ncols,prop={'size':10},bbox_to_anchor=(1., 0.5))
+		legd.draw_frame(False) 
+		legd.get_frame().set_alpha(0.)	
+		
+
+
+	#####
+	# Saving image:
+	print "saving",filename
+	pyplot.savefig(filename )		
+	pyplot.close()
+	
+
+		
 	
 
 class extentMaps:
@@ -220,6 +353,46 @@ class extentMaps:
 
 	
 	dataDL = tst.DataLoader(self.dataFile,'',self.datacoords,self.datadetails, regions = self.regions, layers = self.layers,)
+
+	for l in self.layers:		
+	    for r in self.regions:
+	    	modeldata = {}
+	    	modellat = {}
+	    	modellon = {}
+	    	
+	    	
+	    	realdata = dataDL.load[(r,l,)]
+	    	reallat = dataDL.load[(r,l,'lat')]
+	    	reallon = dataDL.load[(r,l,'lon')]
+		    		    	
+		for mfile in self.modelFiles:
+			nc = Dataset(mfile,'r')
+			ts = tst.getTimes(nc,self.modelcoords)
+			meantime = int(np.mean(ts))
+			print "\ttime:",meantime
+		
+			modelDL = tst.DataLoader(mfile,nc,self.modelcoords,self.modeldetails, regions = self.regions, layers = self.layers,)	
+	
+	    
+			modeldata[meantime] = modelDL.load[(r,l)]
+			modellat[meantime] = modelDL.load[(r,l,'lat')]
+			modellon[meantime] = modelDL.load[(r,l,'lon')]
+			nc.close()
+		    		
+		filename = ukp.folder(self.imageDir)+'_'.join([self.jobID,self.dataType,l,r])+'.png'	    		
+	    	title = ' '.join([getLongName(na) for na in [self.jobID, self.dataType, l, str(meantime) ]])
+    		interannualExtendMap(
+    			modeldata, modellat, modellon,
+			realdata, reallat, reallon,
+			self.contours,
+			filename,
+			title= title,
+			labels='',
+			zrange = self.zrange,
+			)
+	return
+	#assert 0    				
+	
 
 	for mfile in self.modelFiles:
 		nc = Dataset(mfile,'r')

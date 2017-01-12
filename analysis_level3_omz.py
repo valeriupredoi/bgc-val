@@ -584,6 +584,29 @@ def analysis_omz(jobID=''):
 
         #####
         # time series and traffic lights.
+        name = 'Oxygen'
+        em = extentMaps(
+                av[name]['modelFiles'],
+                av[name]['dataFile'],
+                dataType        = name,
+                modelcoords     = av[name]['modelcoords'],
+                modeldetails    = av[name]['modeldetails'],
+                datacoords      = av[name]['datacoords'],
+                datadetails     = av[name]['datadetails'],
+                datasource      = av[name]['datasource'],
+                model           = av[name]['model'],
+                jobID           = jobID,
+                layers          = ['1000m','500m',],#'Surface',],
+                regions         = ['Global',],
+                workingDir      = shelvedir,
+                imageDir        = ukp.folder(imagedir +'ExtentMaps/Oxygen'),
+                contours	= [20.,],
+                 zrange		= [0.,400.],
+                grid            = av[name]['modelgrid'],
+                gridFile        = av[name]['gridFile'],
+                debug           = True,
+        )        
+        
         name = 'OMZExtent'
         em = extentMaps(
                 av[name]['modelFiles'],
@@ -607,28 +630,7 @@ def analysis_omz(jobID=''):
                 debug           = True,
         )	
 
-        name = 'Oxygen'
-        em = extentMaps(
-                av[name]['modelFiles'],
-                av[name]['dataFile'],
-                dataType        = name,
-                modelcoords     = av[name]['modelcoords'],
-                modeldetails    = av[name]['modeldetails'],
-                datacoords      = av[name]['datacoords'],
-                datadetails     = av[name]['datadetails'],
-                datasource      = av[name]['datasource'],
-                model           = av[name]['model'],
-                jobID           = jobID,
-                layers          = ['1000m','500m','Surface',],
-                regions         = ['Global',],
-                workingDir      = shelvedir,
-                imageDir        = ukp.folder(imagedir +'ExtentMaps/Oxygen'),
-                contours	= [20.,],
-                 zrange		= [0.,400.],
-                grid            = av[name]['modelgrid'],
-                gridFile        = av[name]['gridFile'],
-                debug           = True,
-        )
+
 
 
 def main():

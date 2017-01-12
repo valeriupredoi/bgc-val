@@ -138,6 +138,7 @@ def html5Maker(
 	level2Physics = False
 	summarySections = False
 	plotbyfieldandregion = False
+	level3OMZ = True
 	regionMap=True
 	
 	
@@ -1051,6 +1052,9 @@ def html5Maker(
 
 #			html5Tools.AddSection(indexhtmlfn,key+'-'+region,longnames, Description=longnames+' plots',Files = files)
 
+
+	if level3OMZ:
+		pass
 
 
 	if regionMap:
