@@ -1364,7 +1364,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
 			arrD[jobID]	= [mdata[t] for t in timesD[jobID]]
 		
 		for ts in ['Together',]:#'Separate']:
-		    for ls in ['Both','movingaverage',]:#'','Both',]:			
+		    for ls in ['Both','movingaverage','']:#'','Both',]:			
 			tsp.multitimeseries(
 				timesD, 		# model times (in floats)
 				arrD,			# model time series
@@ -1421,8 +1421,12 @@ if __name__=="__main__":
  #               timeseries_compare(colours, physics=True,bio=False,year0=1)
 
 
-	        colours = {'u-ai945':'green','u-aj010':'purple', }
+#	        colours = {'u-ai945':'green','u-aj010':'purple', }
+#                timeseries_compare(colours, physics=True,bio=False,year0=True,debug=0)
+
+                colours = {'u-aj073':'green','u-aj010':'purple', }
                 timeseries_compare(colours, physics=True,bio=False,year0=True,debug=0)
+
                 
 	else:
 	        colours = {'u-ag543':'red', 'u-ag914':'orange','u-ae748':'darkblue','u-af983':'blue','u-af984':'purple', }

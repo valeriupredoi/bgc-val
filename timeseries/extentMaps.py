@@ -253,7 +253,7 @@ def interannualExtendMap(
 	# Add legend:
 	if addLegend:
 		legendSize = len(pd.keys())+1
-		ncols = int(legendSize/5)+1
+		ncols = int(legendSize/25)+1
 		box = ax.get_position()
 		ax.set_position([box.x0,
 				  box.y0 ,
@@ -390,8 +390,6 @@ class extentMaps:
 			labels='',
 			zrange = self.zrange,
 			)
-	return
-	#assert 0    				
 	
 
 	for mfile in self.modelFiles:
