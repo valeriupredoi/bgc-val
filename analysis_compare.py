@@ -1448,12 +1448,16 @@ def CompareTwoRuns(jobIDA,jobIDB,physics=True,bio=False,yearA='',yearB='',debug=
 	#
 	#spatial maps of specific fields
 
-	filetype = ['grid_T',]	
+	filetype = []
+	if physics:	
+		filetype.extend(['grid_T','grid_U','grid_V','grid_W',])
+	if bio:	
+		filetype.extend(['diad_T','ptrc_T',])		
 	filesA = {}
 	filesB = {}
 
         imageFolder = 'images/TimeseriesCompare/'
-        imageFolder+= jobIDA+yearA+'_and_'+jobIDB+yearB
+        imageFolder+= jobIDA+'-'+yearA+'_and_'+jobIDB+'-'+yearB
         
         			
 	for ft in filetype:
@@ -1515,7 +1519,7 @@ if __name__=="__main__":
 	#CompareTwoRuns('u-aj010_10','u-ai567_10',physics=True,bio=False,yearA='2077',yearB='2623',debug=True)
 	#CompareTwoRuns('u-aj010_10','u-ai567_10',physics=True,bio=False,yearA='2086',yearB='2632',debug=True)	
 	
-	CompareTwoRuns('u-ad371','u-ad371',physics=True,bio=False,yearA='1984',yearB='1984',debug=True)	
+	CompareTwoRuns('u-ad371','u-ad371',physics=True,bio=True,yearA='1984',yearB='1984',debug=True)	
 		
 	
 	
