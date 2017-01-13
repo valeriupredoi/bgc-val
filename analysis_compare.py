@@ -51,9 +51,23 @@ from timeseries import profileAnalysis
 from timeseries import timeseriesPlots as tsp 
 try:	from bgcvaltools.pftnames import getLongName
 except:	from pftnames import getLongName
+from alwaysInclude import  alwaysInclude
 
 import paths
 
+
+def listModelDataFiles(jobID, filekey, datafolder, annual,year=''):
+	if year == '':
+		if annual:
+			return sorted(glob(datafolder+jobID+"/"+jobID+"o_1y_*_"+filekey+".nc"))
+		else:
+			return sorted(glob(datafolder+jobID+"/"+jobID+"o_1m_*_"+filekey+".nc"))
+	else:
+		if annual:
+			return sorted(glob(datafolder+jobID+"/"+jobID+"o_1y_*"+year+"????_"+filekey+".nc"))
+		else:
+			return sorted(glob(datafolder+jobID+"/"+jobID+"o_1m_*"+year+"????_"+filekey+".nc"))
+				
 def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
 	### strategy here is a simple wrapper.
 	# It's a little cheat-y, as I'm copying straight from analysis_timeseries.py
@@ -207,11 +221,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
 		shelvedir 	= ukp.folder("/group_workspaces/jasmin2/ukesm/BGC_data/"+getuser()+"/shelves/timeseries/"+jobID)
 		
 		
-		def listModelDataFiles(jobID, filekey, datafolder, annual):
-			if annual:
-				return sorted(glob(datafolder+jobID+"/"+jobID+"o_1y_*_"+filekey+".nc"))
-			else:
-				return sorted(glob(datafolder+jobID+"/"+jobID+"o_1m_*_"+filekey+".nc"))
+
 
 		av = ukp.AutoVivification()							
 		if 'DrakePassageTransport' in analysisKeys:
@@ -1423,12 +1433,70 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
 			)
 	
 		
+def CompareTwoRuns(jobIDA,jobIDB,physics=True,bio=False,yearA='',yearB='',debug=True):
+	#
+	#spatial maps of specific fields
 
+	filetype = ['grid_T',]	
+	filesA = {}
+	filesB = {}
+
+        imageFolder = 'images/TimeseriesCompare/'
+        imageFolder+= jobIDA+yearA+'_and_'+jobIDB+yearB
+        
+        			
+	for ft in filetype:
+	        filesA[ft] = listModelDataFiles(jobIDA, ft, paths.ModelFolder_pref, True,year=yearA)
+	        filesB[ft] = listModelDataFiles(jobIDB, ft, paths.ModelFolder_pref, True,year=yearB)
+	        
+	      
+		ncA = Dataset(filesA[ft], 'r')
+		ncB = Dataset(filesB[ft], 'r')		
+		keys = ukp.intersection(ncA.variables.keys(),ncB.variables.keys())
+
+		lons = ncA.variables['nav_lat'][:]
+		lats = ncA.variables['nav_lon'][:]		
+		
+		for key in keys:
+			if keys in alwaysInclude: continue
+			
+			if ncA.variables[keys]==4:
+				dataA = ncA.variables[keys][0,0,:,:]
+				dataB = ncB.variables[keys][0,0,:,:]			
+
+			if ncA.variables[keys]==3:
+				dataA = ncA.variables[keys][0,:,:]
+				dataB = ncB.variables[keys][0,:,:]	
+					
+			filename = ukp.folder(imageFolder+'/'+ft)+ft+'-'+key+'.png' 
+			title = key
+			robinPlotQuad(
+				lons, lats,
+				dataA,
+				dataB,
+				filename,
+				titles=[jobIDA+' '+yearA,jobIDB+' '+yearB],
+				title='',
+				lon0=0.,
+				marble=False,
+				drawCbar=True,
+				cbarlabel='',
+				doLog=False,
+				vmin=dmin,vmax=dmax,
+				maptype = 'Cartopy',
+				scatter=False)	
+			)
+		
+		
 
 if __name__=="__main__":
 	#colours = {'u-af981':'red', 'u-af982':'orange','u-af983':'blue','u-af984':'purple', }
 	#timeseries_compare(colours)
 	debug = True
+	
+	CompareTwoRuns('u-aj010_10','u-ai567_10',physics=True,bio=False,yearA='2076',yearB='',debug=True)
+	
+	
 	if debug:
 
 
