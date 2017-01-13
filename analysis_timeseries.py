@@ -69,7 +69,7 @@ timeseriesDict = {i:n for i,n in enumerate(timeseriesKeys)}
 level1Keys = ['N', 'Si','O2','Alk','DIC','AirSeaFlux','TotalAirSeaFluxCO2','IntPP_OSU','PP_OSU' ,'LocalExportRatio','GlobalExportRatio' ,
 		'TotalOMZVolume','OMZThickness' ,'OMZMeanDepth','Iron',
 		'Dust','TotalDust','TotalDust_nomask','DiaFrac', #'CHN','CHD',
-		'T', 'GlobalMeanTemperature',
+		'T', 'GlobalMeanTemperature','IcelessMeanSST',
 		'S','MLD','TotalIceArea', 'NorthernTotalIceArea','SouthernTotalIceArea',
 		'TotalIceExtent', 'NorthernTotalIceExtent','SouthernTotalIceExtent','DrakePassageTransport','AMOC_26N','AMOC_32S',
 		'ZonalCurrent','MeridionalCurrent','VerticalCurrent']
@@ -87,7 +87,7 @@ physKeys  = ['T', 'GlobalMeanTemperature',
 		'S','MLD','TotalIceArea', 'NorthernTotalIceArea','SouthernTotalIceArea',
 		'TotalIceExtent', 'NorthernTotalIceExtent','SouthernTotalIceExtent',
 		'DrakePassageTransport','AMOC_26N','AMOC_32S',
-		'ZonalCurrent','MeridionalCurrent','VerticalCurrent']
+		'ZonalCurrent','MeridionalCurrent','VerticalCurrent','IcelessMeanSST']
 physKeysDict = {i:n for i,n in enumerate(physKeys)}
 
 def analysis_timeseries(jobID = "u-ab671",
