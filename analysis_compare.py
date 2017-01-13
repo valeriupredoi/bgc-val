@@ -1431,7 +1431,18 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
 				lineStyle	= ls,
 				colours		= colours,
 			)
+
+def flatten(lats,lons,dataA,dataB):
+	m =  np.ma.array(dataA).mask
+	m += np.ma.array(dataB).mask	
+	m += np.ma.masked_invalid(dataA/dataB).mask
 	
+	return  np.ma.masked_where(m, lats).compressed(),\
+		np.ma.masked_where(m, lons).compressed(),\
+		np.ma.masked_where(m, dataA).compressed(),\
+		np.ma.masked_where(m, dataB).compressed()
+	
+		
 		
 def CompareTwoRuns(jobIDA,jobIDB,physics=True,bio=False,yearA='',yearB='',debug=True):
 	#
@@ -1446,9 +1457,10 @@ def CompareTwoRuns(jobIDA,jobIDB,physics=True,bio=False,yearA='',yearB='',debug=
         
         			
 	for ft in filetype:
-	        filesA[ft] = listModelDataFiles(jobIDA, ft, paths.ModelFolder_pref, True,year=yearA)
-	        filesB[ft] = listModelDataFiles(jobIDB, ft, paths.ModelFolder_pref, True,year=yearB)
-	        
+	        filesA[ft] = listModelDataFiles(jobIDA, ft, paths.ModelFolder_pref, True,year=yearA)[0]
+	        filesB[ft] = listModelDataFiles(jobIDB, ft, paths.ModelFolder_pref, True,year=yearB)[0]
+	        print "files A:",filesA[ft]
+	        print "files B:",filesB[ft]	        
 	      
 		ncA = Dataset(filesA[ft], 'r')
 		ncB = Dataset(filesB[ft], 'r')		
@@ -1458,22 +1470,29 @@ def CompareTwoRuns(jobIDA,jobIDB,physics=True,bio=False,yearA='',yearB='',debug=
 		lats = ncA.variables['nav_lon'][:]		
 		
 		for key in keys:
-			if keys in alwaysInclude: continue
-			
-			if ncA.variables[keys]==4:
-				dataA = ncA.variables[keys][0,0,:,:]
-				dataB = ncB.variables[keys][0,0,:,:]			
+			if key in alwaysInclude: continue
+			if key in ['bounds_lon', 'bounds_lat']:continue
+			if ncA.variables[key].ndim==4:
+				dataA = ncA.variables[key][0,0,:,:]
+				dataB = ncB.variables[key][0,0,:,:]			
 
-			if ncA.variables[keys]==3:
-				dataA = ncA.variables[keys][0,:,:]
-				dataB = ncB.variables[keys][0,:,:]	
-					
+			if ncA.variables[key].ndim==3:
+				dataA = ncA.variables[key][0,:,:]
+				dataB = ncB.variables[key][0,:,:]	
+
+			dmin = min([dataA.min(),dataB.min()])
+			dmax = max([dataA.max(),dataB.max()])
+
+			print key, lats.shape,lons.shape,dataA.shape,dataB.shape	
+			la,lo,data,datb = flatten(lats,lons,dataA,dataB)
+			print key, la.shape,lo.shape,data.shape,datb.shape
+			if 0 in [len(la),len(lo),len(data),len(datb)]:continue
 			filename = ukp.folder(imageFolder+'/'+ft)+ft+'-'+key+'.png' 
 			title = key
-			robinPlotQuad(
-				lons, lats,
-				dataA,
-				dataB,
+			ukp.robinPlotQuad(
+				lo, la,
+				data,
+				datb,
 				filename,
 				titles=[jobIDA+' '+yearA,jobIDB+' '+yearB],
 				title='',
@@ -1485,7 +1504,6 @@ def CompareTwoRuns(jobIDA,jobIDB,physics=True,bio=False,yearA='',yearB='',debug=
 				vmin=dmin,vmax=dmax,
 				maptype = 'Cartopy',
 				scatter=False)	
-			)
 		
 		
 
@@ -1494,7 +1512,11 @@ if __name__=="__main__":
 	#timeseries_compare(colours)
 	debug = True
 	
-	CompareTwoRuns('u-aj010_10','u-ai567_10',physics=True,bio=False,yearA='2076',yearB='',debug=True)
+	#CompareTwoRuns('u-aj010_10','u-ai567_10',physics=True,bio=False,yearA='2077',yearB='2623',debug=True)
+	#CompareTwoRuns('u-aj010_10','u-ai567_10',physics=True,bio=False,yearA='2086',yearB='2632',debug=True)	
+	
+	CompareTwoRuns('u-ad371','u-ad371',physics=True,bio=False,yearA='1984',yearB='1984',debug=True)	
+		
 	
 	
 	if debug:
