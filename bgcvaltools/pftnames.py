@@ -167,6 +167,7 @@ def makeLongNameDict():
 	lnd['TotalDust'] = 'Total Dust'
 	
   	lnd['OMZ'] = 'Oxygen minimum zone' 
+  	lnd['OMZExtent'] = 'Oxygen minimum zone Extent'   	
   	lnd['TotalOMZVolume'] = 'Total Oxygen minimum zone volume (<20 mmol O2/m^3)'   	
   	lnd['TotalOMZVolume50'] = 'Total Oxygen minimum zone volume (<50 mmol O2/m^3)'   	  	
   	lnd['OMZThickness'] = 'Oxygen minimum zone thickness (<20 mmol O2/m^3)'  

@@ -279,7 +279,6 @@ def analysis_omz(jobID=''):
 		
 		
 	if 'OMZExtent' in analysisKeys:
-		
 		if annual:
 			av['OMZExtent']['modelFiles']  	= sorted(glob(paths.ModelFolder_pref+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
 			av['OMZExtent']['dataFile'] 		=  WOAFolder+'woa13_all_o00_01.nc'
@@ -293,33 +292,38 @@ def analysis_omz(jobID=''):
 		nc.close()			
 
 		if 'OMZExtent' in analysisKeys: 	omzthreshold = 20.
-				
 		def modelOMZthickness(nc,keys):
 			o2 = nc.variables[keys[0]][:].squeeze()
 			totalthick = np.ma.masked_where((o2>omzthreshold)+o2.mask+ (tmask==0),thickness).sum(0)#.data
 			if totalthick.max() in [0.,0]: return np.array([0.,])
-			
 			return totalthick #np.ma.masked_where(totalthick==0., totalthick)
 			
 		def woaOMZthickness(nc,keys):
 			o2 = nc.variables[keys[0]][:].squeeze() *44.661
-			pthick = np.zeros_like(o2) 
+			pthick = np.zeros_like(o2.data)
 			lons = nc.variables['lon'][:]
-			lats = nc.variables['lat'][:]			
+			lats = nc.variables['lat'][:]
 			zthick  = np.abs(nc.variables['depth_bnds'][:,0] - nc.variables['depth_bnds'][:,1])
 
 			for y,lat in enumerate(lats):
-			    for x,lon in enumerate(lons):			  
+			    for x,lon in enumerate(lons):
 				pthick[:,y,x] = zthick
 			totalthick = np.ma.masked_where((o2>omzthreshold)+o2.mask,pthick).sum(0).data
 			if totalthick.max() in [0.,0]: return np.array([0.,])
-			return totalthick# np.ma.masked_where(totalthick==0., totalthick)
+			totalthick = np.ma.masked_where(totalthick==0.,totalthick)
+			print "woaOMZthickness:mean thickness:", totalthick.mean(),totalthick.min(),totalthick.max()
+#			from matplotlib import pyplot
+#			pyplot.pcolormesh(totalthick)
+#			pyplot.colorbar()
+#			pyplot.show()
+#			assert 0
+			return totalthick
 
-		av['OMZExtent']['modelcoords'] 	= medusaCoords 	
+		av['OMZExtent']['modelcoords'] 		= medusaCoords 	
 		av['OMZExtent']['datacoords'] 		= woaCoords
 	
-		av['OMZExtent']['modeldetails'] 	= {'name': 'OMZExtent', 'vars':['OXY',], 'convert': modelOMZthickness,'units':'m'}
-		av['OMZExtent']['datadetails']  	= {'name': 'OMZExtent', 'vars':['o_an',], 'convert': woaOMZthickness,'units':'m'}
+		av['OMZExtent']['modeldetails'] 	= {'name': 'OMZExtent', 'vars':['OXY',],  'convert': modelOMZthickness, 'units':'m'}
+		av['OMZExtent']['datadetails']  	= {'name': 'OMZExtent', 'vars':['o_an',], 'convert': woaOMZthickness,   'units':'m'}
 	
 		av['OMZExtent']['layers'] 		= ['layerless',] 
 		av['OMZExtent']['regions'] 		= regionList
@@ -496,7 +500,6 @@ def analysis_omz(jobID=''):
 	shelves = {}
 	shelves_insitu={}
 	for name in av.keys():
-		continue
 		
 		print "------------------------------------------------------------------"	
 		print "analysis-Timeseries.py:\tBeginning to call timeseriesAnalysis for ", name

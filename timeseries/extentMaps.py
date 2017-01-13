@@ -135,6 +135,7 @@ def makeExtentPlot(
 	colourmesh = True,
 	contour	= True,
 	maskOrZero	= 'mask',
+	drawData = True,
 	):
 	
 	print modeldata.shape, modellat.shape,modellon.shape
@@ -142,7 +143,6 @@ def makeExtentPlot(
 	
 	zmin = min([modeldata.min(),realdata.min()])
 	zmax = max([modeldata.max(),realdata.max()])	
-
 	
 	if zrange in ['', 'auto',]:
 		zrange = [zmin,zmax  ]
@@ -156,19 +156,13 @@ def makeExtentPlot(
 	fig.set_size_inches(14,8)
 	ax = pyplot.subplot(111,projection=ccrs.PlateCarree(central_longitude=0., ))
 
+	#####
+	# Draw model
 	crojp2, mdregid, newmLon, newmLat  = regrid(modeldata,modellat,modellon)
-	crojp2, rdregid, newdLon, newdLat  = regrid(realdata,reallat,reallon)
-
 	if maskOrZero=='mask':
 		mdregid = remask(modeldata,modellat,modellon,mdregid, newmLat,newmLon)
 	if maskOrZero=='zero':
 		mdregid = zeromask(modeldata,modellat,modellon,mdregid, newmLat,newmLon)
-	
-#	mdregid = np.ma.masked_where((mdregid < modeldata.min()) + (mdregid > modeldata.max()), mdregid)
-#	rdregid = np.ma.masked_where((rdregid < realdata.min())  + (rdregid > realdata.max()) , rdregid)	
-	
-#	print 'overall:',zmin,zmax, 'model', [modeldata.min(),modeldata.max()], 'data', [realdata.min(),realdata.max()]
-#	print 'regridded:', 'model', [mdregid.min(),mdregid.max()], 'data', [rdregid.min(),rdregid.max()]	
 	
  	if colourmesh:
  		pyplot.pcolormesh(newmLon, newmLat,mdregid,transform=ccrs.PlateCarree(),vmin=zrange[0],vmax=zrange[1])
@@ -176,12 +170,24 @@ def makeExtentPlot(
 		
 	if contour:
 	 	ax.contour(newmLon,newmLat,mdregid,contours,colors=['darkblue',],linewidths=[1.5,],linestyles=['-',],transform=ccrs.PlateCarree(),zorder=1)
- 		#ax.contour(newdLon,newdLat,rdregid,contours,colors=['black',],   linewidths=[1.5,],linestyles=['-',],transform=ccrs.PlateCarree(),zorder=1)
- 		
+
+	#####
+	# Draw data
+	if drawData:
+		crojp2, rdregid, newdLon, newdLat  = regrid(realdata,reallat,reallon)
+
+		if maskOrZero=='mask':
+			rdregid = remask(realdata,reallat,reallon,rdregid, newdLat,newdLon)
+		if maskOrZero=='zero':
+			rdregid = zeromask(realdata,reallat,reallon,rdregid, newdLat,newdLon)	
+ 		ax.contour(newdLon,newdLat,rdregid,contours,colors=['black',],   linewidths=[2.0,],linestyles=['-',],transform=ccrs.PlateCarree(),zorder=1)
+	#####
+	# Draw coastline
 	ax.add_feature(cfeature.LAND,  facecolor='white',zorder=2)
 	ax.coastlines(lw=0.5,zorder=3)
+	
+	
 	pyplot.title(title)
-
 	print "saving",filename
 	pyplot.savefig(filename )		
 	pyplot.close()
@@ -217,7 +223,7 @@ def interannualExtendMap(
 	####
 	# Add plot details
 	pd = {}
-	pd['Data'] = {'label':'Data','c': ['k',],  'lw':[2,],'ls':['-',]}		
+	pd['Data'] = {'label':'Data','c': ['k',],  'lw':[2.,],'ls':['-',]}		
 	for i,key in enumerate(keys):
 		lw =1
 		color = defcmap(float(i)/float(len(keys)))
@@ -238,7 +244,7 @@ def interannualExtendMap(
 	fig.set_size_inches(14,8)
 	ax = pyplot.subplot(111,projection=ccrs.PlateCarree(central_longitude=0., ))
 
-	crojp2, rdregid, newdLon, newdLat  = regrid(realdata,reallat,reallon)
+
 
  	#####
  	# Add model contours	
@@ -261,6 +267,13 @@ def interannualExtendMap(
  	#####
  	# Add data
 	if showdata:	
+		crojp2, rdregid, newdLon, newdLat  = regrid(realdata,reallat,reallon)
+
+		if maskOrZero=='mask':
+			rdregid = remask(realdata,reallat,reallon,rdregid, newdLat,newdLon)
+		if maskOrZero=='zero':
+			rdregid = zeromask(realdata,reallat,reallon,rdregid, newdLat,newdLon)	
+					
 	 	ax.contour(
 	 		newdLon,newdLat,rdregid,
 	 		contours,
@@ -418,7 +431,7 @@ class extentMaps:
 	    				realdata, reallat, reallon,
 	    				self.contours,
 	    				filename,
-	    				title=' '.join([getLongName(na) for na in [self.jobID, self.dataType, l, str(meantime) ]]),
+	    				title=' '.join([getLongName(na) for na in [self.dataType, l, str(meantime), '(',self.jobID,')' ]]),
 	    				labels='',
 	    				zrange = self.zrange,
 	    				colourmesh = mesh,
@@ -428,7 +441,7 @@ class extentMaps:
 	    				
 		    		
 		filename = ukp.folder(self.imageDir)+'_'.join([self.jobID,self.dataType,l,r])+'.png'	    		
-	    	title = ' '.join([getLongName(na) for na in [self.jobID, self.dataType, l  ]])
+	    	title = ' '.join([getLongName(na) for na in [self.dataType, l , '(',self.jobID,')' ]])
     		interannualExtendMap(
     			modeldata, modellat, modellon,
 			realdata, reallat, reallon,
