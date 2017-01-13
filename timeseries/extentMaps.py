@@ -61,8 +61,8 @@ except:
 
 def regrid(data,lat,lon):
         #print 'old regid shape:',data.shape, lat.shape,lon.shape               
-    	nX = np.arange(-179.5,180.5,2.5)
-    	nY = np.arange( -89.5, 90.5,2.5)
+    	nX = np.arange(-179.5,180.5,1.)
+    	nY = np.arange( -89.5, 90.5,1.)
     	newLon, newLat = np.meshgrid(nX,nY)
     	
     	crojp1 = ccrs.PlateCarree(central_longitude=180.0, )#central_latitude=300.0)
