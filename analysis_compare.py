@@ -1470,9 +1470,9 @@ def CompareTwoRuns(jobIDA,jobIDB,physics=True,bio=False,yearA='',yearB='',debug=
 		ncB = Dataset(filesB[ft], 'r')		
 		keys = ukp.intersection(ncA.variables.keys(),ncB.variables.keys())
 
-		lons = ncA.variables['nav_lat'][:]
-		lats = ncA.variables['nav_lon'][:]		
-		
+		lats = ncA.variables['nav_lat'][:]		
+		lons = ncA.variables['nav_lon'][:]
+				
 		for key in keys:
 			if key in alwaysInclude: continue
 			if key in ['bounds_lon', 'bounds_lat']:continue
@@ -1490,6 +1490,7 @@ def CompareTwoRuns(jobIDA,jobIDB,physics=True,bio=False,yearA='',yearB='',debug=
 			print key, lats.shape,lons.shape,dataA.shape,dataB.shape	
 			la,lo,data,datb = flatten(lats,lons,dataA,dataB)
 			print key, la.shape,lo.shape,data.shape,datb.shape
+			
 			if 0 in [len(la),len(lo),len(data),len(datb)]:continue
 			filename = ukp.folder(imageFolder+'/'+ft)+ft+'-'+key+'.png' 
 			title = key
