@@ -64,6 +64,7 @@ def listModelDataFiles(jobID, filekey, datafolder, annual,year=''):
 			return sorted(glob(datafolder+jobID+"/"+jobID+"o_1m_*_"+filekey+".nc"))
 	else:
 		if annual:
+			print datafolder+jobID+"/"+jobID+"o_1y_*"+year+"????_"+filekey+".nc"
 			return sorted(glob(datafolder+jobID+"/"+jobID+"o_1y_*"+year+"????_"+filekey+".nc"))
 		else:
 			return sorted(glob(datafolder+jobID+"/"+jobID+"o_1m_*"+year+"????_"+filekey+".nc"))
@@ -1517,10 +1518,10 @@ if __name__=="__main__":
 	#timeseries_compare(colours)
 	debug = True
 	
-	#CompareTwoRuns('u-aj010_10','u-ai567_10',physics=True,bio=False,yearA='2077',yearB='2623',debug=True)
-	#CompareTwoRuns('u-aj010_10','u-ai567_10',physics=True,bio=False,yearA='2086',yearB='2632',debug=True)	
+	CompareTwoRuns('u-aj010_10','u-ai567_10',physics=True,bio=False,yearA='2623',yearB='2077',debug=True)
+	CompareTwoRuns('u-aj010_10','u-ai567_10',physics=True,bio=False,yearA='2632',yearB='2086',debug=True)	
 	
-	CompareTwoRuns('u-ad371','u-ad371',physics=True,bio=True,yearA='1984',yearB='1984',debug=True)	
+#	CompareTwoRuns('u-ad371','u-ad371',physics=True,bio=True,yearA='1984',yearB='1984',debug=True)	
 		
 	
 	
