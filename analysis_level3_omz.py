@@ -635,9 +635,53 @@ def analysis_omz(jobID=''):
                 maskOrZero	= 'mask',
         )        
         
-	
+        name = 'Oxygen50'
+        em = extentMaps(
+                av[name]['modelFiles'],
+                av[name]['dataFile'],
+                dataType        = name,
+                modelcoords     = av[name]['modelcoords'],
+                modeldetails    = av[name]['modeldetails'],
+                datacoords      = av[name]['datacoords'],
+                datadetails     = av[name]['datadetails'],
+                datasource      = av[name]['datasource'],
+                model           = av[name]['model'],
+                jobID           = jobID,
+                layers          = ['1000m','500m',],#'Surface',],
+                regions         = ['Global',],
+                workingDir      = shelvedir,
+                imageDir        = ukp.folder(imagedir +'ExtentMaps/Oxygen50'),
+                contours	= [50.,],
+                 zrange		= [0.,400.],
+                grid            = av[name]['modelgrid'],
+                gridFile        = av[name]['gridFile'],
+                debug           = True,
+                maskOrZero	= 'mask',
+        )    	
 
-
+        name = 'Oxygen80'
+        em = extentMaps(
+                av[name]['modelFiles'],
+                av[name]['dataFile'],
+                dataType        = name,
+                modelcoords     = av[name]['modelcoords'],
+                modeldetails    = av[name]['modeldetails'],
+                datacoords      = av[name]['datacoords'],
+                datadetails     = av[name]['datadetails'],
+                datasource      = av[name]['datasource'],
+                model           = av[name]['model'],
+                jobID           = jobID,
+                layers          = ['1000m','500m',],#'Surface',],
+                regions         = ['Global',],
+                workingDir      = shelvedir,
+                imageDir        = ukp.folder(imagedir +'ExtentMaps/Oxygen80'),
+                contours	= [50.,],
+                 zrange		= [0.,400.],
+                grid            = av[name]['modelgrid'],
+                gridFile        = av[name]['gridFile'],
+                debug           = True,
+                maskOrZero	= 'mask',
+        ) 
 
 
 def main():
