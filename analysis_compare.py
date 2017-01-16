@@ -64,6 +64,7 @@ def listModelDataFiles(jobID, filekey, datafolder, annual,year=''):
 			return sorted(glob(datafolder+jobID+"/"+jobID+"o_1m_*_"+filekey+".nc"))
 	else:
 		if annual:
+			print datafolder+jobID+"/"+jobID+"o_1y_*"+year+"????_"+filekey+".nc"
 			return sorted(glob(datafolder+jobID+"/"+jobID+"o_1y_*"+year+"????_"+filekey+".nc"))
 		else:
 			return sorted(glob(datafolder+jobID+"/"+jobID+"o_1m_*"+year+"????_"+filekey+".nc"))
@@ -1448,12 +1449,16 @@ def CompareTwoRuns(jobIDA,jobIDB,physics=True,bio=False,yearA='',yearB='',debug=
 	#
 	#spatial maps of specific fields
 
-	filetype = ['grid_T',]	
+	filetype = []
+	if physics:	
+		filetype.extend(['grid_T','grid_U','grid_V','grid_W',])
+	if bio:	
+		filetype.extend(['diad_T','ptrc_T',])		
 	filesA = {}
 	filesB = {}
 
         imageFolder = 'images/TimeseriesCompare/'
-        imageFolder+= jobIDA+yearA+'_and_'+jobIDB+yearB
+        imageFolder+= jobIDA+'-'+yearA+'_and_'+jobIDB+'-'+yearB
         
         			
 	for ft in filetype:
@@ -1466,9 +1471,9 @@ def CompareTwoRuns(jobIDA,jobIDB,physics=True,bio=False,yearA='',yearB='',debug=
 		ncB = Dataset(filesB[ft], 'r')		
 		keys = ukp.intersection(ncA.variables.keys(),ncB.variables.keys())
 
-		lons = ncA.variables['nav_lat'][:]
-		lats = ncA.variables['nav_lon'][:]		
-		
+		lats = ncA.variables['nav_lat'][:]		
+		lons = ncA.variables['nav_lon'][:]
+				
 		for key in keys:
 			if key in alwaysInclude: continue
 			if key in ['bounds_lon', 'bounds_lat']:continue
@@ -1486,6 +1491,7 @@ def CompareTwoRuns(jobIDA,jobIDB,physics=True,bio=False,yearA='',yearB='',debug=
 			print key, lats.shape,lons.shape,dataA.shape,dataB.shape	
 			la,lo,data,datb = flatten(lats,lons,dataA,dataB)
 			print key, la.shape,lo.shape,data.shape,datb.shape
+			
 			if 0 in [len(la),len(lo),len(data),len(datb)]:continue
 			filename = ukp.folder(imageFolder+'/'+ft)+ft+'-'+key+'.png' 
 			title = key
@@ -1512,10 +1518,10 @@ if __name__=="__main__":
 	#timeseries_compare(colours)
 	debug = True
 	
-	#CompareTwoRuns('u-aj010_10','u-ai567_10',physics=True,bio=False,yearA='2077',yearB='2623',debug=True)
-	#CompareTwoRuns('u-aj010_10','u-ai567_10',physics=True,bio=False,yearA='2086',yearB='2632',debug=True)	
+	CompareTwoRuns('u-aj010_10','u-ai567_10',physics=True,bio=False,yearA='2623',yearB='2077',debug=True)
+	CompareTwoRuns('u-aj010_10','u-ai567_10',physics=True,bio=False,yearA='2632',yearB='2086',debug=True)	
 	
-	CompareTwoRuns('u-ad371','u-ad371',physics=True,bio=False,yearA='1984',yearB='1984',debug=True)	
+	#CompareTwoRuns('u-ad371','u-ad371',physics=True,bio=True,yearA='1984',yearB='1984',debug=True)	
 		
 	
 	
