@@ -210,6 +210,7 @@ def makeLongNameDict():
 	#####
 	# Depth layers/transects.
   	lnd['AtlanticTransect'] = "Atlantic Transect"    
+  	lnd['Atlantic28W'] = "Atlantic (28 W)"      	
   	lnd['ArcTransect'] = "Arctic Transect"      	
   	lnd['AntTransect'] = "Antarctic Transect"
   	lnd['CanRusTransect'] = "Canada-Siberia Arctic Transect"
@@ -217,7 +218,9 @@ def makeLongNameDict():
   	lnd['SouthernTransect'] = "Southern Transect"    	
   	lnd['SOTransect'] = "Southern Ocean Transect"    
   	lnd['Transect'] = "Atlantic Transect"    
-  	lnd['PTransect'] = "Pacific Transect"      	  		  	
+  	lnd['PTransect'] = "Pacific Transect"  
+  	lnd['Pacific135W'] = "Pacific (135 W)"    	
+	  	    	  		  	
   	lnd['100m'] = "100m deep"  	
   	lnd['200m'] = "200m deep"  	  	  	
   	lnd['500m'] = "500m deep"  	

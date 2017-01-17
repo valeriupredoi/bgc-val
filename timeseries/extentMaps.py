@@ -314,16 +314,11 @@ def interannualExtendMap(
 		legd.draw_frame(False) 
 		legd.get_frame().set_alpha(0.)	
 		
-
-
 	#####
 	# Saving image:
 	print "saving",filename
 	pyplot.savefig(filename )		
 	pyplot.close()
-	
-
-		
 	
 
 class extentMaps:
@@ -354,7 +349,6 @@ class extentMaps:
 	#####
 	#	This is the class that does most of the legwork.
 	#	First we save all the initialisation settings as class attributes.
-		
 	
 	if debug: print "timeseriesAnalysis:\t init."	
 	self.modelFiles 	= modelFiles 		
