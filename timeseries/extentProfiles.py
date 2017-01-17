@@ -140,19 +140,47 @@ def loadKeyFromFile(fn):
 	return os.path.basename(fn).replace('u-ad371o_1y_','').replace('_ptrc_T.nc','')[:4]
 
 
-def LoadZonalTransect(data, transectLat,lats,lons,depths):
-	if dlats.ndim ==1:
+
+
+def LoadZonalTransect(data, transectLat,lats,lons,depths,):
+    	data = np.ma.array(data)	
+	lons 	= makeLonSafeArr(lons)    	
+	depths 	=depths[::-1]*-1.	    			
+	
+	if lats.ndim ==1:
 		loc 	= findClosest(lats, transectLat)
-		lons 	= makeLonSafeArr(lons)
+		newlons = lons
+	    	if data.ndim ==4:	dat = data[:,::-1,loc,:].squeeze()
+	
+	if lats.ndim ==2:
+		print "LoadZonalTransect:",transectLat,data.shape,lats.shape,lons.shape,depths.shape
+		dat = np.ma.zeros((data.shape[1],data.shape[3]))
+		newlons = np.zeros(data.shape[3])
+		#print data.shape, outDat.shape
+		#assert 0
+		for i in np.arange(lats.shape[1]):
+			loc = findClosest(lats[:,i], transectLat,debug=False)
+			#print i, loc, lats[:,i].mean(), lats[loc,i],lons[loc,i]
+			dat[:,i] = data[0,::-1,loc,i]
+			newlons[i] = lons[loc,i]
+
+    	newX, newZ = np.meshgrid(newlons,depths)
+    	dat = np.ma.array(dat)	    				
+    	print dat.shape,newX.shape,newZ.shape    	
+    	dat 	= np.ma.masked_where((newX>=359.2)+(newX<0.2)+dat.mask,dat)
+	dat 	= np.ma.masked_where(np.ma.array(dat).mask+(dat<1E-10) +(dat>1e10),dat).squeeze()
+	
+    	return dat, newX, newZ			
+
+def LoadMeridionalTransect(data, transectLon,lats,lons,depths):
+	if dlons.ndim ==1:
+		loc 	= findClosest(lons, transectLon)
 		depths 	=depths[::-1]*-1.	    			
 
-	    	newX, newZ = np.meshgrid(lons,depths)
+	    	newX, newZ = np.meshgrid(lats,depths)
 	    	if data.ndim ==4:	dat = data[:,::-1,dloc,:].squeeze()
 	    	return dat, newX,newY
-	
-	if dlats.ndim ==2:
-		dloc 	= findClosest(dlats.mean(1), plotKeyDict[plotKey],debug=True)
-		dx 	= makeLonSafeArr(dlons[dloc,:])				
+	assert 0 
 
 
 def contourplot(
@@ -175,8 +203,8 @@ def contourplot(
 		
 	contours = [zmin,oxcutoff,zmax]
 	plotKeyDict = {'Equator':0.,'10 N':10., '10 S':-10.,'Atlantic28W':-28., 'Pacific135W':-135.}
-	zonalCuts 	= ['Equator','10 N', '10 S',]
-	MeridionalCuts 	= ['Atlantic','Atlantic28W', 'Pacific135W']
+	zonalCuts 	= ['Equator', '10 N', '10 S',]
+	MeridionalCuts 	= ['Atlantic', 'Atlantic28W', 'Pacific135W']
 
 	
 	#####
@@ -196,55 +224,25 @@ def contourplot(
 	dnc = Dataset(datafile,'r')
 	dlats 	= dnc.variables[datacoords['lat']][:]
 	dlons 	= dnc.variables[datacoords['lon']][:]	
+	ddepths = dnc.variables[datacoords['z']][:]		
 	do2 	= ukp.extractData(dnc, datadetails)
-	
-	if plotKey in zonalCuts:
-		
-		
-		if dlats.ndim ==2:
-			dloc 	= findClosest(dlats.mean(1), plotKeyDict[plotKey],debug=True)
-			dx 	= makeLonSafeArr(dlons[dloc,:])				
-		if dlats.ndim ==1:
-			dloc 	= findClosest(dlats,         plotKeyDict[plotKey],debug=True)
-			dx 	= makeLonSafeArr(dlons)	
-	if plotKey in MeridionalCuts:
-		if dlons.ndim ==2:
-			dloc 	= findClosest(dlons.mean(0), plotKeyDict[plotKey],debug=True)
-			dx 	= dlat[:,dloc]
-		if dlons.ndim ==1:
-			dloc 	= findClosest(dlons,         plotKeyDict[plotKey],debug=True)
-			dx 	= dlats
-	dz 	= dnc.variables[datacoords['z']][::-1]*-1.
-    	dnewX, dnewZ = np.meshgrid(dx,dz)
-    	
-
-	if plotKey in zonalCuts:	
-		if do2.ndim==4:	do2 = do2[0,::-1,dloc,:].squeeze()
-	    	do2 	= np.ma.masked_where((dnewX>=359.2)+(dnewX<0.2)+do2.mask,do2)		
-	if plotKey in MeridionalCuts	:
-		if do2.ndim==4:	do2 = do2[0,::-1,:,dloc].squeeze()
-				
-	do2 	= np.ma.masked_where(np.ma.array(do2).mask+(do2<1E-10) +(do2>1e10),do2).squeeze()
 	dnc.close()
 	
-
+	if plotKey in zonalCuts:
+		do2, dnewX, dnewZ = LoadZonalTransect(do2, plotKeyDict[plotKey],dlats,dlons,ddepths)
+			
+	if plotKey in MeridionalCuts:
+		do2, dnewX, dnewZ = LoadMeridionalTransect(do2, plotKeyDict[plotKey],dlats,dlons,ddepths)
+			
+    	
 	#####
 	# Load model lats/lons
 	print "Loading:",modelfiles[0]	
 	nc = Dataset(modelfiles[0],'r')
 	lats 	= nc.variables[modelcoords['lat']][:]
 	lons 	= nc.variables[modelcoords['lon']][:]
-	if plotKey in zonalCuts:	
-		loc 	= findClosest(lats.mean(1), plotKeyDict[plotKey],debug=True)
-		x 	= makeLonSafeArr(lons[loc,:])	
-	if plotKey in MeridionalCuts:	
-		loc 	= findClosest(lons.mean(0), plotKeyDict[plotKey],debug=True)
-		x 	= lats[:,loc]
-		
-	z 	= nc.variables[modelcoords['z']][::-1]*-1.
-    	newX, newZ = np.meshgrid(x,z)	
+	depths 	= nc.variables[modelcoords['z']][:]
 	nc.close()
-	
 			
 	#####
 	# Start making the figure	
@@ -267,18 +265,20 @@ def contourplot(
 	# Add model data as a colormesh
 	for fn in modelfiles:
 		nc = Dataset(fn,'r')
-		
-		o2 	= ukp.extractData(nc, modeldetails)		
-		if plotKey in zonalCuts:	
-			if o2.ndim==4:	o2 = o2[0,::-1,dloc,:].squeeze()
-		    	o2 = np.ma.masked_where((newX>359.2)+(newX<0.2)+o2.mask,o2)			
+		o2 	= ukp.extractData(nc, modeldetails)
+		nc.close()
+				
+		if plotKey in zonalCuts:
+			o2, newX, newZ = LoadZonalTransect(o2, plotKeyDict[plotKey],lats,lons,depths)
+						
+		#if plotKey in zonalCuts:	
+		#	if o2.ndim==4:	o2 = o2[0,::-1,dloc,:].squeeze()
+		#   	o2 = np.ma.masked_where((newX>359.2)+(newX<0.2)+o2.mask,o2)			
 		if plotKey in MeridionalCuts:
 			if o2.ndim==4:	o2 = o2[0,::-1,:,dloc].squeeze()
-		nc.close()
-		
-		key = loadKeyFromFile(fn)		
 
-		o2 = np.ma.masked_where(np.ma.array(o2).mask+(o2<1E-10) +(o2>1e10),o2).squeeze()					
+		key = loadKeyFromFile(fn)		
+		#o2 = np.ma.masked_where(np.ma.array(o2).mask+(o2<1E-10) +(o2>1e10),o2).squeeze()					
 
 		im = ax.contour(
 			newX,newZ,o2,
@@ -332,7 +332,7 @@ def contourplot(
 	pyplot.axhline(y= -500.,c='k',ls='--')
 	pyplot.axhline(y=-1000.,c='k',ls='--') 		
 	ax.set_yscale('symlog',linthreshy=1000.)
-	ax.set_ylim([z.min(),-1.])
+	ax.set_ylim([min([dnewZ.min(),newZ.min()]),-1.])
 	pyplot.yticks([-10.,-100.,-500.,-1000.,-2000.,-5000.],['10','100','500','1000','2000','5000'])	
 	pyplot.ylabel('Depth, m', ha='center', va='center', rotation='vertical')
 
@@ -348,8 +348,15 @@ def contourplot(
 
 
 def run():
+	def listModelDataFiles(jobID, filekey, datafolder, annual):
+		if annual:
+			return sorted(glob(datafolder+jobID+"/"+jobID+"o_1y_*_"+filekey+".nc"))
+		else:
+			return sorted(glob(datafolder+jobID+"/"+jobID+"o_1m_*_"+filekey+".nc"))
+			
 	jobID = 'u-ad371'
-	modelfiles 	= glob('/data/euryale7/scratch/ledm/UKESM/MEDUSA/'+jobID+'/'+jobID+'o_1y_*_ptrc_T.nc')	
+	modelfiles 	= listModelDataFiles(jobID, 'ptrc_T', paths.ModelFolder_pref, True)	
+	#glob('/data/euryale7/scratch/ledm/UKESM/MEDUSA/'+jobID+'/'+jobID+'o_1y_*_ptrc_T.nc')	
 	datafile 	= paths.WOAFolder_annual+'woa13_all_o00_01.nc'
 	name 		= 'OMZExtent'
 
@@ -360,8 +367,8 @@ def run():
 
 	cbarlabel	= 'WOA Oxygen concentration, mmol O2/m^3'
 	
-	for plotKey in ['Pacific135W','Atlantic28W','Equator', '10 N', '10 S',]:
-		oxcutoffs = [20.,50.,80.,]
+	for plotKey in ['Equator','10 N', '10 S',]:#'Pacific135W','Atlantic28W', ]:
+		oxcutoffs = [80.,20.,50.,]
 		for oxcutoff in oxcutoffs:
 			filename=ukp.folder(['images',jobID,'OMZ'])+'-'.join([name,plotKey,'contour',str(int(oxcutoff))])+'.png'
 			title	= ' '.join([jobID, getLongName(plotKey),getLongName(name)+',',str(oxcutoff),modeldetails['units'] ])
