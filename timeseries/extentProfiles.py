@@ -390,7 +390,7 @@ def run():
 		else:
 			return sorted(glob(datafolder+jobID+"/"+jobID+"o_1m_*_"+filekey+".nc"))
 			
-	jobID = 'u-ad371'
+	jobID = 'u-ai886'
 	modelfiles 	= listModelDataFiles(jobID, 'ptrc_T', paths.ModelFolder_pref, True)	
 	#glob('/data/euryale7/scratch/ledm/UKESM/MEDUSA/'+jobID+'/'+jobID+'o_1y_*_ptrc_T.nc')	
 	datafile 	= paths.WOAFolder_annual+'woa13_all_o00_01.nc'
