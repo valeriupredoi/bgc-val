@@ -136,8 +136,12 @@ def findClosest(arr, z,debug=False):
 	if debug: print 'Closest: in situ:', z,'index:', best, 'distance:',d,', closest model:',arr.shape, arr[best]
 	return best	
 
-def loadKeyFromFile(fn):
-	return os.path.basename(fn).replace('u-ad371o_1y_','').replace('_ptrc_T.nc','')[:4]
+def loadKeyFromFile(fn,coords,nc='',):
+	if nc =='':
+		nc = Dataset(fn,'r')
+	dtimes = num2date(nc.variables[coords['t']][:], nc.variables[coords['t']].units,calendar=coords['cal'])[:]
+	return str(dtimes[0].year)
+	#return os.path.basename(fn).replace('u-ad371o_1y_','').replace('_ptrc_T.nc','')[:4]
 
 
 
@@ -213,9 +217,9 @@ def contourplot(
 	pd['Data'] = {'label':'Data','c': ['k',],  'lw':[2.,],'ls':['-',]}		
 	for i,fn in enumerate(modelfiles):
 		lw =1
-		key = loadKeyFromFile(fn)
+		key = loadKeyFromFile(fn,modelcoords,nc='',)
 		color = defcmap(float(i)/float(len(modelfiles)))
-		label = loadKeyFromFile(fn)
+		label = key
 		pd[key] = {'label':label,'c': [color,],  'lw':[lw,],'ls':['-',],}
 
 	#####
@@ -266,6 +270,7 @@ def contourplot(
 	for fn in modelfiles:
 		nc = Dataset(fn,'r')
 		o2 	= ukp.extractData(nc, modeldetails)
+		key = loadKeyFromFile(fn,modelcoords,nc=nc,)		
 		nc.close()
 				
 		if plotKey in zonalCuts:
@@ -276,9 +281,6 @@ def contourplot(
 		#   	o2 = np.ma.masked_where((newX>359.2)+(newX<0.2)+o2.mask,o2)			
 		if plotKey in MeridionalCuts:
 			if o2.ndim==4:	o2 = o2[0,::-1,:,dloc].squeeze()
-
-		key = loadKeyFromFile(fn)		
-		#o2 = np.ma.masked_where(np.ma.array(o2).mask+(o2<1E-10) +(o2>1e10),o2).squeeze()					
 
 		im = ax.contour(
 			newX,newZ,o2,
