@@ -125,6 +125,13 @@ def makeLonSafeArr(lon):
 	 
 
 def findClosest(arr, z,debug=False):
+	"""
+		Calculate the index of the closest point on the array, arr and the point z.
+	"""
+	arr = np.array(arr)
+	if arr.ndim >1:
+		print "Array should be one dimenstional!", arr.shape
+		assert 0
 	d = 10000.
 	best = -1
 	for i,zz in enumerate(arr.squeeze()):
@@ -147,6 +154,8 @@ def loadKeyFromFile(fn,coords,nc='',):
 
 
 def LoadZonalTransect(data, transectLat,lats,lons,depths,):
+	#####
+	# Loads data along a horizontal transect (ie equator, 10 N....) 
     	data = np.ma.array(data)	
 	lons 	= makeLonSafeArr(lons)    	
 	depths 	=depths[::-1]*-1.	    			
@@ -170,21 +179,49 @@ def LoadZonalTransect(data, transectLat,lats,lons,depths,):
 
     	newX, newZ = np.meshgrid(newlons,depths)
     	dat = np.ma.array(dat)	    				
-    	print dat.shape,newX.shape,newZ.shape    	
     	dat 	= np.ma.masked_where((newX>=359.2)+(newX<0.2)+dat.mask,dat)
 	dat 	= np.ma.masked_where(np.ma.array(dat).mask+(dat<1E-10) +(dat>1e10),dat).squeeze()
 	
     	return dat, newX, newZ			
 
 def LoadMeridionalTransect(data, transectLon,lats,lons,depths):
-	if dlons.ndim ==1:
+	#####
+	# Loads data along a vertical transect (ie 0E, dateline, etc) 
+    	data 	= np.ma.array(data)	
+	lons 	= makeLonSafeArr(lons)    	
+	transectLon 	= makeLonSafe(transectLon)
+	depths 	= depths[::-1]*-1.	
+	
+	if lons.ndim ==1:
 		loc 	= findClosest(lons, transectLon)
-		depths 	=depths[::-1]*-1.	    			
-
-	    	newX, newZ = np.meshgrid(lats,depths)
-	    	if data.ndim ==4:	dat = data[:,::-1,dloc,:].squeeze()
-	    	return dat, newX,newY
-	assert 0 
+		newlats = lats		
+	    	if data.ndim ==4:	dat = data[:,::-1,:,loc].squeeze()
+		print "LoadMeridionalTransect:",transectLon,data.shape,lons.shape,loc, lons[loc]
+			    	
+	if lons.ndim ==2:
+		####
+		# For each line of the 2D grid, it finds the closest point in longitude.
+		print "LoadMeridionalTransect:",transectLon,data.shape,lons.shape,lons.shape,depths.shape
+		dat = np.ma.zeros((data.shape[1],data.shape[2]))
+		newlats = np.zeros(data.shape[2])
+		print data.shape, dat.shape
+		for i in np.arange(lons.shape[0]):
+			loc = findClosest(lons[i,:], transectLon,debug=False)
+			
+			print "LoadMeridionalTransect:",i, transectLon, loc, [lats[i,loc], 'N',lons[i,loc],'E',]
+			if transectLon - lons[i,loc] >5.:
+				dat[:,i] = np.ma.masked_all_like(depths)
+				newlats[i] = lats[i,loc]				
+			else:
+				dat[:,i] = data[0,::-1,i,loc]
+				newlats[i] = lats[i,loc]
+			
+    	newX, newZ = np.meshgrid(newlats,depths)
+    	dat = np.ma.array(dat)	    				
+    	print dat.shape,newX.shape,newZ.shape    	
+    	dat 	= np.ma.masked_where((newX>=90.)+(newX<=-90.)+dat.mask,dat)
+	dat 	= np.ma.masked_where(np.ma.array(dat).mask+(dat<1E-10) +(dat>1e10),dat).squeeze()    	
+    	return dat, newX, newZ			
 
 
 def contourplot(
@@ -205,8 +242,8 @@ def contourplot(
 		cbarlabel = '',
 		):
 		
-	contours = [zmin,oxcutoff,zmax]
-	plotKeyDict = {'Equator':0.,'10 N':10., '10 S':-10.,'Atlantic28W':-28., 'Pacific135W':-135.}
+	contours 	= [zmin,oxcutoff,zmax]
+	plotKeyDict 	= {'Equator':0.,'10 N':10., '10 S':-10.,'Atlantic28W':-28., 'Pacific135W':-135.}
 	zonalCuts 	= ['Equator', '10 N', '10 S',]
 	MeridionalCuts 	= ['Atlantic', 'Atlantic28W', 'Pacific135W']
 
@@ -275,12 +312,9 @@ def contourplot(
 				
 		if plotKey in zonalCuts:
 			o2, newX, newZ = LoadZonalTransect(o2, plotKeyDict[plotKey],lats,lons,depths)
-						
-		#if plotKey in zonalCuts:	
-		#	if o2.ndim==4:	o2 = o2[0,::-1,dloc,:].squeeze()
-		#   	o2 = np.ma.masked_where((newX>359.2)+(newX<0.2)+o2.mask,o2)			
+
 		if plotKey in MeridionalCuts:
-			if o2.ndim==4:	o2 = o2[0,::-1,:,dloc].squeeze()
+			o2, newX, newZ = LoadMeridionalTransect(o2, plotKeyDict[plotKey],lats,lons,depths)					
 
 		im = ax.contour(
 			newX,newZ,o2,
@@ -369,7 +403,7 @@ def run():
 
 	cbarlabel	= 'WOA Oxygen concentration, mmol O2/m^3'
 	
-	for plotKey in ['Equator','10 N', '10 S',]:#'Pacific135W','Atlantic28W', ]:
+	for plotKey in ['Pacific135W','Atlantic28W', ]:#'Equator','10 N', '10 S',]:
 		oxcutoffs = [80.,20.,50.,]
 		for oxcutoff in oxcutoffs:
 			filename=ukp.folder(['images',jobID,'OMZ'])+'-'.join([name,plotKey,'contour',str(int(oxcutoff))])+'.png'
