@@ -192,6 +192,81 @@ def makeExtentPlot(
 	pyplot.savefig(filename )		
 	pyplot.close()
 
+
+
+def makeTransectMap(
+	realdata,
+	reallat,
+	reallon,
+	contours,
+	filename,
+	title='',
+	labels='',
+	zrange = '',
+	colourmesh = True,
+	contour	= True,
+	maskOrZero	= 'mask',
+	Transect = 'all',
+	):
+	
+	
+	zmin = realdata.min()
+	zmax = realdata.max()
+	
+	if zrange in ['', 'auto',]:
+		zrange = [zmin,zmax  ]
+	
+	if len(contours)==1:
+		print "makeExtentPlot:\t adding min and max to contours."
+		if zmin < contours[0] < zmax:
+			contours = [zmin, contours[0],zmax]
+
+	fig = pyplot.figure()
+	fig.set_size_inches(10,6)
+	ax = pyplot.subplot(111,projection=ccrs.PlateCarree(central_longitude=0., ))
+
+	#####
+	# Draw data
+	#crojp2, rdregid, newdLon, newdLat  = regrid(realdata,reallat,reallon)
+
+	#if maskOrZero=='mask':
+	#	rdregid = remask(realdata,reallat,reallon,rdregid, newdLat,newdLon)
+	#if maskOrZero=='zero':
+	#	rdregid = zeromask(realdata,reallat,reallon,rdregid, newdLat,newdLon)	
+	#ax.contour(newdLon,newdLat,rdregid,contours,colors=['black',],   linewidths=[2.0,],linestyles=['-',],transform=ccrs.PlateCarree(),zorder=1)
+	
+	
+	#####
+	# Draw coastline
+	ax.add_feature(cfeature.LAND,  facecolor='white',zorder=2)
+	ax.coastlines(lw=0.5,zorder=3)
+	
+	plotKeyDict 	= {'Equator':0.,'10 N':10., '10 S':-10.,'Atlantic28W':-28., 'Pacific135W':-135.}
+	zonalCuts 	= ['Equator', '10 N', '10 S',]
+	MeridionalCuts 	= ['Atlantic', 'Atlantic28W', 'Pacific135W']	
+	
+	if Transect == 'all':
+		for k in plotKeyDict.keys():
+			if k in zonalCuts: 		pyplot.axhline(y= plotKeyDict[k],c='r',ls='-',lw=2)
+			if k in MeridionalCuts: 	pyplot.axvline(x= plotKeyDict[k],c='r',ls='-',lw=2)
+	else:
+		if Transect in zonalCuts: 	pyplot.axhline(y= plotKeyDict[Transect],c='r',ls='-',lw=2)
+		if Transect in MeridionalCuts: 	pyplot.axvline(x= plotKeyDict[Transect],c='r',ls='-',lw=2)
+	pyplot.axhline(y= 90.,c='k',ls='-',lw=0.1)				
+	pyplot.axhline(y= -90.,c='k',ls='-',lw=0.1)					
+	pyplot.axvline(x= 180.,c='k',ls='-',lw=0.1)				
+	pyplot.axvline(x= -180.,c='k',ls='-',lw=0.1)
+	
+	
+	pyplot.title(title)
+	print "saving",filename
+	pyplot.savefig(filename )		
+	pyplot.close()
+
+
+
+
+
 	
 def interannualExtendMap(
 		modeldata,
@@ -402,7 +477,24 @@ class extentMaps:
 	    	realdata = dataDL.load[(r,l,)]
 	    	reallat = dataDL.load[(r,l,'lat')]
 	    	reallon = dataDL.load[(r,l,'lon')]
-		    		    	
+		
+		transects = {'Equator':0.,'10 N':10., '10 S':-10.,'Atlantic28W':-28., 'Pacific135W':-135., 'all':0.}
+		for transect in transects.keys():
+			filename = ukp.folder(self.imageDir)+'TransectMap-'+transect+'.png'
+		   
+	        	makeTransectMap(	    
+	    				realdata, reallat, reallon,
+	    				self.contours,
+	    				filename,
+	    				title='',
+	    				labels='',
+	    				zrange = self.zrange,
+	    				colourmesh = False,
+					maskOrZero=self.maskOrZero,
+					Transect = transect,
+				)
+		assert 0
+			    		    	
 		for mfile in self.modelFiles:
 			nc = Dataset(mfile,'r')
 			ts = tst.getTimes(nc,self.modelcoords)
