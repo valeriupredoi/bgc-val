@@ -136,8 +136,9 @@ def makeMaskNC(outFile, regions, grid):
 	removes = [u'e1f', u'e1t', u'e1u', u'e1v', u'e2f', u'e2t', u'e2u', u'e2v', u'ff', u'fmask', u'fmaskutil', u'gdepu', u'gdepv', u'glamf', u'glamt', u'glamu', u'glamv', u'gphif', u'gphit', u'gphiu', u'gphiv', u'isfdraft',  u'misf',   u'tmaskutil',u'umaskutil',  u'vmaskutil', u'e3t', u'e3u', u'e3v', u'e3w', u'e3t_0', u'e3w_0', u'gdept,', u'gdepw', u'gdept_0', u'gdepw_0']
 	for rem in removes:
 		av[rem]['name']='False'
+	print "makeMaskNC:\tmaking new mask file", outFile
 	
-	c = changeNC(orcaGridfn, outfile, av)
+	c = changeNC(orcaGridfn, outFile, av)
 
 def main():
 	regions	= ['Global', 

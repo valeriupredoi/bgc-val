@@ -134,10 +134,11 @@ def html5Maker(
 	Level1 		= True
 	Level1Regional 	= True
 	Level1Profiles 	=  True	
-	level2Horizontal = True
+	level2Horizontal =True
 	level2Physics 	= False
 	summarySections = False
 	level3OMZ 	= 0#True
+	Level3Salinity	= True
 	regionMap	=0#True
 	
 	
@@ -910,6 +911,153 @@ def html5Maker(
 				FileLists=FileLists,
 				FileOrder=FileOrder)
 
+
+
+
+	if Level3Salinity:
+		l3sal_regions = ['Global',
+		 	 'NordicSea',
+		 	 'LabradorSea'  
+		   ]
+		   	
+		regionalFields = [
+                          'Salinity',
+			]
+	
+		SectionTitle= 'Level 3 - Salinity time series'
+		hrefs 		= []
+		Titles		= {}
+		SidebarTitles 	= {}
+		Descriptions	= {}
+		FileLists	= {}
+		FileOrder 	= {}		
+		for key in regionalFields:
+		 	if physicsOnly and key not in physregionalFields:continue		
+			#if key not in ['Alkalinity','Nitrate']: continue
+
+			href = 	'L3salinity'+key#+'-'+region
+			
+			desc = ''
+			if key in ListofCaveats.keys():			desc +=ListofCaveats[key]+'\n'
+						
+			hrefs.append(href)
+			Titles[href] = 		getLongName(key)
+			SidebarTitles[href] = getLongName(key)				
+			Descriptions[href] = desc
+			FileLists[href] = {}
+			FileOrder[href] = {}
+			
+			#####
+			# Determine the list of files:
+			# It preferentially plots 
+			
+			vfiles = []
+			for region in l3sal_regions:				
+				regfiles = glob(imagedir+'/'+jobID+'/timeseries/*/percentiles*'+key+'*'+region+'*10-90pc.png')
+		                print "Adding",imagedir+'/'+jobID+'/timeseries/*/percentiles*'+key+'*'+region+'*10-90pc.png'
+				vfiles.extend(regfiles)
+
+				if len(regfiles): continue
+				
+		                vfiles.extend(glob(imagedir+'/'+jobID+'/timeseries/*/mean*'+key+'*'+region+'*mean.png'))                             
+		                print "Adding",imagedir+'/'+jobID+'/timeseries/*/mean*'+key+'*'+region+'*mean.png'		                
+			#####
+			# Create plot headers for each file.
+			count=0
+			for fn in vfiles:
+				#####
+				# Skip transects, they'll be added below.
+				if fn.find('Transect') >-1: continue
+				#if fn.lower().find('surface')<0 or fn.lower().find('layerless')<0:continue
+				#####
+				# Copy image to image folder and return relative path.
+				relfn = addImageToHtml(fn, imagesfold, reportdir)
+			
+				#####
+				# Create custom title by removing extra bits.
+				title = html5Tools.fnToTitle(relfn)
+		
+				FileLists[href][relfn] = title
+				FileOrder[href][count] = relfn
+				count+=1
+				print "Adding ",relfn,"to script"
+
+				
+					
+				
+		html5Tools.AddSubSections(indexhtmlfn,hrefs,SectionTitle,
+				SidebarTitles=SidebarTitles,#
+				Titles=Titles, 
+				Descriptions=Descriptions,
+				FileLists=FileLists,
+				FileOrder=FileOrder)
+
+
+
+		#for plottype in ['profile','profilehov']:	# with Hovs
+		for plottype in ['profile',]:		# without hovs.
+			if plottype == 'profile':	SectionTitle= 'Level 3 - Salininty Profiles'
+			hrefs 		= []
+			Titles		= {}
+			SidebarTitles 	= {}
+			Descriptions	= {}
+			FileLists	= {}
+			FileOrder 	= {}		
+			for key in regionalFields:
+			 	if physicsOnly and key not in physregionalFields:continue				
+				#if key not in ['Alkalinity','Nitrate']: continue
+
+				href = 	'L1'+plottype+'-'+key#+'-'+region
+			
+				desc = ''
+				if key in ListofCaveats.keys():			desc +=ListofCaveats[key]+'\n'
+				#if region in ListofCaveats_regions.keys():	desc +=ListofCaveats_regions[key]+'\n'		
+						
+				hrefs.append(href)
+				Titles[href] = 		getLongName(key)
+				SidebarTitles[href] = getLongName(key)				
+				Descriptions[href] = desc
+				FileLists[href] = {}
+				FileOrder[href] = {}
+				#####
+				# Determine the list of files:
+				vfiles = []
+				for region in l3sal_regions:
+					#vfiles.extend(glob(imagedir+'/'+jobID+'/timeseries/*/percentiles*'+key+'*'+region+'*10-90pc.png'))
+				        if plottype == 'profile':	vfiles.extend(glob(imagedir+'/'+jobID+'/timeseries/*/profile_*'+key+'*'+region+'*mean.png'))
+				        if plottype == 'profilehov':	vfiles.extend(glob(imagedir+'/'+jobID+'/timeseries/*/profilehov_*'+key+'*'+region+'*mean.png'))		                
+				#####
+				# Create plot headers for each file.
+				count=0
+				for fn in vfiles:
+					#####
+					# Skip transects, they'll be added below.
+					if fn.find('Transect') >-1: continue
+					#if fn.lower().find('surface')<0:continue
+				
+					#####
+					# Copy image to image folder and return relative path.
+					relfn = addImageToHtml(fn, imagesfold, reportdir)
+			
+					#####
+					# Create custom title by removing extra bits.
+					title = html5Tools.fnToTitle(relfn)
+		
+					FileLists[href][relfn] = title
+					FileOrder[href][count] = relfn
+					count+=1
+					print "Adding ",relfn,"to script"
+				
+			html5Tools.AddSubSections(indexhtmlfn,hrefs,SectionTitle,
+					SidebarTitles=SidebarTitles,#
+					Titles=Titles, 
+					Descriptions=Descriptions,
+					FileLists=FileLists,
+					FileOrder=FileOrder)
+				
+				
+				
+				
 
 
 

@@ -222,7 +222,7 @@ def makeLongNameDict():
   	lnd['Pacific135W'] = "Pacific (135 W)"    	
 
   	lnd['NordicSea'] = "Nordic Sea"    	
-  	lnd['Labrador'] = "Labrador Sea"    	
+  	lnd['LabradorSea'] = "Labrador Sea"    	
   	
   		  	    	  		  	
   	lnd['100m'] = "100m deep"  	

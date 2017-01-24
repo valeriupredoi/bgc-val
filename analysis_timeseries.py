@@ -2025,7 +2025,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		#####
 		# Profile plots
 		if av[name]['Dimensions'] == 3:
-			continue
+			#continue
 			profa = profileAnalysis(
 				av[name]['modelFiles'],
 				av[name]['dataFile'],
