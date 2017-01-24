@@ -592,34 +592,6 @@ def analysis_omz(jobID=''):
 
         #####
         # time series and traffic lights.
-<<<<<<< HEAD
-
-=======
-#        name = 'OMZExtent'
-#        em = extentMaps(
-#                av[name]['modelFiles'],
-#                av[name]['dataFile'],
-#                dataType        = name,
-#                modelcoords     = av[name]['modelcoords'],
-#                modeldetails    = av[name]['modeldetails'],
-#                datacoords      = av[name]['datacoords'],
-#                datadetails     = av[name]['datadetails'],
-#                datasource      = av[name]['datasource'],
-#                model           = av[name]['model'],
-#                jobID           = jobID,
-#                layers          = ['layerless',],
-#                regions         = ['Global',],
-#                workingDir      = shelvedir,
-#                imageDir        = ukp.folder(imagedir +'ExtentMaps/OMZ'), 
-#                contours	= [1.,],
-#                zrange		= 'auto',
-#                grid            = av[name]['modelgrid'],
-#                gridFile        = av[name]['gridFile'],
-#                debug           = True,
-#                maskOrZero	= 'zero'
-#        )
->>>>>>> 56e117e55e2d32f2192e9aa131b5eebeaaadf155
-                
         name = 'Oxygen'
         em = extentMaps(
                 av[name]['modelFiles'],
