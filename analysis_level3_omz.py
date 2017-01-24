@@ -500,8 +500,12 @@ def analysis_omz(jobID=''):
 	shelves = {}
 	shelves_insitu={}
 	for name in av.keys():
+<<<<<<< HEAD
 		continue
 		
+=======
+		continue	
+>>>>>>> 56e117e55e2d32f2192e9aa131b5eebeaaadf155
 		print "------------------------------------------------------------------"	
 		print "analysis-Timeseries.py:\tBeginning to call timeseriesAnalysis for ", name
 
@@ -588,7 +592,33 @@ def analysis_omz(jobID=''):
 
         #####
         # time series and traffic lights.
+<<<<<<< HEAD
 
+=======
+#        name = 'OMZExtent'
+#        em = extentMaps(
+#                av[name]['modelFiles'],
+#                av[name]['dataFile'],
+#                dataType        = name,
+#                modelcoords     = av[name]['modelcoords'],
+#                modeldetails    = av[name]['modeldetails'],
+#                datacoords      = av[name]['datacoords'],
+#                datadetails     = av[name]['datadetails'],
+#                datasource      = av[name]['datasource'],
+#                model           = av[name]['model'],
+#                jobID           = jobID,
+#                layers          = ['layerless',],
+#                regions         = ['Global',],
+#                workingDir      = shelvedir,
+#                imageDir        = ukp.folder(imagedir +'ExtentMaps/OMZ'), 
+#                contours	= [1.,],
+#                zrange		= 'auto',
+#                grid            = av[name]['modelgrid'],
+#                gridFile        = av[name]['gridFile'],
+#                debug           = True,
+#                maskOrZero	= 'zero'
+#        )
+>>>>>>> 56e117e55e2d32f2192e9aa131b5eebeaaadf155
                 
         name = 'Oxygen'
         em = extentMaps(
@@ -602,7 +632,7 @@ def analysis_omz(jobID=''):
                 datasource      = av[name]['datasource'],
                 model           = av[name]['model'],
                 jobID           = jobID,
-                layers          = ['1000m','500m',],#'Surface',],
+                layers          = ['500m',],#'Surface',],'1000m'
                 regions         = ['Global',],
                 workingDir      = shelvedir,
                 imageDir        = ukp.folder(imagedir +'ExtentMaps/Oxygen'),

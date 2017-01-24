@@ -239,9 +239,9 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('OMZThickness')             # Oxygen Minimum Zone Thickness
 			#analysisKeys.append('TotalOMZVolume')		# work in progress
                         #analysisKeys.append('O2')                       # WOA Oxygen
-                        analysisKeys.append('Dust')                     # Dust
-                        analysisKeys.append('TotalDust')                     # Total Dust
-                        analysisKeys.append('TotalDust_nomask')
+                        #analysisKeys.append('Dust')                     # Dust
+                        #analysisKeys.append('TotalDust')                     # Total Dust
+                        #analysisKeys.append('TotalDust_nomask')
 			#analysisKeys.append('DIC')			# work in progress
 			#analysisKeys.append('DrakePassageTransport')	# DrakePassageTransport
 			#analysisKeys.append('TotalIceArea')		# work in progress
@@ -254,7 +254,7 @@ def analysis_timeseries(jobID = "u-ab671",
                         #####
                         # Physics switches:
                         #analysisKeys.append('T')                       # WOA Temperature
-                        #analysisKeys.append('S')                       # WOA Salinity
+                        analysisKeys.append('S')                       # WOA Salinity
                         #analysisKeys.append('NorthernTotalIceArea')    # work in progress
                         #analysisKeys.append('SouthernTotalIceArea')    # work in progress
                         #analysisKeys.append('TotalIceArea')            # work in progress
@@ -1429,8 +1429,10 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modeldetails'] 	= {'name': name, 'vars':['vosaline',], 'convert': applyLandMask,'units':'PSU'}
 		av[name]['datadetails']  	= {'name': name, 'vars':['s_an',], 'convert': ukp.NoChange,'units':'PSU'}
 
+		salregions =regionList
+		salregions.extend(['NordicSea', 'LabradorSea'])
 		av[name]['layers'] 		=  layerList
-		av[name]['regions'] 		= regionList
+		av[name]['regions'] 		= salregions
 		av[name]['metrics']		= metricList
 
 		av[name]['datasource'] 		= 'WOA'

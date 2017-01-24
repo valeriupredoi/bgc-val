@@ -220,7 +220,11 @@ def makeLongNameDict():
   	lnd['Transect'] = "Atlantic Transect"    
   	lnd['PTransect'] = "Pacific Transect"  
   	lnd['Pacific135W'] = "Pacific (135 W)"    	
-	  	    	  		  	
+
+  	lnd['NordicSea'] = "Nordic Sea"    	
+  	lnd['Labrador'] = "Labrador Sea"    	
+  	
+  		  	    	  		  	
   	lnd['100m'] = "100m deep"  	
   	lnd['200m'] = "200m deep"  	  	  	
   	lnd['500m'] = "500m deep"  	

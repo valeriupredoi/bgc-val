@@ -606,6 +606,10 @@ def multitimeseries(
 		if lineStyle.lower() in ['','both','all',]:
 			pyplot.plot(times,arr,c=colours[jobID],ls='-',lw=0.25)#label=jobID,)
 
+                if lineStyle.lower() in ['dataonly']:
+                        pyplot.plot(times,arr,c=colours[jobID],ls='-',lw=0.75,label=jobID,)
+
+
 	
 	if data != -999:
 		pyplot.axhline(y=data,c='k',ls='-',lw=1,label = 'Data')
