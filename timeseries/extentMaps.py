@@ -288,6 +288,10 @@ def interannualExtendMap(
 	ax.add_feature(cfeature.LAND,  facecolor='white',zorder=2)
 	ax.coastlines(lw=0.5,zorder=3)
 	pyplot.title(title)
+	pyplot.axhline(y= 0.,c='k',ls='-')
+        pyplot.axhline(y= 10.,c='k',ls='--')
+        pyplot.axhline(y= -10.,c='k',ls='--')
+
 
 
 	#####

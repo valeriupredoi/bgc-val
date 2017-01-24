@@ -80,8 +80,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
         imageFolder = 'images/TimeseriesCompare/'
         if len(jobs)==1:   imageFolder+= jobs[0]
         elif len(jobs)==2: imageFolder+= jobs[0]+'_and_'+jobs[1]
-        elif len(jobs)==5: imageFolder+= 'AllFiveRuns'
-        else: 		   imageFolder+= 'All'+str(len(jobs))+'Runs'
+        else: 		   imageFolder+= str(len(jobs))+'Runs_'+jobs[0]
 
 
 	annual = True
@@ -1352,7 +1351,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
                                         arrD[j][i] =d/1000000.
 		
 		for ts in ['Together',]:#'Separate']:
-		    for ls in ['Both','movingaverage','']:#'','Both',]:			
+		    for ls in ['Both','movingaverage','DataOnly']:#'','Both',]:			
                         if ls=='' and name not in level3: continue
 
 			tsp.multitimeseries(
@@ -1518,14 +1517,18 @@ if __name__=="__main__":
 	#timeseries_compare(colours)
 	debug = True
 	
-	CompareTwoRuns('u-aj010_10','u-ai567_10',physics=True,bio=False,yearA='2623',yearB='2077',debug=True)
-	CompareTwoRuns('u-aj010_10','u-ai567_10',physics=True,bio=False,yearA='2632',yearB='2086',debug=True)	
+#	CompareTwoRuns('u-aj010_10','u-ai567_10',physics=True,bio=False,yearA='2623',yearB='2077',debug=True)
+#	CompareTwoRuns('u-aj010_10','u-ai567_10',physics=True,bio=False,yearA='2632',yearB='2086',debug=True)	
+
 	
 #	CompareTwoRuns('u-ad371','u-ad371',physics=True,bio=True,yearA='1984',yearB='1984',debug=True)	
 		
 	
 	
 	if debug:
+
+		colours = {'u-aj237':'green','u-aj287':'purple', 'u-aj289':'blue',}
+                timeseries_compare(colours, physics=True,bio=False,year0=True,debug=0)
 
 
 #	        colours = {'u-ah531':'red', 'u-ah847':'orange', 'u-ah846':'blue','u-ah882':'purple', }
@@ -1535,8 +1538,8 @@ if __name__=="__main__":
 #	        colours = {'u-ai945':'green','u-aj010':'purple', }
 #                timeseries_compare(colours, physics=True,bio=False,year0=True,debug=0)
 
-                colours = {'u-aj073':'green','u-aj010':'purple', 'u-ai567':'blue',}
-                timeseries_compare(colours, physics=True,bio=False,year0='u-ai567-minus3',debug=0)
+#                colours = {'u-aj073':'green','u-aj010':'purple', 'u-ai567':'blue',}
+#                timeseries_compare(colours, physics=True,bio=False,year0='u-ai567-minus3',debug=0)
 
                 
 	else:
