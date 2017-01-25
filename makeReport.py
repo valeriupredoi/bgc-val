@@ -130,14 +130,14 @@ def html5Maker(
 	
 	#####
 	# Two switches to turn on Summary section, and groups of plots of field and region.		
-	Level0 		= 0#True	
-	Level1 		= 0#True
-	Level1Regional 	= 0#True
-	Level1Profiles 	=  0#True	
-	level2Horizontal =0#True
+	Level0 		= True	
+	Level1 		= True
+	Level1Regional 	= True
+	Level1Profiles 	=  True	
+	level2Horizontal =True
 	level2Physics 	= False
 	summarySections = False
-	level3OMZ 	= 0#True
+	level3OMZ 	= False
 	Level3Salinity	= True
 	regionMap	=True
 	
