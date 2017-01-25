@@ -631,7 +631,7 @@ class timeseriesAnalysis:
 			modeldata = [modeldataDict[t] for t in times]
 			title = ' '.join([getLongName(t) for t in [r,str(l),m,self.dataType]])
 
-			if len(dataweights):
+			if len(dataweights)!=0 and dataweights.sum()!=0.:
 				datamean = np.average(dataslice, weights = dataweights)
 			else:	datamean = np.mean(dataslice)
 			
