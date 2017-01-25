@@ -112,7 +112,8 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
 		analysisKeys.append('sohefldo')			# Net downward Water Flux 			
 		analysisKeys.append('sofmflup')			# Water flux due to freezing/melting
 		analysisKeys.append('sosfldow')			# Downward salt flux
-			               	
+		analysisKeys.append('soicecov')			# Ice fraction			               	
+		
 	if bio:
 		analysisKeys.append('TotalAirSeaFlux')          # work in progress              
 		analysisKeys.append('IntPP_OSU')                # OSU Integrated primpary production    
@@ -1231,7 +1232,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
 		#sofmflup = "Water flux due to freezing/melting" ;
 		#sosfldow = "Downward salt flux" ;
 			
-		naskeys = ['sowaflup','sohefldo','sofmflup','sosfldow',]
+		naskeys = ['sowaflup','sohefldo','sofmflup','sosfldow','soicecov']
 		if len(set(naskeys).intersection(set(analysisKeys))):
 		    for name in naskeys:
 		    	if name not in analysisKeys:continue
@@ -1256,7 +1257,8 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
 			nasUnits = {	'sowaflup':"kg/m2/s",
 					'sohefldo':"W/m2",
 					'sofmflup':"kg/m2/s",
-					'sosfldow':"PSU/m2/s"
+					'sosfldow':"PSU/m2/s",
+					'soicecov':'',					
 				   }
 		
 			av[name]['modeldetails'] 	= {'name': name[:], 'vars':[name[:],], 'convert': ukp.NoChange,'units':nasUnits[name][:]}
@@ -1331,7 +1333,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
 				'NordicSea', 'LabradorSea', 'NorwegianSea'
 				]
 					
-		for name in ['sowaflup','sohefldo','sofmflup','sosfldow','MLD',]:
+		for name in ['sowaflup','sohefldo','sofmflup','sosfldow','soicecov','MLD',]:
 		  if name not in av.keys():continue
 		  for region in nasregionList:
 		    for layer in ['layerless',]:
@@ -1413,7 +1415,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
 				mdata = modeldataD[(jobID,name )][('Global', 'layerless', 'mean')]
 				title = ' '.join(['Global', getLongName(name)])	
 						
-			elif name in [ 'sowaflup','sohefldo','sofmflup','sosfldow', ]:continue
+			elif name in [ 'sowaflup','sohefldo','sofmflup','sosfldow', 'soicecov',]:continue
 				#####
 				# Special hack for these guys.
 				#nasregionList	= ['NordicSea', 'LabradorSea', 'NorwegianSea'	]			
