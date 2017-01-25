@@ -162,12 +162,14 @@ def analysis_timeseries(jobID = "u-ab671",
 			analysisKeys.append('S')			# WOA Salinity
 			analysisKeys.append('MLD')			# iFERMER Mixed Layer Depth - work in prgress
 			analysisKeys.append('TotalIceArea')		# work in progress
-			analysisKeys.append('NorthernTotalIceArea')		# work in progress
-			analysisKeys.append('SouthernTotalIceArea')		# work in progress
+			analysisKeys.append('NorthernTotalIceArea')	# work in progress
+			analysisKeys.append('SouthernTotalIceArea')	# work in progress
 			analysisKeys.append('TotalIceExtent')		# work in progress
-			analysisKeys.append('NorthernTotalIceExtent')		# work in progress
-			analysisKeys.append('SouthernTotalIceExtent')		# work in progress
-			analysisKeys.append('DrakePassageTransport')			# DrakePassageTransport
+			analysisKeys.append('NorthernTotalIceExtent')	# work in progress
+			analysisKeys.append('SouthernTotalIceExtent')	# work in progress
+			analysisKeys.append('DrakePassageTransport')	# DrakePassageTransport
+			analysisKeys.append('sowaflup')			# Net Upward Water Flux 
+						
 			#####
 			# Switched Off
 
@@ -225,7 +227,8 @@ def analysis_timeseries(jobID = "u-ab671",
 #                       	analysisKeys.append('VerticalCurrent')          # Vertical Veloctity
                        	analysisKeys.append('GlobalMeanTemperature')    # Global Mean Temperature
                        	analysisKeys.append('IcelessMeanSST')    	# Global Mean Surface Temperature with no ice
-
+			analysisKeys.append('sowaflup')			# Net Upward Water Flux 
+			
 		if analysisSuite.lower() in ['level3',]:
                         analysisKeys.append('DMS_ARAN')                 # DMS Aranami Tsunogai
 
@@ -254,7 +257,7 @@ def analysis_timeseries(jobID = "u-ab671",
                         #####
                         # Physics switches:
                         #analysisKeys.append('T')                       # WOA Temperature
-                        analysisKeys.append('S')                       # WOA Salinity
+                        #analysisKeys.append('S')                       # WOA Salinity
                         #analysisKeys.append('NorthernTotalIceArea')    # work in progress
                         #analysisKeys.append('SouthernTotalIceArea')    # work in progress
                         #analysisKeys.append('TotalIceArea')            # work in progress
@@ -271,6 +274,10 @@ def analysis_timeseries(jobID = "u-ab671",
                        	#analysisKeys.append('ZonalCurrent')             # Zonal Veloctity
                        	#analysisKeys.append('MeridionalCurrent')        # Meridional Veloctity
                        	#analysisKeys.append('VerticalCurrent')          # Vertical Veloctity
+			analysisKeys.append('sowaflup')			# Net Upward Water Flux 
+			analysisKeys.append('sohefldo')			# Net downward Water Flux 			
+			analysisKeys.append('sofmflup')			# Water flux due to freezing/melting
+			analysisKeys.append('sosfldow')			# Downward salt flux
 
                 if analysisSuite.lower() in ['physics',]:
                         #####
@@ -1430,7 +1437,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['datadetails']  	= {'name': name, 'vars':['s_an',], 'convert': ukp.NoChange,'units':'PSU'}
 
 		salregions =regionList
-		salregions.extend(['NordicSea', 'LabradorSea'])
+		salregions.extend(['NordicSea', 'LabradorSea', 'NorwegianSea'])
 		av[name]['layers'] 		=  layerList
 		av[name]['regions'] 		= salregions
 		av[name]['metrics']		= metricList
@@ -1523,6 +1530,59 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['Dimensions']		= 3
 
 
+
+
+	#####
+	# North Atlantic Salinity
+	naskeys = ['sowaflup','sohefldo','sofmflup','sosfldow',]#'SouthernTotalIceExtent','TotalIceExtent']
+	if len(set(naskeys).intersection(set(analysisKeys))):
+	    for name in naskeys:
+	    	if name not in analysisKeys:continue
+
+		nc = Dataset(paths.orcaGridfn,'r')
+		area = nc.variables['e2t'][:] * nc.variables['e1t'][:]
+		tmask = nc.variables['tmask'][0,:,:]
+		lat = nc.variables['nav_lat'][:,:]
+		nc.close()
+
+		nas_files = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)
+		nc = Dataset(nas_files[0],'r')
+		if name not in nc.variables.keys():
+			print "analysis_timeseries.py:\tWARNING: ",name ,"is not in the model file."
+			continue
+		av[name]['modelFiles']  	= nas_files
+		av[name]['dataFile'] 		= ''
+
+		av[name]['modelcoords'] 	= medusaCoords
+		av[name]['datacoords'] 		= medusaCoords
+		
+                #sowaflup:long_name = "Net Upward Water Flux" ;
+                #sohefldo:long_name = "Net Downward Heat Flux" ;
+                #sofmflup:long_name = "Water flux due to freezing/melting" ;
+                #sosfldow:long_name = "Downward salt flux" ;
+                
+		nasUnits = {	'sowaflup':"kg/m2/s",
+				'sohefldo':"W/m2",
+				'sofmflup':"kg/m2/s",
+				'sosfldow':"PSU/m2/s"
+			   }
+		
+		av[name]['modeldetails'] 	= {'name': name[:], 'vars':[name[:],], 'convert': ukp.NoChange,'units':nasUnits[name][:]}
+
+		av[name]['regions'] 		=  ['NordicSea', 'LabradorSea', 'NorwegianSea']
+
+		av[name]['datadetails']  	= {'name':'','units':'',}
+		av[name]['layers'] 		=  ['layerless',]
+		av[name]['metrics']		= metricList
+		av[name]['datasource'] 		= ''
+		av[name]['model']		= 'NEMO'
+		av[name]['modelgrid']		= 'eORCA1'
+		av[name]['gridFile']		= paths.orcaGridfn
+		av[name]['Dimensions']		= 1
+		
+		
+		
+		
 
 	if 'MLD' in analysisKeys:
 

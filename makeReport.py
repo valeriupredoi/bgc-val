@@ -130,16 +130,16 @@ def html5Maker(
 	
 	#####
 	# Two switches to turn on Summary section, and groups of plots of field and region.		
-	Level0 		= True	
-	Level1 		= True
-	Level1Regional 	= True
-	Level1Profiles 	=  True	
-	level2Horizontal =True
+	Level0 		= 0#True	
+	Level1 		= 0#True
+	Level1Regional 	= 0#True
+	Level1Profiles 	=  0#True	
+	level2Horizontal =0#True
 	level2Physics 	= False
 	summarySections = False
 	level3OMZ 	= 0#True
 	Level3Salinity	= True
-	regionMap	=0#True
+	regionMap	=True
 	
 	
 	
@@ -915,15 +915,19 @@ def html5Maker(
 
 
 	if Level3Salinity:
-		l3sal_regions = ['Global',
+		l3sal_regions = [
 		 	 'NordicSea',
-		 	 'LabradorSea'  
+		 	 'LabradorSea' ,
+		 	 'NorwegianSea',
 		   ]
 		   	
 		regionalFields = [
                           'Salinity',
+                          'sowaflup','sohefldo','sofmflup','sosfldow',
 			]
-	
+		profileFields = [
+                          'Salinity',
+			]	
 		SectionTitle= 'Level 3 - Salinity time series'
 		hrefs 		= []
 		Titles		= {}
@@ -1003,8 +1007,7 @@ def html5Maker(
 			Descriptions	= {}
 			FileLists	= {}
 			FileOrder 	= {}		
-			for key in regionalFields:
-			 	if physicsOnly and key not in physregionalFields:continue				
+			for key in profileFields:
 				#if key not in ['Alkalinity','Nitrate']: continue
 
 				href = 	'L1'+plottype+'-'+key#+'-'+region

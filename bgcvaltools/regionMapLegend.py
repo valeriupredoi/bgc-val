@@ -40,13 +40,9 @@ from cartopy import img_transform, feature as cfeature
 from bgcvaltools.pftnames import getLongName
 
 
-regionList	= [#'Global', 'ignoreInlandSeas',
-  		'SouthernOcean','Remainder',
-		'Equator10', 
-		'NorthernSubpolarAtlantic','NorthernSubpolarPacific','ArcticOcean',
-		]
 
-def robinPlotCustom(lons,lats,data,filename,title, zrange=[-100,100],drawCbar=True,cbarlabel='',doLog=False,dpi=100,cmapname='default',crude=0):
+
+def robinPlotCustom(lons,lats,data,filename,title, regionList, zrange=[-100,100],drawCbar=True,cbarlabel='',doLog=False,dpi=100,cmapname='default',crude=0):
 	####
 	# Based on robinplotSingle
 	
@@ -92,7 +88,7 @@ def robinPlotCustom(lons,lats,data,filename,title, zrange=[-100,100],drawCbar=Tr
 				 box.width, box.height * 0.9])
 			
 		for i,r in enumerate(regionList):
-			c = cmap((i)/5.)
+			c = cmap((i)/(len(regionList)-1.))
 			print i,r,c
 			pyplot.plot([],[],lw=8,color=c,label=getLongName(r))
 
@@ -208,7 +204,7 @@ def robinPlotTransects(lons,lats,data,filename,title,legends=[], zrange=[-100,10
 
 
 
-def makeRegionMap():
+def makeRegionMap(regionList):
 
 	plotAll = 0#True	# make plots for all regions
 	imageFold = ukp.folder('images/maps')
@@ -245,8 +241,47 @@ def makeRegionMap():
 	colourmaps = ['default',]#'rainbow','jet','gist_earth','terrain','ocean','hsv','gist_rainbow','nipy_spectral',]
 	for c in colourmaps:
 		fn = imageFold+'Region_Legend.png'
-		robinPlotCustom(xy, xx, data,fn,'',drawCbar=False,cbarlabel='',doLog=False,dpi=200,cmapname = c)
-		
+		robinPlotCustom(xy, xx, data,fn,'',regionList,drawCbar=False,cbarlabel='',doLog=False,dpi=200,cmapname = c)
+
+def makeRegionMapNA(regionList):
+
+	plotAll = 0#True	# make plots for all regions
+	imageFold = ukp.folder('images/maps')
+	#####
+	# Load data.
+	nc = Dataset(orcaGridfn,'r')
+	bathy = nc.variables['mbathy'][:]
+	xy = np.ma.masked_where(bathy==0,nc.variables['nav_lat'][:]).compressed()
+	xx = np.ma.masked_where(bathy==0,nc.variables['nav_lon'][:]).compressed()
+	nc.close()
+	
+	cbathy = np.ma.masked_where(bathy==0,bathy).compressed()
+	xt = np.ones_like(cbathy)
+	xz = np.ones_like(cbathy)
+
+	####
+	# Calculate masks, based on lat/lon.
+	masks = {}
+	for r in regionList:
+		masks[r] = ~ukp.makeMask('',r, xt,xz,xy,xx,cbathy,debug=True)
+	
+	#####
+	# Turn mask into one field.
+	data = np.zeros_like(cbathy)
+	for i,r in enumerate(regionList):
+		data += (i+1)* masks[r]
+		if plotAll:
+			fn = imageFold+'Region_Legend_NA_'+r+'.png'		
+			ukp.robinPlotSingle(xy, xx, masks[r],fn,r,drawCbar=True,cbarlabel='',doLog=False,dpi=100,)
+	data = np.ma.masked_where(data==0,data)
+	
+	#####
+	# Send it to the plotting tool.
+	colourmaps = ['default',]#'rainbow','jet','gist_earth','terrain','ocean','hsv','gist_rainbow','nipy_spectral',]
+	for c in colourmaps:
+		fn = imageFold+'Region_Legend_NorthAtlantic.png'
+		robinPlotCustom(xy, xx, data,fn,'',regionList,drawCbar=False,cbarlabel='',doLog=False,dpi=200,cmapname = c)
+				
 
 def makeTransectsMap(proj='robin'):
 	"""
@@ -338,9 +373,23 @@ def makeTransectsMap(proj='robin'):
 	maps = np.ma.masked_where(maps==0,maps)#.compessed()
 	robinPlotTransects(lat, lon, maps,fn, '',legends=transects,drawCbar=False,cbarlabel='',doLog=False,dpi=200,proj=proj)
 
-if __name__=="__main__":
+def main():
+	makeRegionMapNA(['NordicSea', 'LabradorSea', 'NorwegianSea'])		
+	assert 0					
+	regionList	= [#'Global', 'ignoreInlandSeas',
+	  		'SouthernOcean','Remainder',
+			'Equator10', 
+			'NorthernSubpolarAtlantic','NorthernSubpolarPacific','ArcticOcean',
+			]
 	for proj in ['Both','robin',]:#'Arctic', 'Antartic', ]:
 		makeTransectsMap(proj=proj)
+	makeRegionMap(regionList)							
+
+		
+if __name__=="__main__":
+	main()
+
+
 	
-	#makeRegionMap()		
+
 	
