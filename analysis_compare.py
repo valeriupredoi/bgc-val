@@ -1527,7 +1527,7 @@ if __name__=="__main__":
 	
 	if debug:
 
-		colours = {'u-aj237':'green','u-aj287':'purple', 'u-aj289':'blue',}
+		colours = {'u-aj237':'green','u-aj287':'purple', 'u-aj289':'blue','u-ai567':'orange'}
                 timeseries_compare(colours, physics=True,bio=False,year0=True,debug=0)
 
 

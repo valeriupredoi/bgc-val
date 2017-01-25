@@ -34,7 +34,7 @@ from netCDF4 import Dataset
 import UKESMpython as ukp
 import numpy as np
 from changeNC import changeNC, AutoVivification
-
+import paths
 
 """ 	This code makes a mask netcdf for the regions written below.
 	this code is needed for profileAnalysis.py
@@ -43,8 +43,8 @@ from changeNC import changeNC, AutoVivification
 def makeMaskNC(outFile, regions, grid):
 
 	if grid in ['eORCA1',]:
-		orcaGridfn 	= '/data/euryale7/scratch/ledm/UKESM/MEDUSA/mesh_mask_eORCA1_wrk.nc'	
-
+	#	orcaGridfn 	= '/data/euryale7/scratch/ledm/UKESM/MEDUSA/mesh_mask_eORCA1_wrk.nc'	
+		orcaGridfn	= paths.orcaGridfn
 	#####
 	# load mask and coordinates.
 	ncmesh = Dataset(orcaGridfn,'r')
