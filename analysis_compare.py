@@ -1646,9 +1646,9 @@ if __name__=="__main__":
 	
 #	CompareTwoRuns('u-ad371','u-ad371',physics=True,bio=True,yearA='1984',yearB='1984',debug=True)	
 		
-	colours = {'u-ad371':'green',}#'u-aj287':'purple', 'u-aj289':'blue','u-ai567':'orange'}
-        timeseries_compare(colours, physics=True,bio=False,year0=True,debug=0)	
-	assert 0
+#	colours = {'u-ad371':'green',}#'u-aj287':'purple', 'u-aj289':'blue','u-ai567':'orange'}
+#        timeseries_compare(colours, physics=True,bio=False,year0=True,debug=0)	
+
 	if debug:
 
 		colours = {'u-aj237':'green','u-aj287':'purple', 'u-aj289':'blue','u-ai567':'orange'}
