@@ -107,6 +107,12 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
                	analysisKeys.append('VerticalCurrent')          # Vertical Veloctity   	       
                	analysisKeys.append('GlobalMeanTemperature')    # Global Mean Temperature
                	analysisKeys.append('IcelessMeanSST')    	# Global Mean Surface Temperature with no ice               		
+               	
+		analysisKeys.append('sowaflup')			# Net Upward Water Flux 
+		analysisKeys.append('sohefldo')			# Net downward Water Flux 			
+		analysisKeys.append('sofmflup')			# Water flux due to freezing/melting
+		analysisKeys.append('sosfldow')			# Downward salt flux
+			               	
 	if bio:
 		analysisKeys.append('TotalAirSeaFlux')          # work in progress              
 		analysisKeys.append('IntPP_OSU')                # OSU Integrated primpary production    
@@ -151,25 +157,12 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
   	regionList	= ['Global',]
 
 	level3 = ['DMS',]	
+	
 	#####
-	# JASMIN		
-	if gethostname().find('ceda.ac.uk')>-1:
-		print "analysis-timeseries.py:\tBeing run at CEDA on ",gethostname()
-		machinelocation = 'JASMIN'	
-				
-		#####
-		# Location of data files.
-		if annual:	WOAFolder = paths.WOAFolder_annual
-		else:		WOAFolder = paths.WOAFolder		
-				
-
-		# New eORCA1 grid		
-		orcaGridfn 	= '/group_workspaces/jasmin/esmeval/example_data/bgc/mesh_mask_eORCA1_wrk.nc'
-	else:
-		print "This only runs on jasmin."
-		#assert 0		
-
-
+	# paths:
+	orcaGridfn 	= paths.orcaGridfn#'/group_workspaces/jasmin/esmeval/example_data/bgc/mesh_mask_eORCA1_wrk.nc'
+	if annual:	WOAFolder = paths.WOAFolder_annual
+	else:		WOAFolder = paths.WOAFolder	
   	
 
 
@@ -217,8 +210,8 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
 		#####
 		# Location of images directory
 		# the imagedir is where the analysis images will be saved.
-		imagedir	 = ukp.folder('images/'+jobID+'/timeseries')
-		shelvedir 	= ukp.folder("/group_workspaces/jasmin2/ukesm/BGC_data/"+getuser()+"/shelves/timeseries/"+jobID)
+		imagedir	 = ukp.folder(paths.imagedir+'/'+jobID+'/timeseries')
+		shelvedir 	= ukp.folder(paths.shelvedir+"/timeseries/"+jobID)
 		
 		
 
@@ -1231,6 +1224,54 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
 			av[name]['gridFile']		= paths.orcaGridfn
 			av[name]['Dimensions']		= 2				
 	
+		#####
+		# North Atlantic Salinity
+		#sowaflup = "Net Upward Water Flux" ;
+		#sohefldo = "Net Downward Heat Flux" ;
+		#sofmflup = "Water flux due to freezing/melting" ;
+		#sosfldow = "Downward salt flux" ;
+			
+		naskeys = ['sowaflup','sohefldo','sofmflup','sosfldow',]
+		if len(set(naskeys).intersection(set(analysisKeys))):
+		    for name in naskeys:
+		    	if name not in analysisKeys:continue
+
+			#nc = Dataset(paths.orcaGridfn,'r')
+			#area = nc.variables['e2t'][:] * nc.variables['e1t'][:]
+			#tmask = nc.variables['tmask'][0,:,:]
+			#lat = nc.variables['nav_lat'][:,:]
+			#nc.close()
+
+			nas_files = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)
+			nc = Dataset(nas_files[0],'r')
+			if name not in nc.variables.keys():
+				print "analysis_timeseries.py:\tWARNING: ",name ,"is not in the model file."
+				continue
+			av[name]['modelFiles']  	= nas_files
+			av[name]['dataFile'] 		= ''
+
+			av[name]['modelcoords'] 	= medusaCoords
+			av[name]['datacoords'] 		= medusaCoords		
+		       
+			nasUnits = {	'sowaflup':"kg/m2/s",
+					'sohefldo':"W/m2",
+					'sofmflup':"kg/m2/s",
+					'sosfldow':"PSU/m2/s"
+				   }
+		
+			av[name]['modeldetails'] 	= {'name': name[:], 'vars':[name[:],], 'convert': ukp.NoChange,'units':nasUnits[name][:]}
+
+			av[name]['regions'] 		=  ['NordicSea', 'LabradorSea', 'NorwegianSea']
+
+			av[name]['datadetails']  	= {'name':'','units':'',}
+			av[name]['layers'] 		=  ['layerless',]
+			av[name]['metrics']		= metricList
+			av[name]['datasource'] 		= ''
+			av[name]['model']		= 'NEMO'
+			av[name]['modelgrid']		= 'eORCA1'
+			av[name]['gridFile']		= paths.orcaGridfn
+			av[name]['Dimensions']		= 2
+		
 
 		for name in av.keys():
 			print "------------------------------------------------------------------"	
@@ -1281,10 +1322,81 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
 	# Data now loaded, making plots next:
 	for k in modeldataD.keys():
 		print "Model Data D:",k
+
+	#####
+	# 2D fields for North Atlantic analysis 
+	doNorthAtlanticSalt = True
+	if doNorthAtlanticSalt:
+		nasregionList	= [
+				'NordicSea', 'LabradorSea', 'NorwegianSea'
+				]
+					
+		for name in ['sowaflup','sohefldo','sofmflup','sosfldow','MLD',]:
+		  if name not in av.keys():continue
+		  for region in nasregionList:
+		    for layer in ['layerless',]:
+			timesD  = {}
+			arrD	= {}
+			for jobID in jobs:
+				mdata = modeldataD[(jobID,name )][(region, layer, 'mean')]
+				title = ' '.join([region, layer, 'Mean',  getLongName(name)])
+				print name, region,layer, jobID, mdata, title
+				print modeldataD[(jobID,name )].keys()
+				
+				timesD[jobID] 	= sorted(mdata.keys())
+				arrD[jobID]	= [mdata[t] for t in timesD[jobID]]
+
+			
+			if len(arrD.keys()) ==0:continue			
+			
+			for ts in ['Together',]:
+			    for ls in ['DataOnly',]:
+				tsp.multitimeseries(
+					timesD, 		# model times (in floats)
+					arrD,			# model time series
+					data 	= -999,		# in situ data distribution
+					title 	= title,
+					filename=ukp.folder(imageFolder+'/NAS')+'_'.join(['NAS',name,region,layer,ts,ls+'.png']),
+					units = '',
+					plotStyle 	= ts,
+					lineStyle	= ls,
+					colours		= colours,
+				)	
+		####
+		# North Atlantic Salinity
+		for name in ['Salinity',]:
+		  if name not in av.keys():continue
+		  for region in nasregionList:
+		    for layer in ['Surface','500m','1000m']:
+			timesD  = {}
+			arrD	= {}
+		
+			for jobID in jobs:
+				try:	mdata = modeldataD[(jobID,name )][(region, layer, 'mean')]
+				except: continue
+				title = ' '.join([region, layer, 'Mean',  getLongName(name)])
 	
+				timesD[jobID] 	= sorted(mdata.keys())
+				arrD[jobID]	= [mdata[t] for t in timesD[jobID]]
+			if len(arrD.keys()) ==0:continue
+			for ts in ['Together',]:
+			    for ls in ['DataOnly',]:
+				tsp.multitimeseries(
+					timesD, 		# model times (in floats)
+					arrD,			# model time series
+					data 	= -999,		# in situ data distribution
+					title 	= title,
+					filename=ukp.folder(imageFolder+'/NAS')+'_'.join(['NAS',name,region,layer,ts,ls+'.png']),
+					units = '',
+					plotStyle 	= ts,
+					lineStyle	= ls,
+					colours		= colours,
+				)
+					
+		assert 0	
+		
 	####
 	# Standard surface:
-	
 	for name in av.keys():
 		timesD  = {}
 		arrD	= {}
@@ -1297,9 +1409,16 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
 	 			 	 'ZonalCurrent','MeridionalCurrent','VerticalCurrent']:
 				mdata = modeldataD[(jobID,name )][('Global', 'Surface', 'mean')]
 				title = ' '.join(['Global', 'Surface', 'Mean',  getLongName(name)])
-			elif name in [  'OMZThickness', 'OMZMeanDepth', 'DMS', ]:
+			elif name in [  'OMZThickness', 'OMZMeanDepth', 'DMS',]:
 				mdata = modeldataD[(jobID,name )][('Global', 'layerless', 'mean')]
-				title = ' '.join(['Global', getLongName(name)])			
+				title = ' '.join(['Global', getLongName(name)])	
+						
+			elif name in [ 'sowaflup','sohefldo','sofmflup','sosfldow', ]:continue
+				#####
+				# Special hack for these guys.
+				#nasregionList	= ['NordicSea', 'LabradorSea', 'NorwegianSea'	]			
+				#mdata = modeldataD[(jobID,name )][('regionless', 'layerless', 'mean')]
+				#title = getLongName(name)				
 			else:
 				mdata = modeldataD[(jobID,name )][('regionless', 'layerless', 'metricless')]
 				title = getLongName(name)
@@ -1366,6 +1485,10 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
 				colours		= colours,
 			)
 	
+	
+	
+			
+							
 	####
 	# Oxygen at Depth:
   	regionList	= [
@@ -1523,8 +1646,9 @@ if __name__=="__main__":
 	
 #	CompareTwoRuns('u-ad371','u-ad371',physics=True,bio=True,yearA='1984',yearB='1984',debug=True)	
 		
-	
-	
+	colours = {'u-ad371':'green',}#'u-aj287':'purple', 'u-aj289':'blue','u-ai567':'orange'}
+        timeseries_compare(colours, physics=True,bio=False,year0=True,debug=0)	
+	assert 0
 	if debug:
 
 		colours = {'u-aj237':'green','u-aj287':'purple', 'u-aj289':'blue','u-ai567':'orange'}

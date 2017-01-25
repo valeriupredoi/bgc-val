@@ -263,9 +263,14 @@ def analysis_timeseries(jobID = "u-ab671",
                         #####
                         # Physics switches:
                         #analysisKeys.append('T')                       # WOA Temperature
+<<<<<<< HEAD
                         analysisKeys.append('S')                       # WOA Salinity
                         analysisKeys.append('MLD')                     # iFERMER Mixed Layer Depth - work in prgress
 
+=======
+                        #analysisKeys.append('S')                        # WOA Salinity
+                        #analysisKeys.append('MLD')                      # MLD
+>>>>>>> 91c4d4c53b442f918fff7f8c954539bd2dde40af
                         #analysisKeys.append('NorthernTotalIceArea')    # work in progress
                         #analysisKeys.append('SouthernTotalIceArea')    # work in progress
                         #analysisKeys.append('TotalIceArea')            # work in progress
@@ -284,8 +289,8 @@ def analysis_timeseries(jobID = "u-ab671",
                        	#analysisKeys.append('VerticalCurrent')          # Vertical Veloctity
 			analysisKeys.append('sowaflup')			# Net Upward Water Flux 
 			analysisKeys.append('sohefldo')			# Net downward Water Flux 			
-			analysisKeys.append('sofmflup')			# Water flux due to freezing/melting
-			analysisKeys.append('sosfldow')			# Downward salt flux
+			#analysisKeys.append('sofmflup')			# Water flux due to freezing/melting
+			#analysisKeys.append('sosfldow')			# Downward salt flux
 
                 if analysisSuite.lower() in ['physics',]:
                         #####
@@ -383,7 +388,8 @@ def analysis_timeseries(jobID = "u-ab671",
 		if annual:	WOAFolder = paths.WOAFolder_annual
 		else:		WOAFolder = paths.WOAFolder
 
-		shelvedir 	= ukp.folder(paths.shelvedir+'/'+jobID)
+		#shelvedir 	= ukp.folder(paths.shelvedir+'/'+jobID+'/timeseries/'+jobID)
+		shelvedir 	= ukp.folder(paths.shelvedir+"/timeseries/"+jobID)		
 	#####
 	# JASMIN
 	if gethostname().find('ceda.ac.uk')>-1:
@@ -1556,11 +1562,11 @@ def analysis_timeseries(jobID = "u-ab671",
 	    for name in naskeys:
 	    	if name not in analysisKeys:continue
 
-		nc = Dataset(paths.orcaGridfn,'r')
-		area = nc.variables['e2t'][:] * nc.variables['e1t'][:]
-		tmask = nc.variables['tmask'][0,:,:]
-		lat = nc.variables['nav_lat'][:,:]
-		nc.close()
+		#nc = Dataset(paths.orcaGridfn,'r')
+		#area = nc.variables['e2t'][:] * nc.variables['e1t'][:]
+		#tmask = nc.variables['tmask'][0,:,:]
+		#lat = nc.variables['nav_lat'][:,:]
+		#nc.close()
 
 		nas_files = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)
 		nc = Dataset(nas_files[0],'r')
@@ -1590,7 +1596,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['model']		= 'NEMO'
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= paths.orcaGridfn
-		av[name]['Dimensions']		= 1
+		av[name]['Dimensions']		= 2
 		
 		
 		
