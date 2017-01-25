@@ -922,7 +922,7 @@ def html5Maker(
 		   ]
 		   	
 		regionalFields = [
-                          'Salinity',
+                          'Salinity','MLD',
                           'sowaflup','sohefldo','sofmflup','sosfldow',
 			]
 		profileFields = [
