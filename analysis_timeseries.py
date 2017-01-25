@@ -1430,7 +1430,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['datadetails']  	= {'name': name, 'vars':['s_an',], 'convert': ukp.NoChange,'units':'PSU'}
 
 		salregions =regionList
-		salregions.extend(['NordicSea', 'LabradorSea'])
+		salregions.extend(['NordicSea', 'LabradorSea', 'NorwegianSea'])
 		av[name]['layers'] 		=  layerList
 		av[name]['regions'] 		= salregions
 		av[name]['metrics']		= metricList

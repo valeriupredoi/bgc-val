@@ -2293,7 +2293,12 @@ def makeMask(name,newSlice, xt,xz,xy,xx,xd,debug=False):
 		mx  = np.ma.masked_outside(xx,-69., -45.).mask
 		mx += np.ma.masked_outside(xy,  53., 67.).mask
 		return mx
-		
+
+	if newSlice == 'NorwegianSea':
+		mx  = np.ma.masked_outside(xx,-15., 10.).mask
+		mx += np.ma.masked_outside(xy, 67., 76.).mask
+		return mx
+				
 
 	if newSlice == 'NorthernSubpolarPacific':
 		mx = np.ma.masked_inside(xx,-100., 120. ).mask
