@@ -1236,11 +1236,11 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
 		    for name in naskeys:
 		    	if name not in analysisKeys:continue
 
-			nc = Dataset(paths.orcaGridfn,'r')
-			area = nc.variables['e2t'][:] * nc.variables['e1t'][:]
-			tmask = nc.variables['tmask'][0,:,:]
-			lat = nc.variables['nav_lat'][:,:]
-			nc.close()
+			#nc = Dataset(paths.orcaGridfn,'r')
+			#area = nc.variables['e2t'][:] * nc.variables['e1t'][:]
+			#tmask = nc.variables['tmask'][0,:,:]
+			#lat = nc.variables['nav_lat'][:,:]
+			#nc.close()
 
 			nas_files = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)
 			nc = Dataset(nas_files[0],'r')
@@ -1270,7 +1270,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
 			av[name]['model']		= 'NEMO'
 			av[name]['modelgrid']		= 'eORCA1'
 			av[name]['gridFile']		= paths.orcaGridfn
-			av[name]['Dimensions']		= 1
+			av[name]['Dimensions']		= 2
 		
 
 		for name in av.keys():
@@ -1322,10 +1322,81 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
 	# Data now loaded, making plots next:
 	for k in modeldataD.keys():
 		print "Model Data D:",k
+
+	#####
+	# 2D fields for North Atlantic analysis 
+	doNorthAtlanticSalt = True
+	if doNorthAtlanticSalt:
+		nasregionList	= [
+				'NordicSea', 'LabradorSea', 'NorwegianSea'
+				]
+					
+		for name in ['sowaflup','sohefldo','sofmflup','sosfldow','MLD',]:
+		  if name not in av.keys():continue
+		  for region in nasregionList:
+		    for layer in ['layerless',]:
+			timesD  = {}
+			arrD	= {}
+			for jobID in jobs:
+				mdata = modeldataD[(jobID,name )][(region, layer, 'mean')]
+				title = ' '.join([region, layer, 'Mean',  getLongName(name)])
+				print name, region,layer, jobID, mdata, title
+				print modeldataD[(jobID,name )].keys()
+				
+				timesD[jobID] 	= sorted(mdata.keys())
+				arrD[jobID]	= [mdata[t] for t in timesD[jobID]]
+
+			
+			if len(arrD.keys()) ==0:continue			
+			
+			for ts in ['Together',]:
+			    for ls in ['DataOnly',]:
+				tsp.multitimeseries(
+					timesD, 		# model times (in floats)
+					arrD,			# model time series
+					data 	= -999,		# in situ data distribution
+					title 	= title,
+					filename=ukp.folder(imageFolder+'/NAS')+'_'.join(['NAS',name,region,layer,ts,ls+'.png']),
+					units = '',
+					plotStyle 	= ts,
+					lineStyle	= ls,
+					colours		= colours,
+				)	
+		####
+		# North Atlantic Salinity
+		for name in ['Salinity',]:
+		  if name not in av.keys():continue
+		  for region in nasregionList:
+		    for layer in ['Surface','500m','1000m']:
+			timesD  = {}
+			arrD	= {}
+		
+			for jobID in jobs:
+				try:	mdata = modeldataD[(jobID,name )][(region, layer, 'mean')]
+				except: continue
+				title = ' '.join([region, layer, 'Mean',  getLongName(name)])
 	
+				timesD[jobID] 	= sorted(mdata.keys())
+				arrD[jobID]	= [mdata[t] for t in timesD[jobID]]
+			if len(arrD.keys()) ==0:continue
+			for ts in ['Together',]:
+			    for ls in ['DataOnly',]:
+				tsp.multitimeseries(
+					timesD, 		# model times (in floats)
+					arrD,			# model time series
+					data 	= -999,		# in situ data distribution
+					title 	= title,
+					filename=ukp.folder(imageFolder+'/NAS')+'_'.join(['NAS',name,region,layer,ts,ls+'.png']),
+					units = '',
+					plotStyle 	= ts,
+					lineStyle	= ls,
+					colours		= colours,
+				)
+					
+		assert 0	
+		
 	####
 	# Standard surface:
-	
 	for name in av.keys():
 		timesD  = {}
 		arrD	= {}
@@ -1343,6 +1414,11 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
 				title = ' '.join(['Global', getLongName(name)])	
 						
 			elif name in [ 'sowaflup','sohefldo','sofmflup','sosfldow', ]:continue
+				#####
+				# Special hack for these guys.
+				#nasregionList	= ['NordicSea', 'LabradorSea', 'NorwegianSea'	]			
+				#mdata = modeldataD[(jobID,name )][('regionless', 'layerless', 'mean')]
+				#title = getLongName(name)				
 			else:
 				mdata = modeldataD[(jobID,name )][('regionless', 'layerless', 'metricless')]
 				title = getLongName(name)
@@ -1410,68 +1486,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
 			)
 	
 	
-	####
-	# North Atlantic Salinity
-	nasregionList	= [
-			'NordicSea', 'LabradorSea', 'NorwegianSea'
-			]
-	for name in ['Salinity',]:
-	  if name not in av.keys():continue
-	  for region in nasregionList:
-	    for layer in ['Surface','500m','1000m']:
-		timesD  = {}
-		arrD	= {}
-		
-		for jobID in jobs:
-			mdata = modeldataD[(jobID,name )][(region, layer, 'mean')]
-			title = ' '.join([region, layer, 'Mean',  getLongName(name)])
 	
-			timesD[jobID] 	= sorted(mdata.keys())
-			arrD[jobID]	= [mdata[t] for t in timesD[jobID]]
-		if len(arrD.keys()) ==0:continue
-		for ts in ['Together',]:
-		    for ls in ['DataOnly',]:
-			tsp.multitimeseries(
-				timesD, 		# model times (in floats)
-				arrD,			# model time series
-				data 	= -999,		# in situ data distribution
-				title 	= title,
-				filename=ukp.folder(imageFolder+'/NAS')+'_'.join(['NAS',name,region,layer,ts,ls+'.png']),
-				units = '',
-				plotStyle 	= ts,
-				lineStyle	= ls,
-				colours		= colours,
-			)
-			
-	for name in ['sowaflup','sohefldo','sofmflup','sosfldow','MLD',]:
-	  if name not in av.keys():continue
-	  for region in nasregionList:
-	    for layer in ['layerless',]:
-		timesD  = {}
-		arrD	= {}
-		for jobID in jobs:
-			mdata = modeldataD[(jobID,name )][(region, layer, 'mean')]
-			title = ' '.join([region, layer, 'Mean',  getLongName(name)])
-	
-			timesD[jobID] 	= sorted(mdata.keys())
-			arrD[jobID]	= [mdata[t] for t in timesD[jobID]]
-			print name, region,layer, jobID
-			
-			
-		for ts in ['Together',]:
-		    for ls in ['DataOnly',]:
-			tsp.multitimeseries(
-				timesD, 		# model times (in floats)
-				arrD,			# model time series
-				data 	= -999,		# in situ data distribution
-				title 	= title,
-				filename=ukp.folder(imageFolder+'/NAS')+'_'.join(['NAS',name,region,layer,ts,ls+'.png']),
-				units = '',
-				plotStyle 	= ts,
-				lineStyle	= ls,
-				colours		= colours,
-			)			
-	assert 0		
 			
 							
 	####
