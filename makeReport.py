@@ -915,15 +915,19 @@ def html5Maker(
 
 
 	if Level3Salinity:
-		l3sal_regions = ['Global',
+		l3sal_regions = [
 		 	 'NordicSea',
-		 	 'LabradorSea'  
+		 	 'LabradorSea' ,
+		 	 'NorwegianSea',
 		   ]
 		   	
 		regionalFields = [
                           'Salinity',
+                          'sowaflup','sohefldo','sofmflup','sosfldow',
 			]
-	
+		profileFields = [
+                          'Salinity',
+			]	
 		SectionTitle= 'Level 3 - Salinity time series'
 		hrefs 		= []
 		Titles		= {}
@@ -1003,8 +1007,7 @@ def html5Maker(
 			Descriptions	= {}
 			FileLists	= {}
 			FileOrder 	= {}		
-			for key in regionalFields:
-			 	if physicsOnly and key not in physregionalFields:continue				
+			for key in profileFields:
 				#if key not in ['Alkalinity','Nitrate']: continue
 
 				href = 	'L1'+plottype+'-'+key#+'-'+region

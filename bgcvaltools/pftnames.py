@@ -151,6 +151,11 @@ def makeLongNameDict():
         lnd['IcelessMeanSST'] 		= "Global Area-weighted Mean SST (masked above 15% ice coverage)"
         lnd['quickSST']           = "Global Area-weighted Mean SST"
 
+        lnd['sowaflup']  = "Net Upward Water Flux" 
+        lnd['sohefldo']  = "Net Downward Heat Flux" 
+        lnd['sofmflup']  = "Water flux due to freezing/melting" 
+        lnd['sosfldow']  = "Downward salt flux" 
+
 	lnd['exportRatio'] = "Export Ratio"  
 	lnd['LocalExportRatio'] = "Export Ratio"  		
 	
