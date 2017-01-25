@@ -936,8 +936,6 @@ def html5Maker(
 		FileLists	= {}
 		FileOrder 	= {}		
 		for key in regionalFields:
-		 	if physicsOnly and key not in physregionalFields:continue		
-			#if key not in ['Alkalinity','Nitrate']: continue
 
 			href = 	'L3salinity'+key#+'-'+region
 			
