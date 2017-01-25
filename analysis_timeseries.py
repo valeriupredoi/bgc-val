@@ -263,14 +263,8 @@ def analysis_timeseries(jobID = "u-ab671",
                         #####
                         # Physics switches:
                         #analysisKeys.append('T')                       # WOA Temperature
-<<<<<<< HEAD
-                        analysisKeys.append('S')                       # WOA Salinity
-                        analysisKeys.append('MLD')                     # iFERMER Mixed Layer Depth - work in prgress
-
-=======
                         #analysisKeys.append('S')                        # WOA Salinity
                         #analysisKeys.append('MLD')                      # MLD
->>>>>>> 91c4d4c53b442f918fff7f8c954539bd2dde40af
                         #analysisKeys.append('NorthernTotalIceArea')    # work in progress
                         #analysisKeys.append('SouthernTotalIceArea')    # work in progress
                         #analysisKeys.append('TotalIceArea')            # work in progress
