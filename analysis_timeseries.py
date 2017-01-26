@@ -261,10 +261,11 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('Iron')			# work in progress
                         #analysisKeys.append('N')                        # WOA Nitrate
                         #analysisKeys.append('IntPP_OSU')               # OSU Integrated primpary production
+                       
                         #####
                         # Physics switches:
-                        analysisKeys.append('T')                       # WOA Temperature
-                        analysisKeys.append('S')                        # WOA Salinity
+                        #analysisKeys.append('T')                       # WOA Temperature
+                        #analysisKeys.append('S')                        # WOA Salinity
                         #analysisKeys.append('MLD')                      # MLD
                         #analysisKeys.append('NorthernTotalIceArea')    # work in progress
                         #analysisKeys.append('SouthernTotalIceArea')    # work in progress
@@ -282,12 +283,14 @@ def analysis_timeseries(jobID = "u-ab671",
                        	#analysisKeys.append('ZonalCurrent')             # Zonal Veloctity
                        	#analysisKeys.append('MeridionalCurrent')        # Meridional Veloctity
                        	#analysisKeys.append('VerticalCurrent')          # Vertical Veloctity
-			analysisKeys.append('sowaflup')			# Net Upward Water Flux 
-			analysisKeys.append('sohefldo')			# Net downward Water Flux 			
-			analysisKeys.append('sofmflup')			# Water flux due to freezing/melting
-			analysisKeys.append('sosfldow')			# Downward salt flux
-			analysisKeys.append('soicecov')			# Ice fraction
-			
+                       	
+			#analysisKeys.append('sowaflup')			# Net Upward Water Flux 
+			#analysisKeys.append('sohefldo')			# Net downward Water Flux 			
+			#analysisKeys.append('sofmflup')			# Water flux due to freezing/melting
+			#analysisKeys.append('sosfldow')			# Downward salt flux
+			#analysisKeys.append('soicecov')			# Ice fraction
+			analysisKeys.append('max_soshfldo')		# Max short wave radiation.
+					
                 if analysisSuite.lower() in ['physics',]:
                         #####
                         # Physics switches:
@@ -1602,7 +1605,47 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['gridFile']		= paths.orcaGridfn
 		av[name]['Dimensions']		= 2
 		
+	naskeys = ['max_soshfldo',]#'sohefldo','sofmflup','sosfldow','soicecov']
+	if len(set(naskeys).intersection(set(analysisKeys))):
+	    for name in naskeys:
+	    	if name not in analysisKeys:continue
+
+		cutname = name[:].replace('max_','')
+		#nc = Dataset(paths.orcaGridfn,'r')
+		#area = nc.variables['e2t'][:] * nc.variables['e1t'][:]
+		#tmask = nc.variables['tmask'][0,:,:]
+		#lat = nc.variables['nav_lat'][:,:]
+		#nc.close()
+
+		nas_files = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)
+		nc = Dataset(nas_files[0],'r')
+		if cutname not in nc.variables.keys():
+			print "analysis_timeseries.py:\tWARNING: ",cutname ,"is not in the model file."
+			continue
+		av[name]['modelFiles']  	= nas_files
+		av[name]['dataFile'] 		= ''
+
+		av[name]['modelcoords'] 	= medusaCoords
+		av[name]['datacoords'] 		= medusaCoords		
+               
+		maxUnits = {	'max_soshfldo':"W/m2",
+			   }
 		
+		def getMax(nc,keys):
+			return applyLandMask(nc,keys).max()
+					
+		av[name]['modeldetails'] 	= {'name': name[:], 'vars':[cutname,], 'convert': applySurfaceMask, 'units':maxUnits[name][:]}
+
+		av[name]['regions'] 		=  ['Global',]# 'LabradorSea', 'NorwegianSea', ]
+
+		av[name]['datadetails']  	= {'name':'','units':'',}
+		av[name]['layers'] 		=  ['layerless',]
+		av[name]['metrics']		= ['metricless',]
+		av[name]['datasource'] 		= ''
+		av[name]['model']		= 'NEMO'
+		av[name]['modelgrid']		= 'eORCA1'
+		av[name]['gridFile']		= paths.orcaGridfn
+		av[name]['Dimensions']		= 1		
 		
 		
 
