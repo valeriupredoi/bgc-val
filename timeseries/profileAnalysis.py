@@ -256,7 +256,7 @@ class profileAnalysis:
 		else:
 			newmask = 'data/'+self.grid+'_masks_'+r+'.nc'
 
-			if not os.paths.exists(newmask):
+			if not os.path.exists(newmask):
 				makeMaskNC(newmask, [r,], self.grid)
 			nc = Dataset(newmask,'r')
 			self.modelMasks[r] = nc.variables[r][:]
