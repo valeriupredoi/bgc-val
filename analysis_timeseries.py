@@ -263,8 +263,8 @@ def analysis_timeseries(jobID = "u-ab671",
                         #analysisKeys.append('IntPP_OSU')               # OSU Integrated primpary production
                         #####
                         # Physics switches:
-                        #analysisKeys.append('T')                       # WOA Temperature
-                        #analysisKeys.append('S')                        # WOA Salinity
+                        analysisKeys.append('T')                       # WOA Temperature
+                        analysisKeys.append('S')                        # WOA Salinity
                         #analysisKeys.append('MLD')                      # MLD
                         #analysisKeys.append('NorthernTotalIceArea')    # work in progress
                         #analysisKeys.append('SouthernTotalIceArea')    # work in progress
@@ -493,6 +493,10 @@ def analysis_timeseries(jobID = "u-ab671",
 	def applyLandMask(nc,keys):
 		#### works like no change, but applies a mask.
 		return np.ma.masked_where(tlandmask==0,nc.variables[keys[0]][:].squeeze())
+		
+        def applySurfaceMask(nc,keys):
+                #### works like no change, but applies a mask.
+                return np.ma.masked_where(tlandmask[0,:,:]==0, nc.variables[keys[0]][:].squeeze())
 
   	#####
   	# The analysis settings:
@@ -1424,8 +1428,10 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modeldetails'] 	= {'name': name, 'vars':['votemper',], 'convert': applyLandMask,'units':'degrees C'}
 		av[name]['datadetails']  	= {'name': name, 'vars':['t_an',], 'convert': ukp.NoChange,'units':'degrees C'}
 
+                tregions =regionList
+                tregions.extend(['NordicSea', 'LabradorSea', 'NorwegianSea'])
 		av[name]['layers'] 		=  layerList
-		av[name]['regions'] 		= regionList
+		av[name]['regions'] 		= tregions
 		av[name]['metrics']		= metricList
 
 		av[name]['datasource'] 		= 'WOA'
@@ -1583,9 +1589,9 @@ def analysis_timeseries(jobID = "u-ab671",
 				'soicecov':'',
 			   }
 		
-		av[name]['modeldetails'] 	= {'name': name[:], 'vars':[name[:],], 'convert': ukp.NoChange,'units':nasUnits[name][:]}
+		av[name]['modeldetails'] 	= {'name': name[:], 'vars':[name[:],], 'convert': applySurfaceMask, 'units':nasUnits[name][:]}
 
-		av[name]['regions'] 		=  ['NordicSea', 'LabradorSea', 'NorwegianSea']
+		av[name]['regions'] 		=  ['NordicSea', 'LabradorSea', 'NorwegianSea', ]
 
 		av[name]['datadetails']  	= {'name':'','units':'',}
 		av[name]['layers'] 		=  ['layerless',]

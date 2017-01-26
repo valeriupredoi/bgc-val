@@ -1366,7 +1366,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
 				)	
 		####
 		# North Atlantic Salinity
-		for name in ['Salinity',]:
+		for name in ['Salinity','Temperature',]:
 		  if name not in av.keys():continue
 		  for region in nasregionList:
 		    for layer in ['Surface','500m','1000m']:
@@ -1395,7 +1395,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
 					colours		= colours,
 				)
 					
-		assert 0	
+#		assert 0	
 		
 	####
 	# Standard surface:
@@ -1654,7 +1654,7 @@ if __name__=="__main__":
 	if debug:
 
 		colours = {'u-aj237':'green','u-aj287':'purple', 'u-aj289':'blue','u-ai567':'orange'}
-                timeseries_compare(colours, physics=True,bio=False,year0=True,debug=0)
+                timeseries_compare(colours, physics=True,bio=False,year0=False,debug=0)
 
 
 #	        colours = {'u-ah531':'red', 'u-ah847':'orange', 'u-ah846':'blue','u-ah882':'purple', }

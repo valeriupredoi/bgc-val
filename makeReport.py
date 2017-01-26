@@ -922,11 +922,11 @@ def html5Maker(
 		   ]
 		   	
 		regionalFields = [
-                          'Salinity','MLD',
+                          'Salinity','Temperature','MLD',
                           'sowaflup','sohefldo','sofmflup','sosfldow','soicecov',
 			]
 		profileFields = [
-                          'Salinity',
+                          'Salinity','Temperature',
 			]	
 		SectionTitle= 'Level 3 - Salinity time series'
 		hrefs 		= []
@@ -938,7 +938,7 @@ def html5Maker(
 		for key in regionalFields:
 		 	#if physicsOnly and key not in physregionalFields:continue		
 			#if key not in ['Alkalinity','Nitrate']: continue
-			href = 	'L3salinity'+key#+'-'+region
+			href = 	'L3nassalinity'+key#+'-'+region
 			
 			desc = ''
 			if key in ListofCaveats.keys():			desc +=ListofCaveats[key]+'\n'
@@ -1009,7 +1009,7 @@ def html5Maker(
 			for key in profileFields:
 				#if key not in ['Alkalinity','Nitrate']: continue
 
-				href = 	'L1'+plottype+'-'+key#+'-'+region
+				href = 	'L3nas'+plottype+'-'+key#+'-'+region
 			
 				desc = ''
 				if key in ListofCaveats.keys():			desc +=ListofCaveats[key]+'\n'
