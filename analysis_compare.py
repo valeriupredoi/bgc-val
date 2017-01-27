@@ -1699,15 +1699,15 @@ if __name__=="__main__":
 #	CompareTwoRuns('u-aj010_10','u-ai567_10',physics=True,bio=False,yearA='2623',yearB='2077',debug=True)
 #	CompareTwoRuns('u-aj010_10','u-ai567_10',physics=True,bio=False,yearA='2632',yearB='2086',debug=True)	
 
-	
-	CompareTwoRuns('u-ai567','u-aj478',physics=True,bio=False,yearA='2118',yearB='2118',debug=True)	
+        #CompareTwoRuns('u-ai567','u-aj478',physics=True,bio=False,yearA='2107',yearB='2107',debug=True)
+	#CompareTwoRuns('u-ai567','u-aj478',physics=True,bio=False,yearA='2118',yearB='2118',debug=True)	
 		
 #	colours = {'u-ad371':'green',}#'u-aj287':'purple', 'u-aj289':'blue','u-ai567':'orange'}
 #        timeseries_compare(colours, physics=True,bio=False,year0=True,debug=0)	
 
 
 	colours = {'u-aj237':'green','u-aj287':'purple', 'u-aj289':'blue','u-ai567':'orange','u-aj478':'red'}
-        timeseries_compare(colours, physics=True,bio=False,year0=False,debug=1)#False)
+        timeseries_compare(colours, physics=True,bio=False,year0=False,debug=0)#False)
 
 
 #	        colours = {'u-ah531':'red', 'u-ah847':'orange', 'u-ah846':'blue','u-ah882':'purple', }

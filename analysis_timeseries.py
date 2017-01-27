@@ -287,7 +287,7 @@ def analysis_timeseries(jobID = "u-ab671",
 
                        	#analysisKeys.append('ZonalCurrent')             # Zonal Veloctity
                        	#analysisKeys.append('MeridionalCurrent')        # Meridional Veloctity
-                       	analysisKeys.append('VerticalCurrent')          # Vertical Veloctity
+                       	#analysisKeys.append('VerticalCurrent')          # Vertical Veloctity
                        	
 			#analysisKeys.append('sowaflup')			# Net Upward Water Flux 
 			#analysisKeys.append('sohefldo')			# Net downward Water Flux 			
