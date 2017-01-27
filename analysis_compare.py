@@ -1654,16 +1654,20 @@ def CompareTwoRuns(jobIDA,jobIDB,physics=True,bio=False,yearA='',yearB='',debug=
 		lons = ncA.variables['nav_lon'][:]
 				
 		for key in keys:
+			dataA=0.
+			dataB=0.
 			if key in alwaysInclude: continue
 			if key in ['bounds_lon', 'bounds_lat']:continue
 			if ncA.variables[key].ndim==4:
 				dataA = ncA.variables[key][0,0,:,:]
 				dataB = ncB.variables[key][0,0,:,:]			
 
-			if ncA.variables[key].ndim==3:
+			elif ncA.variables[key].ndim==3:
 				dataA = ncA.variables[key][0,:,:]
 				dataB = ncB.variables[key][0,:,:]	
-
+			else:
+				assert 0
+				
 			dmin = min([dataA.min(),dataB.min()])
 			dmax = max([dataA.max(),dataB.max()])
 
