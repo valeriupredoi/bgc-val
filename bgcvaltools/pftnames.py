@@ -157,7 +157,8 @@ def makeLongNameDict():
         lnd['sofmflup']  = "Water flux due to freezing/melting" 
         lnd['sosfldow']  = "Downward salt flux" 
         lnd['soicecov']  = "Ice Fraction" 
-        
+        lnd['sossheig']  = "Sea Surface Height" 
+                
 	lnd['exportRatio'] = "Export Ratio"  
 	lnd['LocalExportRatio'] = "Export Ratio"  		
 	
