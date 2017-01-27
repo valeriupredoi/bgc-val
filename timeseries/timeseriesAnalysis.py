@@ -102,11 +102,6 @@ class timeseriesAnalysis:
 	self.shelvefn_insitu	= ukp.folder(self.workingDir)+'_'.join([self.jobID,self.dataType,])+'_insitu.shelve'
 
 	#####
-	# Load Data file
-	self.__madeDataArea__ = False
- 	self.loadData()
-	
-	#####
 	# Load Model File
 	self.loadModelWeightsDict()
   	self.loadModel()  	
@@ -115,6 +110,12 @@ class timeseriesAnalysis:
 	#####
 	# return Model data without making new images
 	if self.noNewFiles: return
+
+        #####
+        # Load Data file
+        self.__madeDataArea__ = False
+        self.loadData()
+
 	
 	#####
 	# Make the plots:

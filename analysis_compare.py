@@ -114,7 +114,9 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
 		analysisKeys.append('sohefldo')			# Net downward Water Flux 			
 		analysisKeys.append('sofmflup')			# Water flux due to freezing/melting
 		analysisKeys.append('sosfldow')			# Downward salt flux
-		analysisKeys.append('soicecov')			# Ice fraction			               	
+		analysisKeys.append('soicecov')			# Ice fraction			               
+                analysisKeys.append('sossheig')                 # SSH
+
 		
 	if bio:
 		analysisKeys.append('TotalAirSeaFlux')          # work in progress              
@@ -146,7 +148,10 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
 #		analysisKeys.append('DiaFrac')
 #                analysisKeys.append('AMOC_26N')
 #                analysisKeys.append('MLD')
-                analysisKeys.append('ADRC_26N')                # AMOC 26N                        
+#                analysisKeys.append('ADRC_26N')                # AMOC 26N                        
+                analysisKeys.append('VerticalCurrent')          # Vertical Veloctity           
+                analysisKeys.append('sossheig')                 # SSH
+
 	
 #                analysisKeys.append('GlobalMeanTemperature')
 #               	analysisKeys.append('quickSST')    		# Area Weighted Mean Surface Temperature
@@ -1277,7 +1282,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
 		#sofmflup = "Water flux due to freezing/melting" ;
 		#sosfldow = "Downward salt flux" ;
 			
-		naskeys = ['sowaflup','sohefldo','sofmflup','sosfldow','soicecov']
+		naskeys = ['sowaflup','sohefldo','sofmflup','sosfldow','soicecov','sossheig']
 		if len(set(naskeys).intersection(set(analysisKeys))):
 		    for name in naskeys:
 		    	if name not in analysisKeys:continue
@@ -1303,7 +1308,8 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
 					'sohefldo':"W/m2",
 					'sofmflup':"kg/m2/s",
 					'sosfldow':"PSU/m2/s",
-					'soicecov':'',					
+					'soicecov':'',				
+					'sossheig':'m',
 				   }
 		
 			av[name]['modeldetails'] 	= {'name': name[:], 'vars':[name[:],], 'convert': ukp.NoChange,'units':nasUnits[name][:]}
@@ -1362,7 +1368,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
 				clean 		= False,
 				noNewFiles	= True,
 			)
-			dataD[(jobID,name )] = tsa.dataD
+			#dataD[(jobID,name )] = tsa.dataD
 			modeldataD[(jobID,name )] = tsa.modeldataD
 	
 	#####
@@ -1378,7 +1384,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
 				'NordicSea', 'LabradorSea', 'NorwegianSea'
 				]
 					
-		for name in ['sowaflup','sohefldo','sofmflup','sosfldow','soicecov','MLD',]:
+		for name in ['sowaflup','sohefldo','sofmflup','sosfldow','soicecov','MLD','sossheig',]:
 		  if name not in av.keys():continue
 		  for region in nasregionList:
 		    for layer in ['layerless',]:
@@ -1464,7 +1470,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
 				mdata = modeldataD[(jobID,name )][('Global', 'layerless', 'mean')]
 				title = ' '.join(['Global', getLongName(name)])	
 						
-			elif name in [ 'sowaflup','sohefldo','sofmflup','sosfldow', 'soicecov',]:continue
+			elif name in [ 'sowaflup','sohefldo','sofmflup','sosfldow','sossheig', 'soicecov',]:continue
 				#####
 				# Special hack for these guys.
 				#nasregionList	= ['NordicSea', 'LabradorSea', 'NorwegianSea'	]			
@@ -1521,7 +1527,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
                                         arrD[j][i] =d/1000000.
 		
 		for ts in ['Together',]:#'Separate']:
-		    for ls in ['Both','movingaverage','DataOnly']:#'','Both',]:			
+		    for ls in ['DataOnly',]:#'','Both',]:			
                         if ls=='' and name not in level3: continue
 
 			tsp.multitimeseries(
@@ -1701,7 +1707,7 @@ if __name__=="__main__":
 
 
 	colours = {'u-aj237':'green','u-aj287':'purple', 'u-aj289':'blue','u-ai567':'orange','u-aj478':'red'}
-        timeseries_compare(colours, physics=True,bio=False,year0=False,debug=False)
+        timeseries_compare(colours, physics=True,bio=False,year0=False,debug=1)#False)
 
 
 #	        colours = {'u-ah531':'red', 'u-ah847':'orange', 'u-ah846':'blue','u-ah882':'purple', }

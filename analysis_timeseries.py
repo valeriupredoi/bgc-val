@@ -63,7 +63,7 @@ timeseriesKeys = ['T','S','MLD',
 		  'OMZThickness', 'TotalOMZVolume','OMZMeanDepth',
 		  'AMOC_26N','AMOC_32S','ADRC_26N',
 		  'ZonalCurrent','MeridionalCurrent','VerticalCurrent',
-   		  'sowaflup','sohefldo','sofmflup','sosfldow','soicecov'
+   		  'sowaflup','sohefldo','sofmflup','sosfldow','soicecov','sossheig',
 		  ]
 timeseriesDict = {i:n for i,n in enumerate(timeseriesKeys)}
 
@@ -75,7 +75,7 @@ level1Keys = ['N', 'Si','O2','Alk','DIC','AirSeaFlux','TotalAirSeaFluxCO2','IntP
 		'TotalIceExtent', 'NorthernTotalIceExtent','SouthernTotalIceExtent','DrakePassageTransport',
 		'AMOC_26N','AMOC_32S','ADRC_26N',
 		'ZonalCurrent','MeridionalCurrent','VerticalCurrent',
-		'sowaflup','sohefldo','sofmflup','sosfldow','soicecov']
+		'sowaflup','sohefldo','sofmflup','sosfldow','soicecov','sossheig']
 level1KeysDict = {i:n for i,n in enumerate(level1Keys)}
 
 
@@ -91,7 +91,7 @@ physKeys  = ['T', 'GlobalMeanTemperature',
 		'TotalIceExtent', 'NorthernTotalIceExtent','SouthernTotalIceExtent',
 		'DrakePassageTransport','AMOC_26N','AMOC_32S','ADRC_26N',
 		'ZonalCurrent','MeridionalCurrent','VerticalCurrent','IcelessMeanSST',
-		'sowaflup','sohefldo','sofmflup','sosfldow','soicecov']
+		'sowaflup','sohefldo','sofmflup','sosfldow','soicecov','sossheig',]
 physKeysDict = {i:n for i,n in enumerate(physKeys)}
 
 def analysis_timeseries(jobID = "u-ab671",
@@ -237,6 +237,8 @@ def analysis_timeseries(jobID = "u-ab671",
 			analysisKeys.append('sofmflup')			# Water flux due to freezing/melting
 			analysisKeys.append('sosfldow')			# Downward salt flux
 			analysisKeys.append('soicecov')			# Ice fraction
+                        analysisKeys.append('sossheig')                 # Sea surface height
+
 			
 		if analysisSuite.lower() in ['level3',]:
                         analysisKeys.append('DMS_ARAN')                 # DMS Aranami Tsunogai
@@ -268,7 +270,7 @@ def analysis_timeseries(jobID = "u-ab671",
                         # Physics switches:
                         #analysisKeys.append('T')                       # WOA Temperature
                         #analysisKeys.append('S')                        # WOA Salinity
-                        analysisKeys.append('MLD')                      # MLD
+                        #analysisKeys.append('MLD')                      # MLD
                         #analysisKeys.append('NorthernTotalIceArea')    # work in progress
                         #analysisKeys.append('SouthernTotalIceArea')    # work in progress
                         #analysisKeys.append('TotalIceArea')            # work in progress
@@ -277,7 +279,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('SouthernTotalIceExtent')	# work in progress
                         #analysisKeys.append('AMOC_32S')                # AMOC 32S
                         #analysisKeys.append('AMOC_26N')                # AMOC 26N
-                        analysisKeys.append('ADRC_26N')                # AMOC 26N                        
+                        #analysisKeys.append('ADRC_26N')                # AMOC 26N                        
 
                        	#analysisKeys.append('GlobalMeanTemperature')    # Global Mean Temperature
                        	#analysisKeys.append('IcelessMeanSST')    	# Global Mean Surface Temperature with no ice
@@ -285,13 +287,15 @@ def analysis_timeseries(jobID = "u-ab671",
 
                        	#analysisKeys.append('ZonalCurrent')             # Zonal Veloctity
                        	#analysisKeys.append('MeridionalCurrent')        # Meridional Veloctity
-                       	#analysisKeys.append('VerticalCurrent')          # Vertical Veloctity
+                       	analysisKeys.append('VerticalCurrent')          # Vertical Veloctity
                        	
 			#analysisKeys.append('sowaflup')			# Net Upward Water Flux 
 			#analysisKeys.append('sohefldo')			# Net downward Water Flux 			
 			#analysisKeys.append('sofmflup')			# Water flux due to freezing/melting
 			#analysisKeys.append('sosfldow')			# Downward salt flux
 			#analysisKeys.append('soicecov')			# Ice fraction
+                        analysisKeys.append('sossheig')                 # Sea surface height
+
 			#analysisKeys.append('max_soshfldo')		# Max short wave radiation.
 					
                 if analysisSuite.lower() in ['physics',]:
@@ -321,6 +325,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			analysisKeys.append('sofmflup')			# Water flux due to freezing/melting
 			analysisKeys.append('sosfldow')			# Downward salt flux
 			analysisKeys.append('soicecov')			# Ice fraction
+                        analysisKeys.append('sossheig')                 # Sea surface height
 						
 	#####
 	# Some lists of region.
@@ -1547,8 +1552,11 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modeldetails'] 	= {'name': name, 'vars':['vovecrtz',], 'convert': applyLandMask1e6,'units':'um/s'}
 		av[name]['datadetails']  	= {'name': name, 'vars':['dzdt',], 'convert': ukp.NoChange,'units':'um/s'}
 
+                vregions =regionList
+                vregions.extend(['NordicSea', 'LabradorSea', 'NorwegianSea'])
+
 		av[name]['layers'] 		= layerList
-		av[name]['regions'] 		= regionList
+		av[name]['regions'] 		= vregions
 		av[name]['metrics']		= metricList
 
 		av[name]['datasource'] 		= 'GODAS'
@@ -1568,7 +1576,7 @@ def analysis_timeseries(jobID = "u-ab671",
         #sofmflup = "Water flux due to freezing/melting" ;
         #sosfldow = "Downward salt flux" ;
         	
-	naskeys = ['sowaflup','sohefldo','sofmflup','sosfldow','soicecov']
+	naskeys = ['sowaflup','sohefldo','sofmflup','sosfldow','soicecov','sossheig',]
 	if len(set(naskeys).intersection(set(analysisKeys))):
 	    for name in naskeys:
 	    	if name not in analysisKeys:continue
@@ -1595,6 +1603,7 @@ def analysis_timeseries(jobID = "u-ab671",
 				'sofmflup':"kg/m2/s",
 				'sosfldow':"PSU/m2/s",
 				'soicecov':'',
+				'sossheig':'m',
 			   }
 		
 		av[name]['modeldetails'] 	= {'name': name[:], 'vars':[name[:],], 'convert': applySurfaceMask, 'units':nasUnits[name][:]}
