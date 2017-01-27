@@ -142,7 +142,8 @@ def makeLongNameDict():
         lnd['AMOC'] = "AMOC"
   	lnd['AMOC_26N'] = "AMOC 26N"     	
   	lnd['AMOC_32S'] = "AMOC 32S"     	  	
-
+  	lnd['ADRC_26N'] = "Atlantic Deep Return Current at 26N"    	  	   	
+  	
         lnd['ZonalCurrent'] 	= "Zonal Current"
         lnd['MeridionalCurrent']= "Meridional Current"
         lnd['VerticalCurrent'] 	= "Vertical Current"        
@@ -655,7 +656,8 @@ def getLongName_old(text,debug=False):
   	if text == 'DIC500m':	return "DIC (500m deep)"   
 
         if text == 'AMOC':  return "AMOC"
-  	if text == 'AMOC_26N':	return "AMOC 26N"     	
+  	if text == 'AMOC_26N':	return "AMOC 26N"  
+  	if text == 'ADRC_26N':	return "Atlantic Deep Return Current 26N"    	  	   	
   	if text == 'AMOC_32S':	return "AMOC 32S"     	  	
         if text == '26N':  return "26N"
         if text == '32S':  return "32S"
