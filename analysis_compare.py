@@ -1700,7 +1700,7 @@ if __name__=="__main__":
 #	CompareTwoRuns('u-aj010_10','u-ai567_10',physics=True,bio=False,yearA='2632',yearB='2086',debug=True)	
 
 	
-#	CompareTwoRuns('u-ad371','u-ad371',physics=True,bio=True,yearA='1984',yearB='1984',debug=True)	
+	CompareTwoRuns('u-ai567','u-aj478',physics=True,bio=False,yearA='2118',yearB='2118',debug=True)	
 		
 #	colours = {'u-ad371':'green',}#'u-aj287':'purple', 'u-aj289':'blue','u-ai567':'orange'}
 #        timeseries_compare(colours, physics=True,bio=False,year0=True,debug=0)	
