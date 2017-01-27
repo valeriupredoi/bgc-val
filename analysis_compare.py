@@ -101,7 +101,8 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
 	        analysisKeys.append('AMOC_32S')
         	analysisKeys.append('T')                        # WOA Temperature
 	        analysisKeys.append('S')                        # WOA Salinity   
-	         
+                analysisKeys.append('MLD')                      # MLD
+
                	analysisKeys.append('ZonalCurrent')             # Zonal Veloctity
                	analysisKeys.append('MeridionalCurrent')        # Meridional Veloctity
                	analysisKeys.append('VerticalCurrent')          # Vertical Veloctity   	       
@@ -142,7 +143,8 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
 #		analysisKeys.append('CHD')
 #		analysisKeys.append('CHN')
 #		analysisKeys.append('DiaFrac')
-                analysisKeys.append('AMOC_26N')
+#                analysisKeys.append('AMOC_26N')
+                analysisKeys.append('MLD')
 	
 #                analysisKeys.append('GlobalMeanTemperature')
 #               	analysisKeys.append('quickSST')    		# Area Weighted Mean Surface Temperature
@@ -1042,6 +1044,38 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
 			av[name]['gridFile']		= orcaGridfn
 			av[name]['Dimensions']		= 3
 
+		if 'MLD' in analysisKeys:
+
+		        def mldapplymask(nc,keys):
+		                mld = np.ma.array(nc.variables[keys[0]][:])
+		                return np.ma.masked_where((nc.variables[keys[1]][:]==0.)+mld.mask+(mld==1.E9),mld)
+
+
+		        name = 'MLD'
+		        av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)
+		        av[name]['dataFile']            = paths.MLDFolder+"mld_DT02_c1m_reg2.0-annual.nc"       #mld_DT02_c1m_reg2.0.nc"
+
+		        av[name]['modelcoords']         = medusaCoords
+		        av[name]['datacoords']          = mldCoords
+
+		        av[name]['modeldetails']        = {'name': 'mld', 'vars':['somxl010',],   'convert': ukp.NoChange,'units':'m'}
+		        av[name]['datadetails']         = {'name': 'mld', 'vars':['mld','mask',], 'convert': mldapplymask,'units':'m'}
+
+		        av[name]['layers']              = ['layerless',]#'Surface - 1000m','Surface - 300m',]#'depthint']
+		        mldregions =regionList
+		        mldregions.extend(['NordicSea', 'LabradorSea', 'NorwegianSea'])
+		        av[name]['regions']             = mldregions
+		        av[name]['metrics']             = metricList
+
+		        av[name]['datasource']          = 'IFREMER'
+		        av[name]['model']               = 'NEMO'
+
+		        av[name]['modelgrid']           = 'eORCA1'
+		        av[name]['gridFile']            = paths.orcaGridfn
+		        av[name]['Dimensions']          = 2
+
+
+
 		if 'ZonalCurrent' in analysisKeys:
 			name = 'ZonalCurrent'
 			av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_U', paths.ModelFolder_pref, annual)												
@@ -1339,9 +1373,13 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
 		    for layer in ['layerless',]:
 			timesD  = {}
 			arrD	= {}
+			
+			if name in ['',]: metric = 'metricless'
+			else:	metric = 'mean'
+			
 			for jobID in jobs:
-				mdata = modeldataD[(jobID,name )][(region, layer, 'mean')]
-				title = ' '.join([region, layer, 'Mean',  getLongName(name)])
+				mdata = modeldataD[(jobID,name )][(region, layer,metric)]
+				title = ' '.join([getLongName(n) for n in [region, layer, metric, name]])
 				print name, region,layer, jobID, mdata, title
 				print modeldataD[(jobID,name )].keys()
 				
@@ -1411,7 +1449,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
 	 			 	 'ZonalCurrent','MeridionalCurrent','VerticalCurrent']:
 				mdata = modeldataD[(jobID,name )][('Global', 'Surface', 'mean')]
 				title = ' '.join(['Global', 'Surface', 'Mean',  getLongName(name)])
-			elif name in [  'OMZThickness', 'OMZMeanDepth', 'DMS',]:
+			elif name in [  'OMZThickness', 'OMZMeanDepth', 'DMS','MLD']:
 				mdata = modeldataD[(jobID,name )][('Global', 'layerless', 'mean')]
 				title = ' '.join(['Global', getLongName(name)])	
 						
@@ -1640,7 +1678,6 @@ def CompareTwoRuns(jobIDA,jobIDB,physics=True,bio=False,yearA='',yearB='',debug=
 if __name__=="__main__":
 	#colours = {'u-af981':'red', 'u-af982':'orange','u-af983':'blue','u-af984':'purple', }
 	#timeseries_compare(colours)
-	debug = True
 	
 #	CompareTwoRuns('u-aj010_10','u-ai567_10',physics=True,bio=False,yearA='2623',yearB='2077',debug=True)
 #	CompareTwoRuns('u-aj010_10','u-ai567_10',physics=True,bio=False,yearA='2632',yearB='2086',debug=True)	
@@ -1651,30 +1688,21 @@ if __name__=="__main__":
 #	colours = {'u-ad371':'green',}#'u-aj287':'purple', 'u-aj289':'blue','u-ai567':'orange'}
 #        timeseries_compare(colours, physics=True,bio=False,year0=True,debug=0)	
 
-	if debug:
 
-		colours = {'u-aj237':'green','u-aj287':'purple', 'u-aj289':'blue','u-ai567':'orange'}
-                timeseries_compare(colours, physics=True,bio=False,year0=False,debug=0)
+	colours = {'u-aj237':'green','u-aj287':'purple', 'u-aj289':'blue','u-ai567':'orange','u-aj478':'red'}
+        timeseries_compare(colours, physics=True,bio=False,year0=False,debug=False)
 
 
 #	        colours = {'u-ah531':'red', 'u-ah847':'orange', 'u-ah846':'blue','u-ah882':'purple', }
  #               timeseries_compare(colours, physics=True,bio=False,year0=1)
-
-
 #	        colours = {'u-ai945':'green','u-aj010':'purple', }
 #                timeseries_compare(colours, physics=True,bio=False,year0=True,debug=0)
-
 #                colours = {'u-aj073':'green','u-aj010':'purple', 'u-ai567':'blue',}
 #                timeseries_compare(colours, physics=True,bio=False,year0='u-ai567-minus3',debug=0)
-
-                
-	else:
-	        colours = {'u-ag543':'red', 'u-ag914':'orange','u-ae748':'darkblue','u-af983':'blue','u-af984':'purple', }
-        	timeseries_compare(colours, physics=True,bio=False)
-
-	        colours = {'u-ag543':'red', 'u-ag914':'orange', }
-	        timeseries_compare(colours, physics=False,bio=True,debug = debug)
-
-	        colours = {'u-ae748':'darkblue','u-af983':'blue', 'u-ah308':'darkgreen',}    
-	        timeseries_compare(colours, physics=True,bio=False)
+#	        colours = {'u-ag543':'red', 'u-ag914':'orange','u-ae748':'darkblue','u-af983':'blue','u-af984':'purple', }
+#        	timeseries_compare(colours, physics=True,bio=False)
+#	        colours = {'u-ag543':'red', 'u-ag914':'orange', }
+#	        timeseries_compare(colours, physics=False,bio=True,debug = debug)
+#	        colours = {'u-ae748':'darkblue','u-af983':'blue', 'u-ah308':'darkgreen',}    
+#	        timeseries_compare(colours, physics=True,bio=False)
 
