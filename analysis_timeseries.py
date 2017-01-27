@@ -268,7 +268,7 @@ def analysis_timeseries(jobID = "u-ab671",
                         # Physics switches:
                         #analysisKeys.append('T')                       # WOA Temperature
                         #analysisKeys.append('S')                        # WOA Salinity
-                        #analysisKeys.append('MLD')                      # MLD
+                        analysisKeys.append('MLD')                      # MLD
                         #analysisKeys.append('NorthernTotalIceArea')    # work in progress
                         #analysisKeys.append('SouthernTotalIceArea')    # work in progress
                         #analysisKeys.append('TotalIceArea')            # work in progress
@@ -1661,33 +1661,18 @@ def analysis_timeseries(jobID = "u-ab671",
 			return np.ma.masked_where((nc.variables[keys[1]][:]==0.)+mld.mask+(mld==1.E9),mld)
                         #eturn np.ma.masked_where((np.tile(nc.variables[keys[1]][:],(12,1,1))==0.)+mld.mask+(mld==1.E9),mld)
 
-		nc = Dataset(paths.orcaGridfn,'r')
-		depth = nc.variables['nav_lev'][:]#
-		nc.close()
-
-	#	depth10 = x
-	#	ndepth = range(0,50,1)
-	#	ndepth.extend(range(50,80,2))
-	#	ndepth.extend(range(80,110,3))
-	#	ndepth.extend(range(110,200,5))
-	#	ndepth.extend(range(200,500,10))
-	#	ndepth.extend(range(500,1000,50))
-	#	ndepth.extend(range(1000,2000,100))
-	#	ndepth.extend(range(2000,6000,200))
-
-		def calcMLD(nc,keys):
-			#mlds = np.arange(nc.zeros_like(nc.variables[keys[0]][)
-
-			temp = nc.variables[keys[0]][:,:,:,:]
-			f_out = interp1d(depth[7:9],temp[7:9], axis=1)
-			tcrit = 0.2
-			t10m =  f_out(10.)
-			t10m = np.ma.masked_where(t10m>1E20, t10m) - tcrit
-
-			#nc.variables[keys[0]][:,depth10,:,:]
-			# linear regression to extrapolate below this level to find the first?
-			f_out = interp1d(temp, depth, axis=1)
-			#t_out = f_out(newdepth)
+		#nc = Dataset(paths.orcaGridfn,'r')
+		#depth = nc.variables['nav_lev'][:]#
+		#nc.close()
+		#def calcMLD(nc,keys):
+		#	temp = nc.variables[keys[0]][:,:,:,:]
+		#	f_out = interp1d(depth[7:9],temp[7:9], axis=1)
+		#	tcrit = 0.2
+		#	t10m =  f_out(10.)
+		#	t10m = np.ma.masked_where(t10m>1E20, t10m) - tcrit
+		#	# linear regression to extrapolate below this level to find the first?
+		#	f_out = interp1d(temp, depth, axis=1)
+		#	#t_out = f_out(newdepth)
 
 
 
@@ -1702,7 +1687,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modelcoords'] 	= medusaCoords
 		av[name]['datacoords'] 		= mldCoords
 
-		av[name]['modeldetails'] 	= {'name': 'mld', 'vars':['somxl010',],   'convert': ukp.NoChange,'units':'m'}
+		av[name]['modeldetails'] 	= {'name': 'mld', 'vars':['somxl010',],   'convert': applySurfaceMask,'units':'m'}
 		#av[name]['modeldetails'] 	= {'name': 'mld', 'vars':['votemper',],   'convert': calcMLD,'units':'m'}
 		av[name]['datadetails']  	= {'name': 'mld', 'vars':['mld','mask',], 'convert': mldapplymask,'units':'m'}
 
