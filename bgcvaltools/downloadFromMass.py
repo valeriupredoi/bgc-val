@@ -246,8 +246,17 @@ def downloadField(jobID, keys, extension='grid[-_]T', timeslice='m',name='',dryr
                 process = subprocess.Popen(script.split(), stdout=subprocess.PIPE,)#shell=True, executable=shell)
                 output = process.communicate()
 		print "bash out",output
+
+
+######
+# Some spefici wrappers for the downloadField
+def nemoMonthlyIce(jobID):
+	downloadField(jobID, ['soicecov',], extension='grid[-_]T', timeslice='m',dryrun=False)
 	
-	
+def nemoMonthlyMLD(jobID):
+	downloadField(jobID, ['somxl010',], extension='grid[-_]T', timeslice='m',dryrun=False)	
+
+
 def downloadMass(jobID,):
 	"""
 	:param jobID: The job ID
@@ -378,9 +387,22 @@ if __name__=="__main__":
 		keys = argv[2:]
 	except:	keys = []
 	
-	
-	if len(keys):	downloadField(jobID,keys, timeslice='y',dryrun=0)
-	else:		downloadMass(jobID)
+	#####
+	# All yearly files
+	if keys == []:	
+		downloadMass(jobID) 
+	#####
+	# Monthly Ice files
+	elif keys in [['ice',], ['soicecov',],]:
+		nemoMonthlyIce(jobID)
+	#####
+	# Monthly MLD
+	elif keys in [['mld',], ['MLD',],]:
+		nemoMonthlyMLD(jobID)		
+	#####
+	# Other specific monthly files.
+	else:
+		downloadField(jobID,keys, timeslice='m',dryrun=0)
 	
 	
 	
