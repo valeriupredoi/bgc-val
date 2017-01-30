@@ -47,6 +47,19 @@ When run as a script, the command is::
 This tool will only work on machines that have mass enabled.
  
 """
+def folder(name):
+        """ This snippet takes a string, makes the folder and the string.
+            It also accepts lists of strings.
+        """
+        if type(name) == type(['a','b','c']):
+                name='/'.join(name,)
+        if name[-1] != '/':
+                name = name+'/'
+        if os.path.exists(name) is False:
+                os.makedirs(name)
+                print 'makedirs ', name
+        return name
+
 
 def getYearFromFile(fn):
 	""" 
@@ -166,7 +179,7 @@ def downloadField(jobID,keys, extension='grid[-_]T', timeslice='m',dryrun=True):
 	
 	#####
 	# verify time granularity
-	timeslice = str(time).lower()
+	timeslice = str(timeslice).lower()
 	if timeslice in ['monthly','month','1m','m']:ts = 'm'
 	elif timeslice in ['yearly','year','1y','y']:ts = 'y'
 	else: ts = 'y'
@@ -177,7 +190,7 @@ def downloadField(jobID,keys, extension='grid[-_]T', timeslice='m',dryrun=True):
 
 	#####
 	# Verify output folder:		
-	outputFold = ukp.folder(paths.ModelFolder_pref+"/"+jobID)
+	outputFold = folder(paths.ModelFolder_pref+"/"+jobID)
 	
 	print "downloadField:",jobID,keys,timeslice,'being saved to:',outputFold
 
@@ -185,15 +198,15 @@ def downloadField(jobID,keys, extension='grid[-_]T', timeslice='m',dryrun=True):
 	#####
 	# make query file:
 	querytxt = ' -v '.join(keys)
-	queryfile = ukp.folder('queryfiles/'+jobID+'-'.join(keys)+'.txt'
-	qf = open(queryfile)
+	queryfile = folder('queryfiles/')+jobID+'-'.join(keys)+'.txt'
+	qf = open(queryfile,'w')
 	qf.write(querytxt)
 	qf.close()
 	print "downloadField:\tquery text",querytxt
 	
 	#####
 	# moose file path:
-	massfp = "moose:/crum/"+jobID+"/on"+ts+".nc.file/*_1"+ts+"_*"extension".nc"
+	massfp = "moose:/crum/"+jobID+"/on"+ts+".nc.file/*_1"+ts+"_*"+extension+".nc"
 	print "downloadField:\tmoose path:",massfp
 		
 	######
@@ -202,8 +215,17 @@ def downloadField(jobID,keys, extension='grid[-_]T', timeslice='m',dryrun=True):
 	print "running the command:",bashCommand
 	process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
 	output = process.communicate()[0]
-		
-		
+	print "output",output	
+	
+	#####
+	# iterate of listed files:
+	for l,line in enumerate(output.split('\n')):
+		if line in ['', ' ',]:continue 
+	#	print "Downloading from ",l, line	
+                bashCommand = "moo filter "+queryfile+" "+line+" "+outputFold
+                print "running the command:",bashCommand
+#                process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
+#                output = process.communicate()[0]
 		
 	
 def downloadMass(jobID,):

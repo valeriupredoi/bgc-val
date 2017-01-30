@@ -28,8 +28,23 @@
 """
 
 from socket import gethostname
-import UKESMpython as ukp
+#import UKESMpython as ukp
 from getpass import getuser
+import os 
+
+
+def folder(name):
+        """ This snippet takes a string, makes the folder and the string.
+            It also accepts lists of strings.
+        """
+        if type(name) == type(['a','b','c']):
+                name='/'.join(name,)
+        if name[-1] != '/':
+                name = name+'/'
+        if os.path.exists(name) is False:
+                os.makedirs(name)
+                print 'makedirs ', name
+        return name
 
 #####
 # JASMIN
@@ -43,20 +58,20 @@ if gethostname().find('ceda.ac.uk')>-1:
 			
 	#####
 	# Post processed Data location
-	shelvedir 	= ukp.folder("/group_workspaces/jasmin2/ukesm/BGC_data/"+getuser()+"/shelves/")
+	shelvedir 	= folder("/group_workspaces/jasmin2/ukesm/BGC_data/"+getuser()+"/shelves/")
 	
 	#####
 	# Post processed p2p Data location		
-	p2p_ppDir = ukp.folder("/group_workspaces/jasmin2/ukesm/BGC_data/ukesm_postProcessed/")
+	p2p_ppDir = folder("/group_workspaces/jasmin2/ukesm/BGC_data/ukesm_postProcessed/")
 	
 	######
 	# Output location for plots.
-	imagedir	 = ukp.folder('images/')
+	imagedir	 = folder('images/')
 
 	#####
 	# Location of model files.
 	esmvalFolder 	= "/group_workspaces/jasmin2/ukesm/BGC_data/"
-	ModelFolder_pref	= ukp.folder(esmvalFolder)
+	ModelFolder_pref	= folder(esmvalFolder)
 
 	#####
 	# eORCA1 grid		

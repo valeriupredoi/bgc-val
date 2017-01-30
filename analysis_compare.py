@@ -1666,8 +1666,11 @@ def CompareTwoRuns(jobIDA,jobIDB,physics=True,bio=False,yearA='',yearB='',debug=
 				dataA = ncA.variables[key][0,:,:]
 				dataB = ncB.variables[key][0,:,:]	
 			else:
-				assert 0
-				
+				print "can't plot:",key, ncA.variables[key].ndim
+				continue	
+			try:	title = ncA.variables[key].long_name
+			except:	title = getLongName(key) 
+	
 			dmin = min([dataA.min(),dataB.min()])
 			dmax = max([dataA.max(),dataB.max()])
 
@@ -1677,14 +1680,13 @@ def CompareTwoRuns(jobIDA,jobIDB,physics=True,bio=False,yearA='',yearB='',debug=
 			
 			if 0 in [len(la),len(lo),len(data),len(datb)]:continue
 			filename = ukp.folder(imageFolder+'/'+ft)+ft+'-'+key+'.png' 
-			title = key
 			ukp.robinPlotQuad(
 				lo, la,
 				data,
 				datb,
 				filename,
 				titles=[jobIDA+' '+yearA,jobIDB+' '+yearB],
-				title='',
+				title=title,
 				lon0=0.,
 				marble=False,
 				drawCbar=True,
@@ -1703,7 +1705,7 @@ if __name__=="__main__":
 #	CompareTwoRuns('u-aj010_10','u-ai567_10',physics=True,bio=False,yearA='2623',yearB='2077',debug=True)
 #	CompareTwoRuns('u-aj010_10','u-ai567_10',physics=True,bio=False,yearA='2632',yearB='2086',debug=True)	
 
-        #CompareTwoRuns('u-ai567','u-aj478',physics=True,bio=False,yearA='2107',yearB='2107',debug=True)
+#        CompareTwoRuns('u-ai567','u-aj478',physics=True,bio=False,yearA='2107',yearB='2107',debug=True)
 	#CompareTwoRuns('u-ai567','u-aj478',physics=True,bio=False,yearA='2118',yearB='2118',debug=True)	
 		
 #	colours = {'u-ad371':'green',}#'u-aj287':'purple', 'u-aj289':'blue','u-ai567':'orange'}
