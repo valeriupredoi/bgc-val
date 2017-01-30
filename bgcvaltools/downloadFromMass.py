@@ -161,12 +161,14 @@ def findLastFinishedYear(jobID,dividby=1,numberfiles=6):
 	return False
 	#assert 0	
 
-def downloadField(jobID,keys, extension='grid[-_]T', timeslice='m',dryrun=True):
+def downloadField(jobID, keys, extension='grid[-_]T', timeslice='m',name,='phys',dryrun=True):
 	"""
 	:param jobID: The job ID
 	:param keys: a list of fields as they are saved in the Netcdf. (can also be a single string)
 	:param timeslice: The time granularity (monthly or yearly)
 	:param dryrun: does not download files, just prints.
+	:param extension: Nemo style file extension
+	:param name: Name of the analysis group, used for the folder.
 	
 	This tool takes the jobID, the field name, and using the known structure of universally similar MASS and the local filesystem structure
 	from paths.py, downloads the monthly jobID data for the field requested to the local file structure.
@@ -190,15 +192,14 @@ def downloadField(jobID,keys, extension='grid[-_]T', timeslice='m',dryrun=True):
 
 	#####
 	# Verify output folder:		
-	outputFold = folder(paths.ModelFolder_pref+"/"+jobID)
+	outputFold = folder(paths.ModelFolder_pref+"/"+jobID+"/"+name)
 	
-	print "downloadField:",jobID,keys,timeslice,'being saved to:',outputFold
-
+	print "downloadField:",name, jobID,keys,timeslice,'being saved to:',outputFold
 
 	#####
 	# make query file:
 	querytxt = ' -v '.join(keys)
-	queryfile = folder('queryfiles/')+jobID+'-'.join(keys)+'.txt'
+	queryfile = folder('queryfiles/')+name+'.txt'
 	qf = open(queryfile,'w')
 	qf.write(querytxt)
 	qf.close()
@@ -218,15 +219,22 @@ def downloadField(jobID,keys, extension='grid[-_]T', timeslice='m',dryrun=True):
 	print "output",output	
 	
 	#####
-	# iterate of listed files:
+	# create a bash command to download the files:
+	bashCommand ='#!/bin/bash \n'
 	for l,line in enumerate(output.split('\n')):
 		if line in ['', ' ',]:continue 
-	#	print "Downloading from ",l, line	
-                bashCommand = "moo filter "+queryfile+" "+line+" "+outputFold
-                print "running the command:",bashCommand
-#                process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
-#                output = process.communicate()[0]
-		
+		outfn = os.path.basename(line)
+                bashCommand +="\n moo filter "+queryfile+" "+line+" "+outputFold+outfn +' \n'
+        bashCommand+="\necho \"The End of "+jobID +' '+name+"\"\n"
+        print "running the command:\n######\v",bashCommand
+
+	#####
+	# Run the bash command to download the files:        
+        if not dryrun:
+                process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
+                output = process.communicate()[0]
+		print output
+	
 	
 def downloadMass(jobID,):
 	"""
