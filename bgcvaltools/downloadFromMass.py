@@ -251,10 +251,10 @@ def downloadField(jobID, keys, extension='grid[-_]T', timeslice='m',name='',dryr
 ######
 # Some spefici wrappers for the downloadField
 def nemoMonthlyIce(jobID):
-	downloadField(jobID, ['soicecov',], extension='grid[-_]T', timeslice='m',dryrun=False)
+	downloadField(jobID, ['soicecov',], extension='grid[-_]T', timeslice='m',name = 'monthlyIce',dryrun=False)
 	
 def nemoMonthlyMLD(jobID):
-	downloadField(jobID, ['somxl010',], extension='grid[-_]T', timeslice='m',dryrun=False)	
+	downloadField(jobID, ['somxl010',], extension='grid[-_]T', timeslice='m',name = 'monthlyMLD'dryrun=False)	
 
 
 def downloadMass(jobID,):
