@@ -35,7 +35,7 @@ from socket import gethostname
 import os
 from glob import glob
 from re import findall
-
+import paths 
 
 """
 This module includes a series of tools to download the UKESM model run data from MASS.
@@ -148,7 +148,64 @@ def findLastFinishedYear(jobID,dividby=1,numberfiles=6):
 	return False
 	#assert 0	
 
+def downloadField(jobID,keys, extension='grid[-_]T', timeslice='m',dryrun=True):
+	"""
+	:param jobID: The job ID
+	:param keys: a list of fields as they are saved in the Netcdf. (can also be a single string)
+	:param timeslice: The time granularity (monthly or yearly)
+	:param dryrun: does not download files, just prints.
+	
+	This tool takes the jobID, the field name, and using the known structure of universally similar MASS and the local filesystem structure
+	from paths.py, downloads the monthly jobID data for the field requested to the local file structure.
+	
+	This tool will only work on machines that have mass enabled.
+	
+	"""
+	
+	if jobID == '': return
+	
+	#####
+	# verify time granularity
+	timeslice = str(time).lower()
+	if timeslice in ['monthly','month','1m','m']:ts = 'm'
+	elif timeslice in ['yearly','year','1y','y']:ts = 'y'
+	else: ts = 'y'
 
+	#####
+	# verify keys
+	if type(keys) == type('string'): keys = [keys,]
+
+	#####
+	# Verify output folder:		
+	outputFold = ukp.folder(paths.ModelFolder_pref+"/"+jobID)
+	
+	print "downloadField:",jobID,keys,timeslice,'being saved to:',outputFold
+
+
+	#####
+	# make query file:
+	querytxt = ' -v '.join(keys)
+	queryfile = ukp.folder('queryfiles/'+jobID+'-'.join(keys)+'.txt'
+	qf = open(queryfile)
+	qf.write(querytxt)
+	qf.close()
+	print "downloadField:\tquery text",querytxt
+	
+	#####
+	# moose file path:
+	massfp = "moose:/crum/"+jobID+"/on"+ts+".nc.file/*_1"+ts+"_*"extension".nc"
+	print "downloadField:\tmoose path:",massfp
+		
+	######
+	# print files
+	bashCommand = "moo ls "+massfp
+	print "running the command:",bashCommand
+	process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
+	output = process.communicate()[0]
+		
+		
+		
+	
 def downloadMass(jobID,):
 	"""
 	:param jobID: The job ID
@@ -275,7 +332,13 @@ if __name__=="__main__":
 	except:	
 		print "Please provide a jobID"
 		jobID = ''
-	downloadMass(jobID)
+	try:	
+		keys = argv[2:]
+	except:	keys = []
+	
+	
+	if len(keys):	downloadField(jobID,keys, timeslice='y',dryrun=True)
+	else:		downloadMass(jobID)
 	
 	
 	
