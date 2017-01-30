@@ -161,7 +161,7 @@ def findLastFinishedYear(jobID,dividby=1,numberfiles=6):
 	return False
 	#assert 0	
 
-def downloadField(jobID, keys, extension='grid[-_]T', timeslice='m',name,='phys',dryrun=True):
+def downloadField(jobID, keys, extension='grid[-_]T', timeslice='m',name='',dryrun=False):
 	"""
 	:param jobID: The job ID
 	:param keys: a list of fields as they are saved in the Netcdf. (can also be a single string)
@@ -189,6 +189,8 @@ def downloadField(jobID, keys, extension='grid[-_]T', timeslice='m',name,='phys'
 	#####
 	# verify keys
 	if type(keys) == type('string'): keys = [keys,]
+	if len(keys)==1 and name=='':
+		name = keys[0]
 
 	#####
 	# Verify output folder:		
@@ -198,7 +200,7 @@ def downloadField(jobID, keys, extension='grid[-_]T', timeslice='m',name,='phys'
 
 	#####
 	# make query file:
-	querytxt = ' -v '.join(keys)
+	querytxt = '-v '+' '.join(keys)
 	queryfile = folder('queryfiles/')+name+'.txt'
 	qf = open(queryfile,'w')
 	qf.write(querytxt)
@@ -220,20 +222,30 @@ def downloadField(jobID, keys, extension='grid[-_]T', timeslice='m',name,='phys'
 	
 	#####
 	# create a bash command to download the files:
-	bashCommand ='#!/bin/bash \n'
+	shell = '/bin/bash'
+	bashCommand ='#!'+shell+' \n'
 	for l,line in enumerate(output.split('\n')):
 		if line in ['', ' ',]:continue 
 		outfn = os.path.basename(line)
-                bashCommand +="\n moo filter "+queryfile+" "+line+" "+outputFold+outfn +' \n'
+		if os.path.exists(outfn):continue
+                bashCommand +="\nmoo filter "+queryfile+" "+line+" "+outputFold+outfn 
         bashCommand+="\necho \"The End of "+jobID +' '+name+"\"\n"
-        print "running the command:\n######\v",bashCommand
+        print "running the command:\n######\n",bashCommand
+        bashfile = folder('queryfiles/')+jobID+'-'+name+'.sh'
+	print "Saved script as ",bashfile
+        qf = open(bashfile,'w')
+        qf.write(bashCommand)
+        qf.close()
 
+	
 	#####
 	# Run the bash command to download the files:        
         if not dryrun:
-                process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
-                output = process.communicate()[0]
-		print output
+		script = shell +" "+bashfile
+		print script
+                process = subprocess.Popen(script.split(), stdout=subprocess.PIPE,)#shell=True, executable=shell)
+                output = process.communicate()
+		print "bash out",output
 	
 	
 def downloadMass(jobID,):
@@ -367,7 +379,7 @@ if __name__=="__main__":
 	except:	keys = []
 	
 	
-	if len(keys):	downloadField(jobID,keys, timeslice='y',dryrun=True)
+	if len(keys):	downloadField(jobID,keys, timeslice='y',dryrun=0)
 	else:		downloadMass(jobID)
 	
 	
