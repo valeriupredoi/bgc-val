@@ -1710,7 +1710,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		
 		#/group_workspaces/jasmin2/ukesm/BGC_data/u-ad371/monthlyMLD/MetOffice_data_licence.325210916
 		monthlyFiles = glob(paths.ModelFolder_pref+'/'+jobID+'/monthlyMLD/'+jobID+'o_1m_*_grid_T.nc')
-		maxmldfiles = mergeMonthlyFiles(monthlyFiles,outfolder='Annual',cal=medusaCoords['cal'])
+		maxmldfiles = mergeMonthlyFiles(monthlyFiles,outfolder='',cal=medusaCoords['cal'])
 		
 		def mldapplymask(nc,keys):
 			mld = np.ma.array(nc.variables[keys[0]][:]).max(0)

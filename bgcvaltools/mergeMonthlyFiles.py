@@ -52,7 +52,7 @@ def getYearFromFile(fn):
 def getAnnualFilename(files, outfolder,year):
 	#####
 	# determinig filename on the way out
-	if outfolder=='':	outfolder = ukp.folder(files+'/Annual')
+	if outfolder=='':	outfolder = ukp.folder(os.path.dirname(files[0])+'/Annual')
 	
 	mintime = ''
 	maxtime = ''
