@@ -347,6 +347,8 @@ def html5Maker(
                           'AMOC_26N',
                           'ADRC_26N',                          
                           'ZonalCurrent','MeridionalCurrent','VerticalCurrent',
+		  	  'MLD',                          
+                          'MaxMonthlyMLD'
 			 ]
 		lev1physFields = [
                           'Temperature',
@@ -357,7 +359,9 @@ def html5Maker(
                           'DrakePassageTransport',
                           'AMOC_26N',
                           'ADRC_26N',                                                
-		  	  'ZonalCurrent','MeridionalCurrent','VerticalCurrent',			  
+		  	  'ZonalCurrent','MeridionalCurrent','VerticalCurrent',	
+		  	  'MLD',
+		  	  'MaxMonthlyMLD',		  
 			 ]		 
 		SectionTitle= 'Level 1'
 		hrefs 	= []
@@ -462,6 +466,7 @@ def html5Maker(
                           'Temperature', 
                           'Salinity',
                           'ZonalCurrent','MeridionalCurrent','VerticalCurrent',
+                          'MaxMonthlyMLD'                          
                           #'TotalIceArea'
 			]
 		physregionalFields = [
@@ -470,6 +475,7 @@ def html5Maker(
                           'TotalIceArea',
                           'TotalIceExtent',   
                           'ZonalCurrent','MeridionalCurrent','VerticalCurrent',
+                          'MaxMonthlyMLD'                          
 			]			
 		SectionTitle= 'Level 1 - regional'
 		hrefs 		= []
@@ -926,6 +932,7 @@ def html5Maker(
 		regionalFields = [
                           'Salinity','Temperature','MLD',
                           'sowaflup','sohefldo','sofmflup','sosfldow','soicecov',
+                          'MaxMonthlyMLD'                          
 			]
 		profileFields = [
                           'Salinity','Temperature',
