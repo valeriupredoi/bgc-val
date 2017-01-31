@@ -226,9 +226,9 @@ def downloadField(jobID, keys, extension='grid[-_]T', timeslice='m',name='',dryr
 	bashCommand ='#!'+shell+' \n'
 	for l,line in enumerate(output.split('\n')):
 		if line in ['', ' ',]:continue 
-		outfn = os.path.basename(line)
+		outfn = outputFold+os.path.basename(line)
 		if os.path.exists(outfn):continue
-                bashCommand +="\nmoo filter "+queryfile+" "+line+" "+outputFold+outfn 
+                bashCommand +="\nmoo filter "+queryfile+" "+line+" "+outfn 
         bashCommand+="\necho \"The End of "+jobID +' '+name+"\"\n"
         print "running the command:\n######\n",bashCommand
         bashfile = folder('queryfiles/')+jobID+'-'+name+'.sh'
@@ -254,7 +254,7 @@ def nemoMonthlyIce(jobID):
 	downloadField(jobID, ['soicecov',], extension='grid[-_]T', timeslice='m',name = 'monthlyIce',dryrun=False)
 	
 def nemoMonthlyMLD(jobID):
-	downloadField(jobID, ['somxl010',], extension='grid[-_]T', timeslice='m',name = 'monthlyMLD'dryrun=False)	
+	downloadField(jobID, ['somxl010',], extension='grid[-_]T', timeslice='m',name = 'monthlyMLD',dryrun=False)	
 
 
 def downloadMass(jobID,):

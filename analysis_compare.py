@@ -1710,10 +1710,12 @@ if __name__=="__main__":
 		
 #	colours = {'u-ad371':'green',}#'u-aj287':'purple', 'u-aj289':'blue','u-ai567':'orange'}
 #        timeseries_compare(colours, physics=True,bio=False,year0=True,debug=0)	
-
+        colours = {'u-ah882':'green','u-ai611':'purple', 'u-ai661':'blue',}#'u-aj321':'orange',}
+        timeseries_compare(colours, physics=True,bio=False,year0=False,debug=0)#False)
 
 	colours = {'u-aj237':'green','u-aj287':'purple', 'u-aj289':'blue','u-ai567':'orange','u-aj478':'red'}
         timeseries_compare(colours, physics=True,bio=False,year0=False,debug=0)#False)
+
 
 
 #	        colours = {'u-ah531':'red', 'u-ah847':'orange', 'u-ah846':'blue','u-ah882':'purple', }
