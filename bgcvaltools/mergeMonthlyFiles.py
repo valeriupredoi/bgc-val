@@ -50,25 +50,32 @@ def getYearFromFile(fn):
 	return False
 	
 def getAnnualFilename(files, outfolder,year):
+	files = sorted(files)
 	#####
 	# determinig filename on the way out
 	if outfolder=='':	outfolder = ukp.folder(os.path.dirname(files[0])+'/Annual')
 	
 	mintime = ''
 	maxtime = ''
-	basefile = os.path.basename(files[0])
 
-
+	#####
+	# Fiund out the range of file names
 	for f in files:
 		f = os.path.basename(f)
-		a = findall(r'\d\d\d\d\d\d\d\d',f)
-		if mintime==maxtime=='':	mintime,maxtime = a,a
+		startstop = findall(r'\d\d\d\d\d\d\d\d',f)
+		if mintime=='':	mintime = min(startstop)
+		if maxtime=='':	maxtime = max(startstop)
+		if min(startstop) < mintime: mintime = min(startstop)
+		if max(startstop) > maxtime: maxtime = max(startstop)
+
+	#####
+	# Create a fulkename that reflects the new times.
+	basefile = 'Annual-'+os.path.basename(files[0])
+	startstop = findall(r'\d\d\d\d\d\d\d\d',basefile)
+	if len(startstop) ==2:
+		basefile = basefile.replace(startstop[0],mintime)
+		basefile = basefile.replace(startstop[1],maxtime)
 		
-		if a < mintime: mintime = a
-		if a < maxtime: maxtime = a
-		basefile = basefile.replace(str(a),str(year))
-				
-	basefile = basefile.replace('--', '-').replace('__','_')
 	filenameOut = outfolder+basefile
 	return 	filenameOut	
 
@@ -82,7 +89,7 @@ def mergeMonthlyFiles(files,outfolder='',cal='360_day'):
 
 	#####
 	# Load file
-	for fn in files:
+	for fn in sorted(files):
 		yr = getYearFromFile(fn)
 		try:	years[yr].append(fn)
 		except: years[yr] = [fn,]
@@ -95,9 +102,9 @@ def mergeMonthlyFiles(files,outfolder='',cal='360_day'):
 			print "Not enough files in ",yr, len(years[yr])
 			continue
 
-		filenameOut = getAnnualFilename(years[yr], outfolder,yr)
+		filenameOut = getAnnualFilename(yearFiles, outfolder,yr)
 		
-		if  ukp.shouldIMakeFile(years[yr],filenameOut): 
+		if  ukp.shouldIMakeFile(yearFiles,filenameOut): 
 			m = mergeNC( years[yr], filenameOut, [], timeAverage=False,debug=True,calendar=cal)
 		
 		filesOut.append(filenameOut)
