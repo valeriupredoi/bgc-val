@@ -49,6 +49,7 @@ from getpass import getuser
 import UKESMpython as ukp
 from timeseries import timeseriesAnalysis
 from timeseries import profileAnalysis
+from bgcvaltools.mergeMonthlyFiles import mergeMonthlyFiles
 
 #####
 # User defined set of paths pointing towards the datasets.
@@ -271,6 +272,8 @@ def analysis_timeseries(jobID = "u-ab671",
                         #analysisKeys.append('T')                       # WOA Temperature
                         #analysisKeys.append('S')                        # WOA Salinity
                         #analysisKeys.append('MLD')                      # MLD
+                        analysisKeys.append('MaxMonthlyMLD')                      # MLD                        
+                        
                         #analysisKeys.append('NorthernTotalIceArea')    # work in progress
                         #analysisKeys.append('SouthernTotalIceArea')    # work in progress
                         #analysisKeys.append('TotalIceArea')            # work in progress
@@ -294,7 +297,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('sofmflup')			# Water flux due to freezing/melting
 			#analysisKeys.append('sosfldow')			# Downward salt flux
 			#analysisKeys.append('soicecov')			# Ice fraction
-                        analysisKeys.append('sossheig')                 # Sea surface height
+                        #analysisKeys.append('sossheig')                 # Sea surface height
 
 			#analysisKeys.append('max_soshfldo')		# Max short wave radiation.
 					
@@ -488,16 +491,6 @@ def analysis_timeseries(jobID = "u-ab671",
 		else:
 			return sorted(glob(datafolder+jobID+"/"+jobID+"o_1m_*_"+filekey+".nc"))
 
-	#	if z_comp == 'FullDepth':
-	#		if annual:
-	#			files = sorted(glob(datafolder+jobID+"/"+jobID+"o_1y_????????_*[0,5]????_"+filekey+".nc"))
-	#			if len(files)==0:
-	#				files = sorted(glob(datafolder+jobID+"/"+jobID+"o_1y_????????_*????_"+filekey+".nc"))
-	#			return files
-	#		else:
-	#			print "need to figoure out how to implement this."
-	#			assert 0
-#	#			return sorted(glob(MEDUSAFolder_pref+jobID+"/"+jobID+"o_1m_*_"+filekey+".nc"))
 
 	masknc = Dataset(paths.orcaGridfn,'r')
 	tlandmask = masknc.variables['tmask'][:]
@@ -1713,7 +1706,50 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['gridFile']		= paths.orcaGridfn
 		av[name]['Dimensions']		= 2
 
+	if 'MaxMonthlyMLD' in analysisKeys:
+		
+		#/group_workspaces/jasmin2/ukesm/BGC_data/u-ad371/monthlyMLD/MetOffice_data_licence.325210916
+		monthlyFiles = glob(paths.ModelFolder_pref+'/'+jobID+'/monthlyMLD/'+jobID+'o_1m_*_grid_T.nc')
+		maxmldfiles = mergeMonthlyFiles(monthlyFiles,outfolder='Annual',cal=medusaCoords['cal'])
+		
+		def mldapplymask(nc,keys):
+			mld = np.ma.array(nc.variables[keys[0]][:]).max(0)
+			mld = np.ma.masked_where((nc.variables[keys[1]][:]==0.)+mld.mask+(mld==1.E9),mld)
+			return mld
 
+		def mldmonthlymask(nc,keys):
+			mld = np.ma.array(np.ma.abs(nc.variables[keys[0]][:])).max(0)
+			mld = np.ma.masked_where(mld.mask+(mld.data>1.E10),mld)
+			return mld
+					
+                
+		name = 'MaxMonthlyMLD'
+		av[name]['modelFiles']  	= maxmldfiles #listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)
+		av[name]['dataFile'] 		= paths.MLDFolder+"mld_DT02_c1m_reg2.0.nc"	#mld_DT02_c1m_reg2.0.nc"
+
+		av[name]['modelcoords'] 	= medusaCoords
+		av[name]['datacoords'] 		= mldCoords
+
+		av[name]['modeldetails'] 	= {'name': 'mld', 'vars':['somxl010',],   'convert': mldmonthlymask,'units':'m'}
+		av[name]['datadetails']  	= {'name': 'mld', 'vars':['mld','mask',], 'convert': mldapplymask,'units':'m'}
+
+		av[name]['layers'] 		= ['layerless',]
+
+		mldregions =regionList
+		mldregions.extend(['NordicSea', 'LabradorSea', 'NorwegianSea'])		
+		
+		av[name]['regions'] 		= mldregions
+		av[name]['metrics']		= metricList
+
+		av[name]['datasource'] 		= 'IFREMER'
+		av[name]['model']		= 'NEMO'
+
+		av[name]['modelgrid']		= 'eORCA1'
+		av[name]['gridFile']		= paths.orcaGridfn
+		av[name]['Dimensions']		= 2
+		
+		
+		
 
 	icekeys = ['NorthernTotalIceArea','SouthernTotalIceArea','TotalIceArea','NorthernTotalIceExtent','SouthernTotalIceExtent','TotalIceExtent']
 	if len(set(icekeys).intersection(set(analysisKeys))):
