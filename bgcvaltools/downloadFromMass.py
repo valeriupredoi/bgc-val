@@ -246,7 +246,8 @@ def downloadField(jobID, keys, extension='grid[-_]T', timeslice='m',name='',dryr
                 process = subprocess.Popen(script.split(), stdout=subprocess.PIPE,)#shell=True, executable=shell)
                 output = process.communicate()
 		print "bash out",output
-
+		
+	fixFilePaths(outputFold,jobID)
 
 ######
 # Some spefici wrappers for the downloadField
@@ -314,21 +315,23 @@ def downloadMass(jobID,):
 		process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
 		output = process.communicate()[0]
 
+	fixFilePaths(outputFold,jobID)
 
+def fixFilePaths(outputFold,jobID):
 	#####
 	# The coupled model looses the first two characters of the name in the netcdf file.
 	fns = glob(outputFold+"/"+jobID[2:]+"*.nc")
-	print "Looking for", outputFold+"/"+jobID[2:]+"*.nc"
+	print "downloadFromMass:\tfixFilePaths:\tLooking for", outputFold+"/"+jobID[2:]+"*.nc"
 	fns.extend(glob(outputFold+'/MetOffice*'))	# Because ocean assess might use the lisence?	
 	for fn in sorted(fns):
 		#####
         	correctfn = fn.replace('/'+jobID[2:], '/'+jobID)
 	        if os.path.exists(correctfn):
-	        	print "correct path exists.",correctfn
+	        	print "downloadFromMass:\tfixFilePaths:\tcorrect path exists.",correctfn
 	        	continue
-                print "Fixing file prefix",
+                print "downloadFromMass:\tfixFilePaths:\tFixing file prefix",
         	os.symlink(fn,correctfn)
-	        print correctfn
+	        print "downloadFromMass:\tfixFilePaths:\t", correctfn
 
 
         #####
@@ -336,16 +339,16 @@ def downloadMass(jobID,):
 	for pref in ['nemo_','medusa_']:
 		#nemo_u-ai886o_1y_26291201-26301201_grid-V.nc
 	        fns = glob(outputFold+"/"+pref+jobID+"*.nc")
-        	print "Looking for new prefix:",pref, outputFold+"/"+pref+jobID+"*.nc"
+        	print "downloadFromMass:\tfixFilePaths:\tLooking for new prefix:",pref, outputFold+"/"+pref+jobID+"*.nc"
 	        for fn in sorted(fns):
         	        #####
                 	correctfn = os.path.dirname(fn) +'/'+ os.path.basename(fn).replace(pref,'')
 	                if os.path.exists(correctfn):
-        	                print "correct path exists.",correctfn
+        	                print "downloadFromMass:\tfixFilePaths:\tcorrect path exists.",correctfn
                 	        continue
-	                print "Fixing file prefix",pref,
+	                print "downloadFromMass:\tfixFilePaths:\tFixing file prefix",pref,
 	                os.symlink(fn,correctfn)
-        	        print correctfn
+        	        print "downloadFromMass:\tfixFilePaths:\t", correctfn
 
 
         #####
@@ -361,21 +364,21 @@ def downloadMass(jobID,):
 	for badsuff, suff in suffDict.items():
                 #nemo_u-ai886o_1y_26291201-26301201_grid-V.nc
                 fns = glob(outputFold+"/"+jobID+"*"+badsuff+".nc")
-                print "Looking for new suff:",badsuff, outputFold+"/"+jobID+"*"+badsuff+".nc"
+                print "downloadFromMass:\tfixFilePaths:\tLooking for new suff:",badsuff, outputFold+"/"+jobID+"*"+badsuff+".nc"
                 for fn in sorted(fns):
                         #####
                         correctfn = os.path.dirname(fn) +'/'+ os.path.basename(fn).replace(badsuff,suff)
                         if os.path.exists(correctfn):
-                                print "correct path exists.",correctfn
+                                print "downloadFromMass:\tfixFilePaths:\tcorrect path exists.",correctfn
                                 continue
-                        print "Fixing file suffix",badsuff,'->',suff,
+                        print "downloadFromMass:\tfixFilePaths:\tFixing file suffix",badsuff,'->',suff,
                         os.symlink(fn,correctfn)
-                        print correctfn
+                        print "downloadFromMass:\tfixFilePaths:\t", correctfn
 
-	
 	#####
 	# This code looks at symoblic links and points them at their ultimate source, removing the long link chains.
 	for fn in glob(outputFold+'/*'): rebaseSymlinks(fn,dryrun=False)
+
 
 if __name__=="__main__":	
 	
