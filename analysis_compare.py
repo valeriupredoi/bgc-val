@@ -69,18 +69,19 @@ def listModelDataFiles(jobID, filekey, datafolder, annual,year=''):
 		else:
 			return sorted(glob(datafolder+jobID+"/"+jobID+"o_1m_*"+year+"????_"+filekey+".nc"))
 				
-def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
+def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,analysisname=''):
 	### strategy here is a simple wrapper.
 	# It's a little cheat-y, as I'm copying straight from analysis_timeseries.py
 	
-	
-	
-	jobs = sorted(colours.keys())#['u-af725', 'u-af728','u-af420','u-af421', 'u-af586','u-af730','u-ae748']	
+	jobs = sorted(colours.keys())
 
-        imageFolder = 'images/TimeseriesCompare/'
-        if len(jobs)==1:   imageFolder+= jobs[0]
-        elif len(jobs)==2: imageFolder+= jobs[0]+'_and_'+jobs[1]
-        else: 		   imageFolder+= str(len(jobs))+'Runs_'+jobs[0]
+	if analysisname=='':
+		imageFolder = 'images/TimeseriesCompare/'
+        	if len(jobs)==1:   imageFolder+= jobs[0]
+	       	elif len(jobs)==2: imageFolder+= jobs[0]+'_and_'+jobs[1]
+        	else: 		   imageFolder+= str(len(jobs))+'Runs_'+jobs[0]
+	else:
+		imageFolder = 'images/TimeseriesCompare/'+analysisname
 
 
 	annual = True
@@ -170,7 +171,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False):
 	
 	#####
 	# paths:
-	orcaGridfn 	= paths.orcaGridfn#'/group_workspaces/jasmin/esmeval/example_data/bgc/mesh_mask_eORCA1_wrk.nc'
+	orcaGridfn 	= paths.orcaGridfn #'/group_workspaces/jasmin/esmeval/example_data/bgc/mesh_mask_eORCA1_wrk.nc'
 	if annual:	WOAFolder = paths.WOAFolder_annual
 	else:		WOAFolder = paths.WOAFolder	
   	
@@ -1702,21 +1703,67 @@ if __name__=="__main__":
 	#colours = {'u-af981':'red', 'u-af982':'orange','u-af983':'blue','u-af984':'purple', }
 	#timeseries_compare(colours)
 	
-#	CompareTwoRuns('u-aj010_10','u-ai567_10',physics=True,bio=False,yearA='2623',yearB='2077',debug=True)
-#	CompareTwoRuns('u-aj010_10','u-ai567_10',physics=True,bio=False,yearA='2632',yearB='2086',debug=True)	
 
-#        CompareTwoRuns('u-ai567','u-aj478',physics=True,bio=False,yearA='2107',yearB='2107',debug=True)
-	#CompareTwoRuns('u-ai567','u-aj478',physics=True,bio=False,yearA='2118',yearB='2118',debug=True)	
 		
 #	colours = {'u-ad371':'green',}#'u-aj287':'purple', 'u-aj289':'blue','u-ai567':'orange'}
-#        timeseries_compare(colours, physics=True,bio=False,year0=True,debug=0)	
-        colours = {'u-ah882':'green','u-ai611':'purple', 'u-ai661':'blue',}#'u-aj321':'orange',}
+#        timeseries_compare(colours, physics=True,bio=False,year0=True,debug=0)
+
+	#####
+	# These are stephen's runs:	
+#        colours = {'u-ah882':'green','u-ai611':'purple', 'u-ai661':'blue',}#'u-aj321':'orange',}
+#        timeseries_compare(colours, physics=True,bio=False,year0=False,debug=0)#False)
+
+	standards = {
+                'u-ai567':'orange',
+		'u-aj237':'green',
+		'u-aj287':'purple',
+		'u-aj289':'blue',
+		'u-aj478':'red',
+                'u-aj479':'sienna',
+		'u-aj504':'dodgerblue',
+                'u-aj506':'chocolate',
+                'u-aj588':'magenta',
+#                'u-aj618':'brown',
+	}
+
+#       timeseries_compare(standards, physics=True,bio=False,year0=False,debug=0)#False)
+
+
+
+	
+
+ 
+        colours = {i:standards[i] for i in ['u-ai567','u-aj237','u-aj289','u-aj478']}
+        timeseries_compare(colours, physics=True,bio=False,year0=False,debug=0,analysisname='SSSrelax')
+
+        colours = {i:standards[i] for i in ['u-ai567','u-aj289','u-aj588']}
+        timeseries_compare(colours, physics=True,bio=False,year0=False,debug=0,analysisname='TSrelax')
+
+
+        colours = {i:standards[i] for i in ['u-ai567','u-aj289','u-aj504','u-aj506','u-aj479']}
+        timeseries_compare(colours, physics=True,bio=False,year0=False,debug=0,analysisname='MiscFactors')
+
+
+
+
+#        colours = {'u-aj289':'blue','u-aj618':'pink',}
+#        timeseries_compare(colours, physics=True,bio=False,year0=False,debug=0)#False)
+
+        colours = {i:standards[i] for i in ['u-aj289','u-aj478']}
+        timeseries_compare(colours, physics=True,bio=False,year0=False,debug=0,)
+
+
+#        colours = {'u-aj588':'green','u-aj618':'pink'}
+#        timeseries_compare(colours, physics=True,bio=False,year0=False,debug=0)#False)
+
+
+
+#        colours = {'u-aj588':'green','u-aj618':'pink', 'u-aj289':'blue','u-aj478':'red'}
+#        timeseries_compare(colours, physics=True,bio=False,year0=False,debug=0)#False)
+
+
+        colours = {i:standards[i] for i in ['u-ai567','u-aj289','u-aj478','u-aj588']}
         timeseries_compare(colours, physics=True,bio=False,year0=False,debug=0)#False)
-
-	colours = {'u-aj237':'green','u-aj287':'purple', 'u-aj289':'blue','u-ai567':'orange','u-aj478':'red'}
-        timeseries_compare(colours, physics=True,bio=False,year0=False,debug=0)#False)
-
-
 
 #	        colours = {'u-ah531':'red', 'u-ah847':'orange', 'u-ah846':'blue','u-ah882':'purple', }
  #               timeseries_compare(colours, physics=True,bio=False,year0=1)
@@ -1730,4 +1777,3 @@ if __name__=="__main__":
 #	        timeseries_compare(colours, physics=False,bio=True,debug = debug)
 #	        colours = {'u-ae748':'darkblue','u-af983':'blue', 'u-ah308':'darkgreen',}    
 #	        timeseries_compare(colours, physics=True,bio=False)
-
