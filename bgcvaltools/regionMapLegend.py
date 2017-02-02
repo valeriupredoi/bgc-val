@@ -282,6 +282,69 @@ def makeRegionMapNA(regionList):
 		fn = imageFold+'Region_Legend_NorthAtlantic.png'
 		robinPlotCustom(xy, xx, data,fn,'',regionList,drawCbar=False,cbarlabel='',doLog=False,dpi=200,cmapname = c)
 				
+def makeRegionMapYevgeny():
+
+	regionList = ['IrmingerSea', 'YevgenyLabradorSea', 'YevgenyGreenlandIcelandicSeas']
+	
+	plotAll = 0#True	# make plots for all regions
+	imageFold = ukp.folder('images/maps')
+	#####
+	# Load data.
+	nc = Dataset(orcaGridfn,'r')
+	bathy = nc.variables['mbathy'][:]
+	xy = np.ma.masked_where(bathy==0,nc.variables['nav_lat'][:]).compressed()
+	xx = np.ma.masked_where(bathy==0,nc.variables['nav_lon'][:]).compressed()
+	nc.close()
+	
+	cbathy = np.ma.masked_where(bathy==0,bathy).compressed()
+	xt = np.ones_like(cbathy)
+	xz = np.ones_like(cbathy)
+
+	####
+	# Calculate masks, based on lat/lon.
+	masks = {}
+	masks['IrmingerSea'] = ~ukp.makeMask('','NordicSea', xt,xz,xy,xx,cbathy,debug=True)
+
+	#: (i=223,j=251) - (i=247,j=251) - (i=247,j=226) - (i=223,j=226)	
+	lab = np.zeros_like(bathy)
+	lab[226+40:251+40,223:247] = 1
+	masks['YevgenyLabradorSea'] = np.ma.masked_where((bathy==0) ,lab).compressed()
+
+	norw = np.zeros_like(bathy)
+	norw[244+40:272+40,249:282] = 1
+	masks['YevgenyGreenlandIcelandicSeas'] = np.ma.masked_where((bathy==0),norw).compressed()
+		
+	#lab = np.zeros_like(bathy)
+	#lab[226:251,223:247] = 1
+	#masks['YevgenyLabradorSea'] = np.ma.masked_where((bathy==0) ,lab).compressed()
+
+	#norw = np.zeros_like(bathy)
+	#norw[244:272,249:282] = 1
+	#masks['YevgenyGreenlandIcelandicSeas'] = np.ma.masked_where((bathy==0),norw).compressed()
+		
+	
+	#####
+	
+	
+	#####
+	# Turn mask into one field.
+	data = np.zeros_like(cbathy)
+	for i,r in enumerate(regionList):
+		print i,r, masks[r].shape, data.shape
+		data += (i+1)* masks[r]
+		if plotAll:
+			fn = imageFold+'Region_Legend_NA_'+r+'.png'		
+			ukp.robinPlotSingle(xy, xx, masks[r],fn,r,drawCbar=True,cbarlabel='',doLog=False,dpi=100,)
+	data = np.ma.masked_where(data==0,data)
+	
+	#####
+	# Send it to the plotting tool.
+	colourmaps = ['default',]#'rainbow','jet','gist_earth','terrain','ocean','hsv','gist_rainbow','nipy_spectral',]
+	for c in colourmaps:
+		fn = imageFold+'Region_Legend__YevgenyNorthAtlantic.png'
+		robinPlotCustom(xy, xx, data,fn,'',regionList,drawCbar=False,cbarlabel='',doLog=False,dpi=200,cmapname = c)
+	
+	
 
 def makeTransectsMap(proj='robin'):
 	"""
@@ -374,6 +437,8 @@ def makeTransectsMap(proj='robin'):
 	robinPlotTransects(lat, lon, maps,fn, '',legends=transects,drawCbar=False,cbarlabel='',doLog=False,dpi=200,proj=proj)
 
 def main():
+	makeRegionMapYevgeny()			
+
 	makeRegionMapNA(['NordicSea', 'LabradorSea', 'NorwegianSea'])		
 	assert 0					
 	regionList	= [#'Global', 'ignoreInlandSeas',
