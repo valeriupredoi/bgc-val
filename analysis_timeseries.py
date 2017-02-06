@@ -183,14 +183,14 @@ def analysis_timeseries(jobID = "u-ab671",
                 if analysisSuite.lower() in ['keymetricsfirst',]:
 			#####
 			# The crucial metrics that should be run first to be added to the report.
-                        analysisKeys.append('AirSeaFlux')               # work in progress
-                        analysisKeys.append('GlobalExportRatio')        # Export ratio (no data)
+                        #analysisKeys.append('AirSeaFlux')               # work in progress
+                        #analysisKeys.append('GlobalExportRatio')        # Export ratio (no data)
                         analysisKeys.append('DrakePassageTransport')    # DrakePassageTransport
                         analysisKeys.append('AMOC_26N')                 # AMOC 26N
                         analysisKeys.append('TotalIceExtent')           # work in progress
                         analysisKeys.append('NorthernTotalIceExtent')   # work in progress
                         analysisKeys.append('SouthernTotalIceExtent')   # work in progress
-                        analysisKeys.append('IntPP_OSU')                # OSU Integrated primpary production
+                        #analysisKeys.append('IntPP_OSU')                # OSU Integrated primpary production
 
 
                 if analysisSuite.lower() in ['level1',]:

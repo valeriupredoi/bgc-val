@@ -1717,6 +1717,9 @@ if __name__=="__main__":
 #        colours = {'u-ah882':'green','u-ai611':'purple', 'u-ai661':'blue',}#'u-aj321':'orange',}
 #        timeseries_compare(colours, physics=True,bio=False,year0=False,debug=0)#False)
 
+#	CompareTwoRuns('u-ai567','u-aj588',physics=True,bio=False,yearA='2107',yearB='2107',debug=True)
+#        CompareTwoRuns('u-ai567','u-aj588',physics=True,bio=False,yearA='2108',yearB='2108',debug=True)
+
 	standards = {
                 'u-ai567':'orange',
 		'u-aj237':'green',
@@ -1727,7 +1730,7 @@ if __name__=="__main__":
 		'u-aj504':'dodgerblue',
                 'u-aj506':'chocolate',
                 'u-aj588':'magenta',
-#                'u-aj618':'brown',
+                'u-aj613':'brown',
 	}
 
 #       timeseries_compare(standards, physics=True,bio=False,year0=False,debug=0)#False)
@@ -1740,7 +1743,7 @@ if __name__=="__main__":
         colours = {i:standards[i] for i in ['u-ai567','u-aj237','u-aj289','u-aj478']}
         timeseries_compare(colours, physics=True,bio=False,year0=False,debug=0,analysisname='SSSrelax')
 
-        colours = {i:standards[i] for i in ['u-ai567','u-aj289','u-aj588']}
+        colours = {i:standards[i] for i in ['u-ai567','u-aj289','u-aj588','u-aj613']}
         timeseries_compare(colours, physics=True,bio=False,year0=False,debug=0,analysisname='TSrelax')
 
 
