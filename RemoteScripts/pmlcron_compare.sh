@@ -8,9 +8,11 @@ export DISPLAY=':0'
 
 #####
 # parsing job id
-#jobid=${1:-u-ad980}
-#echo jobid=$jobid
-#export jobid=$jobid
+jobid=${1:-compare}
+echo jobid=$jobid
+export jobid=$jobid
 
-ssh -A -X ldemora@jasmin-login1.ceda.ac.uk "/home/users/ldemora/workspace/ukesm-validation/RemoteScripts/runCompareOnSci1.sh"
+ssh -A -X ldemora@jasmin-login1.ceda.ac.uk "/home/users/ldemora/workspace/ukesm-validation/RemoteScripts/helloOnMass.sh $jobid"
+
+ssh -A -X ldemora@jasmin-login1.ceda.ac.uk "/home/users/ldemora/workspace/ukesm-validation/RemoteScripts/runCompareOnSci1.sh $jobid;"
 
