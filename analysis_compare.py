@@ -1670,6 +1670,9 @@ def CompareTwoRuns(jobIDA,jobIDB,physics=True,bio=False,yearA='',yearB='',debug=
 			elif ncA.variables[key].ndim==3:
 				dataA = ncA.variables[key][0,:,:]
 				dataB = ncB.variables[key][0,:,:]	
+			elif ncA.variables[key].ndim==1:
+				dataA = ncA.variables[key][:,:]
+				dataB = ncB.variables[key][:,:]	
 			else:
 				print "can't plot:",key, ncA.variables[key].ndim
 				continue	
