@@ -57,47 +57,89 @@ from bgcvaltools.dataset import dataset
 import paths
 
 
-timeseriesKeys = ['T','S','MLD',
-		  'Chl_pig','Chl_CCI', 'DiaFrac',
-		  'N','Si','O2','Alk','DIC','AirSeaFlux','Iron',
-		  'TotalAirSeaFluxCO2','IntPP_iMarNet','IntPP_OSU',
-		  'PP_OSU','LocalExportRatio','GlobalExportRatio',
-		  'OMZThickness', 'TotalOMZVolume','OMZMeanDepth',
-		  'AMOC_26N','AMOC_32S','ADRC_26N',
-		  'ZonalCurrent','MeridionalCurrent','VerticalCurrent',
-   		  'sowaflup','sohefldo','sofmflup','sosfldow','soicecov','sossheig',
-		  ]
-timeseriesDict = {i:n for i,n in enumerate(timeseriesKeys)}
 
-level1Keys = ['N', 'Si','O2','Alk','DIC','AirSeaFlux','TotalAirSeaFluxCO2','IntPP_OSU','PP_OSU' ,'LocalExportRatio','GlobalExportRatio' ,
-		'TotalOMZVolume','OMZThickness' ,'OMZMeanDepth','Iron',
-		'Dust','TotalDust','TotalDust_nomask','DiaFrac', #'CHN','CHD',
-		'T', 'GlobalMeanTemperature','IcelessMeanSST',
-		'S','MLD','MaxMonthlyMLD',
-		'TotalIceArea', 'NorthernTotalIceArea','SouthernTotalIceArea',
-		'TotalIceExtent', 'NorthernTotalIceExtent','SouthernTotalIceExtent','DrakePassageTransport',
-		'AMOC_26N','AMOC_32S','ADRC_26N',
-		'ZonalCurrent','MeridionalCurrent','VerticalCurrent','WindStress',
-		'sowaflup','sohefldo','sofmflup','sosfldow','soicecov','sossheig']
+#####
+# Biogeochemistry keys
+bgcKeys = []
+if True:
+	bgcKeys.append('N')                        # WOA Nitrate
+	bgcKeys.append('Si')                       # WOA Siliate
+	bgcKeys.append('O2')                       # WOA Oxygen
+	bgcKeys.append('Alk')                      # Glodap Alkalinity
+	bgcKeys.append('DIC')                      # Globap tCO2
+	bgcKeys.append('AirSeaFlux')               # Air Sea Flux
+	bgcKeys.append('TotalAirSeaFluxCO2')       # Total global air sea flux
+	bgcKeys.append('IntPP_OSU')                # OSU Integrated primpary production
+	bgcKeys.append('PP_OSU')                   # OSU Integrated primpary production
+	bgcKeys.append('LocalExportRatio')         # Export ratio (no data)
+	bgcKeys.append('GlobalExportRatio')        # Export ratio (no data)
+	bgcKeys.append('TotalOMZVolume')           # Total Oxygen Minimum zone Volume
+	bgcKeys.append('OMZThickness')             # Oxygen Minimum Zone Thickness
+	bgcKeys.append('OMZMeanDepth')             # Oxygen Minimum Zone mean depth
+	bgcKeys.append('AOU')                      # Apparent Oxygen Usage                         
+	bgcKeys.append('Iron')                     # Iron
+	bgcKeys.append('Dust')                     # Dust
+	bgcKeys.append('TotalDust')                # Total Dust
+	bgcKeys.append('DiaFrac')                  # Diatom Fraction
+bgcKeysDict = {i:n for i,n in enumerate(bgcKeys)}
+
+#####
+# Physical keys
+physKeys = []
+if True:
+	physKeys.append('T')                        	# WOA Temperature
+	physKeys.append('GlobalMeanTemperature')    	# Global Mean Temperature
+	physKeys.append('IcelessMeanSST')    		# Global Mean Surface Temperature with no ice	
+	physKeys.append('S')                        	# WOA Salinity
+	physKeys.append('MLD')				# iFERMER Mixed Layer Depth 
+	#physKeys.append('MaxMonthlyMLD')            	# MLD Monthly max           
+	      			
+	physKeys.append('TotalIceArea')			# work in progress
+	physKeys.append('NorthernTotalIceArea')		# work in progress
+	physKeys.append('SouthernTotalIceArea')		# work in progress
+	physKeys.append('TotalIceExtent')		# work in progress
+	physKeys.append('NorthernTotalIceExtent')	# work in progress
+	physKeys.append('SouthernTotalIceExtent')	# work in progress
+	
+	physKeys.append('DrakePassageTransport')	# DrakePassageTransport
+	physKeys.append('AMOC_32S')                 	# AMOC 32S
+	physKeys.append('AMOC_26N')                 	# AMOC 26N
+	physKeys.append('ADRC_26N')                 	# AMOC 26N                        	                
+	physKeys.append('ZonalCurrent')             	# Zonal Veloctity
+	physKeys.append('MeridionalCurrent')        	# Meridional Veloctity
+	physKeys.append('VerticalCurrent')          	# Vertical Veloctity
+	physKeys.append('WindStress')               	# Wind Stress                        	
+
+	physKeys.append('sowaflup')			# Net Upward Water Flux 
+	physKeys.append('sohefldo')			# Net downward Water Flux 			
+	physKeys.append('sofmflup')			# Water flux due to freezing/melting
+	physKeys.append('sosfldow')			# Downward salt flux
+	physKeys.append('soicecov')			# Ice fraction
+	physKeys.append('sossheig')                 # Sea surface height
+physKeysDict = {i:n for i,n in enumerate(physKeys)}
+
+#####
+# Level 1 keys
+level1Keys = []
+level1Keys.extend(physKeys)
+level1Keys.extend(bgcKeys)
 level1KeysDict = {i:n for i,n in enumerate(level1Keys)}
 
-
-keymetricsfirstKeys = ['TotalAirSeaFluxCO2','IntPP_OSU','GlobalExportRatio',
-                'TotalIceExtent', 'NorthernTotalIceExtent','SouthernTotalIceExtent',
-		'DrakePassageTransport','AMOC_26N',]
+#####
+# The important keys
+keymetricsfirstKeys = [
+		'TotalAirSeaFluxCO2',
+		'IntPP_OSU',
+		'GlobalExportRatio',
+                'TotalIceExtent', 
+                'NorthernTotalIceExtent',
+                'SouthernTotalIceExtent',
+		'DrakePassageTransport',
+		'AMOC_26N',]
 keymetricsfirstDict = {i:n for i,n in enumerate(keymetricsfirstKeys)}
 
 
 
-physKeys  = ['T', 'GlobalMeanTemperature',
-		'S','MLD','MaxMonthlyMLD',
-		'TotalIceArea', 'NorthernTotalIceArea','SouthernTotalIceArea',
-		'TotalIceExtent', 'NorthernTotalIceExtent','SouthernTotalIceExtent',
-		'DrakePassageTransport','AMOC_26N','AMOC_32S','ADRC_26N',
-		'ZonalCurrent','MeridionalCurrent','VerticalCurrent','WindStress',
-		'IcelessMeanSST',
-		'sowaflup','sohefldo','sofmflup','sosfldow','soicecov','sossheig',]
-physKeysDict = {i:n for i,n in enumerate(physKeys)}
 
 def analysis_timeseries(jobID = "u-ab671",
 			clean = 0,
@@ -146,108 +188,19 @@ def analysis_timeseries(jobID = "u-ab671",
 	# These are some preset switches to run in series.
 	if type(analysisSuite) == type('Its_A_string'):
 		analysisKeys = []
-		if analysisSuite.lower() in ['all',]:
-			analysisKeys.append('Chl_CCI')			# CCI Chlorophyll
-			analysisKeys.append('Chl_pig')			# Chlorophyll from pigments (MAREDAT)
-			analysisKeys.append('N')			# WOA Nitrate
-			analysisKeys.append('Si')			# WOA Siliate
-			analysisKeys.append('O2')			# WOA Oxygen
-			analysisKeys.append('Alk')			# Glodap Alkalinity
-			analysisKeys.append('DIC')			# Globap tCO2
-			analysisKeys.append('AirSeaFlux')		# work in progress
-			analysisKeys.append('TotalAirSeaFluxCO2')		# work in progress
-			analysisKeys.append('IntPP_iMarNet')		# Integrated primpary production from iMarNEt
-			analysisKeys.append('IntPP_OSU')		# OSU Integrated primpary production
-			analysisKeys.append('PP_OSU')			# OSU Integrated primpary production
-			analysisKeys.append('LocalExportRatio')		# Export ratio (no data)
-			analysisKeys.append('GlobalExportRatio')	# Export ratio (no data)
-			analysisKeys.append('TotalOMZVolume')		# Total OMZ Volume
-			analysisKeys.append('OMZThickness')		# Total OMZ Volume
-                        analysisKeys.append('Iron') 	            	# Iron
-
-			#####
-			# Physics switches:
-			analysisKeys.append('T')			# WOA Temperature
-			analysisKeys.append('S')			# WOA Salinity
-			analysisKeys.append('MLD')			# iFERMER Mixed Layer Depth - work in prgress
-			analysisKeys.append('TotalIceArea')		# work in progress
-			analysisKeys.append('NorthernTotalIceArea')	# work in progress
-			analysisKeys.append('SouthernTotalIceArea')	# work in progress
-			analysisKeys.append('TotalIceExtent')		# work in progress
-			analysisKeys.append('NorthernTotalIceExtent')	# work in progress
-			analysisKeys.append('SouthernTotalIceExtent')	# work in progress
-			analysisKeys.append('DrakePassageTransport')	# DrakePassageTransport
-			analysisKeys.append('sowaflup')			# Net Upward Water Flux 
-						
-			#####
-			# Switched Off
 
                 if analysisSuite.lower() in ['keymetricsfirst',]:
-			#####
-			# The crucial metrics that should be run first to be added to the report.
-                        #analysisKeys.append('AirSeaFlux')               # work in progress
-                        #analysisKeys.append('GlobalExportRatio')        # Export ratio (no data)
-                        analysisKeys.append('DrakePassageTransport')    # DrakePassageTransport
-                        analysisKeys.append('AMOC_26N')                 # AMOC 26N
-                        analysisKeys.append('TotalIceExtent')           # work in progress
-                        analysisKeys.append('NorthernTotalIceExtent')   # work in progress
-                        analysisKeys.append('SouthernTotalIceExtent')   # work in progress
-                        #analysisKeys.append('IntPP_OSU')                # OSU Integrated primpary production
+			analysisKeys.extend(keymetricsfirstKeys)
 
-
-                if analysisSuite.lower() in ['level1',]:
-                        analysisKeys.append('N')                        # WOA Nitrate
-                        analysisKeys.append('Si')                       # WOA Siliate
-                        analysisKeys.append('O2')                       # WOA Oxygen
-                        analysisKeys.append('Alk')                      # Glodap Alkalinity
-                        analysisKeys.append('DIC')                      # Globap tCO2
-                        analysisKeys.append('AirSeaFlux')               # work in progress
-                        analysisKeys.append('TotalAirSeaFluxCO2')          # work in progress
-                        analysisKeys.append('IntPP_OSU')                # OSU Integrated primpary production
-                        analysisKeys.append('PP_OSU')                   # OSU Integrated primpary production
-                        analysisKeys.append('LocalExportRatio')         # Export ratio (no data)
-                        analysisKeys.append('GlobalExportRatio')        # Export ratio (no data)
-                        analysisKeys.append('TotalOMZVolume')           # Total Oxygen Minimum zone Volume
-                        analysisKeys.append('OMZThickness')             # Oxygen Minimum Zone Thickness
-                        analysisKeys.append('OMZMeanDepth')             # Oxygen Minimum Zone mean depth
-                        analysisKeys.append('AOU')                      # Apparent Oxygen Usage                         
-                        analysisKeys.append('Iron')                     # Iron
-                        analysisKeys.append('Dust')                     # Dust
-                        analysisKeys.append('TotalDust')                # Total Dust
-
-			#analysisKeys.append('CHN')
-			#analysisKeys.append('CHD')
-			#analysisKeys.append('DiaFrac')			# work in progress
-                        #####
-                        # Physics switches:
-                        analysisKeys.append('T')                        # WOA Temperature
-                        analysisKeys.append('S')                        # WOA Salinity
-			analysisKeys.append('MLD')			# iFERMER Mixed Layer Depth - work in prgress
-                        analysisKeys.append('MaxMonthlyMLD')            # MLD                        			
-			analysisKeys.append('TotalIceArea')		# work in progress
-			analysisKeys.append('NorthernTotalIceArea')	# work in progress
-			analysisKeys.append('SouthernTotalIceArea')	# work in progress
-			analysisKeys.append('TotalIceExtent')		# work in progress
-			analysisKeys.append('NorthernTotalIceExtent')	# work in progress
-			analysisKeys.append('SouthernTotalIceExtent')	# work in progress
-			analysisKeys.append('DrakePassageTransport')	# DrakePassageTransport
-                        analysisKeys.append('AMOC_32S')                 # AMOC 32S
-                        analysisKeys.append('AMOC_26N')                 # AMOC 26N
-                        analysisKeys.append('ADRC_26N')              # minimum AMOC 26N                        
-#                       	analysisKeys.append('ZonalCurrent')             # Zonal Veloctity
-#                       	analysisKeys.append('MeridionalCurrent')        # Meridional Veloctity
-#                       	analysisKeys.append('VerticalCurrent')          # Vertical Veloctity
-                       	analysisKeys.append('GlobalMeanTemperature')    # Global Mean Temperature
-                       	analysisKeys.append('IcelessMeanSST')    	# Global Mean Surface Temperature with no ice
-			analysisKeys.append('sowaflup')			# Net Upward Water Flux 
-			analysisKeys.append('sohefldo')			# Net downward Water Flux 			
-			analysisKeys.append('sofmflup')			# Water flux due to freezing/melting
-			analysisKeys.append('sosfldow')			# Downward salt flux
-			analysisKeys.append('soicecov')			# Ice fraction
-                        analysisKeys.append('sossheig')                 # Sea surface height
-
-                        analysisKeys.append('WindStress')               # Wind Stress 
-			
+                if analysisSuite.lower() in ['level1',]: 
+                	analysisKeys.extend(level1Keys)
+					
+                if analysisSuite.lower() in ['bgc',]:
+                	analysisKeys.extend(bgcKeys)
+					
+                if analysisSuite.lower() in ['physics',]:
+                	analysisKeys.extend(physKeys)
+                	
 		if analysisSuite.lower() in ['level3',]:
                         analysisKeys.append('DMS_ARAN')                 # DMS Aranami Tsunogai
 
@@ -309,38 +262,10 @@ def analysis_timeseries(jobID = "u-ab671",
                         #analysisKeys.append('sossheig')                 # Sea surface height
 
 			#analysisKeys.append('max_soshfldo')		# Max short wave radiation.
-					
-                if analysisSuite.lower() in ['physics',]:
+
                         #####
                         # Physics switches:
-                        analysisKeys.append('T')                        # WOA Temperature
-                        analysisKeys.append('S')                        # WOA Salinity
-			analysisKeys.append('MLD')			# iFERMER Mixed Layer Depth 
-#                        analysisKeys.append('MaxMonthlyMLD')            # MLD                        			
-			analysisKeys.append('TotalIceArea')		# work in progress
-			analysisKeys.append('NorthernTotalIceArea')	# work in progress
-			analysisKeys.append('SouthernTotalIceArea')	# work in progress
-			analysisKeys.append('TotalIceExtent')		# work in progress
-			analysisKeys.append('NorthernTotalIceExtent')	# work in progress
-			analysisKeys.append('SouthernTotalIceExtent')	# work in progress
-			analysisKeys.append('DrakePassageTransport')	# DrakePassageTransport
-                        analysisKeys.append('AMOC_32S')                 # AMOC 32S
-                        analysisKeys.append('AMOC_26N')                 # AMOC 26N
-                        analysisKeys.append('ADRC_26N')                 # AMOC 26N                        
-                        
-                       	analysisKeys.append('ZonalCurrent')             # Zonal Veloctity
-                       	analysisKeys.append('MeridionalCurrent')        # Meridional Veloctity
-                       	analysisKeys.append('VerticalCurrent')          # Vertical Veloctity
-                        analysisKeys.append('WindStress')               # Wind Stress                        	
-                       	analysisKeys.append('GlobalMeanTemperature')    # Global Mean Temperature
-                       	analysisKeys.append('IcelessMeanSST')    	# Global Mean Surface Temperature with no ice
-			analysisKeys.append('sowaflup')			# Net Upward Water Flux 
-			analysisKeys.append('sohefldo')			# Net downward Water Flux 			
-			analysisKeys.append('sofmflup')			# Water flux due to freezing/melting
-			analysisKeys.append('sosfldow')			# Downward salt flux
-			analysisKeys.append('soicecov')			# Ice fraction
-                        analysisKeys.append('sossheig')                 # Sea surface height
-						
+
 	#####
 	# Some lists of region.
 	# This are pre-made lists of regions that can be investigated.
@@ -2332,6 +2257,7 @@ def main():
 	elif 'level1' in argv[1:]:suite='level1'
 	elif 'level3' in argv[1:]:suite='level3'
         elif 'physics' in argv[1:]:suite='physics'
+        elif 'bgc' in argv[1:]:suite='bgc'        
 	else:			suite = 'all'
 
 

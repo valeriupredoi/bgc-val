@@ -41,18 +41,12 @@ from multiprocessing import Pool
 
 from bgcvaltools.downloadFromMass import  downloadMass, findLastFinishedYear
 from analysis_timeseries import analysis_timeseries, singleTimeSeries, singleTimeSeriesProfile
-from analysis_timeseries import level1KeysDict, timeseriesDict, physKeysDict,keymetricsfirstDict
+from analysis_timeseries import level1KeysDict, physKeysDict,bgcKeysDict,keymetricsfirstDict
 from analysis_p2p import analysis_p2p, p2pDict_level2, p2pDict_physics,single_p2p
 from makeReport import html5Maker
 from UKESMpython import folder
 
 
-def timeseriesParrallel(index):
-	print "timeseriesParrallel",index, jobID, 'START'
-	key = timeseriesDict[index]
-	singleTimeSeries(jobID, key,)
-	print "timeseriesParrallel",index, jobID, 'SUCESS',key	
-	
 def timeseriesParrallelL1(index):
 	print "timeseriesParrallel",index, jobID, 'START'
 	key = level1KeysDict[index]
@@ -68,12 +62,22 @@ def timeseriesParrallelKMF(index):
 
 def timeseriesParrallelPhys(index):
 	key = physKeysDict[index]
-	print "timeseriesParrallel",index, jobID, 'START',key,index
+	print "timeseriesParrallelPhys",index, jobID, 'START',key,index
 	try:singleTimeSeries(jobID, key,)
 	except:
-		print "timeseriesParrallel failed for",index, jobID, key
+		print "timeseriesParrallelPhys failed for",index, jobID, key
 		assert 0
-	print "timeseriesParrallel",index, jobID, 'SUCESS',key
+	print "timeseriesParrallelPhys",index, jobID, 'SUCESS',key
+
+def timeseriesParrallelBGC(index):
+	key = bgcKeysDict[index]
+	print "timeseriesParrallelBGC",index, jobID, 'START',key,index
+	try:singleTimeSeries(jobID, key,)
+	except:
+		print "timeseriesParrallelBGC failed for",index, jobID, key
+		assert 0
+	print "timeseriesParrallelBGC",index, jobID, 'SUCESS',key	
+	
 	
 def p2pParrallel(index):
 	print "p2pParrallel",index, jobID, 'START'
@@ -137,14 +141,15 @@ def theWholePackage(jobID,year=False,suite = 'level1'):
 	                p.close()
 
 
-		if suite =='all':	remaining = sorted(timeseriesDict.keys())[:]
+		#if suite =='all':	remaining = sorted(timeseriesDict.keys())[:]
 		if suite =='level1':	remaining = sorted(level1KeysDict.keys())[:]
 		if suite =='physics':	remaining = sorted(physKeysDict.keys())[:]		
+		if suite =='bgc':	remaining = sorted(bgcKeysDict.keys())[:]		
 			
 	   	p = Pool(cores)
-	    	if suite =='all':	p.map(timeseriesParrallel,  remaining)
 	    	if suite =='level1':	p.map(timeseriesParrallelL1,remaining)
 	    	if suite =='physics':	p.map(timeseriesParrallelPhys,remaining)	    	
+	    	if suite =='bgc':	p.map(timeseriesParrallelBGC,remaining)	    		    	
 	    	p.close()
 	else:	
 		analysis_timeseries(jobID =jobID,analysisSuite=suite, )#z_component = 'SurfaceOnly',)
