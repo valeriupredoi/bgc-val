@@ -77,7 +77,7 @@ level1Keys = ['N', 'Si','O2','Alk','DIC','AirSeaFlux','TotalAirSeaFluxCO2','IntP
 		'TotalIceArea', 'NorthernTotalIceArea','SouthernTotalIceArea',
 		'TotalIceExtent', 'NorthernTotalIceExtent','SouthernTotalIceExtent','DrakePassageTransport',
 		'AMOC_26N','AMOC_32S','ADRC_26N',
-		'ZonalCurrent','MeridionalCurrent','VerticalCurrent',
+		'ZonalCurrent','MeridionalCurrent','VerticalCurrent','WindStress',
 		'sowaflup','sohefldo','sofmflup','sosfldow','soicecov','sossheig']
 level1KeysDict = {i:n for i,n in enumerate(level1Keys)}
 
@@ -94,7 +94,8 @@ physKeys  = ['T', 'GlobalMeanTemperature',
 		'TotalIceArea', 'NorthernTotalIceArea','SouthernTotalIceArea',
 		'TotalIceExtent', 'NorthernTotalIceExtent','SouthernTotalIceExtent',
 		'DrakePassageTransport','AMOC_26N','AMOC_32S','ADRC_26N',
-		'ZonalCurrent','MeridionalCurrent','VerticalCurrent','IcelessMeanSST',
+		'ZonalCurrent','MeridionalCurrent','VerticalCurrent','WindStress',
+		'IcelessMeanSST',
 		'sowaflup','sohefldo','sofmflup','sosfldow','soicecov','sossheig',]
 physKeysDict = {i:n for i,n in enumerate(physKeys)}
 
@@ -209,6 +210,7 @@ def analysis_timeseries(jobID = "u-ab671",
                         analysisKeys.append('TotalOMZVolume')           # Total Oxygen Minimum zone Volume
                         analysisKeys.append('OMZThickness')             # Oxygen Minimum Zone Thickness
                         analysisKeys.append('OMZMeanDepth')             # Oxygen Minimum Zone mean depth
+                        analysisKeys.append('AOU')                      # Apparent Oxygen Usage                         
                         analysisKeys.append('Iron')                     # Iron
                         analysisKeys.append('Dust')                     # Dust
                         analysisKeys.append('TotalDust')                # Total Dust
@@ -244,6 +246,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			analysisKeys.append('soicecov')			# Ice fraction
                         analysisKeys.append('sossheig')                 # Sea surface height
 
+                        analysisKeys.append('WindStress')               # Wind Stress 
 			
 		if analysisSuite.lower() in ['level3',]:
                         analysisKeys.append('DMS_ARAN')                 # DMS Aranami Tsunogai
@@ -328,6 +331,7 @@ def analysis_timeseries(jobID = "u-ab671",
                        	analysisKeys.append('ZonalCurrent')             # Zonal Veloctity
                        	analysisKeys.append('MeridionalCurrent')        # Meridional Veloctity
                        	analysisKeys.append('VerticalCurrent')          # Vertical Veloctity
+                        analysisKeys.append('WindStress')               # Wind Stress                        	
                        	analysisKeys.append('GlobalMeanTemperature')    # Global Mean Temperature
                        	analysisKeys.append('IcelessMeanSST')    	# Global Mean Surface Temperature with no ice
 			analysisKeys.append('sowaflup')			# Net Upward Water Flux 
