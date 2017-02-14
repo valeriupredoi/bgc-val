@@ -625,7 +625,9 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		name = 'DiaFrac'
 		def caldiafrac(nc,keys):
-			return 100.*nc.variables[keys[0]][:].squeeze()/(nc.variables[keys[0]][:].squeeze()+nc.variables[keys[1]][:].squeeze())
+			chd = applyLandMask(nc,[keys[0],]).squeeze()
+                        chn = applyLandMask(nc,[keys[1],]).squeeze()
+			return 100.*chd/(chd+chn)
 
 		av[name]['modelFiles']  	= listModelDataFiles(jobID, 'ptrc_T', paths.ModelFolder_pref, annual)
 		av[name]['dataFile'] 		= ''
@@ -739,13 +741,13 @@ def analysis_timeseries(jobID = "u-ab671",
 		omzthreshold = 20.
 
 		def modelMeanOMZdepth(nc,keys):
-			o2 = nc.variables[keys[0]][:].squeeze()
+			o2 = np.ma.array(nc.variables[keys[0]][:].squeeze())
 			meandepth = np.ma.masked_where((o2>omzthreshold)+o2.mask + (tmask==0),depths).mean(0)
 			if meandepth.max() in [0.,0]: return np.array([0.,])
 			return np.ma.masked_where(meandepth==0., meandepth)
 
 		def woaMeanOMZdepth(nc,keys):
-			o2 = nc.variables[keys[0]][:].squeeze() *44.661
+			o2 = np.ma.array(nc.variables[keys[0]][:].squeeze() *44.661)
 			pdepths = np.zeros_like(o2)
 			lons = nc.variables['lon'][:]
 			lats = nc.variables['lat'][:]
@@ -804,7 +806,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		if 'OMZThickness50' in analysisKeys: 	omzthreshold = 50.
 
 		def modelOMZthickness(nc,keys):
-			o2 = nc.variables[keys[0]][:].squeeze()
+			o2 = np.ma.array(nc.variables[keys[0]][:].squeeze())
 			totalthick = np.ma.masked_where((o2>omzthreshold)+o2.mask+ (tmask==0),thickness).sum(0).data
 			if totalthick.max() in [0.,0]: return np.array([0.,])
 
@@ -879,7 +881,7 @@ def analysis_timeseries(jobID = "u-ab671",
 
 
 		def woaTotalOMZvol(nc,keys):
-			arr = nc.variables[keys[0]][:].squeeze() *44.661
+			arr = np.ma.array(nc.variables[keys[0]][:].squeeze() *44.661)
 			#area = np.zeros_like(arr[0])
 			pvol = np.zeros_like(arr)
 			#np.ma.masked_wjhere(arr.mask + (arr <0.)+(arr >1E10),np.zeros_like(arr))

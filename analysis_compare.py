@@ -1567,7 +1567,8 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 		arrD	= {}
 		
 		for jobID in jobs:
-			mdata = modeldataD[(jobID,name )][(region, layer, 'mean')]
+			try:	mdata = modeldataD[(jobID,name )][(region, layer, 'mean')]
+			except: continue
 			title = ' '.join([region, layer, 'Mean',  getLongName(name)])
 	
 			timesD[jobID] 	= sorted(mdata.keys())
@@ -1722,26 +1723,33 @@ if __name__=="__main__":
 
 #	CompareTwoRuns('u-ai567','u-aj588',physics=True,bio=False,yearA='2107',yearB='2107',debug=True)
 #        CompareTwoRuns('u-ai567','u-aj588',physics=True,bio=False,yearA='2108',yearB='2108',debug=True)
-
-	standards = {
+        standards = {
+                'u-af981':'black',
+                'u-af982':'purple',
+                'u-af983':'blue',
+                'u-af984':'green',
                 'u-ai567':'orange',
-		'u-aj237':'green',
-		'u-aj287':'purple',
-		'u-aj289':'blue',
-		'u-aj478':'red',
+                'u-aj237':'green',
+                'u-aj287':'purple',
+                'u-aj289':'blue',
+                'u-aj478':'red',
                 'u-aj479':'sienna',
-		'u-aj504':'dodgerblue',
+                'u-aj504':'dodgerblue',
                 'u-aj506':'chocolate',
                 'u-aj588':'magenta',
-                'u-aj613':'brown',
-	}
+                'u-aj613':'springgreen',
+        }
+
 
 #       timeseries_compare(standards, physics=True,bio=False,year0=False,debug=0)#False)
 
 
 
-	
+        colours = {i:standards[i] for i in ['u-aj588','u-aj613',]}
+        timeseries_compare(colours, physics=False,bio=True,year0=False,debug=0,analysisname='Bio')
 
+        colours = {i:standards[i] for i in ['u-aj588','u-aj613','u-af981','u-af982','u-af983','u-af984',]}
+        timeseries_compare(colours, physics=False,bio=True,year0=False,debug=0,analysisname='Bio_oldSpinups')
  
         colours = {i:standards[i] for i in ['u-ai567','u-aj237','u-aj289','u-aj478']}
         timeseries_compare(colours, physics=True,bio=False,year0=False,debug=0,analysisname='SSSrelax')
