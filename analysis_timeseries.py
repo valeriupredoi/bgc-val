@@ -255,12 +255,13 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('TotalOMZVolume')		# work in progress
 			#analysisKeys.append('TotalOMZVolume50')	# work in progress
 			#analysisKeys.append('OMZMeanDepth')		# work in progress
-			#analysisKeys.append('OMZThickness')             # Oxygen Minimum Zone Thickness
+			#analysisKeys.append('OMZThickness')            # Oxygen Minimum Zone Thickness
 			#analysisKeys.append('TotalOMZVolume')		# work in progress
-                        #analysisKeys.append('O2')                       # WOA Oxygen
-                        analysisKeys.append('AOU')                       # Apparent Oxygen Usage 
-                        #analysisKeys.append('Dust')                     # Dust
-                        #analysisKeys.append('TotalDust')                     # Total Dust
+                        #analysisKeys.append('O2')                      # WOA Oxygen
+                        #analysisKeys.append('AOU')                      # Apparent Oxygen Usage 
+                        analysisKeys.append('WindStress')               # Wind Stress                        
+                        #analysisKeys.append('Dust')                    # Dust
+                        #analysisKeys.append('TotalDust')               # Total Dust
                         #analysisKeys.append('TotalDust_nomask')
 			#analysisKeys.append('DIC')			# work in progress
 			#analysisKeys.append('DrakePassageTransport')	# DrakePassageTransport
@@ -509,7 +510,9 @@ def analysis_timeseries(jobID = "u-ab671",
         def applySurfaceMask(nc,keys):
                 #### works like no change, but applies a mask.
                 return np.ma.masked_where(tlandmask[0,:,:]==0, nc.variables[keys[0]][:].squeeze())
-
+                
+	def applyLandMask1e3(nc,keys):
+		return applyLandMask(nc,keys)*1000.
   	#####
   	# The analysis settings:
   	# Below here is a list of analysis settings.
@@ -1531,8 +1534,6 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		av[name]['modelcoords'] 	= medusaUCoords
 		av[name]['datacoords'] 		= godasCoords
-		def applyLandMask1e3(nc,keys):
-			return applyLandMask(nc,keys)*1000.
 		av[name]['modeldetails'] 	= {'name': name, 'vars':['vozocrtx',], 'convert': applyLandMask1e3,'units':'mm/s'}
 		av[name]['datadetails']  	= {'name': name, 'vars':['ucur',], 'convert': ukp.NoChange,'units':'mm/s'}
 
@@ -1548,6 +1549,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['Dimensions']		= 3
 
 
+
 	if 'MeridionalCurrent' in analysisKeys:
 		name = 'MeridionalCurrent'
 		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_V', paths.ModelFolder_pref, annual)
@@ -1556,9 +1558,6 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		av[name]['modelcoords'] 	= medusaVCoords
 		av[name]['datacoords'] 		= godasCoords
-
-		def applyLandMask1e3(nc,keys):
-			return applyLandMask(nc,keys)*1000.
 
 		av[name]['modeldetails'] 	= {'name': name, 'vars':['vomecrty',], 'convert': applyLandMask1e3,'units':'mm/s'}
 		av[name]['datadetails']  	= {'name': name, 'vars':['vcur',], 'convert': ukp.NoChange,'units':'mm/s'}
@@ -1606,7 +1605,40 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['Dimensions']		= 3
 
 
+	if 'WindStress' in analysisKeys:
+		name = 'WindStress'
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_U', paths.ModelFolder_pref, annual)
+		av[name]['dataFile'] 	= ''
+		#paths.GODASFolder+'ucur.clim.nc'
+			
+		def calcwind(nc,keys):
+			taux = applySurfaceMask(nc,['sozotaux',])
+			
+			ncpath = nc.filename
+			newpath=ncpath.replace('grid_U', 'grid_V')		
 
+			nc2 = dataset(newpath,'r')
+			print "Loaded",newpath
+			tauy = applySurfaceMask(nc2,['sometauy',])
+						
+			return np.ma.sqrt(taux*taux + tauy*tauy)
+
+		av[name]['modelcoords'] 	= medusaUCoords
+		av[name]['datacoords'] 		= godasCoords
+
+		av[name]['modeldetails'] 	= {'name': name, 'vars':['sozotaux','sometauy'], 'convert': calcwind,'units':'N/m2'}
+		av[name]['datadetails']  	= {'name': '', 'units':''}
+
+		av[name]['layers'] 		= ['layerless',]
+		av[name]['regions'] 		= regionList
+		av[name]['metrics']		= metricList
+
+		av[name]['datasource'] 		= ''
+		av[name]['model']		= 'NEMO'
+
+		av[name]['modelgrid']		= 'eORCA1'
+		av[name]['gridFile']		= './data/eORCA1_gridU_mesh.nc'
+		av[name]['Dimensions']		= 2
 
 	#####
 	# North Atlantic Salinity
