@@ -84,22 +84,12 @@ def testO2sat():
 def AOU(Temperature,Salinity,Oxygen):
     '''
     calculate apparentl oxygen usage using temperature, salinity and oxygen.
-    
     '''
-    print "AOU", Temperature.mean(),Salinity.mean(),Oxygen.mean()
-    testO2sat()
-    print "AOU mean values:", O2sat(Temperature.mean(),Salinity.mean()) - Oxygen.mean()
-        
     return O2sat(Temperature,Salinity) - Oxygen
-    #
-    #nc_fid = Dataset(nc_P, 'r')
-    #o2 = nc_fid.variables['OXY'][:]
-    #o2 = np.ma.array(o2, mask=o2==0.0) # mask O2
-    #
-    #ap_OU = sat_o2 - Oxygen
-    #return aou
+
     
-    
+if __name__=="__main__":
+   	testO2sat() 
     
     
     

@@ -45,16 +45,23 @@ class dataset:
 	self.filename 	= filename
 	
 	self.dataset = netCDF4.Dataset(filename,'r')
+
 	#####
 	# link to various fields, so that the user experience is similar.
 	self.variables 		= self.dataset.variables	
-	self.title 		= self.dataset.title	
-	self.name 		= self.dataset.name
-	self.dimensions 	= self.dataset.dimensions
-	self.Conventions 	= self.dataset.Conventions
-	self.TimeStamp 		= self.dataset.TimeStamp
-	self.description 	= self.dataset.description				
-	self.ncattrs		= self.dataset.ncattrs
+	self.dimensions 		= self.dataset.dimensions		
+	try:	self.title 		= self.dataset.title	
+	except: self.title		= ''
+	try:	self.name 		= self.dataset.name	
+	except: self.name		= ''
+	try:	self.Conventions 	= self.dataset.Conventions	
+	except: self.Conventions	= ''		
+	try:	self.TimeStamp 		= self.dataset.TimeStamp	
+	except: self.TimeStamp		= ''		
+	try:	self.description 	= self.dataset.description	
+	except: self.description	= ''	
+	try:	self.ncattrs 		= self.dataset.ncattrs	
+	except: self.ncattrs		= ''
 	
 	if not Quiet:print self.__unicode__()	
 			

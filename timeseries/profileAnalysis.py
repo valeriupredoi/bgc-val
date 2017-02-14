@@ -31,7 +31,7 @@
 
 import numpy as np
 from shelve import open as shOpen
-from netCDF4 import Dataset,num2date
+from netCDF4 import num2date
 import os
 import shutil
 
@@ -41,6 +41,7 @@ import timeseriesTools as tst
 import timeseriesPlots as tsp 
 from bgcvaltools.makeEORCAmasks import makeMaskNC
 from bgcvaltools.pftnames import getLongName
+from bgcvaltools.dataset import dataset
 
 
 class profileAnalysis:
@@ -179,13 +180,13 @@ class profileAnalysis:
 			self.loadMasks()		
 		
 		print "loadModel:\tloading new file:",self.dataType,fn,
-		nc = Dataset(fn,'r')
+		nc = dataset(fn,'r')
 		ts = tst.getTimes(nc,self.modelcoords)
 		meantime = np.mean(ts)
 		print "\ttime:",meantime
 		
 		#DL = tst.DataLoader(fn,nc,self.modelcoords,self.modeldetails, regions = self.regions, layers = self.layers,)
-		nc = Dataset(fn,'r')
+		nc = dataset(fn,'r')
 		dataAll = ukp.extractData(nc,self.modeldetails).squeeze()
 		
 		for r in self.regions:
@@ -246,7 +247,7 @@ class profileAnalysis:
 	
 	self.modelMasks= {}
 	
-	ncmasks = Dataset(self.maskfn,'r')
+	ncmasks = dataset(self.maskfn,'r')
 	
 	for r in self.regions:
 		if r in ncmasks.variables.keys():
@@ -258,7 +259,7 @@ class profileAnalysis:
 
 			if not os.path.exists(newmask):
 				makeMaskNC(newmask, [r,], self.grid)
-			nc = Dataset(newmask,'r')
+			nc = dataset(newmask,'r')
 			self.modelMasks[r] = nc.variables[r][:]
 			nc.close()			
 			
@@ -323,7 +324,7 @@ class profileAnalysis:
 	###############
 	# Loading data for each region.
 	print "profileAnalysis:\t loadData,\tloading ",self.dataFile
-	nc = Dataset(self.dataFile,'r')
+	nc = dataset(self.dataFile,'r')
 	data = tst.loadData(nc, self.datadetails)
 
 	
@@ -447,12 +448,12 @@ class profileAnalysis:
 
 	#####
 	# create a dictionary of model and data depths and layers.
-  	mnc = Dataset(self.modelFiles[-1],'r')		
+  	mnc = dataset(self.modelFiles[-1],'r')		
 	modelZcoords = {i:z for i,z in enumerate(mnc.variables[self.modelcoords['z']][:])}
   	mnc.close()  
 
 	if self.dataFile:
-	  	dnc = Dataset(self.dataFile,'r')
+	  	dnc = dataset(self.dataFile,'r')
                 if self.debug: print "profileAnalysis:\t makePlots\tOpening", self.dataFile	
 	  	dataZcoords = {i:z for i,z in enumerate(dnc.variables[self.datacoords['z']][:])}
                 if self.debug: print "profileAnalysis:\t makePlots\tOpened", self.dataFile

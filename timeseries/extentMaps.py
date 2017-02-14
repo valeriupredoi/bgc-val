@@ -31,7 +31,7 @@
 
 import numpy as np
 from shelve import open as shOpen
-from netCDF4 import Dataset,num2date
+from netCDF4 import num2date
 import os
 import shutil
 from matplotlib import pyplot, gridspec
@@ -46,6 +46,7 @@ from cartopy import img_transform, feature as cfeature
 #Specific local code:
 import UKESMpython as ukp
 from bgcvaltools.pftnames import getLongName
+from bgcvaltools.dataset import dataset
 import timeseriesTools as tst 
 import timeseriesPlots as tsp 
 
@@ -464,7 +465,7 @@ class extentMaps:
   def run(self,):
   	
   	
- # 	nc = Dataset(self.modelFiles[0],'r')
+ # 	nc = dataset(self.modelFiles[0],'r')
  	print self.modelFiles
  	print self.dataFile
 
@@ -500,7 +501,7 @@ class extentMaps:
 		assert 0
 			    		    	
 		for mfile in self.modelFiles:
-			nc = Dataset(mfile,'r')
+			nc = dataset(mfile,'r')
 			ts = tst.getTimes(nc,self.modelcoords)
 			meantime = int(np.mean(ts))
 			print "\ttime:",meantime

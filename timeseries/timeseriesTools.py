@@ -23,13 +23,14 @@
 # ledm@pml.ac.uk
 
 import numpy as np
-from netCDF4 import Dataset,num2date
+from netCDF4 import num2date
 import os 
 #from pyproj import Proj
 
 #Specific local code:
 import UKESMpython as ukp
 from convertToOneDNC import convertToOneDNC
+from bgcvaltools.dataset import dataset
 
 """
 .. module:: timeseriesTools
@@ -40,12 +41,13 @@ from convertToOneDNC import convertToOneDNC
 
 
 
+
 def getTimes(nc, coords):
 	"""
 	Loads the times from the netcdf.
 	"""
 	if type(nc) == type('filename'):
-		nc = Dataset(nc,'r')
+		nc = dataset(nc,'r')
 	dtimes = num2date(nc.variables[coords['t']][:], nc.variables[coords['t']].units,calendar=coords['cal'])[:]
 	ts = np.array([float(dt.year) + dt.dayofyr/365. for dt in dtimes])
 	return ts
@@ -57,7 +59,7 @@ def loadData(nc,details):
 	"""
 	
 	if type(nc) == type('filename'):
-		nc = Dataset(nc,'r')
+		nc = dataset(nc,'r')
 	return ukp.extractData(nc,details)[:]
 
 
@@ -75,7 +77,7 @@ def ApplyDepthrange(arr,k1,k2):
 		
 def getHorizontalSlice(nc,coords,details,layer,data = ''):
 	if type(nc) == type('filename'):
-		nc = Dataset(nc,'r')
+		nc = dataset(nc,'r')
 	
 	#####
 	# In the case that there is no depth field provided, or the depth field is not the netcdf.
@@ -170,7 +172,7 @@ class DataLoader:
   def __init__(self,fn,nc,coords,details, regions = ['Global',], layers = ['Surface',],data = ''):
   	self.fn = fn
 	if type(nc) == type('filename'):
-		nc = Dataset(fn,'r')  
+		nc = dataset(fn,'r')  
   	self.nc 	= nc
   	self.coords 	= coords
   	self.details 	= details
@@ -401,7 +403,7 @@ class DataLoader:
   	
   
 def makeArea(fn,coordsdict):
-	nc = Dataset(fn,'r')
+	nc = dataset(fn,'r')
 	lats = nc.variables[coordsdict['lat']][:]	
 	lons = nc.variables[coordsdict['lon']][:]	
 	#depths = nc.variables[coordsdict['z']][:]

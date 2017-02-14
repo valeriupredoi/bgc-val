@@ -31,7 +31,7 @@
 
 import numpy as np
 from shelve import open as shOpen
-from netCDF4 import Dataset,num2date
+from netCDF4 import num2date
 import os
 from glob import glob
 import shutil
@@ -48,6 +48,7 @@ from cartopy import img_transform, feature as cfeature
 #Specific local code:
 import UKESMpython as ukp
 from bgcvaltools.pftnames import getLongName
+from bgcvaltools.dataset import dataset
 import timeseriesTools as tst 
 import timeseriesPlots as tsp 
 import paths	
@@ -145,7 +146,7 @@ def findClosest(arr, z,debug=False):
 
 def loadKeyFromFile(fn,coords,nc='',):
 	if nc =='':
-		nc = Dataset(fn,'r')
+		nc = dataset(fn,'r')
 	dtimes = num2date(nc.variables[coords['t']][:], nc.variables[coords['t']].units,calendar=coords['cal'])[:]
 	return str(dtimes[0].year)
 	#return os.path.basename(fn).replace('u-ad371o_1y_','').replace('_ptrc_T.nc','')[:4]
@@ -262,7 +263,7 @@ def contourplot(
 	#####
 	# Load data lats/lons, and data
 	print "Loading:",datafile
-	dnc = Dataset(datafile,'r')
+	dnc = dataset(datafile,'r')
 	dlats 	= dnc.variables[datacoords['lat']][:]
 	dlons 	= dnc.variables[datacoords['lon']][:]	
 	ddepths = dnc.variables[datacoords['z']][:]		
@@ -279,7 +280,7 @@ def contourplot(
 	#####
 	# Load model lats/lons
 	print "Loading:",modelfiles[0]	
-	nc = Dataset(modelfiles[0],'r')
+	nc = dataset(modelfiles[0],'r')
 	lats 	= nc.variables[modelcoords['lat']][:]
 	lons 	= nc.variables[modelcoords['lon']][:]
 	depths 	= nc.variables[modelcoords['z']][:]
@@ -305,7 +306,7 @@ def contourplot(
 	#####
 	# Add model data as a colormesh
 	for fn in modelfiles:
-		nc = Dataset(fn,'r')
+		nc = dataset(fn,'r')
 		o2 	= ukp.extractData(nc, modeldetails)
 		key = loadKeyFromFile(fn,modelcoords,nc=nc,)		
 		nc.close()

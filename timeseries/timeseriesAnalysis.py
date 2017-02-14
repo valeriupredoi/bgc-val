@@ -31,13 +31,14 @@
 
 import numpy as np
 from shelve import open as shOpen
-from netCDF4 import Dataset,num2date
+from netCDF4 import num2date
 import os
 import shutil
 
 #Specific local code:
 import UKESMpython as ukp
 from bgcvaltools.pftnames import getLongName
+from bgcvaltools.dataset import dataset
 import timeseriesTools as tst 
 import timeseriesPlots as tsp 
 #getTimes, loadData
@@ -201,7 +202,7 @@ class timeseriesAnalysis:
 	for fn in self.modelFiles:
 		if fn in readFiles:continue
 		print "loadModel:\tloading new file:",fn,
-		nc = Dataset(fn,'r')
+		nc = dataset(fn,'r')
 		ts = tst.getTimes(nc,self.modelcoords)
 		meantime = np.mean(ts)
 		print "\ttime:",meantime
@@ -332,7 +333,7 @@ class timeseriesAnalysis:
   	Adding Area dictionany for Model.
   	"""
   	  
-	nc = Dataset(self.gridFile,'r')
+	nc = dataset(self.gridFile,'r')
 	tmask = nc.variables['tmask'][:]
 	try:	
 		pvol  = nc.variables['pvol' ][:]	
@@ -370,7 +371,7 @@ class timeseriesAnalysis:
   		self.dataAreaDict = {}
   		return
   	area = tst.makeArea(self.dataFile,self.datacoords)
-	nc = Dataset(self.dataFile,'r')
+	nc = dataset(self.dataFile,'r')
 	lats = nc.variables[self.datacoords['lat']][:]	
 	lons = nc.variables[self.datacoords['lon']][:]	
 	nc.close()
@@ -448,7 +449,7 @@ class timeseriesAnalysis:
 	###############
 	# Loading data for each region.
 	print "timeseriesAnalysis:\t loadData,\tloading ",self.dataFile
-	#nc = Dataset(self.dataFile,'r')
+	#nc = dataset(self.dataFile,'r')
 	#data = tst.loadData(nc, self.datadetails)
 	
 	###############
@@ -684,12 +685,12 @@ class timeseriesAnalysis:
 
 		#####
 		# create a dictionary of model depths and layers.
-	  	mnc = Dataset(self.modelFiles[-1],'r')		
+	  	mnc = dataset(self.modelFiles[-1],'r')		
 		modelZcoords = {i:z for i,z in enumerate(mnc.variables[self.modelcoords['z']][:])}
 	  	mnc.close()  	
 
 		if self.dataFile:
-		  	dnc = Dataset(self.dataFile,'r')	
+		  	dnc = dataset(self.dataFile,'r')	
 		  	dataZcoords = {i:z for i,z in enumerate(dnc.variables[self.datacoords['z']][:])}
 		  	dnc.close()  	
 		else: 	dataZcoords = {}

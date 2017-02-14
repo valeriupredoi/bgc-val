@@ -37,7 +37,6 @@ from sys import argv,exit
 from os.path import exists
 from calendar import month_name
 from socket import gethostname
-from netCDF4 import Dataset
 from glob import glob
 from scipy.interpolate import interp1d
 import numpy as np
@@ -50,6 +49,8 @@ import UKESMpython as ukp
 from timeseries import timeseriesAnalysis
 from timeseries import profileAnalysis
 from bgcvaltools.mergeMonthlyFiles import mergeMonthlyFiles
+from bgcvaltools.AOU import AOU
+from bgcvaltools.dataset import dataset
 
 #####
 # User defined set of paths pointing towards the datasets.
@@ -257,6 +258,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('OMZThickness')             # Oxygen Minimum Zone Thickness
 			#analysisKeys.append('TotalOMZVolume')		# work in progress
                         #analysisKeys.append('O2')                       # WOA Oxygen
+                        analysisKeys.append('AOU')                       # Apparent Oxygen Usage 
                         #analysisKeys.append('Dust')                     # Dust
                         #analysisKeys.append('TotalDust')                     # Total Dust
                         #analysisKeys.append('TotalDust_nomask')
@@ -275,7 +277,7 @@ def analysis_timeseries(jobID = "u-ab671",
                         #analysisKeys.append('T')                       # WOA Temperature
                         #analysisKeys.append('S')                        # WOA Salinity
                         #analysisKeys.append('MLD')                      # MLD
-                        analysisKeys.append('MaxMonthlyMLD')            # MLD                        
+                        #analysisKeys.append('MaxMonthlyMLD')            # MLD                        
                         
                         #analysisKeys.append('NorthernTotalIceArea')    # work in progress
                         #analysisKeys.append('SouthernTotalIceArea')    # work in progress
@@ -496,7 +498,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			return sorted(glob(datafolder+jobID+"/"+jobID+"o_1m_*_"+filekey+".nc"))
 
 
-	masknc = Dataset(paths.orcaGridfn,'r')
+	masknc = dataset(paths.orcaGridfn,'r')
 	tlandmask = masknc.variables['tmask'][:]
 	masknc.close()
 
@@ -722,7 +724,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			print "OMZ Thickness not implemented for monthly data"
 			assert 0
 
-		nc = Dataset(paths.orcaGridfn,'r')
+		nc = dataset(paths.orcaGridfn,'r')
 		depths   	= np.abs(nc.variables['gdepw' ][:])
 		tmask 		= nc.variables['tmask'][:]
 		nc.close()
@@ -786,7 +788,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			print "OMZ Thickness not implemented for monthly data"
 			assert 0
 
-		nc = Dataset(paths.orcaGridfn,'r')
+		nc = dataset(paths.orcaGridfn,'r')
 		thickness   	= nc.variables['e3t' ][:]
 		tmask 		= nc.variables['tmask'][:]
 		nc.close()
@@ -850,7 +852,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			print "OMZ volume not implemented for monthly data"
 			assert 0
 
-		nc = Dataset(paths.orcaGridfn,'r')
+		nc = dataset(paths.orcaGridfn,'r')
 		try:
 			pvol   = nc.variables['pvol' ][:]
 			tmask = nc.variables['tmask'][:]
@@ -903,6 +905,46 @@ def analysis_timeseries(jobID = "u-ab671",
 		av['TotalOMZVolume']['modelgrid']		= 'eORCA1'
 		av['TotalOMZVolume']['gridFile']		= paths.orcaGridfn
 		av['TotalOMZVolume']['Dimensions']		= 1
+
+
+	if 'AOU' in analysisKeys:
+		name = 'AOU'
+		if annual:
+			av[name]['modelFiles']  = listModelDataFiles(jobID, 'ptrc_T', paths.ModelFolder_pref, annual)
+			av[name]['dataFile'] 		=  ''#WOAFolder+'woa13_all_o00_01.nc'
+
+		def modelAOU(nc,keys):
+			o2 =  nc.variables[keys[0]][:]
+			
+			ncpath = nc.filename
+			print ncpath
+
+			newpath=ncpath.replace('ptrc_T', 'grid_T')
+			
+			print "modelAOU:",ncpath, newpath
+			nc2 = dataset(newpath,'r')
+			print "Loaded",newpath
+			temp = nc2.variables['votemper'][:]
+			sal  = nc2.variables['vosaline'][:]			
+			return AOU(temp,sal,o2)
+			
+		av[name]['modelcoords'] 	= medusaCoords
+		av[name]['datacoords'] 		= woaCoords
+
+		av[name]['modeldetails'] 	= {'name': name, 'vars':['OXY','votemper','vosaline'], 'convert': modelAOU,'units':'mmol O2/m^3'}
+		av[name]['datadetails']  	= {'name':'','units':'',}
+
+		av[name]['layers'] 		=  layerList
+		av[name]['regions'] 		= regionList
+		av[name]['metrics']		= metricList
+
+		av[name]['datasource'] 		= ''
+		av[name]['model']		= 'MEDUSA'
+
+		av[name]['modelgrid']		= 'eORCA1'
+		av[name]['gridFile']		= paths.orcaGridfn
+		av[name]['Dimensions']		= 3	
+
 
 	if 'DIC' in analysisKeys:
 
@@ -965,7 +1007,7 @@ def analysis_timeseries(jobID = "u-ab671",
 
 	if 'AirSeaFlux' in analysisKeys:
 
-		#nc = Dataset(paths.orcaGridfn,'r')
+		#nc = dataset(paths.orcaGridfn,'r')
 		#area = nc.variables['e1t'][:]*nc.variables['e2t'][:]
 		#nc.close()
 
@@ -1018,7 +1060,7 @@ def analysis_timeseries(jobID = "u-ab671",
 
 	if 'TotalAirSeaFluxCO2' in analysisKeys:
 		name = 'TotalAirSeaFluxCO2'
-		nc = Dataset(paths.orcaGridfn,'r')
+		nc = dataset(paths.orcaGridfn,'r')
 		area = nc.variables['e1t'][:]*nc.variables['e2t'][:]
 		nc.close()
 
@@ -1104,7 +1146,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['Dimensions']		= 2
 
 	if 'PP_OSU' in analysisKeys:
-		nc = Dataset(paths.orcaGridfn,'r')
+		nc = dataset(paths.orcaGridfn,'r')
 		area = nc.variables['e1t'][:]*nc.variables['e2t'][:]
 		nc.close()
 		def medusadepthInt(nc,keys):
@@ -1132,7 +1174,7 @@ def analysis_timeseries(jobID = "u-ab671",
 
 
 
-		nc = Dataset(av[name]['dataFile'] ,'r')
+		nc = dataset(av[name]['dataFile'] ,'r')
 		lats = nc.variables['latitude'][:]
 		osuareas = np.zeros((1080, 2160))
 		osuarea = (111100. / 6.)**2. # area of a pixel at equator. in m2
@@ -1170,7 +1212,7 @@ def analysis_timeseries(jobID = "u-ab671",
 	# Total
 	if 'IntPP_OSU' in analysisKeys:
 		noOSU = True
-		nc = Dataset(paths.orcaGridfn,'r')
+		nc = dataset(paths.orcaGridfn,'r')
 		area = nc.variables['e1t'][:]*nc.variables['e2t'][:]
 		nc.close()
 		def medusadepthInt(nc,keys):
@@ -1198,7 +1240,7 @@ def analysis_timeseries(jobID = "u-ab671",
 	                av[name]['datadetails']         = {'name': '', 'units':''}
 
 		else:
-			nc = Dataset(av[name]['dataFile'] ,'r')
+			nc = dataset(av[name]['dataFile'] ,'r')
 			lats = nc.variables['latitude'][:]
 			osuareas = np.zeros((1080, 2160))
 			osuarea = (111100. / 6.)**2. # area of a pixel at equator. in m2
@@ -1306,7 +1348,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modelcoords'] 	= medusaCoords
 		av[name]['datacoords'] 		= woaCoords
 
-		nc = Dataset(paths.orcaGridfn,'r')
+		nc = dataset(paths.orcaGridfn,'r')
 		try:
 			pvol   = nc.variables['pvol' ][:]
 			gmttmask = nc.variables['tmask'][:]
@@ -1346,7 +1388,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modelcoords'] 	= medusaCoords
 		av[name]['datacoords'] 		= woaCoords
 
-		nc = Dataset(paths.orcaGridfn,'r')
+		nc = dataset(paths.orcaGridfn,'r')
 		icetmask = nc.variables['tmask'][:]
 		area_full = nc.variables['e2t'][:] * nc.variables['e1t'][:]
 		nc.close()
@@ -1383,7 +1425,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)
 
 
-			nc = Dataset(paths.orcaGridfn,'r')
+			nc = dataset(paths.orcaGridfn,'r')
 			ssttmask = nc.variables['tmask'][0]
 			area = nc.variables['e2t'][:] * nc.variables['e1t'][:]
 			area = np.ma.masked_where(ssttmask==0,area)
@@ -1578,14 +1620,14 @@ def analysis_timeseries(jobID = "u-ab671",
 	    for name in naskeys:
 	    	if name not in analysisKeys:continue
 
-		#nc = Dataset(paths.orcaGridfn,'r')
+		#nc = dataset(paths.orcaGridfn,'r')
 		#area = nc.variables['e2t'][:] * nc.variables['e1t'][:]
 		#tmask = nc.variables['tmask'][0,:,:]
 		#lat = nc.variables['nav_lat'][:,:]
 		#nc.close()
 
 		nas_files = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)
-		nc = Dataset(nas_files[0],'r')
+		nc = dataset(nas_files[0],'r')
 		if name not in nc.variables.keys():
 			print "analysis_timeseries.py:\tWARNING: ",name ,"is not in the model file."
 			continue
@@ -1622,14 +1664,14 @@ def analysis_timeseries(jobID = "u-ab671",
 	    	if name not in analysisKeys:continue
 
 		cutname = name[:].replace('max_','')
-		#nc = Dataset(paths.orcaGridfn,'r')
+		#nc = dataset(paths.orcaGridfn,'r')
 		#area = nc.variables['e2t'][:] * nc.variables['e1t'][:]
 		#tmask = nc.variables['tmask'][0,:,:]
 		#lat = nc.variables['nav_lat'][:,:]
 		#nc.close()
 
 		nas_files = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)
-		nc = Dataset(nas_files[0],'r')
+		nc = dataset(nas_files[0],'r')
 		if cutname not in nc.variables.keys():
 			print "analysis_timeseries.py:\tWARNING: ",cutname ,"is not in the model file."
 			continue
@@ -1667,7 +1709,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			return np.ma.masked_where((nc.variables[keys[1]][:]==0.)+mld.mask+(mld==1.E9),mld)
                         #eturn np.ma.masked_where((np.tile(nc.variables[keys[1]][:],(12,1,1))==0.)+mld.mask+(mld==1.E9),mld)
 
-		#nc = Dataset(paths.orcaGridfn,'r')
+		#nc = dataset(paths.orcaGridfn,'r')
 		#depth = nc.variables['nav_lev'][:]#
 		#nc.close()
 		#def calcMLD(nc,keys):
@@ -1760,7 +1802,7 @@ def analysis_timeseries(jobID = "u-ab671",
 	    for name in icekeys:
 	    	if name not in analysisKeys:continue
 
-		nc = Dataset(paths.orcaGridfn,'r')
+		nc = dataset(paths.orcaGridfn,'r')
 		area = nc.variables['e2t'][:] * nc.variables['e1t'][:]
 		tmask = nc.variables['tmask'][0,:,:]
 		lat = nc.variables['nav_lat'][:,:]
@@ -1839,7 +1881,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		LAT0=79
 		LAT1=109
 
-		nc = Dataset(paths.orcaGridfn,'r')
+		nc = dataset(paths.orcaGridfn,'r')
 		e2u = nc.variables['e2u'][LAT0:LAT1,LON]
 		umask = nc.variables['umask'][:,LAT0:LAT1,LON]
 		nc.close()
@@ -1881,14 +1923,14 @@ def analysis_timeseries(jobID = "u-ab671",
 			if name == 'AMOC_32S': 	latslice = latslice32S
 
 			# Load grid data
-			nc = Dataset(paths.orcaGridfn,'r')
+			nc = dataset(paths.orcaGridfn,'r')
 			e3v[name] = nc.variables['e3v'][:,latslice,:]	# z level height 3D
 			e1v[name] = nc.variables['e1v'][latslice,:]	#
 			tmask[name] = nc.variables['tmask'][:,latslice,:]
 			nc.close()
 
 			# load basin mask
-			nc = Dataset('data/basinlandmask_eORCA1.nc','r')
+			nc = dataset('data/basinlandmask_eORCA1.nc','r')
 			alttmask[name] = nc.variables['tmaskatl'][latslice,:]	# 2D Atlantic mask
 			nc.close()
 
@@ -2028,7 +2070,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modelcoords'] 	= medusaCoords
 		av[name]['datacoords'] 		= medusaCoords
 
-		nc = Dataset(paths.orcaGridfn,'r')
+		nc = dataset(paths.orcaGridfn,'r')
 		masked_area = nc.variables['e2t'][:] * nc.variables['e1t'][:]*nc.variables['tmask'][0]
 		nc.close()
 
@@ -2076,7 +2118,7 @@ def analysis_timeseries(jobID = "u-ab671",
                 av[name]['modelcoords']         = medusaCoords
                 av[name]['datacoords']          = medusaCoords
 
-                nc = Dataset(paths.orcaGridfn,'r')
+                nc = dataset(paths.orcaGridfn,'r')
                 masked_area = nc.variables['e2t'][:] * nc.variables['e1t'][:]*nc.variables['tmask'][0]
                 nc.close()
 
