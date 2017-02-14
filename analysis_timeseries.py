@@ -73,7 +73,7 @@ level1Keys = ['N', 'Si','O2','Alk','DIC','AirSeaFlux','TotalAirSeaFluxCO2','IntP
 		'TotalOMZVolume','OMZThickness' ,'OMZMeanDepth','Iron',
 		'Dust','TotalDust','TotalDust_nomask','DiaFrac', #'CHN','CHD',
 		'T', 'GlobalMeanTemperature','IcelessMeanSST',
-		'S','MLD','MaxMonthlyMLD',
+		'S','MLD',#'MaxMonthlyMLD',
 		'TotalIceArea', 'NorthernTotalIceArea','SouthernTotalIceArea',
 		'TotalIceExtent', 'NorthernTotalIceExtent','SouthernTotalIceExtent','DrakePassageTransport',
 		'AMOC_26N','AMOC_32S','ADRC_26N',
@@ -90,7 +90,7 @@ keymetricsfirstDict = {i:n for i,n in enumerate(keymetricsfirstKeys)}
 
 
 physKeys  = ['T', 'GlobalMeanTemperature',
-		'S','MLD','MaxMonthlyMLD',
+		'S','MLD',#'MaxMonthlyMLD',
 		'TotalIceArea', 'NorthernTotalIceArea','SouthernTotalIceArea',
 		'TotalIceExtent', 'NorthernTotalIceExtent','SouthernTotalIceExtent',
 		'DrakePassageTransport','AMOC_26N','AMOC_32S','ADRC_26N',
@@ -221,7 +221,7 @@ def analysis_timeseries(jobID = "u-ab671",
                         analysisKeys.append('T')                        # WOA Temperature
                         analysisKeys.append('S')                        # WOA Salinity
 			analysisKeys.append('MLD')			# iFERMER Mixed Layer Depth - work in prgress
-                        analysisKeys.append('MaxMonthlyMLD')            # MLD                        			
+                        #analysisKeys.append('MaxMonthlyMLD')            # MLD                        			
 			analysisKeys.append('TotalIceArea')		# work in progress
 			analysisKeys.append('NorthernTotalIceArea')	# work in progress
 			analysisKeys.append('SouthernTotalIceArea')	# work in progress
