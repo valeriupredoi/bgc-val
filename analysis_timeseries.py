@@ -275,7 +275,7 @@ def analysis_timeseries(jobID = "u-ab671",
                         #####
                         # Physics switches:
                         #analysisKeys.append('T')                       # WOA Temperature
-                        analysisKeys.append('S')                        # WOA Salinity
+                        #analysisKeys.append('S')                        # WOA Salinity
                         #analysisKeys.append('MLD')                      # MLD
                         #analysisKeys.append('MaxMonthlyMLD')            # MLD                        
                         
