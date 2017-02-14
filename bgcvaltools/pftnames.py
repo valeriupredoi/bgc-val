@@ -182,6 +182,7 @@ def makeLongNameDict():
   	lnd['TotalOMZVolume50'] = 'Total Oxygen minimum zone volume (<50 mmol O2/m^3)'   	  	
   	lnd['OMZThickness'] = 'Oxygen minimum zone thickness (<20 mmol O2/m^3)'  
   	lnd['OMZMeanDepth'] = 'Oxygen minimum zone mean depth (<20 mmol O2/m^3)'    
+  	lnd['AOU'] 	= 'Apparent Oxygen Usage' 
   	
   	lnd['DrakePassageTransport'] = 'Drake Passage Transport'    	
   	lnd['DPT'] = 'Drake Passage Transport'    	  		
