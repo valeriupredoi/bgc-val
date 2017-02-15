@@ -47,7 +47,6 @@ def makeMask(name,newSlice, xt,xz,xy,xx,xd,debug=False):
 	:param xd: A one-dimensional array of the data.
 	
 	This function produces a mask to hides all points that are not in the requested region.
-	There are a long list of possible values for new Slice, these are all included in the UKESMPython.slicesDict dictonairy. 
 	
 	Note that xt,xz,xy,xx,xd should all be the same shape and size. 
 	

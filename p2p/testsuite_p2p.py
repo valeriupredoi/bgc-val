@@ -34,6 +34,7 @@ from calendar import month_name
 #Specific local code:
 import UKESMpython as ukp
 from p2p import matchDataAndModel,makePlots,makeTargets, makePatternStatsPlots
+from p2p.slicesDict import populateSlicesList, slicesDict
 #from 
 from bgcvaltools.pftnames import MaredatTypes,WOATypes,Ocean_names,OceanMonth_names,months, Seasons,Hemispheres,HemispheresMonths, OceanSeason_names
 
@@ -244,7 +245,7 @@ def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
 			# The makePlot produces a shelve file in workingDir containing all results of the analysis.
 			if len( plottingSlices) ==0:
 				if len(av[name]['plottingSlices'])==0:
-					nplottingSlices = ukp.populateSlicesList()
+					nplottingSlices = populateSlicesList()
 					print "No plotting slices provided, using defaults",nplottingSlices
 				else:	
 					
@@ -301,7 +302,7 @@ def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
 			if annual:	groups = {'Oceans':[],'depthRanges':[], 'BGCVal':[],}
 			else:		groups = {'Oceans':[],'Months':[],'Seasons':[],'NorthHemisphereMonths':[],'SouthHemisphereMonths':[],'depthRanges':[],'BGCVal':[],}
 			for g in groups:
-			    	groups[g] = ukp.reducesShelves(shelvesAV,  models =[model,],depthLevels = [depthLevel,], names = [name,], sliceslist =ukp.slicesDict[g])
+			    	groups[g] = ukp.reducesShelves(shelvesAV,  models =[model,],depthLevels = [depthLevel,], names = [name,], sliceslist =slicesDict[g])
 				print g, groups[g]
 				
 				if len(groups[g])==0:continue 
@@ -326,7 +327,7 @@ def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
 			  	filenamebase = ukp.folder(imageFolder+'/Patterns/'+year+'/'+name+depthLevel+'/'+g)+'Months_'+model+'_'+jobID+'_'+year+'_'+name+depthLevel
 				makePatternStatsPlots(	{name :groups[g],}, # {legend, shelves}
 							name+' '+g,	#xkeysname
-							ukp.slicesDict[xkeys],		#xkeysLabels=
+							slicesDict[xkeys],		#xkeysLabels=
 							filenamebase,	# filename base	
 							grid		= grid,	
 							gridFile	= gridFile				
@@ -340,7 +341,7 @@ def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
 							 'South Hemisphere' :groups['SouthHemisphereMonths'],
 							 'Global' :	     groups['Months'], }, # {legend, shelves}
 							name+' Months',	#xkeysname
-							ukp.slicesDict['Months'],#xkeysLabels=
+							slicesDict['Months'],#xkeysLabels=
 							filenamebase,	# filename base	
 							grid	= grid,	
 							gridFile= gridFile												
@@ -356,11 +357,11 @@ def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
 			if len(av[name]['depthLevels'])<=1: continue	
 			outShelves = {}
 			for dl in av[name]['depthLevels']:
-				outShelves[dl] = ukp.reducesShelves(shelvesAV,  models =[model,],depthLevels = [dl,], names = [name,], sliceslist =ukp.slicesDict[g])	
+				outShelves[dl] = ukp.reducesShelves(shelvesAV,  models =[model,],depthLevels = [dl,], names = [name,], sliceslist =slicesDict[g])	
 		  	filenamebase = ukp.folder(imageFolder+'/Patterns/'+year+'/'+name+'AllDepths/')+'AllDepths_'+g+'_'+model+'_'+jobID+'_'+year+'_'+name
 			makePatternStatsPlots(	outShelves, 
 						name+' '+g,
-						ukp.slicesDict[g],		
+						slicesDict[g],		
 						filenamebase,
 						grid	= grid,
 						gridFile= gridFile			
