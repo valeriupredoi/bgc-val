@@ -2255,12 +2255,12 @@ def main():
 		jobID = "u-ab749"
 
 	if 'debug' in argv[1:]:	suite = 'debug'
-	elif 'all' in argv[1:]:	suite = 'all'
+	#elif 'all' in argv[1:]:	suite = 'all'
 	elif 'level1' in argv[1:]:suite='level1'
 	elif 'level3' in argv[1:]:suite='level3'
         elif 'physics' in argv[1:]:suite='physics'
         elif 'bgc' in argv[1:]:suite='bgc'        
-	else:			suite = 'all'
+	else:			suite = 'level1'
 
 
 	analysis_timeseries(jobID =jobID,analysisSuite=suite, )#clean=1)

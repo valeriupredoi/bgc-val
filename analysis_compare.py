@@ -1738,6 +1738,7 @@ if __name__=="__main__":
                 'u-aj506':'chocolate',
                 'u-aj588':'magenta',
                 'u-aj613':'springgreen',
+		'u-aj876':'cyan',
         }
 
 
@@ -1754,7 +1755,7 @@ if __name__=="__main__":
         colours = {i:standards[i] for i in ['u-ai567','u-aj237','u-aj289','u-aj478']}
         timeseries_compare(colours, physics=True,bio=False,year0=False,debug=0,analysisname='SSSrelax')
 
-        colours = {i:standards[i] for i in ['u-ai567','u-aj289','u-aj588','u-aj613']}
+        colours = {i:standards[i] for i in ['u-ai567','u-aj289','u-aj588','u-aj613','u-aj876']}
         timeseries_compare(colours, physics=True,bio=False,year0=False,debug=0,analysisname='TSrelax')
 
 
