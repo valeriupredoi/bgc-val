@@ -355,7 +355,10 @@ class profileAnalysis:
 	    	except: 
 	    		meandatad = False
 	    		datadmask = False
-		    	
+	    		
+		if np.isnan(meandatad) or np.isinf(meandatad):
+	    		meandatad = False
+	    		datadmask = False			
     		#print "profileAnalysis:\t load in situ data,\tloaded ",(r,l),  'mean:',meandatad    	
 	    	dataD[(r,l,'lat')] = dl.load[(r,l,'lat')]		    	
 	    	dataD[(r,l,'lon')] = dl.load[(r,l,'lon')]
