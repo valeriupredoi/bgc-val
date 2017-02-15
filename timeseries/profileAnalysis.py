@@ -308,7 +308,7 @@ class profileAnalysis:
 	for r in self.regions:
 	    #if needtoLoad:continue
 	#    for l in self.layers:
-	     for l in sorted(self.layers)[65:80]:	    
+	     for l in sorted(self.layers)[:]:	    
 		#if needtoLoad:continue
 	    	try:	
 	    		dat = self.dataD[(r,l)]
@@ -333,7 +333,7 @@ class profileAnalysis:
 	
 	###############
 	# Loading data for each region.
-	dl = tst.DataLoader(self.dataFile,'',self.datacoords,self.datadetails, regions = self.regions, layers = self.layers[65:80],)
+	dl = tst.DataLoader(self.dataFile,'',self.datacoords,self.datadetails, regions = self.regions, layers = self.layers[:],)
 	
 #	#for r in self.regions:
 #	 #   for l in self.layers:
@@ -348,7 +348,7 @@ class profileAnalysis:
 
 
 	
-    	for l in sorted(self.layers)[65:80]:
+    	for l in sorted(self.layers)[:]:
 	    for r in self.regions:
 	    	dataD[(r,l)] = dl.load[(r,l,)]	
 	    	try:   	
@@ -378,11 +378,11 @@ class profileAnalysis:
 		if meandatad == False:
     			print "profileAnalysis:\t loadData,\problem with ",(r,l),  'data:',dataD[(r,l)] 
     			
-    	    if l%10==0:
- 	   	    print "Saving",l
-		    sh = shOpen(self.shelvefn_insitu)
-		    sh['dataD'] 	= dataD
-		    sh.close()    		
+#    	    if l%10==0:
+# 	   	    print "Saving",l
+#		    sh = shOpen(self.shelvefn_insitu)
+#		    sh['dataD'] 	= dataD
+#		    sh.close()    		
     		
     		
 	###############
