@@ -2018,7 +2018,7 @@ def populateSlicesList(#plotallcuts = False,
 	return newSlices
 
 		      	
-def makeMask(name,newSlice, xt,xz,xy,xx,xd,debug=False):
+def makeMask_old(name,newSlice, xt,xz,xy,xx,xd,debug=False):
 	"""
 	:param name: The name of the data. (useful for debugging)
 	:param newSlice: The name of the regional cut (or slice)
@@ -2033,7 +2033,10 @@ def makeMask(name,newSlice, xt,xz,xy,xx,xd,debug=False):
 	
 	Note that xt,xz,xy,xx,xd should all be the same shape and size. 
 						
-	"""	  
+	"""	
+	print "THIS funcrtion moved to its own file."
+	assert 0
+	  
 	if debug:print "makeMask:\tmakeMask:\tinitialise:\t",name, '\t',newSlice
 		
 	if newSlice in ['OffAxis', 'Overestimate','Underestimate','Matched', 

@@ -50,7 +50,7 @@ from bgcvaltools.robust import StatsDiagram as robustStatsDiagram
 import bgcvaltools.unbiasedSymmetricMetrics as usm
 import UKESMpython as ukp 
 from bgcvaltools.pftnames import getLongName, AutoVivification, fancyUnits,CMIP5models # getmt
-
+from bgcvaltools.makeMask import makeMask
 #from bgcvaltools.pftnames import MaredatTypes,IFREMERTypes,WOATypes,GEOTRACESTypes
 
 #import seaborn as sb
@@ -314,19 +314,19 @@ class makePlots:
 	
 	if type(newSlice) in [type(['a',]),type(('a',))]:    	# newSlice is actaully a list of multiple slices.
 	   	for n in newSlice:
-	  		fullmask += ukp.makeMask(self.name,n,self.xt,self.xz,self.xy,self.xx,xd).astype(int)	  
-		  	fullmask += ukp.makeMask(self.name,n,self.yt,self.yz,self.yy,self.yx,yd).astype(int)	  
+	  		fullmask += makeMask(self.name,n,self.xt,self.xz,self.xy,self.xx,xd).astype(int)	  
+		  	fullmask += makeMask(self.name,n,self.yt,self.yz,self.yy,self.yx,yd).astype(int)	  
 		  	
 	elif newSlice == 'Standard':				# Standard is a shorthand for my favourite cuts.
 	  	for stanSlice in ukp.slicesDict['StandardCuts']: 
 			if self.name in ['tempSurface','tempTransect', 'tempAll'] and stanSlice in ['aboveZero',]:continue 
 				    						
-	  		fullmask += ukp.makeMask(self.name,stanSlice,self.xt,self.xz,self.xy,self.xx,xd).astype(int)
-	  	 	fullmask += ukp.makeMask(self.name,stanSlice,self.yt,self.yz,self.yy,self.yx,yd).astype(int)	
+	  		fullmask += makeMask(self.name,stanSlice,self.xt,self.xz,self.xy,self.xx,xd).astype(int)
+	  	 	fullmask += makeMask(self.name,stanSlice,self.yt,self.yz,self.yy,self.yx,yd).astype(int)	
 	  	 	
 	else:  	# newSlice is a simple slice.
-	  	fullmask += ukp.makeMask(self.name,newSlice,self.xt,self.xz,self.xy,self.xx,xd).astype(int)
-	  	fullmask += ukp.makeMask(self.name,newSlice,self.yt,self.yz,self.yy,self.yx,yd).astype(int)
+	  	fullmask += makeMask(self.name,newSlice,self.xt,self.xz,self.xy,self.xx,xd).astype(int)
+	  	fullmask += makeMask(self.name,newSlice,self.yt,self.yz,self.yy,self.yx,yd).astype(int)
 	  	print 'plotWithSlices:\t',fullmask.sum()
 
 	  

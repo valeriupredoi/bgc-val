@@ -31,7 +31,7 @@ import os
 import UKESMpython as ukp
 from convertToOneDNC import convertToOneDNC
 from bgcvaltools.dataset import dataset
-
+from bgcvaltools.makeMask import makeMask
 """
 .. module:: timeseriesTools
    :platform: Unix
@@ -213,7 +213,11 @@ class DataLoader:
 		if len(arr) == 0: 
 			self.maskedload(region,layer)
 			continue
-			
+
+		if arr.mask.all(): 
+			self.maskedload(region,layer)
+			continue
+						
    		self.load[(region,layer)] =  arr 
    		self.load[(region,layer,'t')] =  arr_t
    		self.load[(region,layer,'z')] =  arr_z
@@ -222,7 +226,8 @@ class DataLoader:
    			   			   			   			
   		print "DataLoader:\tLoaded",self.name, 'in',
   		print '{:<24} layer: {:<8}'.format(region,layer),
-  		print '\tdata length:',len(self.load[(region,layer)]), '\tmean:',np.ma.mean(self.load[(region,layer)])
+  		print '\tdata length:',len(self.load[(region,layer)]), '\tmean:',self.load[(region,layer)].mean(), 'of', len(self.load[(region,layer)]),
+  		print '\trange:',[self.load[(region,layer)].min(),self.load[(region,layer)].max()]
   		
   def maskedload(self,region,layer):
   	""" Quick in line tool to set a layer/region to masked.
@@ -255,14 +260,14 @@ class DataLoader:
   def createDataArray(self,region,layer):
   	"""	
   		This creates a set of 1D arrays of the dat and 4D coordinates for the required region.
-  		The leg work is done in UKESMpython.py: makeMask()
+  		The leg work is done in makeMask.py
   	"""
   	
   	#print 'DataLoader:\tcreateDataArray:\t',self.details['name'],region,layer
   	
   	self.createOneDDataArray(layer)
   	  	
-  	m = ukp.makeMask(self.details['name'],region, 
+  	m = makeMask(self.details['name'],region, 
   				self.oneDData['arr_t'],
   				self.oneDData['arr_z'],
   				self.oneDData['arr_lat'],
