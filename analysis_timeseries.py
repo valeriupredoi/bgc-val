@@ -215,7 +215,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('TotalOMZVolume')		# work in progress
                         #analysisKeys.append('O2')                      # WOA Oxygen
                         #analysisKeys.append('AOU')                      # Apparent Oxygen Usage 
-                        analysisKeys.append('WindStress')               # Wind Stress                        
+                        #analysisKeys.append('WindStress')               # Wind Stress                        
                         #analysisKeys.append('Dust')                    # Dust
                         #analysisKeys.append('TotalDust')               # Total Dust
                         #analysisKeys.append('TotalDust_nomask')
@@ -225,7 +225,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('CHN')
 			#analysisKeys.append('CHD')
 			#analysisKeys.append('DiaFrac')			# work in progress
-			#analysisKeys.append('Iron')			# work in progress
+			analysisKeys.append('Iron')			# work in progress
                         #analysisKeys.append('N')                        # WOA Nitrate
                         #analysisKeys.append('IntPP_OSU')               # OSU Integrated primpary production
                        

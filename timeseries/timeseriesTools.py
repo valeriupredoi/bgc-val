@@ -196,32 +196,24 @@ class DataLoader:
  #  	assert 0
    	lays = self.layers[:]
    	lays.reverse()
-   	maskedValue = np.ma.array([-999.,],mask=[True,])
+
     	for l in lays:#self.layers: 
     	    try:	layer = int(l)
     	    except:	layer = l
     	    
     	    print l,layer,type(layer), type(layer) in [type(1),type(1.),], layer not in depths.keys()
  	    if type(layer) in [type(1),type(1.),] and layer not in depths.keys():
-               	print "DataLoader: layer not in depths. Insetad, setting:",layer, 'to', maskedValue
+               	print "DataLoader:\tLayer outside depths. Setting:",layer, 'to a masked value.'
             	for region in self.regions:
-   			self.load[(region,layer)] =  maskedValue 
-   			self.load[(region,layer,'t')] =  maskedValue
-	   		self.load[(region,layer,'z')] =  maskedValue
-   			self.load[(region,layer,'lat')] =  maskedValue
-   			self.load[(region,layer,'lon')] = maskedValue
-	  		print "DataLoader:\tLoaded empty",self.name, 'in',
-	  		print '{:<24} layer: {:<8}'.format(region,layer),
-	  		print '\tdata length:',len(self.load[(region,layer)]), '\tmean:',np.ma.mean(self.load[(region,layer)])
-  		   			
+			self.maskedload(region,layer)
    	    	continue 
-   	        #return	   		
-   	    #assert 0
-   	    #continue
    	    
   	    for region in self.regions:
 		arr, arr_t, arr_z, arr_lat, arr_lon 	= self.createDataArray(region,layer)
-		#print "DataLoader:",layer,region, np.ma.mean(arr)
+		if len(arr) == 0: 
+			self.maskedload(region,layer)
+			continue
+			
    		self.load[(region,layer)] =  arr 
    		self.load[(region,layer,'t')] =  arr_t
    		self.load[(region,layer,'z')] =  arr_z
@@ -232,6 +224,21 @@ class DataLoader:
   		print '{:<24} layer: {:<8}'.format(region,layer),
   		print '\tdata length:',len(self.load[(region,layer)]), '\tmean:',np.ma.mean(self.load[(region,layer)])
   		
+  def maskedload(self,region,layer):
+  	""" Quick in line tool to set a layer/region to masked.
+  	"""
+   	maskedValue = np.ma.array([-999.,],mask=[True,])  	
+	self.load[(region,layer)] =  maskedValue 
+	self.load[(region,layer,'t')] =  maskedValue
+	self.load[(region,layer,'z')] =  maskedValue
+	self.load[(region,layer,'lat')] =  maskedValue
+	self.load[(region,layer,'lon')] = maskedValue
+	print "DataLoader:\tLoaded empty",self.name, 'in',
+	print '{:<24} layer: {:<8}'.format(region,layer),
+	print '\tdata length:',len(self.load[(region,layer)]) #,
+	#print #, '\tmean:',np.ma.mean(self.load[(region,layer)])
+	  		  	
+  
   def __getlayerDat__(self,layer):
   	""" Minimise quick load and save to minimise disk-reading time.
   	"""
