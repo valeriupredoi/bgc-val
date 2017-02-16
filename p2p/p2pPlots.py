@@ -50,6 +50,8 @@ from bgcvaltools.robust import StatsDiagram as robustStatsDiagram
 import bgcvaltools.unbiasedSymmetricMetrics as usm
 import UKESMpython as ukp 
 from bgcvaltools.pftnames import getLongName, AutoVivification, fancyUnits,CMIP5models # getmt
+from bgcvaltools.makeMask import makeMask
+from p2p.slicesDict import populateSlicesList, slicesDict
 
 #from bgcvaltools.pftnames import MaredatTypes,IFREMERTypes,WOATypes,GEOTRACESTypes
 
@@ -314,19 +316,19 @@ class makePlots:
 	
 	if type(newSlice) in [type(['a',]),type(('a',))]:    	# newSlice is actaully a list of multiple slices.
 	   	for n in newSlice:
-	  		fullmask += ukp.makeMask(self.name,n,self.xt,self.xz,self.xy,self.xx,xd).astype(int)	  
-		  	fullmask += ukp.makeMask(self.name,n,self.yt,self.yz,self.yy,self.yx,yd).astype(int)	  
+	  		fullmask += makeMask(self.name,n,self.xt,self.xz,self.xy,self.xx,xd).astype(int)	  
+		  	fullmask += makeMask(self.name,n,self.yt,self.yz,self.yy,self.yx,yd).astype(int)	  
 		  	
 	elif newSlice == 'Standard':				# Standard is a shorthand for my favourite cuts.
-	  	for stanSlice in ukp.slicesDict['StandardCuts']: 
+	  	for stanSlice in slicesDict['StandardCuts']: 
 			if self.name in ['tempSurface','tempTransect', 'tempAll'] and stanSlice in ['aboveZero',]:continue 
 				    						
-	  		fullmask += ukp.makeMask(self.name,stanSlice,self.xt,self.xz,self.xy,self.xx,xd).astype(int)
-	  	 	fullmask += ukp.makeMask(self.name,stanSlice,self.yt,self.yz,self.yy,self.yx,yd).astype(int)	
+	  		fullmask += makeMask(self.name,stanSlice,self.xt,self.xz,self.xy,self.xx,xd).astype(int)
+	  	 	fullmask += makeMask(self.name,stanSlice,self.yt,self.yz,self.yy,self.yx,yd).astype(int)	
 	  	 	
 	else:  	# newSlice is a simple slice.
-	  	fullmask += ukp.makeMask(self.name,newSlice,self.xt,self.xz,self.xy,self.xx,xd).astype(int)
-	  	fullmask += ukp.makeMask(self.name,newSlice,self.yt,self.yz,self.yy,self.yx,yd).astype(int)
+	  	fullmask += makeMask(self.name,newSlice,self.xt,self.xz,self.xy,self.xx,xd).astype(int)
+	  	fullmask += makeMask(self.name,newSlice,self.yt,self.yz,self.yy,self.yx,yd).astype(int)
 	  	print 'plotWithSlices:\t',fullmask.sum()
 
 	  
@@ -682,16 +684,16 @@ class makePlots:
 
 	file_suffix = '_'+self.xtype+'_'+self.year+'.png'
 	
-	for dictkey,dictlist in ukp.slicesDict.items():
+	for dictkey,dictlist in slicesDict.items():
 		if dictkey=='AllSlices':continue
 		if newSlice not in dictlist: continue
 		if type(newSlice) in [type(['a','b',]),type(('a','b',))]: 
 			newSlice = list(newSlice)
 			for i,n in enumerate(newSlice):
-			   if n in ukp.slicesDict['Months']:
+			   if n in slicesDict['Months']:
 			   	newSlice[i] = ukp.mnStr(self.months[n]+1)+n
 			newSlice = ''.join(newSlice)			
-		if newSlice in ukp.slicesDict['Months']:
+		if newSlice in slicesDict['Months']:
 			 newSlice = ukp.mnStr(self.months[newSlice]+1)+newSlice	
 		if dictkey == 'Default': dictkey=''
 		filename = ukp.folder([file_prefix,dictkey])+self.name+self.depthLevel+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix

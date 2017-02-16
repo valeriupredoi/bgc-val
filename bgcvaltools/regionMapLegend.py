@@ -38,7 +38,7 @@ from matplotlib import pyplot
 import cartopy.crs as ccrs
 from cartopy import img_transform, feature as cfeature	
 from bgcvaltools.pftnames import getLongName
-
+from bgcvaltools.makeMask import makeMask
 
 
 
@@ -224,7 +224,7 @@ def makeRegionMap(regionList):
 	# Calculate masks, based on lat/lon.
 	masks = {}
 	for r in regionList:
-		masks[r] = ~ukp.makeMask('',r, xt,xz,xy,xx,cbathy,debug=True)
+		masks[r] = ~makeMask('',r, xt,xz,xy,xx,cbathy,debug=True)
 	
 	#####
 	# Turn mask into one field.
@@ -263,7 +263,7 @@ def makeRegionMapNA(regionList):
 	# Calculate masks, based on lat/lon.
 	masks = {}
 	for r in regionList:
-		masks[r] = ~ukp.makeMask('',r, xt,xz,xy,xx,cbathy,debug=True)
+		masks[r] = ~makeMask('',r, xt,xz,xy,xx,cbathy,debug=True)
 	
 	#####
 	# Turn mask into one field.
@@ -303,7 +303,7 @@ def makeRegionMapYevgeny():
 	####
 	# Calculate masks, based on lat/lon.
 	masks = {}
-	masks['IrmingerSea'] = ~ukp.makeMask('','NordicSea', xt,xz,xy,xx,cbathy,debug=True)
+	masks['IrmingerSea'] = ~makeMask('','NordicSea', xt,xz,xy,xx,cbathy,debug=True)
 
 	#: (i=223,j=251) - (i=247,j=251) - (i=247,j=226) - (i=223,j=226)	
 	lab = np.zeros_like(bathy)

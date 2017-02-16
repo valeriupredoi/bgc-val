@@ -35,6 +35,7 @@ import UKESMpython as ukp
 import numpy as np
 from changeNC import changeNC, AutoVivification
 import paths
+from bgcvaltools.makeMask import makeMask
 
 """ 	This code makes a mask netcdf for the regions written below.
 	this code is needed for profileAnalysis.py
@@ -97,7 +98,7 @@ def makeMaskNC(outFile, regions, grid):
 	oneDmasks = {}	
 	for r in regions:
 		print 'Calculate 1D mask',r
-		mask = ukp.makeMask('mask name', r, 
+		mask = makeMask('mask name', r, 
 	  				arr_t,
 	  				arr_z,
 	  				arr_lat,

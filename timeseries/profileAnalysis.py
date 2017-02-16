@@ -304,9 +304,11 @@ class profileAnalysis:
 	###############
 	# Test to find out if we need to load the netcdf, or if we can just return the dict as a self.object.
 	needtoLoad = False
+	
 	for r in self.regions:
 	    #if needtoLoad:continue
-	    for l in self.layers:
+	#    for l in self.layers:
+	     for l in sorted(self.layers)[:]:	    
 		#if needtoLoad:continue
 	    	try:	
 	    		dat = self.dataD[(r,l)]
@@ -331,7 +333,7 @@ class profileAnalysis:
 	
 	###############
 	# Loading data for each region.
-	dl = tst.DataLoader(self.dataFile,'',self.datacoords,self.datadetails, regions = self.regions, layers = self.layers,)
+	dl = tst.DataLoader(self.dataFile,'',self.datacoords,self.datadetails, regions = self.regions, layers = self.layers[:],)
 	
 #	#for r in self.regions:
 #	 #   for l in self.layers:
@@ -346,8 +348,8 @@ class profileAnalysis:
 
 
 	
-	for r in self.regions:
-	    for l in self.layers:
+    	for l in sorted(self.layers)[:]:
+	    for r in self.regions:
 	    	dataD[(r,l)] = dl.load[(r,l,)]	
 	    	try:   	
 	    		meandatad = dataD[(r,l)].mean()
@@ -356,10 +358,11 @@ class profileAnalysis:
 	    		meandatad = False
 	    		datadmask = False
 	    		
-		if np.isnan(meandatad) or np.isinf(meandatad):
+		if np.isnan(meandatad) or np.isinf(meandatad) or dataD[(r,l)].mask.all():
 	    		meandatad = False
 	    		datadmask = False			
-    		#print "profileAnalysis:\t load in situ data,\tloaded ",(r,l),  'mean:',meandatad    	
+	    		
+    		#print "profileAnalysis:\t load in situ data,\tloaded ",(r,l),  'mean:',meandatad  
 	    	dataD[(r,l,'lat')] = dl.load[(r,l,'lat')]		    	
 	    	dataD[(r,l,'lon')] = dl.load[(r,l,'lon')]
 		if not meandatad and not datadmask: #np.ma.is_masked(dataD[(r,l)]):
@@ -372,7 +375,14 @@ class profileAnalysis:
 		#	assert 0
 		
     		print "profileAnalysis:\t loadData,\tloading ",(r,l),  'mean:',meandatad    	
-    		
+		if meandatad == False:
+    			print "profileAnalysis:\t loadData,\problem with ",(r,l),  'data:',dataD[(r,l)] 
+    			
+#    	    if l%10==0:
+# 	   	    print "Saving",l
+#		    sh = shOpen(self.shelvefn_insitu)
+#		    sh['dataD'] 	= dataD
+#		    sh.close()    		
     		
     		
 	###############
