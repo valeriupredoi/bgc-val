@@ -233,11 +233,11 @@ def analysis_timeseries(jobID = "u-ab671",
                         # Physics switches:
                         #analysisKeys.append('T')                       # WOA Temperature
                         #analysisKeys.append('S')                        # WOA Salinity
-                        #analysisKeys.append('MLD')                      # MLD
+                        analysisKeys.append('MLD')                      # MLD
                         #analysisKeys.append('MaxMonthlyMLD')            # MLD                        
                         
                         #analysisKeys.append('NorthernTotalIceArea')    # work in progress
-                        analysisKeys.append('SouthernTotalIceArea')    # work in progress
+                        #analysisKeys.append('SouthernTotalIceArea')    # work in progress
                         #analysisKeys.append('TotalIceArea')            # work in progress
 			#analysisKeys.append('TotalIceExtent')		# work in progress
 			#analysisKeys.append('NorthernTotalIceExtent')	# work in progress
@@ -2259,7 +2259,7 @@ def main():
 	elif 'level1' in argv[1:]:suite='level1'
 	elif 'level3' in argv[1:]:suite='level3'
         elif 'physics' in argv[1:]:suite='physics'
-        elif 'bgc' in argv[1:]:suite='bgc'        
+        elif 'bgc' in argv[1:]:	suite='bgc'        
 	else:			suite = 'level1'
 
 

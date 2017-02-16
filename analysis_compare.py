@@ -152,12 +152,12 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 #		analysisKeys.append('CHN')
 #		analysisKeys.append('DiaFrac')
 #                analysisKeys.append('AMOC_26N')
-#                analysisKeys.append('MLD')
+                analysisKeys.append('MLD')
 #                analysisKeys.append('ADRC_26N')                # AMOC 26N                        
 #                analysisKeys.append('VerticalCurrent')          # Vertical Veloctity           
 #                analysisKeys.append('sossheig')                 # SSH
 #                analysisKeys.append('NorthernTotalIceArea')     # North TotalIceArea
-                analysisKeys.append('SouthernTotalIceArea')     # South TotalIceArea
+#                analysisKeys.append('SouthernTotalIceArea')     # South TotalIceArea
 
 	
 #                analysisKeys.append('GlobalMeanTemperature')
@@ -1772,8 +1772,7 @@ if __name__=="__main__":
         
 
         colours = {i:standards[i] for i in ['u-ai567','u-ah882','u-aj588','u-aj613',]}
-        timeseries_compare(colours, physics=0,bio=False,year0=False,debug=1,analysisname='LongSpinUps')
-	assert 0 	
+        timeseries_compare(colours, physics=1,bio=False,year0=False,debug=0,analysisname='LongSpinUps')
 
         colours = {i:standards[i] for i in ['u-aj588','u-aj613','u-aj876']}
         timeseries_compare(colours, physics=False,bio=True,year0=False,debug=0,analysisname='Bio')
@@ -1781,51 +1780,14 @@ if __name__=="__main__":
 	colours = {i:standards[i] for i in ['u-ai567','u-aj289','u-aj588','u-aj613','u-aj876']}
         timeseries_compare(colours, physics=True,bio=False,year0=False,debug=0,analysisname='TSrelax')
 
-#        colours = {i:standards[i] for i in ['u-aj588','u-aj613','u-af981','u-af982','u-af983','u-af984',]}
-        colours = {i:c for i,c in zip(['u-aj588','u-aj613','u-af981','u-af982','u-af983','u-af984',],['#ffffcc','#a1dab4','#41b6c4','#2c7fb8','#253494'])}
-        timeseries_compare(colours, physics=False,bio=True,year0=False,debug=0,analysisname='Bio_oldSpinups')
+#        colours = {i:c for i,c in zip(['u-aj588','u-aj613','u-af981','u-af982','u-af983','u-af984',],['#ffffcc','#a1dab4','#41b6c4','#2c7fb8','#253494'])}
+#        timeseries_compare(colours, physics=False,bio=True,year0=False,debug=0,analysisname='Bio_oldSpinups')
  
         colours = {i:standards[i] for i in ['u-ai567','u-aj237','u-aj289','u-aj478']}
         timeseries_compare(colours, physics=True,bio=False,year0=False,debug=0,analysisname='SSSrelax')
-
-#        colours = {i:standards[i] for i in ['u-ai567','u-aj289','u-aj588','u-aj613','u-aj876']}
-#        timeseries_compare(colours, physics=True,bio=False,year0=False,debug=0,analysisname='TSrelax')
-
 
         colours = {i:standards[i] for i in ['u-ai567','u-aj289','u-aj504','u-aj506','u-aj479']}
         timeseries_compare(colours, physics=True,bio=False,year0=False,debug=0,analysisname='MiscFactors')
 
 
 
-
-#        colours = {'u-aj289':'blue','u-aj618':'pink',}
-#        timeseries_compare(colours, physics=True,bio=False,year0=False,debug=0)#False)
-
-        colours = {i:standards[i] for i in ['u-aj289','u-aj478']}
-        timeseries_compare(colours, physics=True,bio=False,year0=False,debug=0,)
-
-
-#        colours = {'u-aj588':'green','u-aj618':'pink'}
-#        timeseries_compare(colours, physics=True,bio=False,year0=False,debug=0)#False)
-
-
-
-#        colours = {'u-aj588':'green','u-aj618':'pink', 'u-aj289':'blue','u-aj478':'red'}
-#        timeseries_compare(colours, physics=True,bio=False,year0=False,debug=0)#False)
-
-
-        colours = {i:standards[i] for i in ['u-ai567','u-aj289','u-aj478','u-aj588']}
-        timeseries_compare(colours, physics=True,bio=False,year0=False,debug=0)#False)
-
-#	        colours = {'u-ah531':'red', 'u-ah847':'orange', 'u-ah846':'blue','u-ah882':'purple', }
- #               timeseries_compare(colours, physics=True,bio=False,year0=1)
-#	        colours = {'u-ai945':'green','u-aj010':'purple', }
-#                timeseries_compare(colours, physics=True,bio=False,year0=True,debug=0)
-#                colours = {'u-aj073':'green','u-aj010':'purple', 'u-ai567':'blue',}
-#                timeseries_compare(colours, physics=True,bio=False,year0='u-ai567-minus3',debug=0)
-#	        colours = {'u-ag543':'red', 'u-ag914':'orange','u-ae748':'darkblue','u-af983':'blue','u-af984':'purple', }
-#        	timeseries_compare(colours, physics=True,bio=False)
-#	        colours = {'u-ag543':'red', 'u-ag914':'orange', }
-#	        timeseries_compare(colours, physics=False,bio=True,debug = debug)
-#	        colours = {'u-ae748':'darkblue','u-af983':'blue', 'u-ah308':'darkgreen',}    
-#	        timeseries_compare(colours, physics=True,bio=False)
