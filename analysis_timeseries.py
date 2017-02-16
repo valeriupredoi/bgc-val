@@ -225,7 +225,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('CHN')
 			#analysisKeys.append('CHD')
 			#analysisKeys.append('DiaFrac')			# work in progress
-			analysisKeys.append('Iron')			# work in progress
+			#analysisKeys.append('Iron')			# work in progress
                         #analysisKeys.append('N')                        # WOA Nitrate
                         #analysisKeys.append('IntPP_OSU')               # OSU Integrated primpary production
                        
@@ -237,7 +237,7 @@ def analysis_timeseries(jobID = "u-ab671",
                         #analysisKeys.append('MaxMonthlyMLD')            # MLD                        
                         
                         #analysisKeys.append('NorthernTotalIceArea')    # work in progress
-                        #analysisKeys.append('SouthernTotalIceArea')    # work in progress
+                        analysisKeys.append('SouthernTotalIceArea')    # work in progress
                         #analysisKeys.append('TotalIceArea')            # work in progress
 			#analysisKeys.append('TotalIceExtent')		# work in progress
 			#analysisKeys.append('NorthernTotalIceExtent')	# work in progress
@@ -2204,7 +2204,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		#####
 		# Profile plots
 		if av[name]['Dimensions'] == 3:
-			#continue
+			continue
 			profa = profileAnalysis(
 				av[name]['modelFiles'],
 				av[name]['dataFile'],
