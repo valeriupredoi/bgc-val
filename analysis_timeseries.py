@@ -104,7 +104,8 @@ if True:
 	physKeys.append('DrakePassageTransport')	# DrakePassageTransport
 	physKeys.append('AMOC_32S')                 	# AMOC 32S
 	physKeys.append('AMOC_26N')                 	# AMOC 26N
-	physKeys.append('ADRC_26N')                 	# AMOC 26N                        	                
+        physKeys.append('AMOC_26N_nomexico')            # AMOC 26N
+	physKeys.append('ADRC_26N')                 	# ADRC 26N                        	                
 	physKeys.append('ZonalCurrent')             	# Zonal Veloctity
 	physKeys.append('MeridionalCurrent')        	# Meridional Veloctity
 	physKeys.append('VerticalCurrent')          	# Vertical Veloctity
@@ -233,7 +234,7 @@ def analysis_timeseries(jobID = "u-ab671",
                         # Physics switches:
                         #analysisKeys.append('T')                       # WOA Temperature
                         #analysisKeys.append('S')                        # WOA Salinity
-                        analysisKeys.append('MLD')                      # MLD
+                        #analysisKeys.append('MLD')                      # MLD
                         #analysisKeys.append('MaxMonthlyMLD')            # MLD                        
                         
                         #analysisKeys.append('NorthernTotalIceArea')    # work in progress
@@ -244,6 +245,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('SouthernTotalIceExtent')	# work in progress
                         #analysisKeys.append('AMOC_32S')                # AMOC 32S
                         #analysisKeys.append('AMOC_26N')                # AMOC 26N
+                        analysisKeys.append('AMOC_26N_nomexico')
                         #analysisKeys.append('ADRC_26N')                # AMOC 26N                        
 
                        	#analysisKeys.append('GlobalMeanTemperature')    # Global Mean Temperature
@@ -1873,18 +1875,19 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['Dimensions']		= 1
 
 
-	if 'AMOC_26N' in analysisKeys or 'AMOC_32S' in analysisKeys or 'ADRC_26N' in analysisKeys:
+	if 'AMOC_26N' in analysisKeys or 'AMOC_32S' in analysisKeys or 'ADRC_26N' in analysisKeys or 'AMOC_26N_nomexico' in analysisKeys:
 		# Note that this will only work with the eORCAgrid.
 		latslice26N = slice(227,228)
+                latslice26Nnm = slice(228,229)
 		latslice32S = slice(137,138)
 		e3v,e1v,tmask,alttmask = {},{},{},{}
-	    	for name in ['AMOC_26N','AMOC_32S','ADRC_26N']:
+	    	for name in ['AMOC_26N','AMOC_32S','ADRC_26N','AMOC_26N_nomexico']:
 	    		if name not in analysisKeys:continue
 
 			####
 			if name in ['AMOC_26N','ADRC_26N']: 	latslice = latslice26N
 			if name == 'AMOC_32S': 	latslice = latslice32S
-
+			if name in ['AMOC_26N_nomexico',]:	latslice = latslice26Nnm
 			# Load grid data
 			nc = dataset(paths.orcaGridfn,'r')
 			e3v[name] = nc.variables['e3v'][:,latslice,:]	# z level height 3D
@@ -1895,6 +1898,8 @@ def analysis_timeseries(jobID = "u-ab671",
 			# load basin mask
 			nc = dataset('data/basinlandmask_eORCA1.nc','r')
 			alttmask[name] = nc.variables['tmaskatl'][latslice,:]	# 2D Atlantic mask
+                        if name == ['AMOC_26N_nomexico',]:
+				alttmask[name][228,180:208]=0.
 			nc.close()
 
 		def calc_amoc32S(nc,keys):
@@ -1934,15 +1939,17 @@ def analysis_timeseries(jobID = "u-ab671",
  				atlmoc[z,:] = atlmoc[z+1,:] + atlmoc[z,:]
 			#return np.ma.max(atlmoc)
 			return atlmoc
+                def calc_amoc26N(nc,keys):
+                        return np.ma.max(amoc26N_array(nc,keys,amocname='AMOC_26N'))
 
-		def calc_amoc26N(nc,keys):
-			return np.ma.max(amoc26N_array(nc,keys,amocname='AMOC_26N'))
+		def calc_amoc26Nnm(nc,keys):
+			return np.ma.max(amoc26N_array(nc,keys,amocname='AMOC_26N_nomexico'))
 			
 		def calc_min_amoc26N(nc,keys):
 			return np.ma.min(amoc26N_array(nc,keys,amocname='ADRC_26N'))
 
 			
-	    	for name in ['AMOC_26N','AMOC_32S','ADRC_26N']:
+	    	for name in ['AMOC_26N','AMOC_32S','ADRC_26N','AMOC_26N_nomexico']:
 	    		if name not in analysisKeys:continue
 
 			av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_V', paths.ModelFolder_pref, annual)
@@ -1951,7 +1958,9 @@ def analysis_timeseries(jobID = "u-ab671",
 			av[name]['modelcoords'] = medusaCoords
 			av[name]['datacoords'] 	= medusaCoords
 
-			if name == 'AMOC_26N': 	av[name]['modeldetails']= {'name': name, 'vars':['vomecrty',], 'convert': calc_amoc26N,'units':'Sv'}
+			if name == 'AMOC_26N':	av[name]['modeldetails']= {'name': name, 'vars':['vomecrty',], 'convert': calc_amoc26N,'units':'Sv'}
+                        if name in ['AMOC_26N_nomexico',]:
+                                                av[name]['modeldetails']= {'name': name, 'vars':['vomecrty',], 'convert': calc_amoc26Nnm,'units':'Sv'}
 			if name == 'ADRC_26N': 	av[name]['modeldetails']= {'name': name, 'vars':['vomecrty',], 'convert': calc_min_amoc26N,'units':'Sv'}			
 			if name == 'AMOC_32S': 	av[name]['modeldetails']= {'name': name, 'vars':['vomecrty',], 'convert': calc_amoc32S,'units':'Sv'}
 
