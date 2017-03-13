@@ -1321,7 +1321,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 		
 			av[name]['modeldetails'] 	= {'name': name[:], 'vars':[name[:],], 'convert': ukp.NoChange,'units':nasUnits[name][:]}
 
-			av[name]['regions'] 		=  ['NordicSea', 'LabradorSea', 'NorwegianSea']
+			av[name]['regions'] 		=  ['NordicSea', 'LabradorSea', 'NorwegianSea','Global',]
 
 			av[name]['datadetails']  	= {'name':'','units':'',}
 			av[name]['layers'] 		=  ['layerless',]
@@ -1482,7 +1482,10 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 				mdata = modeldataD[(jobID,name )][('Global', 'layerless', 'mean')]
 				title = ' '.join(['Global', getLongName(name)])	
 						
-			elif name in [ 'sowaflup','sohefldo','sofmflup','sosfldow','sossheig', 'soicecov',]:continue
+			elif name in [ 'sowaflup','sohefldo','sofmflup','sosfldow','sossheig', 'soicecov',]:
+                                mdata = modeldataD[(jobID,name )][('Global', 'layerless', 'mean')]
+                                title = ' '.join(['Global', getLongName(name)])
+				
 				#####
 				# Special hack for these guys.
 				#nasregionList	= ['NordicSea', 'LabradorSea', 'NorwegianSea'	]			
@@ -1779,7 +1782,11 @@ if __name__=="__main__":
 #        timeseries_compare(colours, physics=False,bio=True,year0=False,debug=0,analysisname='Bio_oldSpinups')
 
         #colours = {i:c for i,c in zip(['u-ai567','u-aj289','u-aj588','u-aj613','u-aj876'],['#ffffcc','#a1dab4','#41b6c4','#2c7fb8','#253494'])
-        
+        jobs = ['u-aj588','u-ak033',]
+        colours = {i:standards[i] for i in jobs}
+        timeseries_compare(colours, physics=1,bio=1,year0=False,debug=0,analysisname='u-aj588_and_u-ak033')
+       
+ 
    	jobs = ['u-ai567','u-ah882','u-ak033','u-ak040',]
         colours = {i:standards[i] for i in jobs}
         timeseries_compare(colours, physics=1,bio=False,year0=False,debug=0,analysisname='CoupledRuns')
@@ -1809,8 +1816,8 @@ if __name__=="__main__":
 #        colours = {i:c for i,c in zip(['u-aj588','u-aj613','u-af981','u-af982','u-af983','u-af984',],['#ffffcc','#a1dab4','#41b6c4','#2c7fb8','#253494'])}
 #        timeseries_compare(colours, physics=False,bio=True,year0=False,debug=0,analysisname='Bio_oldSpinups')
  
-#        colours = {i:standards[i] for i in ['u-ai567','u-aj237','u-aj289','u-aj478']}
-#        timeseries_compare(colours, physics=True,bio=False,year0=False,debug=0,analysisname='SSSrelax')
+        colours = {i:standards[i] for i in ['u-aj237','u-aj289','u-aj478']}
+        timeseries_compare(colours, physics=0,bio=True,year0=False,debug=0,analysisname='SSSrelax-bio')
 
 #        colours = {i:standards[i] for i in ['u-ai567','u-aj289','u-aj504','u-aj506','u-aj479']}
 #        timeseries_compare(colours, physics=True,bio=False,year0=False,debug=0,analysisname='MiscFactors')

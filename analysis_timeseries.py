@@ -245,7 +245,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('SouthernTotalIceExtent')	# work in progress
                         #analysisKeys.append('AMOC_32S')                # AMOC 32S
                         #analysisKeys.append('AMOC_26N')                # AMOC 26N
-                        analysisKeys.append('AMOC_26N_nomexico')
+                        #analysisKeys.append('AMOC_26N_nomexico')
                         #analysisKeys.append('ADRC_26N')                # AMOC 26N                        
 
                        	#analysisKeys.append('GlobalMeanTemperature')    # Global Mean Temperature
@@ -256,12 +256,12 @@ def analysis_timeseries(jobID = "u-ab671",
                        	#analysisKeys.append('MeridionalCurrent')        # Meridional Veloctity
                        	#analysisKeys.append('VerticalCurrent')          # Vertical Veloctity
                        	
-			#analysisKeys.append('sowaflup')			# Net Upward Water Flux 
-			#analysisKeys.append('sohefldo')			# Net downward Water Flux 			
-			#analysisKeys.append('sofmflup')			# Water flux due to freezing/melting
-			#analysisKeys.append('sosfldow')			# Downward salt flux
-			#analysisKeys.append('soicecov')			# Ice fraction
-                        #analysisKeys.append('sossheig')                 # Sea surface height
+			analysisKeys.append('sowaflup')			# Net Upward Water Flux 
+			analysisKeys.append('sohefldo')			# Net downward Water Flux 			
+			analysisKeys.append('sofmflup')			# Water flux due to freezing/melting
+			analysisKeys.append('sosfldow')			# Downward salt flux
+			analysisKeys.append('soicecov')			# Ice fraction
+                        analysisKeys.append('sossheig')                 # Sea surface height
 
 			#analysisKeys.append('max_soshfldo')		# Max short wave radiation.
 
@@ -1612,7 +1612,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		
 		av[name]['modeldetails'] 	= {'name': name[:], 'vars':[name[:],], 'convert': applySurfaceMask, 'units':nasUnits[name][:]}
 
-		av[name]['regions'] 		=  ['NordicSea', 'LabradorSea', 'NorwegianSea', ]
+		av[name]['regions'] 		=  ['NordicSea', 'LabradorSea', 'NorwegianSea','Global', ]
 
 		av[name]['datadetails']  	= {'name':'','units':'',}
 		av[name]['layers'] 		=  ['layerless',]
