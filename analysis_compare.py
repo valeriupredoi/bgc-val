@@ -1777,50 +1777,75 @@ if __name__=="__main__":
 #2c7fb8
 #253494
 
-#       timeseries_compare(standards, physics=True,bio=False,year0=False,debug=0)#False)
-#        colours = {i:stanc for i,c in zip(['u-aj588','u-aj613','u-af981','u-af982','u-af983','u-af984',],['#ffffcc','#a1dab4','#41b6c4','#2c7fb8','#253494'])}
-#        timeseries_compare(colours, physics=False,bio=True,year0=False,debug=0,analysisname='Bio_oldSpinups')
+	try:
+		args = argv[1:]
+		jobIDs = []
+		suite = 'all'
+		for job in args:
+	                if job == 'debug': 	suite = 'debug'
+        	        elif job == 'physics' :	suite='physics'
+                	elif job in ['bgc','bio']: suite='bgc'
+	                else:  jobIDs.append(job)
+	
+	except:	
+		jobsIDs = []
+		suite	= ''
 
-        #colours = {i:c for i,c in zip(['u-ai567','u-aj289','u-aj588','u-aj613','u-aj876'],['#ffffcc','#a1dab4','#41b6c4','#2c7fb8','#253494'])
-        jobs = ['u-aj588','u-ak033',]
-        colours = {i:standards[i] for i in jobs}
-        timeseries_compare(colours, physics=1,bio=1,year0=False,debug=0,analysisname='u-aj588_and_u-ak033')
+	if len(jobIDs): 
+		print "analysis_compare.py:", jobIDs, suite
+		if suite=='all':
+			phys= 1
+			bio = 1
+			debug = 0
+                if suite=='physics':
+                        phys= 1
+                        bio = 0
+                        debug = 0
+                if suite=='bio':
+                        phys= 0
+                        bio = 1
+                        debug = 0
+                if suite=='debug':
+                        phys= 0
+                        bio = 0
+                        debug = 1
+		try:    
+			colours = {i:standards[i] for i in jobIDs}
+		except:
+			colours = {}
+			randomcolours = ['red','blue','purple','green','gold','sienna', 'orange', 'black']
+			for i,job in enumerate(jobIDs):
+				colours[j] =randomcolours[i]
+		name = '_'.join(jobIDs) 
+	        timeseries_compare(colours, physics=phys,bio=bio,year0=False,debug=debug,analysisname=name)
+		print "Successful command line comparison"
+		exit
+	else:
+
+	        #colours = {i:c for i,c in zip(['u-ai567','u-aj289','u-aj588','u-aj613','u-aj876'],['#ffffcc','#a1dab4','#41b6c4','#2c7fb8','#253494'])
+        	jobs = ['u-aj588','u-ak033',]
+	        colours = {i:standards[i] for i in jobs}
+        	timeseries_compare(colours, physics=1,bio=1,year0=False,debug=0,analysisname='u-aj588_and_u-ak033')
        
  
-   	jobs = ['u-ai567','u-ah882','u-ak033','u-ak040',]
-        colours = {i:standards[i] for i in jobs}
-        timeseries_compare(colours, physics=1,bio=False,year0=False,debug=0,analysisname='CoupledRuns')
+	   	jobs = ['u-ai567','u-ah882','u-ak033','u-ak040',]
+        	colours = {i:standards[i] for i in jobs}
+	        timeseries_compare(colours, physics=1,bio=False,year0=False,debug=0,analysisname='CoupledRuns')
 
-   	jobs = ['u-ai567','u-aj613','u-aj588','u-ak133',]
-        colours = {i:standards[i] for i in jobs}
-        timeseries_compare(colours, physics=1,bio=False,year0=False,debug=0,analysisname='RelaxationRuns')
+	   	jobs = ['u-ai567','u-aj613','u-aj588','u-ak133',]
+        	colours = {i:standards[i] for i in jobs}
+	        timeseries_compare(colours, physics=1,bio=False,year0=False,debug=0,analysisname='RelaxationRuns')
         
-   	jobs = ['u-ai567','u-aj588','u-ak129','u-ak131',]
-        colours = {i:standards[i] for i in jobs}
-        timeseries_compare(colours, physics=1,bio=False,year0=False,debug=0,analysisname='FurtherChecks')
+	   	jobs = ['u-ai567','u-aj588','u-ak129','u-ak131',]
+        	colours = {i:standards[i] for i in jobs}
+	        timeseries_compare(colours, physics=1,bio=False,year0=False,debug=0,analysisname='FurtherChecks')
         
-   	jobs = ['u-ai567','u-aj588','u-ak251','u-ak252',]
-        colours = {i:standards[i] for i in jobs}
-        timeseries_compare(colours, physics=1,bio=False,year0=False,debug=0,analysisname='NewForcings')   
+	   	jobs = ['u-ai567','u-aj588','u-ak251','u-ak252',]
+	        colours = {i:standards[i] for i in jobs}
+	        timeseries_compare(colours, physics=1,bio=False,year0=False,debug=0,analysisname='NewForcings')   
 
-
-#        colours = {i:standards[i] for i in ['u-ai567','u-ah882','u-aj588','u-aj613',]}
-#        timeseries_compare(colours, physics=1,bio=False,year0=False,debug=0,analysisname='LongSpinUps')
-
-#        colours = {i:standards[i] for i in ['u-aj588','u-aj613','u-aj876']}
-#        timeseries_compare(colours, physics=False,bio=True,year0=False,debug=0,analysisname='Bio')
-
-#	colours = {i:standards[i] for i in ['u-ai567','u-aj289','u-aj588','u-aj613','u-aj876']}
-#        timeseries_compare(colours, physics=True,bio=False,year0=False,debug=0,analysisname='TSrelax')
-
-#        colours = {i:c for i,c in zip(['u-aj588','u-aj613','u-af981','u-af982','u-af983','u-af984',],['#ffffcc','#a1dab4','#41b6c4','#2c7fb8','#253494'])}
-#        timeseries_compare(colours, physics=False,bio=True,year0=False,debug=0,analysisname='Bio_oldSpinups')
- 
-        colours = {i:standards[i] for i in ['u-aj237','u-aj289','u-aj478']}
-        timeseries_compare(colours, physics=0,bio=True,year0=False,debug=0,analysisname='SSSrelax-bio')
-
-#        colours = {i:standards[i] for i in ['u-ai567','u-aj289','u-aj504','u-aj506','u-aj479']}
-#        timeseries_compare(colours, physics=True,bio=False,year0=False,debug=0,analysisname='MiscFactors')
+	        colours = {i:standards[i] for i in ['u-aj237','u-aj289','u-aj478']}
+	        timeseries_compare(colours, physics=0,bio=True,year0=False,debug=0,analysisname='SSSrelax-bio')
 
 
 
