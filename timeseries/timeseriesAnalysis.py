@@ -210,7 +210,7 @@ class timeseriesAnalysis:
 	openedFiles = 0					
 	for fn in self.modelFiles:
 		if fn in readFiles:continue
-		print "loadModel:\tloading new file:",fn,
+		print "timeseriesAnalysis:\tloadModel:\tloading new file:",fn,
 		nc = dataset(fn,'r')
 		ts = tst.getTimes(nc,self.modelcoords)
 		meantime = np.mean(ts)

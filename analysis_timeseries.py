@@ -248,7 +248,7 @@ def analysis_timeseries(jobID = "u-ab671",
                         #analysisKeys.append('AMOC_26N_nomexico')
                         #analysisKeys.append('ADRC_26N')                # AMOC 26N                        
 
-                       	#analysisKeys.append('GlobalMeanTemperature')    # Global Mean Temperature
+                       	analysisKeys.append('GlobalMeanTemperature')    # Global Mean Temperature
                        	#analysisKeys.append('IcelessMeanSST')    	# Global Mean Surface Temperature with no ice
                        	#analysisKeys.append('quickSST')    		# Area Weighted Mean Surface Temperature
 
@@ -258,10 +258,10 @@ def analysis_timeseries(jobID = "u-ab671",
                        	
 			analysisKeys.append('sowaflup')			# Net Upward Water Flux 
 			analysisKeys.append('sohefldo')			# Net downward Water Flux 			
-			analysisKeys.append('sofmflup')			# Water flux due to freezing/melting
-			analysisKeys.append('sosfldow')			# Downward salt flux
-			analysisKeys.append('soicecov')			# Ice fraction
-                        analysisKeys.append('sossheig')                 # Sea surface height
+#			analysisKeys.append('sofmflup')			# Water flux due to freezing/melting
+#			analysisKeys.append('sosfldow')			# Downward salt flux
+#			analysisKeys.append('soicecov')			# Ice fraction
+#                       analysisKeys.append('sossheig')                 # Sea surface height
 
 			#analysisKeys.append('max_soshfldo')		# Max short wave radiation.
 
@@ -2213,7 +2213,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		#####
 		# Profile plots
 		if av[name]['Dimensions'] == 3:
-			continue
+#			continue
 			profa = profileAnalysis(
 				av[name]['modelFiles'],
 				av[name]['dataFile'],

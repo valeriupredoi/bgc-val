@@ -179,7 +179,7 @@ class profileAnalysis:
 		if not self._masksLoaded_: 
 			self.loadMasks()		
 		
-		print "loadModel:\tloading new file:",self.dataType,fn,
+		print "profileAnalysis:\tloadModel:\tloading new file:",self.dataType,fn,
 		nc = dataset(fn,'r')
 		ts = tst.getTimes(nc,self.modelcoords)
 		meantime = np.mean(ts)
