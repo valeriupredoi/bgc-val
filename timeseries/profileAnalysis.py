@@ -100,7 +100,8 @@ class profileAnalysis:
 	self._masksLoaded_ 	= False
 	self.doHov		= False
 	#####
-	# Load Data file	
+	# Load Data file
+        self.__madeDataArea__ = False		
  	self.loadData()
 	#assert 0
 	
@@ -114,8 +115,47 @@ class profileAnalysis:
   	
         if self.debug:print "profileAnalysis:\tsafely finished ",self.dataType, (self.modeldetails['name'])
   		
+
+  def setmlayers(self):
+  	"""	From the first model netcdf,
+  		determine the number of depth layers.
+  	""" 	
+	if self.layers not in ['All','Every2','Every5','Every10',]:
+		self.mlayers = self.layers
+		return
+	mlayers = self.calclayers(self.modelFiles[0],self.modelcoords['z'])
+	if self.layers =='All':		self.mlayers = mlayers
+	if self.layers =='Every2':	self.mlayers = mlayers[::2]
+	if self.layers =='Every5':	self.mlayers = mlayers[::5]		
+	if self.layers =='Every10':	self.mlayers = mlayers[::10]
+				
+				
+  def setdlayers(self):
+  	"""	From the data netcdf,
+  		determine the number of depth layers.
+  	""" 	
+	if self.layers not in ['All','Every2','Every5','Every10',]:
+		self.dlayers = self.layers
+		return
+	dlayers = self.calclayers(self.dataFile,self.datacoords['z'])
+	if self.layers =='All':		self.dlayers = dlayers
+	if self.layers =='Every2':	self.dlayers = dlayers[::2]
+	if self.layers =='Every5':	self.dlayers = dlayers[::5]		
+	if self.layers =='Every10':	self.dlayers = dlayers[::10]
+				
+		
+  def calclayers(self,fn,depthkey):
   	
-  	
+	nc = dataset(fn,'r')
+	depth = nc.variables[depthkey]  	
+	if depth.ndim == 1:
+		layers = np.arange(len(depth))
+	if depth.ndim == 3:
+		layers = np.arange(len(depth[:,0,0]))
+	nc.close()
+	return list(layers)
+	
+		
   def loadModel(self):
 	if self.debug: print "profileAnalysis:\tloadModel."
 	####
@@ -133,8 +173,9 @@ class profileAnalysis:
 	except:
 		readFiles = []
 		modeldataD = {}
+		self.setmlayers()
 		for r in self.regions:
-		 for l in self.layers:
+		 for l in self.mlayers:
 		  for m in self.metrics:
 		   	modeldataD[(r,l,m)] = {}
 		   	
@@ -143,7 +184,7 @@ class profileAnalysis:
 	###############
 	# Check whethere there has been a change in what was requested:
 	for r in self.regions:
-	  for l in self.layers:
+	  for l in self.mlayers:
 	    for m in self.metrics:
 	    	if self.debug:print "profileAnalysis:\tloadModel:\tChecking: ",[r,l,m,],'\t',
 	    	try:
@@ -206,7 +247,7 @@ class profileAnalysis:
 				#####
 				# Add a masked value in layers where there is no data.
 				
-				for l in self.layers:
+				for l in self.mlayers:
 					if l in alllayers:continue
 					modeldataD[(r,l,m)][meantime] = np.ma.masked
 					
@@ -304,11 +345,11 @@ class profileAnalysis:
 	###############
 	# Test to find out if we need to load the netcdf, or if we can just return the dict as a self.object.
 	needtoLoad = False
-	
+	self.setdlayers()
 	for r in self.regions:
 	    #if needtoLoad:continue
-	#    for l in self.layers:
-	     for l in sorted(self.layers)[:]:	    
+	#    for l in self.dlayers:
+	     for l in sorted(self.dlayers)[:]:	    
 		#if needtoLoad:continue
 	    	try:	
 	    		dat = self.dataD[(r,l)]
@@ -329,14 +370,14 @@ class profileAnalysis:
 	nc = dataset(self.dataFile,'r')
 	data = tst.loadData(nc, self.datadetails)
 
-	
+	if not self.__madeDataArea__: self.AddDataArea()	
 	
 	###############
 	# Loading data for each region.
-	dl = tst.DataLoader(self.dataFile,'',self.datacoords,self.datadetails, regions = self.regions, layers = self.layers[:],)
+	dl = tst.DataLoader(self.dataFile,'',self.datacoords,self.datadetails, regions = self.regions, layers = self.dlayers[:],)
 	
 #	#for r in self.regions:
-#	 #   for l in self.layers:
+#	 #   for l in self.dlayers:
 #	    	dataD[(r,l)] = dl.load[(r,l,)]	
 #	    	dataD[(r,l,'lat')] = dl.load[(r,l,'lat')]		    	
 #	    	dataD[(r,l,'lon')] = dl.load[(r,l,'lon')]
@@ -346,9 +387,9 @@ class profileAnalysis:
 #			dataD[(r,l,'lon')]  = np.ma.masked
 									    	
 
-
-	
-    	for l in sorted(self.layers)[:]:
+	AreaNeeded = len(ukp.intersection(['mean','median','sum',], self.metrics))
+	maskedValue = np.ma.masked # -999.# np.ma.array([-999.,],mask=[True,])
+    	for l in sorted(self.dlayers)[:]:
 	    for r in self.regions:
 	    	dataD[(r,l)] = dl.load[(r,l,)]	
 	    	try:   	
@@ -358,32 +399,30 @@ class profileAnalysis:
 	    		meandatad = False
 	    		datadmask = False
 	    		
-		if np.isnan(meandatad) or np.isinf(meandatad) or dataD[(r,l)].mask.all():
+		if np.isnan(meandatad) or np.isinf(meandatad) or dataD[(r,l)].mask.all() or np.ma.is_masked(meandatad):
 	    		meandatad = False
 	    		datadmask = False			
+
 	    		
     		#print "profileAnalysis:\t load in situ data,\tloaded ",(r,l),  'mean:',meandatad  
-	    	dataD[(r,l,'lat')] = dl.load[(r,l,'lat')]		    	
-	    	dataD[(r,l,'lon')] = dl.load[(r,l,'lon')]
-		if not meandatad and not datadmask: #np.ma.is_masked(dataD[(r,l)]):
-			dataD[(r,l)]  = np.ma.array([-999,],mask=[True,])	
-			dataD[(r,l,'lat')]  = np.ma.array([-999,],mask=[True,])	    	
-			dataD[(r,l,'lon')]  = np.ma.array([-999,],mask=[True,])	    	
-		
-		#if meandatad and dataD[(r,l)]  == np.ma.array([-999,],mask=[True,]):
-		#	print "Massive failiure here:",meandatad, dataD[(r,l)] ,dl.load[(r,l,)]
-		#	assert 0
-		
-    		print "profileAnalysis:\t loadData,\tloading ",(r,l),  'mean:',meandatad    	
-		if meandatad == False:
-    			print "profileAnalysis:\t loadData,\problem with ",(r,l),  'data:',dataD[(r,l)] 
+
+		if False in [meandatad, datadmask]: 
+			dataD[(r,l)]  = maskedValue	
+			dataD[(r,l,'lat')]  = maskedValue    	
+			dataD[(r,l,'lon')]  = maskedValue
+			if AreaNeeded:	dataD[(r,l,'area')] = maskedValue
+    			print "profileAnalysis:\t loadData\tproblem with ",(r,l),  'data:\t',dataD[(r,l)] 		
     			
-#    	    if l%10==0:
-# 	   	    print "Saving",l
-#		    sh = shOpen(self.shelvefn_insitu)
-#		    sh['dataD'] 	= dataD
-#		    sh.close()    		
-    		
+		else:
+				
+		    	dataD[(r,l,'lat')] = dl.load[(r,l,'lat')]		    	
+		    	dataD[(r,l,'lon')] = dl.load[(r,l,'lon')]		
+			if AreaNeeded:	    	
+			    	dataD[(r,l,'area')] = self.loadDataAreas(dataD[(r,l,'lat')],dataD[(r,l,'lon')])
+			else:	dataD[(r,l,'area')] = np.ones_like(dataD[(r,l,'lon')])
+	    		print "profileAnalysis:\t loadData,\tloading ",(r,l),  'mean:\t',meandatad    	
+
+    			
     		
 	###############
 	# Savng shelve		
@@ -393,7 +432,8 @@ class profileAnalysis:
 	sh['dataD'] 	= dataD
 	sh.close()
 
-	print "profileAnalysis:\t loadData.\tSaved shelve:", self.shelvefn_insitu			
+	print "profileAnalysis:\t loadData.\tSaved shelve:", self.shelvefn_insitu
+		
 #	except:
 #		print "profileAnalysis:\t WARNING.\tSaving shelve failed, trying again.:", self.shelvefn_insitu			
 #		#print "Data is", dataD
@@ -407,7 +447,39 @@ class profileAnalysis:
 	 	
 	self.dataD = dataD
 
+  def AddDataArea(self,):
+  	"""
+  	Adding Area dictionany
+  	"""
+  	if not self.dataFile:
+  		self.dataAreaDict = {}
+  		return
+  	area = tst.makeArea(self.dataFile,self.datacoords)
+	nc = dataset(self.dataFile,'r')
+	lats = nc.variables[self.datacoords['lat']][:]	
+	lons = nc.variables[self.datacoords['lon']][:]	
+	nc.close()
+	print "timeseriesAnalysis:\tAddDataArea:\t",area.shape,lats.shape,lons.shape
+	self.dataAreaDict = {}
+	if lats.ndim ==2:
+		for (i,j), a in np.ndenumerate(area):
+			#if np.ma.is_masked(a):continue
+			self.dataAreaDict[(lats[i,j],lons[i,j])] = a
+	if lats.ndim ==1:
+		for (i,j), a in np.ndenumerate(area):
+			#if np.ma.is_masked(a):continue
+			self.dataAreaDict[(lats[i],lons[j])] = a
+	self.__madeDataArea__ = True
 	
+  def loadDataAreas(self,lats,lons):
+  	"""
+  	Adding Area for each region.
+  	"""
+	areas =   []
+	for la,lo in zip(lats,lons):
+		try:	areas.append(self.dataAreaDict[(la,lo)] )
+		except: areas.append(0.)
+	return 	np.ma.array(areas)			
  	
 
   def mapplotsRegionsLayers(self,):
@@ -485,7 +557,7 @@ class profileAnalysis:
 	   	# Load data layers:
 		data = {}
 		if self.dataFile:		
-	  	    for l in self.layers:
+	  	    for l in self.dlayers:
 	  		#print "Hovmoeller plots:",r,m,l
 	  		
 	  		if type(l) == type('str'):continue	# no strings, only numbered layers.
@@ -515,7 +587,7 @@ class profileAnalysis:
 	   	#####
 	   	# Load model layers:
 		modeldata = {}	   	
-	  	for l in self.layers:
+	  	for l in self.mlayers:
 	  		if type(l) == type('str'):continue	# no strings, only numbered layers.
 	  		if l > max(modelZcoords.keys()): continue
 			modeldata[l] = self.modeldataD[(r,l,m)]

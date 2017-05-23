@@ -225,8 +225,8 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('CHN')
 			#analysisKeys.append('CHD')
 			#analysisKeys.append('DiaFrac')			# work in progress
-			analysisKeys.append('Iron')			# work in progress
-                        #analysisKeys.append('N')                        # WOA Nitrate
+			#analysisKeys.append('Iron')			# work in progress
+                        analysisKeys.append('N')                        # WOA Nitrate
                         #analysisKeys.append('IntPP_OSU')               # OSU Integrated primpary production
                        
                         #####
@@ -2216,7 +2216,7 @@ def analysis_timeseries(jobID = "u-ab671",
 				datasource	= av[name]['datasource'],
 				model 		= av[name]['model'],
 				jobID		= jobID,
-				layers	 	= list(np.arange(102)),	# 102 because that is the number of layers in WOA Oxygen
+				layers	 	= 'All',	# 102 because that is the number of layers in WOA Oxygen
 				regions	 	= av[name]['regions'],
 				metrics	 	= ['mean',],
 				workingDir	= shelvedir,

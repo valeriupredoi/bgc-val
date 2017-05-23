@@ -226,7 +226,8 @@ class DataLoader:
    			   			   			   			
   		print "DataLoader:\tLoaded",self.name, 'in',
   		print '{:<24} layer: {:<8}'.format(region,layer),
-  		print '\tdata length:',len(self.load[(region,layer)]), '\tmean:',self.load[(region,layer)].mean(), 'of', len(self.load[(region,layer)]),
+  		print '\tdata length:',len(self.load[(region,layer)]), 
+  		print '\tmean:',self.load[(region,layer)].mean(), 'of', len(self.load[(region,layer)]),
   		print '\trange:',[self.load[(region,layer)].min(),self.load[(region,layer)].max()]
   		
   def maskedload(self,region,layer):
