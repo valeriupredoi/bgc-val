@@ -139,6 +139,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 		analysisKeys.append('CHN')
 		analysisKeys.append('DiaFrac')
                 analysisKeys.append('DMS')
+                analysisKeys.append('DTC')
 					
       	  	analysisKeys.append('TotalOMZVolume')           # Total Oxygen Minimum zone Volume
        	 	analysisKeys.append('OMZThickness')             # Oxygen Minimum Zone Thickness
@@ -541,6 +542,29 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 			av[name]['modelgrid']		= 'eORCA1'
 			av[name]['gridFile']		= paths.orcaGridfn
 			av[name]['Dimensions']		= 2	
+        	if 'DTC' in analysisKeys:
+	            for name in ['DTC',]:
+	                if name not in analysisKeys: continue
+
+                	av[name]['modelFiles']          = listModelDataFiles(jobID, 'ptrc_T', paths.ModelFolder_pref, annual)
+        	        av[name]['dataFile']            = ''
+
+	                av[name]['modelcoords']         = medusaCoords
+                	av[name]['datacoords']          = ''
+
+        	        av[name]['modeldetails']        = {'name': name, 'vars':[name,], 'convert': ukp.mul1000,'units':'umol-C/m3'}
+	                av[name]['datadetails']         = {'name': '', 'units':''}
+
+                	av[name]['layers']              = ['3000m',]#'100m',]         # CCI is surface only, it's a satellite product.
+        	        av[name]['regions']             = regionList
+	                av[name]['metrics']             = metricList    #['mean','median', ]
+
+        	        av[name]['datasource']          = ''
+	                av[name]['model']               = 'MEDUSA'
+
+                	av[name]['modelgrid']           = 'eORCA1'
+        	        av[name]['gridFile']            = paths.orcaGridfn
+	                av[name]['Dimensions']          = 3
 		
 		
 		
@@ -1485,6 +1509,9 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 			elif name in [  'OMZThickness', 'OMZMeanDepth', 'DMS','MLD']:
 				mdata = modeldataD[(jobID,name )][('Global', 'layerless', 'mean')]
 				title = ' '.join(['Global', getLongName(name)])	
+                        elif name in ['DTC',]:
+                                mdata = modeldataD[(jobID,name )][('Global', '3000m', 'mean')]
+                                title = ' '.join(['Global', '3000m', 'Mean',  getLongName(name)])
 						
 			elif name in [ 'sowaflup','sohefldo','sofmflup','sosfldow','sossheig', 'soicecov',]:
                                 mdata = modeldataD[(jobID,name )][('Global', 'layerless', 'mean')]
@@ -1787,6 +1814,20 @@ if __name__=="__main__":
                 'u-ak661':'chocolate',
 		'u-ak895':'purple',
 		'u-ak900':'orange',
+
+		'u-al598':'green',
+		'u-al284':'red',
+		'u-ak900':'blue',
+		'u-ak033':'purple',
+                'u-am220':'#41b6c4',    # blue-ish
+
+		#####
+		# Atmospheric jobs.
+                'u-am004':'blue',
+                'u-am005':'red',
+                'u-am007':'magenta',
+                'u-am008':'green',
+
         }
 #253494
 #ffffcc
@@ -1840,39 +1881,59 @@ if __name__=="__main__":
 		exit
 	else:
 	
-                jobs = ['u-al902','u-aj392','u-ai661','u-al901','u-aj391','u-ai611']
+
+#                jobs = ['u-al901','u-aj391','u-ai611']
+#                colours = {i:standards[i] for i in jobs}
+#                timeseries_compare(colours, physics=1,bio=0,year0=False,debug=0,analysisname='SteveDMSx1.7')
+
+#                jobs = ['u-al902','u-aj392','u-ai661']
+#                colours = {i:standards[i] for i in jobs}
+#                timeseries_compare(colours, physics=1,bio=0,year0=False,debug=0,analysisname='SteveDMSx1.9')
+
+                jobs = ['u-am004','u-am005','u-am007','u-am008']
                 colours = {i:standards[i] for i in jobs}
-                timeseries_compare(colours, physics=1,bio=0,year0=False,debug=0,analysisname='SteveDMSx1.7_x1.9')
-
-		assert 0	
-                jobs = ['u-al901','u-aj391','u-ai611']
-                colours = {i:standards[i] for i in jobs}
-                timeseries_compare(colours, physics=1,bio=0,year0=False,debug=0,analysisname='SteveDMSx1.7')
-
-                jobs = ['u-al902','u-aj392','u-ai661']
-                colours = {i:standards[i] for i in jobs}
-                timeseries_compare(colours, physics=1,bio=0,year0=False,debug=0,analysisname='SteveDMSx1.9')
-
-
-
+                timeseries_compare(colours, physics=1,bio=1,year0=True,debug=0,analysisname='UKESM0.6')
 		assert 0
 
-	        jobs = ['u-aj588','u-aj876','u-ak262']
+                jobs = ['u-ak033','u-am220']
+                colours = {i:standards[i] for i in jobs}
+                timeseries_compare(colours, physics=1,bio=1,year0=True,debug=0,analysisname='CoupledRuns2')
+
+                jobs = ['u-ak900','u-ak033','u-am220']
+                colours = {i:standards[i] for i in jobs}
+                timeseries_compare(colours, physics=1,bio=1,year0=False,debug=0,analysisname='Candidates3')
+		
+		jobs = ['u-al598', 'u-al284', 'u-ak900','u-ak033',]
+                colours = {i:standards[i] for i in jobs}
+                timeseries_compare(colours, physics=1,bio=1,year0=False,debug=0,analysisname='Candidates2')
+
+
+
+	        jobs = ['u-al598', 'u-al284', 'u-ak900']
                 colours = {i:standards[i] for i in jobs}
                 timeseries_compare(colours, physics=1,bio=1,year0=False,debug=0,analysisname='Candidates')
 
+	
+#                jobs = ['u-al598', 'u-al284', 'u-ak900','u-ak033']
+#                colours = {i:standards[i] for i in jobs}
+#                timeseries_compare(colours, physics=1,bio=1,year0=False,debug=0,analysisname='CandidatesAndCoupled')
 
-                jobs = ['u-aj588', 'u-ak252', 'u-ak251']
-                colours = {i:standards[i] for i in jobs}
-                timeseries_compare(colours, physics=1,bio=1,year0=False,debug=0,analysisname='ForcingVariants')
+#                jobs = ['u-al902','u-aj392','u-ai661','u-al901','u-aj391','u-ai611']
+#                colours = {i:standards[i] for i in jobs}
+#                timeseries_compare(colours, physics=1,bio=0,year0=False,debug=0,analysisname='SteveDMSx1.7_x1.9')
+
+
+#                jobs = ['u-aj588', 'u-ak252', 'u-ak251']
+#               colours = {i:standards[i] for i in jobs}
+#                timeseries_compare(colours, physics=1,bio=1,year0=False,debug=0,analysisname='ForcingVariants')
                 
-                jobs = ['u-aj588', 'u-ak262', 'u-ak895', 'u-ak900']
-                colours = {i:standards[i] for i in jobs}
-                timeseries_compare(colours, physics=1,bio=1,year0=False,debug=0,analysisname=' XCSVariants')
+#                jobs = ['u-aj588', 'u-ak262', 'u-ak895', 'u-ak900']
+#                colours = {i:standards[i] for i in jobs}
+#                timeseries_compare(colours, physics=1,bio=1,year0=False,debug=0,analysisname=' XCSVariants')
                 
-                jobs = ['u-ai567', 'u-ak033', 'u-ak040', 'u-ak661']
-                colours = {i:standards[i] for i in jobs}
-                timeseries_compare(colours, physics=1,bio=0,year0=False,debug=0,analysisname='CoupledJobs')
+#                jobs = ['u-ai567', 'u-ak033', 'u-ak040', 'u-ak661']
+#                colours = {i:standards[i] for i in jobs}
+#                timeseries_compare(colours, physics=1,bio=0,year0=False,debug=0,analysisname='CoupledJobs')
                 
 
 	        #colours = {i:c for i,c in zip(['u-ai567','u-aj289','u-aj588','u-aj613','u-aj876'],['#ffffcc','#a1dab4','#41b6c4','#2c7fb8','#253494'])

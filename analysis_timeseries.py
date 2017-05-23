@@ -81,6 +81,8 @@ if True:
 	bgcKeys.append('Dust')                     # Dust
 	bgcKeys.append('TotalDust')                # Total Dust
 	bgcKeys.append('DiaFrac')                  # Diatom Fraction
+        bgcKeys.append('DTC')                  # Detrital carbon
+
 bgcKeysDict = {i:n for i,n in enumerate(bgcKeys)}
 
 #####
@@ -136,7 +138,8 @@ keymetricsfirstKeys = [
                 'NorthernTotalIceExtent',
                 'SouthernTotalIceExtent',
 		'DrakePassageTransport',
-		'AMOC_26N',]
+		'AMOC_26N',
+		'GlobalMeanTemperature']
 keymetricsfirstDict = {i:n for i,n in enumerate(keymetricsfirstKeys)}
 
 
@@ -226,6 +229,8 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('CHN')
 			#analysisKeys.append('CHD')
 			#analysisKeys.append('DiaFrac')			# work in progress
+                        analysisKeys.append('DTC')                 # work in progress
+
 			#analysisKeys.append('Iron')			# work in progress
                         #analysisKeys.append('N')                        # WOA Nitrate
                         #analysisKeys.append('IntPP_OSU')               # OSU Integrated primpary production
@@ -248,7 +253,7 @@ def analysis_timeseries(jobID = "u-ab671",
                         #analysisKeys.append('AMOC_26N_nomexico')
                         #analysisKeys.append('ADRC_26N')                # AMOC 26N                        
 
-                       	analysisKeys.append('GlobalMeanTemperature')    # Global Mean Temperature
+                       	#analysisKeys.append('GlobalMeanTemperature')    # Global Mean Temperature
                        	#analysisKeys.append('IcelessMeanSST')    	# Global Mean Surface Temperature with no ice
                        	#analysisKeys.append('quickSST')    		# Area Weighted Mean Surface Temperature
 
@@ -256,8 +261,8 @@ def analysis_timeseries(jobID = "u-ab671",
                        	#analysisKeys.append('MeridionalCurrent')        # Meridional Veloctity
                        	#analysisKeys.append('VerticalCurrent')          # Vertical Veloctity
                        	
-			analysisKeys.append('sowaflup')			# Net Upward Water Flux 
-			analysisKeys.append('sohefldo')			# Net downward Water Flux 			
+			#analysisKeys.append('sowaflup')			# Net Upward Water Flux 
+			#analysisKeys.append('sohefldo')			# Net downward Water Flux 			
 #			analysisKeys.append('sofmflup')			# Water flux due to freezing/melting
 #			analysisKeys.append('sosfldow')			# Downward salt flux
 #			analysisKeys.append('soicecov')			# Ice fraction
@@ -547,6 +552,31 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= paths.orcaGridfn
 		av[name]['Dimensions']		= 3
+
+        if 'DTC' in analysisKeys:
+            for name in ['DTC',]:
+                if name not in analysisKeys: continue
+
+                av[name]['modelFiles']          = listModelDataFiles(jobID, 'ptrc_T', paths.ModelFolder_pref, annual)
+                av[name]['dataFile']            = ''
+
+                av[name]['modelcoords']         = medusaCoords
+                av[name]['datacoords']          = ''
+
+                av[name]['modeldetails']        = {'name': name, 'vars':[name,], 'convert': ukp.mul1000,'units':'umol-C/m3'}
+                av[name]['datadetails']         = {'name': '', 'units':''}
+
+                av[name]['layers']              = ['3000m',]#'100m',]         # CCI is surface only, it's a satellite product.
+                av[name]['regions']             = regionList
+                av[name]['metrics']             = metricList    #['mean','median', ]
+
+                av[name]['datasource']          = ''
+                av[name]['model']               = 'MEDUSA'
+
+                av[name]['modelgrid']           = 'eORCA1'
+                av[name]['gridFile']            = paths.orcaGridfn
+                av[name]['Dimensions']          = 3
+
 
 	if 'DiaFrac' in analysisKeys:
 
@@ -1299,7 +1329,6 @@ def analysis_timeseries(jobID = "u-ab671",
 			#### works like no change, but applies a mask.
 			temperature = np.ma.masked_where(gmttmask==0,nc.variables[keys[0]][:].squeeze())
 			return (temperature*pvol).sum()/(pvol.sum())
-
 
 		av[name]['modeldetails'] 	= {'name': name, 'vars':['votemper',], 'convert': sumMeanLandMask,'units':'degrees C'}
 		av[name]['datadetails']  	= {'name': '', 'units':''}
@@ -2212,7 +2241,7 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		#####
 		# Profile plots
-		if av[name]['Dimensions'] == 3:
+		if av[name]['Dimensions'] == 3 and name not in ['Iron','Fe']:
 #			continue
 			profa = profileAnalysis(
 				av[name]['modelFiles'],
@@ -2268,8 +2297,10 @@ def main():
 	elif 'level1' in argv[1:]:suite='level1'
 	elif 'level3' in argv[1:]:suite='level3'
         elif 'physics' in argv[1:]:suite='physics'
-        elif 'bgc' in argv[1:]:	suite='bgc'        
-	else:			suite = 'level1'
+        elif 'bgc' in argv[1:]:	suite='bgc'       
+	elif 'kmf' in argv[1:] or 'keymetricsfirst' in argv[1:]:
+		suite='keymetricsfirst' 
+	else:	suite = 'level1'
 
 
 	analysis_timeseries(jobID =jobID,analysisSuite=suite, )#clean=1)

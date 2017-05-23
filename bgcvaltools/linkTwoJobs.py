@@ -59,7 +59,7 @@ def linkTwoJobs(jobID1,jobID2, copyShelves = False):
 	#	copy the shelve files.
 	
 	linkNetcdfs = True
-	#copyShelves = True
+	#copyShelves = False
 	linkchain   = True
 
 	#####
@@ -111,12 +111,25 @@ def linkTwoJobs(jobID1,jobID2, copyShelves = False):
 
 		#####
 		# link the files:
+		physicsonly 	=  0#True
+		bgconly 	=  1#False
                 for fn1 in sorted(glob(netcdfFold1+'/*'+jobID1+'*')):
                 	print "linking", fn1
 			fn2 = fn1.replace(jobID1,jobID2)			
 			if os.path.exists(fn2):
-				print "Already exists:\t",fn2
+				#print "Already exists:\t",fn2
 				continue
+
+			# only does physics
+			if physicsonly:
+				if fn1.lower().replace('-','').replace('_','').find('diadt') >-1:continue
+                                if fn1.lower().replace('-','').replace('_','').find('ptrct') >-1:continue
+
+			# only does bgc.
+			if bgconly:
+                                if fn1.lower().replace('-','').replace('_','').find('grid') >-1:continue
+
+
 			try:
 				os.symlink(fn1, fn2)
 				print "linking:\t",fn1, '--->',fn2
