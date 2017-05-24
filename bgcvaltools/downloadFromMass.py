@@ -320,12 +320,14 @@ def downloadMass(jobID,):
 def fixFilePaths(outputFold,jobID):
 	#####
 	# The coupled model looses the first two characters of the name in the netcdf file.
-	fns = glob(outputFold+"/"+jobID[2:]+"*.nc")
+	fns = glob(outputFold+"/*"+jobID[2:]+"*.nc")
 	print "downloadFromMass:\tfixFilePaths:\tLooking for", outputFold+"/"+jobID[2:]+"*.nc"
 	fns.extend(glob(outputFold+'/MetOffice*'))	# Because ocean assess might use the lisence?	
 	for fn in sorted(fns):
 		#####
-        	correctfn = fn.replace('/'+jobID[2:], '/'+jobID)
+        	correctfn = fn.replace(jobID[2:], jobID)
+		correctfn = correctfn.replace('u-u-','u-')
+
 	        if os.path.exists(correctfn):
 	        	print "downloadFromMass:\tfixFilePaths:\tcorrect path exists.",correctfn
 	        	continue

@@ -414,7 +414,8 @@ def simpletimeseries(
 	pyplot.title(title)	
 	pyplot.ylabel(units)
 
-	pyplot.axhline(y=data,c='k',ls='-',lw=1,label = 'data')
+	if data not in [np.ma.masked,np.ma.array([0.,0.],mask=True)[0]]:	
+		pyplot.axhline(y=data,c='k',ls='-',lw=1,label = 'data')
 				
 	legend = pyplot.legend(loc='lower center',  numpoints = 1, ncol=2, prop={'size':12}) 
 	legend.draw_frame(False) 

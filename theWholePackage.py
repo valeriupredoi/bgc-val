@@ -225,7 +225,7 @@ if __name__=="__main__":
 		numberfiles = 6
         
 	year = False
-	for divby in [25, 10, 5, 1]:
+	for divby in [100,50,25, 10, 5, 1]:
                 print "main", divby, year
 		if year: continue 
 	        year = findLastFinishedYear(jobID,dividby=divby,numberfiles=numberfiles)

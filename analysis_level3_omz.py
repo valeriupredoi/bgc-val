@@ -500,12 +500,7 @@ def analysis_omz(jobID=''):
 	shelves = {}
 	shelves_insitu={}
 	for name in av.keys():
-<<<<<<< HEAD
-		continue
-		
-=======
 		continue	
->>>>>>> 56e117e55e2d32f2192e9aa131b5eebeaaadf155
 		print "------------------------------------------------------------------"	
 		print "analysis-Timeseries.py:\tBeginning to call timeseriesAnalysis for ", name
 

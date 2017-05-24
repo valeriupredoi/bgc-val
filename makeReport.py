@@ -138,7 +138,7 @@ def html5Maker(
 	level2Physics 	= False
 	summarySections = False
 	level3OMZ 	= False
-	Level3Salinity	= True
+	Level3Salinity	= False
 	regionMap	=True
 	
 	

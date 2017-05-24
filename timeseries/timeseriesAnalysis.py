@@ -103,6 +103,12 @@ class timeseriesAnalysis:
 	self.shelvefn_insitu	= ukp.folder(self.workingDir)+'_'.join([self.jobID,self.dataType,])+'_insitu.shelve'
 
 	#####
+	# Load Data file
+	self.__madeDataArea__ = False
+	if self.noNewFiles:	pass
+	else:	self.loadData()
+	
+	#####
 	# Load Model File
 	self.loadModelWeightsDict()
   	self.loadModel()  	
@@ -111,12 +117,6 @@ class timeseriesAnalysis:
 	#####
 	# return Model data without making new images
 	if self.noNewFiles: return
-
-        #####
-        # Load Data file
-        self.__madeDataArea__ = False
-        self.loadData()
-
 	
 	#####
 	# Make the plots:
@@ -165,6 +165,15 @@ class timeseriesAnalysis:
 	    	    	if len(modeldataD[(r,l,m)].keys()) == 0: 
 	    	    		readFiles = []
 	    	except: pass
+	#####
+	# Check if the Input file has changed since the shelve file last changed.
+        reDoFiles = []
+	for fn in sorted(readFiles):
+                if self.debug:print "timeseriesAnalysis:\tloadModel\tChecking: ",fn
+		if ukp.shouldIMakeFile(fn, self.shelvefn,debug=False): 
+			print "timeseriesAnalysis:\tloadModel\t:this file should be re-analysed:", fn
+			readFiles.remove(fn)
+		        reDoFiles.append(fn)
 
 	#####
 	# Check if the Input file has changed since the shelve file last changed.
@@ -176,10 +185,10 @@ class timeseriesAnalysis:
 	#####
 	# Summarise checks
 	if self.debug:	
-		print "timeseriesAnalysis:\tloadModel\t:post checks:"
+		print "timeseriesAnalysis:\tloadModel:\tpost checks..."
 		#print "modeldataD:",modeldataD
 		print "timeseriesAnalysis:\tloadModel\tshelveFn:",self.shelvefn
-		print "timeseriesAnalysis:\tloadModel\treadFiles: contains ",len(readFiles), "files.",
+		print "timeseriesAnalysis:\tloadModel\treadFiles: contains ",len(readFiles), 
 		try: 	print "files.\tUp to ", sorted(readFiles)[-1]
 		except: print "files."
 	
@@ -208,7 +217,7 @@ class timeseriesAnalysis:
 	openedFiles = 0					
 	for fn in self.modelFiles:
 		if fn in readFiles:continue
-		print "loadModel:\tloading new file:",fn,
+		print "timeseriesAnalysis:\tloadModel:\tloading new file:",fn,
 		nc = dataset(fn,'r')
 		ts = tst.getTimes(nc,self.modelcoords)
 		meantime = np.mean(ts)
@@ -231,6 +240,9 @@ class timeseriesAnalysis:
 				except: 
 					skip = False
 					print "timeseriesAnalysis:\tloadModel\tNeed to create ",int(meantime),':\t',(r,l,m)
+			if fn in reDoFiles: 
+                                print "timeseriesAnalysis:\tloadModel\tNeed to re-load ",int(meantime),':\t',(r,l,m)
+				skip = False
 			if skip: continue
 			
 		    	#####
@@ -717,8 +729,6 @@ class timeseriesAnalysis:
 	runmapplots=False
 	for r in self.regions:
 	  	for l in self.layers:	
-	 		if runmapplots:continue
-			if type(l) in [type(0),type(0.)]:continue
 	 		mapfilename = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join(['map',self.jobID,self.dataType,str(l),r,])+'.png'
 			if ukp.shouldIMakeFile(self.modelFiles[-1],mapfilename,debug=False):runmapplots = True
  	if runmapplots:

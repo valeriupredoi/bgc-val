@@ -81,6 +81,8 @@ if True:
 	bgcKeys.append('Dust')                     # Dust
 	bgcKeys.append('TotalDust')                # Total Dust
 	bgcKeys.append('DiaFrac')                  # Diatom Fraction
+        bgcKeys.append('DTC')                  # Detrital carbon
+
 bgcKeysDict = {i:n for i,n in enumerate(bgcKeys)}
 
 #####
@@ -104,7 +106,8 @@ if True:
 	physKeys.append('DrakePassageTransport')	# DrakePassageTransport
 	physKeys.append('AMOC_32S')                 	# AMOC 32S
 	physKeys.append('AMOC_26N')                 	# AMOC 26N
-	physKeys.append('ADRC_26N')                 	# AMOC 26N                        	                
+        physKeys.append('AMOC_26N_nomexico')            # AMOC 26N
+	physKeys.append('ADRC_26N')                 	# ADRC 26N                        	                
 	physKeys.append('ZonalCurrent')             	# Zonal Veloctity
 	physKeys.append('MeridionalCurrent')        	# Meridional Veloctity
 	physKeys.append('VerticalCurrent')          	# Vertical Veloctity
@@ -135,7 +138,8 @@ keymetricsfirstKeys = [
                 'NorthernTotalIceExtent',
                 'SouthernTotalIceExtent',
 		'DrakePassageTransport',
-		'AMOC_26N',]
+		'AMOC_26N',
+		'GlobalMeanTemperature']
 keymetricsfirstDict = {i:n for i,n in enumerate(keymetricsfirstKeys)}
 
 
@@ -226,7 +230,10 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('CHD')
 			#analysisKeys.append('DiaFrac')			# work in progress
 			#analysisKeys.append('Iron')			# work in progress
-                        analysisKeys.append('N')                        # WOA Nitrate
+                        analysisKeys.append('DTC')                 # work in progress
+
+			#analysisKeys.append('Iron')			# work in progress
+                        #analysisKeys.append('N')                        # WOA Nitrate
                         #analysisKeys.append('IntPP_OSU')               # OSU Integrated primpary production
                        
                         #####
@@ -244,6 +251,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('SouthernTotalIceExtent')	# work in progress
                         #analysisKeys.append('AMOC_32S')                # AMOC 32S
                         #analysisKeys.append('AMOC_26N')                # AMOC 26N
+                        #analysisKeys.append('AMOC_26N_nomexico')
                         #analysisKeys.append('ADRC_26N')                # AMOC 26N                        
 
                        	#analysisKeys.append('GlobalMeanTemperature')    # Global Mean Temperature
@@ -256,10 +264,10 @@ def analysis_timeseries(jobID = "u-ab671",
                        	
 			#analysisKeys.append('sowaflup')			# Net Upward Water Flux 
 			#analysisKeys.append('sohefldo')			# Net downward Water Flux 			
-			#analysisKeys.append('sofmflup')			# Water flux due to freezing/melting
-			#analysisKeys.append('sosfldow')			# Downward salt flux
-			#analysisKeys.append('soicecov')			# Ice fraction
-                        #analysisKeys.append('sossheig')                 # Sea surface height
+#			analysisKeys.append('sofmflup')			# Water flux due to freezing/melting
+#			analysisKeys.append('sosfldow')			# Downward salt flux
+#			analysisKeys.append('soicecov')			# Ice fraction
+#                       analysisKeys.append('sossheig')                 # Sea surface height
 
 			#analysisKeys.append('max_soshfldo')		# Max short wave radiation.
 
@@ -545,6 +553,31 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= paths.orcaGridfn
 		av[name]['Dimensions']		= 3
+
+        if 'DTC' in analysisKeys:
+            for name in ['DTC',]:
+                if name not in analysisKeys: continue
+
+                av[name]['modelFiles']          = listModelDataFiles(jobID, 'ptrc_T', paths.ModelFolder_pref, annual)
+                av[name]['dataFile']            = ''
+
+                av[name]['modelcoords']         = medusaCoords
+                av[name]['datacoords']          = ''
+
+                av[name]['modeldetails']        = {'name': name, 'vars':[name,], 'convert': ukp.mul1000,'units':'umol-C/m3'}
+                av[name]['datadetails']         = {'name': '', 'units':''}
+
+                av[name]['layers']              = ['3000m',]#'100m',]         # CCI is surface only, it's a satellite product.
+                av[name]['regions']             = regionList
+                av[name]['metrics']             = metricList    #['mean','median', ]
+
+                av[name]['datasource']          = ''
+                av[name]['model']               = 'MEDUSA'
+
+                av[name]['modelgrid']           = 'eORCA1'
+                av[name]['gridFile']            = paths.orcaGridfn
+                av[name]['Dimensions']          = 3
+
 
 	if 'DiaFrac' in analysisKeys:
 
@@ -1298,7 +1331,6 @@ def analysis_timeseries(jobID = "u-ab671",
 			temperature = np.ma.masked_where(gmttmask==0,nc.variables[keys[0]][:].squeeze())
 			return (temperature*pvol).sum()/(pvol.sum())
 
-
 		av[name]['modeldetails'] 	= {'name': name, 'vars':['votemper',], 'convert': sumMeanLandMask,'units':'degrees C'}
 		av[name]['datadetails']  	= {'name': '', 'units':''}
 		#av[name]['datadetails']  	= {'name': name, 'vars':['t_an',], 'convert': ukp.NoChange,'units':'degrees C'}
@@ -1610,7 +1642,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		
 		av[name]['modeldetails'] 	= {'name': name[:], 'vars':[name[:],], 'convert': applySurfaceMask, 'units':nasUnits[name][:]}
 
-		av[name]['regions'] 		=  ['NordicSea', 'LabradorSea', 'NorwegianSea', ]
+		av[name]['regions'] 		=  ['NordicSea', 'LabradorSea', 'NorwegianSea','Global', ]
 
 		av[name]['datadetails']  	= {'name':'','units':'',}
 		av[name]['layers'] 		=  ['layerless',]
@@ -1873,18 +1905,19 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['Dimensions']		= 1
 
 
-	if 'AMOC_26N' in analysisKeys or 'AMOC_32S' in analysisKeys or 'ADRC_26N' in analysisKeys:
+	if 'AMOC_26N' in analysisKeys or 'AMOC_32S' in analysisKeys or 'ADRC_26N' in analysisKeys or 'AMOC_26N_nomexico' in analysisKeys:
 		# Note that this will only work with the eORCAgrid.
 		latslice26N = slice(227,228)
+                latslice26Nnm = slice(228,229)
 		latslice32S = slice(137,138)
 		e3v,e1v,tmask,alttmask = {},{},{},{}
-	    	for name in ['AMOC_26N','AMOC_32S','ADRC_26N']:
+	    	for name in ['AMOC_26N','AMOC_32S','ADRC_26N','AMOC_26N_nomexico']:
 	    		if name not in analysisKeys:continue
 
 			####
 			if name in ['AMOC_26N','ADRC_26N']: 	latslice = latslice26N
 			if name == 'AMOC_32S': 	latslice = latslice32S
-
+			if name in ['AMOC_26N_nomexico',]:	latslice = latslice26Nnm
 			# Load grid data
 			nc = dataset(paths.orcaGridfn,'r')
 			e3v[name] = nc.variables['e3v'][:,latslice,:]	# z level height 3D
@@ -1895,6 +1928,8 @@ def analysis_timeseries(jobID = "u-ab671",
 			# load basin mask
 			nc = dataset('data/basinlandmask_eORCA1.nc','r')
 			alttmask[name] = nc.variables['tmaskatl'][latslice,:]	# 2D Atlantic mask
+                        if name == ['AMOC_26N_nomexico',]:
+				alttmask[name][228,180:208]=0.
 			nc.close()
 
 		def calc_amoc32S(nc,keys):
@@ -1934,15 +1969,17 @@ def analysis_timeseries(jobID = "u-ab671",
  				atlmoc[z,:] = atlmoc[z+1,:] + atlmoc[z,:]
 			#return np.ma.max(atlmoc)
 			return atlmoc
+                def calc_amoc26N(nc,keys):
+                        return np.ma.max(amoc26N_array(nc,keys,amocname='AMOC_26N'))
 
-		def calc_amoc26N(nc,keys):
-			return np.ma.max(amoc26N_array(nc,keys,amocname='AMOC_26N'))
+		def calc_amoc26Nnm(nc,keys):
+			return np.ma.max(amoc26N_array(nc,keys,amocname='AMOC_26N_nomexico'))
 			
 		def calc_min_amoc26N(nc,keys):
 			return np.ma.min(amoc26N_array(nc,keys,amocname='ADRC_26N'))
 
 			
-	    	for name in ['AMOC_26N','AMOC_32S','ADRC_26N']:
+	    	for name in ['AMOC_26N','AMOC_32S','ADRC_26N','AMOC_26N_nomexico']:
 	    		if name not in analysisKeys:continue
 
 			av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_V', paths.ModelFolder_pref, annual)
@@ -1951,7 +1988,9 @@ def analysis_timeseries(jobID = "u-ab671",
 			av[name]['modelcoords'] = medusaCoords
 			av[name]['datacoords'] 	= medusaCoords
 
-			if name == 'AMOC_26N': 	av[name]['modeldetails']= {'name': name, 'vars':['vomecrty',], 'convert': calc_amoc26N,'units':'Sv'}
+			if name == 'AMOC_26N':	av[name]['modeldetails']= {'name': name, 'vars':['vomecrty',], 'convert': calc_amoc26N,'units':'Sv'}
+                        if name in ['AMOC_26N_nomexico',]:
+                                                av[name]['modeldetails']= {'name': name, 'vars':['vomecrty',], 'convert': calc_amoc26Nnm,'units':'Sv'}
 			if name == 'ADRC_26N': 	av[name]['modeldetails']= {'name': name, 'vars':['vomecrty',], 'convert': calc_min_amoc26N,'units':'Sv'}			
 			if name == 'AMOC_32S': 	av[name]['modeldetails']= {'name': name, 'vars':['vomecrty',], 'convert': calc_amoc32S,'units':'Sv'}
 
@@ -2203,8 +2242,8 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		#####
 		# Profile plots
-		if av[name]['Dimensions'] == 3:
-			#continue
+		if av[name]['Dimensions'] == 3 and name not in ['Iron','Fe']:
+#			continue
 			profa = profileAnalysis(
 				av[name]['modelFiles'],
 				av[name]['dataFile'],
@@ -2255,12 +2294,14 @@ def main():
 		jobID = "u-ab749"
 
 	if 'debug' in argv[1:]:	suite = 'debug'
-	elif 'all' in argv[1:]:	suite = 'all'
+	#elif 'all' in argv[1:]:	suite = 'all'
 	elif 'level1' in argv[1:]:suite='level1'
 	elif 'level3' in argv[1:]:suite='level3'
         elif 'physics' in argv[1:]:suite='physics'
-        elif 'bgc' in argv[1:]:suite='bgc'        
-	else:			suite = 'all'
+        elif 'bgc' in argv[1:]:	suite='bgc'       
+	elif 'kmf' in argv[1:] or 'keymetricsfirst' in argv[1:]:
+		suite='keymetricsfirst' 
+	else:	suite = 'level1'
 
 
 	analysis_timeseries(jobID =jobID,analysisSuite=suite, )#clean=1)
