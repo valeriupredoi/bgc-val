@@ -529,6 +529,7 @@ class timeseriesAnalysis:
    		modellon	= mDL.load[(r,l,'lon')]
 		  	
 		if not len(modeldata): continue
+		if modellat.mean() == 0. and modellon.mean() == 0. : continue
 		
 	  	print "mapplotsRegionsLayers:\t",r,l, "model contains",len(modeldata),'model data'
 	  	print "mapplotsRegionsLayers:\t",r,l, "model lat:",len(modellat),modellat.min(),modellat.mean(),modellat.max()
