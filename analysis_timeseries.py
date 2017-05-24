@@ -81,7 +81,8 @@ if True:
 	bgcKeys.append('Dust')                     # Dust
 	bgcKeys.append('TotalDust')                # Total Dust
 	bgcKeys.append('DiaFrac')                  # Diatom Fraction
-        bgcKeys.append('DTC')                  # Detrital carbon
+        bgcKeys.append('DTC')                      # Detrital carbon
+        #bgcKeys.append('CHL')                      # Total Chlorophyll        
 
 bgcKeysDict = {i:n for i,n in enumerate(bgcKeys)}
 
@@ -228,9 +229,10 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('TotalIceArea')		# work in progress
 			#analysisKeys.append('CHN')
 			#analysisKeys.append('CHD')
+			analysisKeys.append('CHL')			
 			#analysisKeys.append('DiaFrac')			# work in progress
 			#analysisKeys.append('Iron')			# work in progress
-                        analysisKeys.append('DTC')                 # work in progress
+                        #analysisKeys.append('DTC')                 # work in progress
 
 			#analysisKeys.append('Iron')			# work in progress
                         #analysisKeys.append('N')                        # WOA Nitrate
@@ -500,6 +502,28 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['gridFile']		= paths.orcaGridfn
 		av[name]['Dimensions']		= 3
 
+	if 'CHL' in analysisKeys:
+		name = 'Chlorophyll'
+		av[name]['modelFiles']  	= listModelDataFiles(jobID, 'ptrc_T', paths.ModelFolder_pref, annual)
+		av[name]['dataFile'] 		= ''
+
+		av[name]['modelcoords'] 	= medusaCoords
+		av[name]['datacoords'] 		= maredatCoords
+
+		av[name]['modeldetails'] 	= {'name': name, 'vars':['CHN','CHD'], 'convert': ukp.sums,'units':'mg C/m^3'}
+		av[name]['datadetails']  	= {'name': '', 'units':''}
+		
+		av[name]['layers'] 		= ['Surface','100m','200m',]
+		av[name]['regions'] 		= regionList
+		av[name]['metrics']		= metricList
+
+		av[name]['datasource'] 		= ''
+		av[name]['model']		= 'MEDUSA'
+
+		av[name]['modelgrid']		= 'eORCA1'
+		av[name]['gridFile']		= paths.orcaGridfn
+		av[name]['Dimensions']		= 3
+		
 
 	if 'Chl_CCI' in analysisKeys:
 		name = 'Chlorophyll_cci'

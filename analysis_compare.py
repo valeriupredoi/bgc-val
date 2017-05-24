@@ -137,6 +137,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 
 		analysisKeys.append('CHD')
 		analysisKeys.append('CHN')
+		analysisKeys.append('CHL')		
 		analysisKeys.append('DiaFrac')
                 analysisKeys.append('DMS')
                 analysisKeys.append('DTC')
@@ -516,7 +517,29 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 			av[name]['modelgrid']		= 'eORCA1'
 			av[name]['gridFile']		= paths.orcaGridfn
 			av[name]['Dimensions']		= 2		
+
+		if 'CHL' in analysisKeys:
+			name = 'Chlorophyll'
+			av[name]['modelFiles']  	= listModelDataFiles(jobID, 'ptrc_T', paths.ModelFolder_pref, annual)
+			av[name]['dataFile'] 		= ''
+
+			av[name]['modelcoords'] 	= medusaCoords
+			av[name]['datacoords'] 		= maredatCoords
+
+			av[name]['modeldetails'] 	= {'name': name, 'vars':['CHN','CHD'], 'convert': ukp.sums,'units':'mg C/m^3'}
+			av[name]['datadetails']  	= {'name': '', 'units':''}
 		
+			av[name]['layers'] 		= ['Surface','100m','200m',]
+			av[name]['regions'] 		= regionList
+			av[name]['metrics']		= metricList
+
+			av[name]['datasource'] 		= ''
+			av[name]['model']		= 'MEDUSA'
+
+			av[name]['modelgrid']		= 'eORCA1'
+			av[name]['gridFile']		= paths.orcaGridfn
+			av[name]['Dimensions']		= 3
+				
 		if 'DiaFrac' in analysisKeys:
 					
 			name = 'DiaFrac'
