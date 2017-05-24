@@ -82,7 +82,9 @@ if True:
 	bgcKeys.append('TotalDust')                # Total Dust
 	bgcKeys.append('DiaFrac')                  # Diatom Fraction
         bgcKeys.append('DTC')                      # Detrital carbon
-        #bgcKeys.append('CHL')                      # Total Chlorophyll        
+        bgcKeys.append('CHL')                      # Total Chlorophyll        
+        bgcKeys.append('DMS_ARAN')                      # Total Chlorophyll        
+
 
 bgcKeysDict = {i:n for i,n in enumerate(bgcKeys)}
 
@@ -229,7 +231,9 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('TotalIceArea')		# work in progress
 			#analysisKeys.append('CHN')
 			#analysisKeys.append('CHD')
-			analysisKeys.append('CHL')			
+			analysisKeys.append('CHL')		
+                        analysisKeys.append('DMS_ARAN')                 # DMS Aranami Tsunogai
+	
 			#analysisKeys.append('DiaFrac')			# work in progress
 			#analysisKeys.append('Iron')			# work in progress
                         #analysisKeys.append('DTC')                 # work in progress
@@ -2028,6 +2032,8 @@ def analysis_timeseries(jobID = "u-ab671",
 			av[name]['gridFile']		= paths.orcaGridfn
 			av[name]['Dimensions']		= 1
 
+
+
 	if 'DMS_ARAN' in analysisKeys:
 		name = 'DMS'
 		av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', paths.ModelFolder_pref, annual)[:]
@@ -2267,7 +2273,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		#####
 		# Profile plots
 		if av[name]['Dimensions'] == 3 and name not in ['Iron','Fe']:
-#			continue
+			#continue
 			profa = profileAnalysis(
 				av[name]['modelFiles'],
 				av[name]['dataFile'],
@@ -2279,7 +2285,7 @@ def analysis_timeseries(jobID = "u-ab671",
 				datasource	= av[name]['datasource'],
 				model 		= av[name]['model'],
 				jobID		= jobID,
-				layers	 	= 'All',	# 102 because that is the number of layers in WOA Oxygen
+				layers	 	= list(np.arange(102)),		# 102 because that is the number of layers in WOA Oxygen
 				regions	 	= av[name]['regions'],
 				metrics	 	= ['mean',],
 				workingDir	= shelvedir,

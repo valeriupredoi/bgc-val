@@ -128,7 +128,7 @@ class profileAnalysis:
 	if self.layers =='Every2':	self.mlayers = mlayers[::2]
 	if self.layers =='Every5':	self.mlayers = mlayers[::5]		
 	if self.layers =='Every10':	self.mlayers = mlayers[::10]
-				
+	print self.mlayers		
 				
   def setdlayers(self):
   	"""	From the data netcdf,
@@ -160,6 +160,7 @@ class profileAnalysis:
 	if self.debug: print "profileAnalysis:\tloadModel."
 	####
 	# load and calculate the model info
+        self.setmlayers()
 	
 	try:
 		if self.clean: 
@@ -169,11 +170,12 @@ class profileAnalysis:
 		readFiles 	= sh['readFiles']
 		modeldataD 	= sh['modeldata']
 		sh.close()
+
 		print "OprofileAnalysis:\tloadModel:\tpened shelve:", self.shelvefn, '\tread', len(readFiles)
 	except:
 		readFiles = []
 		modeldataD = {}
-		self.setmlayers()
+#		self.setmlayers()
 		for r in self.regions:
 		 for l in self.mlayers:
 		  for m in self.metrics:

@@ -534,6 +534,17 @@ def multitimeseries(
 	):
 
         if 0 in [len(timesD) , len(timesD.keys())]:return
+
+        #####
+        # is empty?
+        emptydat=True
+        for i,jobID in enumerate(sorted(timesD.keys())):
+                if len(arrD[jobID]):emptydat=False
+        if emptydat:
+                print "No data for this figure:", plotStyle,timesD.keys(), title,filename
+                return
+
+
         	
 	fig = pyplot.figure()
 	fig.set_size_inches(10,6)
@@ -552,7 +563,6 @@ def multitimeseries(
 		tmpdict = {jobID, c in zip(sorted(timesD.keys()),colours )}
 		colours = tmpdict
 	else:	print "colours isn't working."
-
 
 
 		

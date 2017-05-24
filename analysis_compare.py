@@ -140,8 +140,9 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 		analysisKeys.append('CHL')		
 		analysisKeys.append('DiaFrac')
                 analysisKeys.append('DMS')
+                analysisKeys.append('DMS_ARAN')
                 analysisKeys.append('DTC')
-					
+							
       	  	analysisKeys.append('TotalOMZVolume')           # Total Oxygen Minimum zone Volume
        	 	analysisKeys.append('OMZThickness')             # Oxygen Minimum Zone Thickness
         	analysisKeys.append('OMZMeanDepth')             # Oxygen Minimum Zone mean depth      
@@ -1440,6 +1441,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 				]
 					
 		for name in ['sowaflup','sohefldo','sofmflup','sosfldow','soicecov','MLD','sossheig',]:
+ 		  continue
 		  if name not in av.keys():continue
 		  for region in nasregionList:
 		    for layer in ['layerless',]:
@@ -1525,11 +1527,11 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 			if name in ['Iron','Nitrate','Silicate',
 					'Oxygen','Temperature','Salinity',
 					 'Alkalinity','DIC',
-					 'CHD','CHN','DiaFrac',
+					 'CHD','CHN','DiaFrac','CHL','Chlorophyll',
 	 			 	 'ZonalCurrent','MeridionalCurrent','VerticalCurrent']:
 				mdata = modeldataD[(jobID,name )][('Global', 'Surface', 'mean')]
 				title = ' '.join(['Global', 'Surface', 'Mean',  getLongName(name)])
-			elif name in [  'OMZThickness', 'OMZMeanDepth', 'DMS','MLD']:
+			elif name in [  'OMZThickness', 'OMZMeanDepth', 'DMS','MLD','DMS_ARAN']:
 				mdata = modeldataD[(jobID,name )][('Global', 'layerless', 'mean')]
 				title = ' '.join(['Global', getLongName(name)])	
                         elif name in ['DTC',]:
@@ -1546,6 +1548,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 				#mdata = modeldataD[(jobID,name )][('regionless', 'layerless', 'mean')]
 				#title = getLongName(name)				
 			else:
+				print name, jobID, name
 				mdata = modeldataD[(jobID,name )][('regionless', 'layerless', 'metricless')]
 				title = getLongName(name)
 
@@ -1639,7 +1642,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 			arrD[jobID]	= [mdata[t] for t in timesD[jobID]]
 		
 		for ts in ['Together',]:#'Separate']:
-		    for ls in ['Both','movingaverage','']:#'','Both',]:			
+		    for ls in ['DataOnly',]:#'','Both',]:						
 			tsp.multitimeseries(
 				timesD, 		# model times (in floats)
 				arrD,			# model time series
@@ -1654,10 +1657,10 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 
         	
         	
-	for name in ['DiaFrac','CHD','CHN','CHL','N','Si','Iron','Alk','DIC']:
+	for name in ['DiaFrac','CHD','CHN','CHL','N','Si','Iron','Alk','DIC','Chlorophyll','DMS','DMS_ARAN',]:
 	  if name not in av.keys():continue
 	  for region in regionList:
-	    for layer in ['Surface','100m','200m',]:
+	    for layer in ['Surface','100m','200m','layerless',]:
 	    
 		timesD  = {}
 		arrD	= {}
@@ -1671,7 +1674,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 			arrD[jobID]	= [mdata[t] for t in timesD[jobID]]
 		
 		for ts in ['Together',]:#'Separate']:
-		    for ls in ['Both','movingaverage',]:#'','Both',]:			
+		    for ls in ['DataOnly',]:#'','Both',]:			
 			tsp.multitimeseries(
 				timesD, 		# model times (in floats)
 				arrD,			# model time series
@@ -1684,7 +1687,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 				colours		= colours,
 			)
 
-	for name in ['DMS',]:
+	for name in ['DMS','DMS_ARAN',]:
 	  if name not in av.keys():continue
 	  for region in regionList:
 	    for layer in ['Surface','100m','200m',]:
@@ -1701,7 +1704,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 			arrD[jobID]	= [mdata[t] for t in timesD[jobID]]
 		
 		for ts in ['Together',]:#'Separate']:
-		    for ls in ['Both','movingaverage',]:#'','Both',]:			
+		    for ls in ['DataOnly',]:#'','Both',]:			
 			tsp.multitimeseries(
 				timesD, 		# model times (in floats)
 				arrD,			# model time series
@@ -1949,6 +1952,7 @@ if __name__=="__main__":
                 colours = {i:standards[i] for i in jobs}
                 timeseries_compare(colours, physics=1,bio=1,year0=True,debug=0,analysisname='UKESM0.6')
 		assert 0
+
 
                 jobs = ['u-ak033','u-am220']
                 colours = {i:standards[i] for i in jobs}
