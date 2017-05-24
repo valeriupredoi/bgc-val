@@ -1308,7 +1308,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 					
 		if 'DMS' in analysisKeys:
 			name = 'DMS'
-			av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', paths.ModelFolder_pref, annual)[::30]
+			av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', paths.ModelFolder_pref, annual)#[::30]
 			if annual:		
 				av[name]['dataFile'] 		= paths.DMSDir+'DMSclim_mean.nc'
 			else:	av[name]['dataFile'] 		= ''
@@ -1652,10 +1652,12 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 				colours		= colours,
 			)
 
-	for name in ['DiaFrac','CHD','CHN',]:
+        	
+        	
+	for name in ['DiaFrac','CHD','CHN','CHL','N','Si','Iron','Alk','DIC']:
 	  if name not in av.keys():continue
 	  for region in regionList:
-	    for layer in ['Surface','100m']:
+	    for layer in ['Surface','100m','200m',]:
 	    
 		timesD  = {}
 		arrD	= {}
@@ -1675,7 +1677,37 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 				arrD,			# model time series
 				data 	= -999,		# in situ data distribution
 				title 	= title,
-				filename=ukp.folder(imageFolder+'/Chl')+'_'.join([name,region,layer,ts,ls+'.png']),
+				filename=ukp.folder(imageFolder+'/BGC')+'_'.join([name,region,layer,ts,ls+'.png']),
+				units = '',
+				plotStyle 	= ts,
+				lineStyle	= ls,
+				colours		= colours,
+			)
+
+	for name in ['DMS',]:
+	  if name not in av.keys():continue
+	  for region in regionList:
+	    for layer in ['Surface','100m','200m',]:
+	    
+		timesD  = {}
+		arrD	= {}
+		
+		for jobID in jobs:
+			try:mdata = modeldataD[(jobID,name )][(region, layer, 'mean')]
+			except: continue
+			title = ' '.join([region, layer, 'Mean',  getLongName(name)])
+	
+			timesD[jobID] 	= sorted(mdata.keys())
+			arrD[jobID]	= [mdata[t] for t in timesD[jobID]]
+		
+		for ts in ['Together',]:#'Separate']:
+		    for ls in ['Both','movingaverage',]:#'','Both',]:			
+			tsp.multitimeseries(
+				timesD, 		# model times (in floats)
+				arrD,			# model time series
+				data 	= -999,		# in situ data distribution
+				title 	= title,
+				filename=ukp.folder(imageFolder+'/DMS')+'_'.join([name,region,layer,ts,ls+'.png']),
 				units = '',
 				plotStyle 	= ts,
 				lineStyle	= ls,
