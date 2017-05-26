@@ -231,8 +231,12 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('TotalIceArea')		# work in progress
 			#analysisKeys.append('CHN')
 			#analysisKeys.append('CHD')
-			analysisKeys.append('CHL')		
-                        analysisKeys.append('DMS_ARAN')                 # DMS Aranami Tsunogai
+			#analysisKeys.append('CHL')	
+			
+			if jobID in ['u-am004','u-am005']:
+	                        analysisKeys.append('DMS_ANDR')                 # DMS Anderson
+			else:
+	                       analysisKeys.append('DMS_ARAN')                 # DMS Aranami Tsunogai
 	
 			#analysisKeys.append('DiaFrac')			# work in progress
 			#analysisKeys.append('Iron')			# work in progress
@@ -2045,7 +2049,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modelcoords'] 	= medusaCoords
 		av[name]['datacoords'] 		= dmsCoords
 
-		av[name]['modeldetails'] 	= {'name': name, 'vars':['DMS_ARAN',], 'convert': ukp.mul1000000,'units':'umol/m3'}
+		av[name]['modeldetails'] 	= {'name': name, 'vars':['DMS_ARAN',], 'convert': ukp.NoChange,'units':'nmol/L'}
 		av[name]['datadetails']  	= {'name': name, 'vars':['DMS',], 'convert': ukp.NoChange,'units':'umol/m3'}
 
 		av[name]['layers'] 		= ['layerless',]
@@ -2058,6 +2062,33 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= paths.orcaGridfn
 		av[name]['Dimensions']		= 2
+
+        if 'DMS_ANDR' in analysisKeys:
+                name = 'DMS'
+                av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', paths.ModelFolder_pref, annual)[:]
+                if annual:
+                        av[name]['dataFile']            = paths.DMSDir+'DMSclim_mean.nc'
+                else:
+                        av[name]['dataFile']            = ''
+
+                av[name]['modelcoords']         = medusaCoords
+                av[name]['datacoords']          = dmsCoords
+
+                av[name]['modeldetails']        = {'name': name, 'vars':['DMS_ANDR',], 'convert': ukp.NoChange,'units':'nmol/L'}
+                av[name]['datadetails']         = {'name': name, 'vars':['DMS',], 'convert': ukp.NoChange,'units':'umol/m3'}
+
+                av[name]['layers']              = ['layerless',]
+                av[name]['regions']             = regionList
+                av[name]['metrics']             = metricList
+
+                av[name]['datasource']          = 'Lana'
+                av[name]['model']               = 'MEDUSA'
+
+                av[name]['modelgrid']           = 'eORCA1'
+                av[name]['gridFile']            = paths.orcaGridfn
+                av[name]['Dimensions']          = 2
+
+
 
 	if 'Dust' in analysisKeys:
 		name = 'Dust'

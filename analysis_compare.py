@@ -140,7 +140,8 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 		analysisKeys.append('CHL')		
 		analysisKeys.append('DiaFrac')
                 analysisKeys.append('DMS')
-                analysisKeys.append('DMS_ARAN')
+#                analysisKeys.append('DMS_ARAN')
+
                 analysisKeys.append('DTC')
 							
       	  	analysisKeys.append('TotalOMZVolume')           # Total Oxygen Minimum zone Volume
@@ -156,7 +157,11 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 #		analysisKeys.append('DiaFrac')
 #                analysisKeys.append('AMOC_26N')
 #                analysisKeys.append('MLD')
-                analysisKeys.append('TotalAirSeaFlux')          # work in progress              
+                analysisKeys.append('DMS')
+#                analysisKeys.append('N')                        # WOA Nitrate
+#                analysisKeys.append('Si')                       # WOA Siliate
+
+#                analysisKeys.append('TotalAirSeaFlux')          # work in progress              
 #                analysisKeys.append('ADRC_26N')                # AMOC 26N                        
 #                analysisKeys.append('VerticalCurrent')          # Vertical Veloctity           
 #                analysisKeys.append('sossheig')                 # SSH
@@ -1466,7 +1471,9 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 					arrD[jobID]     = np.ma.masked_where(arrD[jobID]==0.,arrD[jobID])
 
 			
-			if len(arrD.keys()) ==0:continue			
+			if len(arrD.keys()) ==0:continue	
+			
+                        units = av[name]['modeldetails']['units']
 			
 			for ts in ['Together',]:
 			    for ls in ['DataOnly',]:
@@ -1476,7 +1483,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 					data 	= -999,		# in situ data distribution
 					title 	= title,
 					filename=ukp.folder(imageFolder+'/NAS')+'_'.join(['NAS',name,region,layer,ts,ls+'.png']),
-					units = '',
+					units = units,
 					plotStyle 	= ts,
 					lineStyle	= ls,
 					colours		= colours,
@@ -1501,6 +1508,8 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
                                         arrD[jobID]     = np.ma.masked_where(arrD[jobID]==0.,arrD[jobID])
 
 			if len(arrD.keys()) ==0:continue
+                        units = av[name]['modeldetails']['units']
+
 			for ts in ['Together',]:
 			    for ls in ['DataOnly',]:
 				tsp.multitimeseries(
@@ -1509,7 +1518,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 					data 	= -999,		# in situ data distribution
 					title 	= title,
 					filename=ukp.folder(imageFolder+'/NAS')+'_'.join(['NAS',name,region,layer,ts,ls+'.png']),
-					units = '',
+					units = units,
 					plotStyle 	= ts,
 					lineStyle	= ls,
 					colours		= colours,
@@ -1640,6 +1649,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 	
 			timesD[jobID] 	= sorted(mdata.keys())
 			arrD[jobID]	= [mdata[t] for t in timesD[jobID]]
+                units = av[name]['modeldetails']['units']
 		
 		for ts in ['Together',]:#'Separate']:
 		    for ls in ['DataOnly',]:#'','Both',]:						
@@ -1649,7 +1659,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 				data 	= -999,		# in situ data distribution
 				title 	= title,
 				filename=ukp.folder(imageFolder+'/Oxygen')+'_'.join([name,region,layer,ts,ls+'.png']),
-				units = '',
+				units = units,
 				plotStyle 	= ts,
 				lineStyle	= ls,
 				colours		= colours,
@@ -1657,7 +1667,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 
         	
         	
-	for name in ['DiaFrac','CHD','CHN','CHL','N','Si','Iron','Alk','DIC','Chlorophyll','DMS','DMS_ARAN',]:
+	for name in ['DiaFrac','CHD','CHN','CHL','N','Si','Iron','Alk','DIC','Chlorophyll','DMS','Nitrate','Silicate','MLD','mld',]:
 	  if name not in av.keys():continue
 	  for region in regionList:
 	    for layer in ['Surface','100m','200m','layerless',]:
@@ -1672,6 +1682,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 	
 			timesD[jobID] 	= sorted(mdata.keys())
 			arrD[jobID]	= [mdata[t] for t in timesD[jobID]]
+                units = av[name]['modeldetails']['units']
 		
 		for ts in ['Together',]:#'Separate']:
 		    for ls in ['DataOnly',]:#'','Both',]:			
@@ -1681,13 +1692,13 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 				data 	= -999,		# in situ data distribution
 				title 	= title,
 				filename=ukp.folder(imageFolder+'/BGC')+'_'.join([name,region,layer,ts,ls+'.png']),
-				units = '',
+				units = units,
 				plotStyle 	= ts,
 				lineStyle	= ls,
 				colours		= colours,
 			)
 
-	for name in ['DMS','DMS_ARAN',]:
+	for name in ['DMS',]:
 	  if name not in av.keys():continue
 	  for region in regionList:
 	    for layer in ['Surface','100m','200m',]:
@@ -1702,7 +1713,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 	
 			timesD[jobID] 	= sorted(mdata.keys())
 			arrD[jobID]	= [mdata[t] for t in timesD[jobID]]
-		
+                units = av[name]['modeldetails']['units']
 		for ts in ['Together',]:#'Separate']:
 		    for ls in ['DataOnly',]:#'','Both',]:			
 			tsp.multitimeseries(
@@ -1711,7 +1722,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 				data 	= -999,		# in situ data distribution
 				title 	= title,
 				filename=ukp.folder(imageFolder+'/DMS')+'_'.join([name,region,layer,ts,ls+'.png']),
-				units = '',
+				units = units,
 				plotStyle 	= ts,
 				lineStyle	= ls,
 				colours		= colours,
@@ -1877,7 +1888,11 @@ if __name__=="__main__":
 		'u-al284':'red',
 		'u-ak900':'blue',
 		'u-ak033':'purple',
+                'u-am459':'fushia',
+		'u-am184':'teal',
                 'u-am220':'#41b6c4',    # blue-ish
+
+
 
 		#####
 		# Atmospheric jobs.
@@ -1951,7 +1966,15 @@ if __name__=="__main__":
                 jobs = ['u-am004','u-am005','u-am007','u-am008']
                 colours = {i:standards[i] for i in jobs}
                 timeseries_compare(colours, physics=1,bio=1,year0=True,debug=0,analysisname='UKESM0.6')
-		assert 0
+#		assert 0
+
+                jobs = ['u-ak900','u-am184']
+                colours = {i:standards[i] for i in jobs}
+                timeseries_compare(colours, physics=1,bio=1,year0=True,debug=0,analysisname='OngoingParamFix')
+
+                jobs = ['u-ak033','u-am459']
+                colours = {i:standards[i] for i in jobs}
+                timeseries_compare(colours, physics=1,bio=1,year0=True,debug=0,analysisname='FastCoupled')
 
 
                 jobs = ['u-ak033','u-am220']

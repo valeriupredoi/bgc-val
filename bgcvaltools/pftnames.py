@@ -310,7 +310,7 @@ def makeLongNameDict():
  	lnd['LANA'] = 'Lana et al. (extrapolated)'
  	lnd['LANA_p'] = 'Lana et al. (pixels)'
  	lnd['lanaetal'] = 'DMS extrapolated (Lana et al. 2011)'
- 	lnd['DMS'] = 'DMS pixels (Lana et al. 2011)'
+ 	lnd['DMS'] = 'DMS'
 	lnd['DMS_p'] = 'DMS (pixels)'
 	lnd['DMS_e'] = 'DMS (extrapolated)'	
  
