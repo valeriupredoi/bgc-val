@@ -1355,7 +1355,11 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 			#nc.close()
 
 			nas_files = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)
-			nc = Dataset(nas_files[0],'r')
+			try:	nc = Dataset(nas_files[0],'r')
+			except:
+				print "nc does not exist:", name
+				continue
+			
 			if name not in nc.variables.keys():
 				print "analysis_timeseries.py:\tWARNING: ",name ,"is not in the model file."
 				continue
@@ -1548,7 +1552,10 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
                                 title = ' '.join(['Global', '3000m', 'Mean',  getLongName(name)])
 						
 			elif name in [ 'sowaflup','sohefldo','sofmflup','sosfldow','sossheig', 'soicecov',]:
-                                mdata = modeldataD[(jobID,name )][('Global', 'layerless', 'mean')]
+				
+                                try:
+					mdata = modeldataD[(jobID,name )][('Global', 'layerless', 'mean')]
+				except: continue
                                 title = ' '.join(['Global', getLongName(name)])
 				
 				#####
@@ -1561,7 +1568,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 				mdata = modeldataD[(jobID,name )][('regionless', 'layerless', 'metricless')]
 				title = getLongName(name)
 
-			if year0 in ['True', True]:
+			if year0 in ['True', True,'First100Years']:
 				if len(mdata.keys())==0:
 					timesD[jobID]=[]
                                         arrD[jobID]=[]
@@ -1570,6 +1577,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 				times = []
 				datas = []
 				for t in sorted(mdata.keys()):
+					if year0=='First100Years' and float(t) - t0 > 100.:continue
 					times.append(float(t)-t0)
 					datas.append(mdata[t])
 				timesD[jobID] 	= times
@@ -1587,7 +1595,8 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
                                         times.append(float(t)-t0)
                                         datas.append(mdata[t])
                                 timesD[jobID]   = times
-                                arrD[jobID]     = datas    						
+                                arrD[jobID]     = datas    					
+	
 			else:
 				timesD[jobID] 	= sorted(mdata.keys())
 				arrD[jobID]	= [mdata[t] for t in timesD[jobID]]
@@ -1892,6 +1901,10 @@ if __name__=="__main__":
 		'u-am184':'teal',
                 'u-am220':'#41b6c4',    # blue-ish
 
+		# Colins tests
+		'u-am696':'red',
+		'u-am792':'purple',
+		'u-am892':'green',
 
 
 		#####
@@ -1962,6 +1975,10 @@ if __name__=="__main__":
 #                jobs = ['u-al902','u-aj392','u-ai661']
 #                colours = {i:standards[i] for i in jobs}
 #                timeseries_compare(colours, physics=1,bio=0,year0=False,debug=0,analysisname='SteveDMSx1.9')
+                jobs = ['u-ai567','u-aj588','u-am696','u-am792','u-am892']
+                colours = {i:standards[i] for i in jobs}
+                timeseries_compare(colours, physics=1,bio=0,year0='First100Years',debug=0,analysisname='CirculationTests-june17')
+
 
                 jobs = ['u-am004','u-am005','u-am007','u-am008']
                 colours = {i:standards[i] for i in jobs}
@@ -1972,9 +1989,9 @@ if __name__=="__main__":
                 colours = {i:standards[i] for i in jobs}
                 timeseries_compare(colours, physics=1,bio=1,year0=True,debug=0,analysisname='OngoingParamFix')
 
-                jobs = ['u-ak033','u-am459']
-                colours = {i:standards[i] for i in jobs}
-                timeseries_compare(colours, physics=1,bio=1,year0=True,debug=0,analysisname='FastCoupled')
+#                jobs = ['u-ak033','u-am459']
+#                colours = {i:standards[i] for i in jobs}
+#                timeseries_compare(colours, physics=1,bio=1,year0=True,debug=0,analysisname='FastCoupled')
 
 
                 jobs = ['u-ak033','u-am220']

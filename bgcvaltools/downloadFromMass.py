@@ -294,6 +294,7 @@ def downloadMass(jobID,):
 		print "\tTo skip this warning, use the \"anymachine\" option at the command line"
 		return
 	
+        fixFilePaths(outputFold,jobID)
 	
 	doLs = False
 	doDL = True
