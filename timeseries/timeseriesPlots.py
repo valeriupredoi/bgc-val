@@ -331,13 +331,18 @@ def trafficlightsPlot(
 	
 	fig = pyplot.figure()
 	
-	ax = fig.add_subplot(111)	
-        if len(arr)>30:
-                smoothing = movingaverage2(arr,window_len=30,window='flat',extrapolate='axially')
-                pyplot.plot(times,arr,      c='b',ls='-',lw=0.3,)
-                pyplot.plot(times,smoothing,c='b',ls='-',lw=2,label='Model')
-        else:
-                pyplot.plot(times,arr,c='b',ls='-',lw=1,label='Model',)
+	ax = fig.add_subplot(111)
+	
+        arr_new = movingaverage_DT(arr,times, window_len=5.,window_units='years')	# 5 year average.
+	pyplot.plot(times,arr,    c='b',ls='-',lw=0.2, )	
+	pyplot.plot(times,arr_new,c='b',ls='-',lw=2. , label='Model')		
+		
+#        if len(arr)>30:
+#                smoothing = movingaverage2(arr,window_len=30,window='flat',extrapolate='axially')
+#                pyplot.plot(times,arr,      c='b',ls='-',lw=0.3,)
+#                pyplot.plot(times,smoothing,c='b',ls='-',lw=2,label='Model')
+#        else:
+#                pyplot.plot(times,arr,c='b',ls='-',lw=1,label='Model',)
 
 	pyplot.xlim(xlims)	
 	pyplot.title(title)	
@@ -401,14 +406,20 @@ def simpletimeseries(
 	xlims= [times[0],times[-1]]
 	
 	fig = pyplot.figure()
-	
+	print "simpletimeseries,",arr, times
 	ax = fig.add_subplot(111)	
-	if len(arr)>30:
-		smoothing = movingaverage2(arr,window_len=30,window='hanning',extrapolate='axially')
-		pyplot.plot(times,arr,      c='b',ls='-',lw=0.2,)	
-		pyplot.plot(times,smoothing,c='b',ls='-',lw=2,label='Model')		
-	else:
-		pyplot.plot(times,arr,c='b',ls='-',lw=1,label='Model',)	
+	
+        arr_new = movingaverage_DT(arr,times, window_len=5.,window_units='years')	# 5 year average.
+	pyplot.plot(times,arr,    c='b',ls='-',lw=0.2, )	
+	pyplot.plot(times,arr_new,c='b',ls='-',lw=2. , label='Model')		
+			
+#	if len(arr)>30:
+#                #arr_new = movingaverage_DT(arr,times, window_len=5.,window_units='years')	
+#		smoothing = movingaverage2(arr,window_len=30,window='hanning',extrapolate='axially')
+#		pyplot.plot(times,arr,      c='b',ls='-',lw=0.2,)	
+#		pyplot.plot(times,smoothing,c='b',ls='-',lw=2,label='Model')		
+#	else:
+#		pyplot.plot(times,arr,c='b',ls='-',lw=1,label='Model',)	
 		
 	pyplot.xlim(xlims)	
 	pyplot.title(title)	
@@ -518,7 +529,33 @@ def movingaverage2(x,window_len=11,window='flat',extrapolate='axially'):
     return np.ma.masked_where((counts<window_len/2.) + (counts>len(x)-window_len/2.) ,returning)
 
 
-        
+
+
+def movingaverage_DT(data,times, window_len=5.,window_units='years'):
+	######
+	#
+	window_units = window_units.lower()
+	if window_units not in ['days','months','years']:
+     	   	raise ValueError("movingaverage_DT: window_units not recognised"+str(window_units))
+	if len(data) !=len(times):
+     	   	raise ValueError("movingaverage_DT: Data and times are different lengths.")
+	data = np.ma.array(data)
+	
+	#####
+	# Assuming time 
+	if window_units in ['years',]:	window = float(window_len)/2.
+	if window_units in ['months',]:	window = float(window_len)/(2.*12.)
+	if window_units in ['days',]:	window = float(window_len)/(2.*365.25)
+	output = np.ma.zeros(data.shape)
+	for i,o in enumerate(output):
+		t = times[i]
+		av = np.ma.masked_where((times < t-window ) + (times > t+window ), data).mean()
+		output[i] = av
+	return output
+	
+	
+
+      
         
     
 def multitimeseries(
@@ -609,7 +646,36 @@ def multitimeseries(
 			#arr_new = movingaverage(arr, window)
                         arr_new = movingaverage2(arr, window_len=window,window='flat',extrapolate='periodically')
 			pyplot.plot(times,arr_new,c=colours[jobID],ls='-',label=jobID,)#label=jobID+' smooth',)
-			
+
+		if lineStyle.lower() in ['movingaverage5',]:
+			window = 5
+                        arr_new = movingaverage2(arr,times, window_len=window,window='flat',extrapolate='periodically')
+			pyplot.plot(times,arr_new,c=colours[jobID],ls='-',label=jobID,)#label=jobID+' smooth',)
+
+
+
+
+		if lineStyle.lower() in ['movingav1year',]:
+                        arr_new = movingaverage_DT(arr,times, window_len=1.,window_units='years')
+			pyplot.plot(times,arr_new,c=colours[jobID],ls='-',label=jobID,)
+		if lineStyle.lower() in ['movingav5years',]:
+                        arr_new = movingaverage_DT(arr,times, window_len=5.,window_units='years')
+			pyplot.plot(times,arr_new,c=colours[jobID],ls='-',label=jobID,)
+
+
+
+		if lineStyle.lower() in ['movingaverage12',]:
+			window = 12
+			if len(arr)>12:
+ 	                	arr_new = movingaverage2(arr, window_len=window,window='flat',extrapolate='periodically')
+				pyplot.plot(times,arr_new,c=colours[jobID],ls='-',lw=2.,label=jobID,)#label=jobID+' smooth',)
+				
+		if lineStyle.lower() in ['movingaverage60',]:
+			window = 60
+			if len(arr)>60:
+ 	                	arr_new = movingaverage2(arr, window_len=window,window='flat',extrapolate='periodically')
+				pyplot.plot(times,arr_new,c=colours[jobID],ls='-',lw=2.,label=jobID,)#label=jobID+' smooth',)
+													
 		#if lineStyle.lower() in ['lowess','all','both',]:
 		#	filtered = lowess(arr, times, is_sorted=True, frac=0.025, it=0)			
 		#	pyplot.plot(filtered[:,0], filtered[:,1], colour[i],ls='-',label=jobID+' lowess',)

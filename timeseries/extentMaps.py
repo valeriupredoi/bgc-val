@@ -36,6 +36,8 @@ import os
 import shutil
 from matplotlib import pyplot, gridspec
 from matplotlib.colors import LogNorm
+from matplotlib.colors import LinearSegmentedColormap
+
 import matplotlib.patches as mpatches
 from mpl_toolkits.basemap import Basemap
 import cartopy
@@ -58,12 +60,12 @@ except:
 	defcmap = viridis
 	defcmapstr = 'viridis'	
 	
-	
+resolution = 2.
 
-def regrid(data,lat,lon):
+def regrid(data,lat,lon,res=resolution):
         #print 'old regid shape:',data.shape, lat.shape,lon.shape               
-    	nX = np.arange(-179.5,180.5,1.)
-    	nY = np.arange( -89.5, 90.5,1.)
+    	nX = np.arange(-179.5,180.5,res)
+    	nY = np.arange( -89.5, 90.5,res)
     	newLon, newLat = np.meshgrid(nX,nY)
     	
     	crojp1 = ccrs.PlateCarree(central_longitude=180.0, )#central_latitude=300.0)
@@ -83,14 +85,14 @@ def regrid(data,lat,lon):
 	
 
 
-def remask(data,lat,lon,regiddata, regridLat,regridLon, res=1.):
+def remask(data,lat,lon,regiddata, regridLat,regridLon, res=resolution):
 	#####
 	# This is neccesairy as the img_tranform above doesn't see gaps in the data and fills it in.
 	# We could do with re
 	if len(data) == len(lat) ==len(lon): pass
 	else:	assert "The data,lat,lon aren't the same length!"
 	
-	print data.shape,lat.shape,lon.shape,regridLat.shape,regridLon.shape
+	print "remask:",data.shape,lat.shape,lon.shape,regridLat.shape,regridLon.shape
 	newmask = np.zeros_like(regiddata)
 	for (i,j), la in np.ndenumerate(regridLat):
 		latdiff = np.abs(lat- la)
@@ -100,7 +102,7 @@ def remask(data,lat,lon,regiddata, regridLat,regridLon, res=1.):
 			
 	return np.ma.masked_where( newmask>=1., regiddata)
 
-def zeromask(data,lat,lon,regiddata, regridLat,regridLon, res=1.):
+def zeromask(data,lat,lon,regiddata, regridLat,regridLon, res=resolution):
 	#####
 	# This is neccesairy as the img_tranform above doesn't see gaps in the data and fills it in.
 	# But replaces the masked array with zeros, instead of masked elements.
@@ -108,7 +110,7 @@ def zeromask(data,lat,lon,regiddata, regridLat,regridLon, res=1.):
 	if len(data) == len(lat) ==len(lon): pass
 	else:	assert "The data,lat,lon aren't the same length!"
 	
-	print data.shape,lat.shape,lon.shape,regridLat.shape,regridLon.shape
+	print "zeromask:",data.shape,lat.shape,lon.shape,regridLat.shape,regridLon.shape
 	newmask = np.zeros_like(regiddata)
 	for (i,j), la in np.ndenumerate(regridLat):
 		latdiff = np.abs(lat- la)
@@ -159,22 +161,28 @@ def makeExtentPlot(
 
 	#####
 	# Draw model
+
 	crojp2, mdregid, newmLon, newmLat  = regrid(modeldata,modellat,modellon)
 	if maskOrZero=='mask':
+		print "makeExtentPlot:\t remasking."	
 		mdregid = remask(modeldata,modellat,modellon,mdregid, newmLat,newmLon)
 	if maskOrZero=='zero':
+		print "makeExtentPlot:\t zero masking."		
 		mdregid = zeromask(modeldata,modellat,modellon,mdregid, newmLat,newmLon)
 	
  	if colourmesh:
+		print "makeExtentPlot:\t colourmesh."	 	
  		pyplot.pcolormesh(newmLon, newmLat,mdregid,transform=ccrs.PlateCarree(),vmin=zrange[0],vmax=zrange[1])
 		pyplot.colorbar()
 		
 	if contour:
+		print "makeExtentPlot:\t contour."	 		
 	 	ax.contour(newmLon,newmLat,mdregid,contours,colors=['darkblue',],linewidths=[1.5,],linestyles=['-',],transform=ccrs.PlateCarree(),zorder=1)
 
 	#####
 	# Draw data
 	if drawData:
+		print "makeExtentPlot:\t drawData."	 			
 		crojp2, rdregid, newdLon, newdLat  = regrid(realdata,reallat,reallon)
 
 		if maskOrZero=='mask':
@@ -184,12 +192,13 @@ def makeExtentPlot(
  		ax.contour(newdLon,newdLat,rdregid,contours,colors=['black',],   linewidths=[2.0,],linestyles=['-',],transform=ccrs.PlateCarree(),zorder=1)
 	#####
 	# Draw coastline
+	print "makeExtentPlot:\t coastline."	 				
 	ax.add_feature(cfeature.LAND,  facecolor='white',zorder=2)
 	ax.coastlines(lw=0.5,zorder=3)
 	
 	
 	pyplot.title(title)
-	print "saving",filename
+	print "makeExtentPlot:\t saving",filename
 	pyplot.savefig(filename )		
 	pyplot.close()
 
@@ -284,8 +293,15 @@ def interannualExtendMap(
 		#colourmesh = True,
 		showdata	= True,
 		addLegend	= True,
-		maskOrZero	= 'mask'
-		):	
+		colormesh	= True,
+		maskOrZero	= 'mask',
+		plotEvery	= 10,
+		):
+
+	print "interannualExtendMap:",title, filename
+	
+	if plotEvery in [0. , 0, False, None]:plotEvery=1 # plot every year!
+		
 	keys = sorted(	modeldata.keys())
 		
 	zmin = [realdata.min(),]
@@ -301,36 +317,79 @@ def interannualExtendMap(
 	pd = {}
 	pd['Data'] = {'label':'Data','c': ['k',],  'lw':[2.,],'ls':['-',]}		
 	for i,key in enumerate(keys):
+		if int(key)%int(plotEvery)!=0: continue	
 		lw =1
 		color = defcmap(float(i)/float(len(keys)))
-		label = key
+		label = str(int(key))
 		pd[key] = {'label':label,'c': [color,],  'lw':[lw,],'ls':['-',],}
 		
 		
 	
 	if zrange in ['', 'auto',]:
 		zrange = [zmin,zmax  ]	
-	
+		
+	print "contours:",contours				
 	if len(contours)==1:
-		print "makeExtentPlot:\t adding min and max to contours."
+		print "interannualExtendMap:\t adding min and max to contours."
 		if zmin < contours[0] < zmax:
 			contours = [zmin, contours[0],zmax]
 
+	print "contours:",contours			
 	fig = pyplot.figure()
 	fig.set_size_inches(14,8)
 	ax = pyplot.subplot(111,projection=ccrs.PlateCarree(central_longitude=0., ))
 
 
-
- 	#####
- 	# Add model contours	
+	print "interannualExtendMap:\tlength of keys", len(keys), 'first key:', keys[0]
+	#####
+	# figure out last key
+ 	lastkey=keys[0]	
 	for key in keys:
-		crojp2, mdregid, newmLon, newmLat  = regrid(modeldata[key],modellat[key],modellon[key])
-		if maskOrZero=='mask':
-			mdregid = remask(modeldata[key],modellat[key],modellon[key],mdregid, newmLat,newmLon)
-		if maskOrZero=='zero':
-			mdregid = zeromask(modeldata[key],modellat[key],modellon[key],mdregid, newmLat,newmLon)
-						
+		if int(key)%int(plotEvery)!=0: continue
+		lastkey = key
+ 	#####
+ 	# Add model contours
+	for key in keys:
+		if int(key)%int(plotEvery)!=0: continue
+		#if key != lastkey: continue
+
+
+ 		if colormesh and key == lastkey:
+			crojp2, mdregid, newmLon, newmLat  = regrid(modeldata[key],modellat[key],modellon[key],res=0.5)
+			if maskOrZero=='mask':
+				mdregid = remask(modeldata[key],modellat[key],modellon[key],mdregid, newmLat,newmLon)
+			if maskOrZero=='zero':
+				mdregid = zeromask(modeldata[key],modellat[key],modellon[key],mdregid, newmLat,newmLon)
+			
+			
+			allblue = {'red':   ((0.0,  1.0, 1.0),	(1.0,  1.0, 1.0)),
+				 'green':   ((0.0,  0.0, 0.0),  (1.0,  0.0, 0.0)),
+				 'blue':    ((0.0,  0.0, 0.0),  (1.0,  0.0, 0.0)),
+				 'alpha':   ((0.0,  0.05, 0.05),	(1.0,  0.05, 0.05))}
+			allblue1 = LinearSegmentedColormap('allblue', allblue)
+                   			 		
+			print "makeExtentPlot:\t pcolormesh."
+			fillarea = np.ma.masked_where(mdregid>contours[1],mdregid)
+			fillarea = np.ma.clip(fillarea, contours[1],contours[1])
+			print "fillarea:",fillarea.min(), fillarea.max(), fillarea.mean()
+			print "mdregid :",mdregid.min(), mdregid.max(), mdregid.mean()
+			nnewmLat = np.ma.masked_where(fillarea.mask,newmLat)#.compressed()
+			nnewmLon = np.ma.masked_where(fillarea.mask,newmLon)#.compressed()
+			fillarea = np.ma.masked_where(fillarea.mask,mdregid)#.compressed()
+											
+ 			pyplot.pcolormesh(nnewmLon, nnewmLat,fillarea,transform=ccrs.PlateCarree(),cmap=allblue1)#,alpha=0.3)#vmin=contours[1],vmax=contours[1],)
+ 			#pyplot.colorbar()
+ 			
+ 
+		else:	
+			print "interannualExtendMap:\tregridding for contour:", key
+			crojp2, mdregid, newmLon, newmLat  = regrid(modeldata[key],modellat[key],modellon[key])
+			if maskOrZero=='mask':
+				mdregid = remask(modeldata[key],modellat[key],modellon[key],mdregid, newmLat,newmLon)
+			if maskOrZero=='zero':
+				mdregid = zeromask(modeldata[key],modellat[key],modellon[key],mdregid, newmLat,newmLon) 			
+
+		print "interannualExtendMap:\tplotting contour:", key
 	 	ax.contour(
 	 		newmLon,newmLat,mdregid,
 	 		contours,
@@ -340,6 +399,10 @@ def interannualExtendMap(
 	 		transform=ccrs.PlateCarree(),
 	 		zorder=1,
 	 		)
+	 		
+
+ 		
+ 			 		
  	#####
  	# Add data
 	if showdata:	
@@ -361,7 +424,7 @@ def interannualExtendMap(
 	 		)
 	#####
 	# Add land:	 	
-	ax.add_feature(cfeature.LAND,  facecolor='white',zorder=2)
+	ax.add_feature(cfeature.LAND,  facecolor='0.95',zorder=2)
 	ax.coastlines(lw=0.5,zorder=3)
 	pyplot.title(title)
 	pyplot.axhline(y= 0.,c='k',ls='-')
@@ -382,6 +445,7 @@ def interannualExtendMap(
 				  box.height ])
 	
 		for i in sorted(pd.keys()):
+		
 			pyplot.plot(
 				[], [], 
 				c    = pd[i]['c'][0], 
@@ -396,7 +460,7 @@ def interannualExtendMap(
 		
 	#####
 	# Saving image:
-	print "saving",filename
+	print "interannualExtendMap:\tsaving",filename
 	pyplot.savefig(filename )		
 	pyplot.close()
 	
@@ -424,6 +488,7 @@ class extentMaps:
 		gridFile	= '',
 		maskOrZero	= 'mask',
 		debug		= True,
+		plotEvery	= 10,
 		
 		):
 	#####
@@ -452,7 +517,7 @@ class extentMaps:
   	self.imageDir 		= imageDir
 	self.maskOrZero		= maskOrZero
 	self.debug		= debug
-	
+	self.plotEvery		= plotEvery
 		
   	self.shelvefn 		= ukp.folder(self.workingDir)+'_'.join([self.jobID,self.dataType,])+'_contour.shelve'
 	self.shelvefn_insitu	= ukp.folder(self.workingDir)+'_'.join([self.jobID,self.dataType,])+'_contour_insitu.shelve'
@@ -478,15 +543,20 @@ class extentMaps:
 	    	modellat = {}
 	    	modellon = {}
 	    	
-	    	
+		interannualExtendfilename = ukp.folder(self.imageDir)+'_'.join([self.jobID,self.dataType,l,r])+'.png'	    			    	
+	    	if os.path.exists(interannualExtendfilename): 
+		    	print "Interinnual extended map already exists:", interannualExtendfilename	    	
+	    		continue
+	    			    	
 	    	realdata = dataDL.load[(r,l,)]
 	    	reallat = dataDL.load[(r,l,'lat')]
 	    	reallon = dataDL.load[(r,l,'lon')]
 		
 		transects = {'Equator':0.,'10 N':10., '10 S':-10.,'Atlantic28W':-28., 'Pacific135W':-135., 'all':0.}
 		for transect in transects.keys():
+			continue
 			filename = ukp.folder(self.imageDir)+'TransectMap-'+transect+'.png'
-		   
+		   	
 	        	makeTransectMap(	    
 	    				realdata, reallat, reallon,
 	    				self.contours,
@@ -498,26 +568,51 @@ class extentMaps:
 					maskOrZero=self.maskOrZero,
 					Transect = transect,
 				)
-		assert 0
-			    		    	
-		for mfile in self.modelFiles:
-			nc = dataset(mfile,'r')
-			ts = tst.getTimes(nc,self.modelcoords)
-			meantime = int(np.mean(ts))
-			print "\ttime:",meantime
+		#assert 0
 		
-			modelDL = tst.DataLoader(mfile,nc,self.modelcoords,self.modeldetails, regions = self.regions, layers = self.layers,)	
-	
-	    
-			modeldata[meantime] = modelDL.load[(r,l)]
-			modellat[meantime] = modelDL.load[(r,l,'lat')]
-			modellon[meantime] = modelDL.load[(r,l,'lon')]
-			nc.close()
+		
+		make2Maps = True
+		for mf, mfile in enumerate(self.modelFiles):
+			nc = dataset(mfile,'r')
+			
+			ts = tst.getTimes(nc,self.modelcoords)
+			modelDL = tst.DataLoader(mfile,nc,self.modelcoords,self.modeldetails, regions = self.regions, layers = self.layers,)
+			
+			if len(ts) ==1:
+				meantime = int(np.mean(ts))
+				print "\tmodel have one time step:",meantime
+		
+		    		modelTimes = modelDL.load[(r,l,'t')]
+		    		print modelTimes.min(), modelTimes.max(), tst.getTimes(nc,self.modelcoords)
+		    		
+		    		
+				modeldata[meantime] = modelDL.load[(r,l)]
+				modellat[meantime] = modelDL.load[(r,l,'lat')]
+				modellon[meantime] = modelDL.load[(r,l,'lon')]
 
+			else:
+				#####
+				# For models with more than one time step per file.
+				print "times: (models with more than one time step per file.)",ts
+				tsmodeldat 	= modelDL.load[(r,l)]
+			    	tsmodellat	= modelDL.load[(r,l,'lat')]
+			    	tsmodellon	= modelDL.load[(r,l,'lon')]
+			    	tsmodeltime	= modelDL.load[(r,l,'t')]			    	
+			    	for t,meantime in enumerate(ts):
+			    	
+					modeldata[meantime] = np.ma.masked_where(tsmodeltime != t, tsmodeldat).compressed()
+					modellat[meantime] = np.ma.masked_where(tsmodeltime != t, tsmodellat).compressed()
+					modellon[meantime] = np.ma.masked_where(tsmodeltime != t, tsmodellon).compressed()										
+			nc.close()
+				
 	    		for mesh in [1,]:
+	    			if make2Maps:
+					if  mf not in [0, len(self.modelFiles)-1 ]:continue
+					
 			    	if mesh: filename = ukp.folder(self.imageDir)+'_'.join([self.jobID,self.dataType,l,r,str(meantime), 'mesh',])+'.png'
 			    	else:	 filename = ukp.folder(self.imageDir)+'_'.join([self.jobID,self.dataType,l,r,str(meantime)])+'.png'	    		
 			    	
+			    	if os.path.exists(filename):continue
 		    		makeExtentPlot(	modeldata[meantime], modellat[meantime], modellon[meantime],
 	    				realdata, reallat, reallon,
 	    				self.contours,
@@ -531,17 +626,20 @@ class extentMaps:
 	    				
 	    				
 		    		
-		filename = ukp.folder(self.imageDir)+'_'.join([self.jobID,self.dataType,l,r])+'.png'	    		
+
 	    	title = ' '.join([getLongName(na) for na in [self.dataType, l , '(',self.jobID,')' ]])
+
+	    	print "Now making inter innual extended map:", title
     		interannualExtendMap(
     			modeldata, modellat, modellon,
 			realdata, reallat, reallon,
 			self.contours,
-			filename,
+			interannualExtendfilename,
 			title= title,
 			labels='',
 			zrange = self.zrange,
 			maskOrZero=self.maskOrZero,
+			plotEvery = self.plotEvery
 			)
 	
 

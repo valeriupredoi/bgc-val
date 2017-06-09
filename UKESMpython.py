@@ -1690,6 +1690,10 @@ def makeLonSafeArr(lon):
 	Makes sure that the entire array is between -180 and 180.
 	"""
 	
+	if lon.ndim == 3:
+	 for (l,ll,lll,) , lo in np.ndenumerate(lon):
+		lon[l,ll,lll] = makeLonSafe(lo)
+	 return lon	 	  
 	if lon.ndim == 2:
 	 for l,lon1 in enumerate(lon):
 	  for ll,lon2 in enumerate(lon1):
@@ -1698,10 +1702,32 @@ def makeLonSafeArr(lon):
 	if lon.ndim == 1:
 	 for l,lon1 in enumerate(lon):
 	   lon[l] = makeLonSafe(lon1)
-	 return lon
-	 	 
+	 return lon	 	 
 	assert False
 
+def sensibleLonBox(lons):
+	""" Takes a small list of longitude coordinates, and makes sure that they're all together.
+	Ie. a box of (179, 181,) would become 179,-179 when makeLonSafe, so we're undoing that.
+	"""
+	lons = np.array(lons)
+	# all positiv or all negative: fine
+	
+	if lons.min() * lons.max() >= 0.:
+		return lons
+	
+	boundary =10.
+	if lons.min()<-180.+boundary and lons.max() > 180. -boundary:
+		# move all below zero values to around 180.
+
+		for l,lo in enumerate(lons):
+			if lo <0.:
+				#print "move all below zero values to around 180.", l, lo
+				lons[l] = lo+360.
+	#####
+	# Note that this will need tweaking if we start looking at pacific transects.	
+
+	return lons	
+	
 
 def Area(p1,p2):#lat,lon
 	"""
@@ -1897,6 +1923,14 @@ def N2Biomass(nc,keys):
 	Loads keys[0] from the netcdf, but multiplies by 79.572 (to convert Nitrogen into biomass).
 	"""
 	return nc.variables[keys[0]][:]* 79.573
+
+def KtoC(nc,keys):		
+	""" 
+	Loads keys[0] from the netcdf, and converts from Kelvin to Celcius.
+	"""
+	return nc.variables[keys[0]][:] - 273.15
+
+
 def mul1000(nc,keys):		
 	""" 
 	Loads keys[0] from the netcdf, but multiplies by 1000.
@@ -1956,7 +1990,7 @@ tdicts = {	'ZeroToZero': {i  :i     for i in xrange(12)},
 		'ZeroToOne':  {i  :i+1   for i in xrange(12)},			
 	}		      		
 
-def extractData(nc, details,key = ['',]):
+def extractData(nc, details,key = ['',],debug=False):
   	""" 	
   	This loads the data based on the instructions from details dictionairy.
   	If you want to do something funking to the data before plotting it, just create a new convert function in getMT().
@@ -1965,17 +1999,17 @@ def extractData(nc, details,key = ['',]):
   	
 	if isinstance(details,dict): 
   		keys = details.keys()
-  		print "extractData: details is a dict", details.keys()
+  		if debug: print "extractData: details is a dict", details.keys()
   		
   	elif len(key) and key in nc.variables.keys():
-  		print "extractData: details Not a dict:", details,'but, the key is valid:',key
+  		if debug: print "extractData: details Not a dict:", details,'but, the key is valid:',key
   		return np.ma.array(nc.variables[key][:])  	
  		
 	if 'convert' in keys and 'vars' in keys:	
 		xd = np.ma.array(details['convert'](nc,details['vars']))
 		return xd
   	
-  	print "extractData:\t you shouldn't get here", details, key
+  	print "extractData:\t you may have a problem in your details dictionairy:", details, key
   	assert False
   	
   	
