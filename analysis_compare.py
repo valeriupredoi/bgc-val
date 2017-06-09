@@ -1967,27 +1967,19 @@ if __name__=="__main__":
 		exit
 	else:
 	
-
-#                jobs = ['u-al901','u-aj391','u-ai611']
-#                colours = {i:standards[i] for i in jobs}
-#                timeseries_compare(colours, physics=1,bio=0,year0=False,debug=0,analysisname='SteveDMSx1.7')
-
-#                jobs = ['u-al902','u-aj392','u-ai661']
-#                colours = {i:standards[i] for i in jobs}
-#                timeseries_compare(colours, physics=1,bio=0,year0=False,debug=0,analysisname='SteveDMSx1.9')
-                jobs = ['u-ai567','u-aj588','u-am696','u-am792','u-am892']
+                jobs = ['u-ai567','u-aj588','u-am696','u-am792','u-am892','u-ak900']
                 colours = {i:standards[i] for i in jobs}
-                timeseries_compare(colours, physics=1,bio=0,year0='First100Years',debug=0,analysisname='CirculationTests-june17')
-
+                timeseries_compare(colours, physics=1,bio=1,year0='First100Years',debug=0,analysisname='CirculationTests-june17')
 
                 jobs = ['u-am004','u-am005','u-am007','u-am008']
                 colours = {i:standards[i] for i in jobs}
                 timeseries_compare(colours, physics=1,bio=1,year0=True,debug=0,analysisname='UKESM0.6')
-#		assert 0
 
-                jobs = ['u-ak900','u-am184']
-                colours = {i:standards[i] for i in jobs}
-                timeseries_compare(colours, physics=1,bio=1,year0=True,debug=0,analysisname='OngoingParamFix')
+
+
+#                jobs = ['u-ak900','u-am184']
+#                colours = {i:standards[i] for i in jobs}
+#                timeseries_compare(colours, physics=1,bio=1,year0=True,debug=0,analysisname='OngoingParamFix')
 
 #                jobs = ['u-ak033','u-am459']
 #                colours = {i:standards[i] for i in jobs}

@@ -2304,7 +2304,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		#####
 		# Profile plots
 		if av[name]['Dimensions'] == 3 and name not in ['Iron','Fe']:
-			#continue
+			continue
 			profa = profileAnalysis(
 				av[name]['modelFiles'],
 				av[name]['dataFile'],
