@@ -410,6 +410,30 @@ def analysis_timeseries(jobID = "u-ab671",
 
 
 
+        #####
+        # Because we can never be sure someone won't randomly rename the 
+        # time dimension without saying anything.
+        if jobID in ['u-am515','u-am927','u-am064']:
+                #####
+                # Because we can never be sure someone won't randomly rename the 
+                # time dimension without saying anything.
+		ukesmkeys={}
+                ukesmkeys['time'] 	= 'time_centered'
+		ukesmkeys['temp3d'] 	= 'thetao'
+                ukesmkeys['sst'] 	= 'tos'
+                ukesmkeys['v3d']     = 'vo'
+                ukesmkeys['u3d']     = 'uo'
+                ukesmkeys['e3u']    = 'thkcello'
+
+        else:
+                ukesmkeys={}
+                ukesmkeys['time'] = 'time_counter'
+                ukesmkeys['temp3d']     = 'votemper'
+                ukesmkeys['sst']        = ''
+                ukesmkeys['v3d']     = 'vomecrty'
+                ukesmkeys['u3d']     = 'vozocrtx'
+                ukesmkeys['e3u']    = 'e3u'
+
 	#####
 	# Coordinate dictionairy
 	# These are python dictionairies, one for each data source and model.
@@ -420,13 +444,13 @@ def analysis_timeseries(jobID = "u-ab671",
 	# 	An example would be, if a netcdf uses the middle day of the month as it's time value:
 	#		tdict = {15:0, 45:1 ...}
 
+	timekey		= ukesmkeys['time']
+	medusaCoords 	= {'t':timekey, 'z':'deptht', 'lat': 'nav_lat',  'lon': 'nav_lon',   'cal': '360_day',}	# model doesn't need time dict.
+	medusaUCoords 	= {'t':timekey, 'z':'depthu', 'lat': 'nav_lat',  'lon': 'nav_lon',   'cal': '360_day',}	# model doesn't need time dict.
+	medusaVCoords 	= {'t':timekey, 'z':'depthv', 'lat': 'nav_lat',  'lon': 'nav_lon',   'cal': '360_day',}	# model doesn't need time dict.
+	medusaWCoords 	= {'t':timekey, 'z':'depthw', 'lat': 'nav_lat',  'lon': 'nav_lon',   'cal': '360_day',}	# model doesn't need time dict.
 
-	medusaCoords 	= {'t':'time_counter', 'z':'deptht', 'lat': 'nav_lat',  'lon': 'nav_lon',   'cal': '360_day',}	# model doesn't need time dict.
-	medusaUCoords 	= {'t':'time_counter', 'z':'depthu', 'lat': 'nav_lat',  'lon': 'nav_lon',   'cal': '360_day',}	# model doesn't need time dict.
-	medusaVCoords 	= {'t':'time_counter', 'z':'depthv', 'lat': 'nav_lat',  'lon': 'nav_lon',   'cal': '360_day',}	# model doesn't need time dict.
-	medusaWCoords 	= {'t':'time_counter', 'z':'depthw', 'lat': 'nav_lat',  'lon': 'nav_lon',   'cal': '360_day',}	# model doesn't need time dict.
-
-	icCoords 	= {'t':'time_counter', 'z':'nav_lev', 'lat': 'nav_lat',  'lon': 'nav_lon',   'cal': '360_day',}	# model doesn't need time dict.
+	icCoords 	= {'t':timekey, 'z':'nav_lev', 'lat': 'nav_lat',  'lon': 'nav_lon',   'cal': '360_day',}	# model doesn't need time dict.
 	maredatCoords 	= {'t':'index_t', 'z':'DEPTH',  'lat': 'LATITUDE', 'lon': 'LONGITUDE', 'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
 	takahashiCoords	= {'t':'index_t', 'z':'index_z','lat': 'LAT', 'lon': 'LON', 'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
 	woaCoords 	= {'t':'index_t', 'z':'depth',  'lat': 'lat', 	   'lon': 'lon',       'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
@@ -437,6 +461,7 @@ def analysis_timeseries(jobID = "u-ab671",
 	dmsCoords	= {'t':'time',    'z':'depth',  'lat':'Latitude',  'lon': 'Longitude','cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
 	cciCoords	= {'t':'index_t', 'z':'index_z','lat': 'lat',      'lon': 'lon', 'cal': 'standard','tdict':['ZeroToZero'] }
 	godasCoords 	= {'t':'index_t',    'z':'level',  'lat': 'lat',      'lon': 'lon', 'cal': 'standard','tdict':['ZeroToZero'] }
+
 
 	def listModelDataFiles(jobID, filekey, datafolder, annual):
 		print "listing model data files:",jobID, filekey, datafolder, annual
@@ -923,14 +948,14 @@ def analysis_timeseries(jobID = "u-ab671",
 			print "modelAOU:",ncpath, newpath
 			nc2 = dataset(newpath,'r')
 			print "Loaded",newpath
-			temp = nc2.variables['votemper'][:]
+			temp = nc2.variables[ukesmkeys['temp3d']][:]
 			sal  = nc2.variables['vosaline'][:]			
 			return AOU(temp,sal,o2)
 			
 		av[name]['modelcoords'] 	= medusaCoords
 		av[name]['datacoords'] 		= woaCoords
 
-		av[name]['modeldetails'] 	= {'name': name, 'vars':['OXY','votemper','vosaline'], 'convert': modelAOU,'units':'mmol O2/m^3'}
+		av[name]['modeldetails'] 	= {'name': name, 'vars':['OXY',ukesmkeys['temp3d'],'vosaline'], 'convert': modelAOU,'units':'mmol O2/m^3'}
 		av[name]['datadetails']  	= {'name':'','units':'',}
 
 		av[name]['layers'] 		=  layerList
@@ -1362,8 +1387,9 @@ def analysis_timeseries(jobID = "u-ab671",
 			#### works like no change, but applies a mask.
 			temperature = np.ma.masked_where(gmttmask==0,nc.variables[keys[0]][:].squeeze())
 			return (temperature*pvol).sum()/(pvol.sum())
-
-		av[name]['modeldetails'] 	= {'name': name, 'vars':['votemper',], 'convert': sumMeanLandMask,'units':'degrees C'}
+		
+		
+		av[name]['modeldetails'] 	= {'name': name, 'vars':[ukesmkeys['temp3d'],], 'convert': sumMeanLandMask,'units':'degrees C'}
 		av[name]['datadetails']  	= {'name': '', 'units':''}
 		#av[name]['datadetails']  	= {'name': name, 'vars':['t_an',], 'convert': ukp.NoChange,'units':'degrees C'}
 
@@ -1394,7 +1420,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		def calcIcelessMeanSST(nc,keys):
 			#### works like no change, but applies a mask.
 			icecov = nc.variables['soicecov'][:].squeeze()
-			sst = np.ma.array(nc.variables['votemper'][:,0,].squeeze())
+			sst = np.ma.array(nc.variables[ukesmkeys['temp3d']][:,0,].squeeze())
 			sst = np.ma.masked_where((icetmask[0]==0)+(icecov>0.15)+sst.mask,sst)
 			area=  np.ma.masked_where(sst.mask,area_full)
 			val = (sst*area).sum()/(area.sum())
@@ -1402,7 +1428,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			return val
 
 
-		av[name]['modeldetails'] 	= {'name': name, 'vars':['soicecov','votemper',], 'convert': calcIcelessMeanSST,'units':'degrees C'}
+		av[name]['modeldetails'] 	= {'name': name, 'vars':['soicecov',ukesmkeys['temp3d'],], 'convert': calcIcelessMeanSST,'units':'degrees C'}
 		av[name]['datadetails']  	= {'name': '', 'units':''}
 		#av[name]['datadetails']  	= {'name': name, 'vars':['t_an',], 'convert': ukp.NoChange,'units':'degrees C'}
 
@@ -1447,7 +1473,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			av[name]['modelcoords'] 	= medusaCoords
 			av[name]['datacoords'] 		= woaCoords
 
-			av[name]['modeldetails'] 	= {'name': name, 'vars':['votemper',], 'convert': meanLandMask,'units':'degrees C'}
+			av[name]['modeldetails'] 	= {'name': name, 'vars':[ukesmkeys['temp3d'],], 'convert': meanLandMask,'units':'degrees C'}
 			av[name]['datadetails']  	= {'name': '', 'units':''}
 
 			av[name]['layers'] 		= ['layerless',]
@@ -1475,7 +1501,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modelcoords'] 	= medusaCoords
 		av[name]['datacoords'] 		= woaCoords
 
-		av[name]['modeldetails'] 	= {'name': name, 'vars':['votemper',], 'convert': applyLandMask,'units':'degrees C'}
+		av[name]['modeldetails'] 	= {'name': name, 'vars':[ukesmkeys['temp3d'],], 'convert': applyLandMask,'units':'degrees C'}
 		av[name]['datadetails']  	= {'name': name, 'vars':['t_an',], 'convert': ukp.NoChange,'units':'degrees C'}
 
                 tregions =regionList
@@ -1529,7 +1555,7 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		av[name]['modelcoords'] 	= medusaUCoords
 		av[name]['datacoords'] 		= godasCoords
-		av[name]['modeldetails'] 	= {'name': name, 'vars':['vozocrtx',], 'convert': applyLandMask1e3,'units':'mm/s'}
+		av[name]['modeldetails'] 	= {'name': name, 'vars':[ukesmkeys['u3d'],], 'convert': applyLandMask1e3,'units':'mm/s'}
 		av[name]['datadetails']  	= {'name': name, 'vars':['ucur',], 'convert': ukp.NoChange,'units':'mm/s'}
 
 		av[name]['layers'] 		= layerList
@@ -1554,7 +1580,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modelcoords'] 	= medusaVCoords
 		av[name]['datacoords'] 		= godasCoords
 
-		av[name]['modeldetails'] 	= {'name': name, 'vars':['vomecrty',], 'convert': applyLandMask1e3,'units':'mm/s'}
+		av[name]['modeldetails'] 	= {'name': name, 'vars':[ukesmkeys['v3d'],], 'convert': applyLandMask1e3,'units':'mm/s'}
 		av[name]['datadetails']  	= {'name': name, 'vars':['vcur',], 'convert': ukp.NoChange,'units':'mm/s'}
 
 		av[name]['layers'] 		= layerList
@@ -1763,7 +1789,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['datacoords'] 		= mldCoords
 
 		av[name]['modeldetails'] 	= {'name': 'mld', 'vars':['somxl010',],   'convert': applySurfaceMask,'units':'m'}
-		#av[name]['modeldetails'] 	= {'name': 'mld', 'vars':['votemper',],   'convert': calcMLD,'units':'m'}
+		#av[name]['modeldetails'] 	= {'name': 'mld', 'vars':[ukesmkeys['temp3d'],],   'convert': calcMLD,'units':'m'}
 		av[name]['datadetails']  	= {'name': 'mld', 'vars':['mld','mask',], 'convert': mldapplymask,'units':'m'}
 
 		av[name]['layers'] 		= ['layerless',]#'Surface - 1000m','Surface - 300m',]#'depthint']
@@ -1914,8 +1940,8 @@ def analysis_timeseries(jobID = "u-ab671",
 		nc.close()
 
 		def drake(nc,keys):
-			e3u = nc.variables['e3u'][0,:,LAT0:LAT1,LON]
-			velo = nc.variables['vozocrtx'][0,:,LAT0:LAT1,LON]
+			e3u = nc.variables[ukesmkeys['e3u']][0,:,LAT0:LAT1,LON]
+			velo = nc.variables[ukesmkeys['u3d']][0,:,LAT0:LAT1,LON]
 			return np.sum(velo*e3u*e2u*umask)*1.e-6
 
 		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_U', paths.ModelFolder_pref, annual)
@@ -1924,7 +1950,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modelcoords'] = medusaCoords
 		av[name]['datacoords'] 	= medusaCoords
 
-		av[name]['modeldetails']= {'name': name, 'vars':['e3u','vozocrtx',], 'convert': drake,'units':'Sv'}
+		av[name]['modeldetails']= {'name': name, 'vars':[ukesmkeys['e3u'],ukesmkeys['u3d'],], 'convert': drake,'units':'Sv'}
 
 		av[name]['regions'] 		=  ['regionless',]
 		av[name]['datadetails']  	= {'name':'','units':'',}
@@ -1966,7 +1992,7 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		def calc_amoc32S(nc,keys):
 			name = 'AMOC_32S'
-			zv = np.ma.array(nc.variables['vomecrty'][...,latslice32S,:]) # m/s
+			zv = np.ma.array(nc.variables[ukesmkeys['v3d']][...,latslice32S,:]) # m/s
 			atlmoc = np.array(np.zeros_like(zv[0,:,:,0]))
 			e2vshape = e3v[name].shape
 			for la in range(e2vshape[1]):		#ji, y
@@ -1984,7 +2010,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			return np.ma.max(atlmoc)
 
 		def amoc26N_array(nc,keys,amocname='AMOC_26N'):
-			zv = np.ma.array(nc.variables['vomecrty'][...,latslice26N,:]) # m/s
+			zv = np.ma.array(nc.variables[ukesmkeys['v3d']][...,latslice26N,:]) # m/s
 			atlmoc = np.array(np.zeros_like(zv[0,:,:,0]))
 			e2vshape = e3v[amocname].shape
 			for la in range(e2vshape[1]):		#ji, y
@@ -2020,11 +2046,11 @@ def analysis_timeseries(jobID = "u-ab671",
 			av[name]['modelcoords'] = medusaCoords
 			av[name]['datacoords'] 	= medusaCoords
 
-			if name == 'AMOC_26N':	av[name]['modeldetails']= {'name': name, 'vars':['vomecrty',], 'convert': calc_amoc26N,'units':'Sv'}
+			if name == 'AMOC_26N':	av[name]['modeldetails']= {'name': name, 'vars':[ukesmkeys['v3d'],], 'convert': calc_amoc26N,'units':'Sv'}
                         if name in ['AMOC_26N_nomexico',]:
-                                                av[name]['modeldetails']= {'name': name, 'vars':['vomecrty',], 'convert': calc_amoc26Nnm,'units':'Sv'}
-			if name == 'ADRC_26N': 	av[name]['modeldetails']= {'name': name, 'vars':['vomecrty',], 'convert': calc_min_amoc26N,'units':'Sv'}			
-			if name == 'AMOC_32S': 	av[name]['modeldetails']= {'name': name, 'vars':['vomecrty',], 'convert': calc_amoc32S,'units':'Sv'}
+                                                av[name]['modeldetails']= {'name': name, 'vars':[ukesmkeys['v3d'],], 'convert': calc_amoc26Nnm,'units':'Sv'}
+			if name == 'ADRC_26N': 	av[name]['modeldetails']= {'name': name, 'vars':[ukesmkeys['v3d'],], 'convert': calc_min_amoc26N,'units':'Sv'}			
+			if name == 'AMOC_32S': 	av[name]['modeldetails']= {'name': name, 'vars':[ukesmkeys['v3d'],], 'convert': calc_amoc32S,'units':'Sv'}
 
 			av[name]['datadetails']  	= {'name':'','units':'',}
 			av[name]['layers'] 		=  ['layerless',]

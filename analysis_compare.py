@@ -1867,7 +1867,11 @@ if __name__=="__main__":
 		#x1.7 DMS
 		'u-al901':'purple', 
                 'u-aj391':'blue',
-                'u-ai611':'green', 
+                'u-ai611':'green',
+                'u-am064':'#41b6c4',
+                'u-am927':'red',
+                'u-am515':'orange',
+                
 
 		#x1.9 DMS
                 'u-al902':'sienna',
@@ -1966,6 +1970,17 @@ if __name__=="__main__":
 		print "Successful command line comparison"
 		exit
 	else:
+
+
+                jobs = ['u-ai611','u-aj391','u-al901','u-am064','u-am927','u-am515',]
+                colours = {i:standards[i] for i in jobs}
+                timeseries_compare(colours, physics=1,bio=0,year0=False,debug=0,analysisname='TillsCoupledRuns_physics')
+                
+                jobs = ['u-am927','u-am515',]
+                colours = {i:standards[i] for i in jobs}
+                timeseries_compare(colours, physics=0,bio=1,year0=False,debug=0,analysisname='TillsCoupledRuns_BGC')
+
+
 	
                 jobs = ['u-ai567','u-aj588','u-am696','u-am792','u-am892','u-ak900']
                 colours = {i:standards[i] for i in jobs}
@@ -1975,6 +1990,7 @@ if __name__=="__main__":
                 colours = {i:standards[i] for i in jobs}
                 timeseries_compare(colours, physics=1,bio=1,year0=True,debug=0,analysisname='UKESM0.6')
 
+		
 
 
 #                jobs = ['u-ak900','u-am184']
