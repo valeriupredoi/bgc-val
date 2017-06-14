@@ -58,6 +58,9 @@ def folder(name):
         if os.path.exists(name) is False:
                 os.makedirs(name)
                 print 'makedirs ', name
+	####
+	# ensure that permissions are : drwxrwsr-x+
+	#os.chmod(name , 02775)
         return name
 
 
@@ -195,6 +198,11 @@ def downloadField(jobID, keys, extension='grid[-_]T', timeslice='m',name='',dryr
 	#####
 	# Verify output folder:		
 	outputFold = folder(paths.ModelFolder_pref+"/"+jobID+"/"+name)
+        ####
+        # ensure that permissions are : drwxrwsr-x+
+        os.chmod(paths.ModelFolder_pref+"/"+jobID , 02775)
+        os.chmod(outputFold , 02775)
+
 	
 	print "downloadField:",name, jobID,keys,timeslice,'being saved to:',outputFold
 
@@ -278,10 +286,15 @@ def downloadMass(jobID,):
 		if not os.path.exists(outputFold):
 			print "Making ",outputFold
     			os.makedirs(outputFold)
+	        ####
+        	# ensure that permissions are : drwxrwsr-x+
+	        os.chmod(outputFold , 02775)
+
 
 	if machine.find('monsoon')>-1:
 		knownmachine = True
                 outputFold = "/projects/ukesm/ldmora/UKESM/"+jobID
+
                 if not os.path.exists(outputFold):
                         print "Making ",outputFold
                         os.makedirs(outputFold)
@@ -293,6 +306,7 @@ def downloadMass(jobID,):
 		print "\tBut you're at",machine
 		print "\tTo skip this warning, use the \"anymachine\" option at the command line"
 		return
+
 	
         fixFilePaths(outputFold,jobID)
 	
