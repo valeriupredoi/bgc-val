@@ -140,6 +140,9 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 		analysisKeys.append('CHL')		
 		analysisKeys.append('DiaFrac')
                 analysisKeys.append('DMS')
+		analysisKeys.append('Dust')                     # Dust
+        	analysisKeys.append('TotalDust')                # Total Dust
+
 #                analysisKeys.append('DMS_ARAN')
 
                 analysisKeys.append('DTC')
@@ -1335,6 +1338,91 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 			av[name]['modelgrid']		= 'eORCA1'
 			av[name]['gridFile']		= paths.orcaGridfn
 			av[name]['Dimensions']		= 2				
+
+		if 'TotalDust' in analysisKeys:
+		        name = 'TotalDust'
+		        av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', paths.ModelFolder_pref, annual)[:]
+		        av[name]['dataFile']    = paths.Dustdir+'mahowald.orca100_annual.nc'
+
+		        av[name]['modelcoords']         = medusaCoords
+		        av[name]['datacoords']          = medusaCoords
+
+		        nc = Dataset(paths.orcaGridfn,'r')
+		        masked_area = nc.variables['e2t'][:] * nc.variables['e1t'][:]*nc.variables['tmask'][0]
+		        nc.close()
+
+		        def datadustsum(nc,keys):
+		                #factors are:
+		                # 0.035: iron as a fraction of total dust
+		                # 1e6: convert from kmol -> mmol
+		                # 1e-12: convert from mol to Gmol
+		                # 0.00532: solubility factor for iron
+		                # 55.845: atmoic mass of iron (g>mol conversion)
+		                # (24.*60.*60.*365.25): per second to per year
+
+		                dust = nc.variables[keys[0]][:]
+		                dust[:,:,234:296,295:348] = 0.
+		                dust[:,:,234:248,285:295] = 0.
+		                dust[:,:,228:256,290:304] = 0.
+		                return (masked_area*dust).sum() *0.035 * 1.e6*1.e-12 *0.00532*(24.*60.*60. *365.25)/  55.845
+
+		        def modeldustsum(nc,keys):
+		                dust = nc.variables[keys[0]][:]
+		                dust[:,234:296,295:348] = 0.
+		                dust[:,234:248,285:295] = 0.
+		                dust[:,228:256,290:304] = 0.
+		                return (masked_area*dust).sum() *1.E-12 *365.25
+
+		        av[name]['modeldetails']        = {'name': name, 'vars':['AEOLIAN',], 'convert': modeldustsum,'units':'Gmol Fe/yr'}
+		        av[name]['datadetails']         = {'name': name, 'vars':['dust_ann',], 'convert': datadustsum,'units':'Gmol Fe/yr'}
+
+		        av[name]['layers']              = ['layerless',]
+		        av[name]['regions']             = ['regionless',]
+		        av[name]['metrics']             = ['metricless',]
+
+		        av[name]['datasource']          = 'Mahowald'
+		        av[name]['model']               = 'MEDUSA'
+
+		        av[name]['modelgrid']           = 'eORCA1'
+		        av[name]['gridFile']            = paths.orcaGridfn
+		        av[name]['Dimensions']          = 1
+		        
+		if 'Dust' in analysisKeys:
+		        name = 'Dust'
+		        av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', paths.ModelFolder_pref, annual)[:]
+		        av[name]['dataFile']            = paths.Dustdir+'mahowald.orca100_annual.nc'
+
+		        av[name]['modelcoords']         = medusaCoords
+		        av[name]['datacoords']          = medusaCoords
+		        av[name]['modeldetails']        = {'name': name, 'vars':['AEOLIAN',], 'convert': ukp.NoChange,'units':'mmol Fe/m2/d'}
+
+		        def mahodatadust(nc,keys):
+		                #factors are:
+		                # 0.035: iron as a fraction of total dust
+		                # 1e6: convert from kmol -> mmol
+		                # 0.00532: solubility factor or iron
+		                # 55.845: atmoic mass of iron (g>mol conversion)
+		                # (24.*60.*60.): per second to per day
+		                dust = nc.variables[keys[0]][:]
+		                dust[0,0,194:256,295:348] = 0.
+		                dust[0,0,194:208,285:295] = 0.
+		                dust[0,0,188:216,290:304] = 0.
+		                return dust *0.035 * 1.e6 *0.00532*(24.*60.*60.) / 55.845
+
+		        av[name]['datadetails']         = {'name': name, 'vars':['dust_ann',], 'convert': mahodatadust ,'units':'mmol Fe/m2/d'}
+
+		        av[name]['layers']              = ['layerless',]
+		        av[name]['regions']             = regionList
+		        av[name]['metrics']             = metricList
+
+		        av[name]['datasource']          = 'Mahowald'
+		        av[name]['model']               = 'MEDUSA'
+
+		        av[name]['modelgrid']           = 'eORCA1'
+		        av[name]['gridFile']            = paths.orcaGridfn
+		        av[name]['Dimensions']          = 2
+
+
 	
 		#####
 		# North Atlantic Salinity
@@ -1544,7 +1632,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 	 			 	 'ZonalCurrent','MeridionalCurrent','VerticalCurrent']:
 				mdata = modeldataD[(jobID,name )][('Global', 'Surface', 'mean')]
 				title = ' '.join(['Global', 'Surface', 'Mean',  getLongName(name)])
-			elif name in [  'OMZThickness', 'OMZMeanDepth', 'DMS','MLD','DMS_ARAN']:
+			elif name in [  'OMZThickness', 'OMZMeanDepth', 'DMS','MLD','DMS_ARAN','Dust',]:
 				mdata = modeldataD[(jobID,name )][('Global', 'layerless', 'mean')]
 				title = ' '.join(['Global', getLongName(name)])	
                         elif name in ['DTC',]:
@@ -1655,9 +1743,24 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 			try:	mdata = modeldataD[(jobID,name )][(region, layer, 'mean')]
 			except: continue
 			title = ' '.join([region, layer, 'Mean',  getLongName(name)])
-	
-			timesD[jobID] 	= sorted(mdata.keys())
-			arrD[jobID]	= [mdata[t] for t in timesD[jobID]]
+
+                        if year0 in ['True', True,'First100Years']:
+                                if len(mdata.keys())==0:
+                                        timesD[jobID]=[]
+                                        arrD[jobID]=[]
+                                        continue
+                                t0 = float(sorted(mdata.keys())[0])
+                                times = []
+                                datas = []
+                                for t in sorted(mdata.keys()):
+                                        if year0=='First100Years' and float(t) - t0 > 100.:continue
+                                        times.append(float(t)-t0)
+                                        datas.append(mdata[t])
+                                timesD[jobID]   = times
+                                arrD[jobID]     = datas
+			else:
+				timesD[jobID] 	= sorted(mdata.keys())
+				arrD[jobID]	= [mdata[t] for t in timesD[jobID]]
                 units = av[name]['modeldetails']['units']
 		
 		for ts in ['Together',]:#'Separate']:
@@ -1676,7 +1779,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 
         	
         	
-	for name in ['DiaFrac','CHD','CHN','CHL','N','Si','Iron','Alk','DIC','Chlorophyll','DMS','Nitrate','Silicate','MLD','mld',]:
+	for name in ['DiaFrac','CHD','CHN','CHL','N','Si','Iron','Alk','DIC','Chlorophyll','DMS','Nitrate','Silicate','MLD','mld','Dust',]:
 	  if name not in av.keys():continue
 	  for region in regionList:
 	    for layer in ['Surface','100m','200m','layerless',]:
@@ -1972,15 +2075,15 @@ if __name__=="__main__":
 	else:
 
 
-                jobs = ['u-ai611','u-aj391','u-al901','u-am064','u-am927','u-am515',]
-                colours = {i:standards[i] for i in jobs}
-                timeseries_compare(colours, physics=1,bio=0,year0=False,debug=0,analysisname='TillsCoupledRuns_physics')
+#                jobs = ['u-ai611','u-aj391','u-al901','u-am064','u-am927','u-am515',]
+#                colours = {i:standards[i] for i in jobs}
+#                timeseries_compare(colours, physics=1,bio=0,year0=False,debug=0,analysisname='TillsCoupledRuns_physics')
                 
                 jobs = ['u-am927','u-am515',]
                 colours = {i:standards[i] for i in jobs}
-                timeseries_compare(colours, physics=0,bio=1,year0=False,debug=0,analysisname='TillsCoupledRuns_BGC')
+                timeseries_compare(colours, physics=0,bio=1,year0=True,debug=0,analysisname='TillsCoupledRuns_BGC')
 
-
+		assert 0
 	
                 jobs = ['u-ai567','u-aj588','u-am696','u-am792','u-am892','u-ak900']
                 colours = {i:standards[i] for i in jobs}

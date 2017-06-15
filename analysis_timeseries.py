@@ -114,14 +114,14 @@ if True:
 	physKeys.append('ZonalCurrent')             	# Zonal Veloctity
 	physKeys.append('MeridionalCurrent')        	# Meridional Veloctity
 	physKeys.append('VerticalCurrent')          	# Vertical Veloctity
-	physKeys.append('WindStress')               	# Wind Stress                        	
+#	physKeys.append('WindStress')               	# Wind Stress                        	
 
 	physKeys.append('sowaflup')			# Net Upward Water Flux 
-	physKeys.append('sohefldo')			# Net downward Water Flux 			
-	physKeys.append('sofmflup')			# Water flux due to freezing/melting
-	physKeys.append('sosfldow')			# Downward salt flux
+#	physKeys.append('sohefldo')			# Net downward Water Flux 			
+#	physKeys.append('sofmflup')			# Water flux due to freezing/melting
+#	physKeys.append('sosfldow')			# Downward salt flux
 	physKeys.append('soicecov')			# Ice fraction
-	physKeys.append('sossheig')                 # Sea surface height
+#	physKeys.append('sossheig')                 # Sea surface height
 physKeysDict = {i:n for i,n in enumerate(physKeys)}
 
 #####
@@ -421,19 +421,26 @@ def analysis_timeseries(jobID = "u-ab671",
                 ukesmkeys['time'] 	= 'time_centered'
 		ukesmkeys['temp3d'] 	= 'thetao'
                 ukesmkeys['sst'] 	= 'tos'
+                ukesmkeys['sal3d']     = 'so'
+                ukesmkeys['sss']        = 'sos'
                 ukesmkeys['v3d']     = 'vo'
                 ukesmkeys['u3d']     = 'uo'
                 ukesmkeys['e3u']    = 'thkcello'
+                ukesmkeys['w3d']     = 'wo'
+
+
 
         else:
                 ukesmkeys={}
                 ukesmkeys['time'] = 'time_counter'
                 ukesmkeys['temp3d']     = 'votemper'
                 ukesmkeys['sst']        = ''
+                ukesmkeys['sal3d']     = 'vosaline'
+                ukesmkeys['sss']        = ''
                 ukesmkeys['v3d']     = 'vomecrty'
                 ukesmkeys['u3d']     = 'vozocrtx'
                 ukesmkeys['e3u']    = 'e3u'
-
+                ukesmkeys['w3d']     = 'vovecrtz'
 	#####
 	# Coordinate dictionairy
 	# These are python dictionairies, one for each data source and model.
@@ -949,13 +956,13 @@ def analysis_timeseries(jobID = "u-ab671",
 			nc2 = dataset(newpath,'r')
 			print "Loaded",newpath
 			temp = nc2.variables[ukesmkeys['temp3d']][:]
-			sal  = nc2.variables['vosaline'][:]			
+			sal  = nc2.variables[ukesmkeys['sal3d']][:]			
 			return AOU(temp,sal,o2)
 			
 		av[name]['modelcoords'] 	= medusaCoords
 		av[name]['datacoords'] 		= woaCoords
 
-		av[name]['modeldetails'] 	= {'name': name, 'vars':['OXY',ukesmkeys['temp3d'],'vosaline'], 'convert': modelAOU,'units':'mmol O2/m^3'}
+		av[name]['modeldetails'] 	= {'name': name, 'vars':['OXY',ukesmkeys['temp3d'],ukesmkeys['sal3d']], 'convert': modelAOU,'units':'mmol O2/m^3'}
 		av[name]['datadetails']  	= {'name':'','units':'',}
 
 		av[name]['layers'] 		=  layerList
@@ -1505,7 +1512,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['datadetails']  	= {'name': name, 'vars':['t_an',], 'convert': ukp.NoChange,'units':'degrees C'}
 
                 tregions =regionList
-                tregions.extend(['NordicSea', 'LabradorSea', 'NorwegianSea'])
+                #tregions.extend(['NordicSea', 'LabradorSea', 'NorwegianSea'])
 		av[name]['layers'] 		=  layerList
 		av[name]['regions'] 		= tregions
 		av[name]['metrics']		= metricList
@@ -1530,11 +1537,11 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modelcoords'] 	= medusaCoords
 		av[name]['datacoords'] 		= woaCoords
 
-		av[name]['modeldetails'] 	= {'name': name, 'vars':['vosaline',], 'convert': applyLandMask,'units':'PSU'}
+		av[name]['modeldetails'] 	= {'name': name, 'vars':[ukesmkeys['sal3d'],], 'convert': applyLandMask,'units':'PSU'}
 		av[name]['datadetails']  	= {'name': name, 'vars':['s_an',], 'convert': ukp.NoChange,'units':'PSU'}
 
 		salregions =regionList
-		salregions.extend(['NordicSea', 'LabradorSea', 'NorwegianSea'])
+		#salregions.extend(['NordicSea', 'LabradorSea', 'NorwegianSea'])
 		av[name]['layers'] 		=  layerList
 		av[name]['regions'] 		= salregions
 		av[name]['metrics']		= metricList
@@ -1608,11 +1615,11 @@ def analysis_timeseries(jobID = "u-ab671",
 		def applyLandMask1e6(nc,keys):
 			return applyLandMask(nc,keys)*1000000.
 
-		av[name]['modeldetails'] 	= {'name': name, 'vars':['vovecrtz',], 'convert': applyLandMask1e6,'units':'um/s'}
+		av[name]['modeldetails'] 	= {'name': name, 'vars':[ukesmkeys['w3d'],], 'convert': applyLandMask1e6,'units':'um/s'}
 		av[name]['datadetails']  	= {'name': name, 'vars':['dzdt',], 'convert': ukp.NoChange,'units':'um/s'}
 
                 vregions =regionList
-                vregions.extend(['NordicSea', 'LabradorSea', 'NorwegianSea'])
+#                vregions.extend(['NordicSea', 'LabradorSea', 'NorwegianSea'])
 
 		av[name]['layers'] 		= layerList
 		av[name]['regions'] 		= vregions
@@ -1700,7 +1707,9 @@ def analysis_timeseries(jobID = "u-ab671",
 		
 		av[name]['modeldetails'] 	= {'name': name[:], 'vars':[name[:],], 'convert': applySurfaceMask, 'units':nasUnits[name][:]}
 
-		av[name]['regions'] 		=  ['NordicSea', 'LabradorSea', 'NorwegianSea','Global', ]
+		#av[name]['regions'] 		=  ['NordicSea', 'LabradorSea', 'NorwegianSea','Global', ]
+                av[name]['regions']             =  ['Global', ]
+
 
 		av[name]['datadetails']  	= {'name':'','units':'',}
 		av[name]['layers'] 		=  ['layerless',]
@@ -1794,7 +1803,7 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		av[name]['layers'] 		= ['layerless',]#'Surface - 1000m','Surface - 300m',]#'depthint']
 		mldregions =regionList
-		mldregions.extend(['NordicSea', 'LabradorSea', 'NorwegianSea'])		
+		#mldregions.extend(['NordicSea', 'LabradorSea', 'NorwegianSea'])		
 		av[name]['regions'] 		= mldregions
 		av[name]['metrics']		= metricList
 
@@ -1835,7 +1844,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['layers'] 		= ['layerless',]
 
 		mldregions =regionList
-		mldregions.extend(['NordicSea', 'LabradorSea', 'NorwegianSea'])		
+		#mldregions.extend(['NordicSea', 'LabradorSea', 'NorwegianSea'])		
 		
 		av[name]['regions'] 		= mldregions
 		av[name]['metrics']		= metricList
