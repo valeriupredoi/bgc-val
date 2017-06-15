@@ -264,6 +264,39 @@ def analysis_p2p(
                #         orcaGridfn      = ModelFolder+'/mesh_mask_eORCA1_wrk.nc'
                # paths.p2p_ppDir         = "/projects/ukesm/"+getuser()+"/UKESM_postprocessed"
                 #imgDir          = ukp.folder('images')
+
+        #####
+        # Because we can never be sure someone won't randomly rename the 
+        # time dimension without saying anything.
+        if jobID in ['u-am515','u-am927','u-am064']:
+                #####
+                # Because we can never be sure someone won't randomly rename the 
+                # time dimension without saying anything.
+		ukesmkeys={}
+                ukesmkeys['time'] 	= 'time_centered'
+		ukesmkeys['temp3d'] 	= 'thetao'
+                ukesmkeys['sst'] 	= 'tos'
+                ukesmkeys['sal3d']     = 'so'
+                ukesmkeys['sss']        = 'sos'
+                ukesmkeys['v3d']     = 'vo'
+                ukesmkeys['u3d']     = 'uo'
+                ukesmkeys['e3u']    = 'thkcello'
+                ukesmkeys['w3d']     = 'wo'
+
+        else:
+                ukesmkeys={}
+                ukesmkeys['time'] = 'time_counter'
+                ukesmkeys['temp3d']     = 'votemper'
+                ukesmkeys['sst']        = ''
+                ukesmkeys['sal3d']     = 'vosaline'
+                ukesmkeys['sss']        = ''
+                ukesmkeys['v3d']     = 'vomecrty'
+                ukesmkeys['u3d']     = 'vozocrtx'
+                ukesmkeys['e3u']    = 'e3u'
+                ukesmkeys['w3d']     = 'vovecrtz'
+                
+                
+
 						
 	#####
 	# Set which spatial and temporal limitations to plot.
@@ -735,7 +768,7 @@ def analysis_p2p(
 			av[name]['Data']['source'] 	= 'WOA'
 			av[name]['NEMO']['source']	= 'NEMO'			
 	
-			av[name]['NEMO']['details']	= {'name': name, 'vars':['vosaline',], 'convert': ukp.NoChange,}			
+			av[name]['NEMO']['details']	= {'name': name, 'vars':[ukesmkeys['sal3d'],], 'convert': ukp.NoChange,}			
 			av[name]['Data']['details']	= {'name': name, 'vars':['s_an',], 'convert': ukp.NoChange,}	# no units?
 			
 					
@@ -757,7 +790,7 @@ def analysis_p2p(
 			av[name]['Data']['source'] 	= 'WOA'
 			av[name]['NEMO']['source']	= 'NEMO'			
 	
-			av[name]['NEMO']['details']	= {'name': name, 'vars':['votemper',], 'convert': ukp.NoChange,}			
+			av[name]['NEMO']['details']	= {'name': name, 'vars':[ukesmkeys['temp3d'],], 'convert': ukp.NoChange,}			
 			av[name]['Data']['details']	= {'name': name, 'vars':['t_an',], 'convert': ukp.NoChange,}	# no units?
 
 		if 'ZonalCurrent' in analysisKeys:
@@ -779,7 +812,7 @@ def analysis_p2p(
 			av[name]['Data']['source'] 	= 'GODAS'
 			av[name]['NEMO']['source']	= 'NEMO'			
 	
-			av[name]['NEMO']['details']	= {'name': name, 'vars':['vozocrtx',], 'convert': ukp.mul1000,'units':'mm/s'}			
+			av[name]['NEMO']['details']	= {'name': name, 'vars':[ukesmkeys['u3d'],], 'convert': ukp.mul1000,'units':'mm/s'}			
 			av[name]['Data']['details']	= {'name': name, 'vars':['ucur',], 'convert': ukp.NoChange,'units':'mm/s'}
 			
 		if 'MeridionalCurrent' in analysisKeys:
@@ -801,7 +834,7 @@ def analysis_p2p(
 			av[name]['Data']['source'] 	= 'GODAS'
 			av[name]['NEMO']['source']	= 'NEMO'			
 	
-			av[name]['NEMO']['details'] 	= {'name': name, 'vars':['vomecrty',], 'convert': ukp.mul1000,'units':'mm/s'}	
+			av[name]['NEMO']['details'] 	= {'name': name, 'vars':[ukesmkeys['v3d'],], 'convert': ukp.mul1000,'units':'mm/s'}	
 			av[name]['Data']['details']  	= {'name': name, 'vars':['vcur',], 'convert': ukp.NoChange,'units':'mm/s'}			
 
 			
@@ -824,7 +857,7 @@ def analysis_p2p(
 			av[name]['Data']['source'] 	= 'GODAS'
 			av[name]['NEMO']['source']	= 'NEMO'			
 	
-			av[name]['NEMO']['details'] 	=  {'name': name, 'vars':['vovecrtz',], 'convert': ukp.mul1000000,'units':'um/s'}
+			av[name]['NEMO']['details'] 	=  {'name': name, 'vars':[ukesmkeys['w3d'],], 'convert': ukp.mul1000000,'units':'um/s'}
 			av[name]['Data']['details']  	= {'name': name, 'vars':['dzdt',], 'convert': ukp.NoChange,'units':'um/s'}
 						
 												

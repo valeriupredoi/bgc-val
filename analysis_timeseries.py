@@ -428,8 +428,6 @@ def analysis_timeseries(jobID = "u-ab671",
                 ukesmkeys['e3u']    = 'thkcello'
                 ukesmkeys['w3d']     = 'wo'
 
-
-
         else:
                 ukesmkeys={}
                 ukesmkeys['time'] = 'time_counter'
