@@ -2083,7 +2083,6 @@ if __name__=="__main__":
                 colours = {i:standards[i] for i in jobs}
                 timeseries_compare(colours, physics=0,bio=1,year0=True,debug=0,analysisname='TillsCoupledRuns_BGC')
 
-		assert 0
 	
                 jobs = ['u-ai567','u-aj588','u-am696','u-am792','u-am892','u-ak900']
                 colours = {i:standards[i] for i in jobs}
