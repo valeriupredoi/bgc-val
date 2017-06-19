@@ -94,6 +94,7 @@ physKeys = []
 if True:
 	physKeys.append('T')                        	# WOA Temperature
 	physKeys.append('GlobalMeanTemperature')    	# Global Mean Temperature
+	physKeys.append('GlobalMeanSalinity')    	# Global Mean Salinity
 	physKeys.append('IcelessMeanSST')    		# Global Mean Surface Temperature with no ice	
 	physKeys.append('S')                        	# WOA Salinity
 	physKeys.append('MLD')				# iFERMER Mixed Layer Depth 
@@ -142,7 +143,8 @@ keymetricsfirstKeys = [
                 'SouthernTotalIceExtent',
 		'DrakePassageTransport',
 		'AMOC_26N',
-		'GlobalMeanTemperature']
+		'GlobalMeanTemperature',
+		'GlobalMeanSalinity',]
 keymetricsfirstDict = {i:n for i,n in enumerate(keymetricsfirstKeys)}
 
 
@@ -265,6 +267,7 @@ def analysis_timeseries(jobID = "u-ab671",
                         #analysisKeys.append('ADRC_26N')                # AMOC 26N                        
 
                        	#analysisKeys.append('GlobalMeanTemperature')    # Global Mean Temperature
+			#analysisKeys.append('GlobalMeanSalinity')    	# Global Mean Salinity                       	
                        	#analysisKeys.append('IcelessMeanSST')    	# Global Mean Surface Temperature with no ice
                        	#analysisKeys.append('quickSST')    		# Area Weighted Mean Surface Temperature
 
@@ -1408,6 +1411,48 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= paths.orcaGridfn
 		av[name]['Dimensions']		= 1
+
+	if 'GlobalMeanSalinity' in analysisKeys:
+		name = 'GlobalMeanSalinity'
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)
+		av[name]['dataFile'] 	= ''
+
+		av[name]['modelcoords'] 	= medusaCoords
+		av[name]['datacoords'] 		= woaCoords
+
+		nc = dataset(paths.orcaGridfn,'r')
+		try:
+			pvol   = nc.variables['pvol' ][:]
+			gmttmask = nc.variables['tmask'][:]
+		except:
+			gmttmask = nc.variables['tmask'][:]
+			area = nc.variables['e2t'][:] * nc.variables['e1t'][:]
+			pvol = nc.variables['e3t'][:] *area
+			pvol = np.ma.masked_where(gmttmask==0,pvol)
+		nc.close()
+
+		def sumMeanLandMask(nc,keys):
+			#### works like no change, but applies a mask.
+			temperature = np.ma.masked_where(gmttmask==0,nc.variables[keys[0]][:].squeeze())
+			return (temperature*pvol).sum()/(pvol.sum())
+		
+		
+		av[name]['modeldetails'] 	= {'name': name, 'vars':[ukesmkeys['sal3d'],], 'convert': sumMeanLandMask,'units':'PSU'}
+		av[name]['datadetails']  	= {'name': '', 'units':''}
+		#av[name]['datadetails']  	= {'name': name, 'vars':['t_an',], 'convert': ukp.NoChange,'units':'degrees C'}
+
+		av[name]['layers'] 		= ['layerless',]
+		av[name]['regions'] 		= ['regionless',]
+		av[name]['metrics']		= ['metricless',]
+
+		av[name]['datasource'] 		= ''
+		av[name]['model']		= 'NEMO'
+
+		av[name]['modelgrid']		= 'eORCA1'
+		av[name]['gridFile']		= paths.orcaGridfn
+		av[name]['Dimensions']		= 1
+
+
 
 	if 'IcelessMeanSST' in analysisKeys:
 		name = 'IcelessMeanSST'

@@ -149,7 +149,9 @@ def makeLongNameDict():
         lnd['VerticalCurrent'] 	= "Vertical Current"        
         lnd['WindStress'] 	= "Wind Stress"
         
-        lnd['GlobalMeanTemperature'] 	= "Global Volume-weighted Mean Temperature"        
+        lnd['GlobalMeanTemperature'] 	= "Global Volume-weighted Mean Temperature" 
+        lnd['GlobalMeanSalinity'] 	= "Global Volume-weighted Mean Salinity"         
+               
         lnd['IcelessMeanSST'] 		= "Global Area-weighted Mean SST (masked above 15% ice coverage)"
         lnd['quickSST']           = "Global Area-weighted Mean SST"
 

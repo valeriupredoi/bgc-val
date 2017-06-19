@@ -111,8 +111,9 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 
                	analysisKeys.append('ZonalCurrent')             # Zonal Veloctity
                	analysisKeys.append('MeridionalCurrent')        # Meridional Veloctity
-               	analysisKeys.append('VerticalCurrent')          # Vertical Veloctity   	       
-               	analysisKeys.append('GlobalMeanTemperature')    # Global Mean Temperature
+               	analysisKeys.append('VerticalCurrent')          # Vertical Veloctity  
+               	analysisKeys.append('GlobalMeanTemperature')    # Global Mean Temperature               	 	       
+               	analysisKeys.append('GlobalMeanSalinity')       # Global Mean Salinity
                	analysisKeys.append('IcelessMeanSST')    	# Global Mean Surface Temperature with no ice               		
                	
 		analysisKeys.append('sowaflup')			# Net Upward Water Flux 
@@ -1005,6 +1006,43 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 			av[name]['gridFile']		= paths.orcaGridfn
 			av[name]['Dimensions']		= 1
 
+		if 'GlobalMeanSalinity' in analysisKeys:
+			name = 'GlobalMeanSalinity'
+			av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)										
+			av[name]['dataFile'] 	= ''		
+			
+			av[name]['modelcoords'] 	= medusaCoords 	
+			av[name]['datacoords'] 		= woaCoords
+
+			nc = Dataset(paths.orcaGridfn,'r')
+			try:	
+				pvol   = nc.variables['pvol' ][:]
+				tmask = nc.variables['tmask'][:]
+			except:
+				tmask = nc.variables['tmask'][:]			
+				area = nc.variables['e2t'][:] * nc.variables['e1t'][:]
+				pvol = nc.variables['e3t'][:] *area			
+				pvol = np.ma.masked_where(tmask==0,pvol)
+			nc.close()
+		
+			def sumMeanLandMask(nc,keys):
+				temperature = np.ma.masked_where(tmask==0,nc.variables[keys[0]][:].squeeze())
+				return (temperature*pvol).sum()/(pvol.sum())
+			
+			av[name]['modeldetails'] 	= {'name': name, 'vars':['vosaline',], 'convert': sumMeanLandMask,'units':'degrees C'}
+			av[name]['datadetails']  	= {'name': '', 'units':''}		
+	
+			av[name]['layers'] 		= ['layerless',]
+			av[name]['regions'] 		= ['regionless',]
+			av[name]['metrics']		= ['metricless',]
+
+			av[name]['datasource'] 		= ''
+			av[name]['model']		= 'NEMO'
+
+			av[name]['modelgrid']		= 'eORCA1'
+			av[name]['gridFile']		= paths.orcaGridfn
+			av[name]['Dimensions']		= 1
+			
 		if 'quickSST' in analysisKeys:
 			name = 'quickSST'
 			av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)										
