@@ -372,7 +372,9 @@ def trafficlightsPlot(
 		pyplot.axhline(y=np.ma.sum(dataslice),c='b',ls='-',lw=1,label ='Data')#+str(np.ma.sum(dataslice)))#alpha=0.5)		
 
 	if len(dataslice) and metric == 'mean':
-		pyplot.axhline(y=np.ma.mean(dataslice),c='b',ls='-',lw=1,label ='Data')#+str(np.ma.sum(dataslice)))#alpha=0.5)		
+		if np.ma.mean(dataslice) not in [-999,-999.,np.ma.masked,0.,np.ma.array([0.,0.],mask=True)[0],]:
+			pyplot.axhline(y=np.ma.mean(dataslice),c='b',ls='-',lw=1,label ='Data')#+str(np.ma.sum(dataslice)))#alpha=0.5)		
+	                assert "Plotting data with no data!"
 	
 
 	legend = pyplot.legend(loc='lower center',  numpoints = 1, ncol=2, prop={'size':12}) 
@@ -410,24 +412,17 @@ def simpletimeseries(
 	ax = fig.add_subplot(111)	
 	
         arr_new = movingaverage_DT(arr,times, window_len=5.,window_units='years')	# 5 year average.
-	pyplot.plot(times,arr,    c='b',ls='-',lw=0.2, )	
-	pyplot.plot(times,arr_new,c='b',ls='-',lw=2. , label='Model')		
+	pyplot.plot(times,arr,    c='b',ls='-',lw=0.2, label = 'Model')	
+	pyplot.plot(times,arr_new,c='b',ls='-',lw=2. , label='Model 5yr moving average')
 			
-#	if len(arr)>30:
-#                #arr_new = movingaverage_DT(arr,times, window_len=5.,window_units='years')	
-#		smoothing = movingaverage2(arr,window_len=30,window='hanning',extrapolate='axially')
-#		pyplot.plot(times,arr,      c='b',ls='-',lw=0.2,)	
-#		pyplot.plot(times,smoothing,c='b',ls='-',lw=2,label='Model')		
-#	else:
-#		pyplot.plot(times,arr,c='b',ls='-',lw=1,label='Model',)	
 		
 	pyplot.xlim(xlims)	
 	pyplot.title(title)	
 	pyplot.ylabel(units)
 
-	if data not in [np.ma.masked,np.ma.array([0.,0.],mask=True)[0]]:	
-		pyplot.axhline(y=data,c='k',ls='-',lw=1,label = 'data')
-				
+        if data not in [np.ma.masked,np.ma.array([0.,0.],mask=True)[0],-999,-999.,] and np.isnan(data)==False and np.isinf(data) == False:
+		pyplot.axhline(y=data,c='k',ls='-',lw=1,label = 'Data')
+		
 	legend = pyplot.legend(loc='lower center',  numpoints = 1, ncol=2, prop={'size':12}) 
 	legend.draw_frame(False) 
 	legend.get_frame().set_alpha(0.)
@@ -1208,7 +1203,8 @@ def profilePlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords= {}
 			  box.width*(1.-0.1*ncols), 
 			  box.height ])
 	
-	if len(dd.squeeze().compressed())!=0:
+	if len(dd.squeeze().compressed())!=0 :
+		
 		pyplot.plot([], [], 'k', lw=2, label='Data')
 
 	for i in sorted(plotDetails.keys()):
@@ -1231,3 +1227,4 @@ def profilePlot(modeldata,dataslice,filename, modelZcoords = {}, dataZcoords= {}
 	
 		
 			
+

@@ -235,10 +235,9 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('CHD')
 			#analysisKeys.append('CHL')	
 			
-			if jobID in ['u-am004','u-am005']:
-	                        analysisKeys.append('DMS_ANDR')                 # DMS Anderson
-			else:
-	                       analysisKeys.append('DMS_ARAN')                 # DMS Aranami Tsunogai
+			#if jobID in ['u-am004','u-am005']:
+	                #        analysisKeys.append('DMS_ANDR')                 # DMS Anderson
+			#else:   analysisKeys.append('DMS_ARAN')                 # DMS Aranami Tsunogai
 	
 			#analysisKeys.append('DiaFrac')			# work in progress
 			#analysisKeys.append('Iron')			# work in progress
@@ -267,7 +266,7 @@ def analysis_timeseries(jobID = "u-ab671",
                         #analysisKeys.append('ADRC_26N')                # AMOC 26N                        
 
                        	#analysisKeys.append('GlobalMeanTemperature')    # Global Mean Temperature
-			#analysisKeys.append('GlobalMeanSalinity')    	# Global Mean Salinity                       	
+			analysisKeys.append('GlobalMeanSalinity')    	# Global Mean Salinity                       	
                        	#analysisKeys.append('IcelessMeanSST')    	# Global Mean Surface Temperature with no ice
                        	#analysisKeys.append('quickSST')    		# Area Weighted Mean Surface Temperature
 

@@ -161,7 +161,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 #		analysisKeys.append('DiaFrac')
 #                analysisKeys.append('AMOC_26N')
 #                analysisKeys.append('MLD')
-                analysisKeys.append('DMS')
+#                analysisKeys.append('DMS')
 #                analysisKeys.append('N')                        # WOA Nitrate
 #                analysisKeys.append('Si')                       # WOA Siliate
 
@@ -174,6 +174,8 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 
 	
 #                analysisKeys.append('GlobalMeanTemperature')
+                analysisKeys.append('GlobalMeanSalinity')
+
 #               	analysisKeys.append('quickSST')    		# Area Weighted Mean Surface Temperature
 #       	  	analysisKeys.append('TotalOMZVolume')           # Total Oxygen Minimum zone Volume
 #       	 	analysisKeys.append('OMZThickness')             # Oxygen Minimum Zone Thickness
