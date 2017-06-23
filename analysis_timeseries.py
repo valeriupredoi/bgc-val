@@ -48,6 +48,8 @@ from getpass import getuser
 import UKESMpython as ukp
 from timeseries import timeseriesAnalysis
 from timeseries import profileAnalysis
+from timeseries import timeseriesTools as tst
+
 from bgcvaltools.mergeMonthlyFiles import mergeMonthlyFiles
 from bgcvaltools.AOU import AOU
 from bgcvaltools.dataset import dataset
@@ -261,12 +263,12 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('NorthernTotalIceExtent')	# work in progress
 			#analysisKeys.append('SouthernTotalIceExtent')	# work in progress
                         #analysisKeys.append('AMOC_32S')                # AMOC 32S
-                        #analysisKeys.append('AMOC_26N')                # AMOC 26N
-                        #analysisKeys.append('AMOC_26N_nomexico')
+                        analysisKeys.append('AMOC_26N')                # AMOC 26N
+                        analysisKeys.append('AMOC_26N_nomexico')
                         #analysisKeys.append('ADRC_26N')                # AMOC 26N                        
 
                        	#analysisKeys.append('GlobalMeanTemperature')    # Global Mean Temperature
-			analysisKeys.append('GlobalMeanSalinity')    	# Global Mean Salinity                       	
+			#analysisKeys.append('GlobalMeanSalinity')    	# Global Mean Salinity                       	
                        	#analysisKeys.append('IcelessMeanSST')    	# Global Mean Surface Temperature with no ice
                        	#analysisKeys.append('quickSST')    		# Area Weighted Mean Surface Temperature
 
@@ -1095,6 +1097,29 @@ def analysis_timeseries(jobID = "u-ab671",
 		area = nc.variables['e1t'][:]*nc.variables['e2t'][:]
 		nc.close()
 
+                def uam515_TotalCO2(nc,keys):
+                	#####
+                	# Hack to deal with the problem in the caspian sea in the spin up job, u-am515.
+                	# This is only to dfea
+                        factor =  365.25 * 12./1000. / 1.E15
+                        times =  tst.getTimes(nc, medusaCoords)
+                        if times[0] <2262.:
+				arr = nc.variables['CO2FLUX'][:].squeeze()
+				arr = np.ma.masked_where(np.ma.abs(arr)>1E10,arr)
+                      	  	arr = arr * factor *area    # mmolC/m2/d                        	
+                                print "uam515_TotalCO2:\tMasking u-am515", arr.min(),arr.mean(),arr.max()
+                        else:
+	                        arr = nc.variables['CO2FLUX'][:].squeeze() * factor  *area   # mmolC/m2/d
+                        
+#                        if arr.ndim ==3:
+#                                for i in np.arange(arr.shape[0]):
+#                                      uam515_TotalCO2  arr[i] = arr[i]*area
+#                        elif arr.ndim ==2: arr = arr*area
+#                        else: assert 0
+                        return np.ma.sum(arr)
+
+			
+
 		def eOrcaTotal(nc,keys):
 			factor =  365.25 * 12./1000. / 1.E15
 			arr = nc.variables['CO2FLUX'][:].squeeze() * factor	# mmolC/m2/d
@@ -1128,7 +1153,9 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		av[name]['modelcoords'] 	= medusaCoords
 		av[name]['datacoords'] 		= takahashiCoords
-		av[name]['modeldetails'] 	= {'name': 'AirSeaFluxCO2', 'vars':['CO2FLUX',], 'convert': eOrcaTotal,'units':'Pg C/yr'}
+		if jobID == 'u-am515':	av[name]['modeldetails']        = {'name': 'AirSeaFluxCO2', 'vars':['CO2FLUX',], 'convert': uam515_TotalCO2,'units':'Pg C/yr'}
+		else:	                av[name]['modeldetails']        = {'name': 'AirSeaFluxCO2', 'vars':['CO2FLUX',], 'convert': eOrcaTotal,'units':'Pg C/yr'}
+		#av[name]['modeldetails'] 	= {'name': 'AirSeaFluxCO2', 'vars':['CO2FLUX',], 'convert': eOrcaTotal,'units':'Pg C/yr'}
 		av[name]['datadetails']  	= {'name': 'AirSeaFluxCO2', 'vars':['TFLUXSW06','AREA_MKM2'], 'convert': takaTotal,'units':'Pg C/yr'}
 		av[name]['layers'] 		= ['layerless',]
 		av[name]['regions'] 		= ['regionless',]
@@ -1558,6 +1585,13 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['layers'] 		=  layerList
 		av[name]['regions'] 		= tregions
 		av[name]['metrics']		= metricList
+                	
+		try:	
+			if analysisSuite.lower() in ['debug',]:
+		                av[name]['layers']              =  ['Surface',]
+        		        av[name]['regions']             =  ['Global',]
+		except:pass
+
 
 		av[name]['datasource'] 		= 'WOA'
 		av[name]['model']		= 'NEMO'

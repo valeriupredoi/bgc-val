@@ -141,7 +141,8 @@ def makeLongNameDict():
   	
         lnd['AMOC'] = "AMOC"
   	lnd['AMOC_26N'] = "AMOC 26N"     	
-  	lnd['AMOC_32S'] = "AMOC 32S"     	  	
+        lnd['AMOC_26N_nomexico'] = "AMOC 26N (excluding Gulf of Mexico)"
+	lnd['AMOC_32S'] = "AMOC 32S"     	  	
   	lnd['ADRC_26N'] = "Atlantic Deep Return Current at 26N"    	  	   	
   	
         lnd['ZonalCurrent'] 	= "Zonal Current"

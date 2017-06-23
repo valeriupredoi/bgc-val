@@ -159,7 +159,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 #		analysisKeys.append('CHD')
 #		analysisKeys.append('CHN')
 #		analysisKeys.append('DiaFrac')
-#                analysisKeys.append('AMOC_26N')
+                analysisKeys.append('AMOC_26N')
 #                analysisKeys.append('MLD')
 #                analysisKeys.append('DMS')
 #                analysisKeys.append('N')                        # WOA Nitrate
@@ -174,7 +174,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 
 	
 #                analysisKeys.append('GlobalMeanTemperature')
-                analysisKeys.append('GlobalMeanSalinity')
+#                analysisKeys.append('GlobalMeanSalinity')
 
 #               	analysisKeys.append('quickSST')    		# Area Weighted Mean Surface Temperature
 #       	  	analysisKeys.append('TotalOMZVolume')           # Total Oxygen Minimum zone Volume
@@ -2056,6 +2056,7 @@ if __name__=="__main__":
 
 		#####
 		# Atmospheric jobs.
+                'u-am001':'teal',
                 'u-am004':'blue',
                 'u-am005':'red',
                 'u-am007':'magenta',
@@ -2114,12 +2115,15 @@ if __name__=="__main__":
 		exit
 	else:
 
+                jobs = ['u-am001','u-am004',]
+                colours = {i:standards[i] for i in jobs}
+                timeseries_compare(colours, physics=0,bio=0,year0=False,debug=1,analysisname='UKESM0.6_vs_GC3.1')
 
                 jobs = ['u-ai611','u-aj391','u-al901','u-am064','u-am927','u-am515',]
                 colours = {i:standards[i] for i in jobs}
                 timeseries_compare(colours, physics=1,bio=0,year0=False,debug=0,analysisname='TillsCoupledRuns_physics')
                 
-                jobs = ['u-am927','u-am515',]
+		jobs = ['u-am927','u-am515',]
                 colours = {i:standards[i] for i in jobs}
                 timeseries_compare(colours, physics=0,bio=1,year0=True,debug=0,analysisname='TillsCoupledRuns_BGC')
 
