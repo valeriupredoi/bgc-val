@@ -2053,7 +2053,9 @@ if __name__=="__main__":
 		'u-am792':'purple',
 		'u-am892':'green',
 
-
+		'u-an631':'red',
+		'u-an629':'green',
+		'u-an619':'purple',
 		#####
 		# Atmospheric jobs.
                 'u-am001':'teal',
@@ -2115,6 +2117,13 @@ if __name__=="__main__":
 		exit
 	else:
 
+                jobs = ['u-ak900','u-an631','u-an629','u-an619',]
+                colours = {i:standards[i] for i in jobs}
+                timeseries_compare(colours, physics=1,bio=1,year0=False,debug=0,analysisname='OceanOnlySpinUp')
+
+		assert 0
+
+
                 jobs = ['u-am001','u-am004',]
                 colours = {i:standards[i] for i in jobs}
                 timeseries_compare(colours, physics=0,bio=0,year0=False,debug=1,analysisname='UKESM0.6_vs_GC3.1')
@@ -2126,6 +2135,7 @@ if __name__=="__main__":
 		jobs = ['u-am927','u-am515',]
                 colours = {i:standards[i] for i in jobs}
                 timeseries_compare(colours, physics=0,bio=1,year0=True,debug=0,analysisname='TillsCoupledRuns_BGC')
+
 
 	
                 jobs = ['u-ai567','u-aj588','u-am696','u-am792','u-am892','u-ak900']

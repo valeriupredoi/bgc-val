@@ -146,7 +146,8 @@ keymetricsfirstKeys = [
 		'DrakePassageTransport',
 		'AMOC_26N',
 		'GlobalMeanTemperature',
-		'GlobalMeanSalinity',]
+		#'GlobalMeanSalinity',
+		]
 keymetricsfirstDict = {i:n for i,n in enumerate(keymetricsfirstKeys)}
 
 
@@ -217,8 +218,8 @@ def analysis_timeseries(jobID = "u-ab671",
 
 
 		if analysisSuite.lower() in ['debug',]:
-			#analysisKeys.append('AirSeaFlux')		# work in progress
-			#analysisKeys.append('TotalAirSeaFluxCO2')	# work in progress
+			analysisKeys.append('AirSeaFlux')		# work in progress
+			analysisKeys.append('TotalAirSeaFluxCO2')	# work in progress
 			#analysisKeys.append('TotalOMZVolume')		# work in progress
 			#analysisKeys.append('TotalOMZVolume50')	# work in progress
 			#analysisKeys.append('OMZMeanDepth')		# work in progress
@@ -263,8 +264,8 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('NorthernTotalIceExtent')	# work in progress
 			#analysisKeys.append('SouthernTotalIceExtent')	# work in progress
                         #analysisKeys.append('AMOC_32S')                # AMOC 32S
-                        analysisKeys.append('AMOC_26N')                # AMOC 26N
-                        analysisKeys.append('AMOC_26N_nomexico')
+                        #analysisKeys.append('AMOC_26N')                # AMOC 26N
+                        #analysisKeys.append('AMOC_26N_nomexico')
                         #analysisKeys.append('ADRC_26N')                # AMOC 26N                        
 
                        	#analysisKeys.append('GlobalMeanTemperature')    # Global Mean Temperature
@@ -417,7 +418,9 @@ def analysis_timeseries(jobID = "u-ab671",
         #####
         # Because we can never be sure someone won't randomly rename the 
         # time dimension without saying anything.
-        if jobID in ['u-am515','u-am927','u-am064']:
+        # if jobID in ['u-am515','u-am927','u-am064','u-an326',]:
+	if jobID > 'u-am515' and jobID not in ['u-an619','u-an629','u-an631',]:
+		# There are other changes here too.
                 #####
                 # Because we can never be sure someone won't randomly rename the 
                 # time dimension without saying anything.
@@ -1448,19 +1451,17 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		nc = dataset(paths.orcaGridfn,'r')
 		try:
-			pvol   = nc.variables['pvol' ][:]
 			gmttmask = nc.variables['tmask'][:]
 		except:
 			gmttmask = nc.variables['tmask'][:]
-			area = nc.variables['e2t'][:] * nc.variables['e1t'][:]
-			pvol = nc.variables['e3t'][:] *area
-			pvol = np.ma.masked_where(gmttmask==0,pvol)
 		nc.close()
 
 		def sumMeanLandMask(nc,keys):
 			#### works like no change, but applies a mask.
-			temperature = np.ma.masked_where(gmttmask==0,nc.variables[keys[0]][:].squeeze())
-			return (temperature*pvol).sum()/(pvol.sum())
+			sal = np.ma.array(nc.variables[keys[0]][:].squeeze())
+			sal = np.ma.masked_where((gmttmask==0) + (sal.mask),sal)
+			pvol = np.ma.masked_where(sal.mask, nc('thkcello')[:].squeeze() * nc('area')[:])
+			return (sal*pvol).sum()/(pvol.sum())
 		
 		
 		av[name]['modeldetails'] 	= {'name': name, 'vars':[ukesmkeys['sal3d'],], 'convert': sumMeanLandMask,'units':'PSU'}

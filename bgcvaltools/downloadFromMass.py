@@ -309,6 +309,7 @@ def downloadMass(jobID,):
 
 	
         fixFilePaths(outputFold,jobID)
+        deleteBadLinksAndZeroSize(outputFold,jobID)
 	
 	doLs = False
 	doDL = True
@@ -331,6 +332,7 @@ def downloadMass(jobID,):
 		output = process.communicate()[0]
 
 	fixFilePaths(outputFold,jobID)
+	deleteBadLinksAndZeroSize(outputFold,jobID)
 
 def fixFilePaths(outputFold,jobID):
 	#####
@@ -396,6 +398,25 @@ def fixFilePaths(outputFold,jobID):
 	# This code looks at symoblic links and points them at their ultimate source, removing the long link chains.
 	for fn in glob(outputFold+'/*'): rebaseSymlinks(fn,dryrun=False)
 
+def deleteBadLinksAndZeroSize(outputFold,jobID):
+	
+
+	bashCommand1 = "find "+outputFold+"/. -size 0 -print -delete"
+        bashCommand2 = "find -L "+outputFold+"/. -type l -delete  -print"
+
+	print "deleteBadLinksAndZeroSize:\t",bashCommand1
+	
+	process1= subprocess.Popen(bashCommand1.split(), stdout=subprocess.PIPE)
+        output1= process1.communicate()[0]
+
+        print "deleteBadLinksAndZeroSize:\t",bashCommand2
+
+
+        process2= subprocess.Popen(bashCommand2.split(), stdout=subprocess.PIPE)
+        output2= process2.communicate()[0]
+
+
+		
 
 if __name__=="__main__":	
 	
