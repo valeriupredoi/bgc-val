@@ -1420,10 +1420,14 @@ def analysis_timeseries(jobID = "u-ab671",
 			pvol = np.ma.masked_where(gmttmask==0,pvol)
 		nc.close()
 
-		def sumMeanLandMask(nc,keys):
-			#### works like no change, but applies a mask.
-			temperature = np.ma.masked_where(gmttmask==0,nc.variables[keys[0]][:].squeeze())
-			return (temperature*pvol).sum()/(pvol.sum())
+                def sumMeanLandMask(nc,keys):
+                        #### works like no change, but applies a mask.
+                        temp = np.ma.array(nc.variables[keys[0]][:].squeeze())
+                        temp = np.ma.masked_where((gmttmask==0) + (temp.mask),temp)
+                        try:    vol = np.ma.masked_where(temp.mask, nc('thkcello')[:].squeeze() * nc('area')[:]) # preferentially use in file volume.
+                        except: vol = np.ma.masked_where(temp.mask, pvol)
+                        return (temp*vol).sum()/(vol.sum())
+
 		
 		
 		av[name]['modeldetails'] 	= {'name': name, 'vars':[ukesmkeys['temp3d'],], 'convert': sumMeanLandMask,'units':'degrees C'}
@@ -1449,19 +1453,25 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modelcoords'] 	= medusaCoords
 		av[name]['datacoords'] 		= woaCoords
 
-		nc = dataset(paths.orcaGridfn,'r')
-		try:
-			gmttmask = nc.variables['tmask'][:]
-		except:
-			gmttmask = nc.variables['tmask'][:]
-		nc.close()
+                nc = dataset(paths.orcaGridfn,'r')
+                try:
+                        pvol   = nc.variables['pvol' ][:]
+                        gmstmask = nc.variables['tmask'][:]
+                except:
+                        gmstmask = nc.variables['tmask'][:]
+                        area = nc.variables['e2t'][:] * nc.variables['e1t'][:]
+                        pvol = nc.variables['e3t'][:] *area
+                        pvol = np.ma.masked_where(gmstmask==0,pvol)
+                nc.close()
+
 
 		def sumMeanLandMask(nc,keys):
 			#### works like no change, but applies a mask.
 			sal = np.ma.array(nc.variables[keys[0]][:].squeeze())
-			sal = np.ma.masked_where((gmttmask==0) + (sal.mask),sal)
-			pvol = np.ma.masked_where(sal.mask, nc('thkcello')[:].squeeze() * nc('area')[:])
-			return (sal*pvol).sum()/(pvol.sum())
+			sal = np.ma.masked_where((gmstmask==0) + (sal.mask),sal)
+			try:	vol = np.ma.masked_where(sal.mask, nc('thkcello')[:].squeeze() * nc('area')[:]) # preferentially use in file volume.
+			except: vol = np.ma.masked_where(sal.mask, pvol)
+			return (sal*vol).sum()/(vol.sum())
 		
 		
 		av[name]['modeldetails'] 	= {'name': name, 'vars':[ukesmkeys['sal3d'],], 'convert': sumMeanLandMask,'units':'PSU'}

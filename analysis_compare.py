@@ -126,6 +126,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 		
 	if bio:
 		analysisKeys.append('TotalAirSeaFlux')          # work in progress              
+#                analysisKeys.append('AirSeaFlux')               # work in progress              
 		analysisKeys.append('IntPP_OSU')                # OSU Integrated primpary production    
 		analysisKeys.append('GlobalExportRatio')
 
@@ -159,13 +160,15 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 #		analysisKeys.append('CHD')
 #		analysisKeys.append('CHN')
 #		analysisKeys.append('DiaFrac')
-                analysisKeys.append('AMOC_26N')
+#                analysisKeys.append('AMOC_26N')
 #                analysisKeys.append('MLD')
 #                analysisKeys.append('DMS')
 #                analysisKeys.append('N')                        # WOA Nitrate
 #                analysisKeys.append('Si')                       # WOA Siliate
 
-#                analysisKeys.append('TotalAirSeaFlux')          # work in progress              
+                analysisKeys.append('TotalAirSeaFlux')          # work in progress              
+                analysisKeys.append('AirSeaFlux')          # work in progress              
+
 #                analysisKeys.append('ADRC_26N')                # AMOC 26N                        
 #                analysisKeys.append('VerticalCurrent')          # Vertical Veloctity           
 #                analysisKeys.append('sossheig')                 # SSH
@@ -505,6 +508,60 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 				av[name]['datadetails'] =  {'name': '',	'units':''}
 				av[name]['dataFile']	= ''
 				av[name]['datasource']  = ''
+
+		if 'AirSeaFlux' in analysisKeys:
+
+		        #nc = dataset(paths.orcaGridfn,'r')
+		        #area = nc.variables['e1t'][:]*nc.variables['e2t'][:]
+		        #nc.close()
+
+		        def eOrcaTotal(nc,keys):
+		                factor =  12./1000.
+		                arr = nc.variables['CO2FLUX'][:].squeeze()      # mmolC/m2/d
+		                #if arr.ndim ==3:
+		                #       for i in np.arange(arr.shape[0]):
+		                #               arr[i] = arr[i]*area
+		                #elif arr.ndim ==2: arr = arr*area
+		                #else: assert 0
+		                return arr * factor
+
+		        def takaTotal(nc,keys):
+		                arr = nc.variables['TFLUXSW06'][:].squeeze()    # 10^12 g Carbon year^-1
+		                arr = -1.E12* arr / 365.                                #g Carbon/day
+		                factor = -1.E12/(365. ) # convert to #/ 1.E12
+		                area = nc.variables['AREA_MKM2'][:].squeeze() *1E12     # 10^6 km^2
+		                fluxperarea = arr/area
+		                #arr = arr*area #* 1.E24        # converts area into m^2
+		                #print arr.sum(), arr.sum()*factor
+		                return fluxperarea
+		                # area 10^6 km^2
+		                # flux:  10^15 g Carbon month^-1. (GT)/m2/month
+
+
+		        name = 'AirSeaFluxCO2'
+
+		        av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', paths.ModelFolder_pref, annual)
+		        if annual:
+		                av[name]['dataFile']            =  paths.TakahashiFolder+'takahashi_2009_Anual_sumflux_2006c_noHead.nc'
+		        else:
+		                av[name]['dataFile']            =  paths.TakahashiFolder+'takahashi2009_month_flux_pCO2_2006c_noHead.nc'
+		                print "Air Sea Flux CO2 monthly not implemented"
+		                assert 0
+		                #av[name]['dataFile']           =  paths.TakahashiFolder+'takahashi2009_month_flux_pCO2_2006c_noHead.nc'
+
+		        av[name]['modelcoords']         = medusaCoords
+		        av[name]['datacoords']          = takahashiCoords
+		        av[name]['modeldetails']        = {'name': 'AirSeaFluxCO2', 'vars':['CO2FLUX',], 'convert': eOrcaTotal,'units':'g C/m2/day'}
+		        av[name]['datadetails']         = {'name': 'AirSeaFluxCO2', 'vars':['TFLUXSW06','AREA_MKM2'], 'convert': takaTotal,'units':'g C/m2/day'}
+		        av[name]['layers']              = ['Surface',]
+		        av[name]['regions']             = regionList
+		        av[name]['metrics']             = metricList
+		        av[name]['datasource']          = ''
+		        av[name]['model']               = 'MEDUSA'
+		        av[name]['modelgrid']           = 'eORCA1'
+		        av[name]['gridFile']            = paths.orcaGridfn
+		        av[name]['Dimensions']          = 2
+
 							
 		if 'CHD' in analysisKeys or  'CHN' in analysisKeys:
 		    for name in ['CHD','CHN',]:
@@ -1678,6 +1735,10 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
                         elif name in ['DTC',]:
                                 mdata = modeldataD[(jobID,name )][('Global', '3000m', 'mean')]
                                 title = ' '.join(['Global', '3000m', 'Mean',  getLongName(name)])
+                        elif name in ['AirSeaFlux','AirSeaFluxCO2','Alk','Alkalinity',]:
+				print name, jobID, ':',sorted(modeldataD[(jobID,name )].keys())
+                                mdata = modeldataD[(jobID,name )][('ignoreInlandSeas', 'Surface', 'mean')]
+                                title = ' '.join(['ignoreInlandSeas', 'Surface', 'Mean',  getLongName(name)])
 						
 			elif name in [ 'sowaflup','sohefldo','sofmflup','sosfldow','sossheig', 'soicecov',]:
 				
@@ -2121,12 +2182,11 @@ if __name__=="__main__":
                 colours = {i:standards[i] for i in jobs}
                 timeseries_compare(colours, physics=1,bio=1,year0=False,debug=0,analysisname='OceanOnlySpinUp')
 
-		assert 0
 
 
-                jobs = ['u-am001','u-am004',]
-                colours = {i:standards[i] for i in jobs}
-                timeseries_compare(colours, physics=0,bio=0,year0=False,debug=1,analysisname='UKESM0.6_vs_GC3.1')
+#                jobs = ['u-am001','u-am004',]
+#                colours = {i:standards[i] for i in jobs}
+#                timeseries_compare(colours, physics=0,bio=0,year0=False,debug=1,analysisname='UKESM0.6_vs_GC3.1')
 
                 jobs = ['u-ai611','u-aj391','u-al901','u-am064','u-am927','u-am515',]
                 colours = {i:standards[i] for i in jobs}

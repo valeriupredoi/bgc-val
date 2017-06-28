@@ -159,7 +159,8 @@ def analysis_p2p(
                        	#analysisKeys.append('ZonalCurrent')             # Zonal Veloctity
                        	#analysisKeys.append('MeridionalCurrent')        # Meridional Veloctity
                        	#analysisKeys.append('VerticalCurrent')          # Vertical Veloctity	
-                       	analysisKeys.append('Dust')          # Vertical Veloctity	                       	
+                       	#analysisKeys.append('Dust')          # Vertical Veloctity	                       	
+	                analysisKeys.append('AirSeaFlux')          # work in progress              
 		                       			
                 print "analysisSuite is a string", analysisSuite, analysisKeys
 		
