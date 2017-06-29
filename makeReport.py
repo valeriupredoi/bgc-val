@@ -1129,7 +1129,7 @@ def comparehtml5Maker(
 	print "Copying html and js assets to", reportdir
 	copytree('html5/html5Assets', reportdir)
 	indexhtmlfn 	= reportdir+"index.html"
-	try:os.rename(reportdir+'index-template.html', indexhtmlfn)
+	try:os.rename(reportdir+'index-compare-template.html', indexhtmlfn)
 	except: pass
 
 	imagesfold 	= folder(reportdir+'images/')
@@ -1147,7 +1147,7 @@ def comparehtml5Maker(
 				descriptionText,
 				)
 	
-	categories ={}
+
 	physicsKM 	= [
 			'AMOC_26N',
 			'ADRC_26N',			
@@ -1164,9 +1164,17 @@ def comparehtml5Maker(
 			'TotalDust',
 			'Chlorophyll_Global_Surface',
 			'TotalOMZVolume',
-			]	
-			
-	extrafolds = ['BGC','NAS','OMZ',]
+                        'ExportRatio',
+                        'Nitrate_Global_Surface',
+                        'DIC_Global_Surface',
+                        'Alkalinity_Global_Surface',
+                        'Silicate_Global_Surface',
+                        'Iron_Global_Surface',
+			]
+	categories ={	'Physics Key Metrics':[],
+			'BGC Key Metrics':[],
+			}				
+	extrafolds = []
 	
 	for fn in files:
 		found = False
@@ -1194,25 +1202,108 @@ def comparehtml5Maker(
 		if found:continue		
 		try:	categories['Other Plots'].append(fn)
 		except:	categories['Other Plots'] = [fn,]					
-
-	for cat, catfiles in categories:
 	
+	categoryOrder = []
+	if len(categories['Physics Key Metrics']): categoryOrder.append('Physics Key Metrics')
+        if len(categories['BGC Key Metrics']): categoryOrder.append('BGC Key Metrics')
+	for exf in extrafolds:
+		if exf not in categories.keys():continue
+		if len(categories[exf]): categoryOrder.append(exf)
+
+        if len(categories['Other Plots']): categoryOrder.append('Other Plots')
+
+	categories['Other Plots'] = sorted(categories['Other Plots'])
+
+	for cat in categoryOrder:
+		if cat in ['Other Plots',]:continue
+		catfiles =  categories[cat]
+		if not len(catfiles): continue
+
 		href = 	cat.replace(' ','')
 		Title = cat
 
 		#####
 		# Copy image to image folder and return relative path.
 		relativeFiles  = [addImageToHtml(catfn, imagesfold, reportdir) for catfn in catfiles]
-		
+
+		####
+		# sort alphabeticaly.
+		relativeFiles = sorted(relativeFiles)	
+
 		html5Tools.AddSection(
 			indexhtmlfn,
 			href,
 			Title, 
 			Description='',
 			Files=relativeFiles)
-			
-	
 
+
+
+	if len(categories['Other Plots']): 
+		otherFilenames = categories['Other Plots'][:]	
+		SectionTitle= 'Other Plots',
+	
+		hrefs 		= []
+		Titles		= {}
+		SidebarTitles 	= {}
+		Descriptions	= {}
+		FileLists	= {}
+		FileOrder 	= {}
+		
+		
+		for key in sorted(names):
+
+			href = 	'OtherPlots-'+key#+'-'+region
+			
+			desc = ''
+						
+			hrefs.append(href)
+			Titles[href] = 		getLongName(key)
+			SidebarTitles[href] = getLongName(key)				
+			Descriptions[href] = desc
+			FileLists[href] = {}
+			FileOrder[href] = {}
+			
+			#####
+			# Determine the list of files:
+			vfiles = []
+			for ofn in otherFilenames:
+				if ofn.find(key)>-1:
+					vfiles.append(ofn)
+				otherFilenames.pop(ofn)
+			#####
+			# Create plot headers for each file.
+			count=0
+			for fn in sorted(vfiles):
+				#####
+				# Copy image to image folder and return relative path.
+				relfn = addImageToHtml(fn, imagesfold, reportdir)
+			
+				#####
+				# Create custom title by removing extra bits.
+				title = html5Tools.fnToTitle(relfn)
+		
+				FileLists[href][relfn] = title
+				FileOrder[href][count] = relfn
+				count+=1
+				print "Adding ",relfn,"to script"
+				
+		html5Tools.AddSubSections(indexhtmlfn,
+				hrefs,
+				SectionTitle,
+				SidebarTitles=SidebarTitles,#
+				Titles=Titles, 
+				Descriptions=Descriptions,
+				FileLists=FileLists,
+				FileOrder=FileOrder)
+				
+				
+				
+				
+				
+
+        print "-------------\nSuccess\ntest with:\nfirefox",indexhtmlfn
+			
 
 def main():
 	try:	jobID = argv[1]

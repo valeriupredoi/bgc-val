@@ -261,9 +261,11 @@ def makeLongNameDict():
 	lnd['Taylor'] = "Taylor Diagram"  	
 	lnd['SummaryTargets'] = "Summary Diagrams"  		
 	lnd['RobustTarget'] = "Robust Statisitcs Target Diagram" 			
-   	lnd['metricless'] = ''    	
    	lnd['regionless'] = ''    	
-   	lnd['layerless'] = ''    	   	   	
+   	lnd['layerless'] = ''    	   	   
+        lnd['together'] = ''
+        lnd['dataonly'] = ''
+
   	lnd['RegionLegend'] = "Region Legend"
   	lnd['TransectsLegend'] = "Transects Legend"
   	lnd['TransectsLegendBoth'] = "Transects Legend"
