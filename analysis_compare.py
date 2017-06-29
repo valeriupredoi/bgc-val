@@ -2207,11 +2207,9 @@ if __name__=="__main__":
 	else:
 
 
-
-
                 jobs = ['u-am001','u-am004',]
                 colours = {i:standards[i] for i in jobs}
-                timeseries_compare(colours, physics=1,bio=0,year0=False,debug=0,analysisname='UKESM0.6_vs_GC3.1')
+                timeseries_compare(colours, physics=1,bio=0,year0=False,debug=1,analysisname='UKESM0.6_vs_GC3.1')
 		
                 jobs = ['u-ak900','u-an631','u-an629','u-an619',]
                 colours = {i:standards[i] for i in jobs}

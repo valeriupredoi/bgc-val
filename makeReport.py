@@ -1215,7 +1215,11 @@ def comparehtml5Maker(
 	categories['Other Plots'] = sorted(categories['Other Plots'])
 
 	for cat in categoryOrder:
+
+		#####
+		# These plots get added below.
 		if cat in ['Other Plots',]:continue
+
 		catfiles =  categories[cat]
 		if not len(catfiles): continue
 
@@ -1240,8 +1244,8 @@ def comparehtml5Maker(
 
 
 	if len(categories['Other Plots']): 
-		otherFilenames = categories['Other Plots'][:]	
-		SectionTitle= 'Other Plots',
+		otherFilenames = files[:]#categories['Other Plots'][:]	
+		SectionTitle= 'All Plots'
 	
 		hrefs 		= []
 		Titles		= {}
@@ -1250,27 +1254,53 @@ def comparehtml5Maker(
 		FileLists	= {}
 		FileOrder 	= {}
 		
-		
+		names = ['Chlorophyll',
+			'MLD',
+			'Nitrate',
+			'Salinity',
+			'Temperature',
+			'Current',
+			'so',
+			'Ice',
+			'DIC',
+			'DMS',
+			'DiaFrac',
+			'Dust',
+			'Iron',
+			'Silicate',	
+			'Alkalinity',
+			'AMOC',
+			'ADRC',
+			'DrakePassage',
+			'AirSeaFlux',
+			'DTC',
+			'Oxygen',
+			'OMZ',
+			'Production',
+			'Export',
+			]
 		for key in sorted(names):
-
-			href = 	'OtherPlots-'+key#+'-'+region
-			
-			desc = ''
-						
-			hrefs.append(href)
-			Titles[href] = 		getLongName(key)
-			SidebarTitles[href] = getLongName(key)				
-			Descriptions[href] = desc
-			FileLists[href] = {}
-			FileOrder[href] = {}
-			
 			#####
 			# Determine the list of files:
 			vfiles = []
 			for ofn in otherFilenames:
 				if ofn.find(key)>-1:
 					vfiles.append(ofn)
-				otherFilenames.pop(ofn)
+			
+			for ofn in vfiles:otherFilenames.remove(ofn)
+
+			if len(vfiles) ==0: continue
+
+                        href =  'OtherPlots-'+key
+                        desc = ''
+
+                        hrefs.append(href)
+                        Titles[href] =          getLongName(key)
+                        SidebarTitles[href] = getLongName(key)
+                        Descriptions[href] = desc
+                        FileLists[href] = {}
+                        FileOrder[href] = {}
+
 			#####
 			# Create plot headers for each file.
 			count=0
@@ -1287,11 +1317,47 @@ def comparehtml5Maker(
 				FileOrder[href][count] = relfn
 				count+=1
 				print "Adding ",relfn,"to script"
-				
-		html5Tools.AddSubSections(indexhtmlfn,
+
+                if len(otherFilenames):
+                        href =  'OtherPlots-others'
+
+                        hrefs.append(href)
+                        Titles[href] 		= 'Everything Else'
+                        SidebarTitles[href] 	= 'Everything Else'
+                        Descriptions[href] 	= ''
+                        FileLists[href] = {}
+                        FileOrder[href] = {}
+
+                        #####
+                        # Create plot headers for each file.
+                        count=0
+                        for fn in sorted(otherFilenames):
+                                #####
+                                # Copy image to image folder and return relative path.
+                                relfn = addImageToHtml(fn, imagesfold, reportdir)
+
+                                #####
+                                # Create custom title by removing extra bits.
+                                title = html5Tools.fnToTitle(relfn)
+
+                                FileLists[href][relfn] = title
+                                FileOrder[href][count] = relfn
+                                count+=1
+                                print "Adding ",relfn,"to script"
+
+		print hrefs
+        	print SectionTitle
+	        print SidebarTitles
+        	print Titles
+	        print Descriptions
+        	print FileLists
+	        print FileOrder
+#		hrefs=[]
+		if len(hrefs):	
+			html5Tools.AddSubSections(indexhtmlfn,
 				hrefs,
 				SectionTitle,
-				SidebarTitles=SidebarTitles,#
+				SidebarTitles=SidebarTitles,
 				Titles=Titles, 
 				Descriptions=Descriptions,
 				FileLists=FileLists,

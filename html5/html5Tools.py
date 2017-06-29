@@ -62,7 +62,8 @@ def locateLineNumber(filepath,linekey):
 def writeSideBar(filepath, href, text,option='head',debug=False):
 	"""	Addes a sidebar to the file "filepath."
 	"""	
-	
+        print "Adding sidebar", href,text
+		
 	if option == 'sub':	
 		newline = '\n\t\t\t\t\t\t\t\t<li><a href="#'+href+'" id="'+href+'-link" class="skel-layers-ignoreHref"><span class="icon fa-square">'+text+'</span></a></li>\n'
 	if option == 'head':	

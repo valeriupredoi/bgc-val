@@ -265,6 +265,7 @@ def makeLongNameDict():
    	lnd['layerless'] = ''    	   	   
         lnd['together'] = ''
         lnd['dataonly'] = ''
+        lnd['so'] = 'NEMO Diagnostics'
 
   	lnd['RegionLegend'] = "Region Legend"
   	lnd['TransectsLegend'] = "Transects Legend"
