@@ -1195,12 +1195,12 @@ def comparehtml5Maker(
 		try:	categories['Other Plots'].append(fn)
 		except:	categories['Other Plots'] = [fn,]					
 
-	for cat, catfiles in categories:
+	for cat, catfiles in categories.items():
 	
 		href = 	cat.replace(' ','')
 		Title = cat
 		
-		AddSection(
+		html5Tools.AddSection(
 			indexhtmlfn,
 			href,
 			Title, 
