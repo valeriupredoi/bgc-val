@@ -1129,7 +1129,7 @@ def comparehtml5Maker(
 	print "Copying html and js assets to", reportdir
 	copytree('html5/html5Assets', reportdir)
 	indexhtmlfn 	= reportdir+"index.html"
-	try:os.rename(reportdir+'index-template.html', indexhtmlfn)
+	try:os.rename(reportdir+'index-compare-template.html', indexhtmlfn)
 	except: pass
 
 	imagesfold 	= folder(reportdir+'images/')
@@ -1162,11 +1162,17 @@ def comparehtml5Maker(
 			'TotalAirSeaFluxCO2',
 			'TotalIntegratedPrimaryProduction',
 			'TotalDust',
-			'Chlorophyll',
+			'Chlorophyll_Global_Surface',
 			'TotalOMZVolume',
+                        'ExportRatio',
+                        'Nitrate_Global_Surface',
+                        'DIC_Global_Surface',
+                        'Alkalinity_Global_Surface',
+                        'Silicate_Global_Surface',
+                        'Iron_Global_Surface',
 			]	
-			
-	extrafolds = ['BGC','NAS','OMZ',]
+	extrafolds = []
+#	extrafolds = ['BGC','NAS','OMZ',]
 	
 	for fn in files:
 		found = False
@@ -1194,18 +1200,41 @@ def comparehtml5Maker(
 		if found:continue		
 		try:	categories['Other Plots'].append(fn)
 		except:	categories['Other Plots'] = [fn,]					
-
-	for cat, catfiles in categories.items():
 	
+	categoryOrder = []
+	if len(categories['Physics Key Metrics']): categoryOrder.append('Physics Key Metrics')
+        if len(categories['BGC Key Metrics']): categoryOrder.append('BGC Key Metrics')
+	for exf in extrafolds:
+		if exf not in categories.keys():continue
+		if len(categories[exf]): categoryOrder.append(exf)
+
+        if len(categories['Other Plots']): categoryOrder.append('Other Plots')
+
+	categories['Other Plots'] = sorted(categories['Other Plots'])
+
+	for cat in categoryOrder:
+		catfiles =  categories[cat]
+		if not len(catfiles): continue
+
 		href = 	cat.replace(' ','')
 		Title = cat
-		
+		#####
+		# Copy image to image folder and return relative path.
+		relativeFiles  = [addImageToHtml(catfn, imagesfold, reportdir) for catfn in catfiles]
+
+		####
+		# sort alphabeticaly.
+		relativeFiles = sorted(relativeFiles)	
+
 		html5Tools.AddSection(
 			indexhtmlfn,
 			href,
 			Title, 
 			Description='',
-			Files=catfiles)
+			Files=relativeFiles)
+		
+
+        print "-------------\nSuccess\ntest with:\nfirefox",indexhtmlfn
 			
 	
 
