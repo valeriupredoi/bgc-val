@@ -1162,7 +1162,7 @@ def comparehtml5Maker(
 			'TotalAirSeaFluxCO2',
 			'TotalIntegratedPrimaryProduction',
 			'TotalDust',
-			'Chlorophyll',
+			'Chlorophyll_Global_Surface',
 			'TotalOMZVolume',
 			]	
 			
@@ -1199,13 +1199,17 @@ def comparehtml5Maker(
 	
 		href = 	cat.replace(' ','')
 		Title = cat
+
+		#####
+		# Copy image to image folder and return relative path.
+		relativeFiles  = [addImageToHtml(catfn, imagesfold, reportdir) for catfn in catfiles]
 		
-		AddSection(
+		html5Tools.AddSection(
 			indexhtmlfn,
 			href,
 			Title, 
 			Description='',
-			Files=catfiles)
+			Files=relativeFiles)
 			
 	
 
