@@ -126,7 +126,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 		
 	if bio:
 		analysisKeys.append('TotalAirSeaFlux')          # work in progress              
-#                analysisKeys.append('AirSeaFlux')               # work in progress              
+                analysisKeys.append('AirSeaFlux')               # work in progress              
 		analysisKeys.append('IntPP_OSU')                # OSU Integrated primpary production    
 		analysisKeys.append('GlobalExportRatio')
 
@@ -1736,9 +1736,10 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
                                 mdata = modeldataD[(jobID,name )][('Global', '3000m', 'mean')]
                                 title = ' '.join(['Global', '3000m', 'Mean',  getLongName(name)])
                         elif name in ['AirSeaFlux','AirSeaFluxCO2','Alk','Alkalinity',]:
-				print name, jobID, ':',sorted(modeldataD[(jobID,name )].keys())
-                                mdata = modeldataD[(jobID,name )][('ignoreInlandSeas', 'Surface', 'mean')]
-                                title = ' '.join(['ignoreInlandSeas', 'Surface', 'Mean',  getLongName(name)])
+	                        try:
+					mdata = modeldataD[(jobID,name )][('ignoreInlandSeas', 'Surface', 'mean')]
+		                        title = ' '.join(['ignoreInlandSeas', 'Surface', 'Mean',  getLongName(name)])
+				except: continue
 						
 			elif name in [ 'sowaflup','sohefldo','sofmflup','sosfldow','sossheig', 'soicecov',]:
 				
@@ -1757,7 +1758,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 				mdata = modeldataD[(jobID,name )][('regionless', 'layerless', 'metricless')]
 				title = getLongName(name)
 
-			if year0 in ['True', True,'First100Years']:
+			if year0 in ['True', True,'First100Years','2000-2250']:
 				if len(mdata.keys())==0:
 					timesD[jobID]=[]
                                         arrD[jobID]=[]
@@ -1766,9 +1767,17 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 				times = []
 				datas = []
 				for t in sorted(mdata.keys()):
-					if year0=='First100Years' and float(t) - t0 > 100.:continue
-					times.append(float(t)-t0)
-					datas.append(mdata[t])
+					if year0=='First100Years':
+						if float(t) - t0 > 100.:continue
+						times.append(float(t)-t0)
+						datas.append(mdata[t])
+                                        if year0=='2000-2250':
+						if float(t) <2000.:continue
+                                                if float(t) >2250.:continue
+                                                times.append(float(t))
+                                                datas.append(mdata[t])
+					
+
 				timesD[jobID] 	= times
 				arrD[jobID]	= datas
                         elif year0=='u-ai567-minus3':      
@@ -2178,15 +2187,15 @@ if __name__=="__main__":
 		exit
 	else:
 
+
+                jobs = ['u-am001','u-am004',]
+                colours = {i:standards[i] for i in jobs}
+                timeseries_compare(colours, physics=1,bio=0,year0=False,debug=0,analysisname='UKESM0.6_vs_GC3.1')
+
                 jobs = ['u-ak900','u-an631','u-an629','u-an619',]
                 colours = {i:standards[i] for i in jobs}
-                timeseries_compare(colours, physics=1,bio=1,year0=False,debug=0,analysisname='OceanOnlySpinUp')
+                timeseries_compare(colours, physics=1,bio=1,year0='2000-2250',debug=0,analysisname='OceanOnlySpinUp')
 
-
-
-#                jobs = ['u-am001','u-am004',]
-#                colours = {i:standards[i] for i in jobs}
-#                timeseries_compare(colours, physics=0,bio=0,year0=False,debug=1,analysisname='UKESM0.6_vs_GC3.1')
 
                 jobs = ['u-ai611','u-aj391','u-al901','u-am064','u-am927','u-am515',]
                 colours = {i:standards[i] for i in jobs}
