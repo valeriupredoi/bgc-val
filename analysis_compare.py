@@ -44,7 +44,7 @@ from netCDF4 import Dataset
 from glob import glob
 from scipy.interpolate import interp1d
 import numpy as np
-import os,sys
+import os,sys,fnmatch
 from getpass import getuser
 
 #####	
@@ -56,7 +56,7 @@ from timeseries import timeseriesPlots as tsp
 try:	from bgcvaltools.pftnames import getLongName
 except:	from pftnames import getLongName
 from alwaysInclude import  alwaysInclude
-
+from makeReport import comparehtml5Maker
 import paths
 
 
@@ -950,7 +950,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 				
 			name = 'DIC'
 		
-			av[name]['modelFiles'] 		= listModelDataFiles(jobID, 'ptrc_T', paths.ModelFolder_pref, annual)				
+			av[name]['modelFiles'] 		= listModelDataFiles(jobID, 'ptrcG_T', paths.ModelFolder_pref, annual)				
 			av[name]['dataFile'] 		= paths.GLODAPv2Dir+ 'GLODAPv2.tco2.historic.nc'
 				
 			av[name]['modelcoords'] 	= medusaCoords 	
@@ -1720,7 +1720,8 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 	for name in av.keys():
 		timesD  = {}
 		arrD	= {}
-		units = av[name]['modeldetails']['units']	
+		units = av[name]['modeldetails']['units']
+		title= ''	
 		for jobID in jobs:
 			if name in ['Iron','Nitrate','Silicate',
 					'Oxygen','Temperature','Salinity',
@@ -1949,6 +1950,24 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 				lineStyle	= ls,
 				colours		= colours,
 			)
+	try:
+		AllImages = glob(imageFolder, recursive=True)
+	except:
+		AllImages = []
+		for root, dirnames, filenames in os.walk(imageFolder):
+    			for filename in fnmatch.filter(filenames, '*.png'):
+     			   AllImages.append(os.path.join(root, filename))		
+	comparehtml5Maker(
+		jobIDs = jobs,
+		reportdir = ukp.folder('CompareReports/'+analysisname),
+		files = AllImages,
+		clean = False,
+		doZip= False,
+		jobDescriptions = {},
+		)
+	
+
+
 
 def flatten(lats,lons,dataA,dataB):
 	m =  np.ma.array(dataA).mask
@@ -2190,8 +2209,9 @@ if __name__=="__main__":
 
                 jobs = ['u-am001','u-am004',]
                 colours = {i:standards[i] for i in jobs}
-                timeseries_compare(colours, physics=1,bio=0,year0=False,debug=0,analysisname='UKESM0.6_vs_GC3.1')
-
+                timeseries_compare(colours, physics=1,bio=0,year0=False,debug=1,analysisname='UKESM0.6_vs_GC3.1')
+		assert 0
+		
                 jobs = ['u-ak900','u-an631','u-an629','u-an619',]
                 colours = {i:standards[i] for i in jobs}
                 timeseries_compare(colours, physics=1,bio=1,year0='2000-2250',debug=0,analysisname='OceanOnlySpinUp')

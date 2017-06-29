@@ -1104,6 +1104,112 @@ def html5Maker(
 
 
 
+        
+def comparehtml5Maker(
+		jobIDs = ['u-ab749','u-ad371'],
+		reportdir = 'reports/tmp',
+		files = [],
+		clean = False,
+		doZip= False,
+		jobDescriptions = {},
+		):
+
+	
+	if clean:
+		#####
+		# Delete old files
+		print "Removing old files from:",reportdir
+		try:shutil.rmtree(reportdir)
+		except: pass
+
+	reportdir = folder(reportdir)
+	
+	####
+	# Copy all necceasiry objects and templates to the report location:
+	print "Copying html and js assets to", reportdir
+	copytree('html5/html5Assets', reportdir)
+	indexhtmlfn 	= reportdir+"index.html"
+	try:os.rename(reportdir+'index-template.html', indexhtmlfn)
+	except: pass
+
+	imagesfold 	= folder(reportdir+'images/')
+	def newImageLocation(fn):
+		return imagesfold+os.path.basename(fn)
+	
+	#####
+	if jobDescriptions == {}:
+		jobDescriptions = {j:'' for j in jobIDs}
+	
+	descriptionText = 'Comparison of the jobs: '+ ', '.join(jobIDs)
+	
+	html5Tools.writeDescription(
+				indexhtmlfn,
+				descriptionText,
+				)
+	
+	categories ={}
+	physicsKM 	= [
+			'AMOC_26N',
+			'ADRC_26N',			
+			'DrakePassage',
+			'GlobalMeanTemperature',
+			'GlobalMeanSalinity',
+			'NothernTotalIceExtent',
+			'SouthernTotalIceExtent',
+			]
+			
+	bgcKM 		= [
+			'TotalAirSeaFluxCO2',
+			'TotalIntegratedPrimaryProduction',
+			'TotalDust',
+			'Chlorophyll',
+			'TotalOMZVolume',
+			]	
+			
+	extrafolds = ['BGC','NAS','OMZ',]
+	
+	for fn in files:
+		found = False
+		for key in physicsKM:
+			if found:continue
+			sectionTitle = 'Physics Key Metrics'
+			if fn.find(key) > -1:	
+				try:	categories[sectionTitle].append(fn)
+				except:	categories[sectionTitle] = [fn,]
+				found = True
+		for key in bgcKM: 
+			if found:continue		
+			sectionTitle = 'BGC Key Metrics'
+			if fn.find(key) > -1:	
+				try:	categories[sectionTitle].append(fn)
+				except:	categories[sectionTitle] = [fn,]	
+				found = True
+		if found:continue
+		for extracat in extrafolds:
+			if found:continue				
+			if fn.find('/'+extracat+'/') > -1:
+				try:	categories[extracat].append(fn)
+				except:	categories[extracat] = [fn,]			
+				
+		if found:continue		
+		try:	categories['Other Plots'].append(fn)
+		except:	categories['Other Plots'] = [fn,]					
+
+	for cat, catfiles in categories:
+	
+		href = 	cat.replace(' ','')
+		Title = cat
+		
+		AddSection(
+			indexhtmlfn,
+			href,
+			Title, 
+			Description='',
+			Files=catfiles)
+			
+	
+
+
 def main():
 	try:	jobID = argv[1]
 	except:	
@@ -1135,6 +1241,8 @@ def main():
 		
 		reportdir = arg
 			
+
+
 
 	
 
