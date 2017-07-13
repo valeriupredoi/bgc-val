@@ -2400,33 +2400,11 @@ def analysis_timeseries(jobID = "u-ab671",
 			#shelves[name] = profa.shelvefn
 			#shelves_insitu[name] = profa.shelvefn_insitu
 
-                #####
-                # time series and traffic lights.
-                tsa = timeseriesAnalysis(
-                        av[name]['modelFiles'],
-                        av[name]['dataFile'],
-                        dataType        = name,
-                        modelcoords     = av[name]['modelcoords'],
-                        modeldetails    = av[name]['modeldetails'],
-                        datacoords      = av[name]['datacoords'],
-                        datadetails     = av[name]['datadetails'],
-                        datasource      = av[name]['datasource'],
-                        model           = av[name]['model'],
-                        jobID           = jobID,
-                        layers          = av[name]['layers'],
-                        regions         = av[name]['regions'],
-                        metrics         = av[name]['metrics'],
-                        workingDir      = shelvedir,
-                        imageDir        = imagedir,
-                        grid            = av[name]['modelgrid'],
-                        gridFile        = av[name]['gridFile'],
-                        clean           = clean,
-                )
 
 		#####
 		# Profile plots
 		if av[name]['Dimensions'] == 3 and name not in ['Iron','Fe']:
-			continue
+#			continue
 			profa = profileAnalysis(
 				av[name]['modelFiles'],
 				av[name]['dataFile'],
@@ -2449,7 +2427,31 @@ def analysis_timeseries(jobID = "u-ab671",
 			)
 			#shelves[name] = profa.shelvefn
 			#shelves_insitu[name] = profa.shelvefn_insitu
-
+		continue
+                #####
+                # time series and traffic lights.
+                tsa = timeseriesAnalysis(
+                        av[name]['modelFiles'],
+                        av[name]['dataFile'],
+                        dataType        = name,
+                        modelcoords     = av[name]['modelcoords'],
+                        modeldetails    = av[name]['modeldetails'],
+                        datacoords      = av[name]['datacoords'],
+                        datadetails     = av[name]['datadetails'],
+                        datasource      = av[name]['datasource'],
+                        model           = av[name]['model'],
+                        jobID           = jobID,
+                        layers          = av[name]['layers'],
+                        regions         = av[name]['regions'],
+                        metrics         = av[name]['metrics'],
+                        workingDir      = shelvedir,
+                        imageDir        = imagedir,
+                        grid            = av[name]['modelgrid'],
+                        gridFile        = av[name]['gridFile'],
+                        clean           = clean,
+                )
+                
+                
 		#shelves[name] = tsa.shelvefn
 		#shelves_insitu[name] = tsa.shelvefn_insitu
 
