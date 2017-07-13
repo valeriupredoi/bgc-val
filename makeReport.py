@@ -1147,18 +1147,23 @@ def comparehtml5Maker(
 				)
 	
 	#####
-	if jobDescriptions != {}:
-		SectionTitle = 'Job description Table'
+	if jobColours != {}:
+		SectionTitle = 'Job IDs' 
+		Description=''		
 		Caption = ''
 		
+		href = 'sectionZeroTable'
 		table_data = []
-		for jobID in jobIDs:table_data.append([jobID, jobColours[jobID],jobDescriptions[jobID])
+		for jobID in jobIDs:
+			colourhtml = "<span style=\"color: "+jobColours[jobID]+"\">"+jobColours[jobID].title()+"</span>"
+			table_data.append([jobID, colourhtml,jobDescriptions[jobID]])
 			
 		
 		htmltable = htmltables.table(table_data,
-			header_row = ['job ID',   'Colour',   'Description'],
-		        col_align=['center', 'center', 'left'],
+			header_row = ['Job ID',   'Colour',   'Description',],
+		        col_align=['center', 'center', 'center',],
 		)
+
 		
 		html5Tools.AddTableSection(indexhtmlfn,
 				href,
