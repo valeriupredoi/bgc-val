@@ -73,7 +73,7 @@ def listModelDataFiles(jobID, filekey, datafolder, annual,year=''):
 		else:
 			return sorted(glob(datafolder+jobID+"/"+jobID+"o_1m_*"+year+"????_"+filekey+".nc"))
 				
-def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,analysisname=''):
+def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,analysisname='',jobDescriptions={}):
 	### strategy here is a simple wrapper.
 	# It's a little cheat-y, as I'm copying straight from analysis_timeseries.py
 	
@@ -1969,7 +1969,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 		files = AllImages,
 		clean = False,
 		doZip= False,
-		jobDescriptions = {jid:jid for jid in jobs},
+		jobDescriptions = jobDescriptions,
 		jobColours = colours,
 		)
 	
@@ -2164,12 +2164,19 @@ if __name__=="__main__":
                 'u-am008':'green',
 
         }
-#253494
-#ffffcc
-#a1dab4
-#41b6c4
-#2c7fb8
-#253494
+	jobDescriptions = {
+		'u-ad371': "Very short old run for debugging evaluation suite",	
+		'u-ak900': "Long runnning Ocean Only Spin up Candidate",
+		
+		'u-an619': "Observational start; new LSM; new bulk formulae, forced with u-am927",
+		'u-an629': "u-ak900 start (year 3996 = 1890 years); new LSM; old bulk formulae, forced with u-am927",
+		'u-an631': "u-ak900 start (year 3996 = 1890 years); new LSM; new bulk formulae, forced with u-am927",
+		
+		'u-an869':"uses observed ICs, old bulk formula, forced with u-am515",	
+		'u-an908':"u-ak900 start (year 3996 = 1890 years); new LSM; old bulk formulae, forced with u-am515",
+		'u-an911':"u-ak900 start (year 3996 = 1890 years); new LSM; new bulk formulae, forced with u-am515",
+		
+		}
 
 	try:
 		args = argv[1:]
@@ -2211,7 +2218,7 @@ if __name__=="__main__":
 			for i,job in enumerate(jobIDs):
 				colours[job] =randomcolours[i]
 		name = '_'.join(jobIDs) 
-	        timeseries_compare(colours, physics=phys,bio=bio,year0=False,debug=debug,analysisname=name)
+	        timeseries_compare(colours, physics=phys,bio=bio,year0=False,debug=debug,analysisname=name,jobDescriptions=jobDescriptions)
 		print "Successful command line comparison"
 		exit
 	else:
@@ -2219,7 +2226,7 @@ if __name__=="__main__":
 
                 jobs = ['u-an869','u-an908','u-an911','u-an631','u-an629','u-an619']
                 colours = {i:standards[i] for i in jobs}
-                timeseries_compare(colours, physics=1,bio=1,year0=False,debug=0,analysisname='OceanOnlySpinUp_with_u-am515_forced')
+                timeseries_compare(colours, physics=1,bio=1,year0=False,debug=0,jobDescriptions=jobDescriptions, analysisname='OceanOnlySpinUp_with_u-am515_forced')
 #		assert 0
 
 #                jobs = ['u-am001','u-am004',]
@@ -2228,23 +2235,23 @@ if __name__=="__main__":
 		
                 jobs = ['u-ak900','u-an631','u-an629','u-an619',]
                 colours = {i:standards[i] for i in jobs}
-                timeseries_compare(colours, physics=1,bio=1,year0='2000-2600normu-ak900',debug=0,analysisname='OceanOnlySpinUp_u-ak900')
+                timeseries_compare(colours, physics=1,bio=1,year0='2000-2600normu-ak900',debug=0,jobDescriptions=jobDescriptions, analysisname='OceanOnlySpinUp_u-ak900')
                 assert 0
 
 
                 jobs = ['u-ai611','u-aj391','u-al901','u-am064','u-am927','u-am515',]
                 colours = {i:standards[i] for i in jobs}
-                timeseries_compare(colours, physics=1,bio=0,year0=False,debug=0,analysisname='TillsCoupledRuns_physics')
+                timeseries_compare(colours, physics=1,bio=0,year0=False,debug=0,jobDescriptions=jobDescriptions, analysisname='TillsCoupledRuns_physics')
                 
 		jobs = ['u-am927','u-am515',]
                 colours = {i:standards[i] for i in jobs}
-                timeseries_compare(colours, physics=0,bio=1,year0=True,debug=0,analysisname='TillsCoupledRuns_BGC')
+                timeseries_compare(colours, physics=0,bio=1,year0=True,debug=0,jobDescriptions=jobDescriptions, analysisname='TillsCoupledRuns_BGC')
 
 
 	
                 jobs = ['u-ai567','u-aj588','u-am696','u-am792','u-am892','u-ak900']
                 colours = {i:standards[i] for i in jobs}
-                timeseries_compare(colours, physics=1,bio=1,year0='First100Years',debug=0,analysisname='CirculationTests-june17')
+                timeseries_compare(colours, physics=1,bio=1,year0='First100Years',debug=0,jobDescriptions=jobDescriptions, analysisname='CirculationTests-june17')
 
                 jobs = ['u-am004','u-am005','u-am007','u-am008']
                 colours = {i:standards[i] for i in jobs}

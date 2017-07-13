@@ -1156,12 +1156,17 @@ def comparehtml5Maker(
 		table_data = []
 		for jobID in jobIDs:
 			colourhtml = "<span style=\"color: "+jobColours[jobID]+"\">"+jobColours[jobID].title()+"</span>"
-			table_data.append([jobID, colourhtml,jobDescriptions[jobID]])
+			try:	jobdesc = jobDescriptions[jobID]
+			except:
+				print "comparehtml5Maker:\tjobID:",jobID," not in jobDescriptions."
+				jobdesc = jobID
+			table_data.append([jobID, colourhtml,jobdesc])
+			print "comparehtml5Maker:\tadded:",[jobID, colourhtml,jobdesc]	
 			
-		
+			
 		htmltable = htmltables.table(table_data,
 			header_row = ['Job ID',   'Colour',   'Description',],
-		        col_align=['center', 'center', 'center',],
+		        col_align=['center', 'center', 'left',],
 		)
 
 		
