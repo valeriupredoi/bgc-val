@@ -1154,8 +1154,10 @@ def comparehtml5Maker(
 			'DrakePassage',
 			'GlobalMeanTemperature',
 			'GlobalMeanSalinity',
-			'NothernTotalIceExtent',
+			'NorthernTotalIceExtent',
 			'SouthernTotalIceExtent',
+                        'Temperature_Global_Surface',
+                        'Salinty_Global_Surface',
 			]
 			
 	bgcKM 		= [
