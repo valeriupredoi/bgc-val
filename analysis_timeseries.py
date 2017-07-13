@@ -419,7 +419,7 @@ def analysis_timeseries(jobID = "u-ab671",
         # Because we can never be sure someone won't randomly rename the 
         # time dimension without saying anything.
         # if jobID in ['u-am515','u-am927','u-am064','u-an326',]:
-	if jobID > 'u-am515' and jobID not in ['u-an619','u-an629','u-an631',]:
+	if jobID > 'u-am515' and jobID not in ['u-an619','u-an629','u-an631','u-an869', 'u-an908', 'u-an911']:
 		# There are other changes here too.
                 #####
                 # Because we can never be sure someone won't randomly rename the 
