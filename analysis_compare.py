@@ -1969,7 +1969,8 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 		files = AllImages,
 		clean = False,
 		doZip= False,
-		jobDescriptions = {},
+		jobDescriptions = {jid:jid for jid in jobs},
+		jobColours = colours,
 		)
 	
 

@@ -1112,6 +1112,7 @@ def comparehtml5Maker(
 		clean = False,
 		doZip= False,
 		jobDescriptions = {},
+		jobColours 	= {},		
 		):
 
 	
@@ -1136,9 +1137,7 @@ def comparehtml5Maker(
 	def newImageLocation(fn):
 		return imagesfold+os.path.basename(fn)
 	
-	#####
-	if jobDescriptions == {}:
-		jobDescriptions = {j:'' for j in jobIDs}
+
 	
 	descriptionText = 'Comparison of the jobs: '+ ', '.join(jobIDs)
 	
@@ -1147,6 +1146,30 @@ def comparehtml5Maker(
 				descriptionText,
 				)
 	
+	#####
+	if jobDescriptions != {}:
+		SectionTitle = 'Job description Table'
+		Caption = ''
+		
+		table_data = []
+		for jobID in jobIDs:table_data.append([jobID, jobColours[jobID],jobDescriptions[jobID])
+			
+		
+		htmltable = htmltables.table(table_data,
+			header_row = ['job ID',   'Colour',   'Description'],
+		        col_align=['center', 'center', 'left'],
+		)
+		
+		html5Tools.AddTableSection(indexhtmlfn,
+				href,
+				SectionTitle,
+				Description=Description,
+				Caption=Caption,
+				tablehtml=htmltable)
+				
+				
+
+
 
 	physicsKM 	= [
 			'AMOC_26N',

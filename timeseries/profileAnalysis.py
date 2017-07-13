@@ -390,7 +390,11 @@ class profileAnalysis:
 									    	
 
 	AreaNeeded = len(ukp.intersection(['mean','median','sum',], self.metrics))
+	
 	maskedValue = np.ma.masked # -999.# np.ma.array([-999.,],mask=[True,])
+	#maskedValue = np.ma.array([-999.,],mask=[True,])
+	#maskedValue  = -999 #np.ma.array([-999.,],mask=[True,])	
+	
     	for l in sorted(self.dlayers)[:]:
 	    for r in self.regions:
 	    	dataD[(r,l)] = dl.load[(r,l,)]	
@@ -425,25 +429,41 @@ class profileAnalysis:
 	    		print "profileAnalysis:\t loadData,\tloading ",(r,l),  'mean:\t',meandatad    	
 
     			
+	    print "profileAnalysis:\t loadData.\tSaving shelve: (layer",l,")", self.shelvefn_insitu			
+	    sh = shOpen(self.shelvefn_insitu)
+	    sh['dataD'] 	= dataD
+	    sh.close()
+
     		
 	###############
 	# Savng shelve		
 	print "profileAnalysis:\t loadData.\tSaving shelve:", self.shelvefn_insitu			
-#	try:
-	sh = shOpen(self.shelvefn_insitu)
-	sh['dataD'] 	= dataD
-	sh.close()
+	try:
+		sh = shOpen(self.shelvefn_insitu)
+		sh['dataD'] 	= dataD
+		sh.close()
 
-	print "profileAnalysis:\t loadData.\tSaved shelve:", self.shelvefn_insitu
+		print "profileAnalysis:\t loadData.\tSaved shelve:", self.shelvefn_insitu
 		
-#	except:
-#		print "profileAnalysis:\t WARNING.\tSaving shelve failed, trying again.:", self.shelvefn_insitu			
-#		#print "Data is", dataD
-#		shutil.move(self.shelvefn_insitu, self.shelvefn_insitu+'.broken')
+	except:
+		print "profileAnalysis:\t WARNING.\tSaving shelve failed, trying again.:", self.shelvefn_insitu			
+		print "Data is", dataD.keys()
+		
+		for key in sorted(dataD.keys()): 
+
+			
+			print key, ':\t', dataD[key]
+			sh = shOpen(ukp.folder('./tmpshelves')+'tmshelve.shelve')
+			sh['dataD'] 	= dataD[key]
+			sh.close()
+			print "saved fine:\t./tmpshelves/tmshelve.shelve"
+		
+		shutil.move(self.shelvefn_insitu, self.shelvefn_insitu+'.broken')
+
 #		try:
-#			sh = shOpen(self.shelvefn_insitu)
-#			sh['dataD'] 	= dataD
-#			sh.close()
+		sh = shOpen(self.shelvefn_insitu)
+		sh['dataD'] 	= dataD
+		sh.close()
 #		except:
 #			print "profileAnalysis:\t WARNING.\tUnable to Save in situ shelve.\tYou'll have to input it each time.",self.shelvefn_insitu	
 	 	
