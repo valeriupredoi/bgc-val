@@ -419,7 +419,7 @@ def analysis_timeseries(jobID = "u-ab671",
         # Because we can never be sure someone won't randomly rename the 
         # time dimension without saying anything.
         # if jobID in ['u-am515','u-am927','u-am064','u-an326',]:
-	if jobID > 'u-am515' and jobID not in ['u-an619','u-an629','u-an631','u-an869', 'u-an908', 'u-an911']:
+	if jobID > 'u-am515' and jobID not in ['u-an619','u-an629','u-an631','u-an869', 'u-an908', 'u-an911','u-an989',]:
 		# There are other changes here too.
                 #####
                 # Because we can never be sure someone won't randomly rename the 
@@ -478,8 +478,10 @@ def analysis_timeseries(jobID = "u-ab671",
 	def listModelDataFiles(jobID, filekey, datafolder, annual):
 		print "listing model data files:",jobID, filekey, datafolder, annual
 		if annual:
+			print "listing model data files:",datafolder+jobID+"/"+jobID+"o_1y_*_"+filekey+".nc"
 			return sorted(glob(datafolder+jobID+"/"+jobID+"o_1y_*_"+filekey+".nc"))
 		else:
+                        print "listing model data files:",datafolder+jobID+"/"+jobID+"o_1m_*_"+filekey+".nc"
 			return sorted(glob(datafolder+jobID+"/"+jobID+"o_1m_*_"+filekey+".nc"))
 
 

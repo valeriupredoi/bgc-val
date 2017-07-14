@@ -1148,11 +1148,11 @@ def comparehtml5Maker(
 	
 	#####
 	if jobColours != {}:
-		SectionTitle = 'Job IDs' 
+		SectionTitle = 'Legend' 
 		Description=''		
 		Caption = ''
 		
-		href = 'sectionZeroTable'
+		href = 'legendTable'
 		table_data = []
 		for jobID in jobIDs:
 			colourhtml = "<span style=\"color: "+jobColours[jobID]+"\">"+jobColours[jobID].title()+"</span>"

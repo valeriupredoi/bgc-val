@@ -2108,7 +2108,7 @@ if __name__=="__main__":
                 'u-aj391':'blue',
                 'u-ai611':'green',
                 'u-am064':'#41b6c4',
-                'u-am927':'red',
+                'u-am927':'sienna',
                 'u-am515':'orange',
                 
 
@@ -2134,7 +2134,6 @@ if __name__=="__main__":
 		'u-ak262':'dodgerblue',
                 'u-ak661':'chocolate',
 		'u-ak895':'purple',
-		'u-ak900':'orange',
 
 		'u-al598':'green',
 		'u-al284':'red',
@@ -2143,6 +2142,7 @@ if __name__=="__main__":
                 'u-am459':'fushia',
 		'u-am184':'teal',
                 'u-am220':'#41b6c4',    # blue-ish
+
 
 		# Colins tests
 		'u-am696':'red',
@@ -2155,6 +2155,9 @@ if __name__=="__main__":
 		'u-an869':'teal',
 		'u-an908':'magenta',
 		'u-an911':'blue',
+                'u-an989':'gold',
+
+
 		#####
 		# Atmospheric jobs.
                 'u-am001':'teal',
@@ -2165,17 +2168,25 @@ if __name__=="__main__":
 
         }
 	jobDescriptions = {
+		
 		'u-ad371': "Very short old run for debugging evaluation suite",	
 		'u-ak900': "Long runnning Ocean Only Spin up Candidate",
+
+                'u-am527': "Fully coupled, CMIP5 then CMIP6",
+                'u-am927': "Fully coupled, CMIP6 only",
+				
+                'u-an619': "Ocean Only, IC=OBS, atmos=u-am927, bulk=new",
+
+		'u-an629': "Ocean Only, IC=u-ak900, atmos=u-am927, bulk=old",
+		'u-an631': "Ocean Only, IC=u-ak900, atmos=u-am927, bulk=new",
+
 		
-		'u-an619': "IC=u-ak900, atmos=u-am927, bulk=new",
-		'u-an629': "IC=u-ak900, atmos=u-am927, bulk=old",
-		'u-an631': "IC=OBS, atmos=u-am927, bulk=new",
-		
-		'u-an869':"IC=OBS, atmos=u-am515, bulk=old",	
-		'u-an908':"IC=u-ak900, atmos=u-am515, bulk=new",
-		'u-an911':"IC=u-ak900, atmos=u-am515, bulk=old",
-		
+		'u-an908': "Ocean Only, IC=OBS, atmos=u-am515, bulk=new",
+		'u-an911': "Ocean Only, IC=u-ak900, atmos=u-am515, bulk=old",
+		'u-an989': "Ocean Only, IC=OBS, atmos=u-am515, bulk=old",
+                'u-an869': "Ocean Only, IC=u-ak900, atmos=u-am515, bulk=new",
+
+		'u-an766': 'copy of u-am001 but with PI oxidants.',
 		}
 
 
@@ -2224,13 +2235,17 @@ if __name__=="__main__":
 		exit
 	else:
 
+                jobs = ['u-an869','u-an908','u-an911','u-an631','u-an629','u-an619','u-an989',]
+                timeseries_compare(
+                        {i:standards[i] for i in jobs},
+                        physics=1,
+                        bio=1,
+                        debug=0,
+                        year0=False,
+                        jobDescriptions=jobDescriptions,
+			analysisname='AllOceanOnlySpinUps')
 
-                jobs = ['u-an869','u-an908','u-an911','u-an631','u-an629','u-an619']
-                colours = {i:standards[i] for i in jobs}
-                timeseries_compare(colours, physics=1,bio=1,year0=False,debug=0,jobDescriptions=jobDescriptions, analysisname='OceanOnlySpinUp_with_u-am515_forced')
-#		assert 0
-
-                jobs = ['u-an631','u-an911', 'u-an989',]
+                jobs = [ 'u-an989','u-an908','u-an619']
                 timeseries_compare(
                 	{i:standards[i] for i in jobs},
                 	physics=1,
@@ -2241,7 +2256,7 @@ if __name__=="__main__":
                 	analysisname='IC_Observations')
                 
                 
-                jobs = ['u-an911','u-an908','u-an629','u-an619']
+                jobs = ['u-an631','u-an869','u-an629','u-an911']
                 colours = {i:standards[i] for i in jobs}
                 timeseries_compare({
                 	i:standards[i] for i in jobs},
@@ -2252,6 +2267,30 @@ if __name__=="__main__":
                 	jobDescriptions=jobDescriptions,
                 	analysisname='IC_u-ak900')
                                 
+
+                jobs = ['u-am927','u-an619','u-an629','u-an631',]
+                colours = {i:standards[i] for i in jobs}
+                timeseries_compare({
+                        i:standards[i] for i in jobs},
+                        physics=1,
+                        bio=1,
+                        debug=0,
+                        year0=False,
+                        jobDescriptions=jobDescriptions,
+                        analysisname='atmos_u-am927')
+
+                jobs = ['u-am515','u-an908','u-an869','u-an911','u-an989']
+                colours = {i:standards[i] for i in jobs}
+                timeseries_compare({
+                        i:standards[i] for i in jobs},
+                        physics=1,
+                        bio=1,
+                        debug=0,
+                        year0=False,
+                        jobDescriptions=jobDescriptions,
+                        analysisname='atmos_u-am515')
+
+				
 
 #                jobs = ['u-am001','u-am004',]
 #                colours = {i:standards[i] for i in jobs}
