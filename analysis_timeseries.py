@@ -85,7 +85,7 @@ if True:
 	bgcKeys.append('DiaFrac')                  # Diatom Fraction
         bgcKeys.append('DTC')                      # Detrital carbon
         bgcKeys.append('CHL')                      # Total Chlorophyll        
-        bgcKeys.append('DMS_ARAN')                      # Total Chlorophyll        
+#        bgcKeys.append('DMS_ARAN')                      # Total Chlorophyll        
 
 
 bgcKeysDict = {i:n for i,n in enumerate(bgcKeys)}
@@ -94,13 +94,13 @@ bgcKeysDict = {i:n for i,n in enumerate(bgcKeys)}
 # Physical keys
 physKeys = []
 if True:
+
 	physKeys.append('T')                        	# WOA Temperature
 	physKeys.append('GlobalMeanTemperature')    	# Global Mean Temperature
 	physKeys.append('GlobalMeanSalinity')    	# Global Mean Salinity
 	physKeys.append('IcelessMeanSST')    		# Global Mean Surface Temperature with no ice	
 	physKeys.append('S')                        	# WOA Salinity
 	physKeys.append('MLD')				# iFERMER Mixed Layer Depth 
-	#physKeys.append('MaxMonthlyMLD')            	# MLD Monthly max           
 	      			
 	physKeys.append('TotalIceArea')			# work in progress
 	physKeys.append('NorthernTotalIceArea')		# work in progress
@@ -117,14 +117,18 @@ if True:
 	physKeys.append('ZonalCurrent')             	# Zonal Veloctity
 	physKeys.append('MeridionalCurrent')        	# Meridional Veloctity
 	physKeys.append('VerticalCurrent')          	# Vertical Veloctity
-#	physKeys.append('WindStress')               	# Wind Stress                        	
 
 	physKeys.append('sowaflup')			# Net Upward Water Flux 
-#	physKeys.append('sohefldo')			# Net downward Water Flux 			
-#	physKeys.append('sofmflup')			# Water flux due to freezing/melting
-#	physKeys.append('sosfldow')			# Downward salt flux
 	physKeys.append('soicecov')			# Ice fraction
-#	physKeys.append('sossheig')                 # Sea surface height
+	##### 
+	# unused:
+#       #physKeys.append('MaxMonthlyMLD')               # MLD Monthly max           
+#       physKeys.append('WindStress')                   # Wind Stress                           
+#       physKeys.append('sohefldo')                     # Net downward Water Flux                       
+#       physKeys.append('sofmflup')                     # Water flux due to freezing/melting
+#       physKeys.append('sosfldow')                     # Downward salt flux
+#       physKeys.append('sossheig')                 # Sea surface height
+
 physKeysDict = {i:n for i,n in enumerate(physKeys)}
 
 #####
@@ -476,7 +480,7 @@ def analysis_timeseries(jobID = "u-ab671",
 
 
 	def listModelDataFiles(jobID, filekey, datafolder, annual):
-		print "listing model data files:",jobID, filekey, datafolder, annual
+		print "listing model data files:\njobID:\t",jobID, '\nfile key:\t',filekey,'\ndata folder:\t', datafolder, '\nannual flag:\t',annual
 		if annual:
 			print "listing model data files:",datafolder+jobID+"/"+jobID+"o_1y_*_"+filekey+".nc"
 			return sorted(glob(datafolder+jobID+"/"+jobID+"o_1y_*_"+filekey+".nc"))
@@ -2379,34 +2383,31 @@ def analysis_timeseries(jobID = "u-ab671",
 			print "analysis-Timeseries.py:\tWARNING:\tdata file is not found:",av[name]['dataFile']
 			if strictFileCheck: assert 0
 
-#		profa = profileAnalysis(
-#			av[name]['modelFiles'],
-#			av[name]['dataFile'],
-#			dataType	= name,
- # 			modelcoords 	= av[name]['modelcoords'],
-  #			modeldetails 	= av[name]['modeldetails'],
-  #			datacoords 	= av[name]['datacoords'],
-  #			datadetails 	= av[name]['datadetails'],
-#			datasource	= av[name]['datasource'],
-#			model 		= av[name]['model'],
-#			jobID		= jobID,
-#			layers	 	= list(np.arange(102)),	# 102 because that is the number of layers in WOA Oxygen
-#			regions	 	= av[name]['regions'],
-#			metrics	 	= ['mean',],
-#			workingDir	= shelvedir,
-#			imageDir	= imagedir,
-#			grid		= av[name]['modelgrid'],
-#			gridFile	= av[name]['gridFile'],
-#			clean 		= clean,
-#		)
-			#shelves[name] = profa.shelvefn
-			#shelves_insitu[name] = profa.shelvefn_insitu
-
+                tsa = timeseriesAnalysis(
+                        av[name]['modelFiles'],
+                        av[name]['dataFile'],
+                        dataType        = name,
+                        modelcoords     = av[name]['modelcoords'],
+                        modeldetails    = av[name]['modeldetails'],
+                        datacoords      = av[name]['datacoords'],
+                        datadetails     = av[name]['datadetails'],
+                        datasource      = av[name]['datasource'],
+                        model           = av[name]['model'],
+                        jobID           = jobID,
+                        layers          = av[name]['layers'],
+                        regions         = av[name]['regions'],
+                        metrics         = av[name]['metrics'],
+                        workingDir      = shelvedir,
+                        imageDir        = imagedir,
+                        grid            = av[name]['modelgrid'],
+                        gridFile        = av[name]['gridFile'],
+                        clean           = clean,
+                )
 
 		#####
 		# Profile plots
 		if av[name]['Dimensions'] == 3 and name not in ['Iron','Fe']:
-#			continue
+			continue
 			profa = profileAnalysis(
 				av[name]['modelFiles'],
 				av[name]['dataFile'],
@@ -2429,30 +2430,6 @@ def analysis_timeseries(jobID = "u-ab671",
 			)
 			#shelves[name] = profa.shelvefn
 			#shelves_insitu[name] = profa.shelvefn_insitu
-		continue
-                #####
-                # time series and traffic lights.
-                tsa = timeseriesAnalysis(
-                        av[name]['modelFiles'],
-                        av[name]['dataFile'],
-                        dataType        = name,
-                        modelcoords     = av[name]['modelcoords'],
-                        modeldetails    = av[name]['modeldetails'],
-                        datacoords      = av[name]['datacoords'],
-                        datadetails     = av[name]['datadetails'],
-                        datasource      = av[name]['datasource'],
-                        model           = av[name]['model'],
-                        jobID           = jobID,
-                        layers          = av[name]['layers'],
-                        regions         = av[name]['regions'],
-                        metrics         = av[name]['metrics'],
-                        workingDir      = shelvedir,
-                        imageDir        = imagedir,
-                        grid            = av[name]['modelgrid'],
-                        gridFile        = av[name]['gridFile'],
-                        clean           = clean,
-                )
-                
                 
 		#shelves[name] = tsa.shelvefn
 		#shelves_insitu[name] = tsa.shelvefn_insitu

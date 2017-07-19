@@ -232,6 +232,8 @@ if __name__=="__main__":
 	print "########\nThe Whole Package:\tmain:", jobID,year
 
 	#if not ReportOnly:
+	year = False
+	print "Warning:\tturning off p2p analysis to save time and speed up time series."
 	if physicsOnly:	theWholePackage(jobID,year=year,suite='physics')
 	else:		theWholePackage(jobID,year=year)
 		

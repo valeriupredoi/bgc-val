@@ -85,7 +85,7 @@ def getHorizontalSlice(nc,coords,details,layer,data = ''):
 	# This is useful
 	if coords['z'] == '' or coords['z'] not in nc.variables.keys():
 		print "getHorizontalSlice:\tNo depth field in",details['name']
-		if data =='': 	data = ukp.extractData(nc,details)
+		if type(data) ==type(''): 	data = ukp.extractData(nc,details)
 		return data
 				
 	####
@@ -96,7 +96,7 @@ def getHorizontalSlice(nc,coords,details,layer,data = ''):
 		return ApplyDepthSlice(data, 0)
 	if layer in ['layerless',]:
 		print "getHorizontalSlice:\tNo layer data requested", layer
-		if data =='': 	data = ukp.extractData(nc,details)
+		if type(data) == type(''): 	data = ukp.extractData(nc,details)
 		return data
 
 	#####
@@ -120,7 +120,8 @@ def getHorizontalSlice(nc,coords,details,layer,data = ''):
 		if layer == '2000m': 	z = 2000.
                 if layer == '3000m':    z = 3000.
 		k =  ukp.getORCAdepth(z,nc.variables[coords['z']][:],debug=False)
-		if data =='': 	data = ukp.extractData(nc,details)
+		if type(data) == type(''):
+		 	data = ukp.extractData(nc,details)
 		print "getHorizontalSlice:\tSpecific depth field requested",details['name'], layer,[k],nc.variables[coords['z']][k], data.shape
 		return ApplyDepthSlice(data, k)
 			
