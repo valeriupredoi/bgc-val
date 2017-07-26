@@ -1208,6 +1208,7 @@ def comparehtml5Maker(
 			]
 	categories ={	'Physics Key Metrics':[],
 			'BGC Key Metrics':[],
+			'Other Plots':[],
 			}				
 	extrafolds = []
 	
@@ -1245,8 +1246,7 @@ def comparehtml5Maker(
 		if exf not in categories.keys():continue
 		if len(categories[exf]): categoryOrder.append(exf)
 
-        if len(categories['Other Plots']): categoryOrder.append('Other Plots')
-
+	if len(categories['Other Plots']): categoryOrder.append('Other Plots')
 	categories['Other Plots'] = sorted(categories['Other Plots'])
 
 	for cat in categoryOrder:

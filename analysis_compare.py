@@ -157,6 +157,9 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
         	####
         	# Supercedes other flags.
 		analysisKeys = []
+                analysisKeys.append('DrakePassageTransport')    # DrakePassageTransport         
+                analysisKeys.append('AMOC_26N')
+
 #		analysisKeys.append('CHD')
 #		analysisKeys.append('CHN')
 #		analysisKeys.append('DiaFrac')
@@ -166,8 +169,8 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 #                analysisKeys.append('N')                        # WOA Nitrate
 #                analysisKeys.append('Si')                       # WOA Siliate
 
-                analysisKeys.append('TotalAirSeaFlux')          # work in progress              
-                analysisKeys.append('AirSeaFlux')          # work in progress              
+#                analysisKeys.append('TotalAirSeaFlux')          # work in progress              
+#                analysisKeys.append('AirSeaFlux')          # work in progress              
 
 #                analysisKeys.append('ADRC_26N')                # AMOC 26N                        
 #                analysisKeys.append('VerticalCurrent')          # Vertical Veloctity           
@@ -1759,12 +1762,14 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 				mdata = modeldataD[(jobID,name )][('regionless', 'layerless', 'metricless')]
 				title = getLongName(name)
 
-			if year0 in ['True', True,'First100Years','2000-2250','2000-2600normu-ak900',]:
+			if year0 in ['True', True,'First100Years','2000-2250','2000-2600normu-ak900','juggling',]:
 				if len(mdata.keys())==0:
 					timesD[jobID]=[]
                                         arrD[jobID]=[]
 					continue
 				t0 = float(sorted(mdata.keys())[0])
+                                tm1 = float(sorted(mdata.keys())[-1])
+
 				times = []
 				datas = []
 				for t in sorted(mdata.keys()):
@@ -1782,6 +1787,15 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
                                                 if float(t) <2000.:continue
                                                 if float(t) >2600.:continue
                                                 times.append(float(t))
+                                                datas.append(mdata[t])
+
+					if year0=='juggling':
+                                                if jobID == 'u-am515': t1 = t - t0
+                                                if jobID == 'u-an869': t1 = t - (2061-56)	#-1862
+                                                if jobID == 'u-ao586': t1 = t - (2561 - 556)	#-1869
+                                                print jobID, t1,t, [t0, tm1]
+
+                                                times.append(float(t1))
                                                 datas.append(mdata[t])
 
 
@@ -2157,6 +2171,7 @@ if __name__=="__main__":
 		'u-an911':'blue',
                 'u-an989':'gold',
 
+		'u-ao586':'purple',
 
 		#####
 		# Atmospheric jobs.
@@ -2165,6 +2180,9 @@ if __name__=="__main__":
                 'u-am005':'red',
                 'u-am007':'magenta',
                 'u-am008':'green',
+		
+		'u-ao365':'red',
+		'u-ao404':'blue',
 
         }
 	jobDescriptions = {
@@ -2172,7 +2190,7 @@ if __name__=="__main__":
 		'u-ad371': "Very short old run for debugging evaluation suite",	
 		'u-ak900': "Long runnning Ocean Only Spin up Candidate",
 
-                'u-am527': "Fully coupled, CMIP5 then CMIP6",
+                'u-am515': "Fully coupled, CMIP5 then CMIP6",
                 'u-am927': "Fully coupled, CMIP6 only",
 				
                 'u-an619': "Ocean Only, IC=OBS, atmos=u-am927, bulk=new",
@@ -2187,6 +2205,12 @@ if __name__=="__main__":
                 'u-an869': "Ocean Only, IC=u-ak900, atmos=u-am515, bulk=new",
 
 		'u-an766': 'copy of u-am001 but with PI oxidants.',
+
+                'u-ao365':'UKESM 0.7 CN, lai_min = 0.7',
+                'u-ao404':'UKESM 0.7 CN, lai_min = 1.0, (southern ocean dust deposition should be higher) ',
+
+                'u-ao586':'Coupled extension',
+
 		}
 
 
@@ -2234,6 +2258,31 @@ if __name__=="__main__":
 		print "Successful command line comparison"
 		exit
 	else:
+		
+                jobs = ['u-an869','u-ao586','u-am515',]
+                colours = {i:standards[i] for i in jobs}
+                timeseries_compare({
+                        i:standards[i] for i in jobs},
+                        physics=1,
+                        bio=1,
+                        debug=0,
+                        year0='juggling',
+                        jobDescriptions=jobDescriptions,
+                        analysisname='Re-couplingTest_juggled')
+
+                jobs = ['u-ao365','u-ao404',]
+                colours = {i:standards[i] for i in jobs}
+                timeseries_compare({
+                        i:standards[i] for i in jobs},
+                        physics=1,
+                        bio=1,
+                        debug=0,
+                        year0=False,
+                        jobDescriptions=jobDescriptions,
+                        analysisname='UKESM_0.7')
+
+
+
 
                 jobs = ['u-an869','u-an908','u-an911','u-an631','u-an629','u-an619','u-an989',]
                 timeseries_compare(
@@ -2290,15 +2339,26 @@ if __name__=="__main__":
                         jobDescriptions=jobDescriptions,
                         analysisname='atmos_u-am515')
 
-				
+
+                jobs = ['u-ao365','u-ao404',]
+                colours = {i:standards[i] for i in jobs}
+                timeseries_compare({
+                        i:standards[i] for i in jobs},
+                        physics=1,
+                        bio=1,
+                        debug=0,
+                        year0=False,
+                        jobDescriptions=jobDescriptions,
+                        analysisname='UKESM_0.7')
+						
 
 #                jobs = ['u-am001','u-am004',]
 #                colours = {i:standards[i] for i in jobs}
 #                timeseries_compare(colours, physics=1,bio=0,year0=False,debug=1,analysisname='UKESM0.6_vs_GC3.1')
 		
-                jobs = ['u-ak900','u-an631','u-an629','u-an619',]
-                colours = {i:standards[i] for i in jobs}
-                timeseries_compare(colours, physics=1,bio=1,year0='2000-2600normu-ak900',debug=0,jobDescriptions=jobDescriptions, analysisname='OceanOnlySpinUp_u-ak900')
+#                jobs = ['u-ak900','u-an631','u-an629','u-an619',]
+#                colours = {i:standards[i] for i in jobs}
+#                timeseries_compare(colours, physics=1,bio=1,year0='2000-2600normu-ak900',debug=0,jobDescriptions=jobDescriptions, analysisname='OceanOnlySpinUp_u-ak900')
                 assert 0
 
 

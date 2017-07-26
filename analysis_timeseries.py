@@ -73,17 +73,17 @@ if True:
 	bgcKeys.append('TotalAirSeaFluxCO2')       # Total global air sea flux
 	bgcKeys.append('IntPP_OSU')                # OSU Integrated primpary production
 	bgcKeys.append('PP_OSU')                   # OSU Integrated primpary production
-	bgcKeys.append('LocalExportRatio')         # Export ratio (no data)
+#	bgcKeys.append('LocalExportRatio')         # Export ratio (no data)
 	bgcKeys.append('GlobalExportRatio')        # Export ratio (no data)
 	bgcKeys.append('TotalOMZVolume')           # Total Oxygen Minimum zone Volume
-	bgcKeys.append('OMZThickness')             # Oxygen Minimum Zone Thickness
-	bgcKeys.append('OMZMeanDepth')             # Oxygen Minimum Zone mean depth
-	bgcKeys.append('AOU')                      # Apparent Oxygen Usage                         
+#	bgcKeys.append('OMZThickness')             # Oxygen Minimum Zone Thickness
+#	bgcKeys.append('OMZMeanDepth')             # Oxygen Minimum Zone mean depth
+#	bgcKeys.append('AOU')                      # Apparent Oxygen Usage                         
 	bgcKeys.append('Iron')                     # Iron
 	bgcKeys.append('Dust')                     # Dust
 	bgcKeys.append('TotalDust')                # Total Dust
-	bgcKeys.append('DiaFrac')                  # Diatom Fraction
-        bgcKeys.append('DTC')                      # Detrital carbon
+#	bgcKeys.append('DiaFrac')                  # Diatom Fraction
+#        bgcKeys.append('DTC')                      # Detrital carbon
         bgcKeys.append('CHL')                      # Total Chlorophyll        
 #        bgcKeys.append('DMS_ARAN')                      # Total Chlorophyll        
 
@@ -98,13 +98,13 @@ if True:
 	physKeys.append('T')                        	# WOA Temperature
 	physKeys.append('GlobalMeanTemperature')    	# Global Mean Temperature
 	physKeys.append('GlobalMeanSalinity')    	# Global Mean Salinity
-	physKeys.append('IcelessMeanSST')    		# Global Mean Surface Temperature with no ice	
+#	physKeys.append('IcelessMeanSST')    		# Global Mean Surface Temperature with no ice	
 	physKeys.append('S')                        	# WOA Salinity
 	physKeys.append('MLD')				# iFERMER Mixed Layer Depth 
 	      			
-	physKeys.append('TotalIceArea')			# work in progress
-	physKeys.append('NorthernTotalIceArea')		# work in progress
-	physKeys.append('SouthernTotalIceArea')		# work in progress
+#	physKeys.append('TotalIceArea')			# work in progress
+#	physKeys.append('NorthernTotalIceArea')		# work in progress
+#	physKeys.append('SouthernTotalIceArea')		# work in progress
 	physKeys.append('TotalIceExtent')		# work in progress
 	physKeys.append('NorthernTotalIceExtent')	# work in progress
 	physKeys.append('SouthernTotalIceExtent')	# work in progress
@@ -114,14 +114,15 @@ if True:
 	physKeys.append('AMOC_26N')                 	# AMOC 26N
         physKeys.append('AMOC_26N_nomexico')            # AMOC 26N
 	physKeys.append('ADRC_26N')                 	# ADRC 26N                        	                
-	physKeys.append('ZonalCurrent')             	# Zonal Veloctity
-	physKeys.append('MeridionalCurrent')        	# Meridional Veloctity
-	physKeys.append('VerticalCurrent')          	# Vertical Veloctity
+#	physKeys.append('ZonalCurrent')             	# Zonal Veloctity
+#	physKeys.append('MeridionalCurrent')        	# Meridional Veloctity
+#	physKeys.append('VerticalCurrent')          	# Vertical Veloctity
 
 	physKeys.append('sowaflup')			# Net Upward Water Flux 
-	physKeys.append('soicecov')			# Ice fraction
+#	physKeys.append('soicecov')			# Ice fraction
 	##### 
 	# unused:
+
 #       #physKeys.append('MaxMonthlyMLD')               # MLD Monthly max           
 #       physKeys.append('WindStress')                   # Wind Stress                           
 #       physKeys.append('sohefldo')                     # Net downward Water Flux                       
@@ -423,7 +424,7 @@ def analysis_timeseries(jobID = "u-ab671",
         # Because we can never be sure someone won't randomly rename the 
         # time dimension without saying anything.
         # if jobID in ['u-am515','u-am927','u-am064','u-an326',]:
-	if jobID > 'u-am515' and jobID not in ['u-an619','u-an629','u-an631','u-an869', 'u-an908', 'u-an911','u-an989',]:
+	if jobID > 'u-am514' and jobID not in ['u-an619','u-an629','u-an631','u-an869', 'u-an908', 'u-an911','u-an989',]:
 		# There are other changes here too.
                 #####
                 # Because we can never be sure someone won't randomly rename the 
@@ -1597,10 +1598,8 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modeldetails'] 	= {'name': name, 'vars':[ukesmkeys['temp3d'],], 'convert': applyLandMask,'units':'degrees C'}
 		av[name]['datadetails']  	= {'name': name, 'vars':['t_an',], 'convert': ukp.NoChange,'units':'degrees C'}
 
-                tregions =regionList
-                #tregions.extend(['NordicSea', 'LabradorSea', 'NorwegianSea'])
 		av[name]['layers'] 		=  layerList
-		av[name]['regions'] 		= tregions
+		av[name]['regions'] 		= regionList
 		av[name]['metrics']		= metricList
                 	
 		try:	
@@ -1633,10 +1632,8 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modeldetails'] 	= {'name': name, 'vars':[ukesmkeys['sal3d'],], 'convert': applyLandMask,'units':'PSU'}
 		av[name]['datadetails']  	= {'name': name, 'vars':['s_an',], 'convert': ukp.NoChange,'units':'PSU'}
 
-		salregions =regionList
-		#salregions.extend(['NordicSea', 'LabradorSea', 'NorwegianSea'])
 		av[name]['layers'] 		=  layerList
-		av[name]['regions'] 		= salregions
+		av[name]['regions'] 		= regionList
 		av[name]['metrics']		= metricList
 
 		av[name]['datasource'] 		= 'WOA'
