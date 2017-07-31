@@ -266,7 +266,7 @@ def nemoMonthlyMLD(jobID):
 	downloadField(jobID, ['somxl010',], extension='grid[-_]T', timeslice='m',name = 'monthlyMLD',dryrun=False)	
 
 
-def downloadMass(jobID,):
+def downloadMass(jobID,doMoo=True):
 	"""
 	:param jobID: The job ID
 	
@@ -313,7 +313,8 @@ def downloadMass(jobID,):
 	
 	doLs = False
 	doDL = True
-	
+
+	if not doMoo: return	
 	if doLs:	
 		print "Looking at the following files:"
 	
@@ -431,7 +432,10 @@ if __name__=="__main__":
 	#####
 	# All yearly files
 	if keys == []:	
-		downloadMass(jobID) 
+		downloadMass(jobID)
+
+	elif 'noMoo' in keys:
+		downloadMass(jobID,doMoo=False)
 	#####
 	# Monthly Ice files
 	elif keys in [['ice',], ['soicecov',],]:

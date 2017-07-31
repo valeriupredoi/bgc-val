@@ -1762,7 +1762,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 				mdata = modeldataD[(jobID,name )][('regionless', 'layerless', 'metricless')]
 				title = getLongName(name)
 
-			if year0 in ['True', True,'First100Years','2000-2250','2000-2600normu-ak900','juggling',]:
+			if year0 in ['True', True,'First100Years','2000-2250','2000-2600normu-ak900','juggling','juggling2']:
 				if len(mdata.keys())==0:
 					timesD[jobID]=[]
                                         arrD[jobID]=[]
@@ -1798,6 +1798,17 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
                                                 times.append(float(t1))
                                                 datas.append(mdata[t])
 
+                                        if year0=='juggling2':
+                                                if jobID == 'u-an869': t1 = t - (2061-56)       #-1862
+                                                if jobID == 'u-ao586': t1 = t - (2561 - 556)    #-1869
+                                                print jobID, t1,t, [t0, tm1]
+						
+						if t1<540:continue
+                                                if t1>600:continue
+
+                                                times.append(float(t1))
+                                                datas.append(mdata[t])
+
 
 				timesD[jobID] 	= times
 				arrD[jobID]	= datas
@@ -1815,6 +1826,16 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
                                         datas.append(mdata[t])
                                 timesD[jobID]   = times
                                 arrD[jobID]     = datas    					
+                        elif year0=='juggling2':
+                                if jobID == 'u-an869': t1 = t - (2061-56)       #-1862
+                                if jobID == 'u-ao586': t1 = t - (2561 - 556)    #-1869
+                                print jobID, t1,t, [t0, tm1]
+
+                                if t1<540:continue
+                                if t1>600:continue
+
+                                times.append(float(t1))
+                                datas.append(mdata[t])
 	
 			else:
 				timesD[jobID] 	= sorted(mdata.keys())
@@ -1922,9 +1943,21 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 			try:mdata = modeldataD[(jobID,name )][(region, layer, 'mean')]
 			except: continue
 			title = ' '.join([region, layer, 'Mean',  getLongName(name)])
-	
-			timesD[jobID] 	= sorted(mdata.keys())
-			arrD[jobID]	= [mdata[t] for t in timesD[jobID]]
+			if year0=='juggling2':
+				times,datas=[],[]
+                                for t in sorted(mdata.keys()):
+   	                                if jobID == 'u-an869': t1 = t - (2061-56)       #-1862
+        	                        if jobID == 'u-ao586': t1 = t - (2561 - 556)    #-1869
+                	                if t1<540:continue
+                        	        if t1>600:continue
+                                	times.append(float(t1))
+	                                datas.append(mdata[t])	
+                                timesD[jobID]   = times
+                                arrD[jobID]     = datas
+		
+			else:
+				timesD[jobID] 	= sorted(mdata.keys())
+				arrD[jobID]	= [mdata[t] for t in timesD[jobID]]
                 units = av[name]['modeldetails']['units']
 		
 		for ts in ['Together',]:#'Separate']:
@@ -2209,7 +2242,7 @@ if __name__=="__main__":
                 'u-ao365':'UKESM 0.7 CN, lai_min = 0.7',
                 'u-ao404':'UKESM 0.7 CN, lai_min = 1.0, (southern ocean dust deposition should be higher) ',
 
-                'u-ao586':'Coupled extension',
+                'u-ao586':'Coupled extension - based on 56 years of coupled u-am515, then 500 years of Ocean Only u-an869.',
 
 		}
 
@@ -2258,7 +2291,18 @@ if __name__=="__main__":
 		print "Successful command line comparison"
 		exit
 	else:
-		
+
+                jobs = ['u-an869','u-ao586',]
+                colours = {i:standards[i] for i in jobs}
+                timeseries_compare({
+                        i:standards[i] for i in jobs},
+                        physics=1,
+                        bio=1,
+                        debug=0,
+                        year0='juggling2',
+                        jobDescriptions=jobDescriptions,
+                        analysisname='Re-couplingTestReduced')
+
                 jobs = ['u-an869','u-ao586','u-am515',]
                 colours = {i:standards[i] for i in jobs}
                 timeseries_compare({
