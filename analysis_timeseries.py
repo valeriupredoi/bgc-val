@@ -225,6 +225,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		if analysisSuite.lower() in ['debug',]:
 			analysisKeys.append('AirSeaFlux')		# work in progress
 			analysisKeys.append('TotalAirSeaFluxCO2')	# work in progress
+			analysisKeys.append('NoCaspianAirSeaFluxCO2')	# work in progress			
 			#analysisKeys.append('TotalOMZVolume')		# work in progress
 			#analysisKeys.append('TotalOMZVolume50')	# work in progress
 			#analysisKeys.append('OMZMeanDepth')		# work in progress
@@ -1107,26 +1108,26 @@ def analysis_timeseries(jobID = "u-ab671",
 		area = nc.variables['e1t'][:]*nc.variables['e2t'][:]
 		nc.close()
 
-                def uam515_TotalCO2(nc,keys):
-                	#####
-                	# Hack to deal with the problem in the caspian sea in the spin up job, u-am515.
-                	# This is only to dfea
-                        factor =  365.25 * 12./1000. / 1.E15
-                        times =  tst.getTimes(nc, medusaCoords)
-                        if times[0] <2262.:
-				arr = nc.variables['CO2FLUX'][:].squeeze()
-				arr = np.ma.masked_where(np.ma.abs(arr)>1E10,arr)
-                      	  	arr = arr * factor *area    # mmolC/m2/d                        	
-                                print "uam515_TotalCO2:\tMasking u-am515", arr.min(),arr.mean(),arr.max()
-                        else:
-	                        arr = nc.variables['CO2FLUX'][:].squeeze() * factor  *area   # mmolC/m2/d
-                        
+#                def uam515_TotalCO2(nc,keys):
+#                	#####
+#                	# Hack to deal with the problem in the caspian sea in the spin up job, u-am515.
+#                	# This is only to dfea
+#                        factor =  365.25 * 12./1000. / 1.E15
+#                        times =  tst.getTimes(nc, medusaCoords)
+#                        if times[0] <2262.:#
+#				arr = nc.variables['CO2FLUX'][:].squeeze()
+#				arr = np.ma.masked_where(np.ma.abs(arr)>1E10,arr)
+#                      	  	arr = arr * factor *area    # mmolC/m2/d                        	
+#                                print "uam515_TotalCO2:\tMasking u-am515", arr.min(),arr.mean(),arr.max()
+#                        else:#
+#	                        arr = nc.variables['CO2FLUX'][:].squeeze() * factor  *area   # mmolC/m2/d
+#                        
 #                        if arr.ndim ==3:
 #                                for i in np.arange(arr.shape[0]):
 #                                      uam515_TotalCO2  arr[i] = arr[i]*area
 #                        elif arr.ndim ==2: arr = arr*area
 #                        else: assert 0
-                        return np.ma.sum(arr)
+#                        return np.ma.sum(arr)
 
 			
 
@@ -1153,24 +1154,13 @@ def analysis_timeseries(jobID = "u-ab671",
 
 
 		av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', paths.ModelFolder_pref, annual)
-		if annual:
-			av[name]['dataFile'] 		=  paths.TakahashiFolder+'takahashi_2009_Anual_sumflux_2006c_noHead.nc'
-		else:
-			av[name]['dataFile'] 		=  paths.TakahashiFolder+'takahashi2009_month_flux_pCO2_2006c_noHead.nc'
-			print "Air Sea Flux CO2 monthly not implemented"
-			assert 0
-			#av[name]['dataFile'] 		=  paths.TakahashiFolder+'takahashi2009_month_flux_pCO2_2006c_noHead.nc'
-
 		av[name]['modelcoords'] 	= medusaCoords
-		av[name]['datacoords'] 		= takahashiCoords
-		if jobID == 'u-am515':	av[name]['modeldetails']        = {'name': 'AirSeaFluxCO2', 'vars':['CO2FLUX',], 'convert': uam515_TotalCO2,'units':'Pg C/yr'}
-		else:	                av[name]['modeldetails']        = {'name': 'AirSeaFluxCO2', 'vars':['CO2FLUX',], 'convert': eOrcaTotal,'units':'Pg C/yr'}
-		#av[name]['modeldetails'] 	= {'name': 'AirSeaFluxCO2', 'vars':['CO2FLUX',], 'convert': eOrcaTotal,'units':'Pg C/yr'}
-		av[name]['datadetails']  	= {'name': 'AirSeaFluxCO2', 'vars':['TFLUXSW06','AREA_MKM2'], 'convert': takaTotal,'units':'Pg C/yr'}
+		#if jobID == 'u-am515':	av[name]['modeldetails']        = {'name': 'AirSeaFluxCO2', 'vars':['CO2FLUX',], 'convert': uam515_TotalCO2,'units':'Pg C/yr'}
+		#else:
+		av[name]['modeldetails']        = {'name': 'AirSeaFluxCO2', 'vars':['CO2FLUX',], 'convert': eOrcaTotal,'units':'Pg C/yr'}
 		av[name]['layers'] 		= ['layerless',]
 		av[name]['regions'] 		= ['regionless',]
 		av[name]['metrics']		= ['metricless',]
-		av[name]['datasource'] 		= ''
 		av[name]['model']		= 'MEDUSA'
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= paths.orcaGridfn
@@ -1178,9 +1168,63 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		noTaka = True
 		if noTaka:
-			av[name]['datadetails'] =  {'name': '',	'units':''}
-			av[name]['dataFile']	= ''
-			av[name]['datasource']  = ''
+			av[name]['datacoords'] 		= {'name': '', 'units':''}
+			av[name]['datadetails'] 	=  {'name': '',	'units':''}
+			av[name]['dataFile']		= ''
+			av[name]['datasource']  	= ''
+		else:
+			if annual:
+				av[name]['dataFile'] 		=  paths.TakahashiFolder+'takahashi_2009_Anual_sumflux_2006c_noHead.nc'
+			else:
+				av[name]['dataFile'] 		=  paths.TakahashiFolder+'takahashi2009_month_flux_pCO2_2006c_noHead.nc'
+				print "Air Sea Flux CO2 monthly not implemented"
+				assert 0
+				#av[name]['dataFile'] 		=  paths.TakahashiFolder+'takahashi2009_month_flux_pCO2_2006c_noHead.nc'
+			av[name]['datadetails']  	= {'name': 'AirSeaFluxCO2', 'vars':['TFLUXSW06','AREA_MKM2'], 'convert': takaTotal,'units':'Pg C/yr'}
+			av[name]['datasource'] 		= 'Takahashi'
+			av[name]['datacoords'] 		= takahashiCoords			
+
+
+
+	if 'NoCaspianAirSeaFluxCO2' in analysisKeys:
+		name = 'NoCaspianAirSeaFluxCO2'
+		nc = dataset(paths.orcaGridfn,'r')
+		area = nc.variables['e1t'][:]*nc.variables['e2t'][:]
+		nc.close()
+
+		def eOrcaTotal(nc,keys):
+			factor =  365.25 * 12./1000. / 1.E15
+			arr = nc.variables['CO2FLUX'][:].squeeze() * factor	# mmolC/m2/d
+			if arr.ndim ==3:
+				for i in np.arange(arr.shape[0]):
+					arr[i] = arr[i]*area
+			elif arr.ndim ==2: arr = arr*area
+			else: assert 0
+			return arr
+
+
+
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', paths.ModelFolder_pref, annual)
+
+		av[name]['modelcoords'] 	= medusaCoords
+
+		av[name]['modeldetails']        = {'name': 'AirSeaFluxCO2', 'vars':['CO2FLUX',], 'convert': eOrcaTotal,'units':'Pg C/yr'}
+
+		av[name]['layers'] 		= ['layerless',]
+		av[name]['regions'] 		= ['ignoreCaspian',]
+		av[name]['metrics']		= ['sum',]
+		av[name]['model']		= 'MEDUSA'
+		av[name]['modelgrid']		= 'eORCA1'
+		av[name]['gridFile']		= paths.orcaGridfn
+		av[name]['Dimensions']		= 2
+
+		av[name]['datacoords'] 		= {'name': '', 'units':''}
+		av[name]['datadetails'] 	=  {'name': '',	'units':''}
+		av[name]['dataFile']		= ''
+		av[name]['datasource']  	= ''
+			
+			
+			
 
 
 	if 'IntPP_iMarNet' in analysisKeys:
