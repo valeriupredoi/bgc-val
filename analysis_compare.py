@@ -125,7 +125,9 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 
 		
 	if bio:
-		analysisKeys.append('TotalAirSeaFlux')          # work in progress              
+		analysisKeys.append('TotalAirSeaFlux')          # work in progress             
+                analysisKeys.append('NoCaspianAirSeaFluxCO2')   # work in progress                      
+ 
                 analysisKeys.append('AirSeaFlux')               # work in progress              
 		analysisKeys.append('IntPP_OSU')                # OSU Integrated primpary production    
 		analysisKeys.append('GlobalExportRatio')
@@ -157,8 +159,9 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
         	####
         	# Supercedes other flags.
 		analysisKeys = []
-                analysisKeys.append('DrakePassageTransport')    # DrakePassageTransport         
-                analysisKeys.append('AMOC_26N')
+#                analysisKeys.append('DrakePassageTransport')    # DrakePassageTransport         
+#                analysisKeys.append('AMOC_26N')
+                analysisKeys.append('NoCaspianAirSeaFluxCO2')   # work in progress                      
 
 #		analysisKeys.append('CHD')
 #		analysisKeys.append('CHN')
@@ -511,6 +514,43 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 				av[name]['datadetails'] =  {'name': '',	'units':''}
 				av[name]['dataFile']	= ''
 				av[name]['datasource']  = ''
+
+		if 'NoCaspianAirSeaFluxCO2' in analysisKeys:
+			name = 'NoCaspianAirSeaFluxCO2'
+			nc = Dataset(paths.orcaGridfn,'r')
+			area = nc.variables['e1t'][:]*nc.variables['e2t'][:]
+			nc.close()
+
+			def eOrcaTotal(nc,keys):
+				factor =  365.25 * 12./1000. / 1.E15
+				arr = nc.variables['CO2FLUX'][:].squeeze() * factor	# mmolC/m2/d
+				if arr.ndim ==3:
+					for i in np.arange(arr.shape[0]):
+						arr[i] = arr[i]*area
+				elif arr.ndim ==2: arr = arr*area
+				else: assert 0
+				return arr
+
+
+
+			av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', paths.ModelFolder_pref, annual)
+
+			av[name]['modelcoords'] 	= medusaCoords
+
+			av[name]['modeldetails']        = {'name': 'AirSeaFluxCO2', 'vars':['CO2FLUX',], 'convert': eOrcaTotal,'units':'Pg C/yr'}
+
+			av[name]['layers'] 		= ['layerless',]
+			av[name]['regions'] 		= ['ignoreCaspian',]
+			av[name]['metrics']		= ['sum',]
+			av[name]['model']		= 'MEDUSA'
+			av[name]['modelgrid']		= 'eORCA1'
+			av[name]['gridFile']		= paths.orcaGridfn
+			av[name]['Dimensions']		= 2
+
+			av[name]['datacoords'] 		= {'name': '', 'units':''}
+			av[name]['datadetails'] 	=  {'name': '',	'units':''}
+			av[name]['dataFile']		= ''
+			av[name]['datasource']  	= ''
 
 		if 'AirSeaFlux' in analysisKeys:
 
@@ -1744,6 +1784,11 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 					mdata = modeldataD[(jobID,name )][('ignoreInlandSeas', 'Surface', 'mean')]
 		                        title = ' '.join(['ignoreInlandSeas', 'Surface', 'Mean',  getLongName(name)])
 				except: continue
+                        elif name in ['NoCaspianAirSeaFluxCO2',]:
+                                try:
+                                        mdata = modeldataD[(jobID,name )][('ignoreCaspian', 'layerless', 'sum')]
+                                        title = ' '.join(['ignoreCaspian',  'sum',  getLongName(name)])
+                                except: continue
 						
 			elif name in [ 'sowaflup','sohefldo','sofmflup','sosfldow','sossheig', 'soicecov',]:
 				

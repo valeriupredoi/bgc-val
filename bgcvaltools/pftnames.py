@@ -173,7 +173,9 @@ def makeLongNameDict():
   	lnd['Fe_D_CONC_BOTTLE'] = "Iron (Dissolved)"  
   		
 	lnd['AirSeaFluxCO2'] = "Air Sea CO2 Flux"  
-	lnd['TotalAirSeaFluxCO2'] = "Total Air Sea CO2 Flux"  
+	lnd['TotalAirSeaFluxCO2'] = "Total Air Sea CO2 Flux" 
+        lnd['NoCaspianAirSeaFluxCO2'] = "Air Sea CO2 Flux"
+ 
 	lnd['DIC'] = "DIC"  
 
 	lnd['TotalDust'] = 'Total Dust'
@@ -383,6 +385,7 @@ def makeLongNameDict():
   	lnd['ignoreMoreArtics'] = "No Arctic Oceans (60 degrees)"
   	lnd['ignoreMidArtics'] = "No Arctic Oceans (65 degrees)"  
   	lnd['ignoreArtics'] = "No Arctic Oceans (70 degrees)" 
+        lnd['ignoreCaspian'] = "Ignoring Caspian Sea"
   	
   	
   	lnd['Depth_0-10m'] = 'Depth <10m'
@@ -426,6 +429,8 @@ def makeLongNameDict():
   	lnd['OffAxis'] = 'Off Axis'  	
   	lnd['Depth'] = 'Depth >200m'  	
   	lnd['Shallow'] = 'Depth <200m'
+
+        lnd['Sum'] = 'Total'
 
 	lnd['Overestimate_2sig'] = "Overestimate 2 sigma"
 	lnd['Overestimate_3sig'] = "Overestimate 3 sigma"

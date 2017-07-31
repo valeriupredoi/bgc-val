@@ -143,6 +143,7 @@ level1KeysDict = {i:n for i,n in enumerate(level1Keys)}
 # The important keys
 keymetricsfirstKeys = [
 		'TotalAirSeaFluxCO2',
+                'NoCaspianAirSeaFluxCO2',
 		'IntPP_OSU',
 		'GlobalExportRatio',
                 'TotalIceExtent', 
@@ -223,8 +224,8 @@ def analysis_timeseries(jobID = "u-ab671",
 
 
 		if analysisSuite.lower() in ['debug',]:
-			analysisKeys.append('AirSeaFlux')		# work in progress
-			analysisKeys.append('TotalAirSeaFluxCO2')	# work in progress
+			#analysisKeys.append('AirSeaFlux')		# work in progress
+			#analysisKeys.append('TotalAirSeaFluxCO2')	# work in progress
 			analysisKeys.append('NoCaspianAirSeaFluxCO2')	# work in progress			
 			#analysisKeys.append('TotalOMZVolume')		# work in progress
 			#analysisKeys.append('TotalOMZVolume50')	# work in progress

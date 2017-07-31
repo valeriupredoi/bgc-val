@@ -407,6 +407,11 @@ def html5Maker(
 	                vfiles.extend(glob(imagedir+'/'+jobID+'/timeseries/*/mean*'+key+'*'+'Global*mean.png'))                                                                  	                
 	                vfiles.extend(glob(imagedir+'/'+jobID+'/timeseries/*/*'+key+'*'+'regionless*metricless.png'))     
 
+			#####
+			# Exceptions:
+			if key in ['AirSeaFluxCO2',]:
+	                        vfiles.extend(glob(imagedir+'/'+jobID+'/timeseries/*/sum*NoCaspianAirSeaFluxCO2_ignoreCaspian_layerless_sum.png'))
+
 			#vfiles.extend(glob(imagedir+'/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*hist.png'))
 			#vfiles.extend(glob(imagedir+'/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*robinquad.png'))
 			#vfiles.extend(glob(imagedir+'/'+jobID+'/P2Pplots/*/*'+key+'*/*/*'+region+'*'+key+'*'+year+'*scatter.png'))
@@ -1195,6 +1200,7 @@ def comparehtml5Maker(
 			
 	bgcKM 		= [
 			'TotalAirSeaFluxCO2',
+			'NoCaspianAirSeaFluxCO2',
 			'TotalIntegratedPrimaryProduction',
 			'TotalDust',
 			'Chlorophyll_Global_Surface',
