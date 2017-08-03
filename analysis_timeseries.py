@@ -262,9 +262,9 @@ def analysis_timeseries(jobID = "u-ab671",
                         #analysisKeys.append('T')                       # WOA Temperature
                         #analysisKeys.append('S')                        # WOA Salinity
                         #analysisKeys.append('MLD')                      # MLD
-                        analysisKeys.append('MaxMonthlyMLD')            # MLD                       
-                        analysisKeys.append('MinMonthlyMLD')
-                        
+                        #analysisKeys.append('MaxMonthlyMLD')            # MLD                       
+                        #analysisKeys.append('MinMonthlyMLD')
+                        analysisKeys.append('Chl_CCI')
                         #analysisKeys.append('NorthernTotalIceArea')    # work in progress
                         #analysisKeys.append('SouthernTotalIceArea')    # work in progress
                         #analysisKeys.append('TotalIceArea')            # work in progress
