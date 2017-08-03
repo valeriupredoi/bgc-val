@@ -218,7 +218,9 @@ def makeLongNameDict():
 	lnd['OND'] = 'OND'   			  	
 
   	lnd['mld'] = 'Mixed Layer Depth'     
-  	lnd['MaxMonthlyMLD'] = 'Annual Maximum Mixed Layer Depth' 
+  	lnd['MaxMonthlyMLD'] = 'Annual Maximum Mixed Layer Depth'
+        lnd['MinMonthlyMLD'] = 'Annual Minimum Mixed Layer Depth'
+ 
   	lnd['mld_DT02'] = 'MLD:Fixed Threshold Temperature '
   	lnd['mld_DR003'] = 'MLD:Fixed Threshold Density'
   	lnd['mld_DReqDTm02'] = 'MLD:Variable Threshold Density'  	  	

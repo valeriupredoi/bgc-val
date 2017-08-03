@@ -1787,7 +1787,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
                         elif name in ['NoCaspianAirSeaFluxCO2',]:
                                 try:
                                         mdata = modeldataD[(jobID,name )][('ignoreCaspian', 'layerless', 'sum')]
-                                        title = ' '.join(['ignoreCaspian',  'sum',  getLongName(name)])
+                                        title = ' '.join(['Total',  getLongName(name), '(No Caspian)'])
                                 except: continue
 						
 			elif name in [ 'sowaflup','sohefldo','sofmflup','sosfldow','sossheig', 'soicecov',]:

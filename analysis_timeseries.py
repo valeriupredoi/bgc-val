@@ -226,7 +226,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		if analysisSuite.lower() in ['debug',]:
 			#analysisKeys.append('AirSeaFlux')		# work in progress
 			#analysisKeys.append('TotalAirSeaFluxCO2')	# work in progress
-			analysisKeys.append('NoCaspianAirSeaFluxCO2')	# work in progress			
+			#analysisKeys.append('NoCaspianAirSeaFluxCO2')	# work in progress			
 			#analysisKeys.append('TotalOMZVolume')		# work in progress
 			#analysisKeys.append('TotalOMZVolume50')	# work in progress
 			#analysisKeys.append('OMZMeanDepth')		# work in progress
@@ -262,7 +262,8 @@ def analysis_timeseries(jobID = "u-ab671",
                         #analysisKeys.append('T')                       # WOA Temperature
                         #analysisKeys.append('S')                        # WOA Salinity
                         #analysisKeys.append('MLD')                      # MLD
-                        #analysisKeys.append('MaxMonthlyMLD')            # MLD                        
+                        analysisKeys.append('MaxMonthlyMLD')            # MLD                       
+                        analysisKeys.append('MinMonthlyMLD')
                         
                         #analysisKeys.append('NorthernTotalIceArea')    # work in progress
                         #analysisKeys.append('SouthernTotalIceArea')    # work in progress
@@ -1949,49 +1950,64 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['gridFile']		= paths.orcaGridfn
 		av[name]['Dimensions']		= 2
 
-	if 'MaxMonthlyMLD' in analysisKeys:
+	if 'MaxMonthlyMLD' in analysisKeys or 'MinMonthlyMLD' in analysisKeys:
 		
 		#/group_workspaces/jasmin2/ukesm/BGC_data/u-ad371/monthlyMLD/MetOffice_data_licence.325210916
 		monthlyFiles = glob(paths.ModelFolder_pref+'/'+jobID+'/monthlyMLD/'+jobID+'o_1m_*_grid_T.nc')
-		maxmldfiles = mergeMonthlyFiles(monthlyFiles,outfolder='',cal=medusaCoords['cal'])
+		if len(monthlyFiles):
+			maxmldfiles = mergeMonthlyFiles(monthlyFiles,outfolder='',cal=medusaCoords['cal'])
 		
-		def mldapplymask(nc,keys):
-			mld = np.ma.array(nc.variables[keys[0]][:]).max(0)
-			mld = np.ma.masked_where((nc.variables[keys[1]][:]==0.)+mld.mask+(mld==1.E9),mld)
-			return mld
+			for name in ['MaxMonthlyMLD','MinMonthlyMLD']:
+		                if name not in analysisKeys:continue
 
-		def mldmonthlymask(nc,keys):
-			mld = np.ma.array(np.ma.abs(nc.variables[keys[0]][:])).max(0)
-			mld = np.ma.masked_where(mld.mask+(mld.data>1.E10),mld)
-			return mld
+				def mldapplymask(nc,keys):
+					mld = np.ma.array(nc.variables[keys[0]][:]).max(0)
+					mld = np.ma.masked_where((nc.variables[keys[1]][:]==0.)+mld.mask+(mld==1.E9),mld)
+					return mld
+
+				def mldmonthlymask(nc,keys):
+					mld = np.ma.array(np.ma.abs(nc.variables[keys[0]][:])).max(0)
+					mld = np.ma.masked_where(mld.mask+(mld.data>1.E10),mld)
+					return mld
+
+                                def mldapplymask_min(nc,keys):
+                                        mld = np.ma.array(nc.variables[keys[0]][:]).min(0)
+                                        mld = np.ma.masked_where((nc.variables[keys[1]][:]==0.)+mld.mask+(mld==1.E9),mld)
+                                        return mld
+
+                                def mldmonthlymask_min(nc,keys):
+                                        mld = np.ma.array(np.ma.abs(nc.variables[keys[0]][:])).min(0)
+                                        mld = np.ma.masked_where(mld.mask+(mld.data>1.E10),mld)
+                                        return mld
 					
                 
-		name = 'MaxMonthlyMLD'
-		av[name]['modelFiles']  	= maxmldfiles #listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)
-		av[name]['dataFile'] 		= paths.MLDFolder+"mld_DT02_c1m_reg2.0.nc"	#mld_DT02_c1m_reg2.0.nc"
+				av[name]['modelFiles']  	= maxmldfiles #listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)
+				av[name]['dataFile'] 		= paths.MLDFolder+"mld_DT02_c1m_reg2.0.nc"	#mld_DT02_c1m_reg2.0.nc"
 
-		av[name]['modelcoords'] 	= medusaCoords
-		av[name]['datacoords'] 		= mldCoords
+				av[name]['modelcoords'] 	= medusaCoords
+				av[name]['datacoords'] 		= mldCoords
 
-		av[name]['modeldetails'] 	= {'name': 'mld', 'vars':['somxl010',],   'convert': mldmonthlymask,'units':'m'}
-		av[name]['datadetails']  	= {'name': 'mld', 'vars':['mld','mask',], 'convert': mldapplymask,'units':'m'}
+				if name =='MaxMonthlyMLD':
+					av[name]['modeldetails'] 	= {'name': 'mld', 'vars':['somxl010',],   'convert': mldmonthlymask,'units':'m'}
+					av[name]['datadetails']  	= {'name': 'mld', 'vars':['mld','mask',], 'convert': mldapplymask,'units':'m'}
+                                if name =='MinMonthlyMLD':
+                                        av[name]['modeldetails']        = {'name': 'mld', 'vars':['somxl010',],   'convert': mldmonthlymask_min,'units':'m'}
+                                        av[name]['datadetails']         = {'name': 'mld', 'vars':['mld','mask',], 'convert': mldapplymask_min,'units':'m'}
 
-		av[name]['layers'] 		= ['layerless',]
-
-		mldregions =regionList
-		#mldregions.extend(['NordicSea', 'LabradorSea', 'NorwegianSea'])		
+				av[name]['layers'] 		= ['layerless',]
 		
-		av[name]['regions'] 		= mldregions
-		av[name]['metrics']		= metricList
+				av[name]['regions'] 		= regionList
+				av[name]['metrics']		= metricList
+	
+				av[name]['datasource'] 		= 'IFREMER'
+				av[name]['model']		= 'NEMO'
 
-		av[name]['datasource'] 		= 'IFREMER'
-		av[name]['model']		= 'NEMO'
-
-		av[name]['modelgrid']		= 'eORCA1'
-		av[name]['gridFile']		= paths.orcaGridfn
-		av[name]['Dimensions']		= 2
+				av[name]['modelgrid']		= 'eORCA1'
+				av[name]['gridFile']		= paths.orcaGridfn
+				av[name]['Dimensions']		= 2
 		
-		
+		else:
+			print "No monthly MLD files found"		
 		
 
 	icekeys = ['NorthernTotalIceArea','SouthernTotalIceArea','TotalIceArea','NorthernTotalIceExtent','SouthernTotalIceExtent','TotalIceExtent']

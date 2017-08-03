@@ -473,7 +473,8 @@ def html5Maker(
                           'Temperature', 
                           'Salinity',
                           'ZonalCurrent','MeridionalCurrent','VerticalCurrent',
-                          'MaxMonthlyMLD'                          
+                          'MaxMonthlyMLD',                    
+                          'MinMonthlyMLD',
                           #'TotalIceArea'
 			]
 		physregionalFields = [
@@ -482,7 +483,8 @@ def html5Maker(
                           'TotalIceArea',
                           'TotalIceExtent',   
                           'ZonalCurrent','MeridionalCurrent','VerticalCurrent',
-                          'MaxMonthlyMLD'                          
+                          'MaxMonthlyMLD',                         
+                          'MinMonthlyMLD',
 			]			
 		SectionTitle= 'Level 1 - regional'
 		hrefs 		= []
