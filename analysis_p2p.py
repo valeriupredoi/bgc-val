@@ -160,7 +160,8 @@ def analysis_p2p(
                        	#analysisKeys.append('MeridionalCurrent')        # Meridional Veloctity
                        	#analysisKeys.append('VerticalCurrent')          # Vertical Veloctity	
                        	#analysisKeys.append('Dust')          # Vertical Veloctity	                       	
-	                analysisKeys.append('AirSeaFlux')          # work in progress              
+	                #analysisKeys.append('AirSeaFlux')          # work in progress              
+                        analysisKeys.append('Chl_CCI')                  # CCI Chlorophyll       
 		                       			
                 print "analysisSuite is a string", analysisSuite, analysisKeys
 		

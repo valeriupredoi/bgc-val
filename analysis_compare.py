@@ -1807,7 +1807,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 				mdata = modeldataD[(jobID,name )][('regionless', 'layerless', 'metricless')]
 				title = getLongName(name)
 
-			if year0 in ['True', True,'First100Years','2000-2250','2000-2600normu-ak900','juggling','juggling2']:
+			if year0 in ['True', True,'First100Years','2000-2250','2000-2600normu-ak900','juggling','juggling2','FullSpinUp']:
 				if len(mdata.keys())==0:
 					timesD[jobID]=[]
                                         arrD[jobID]=[]
@@ -1853,6 +1853,13 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 
                                                 times.append(float(t1))
                                                 datas.append(mdata[t])
+                                        if year0=='FullSpinUp':
+                                                if jobID == 'u-ak900': t1 = t - 2106
+                                                if jobID == 'u-an869': t1 = t - 2061 +       3996-2106      #-1862
+                                                if jobID == 'u-ao586': t1 = t - 2561 + 500 + 3996-2106    #-1869
+                                                times.append(float(t1))
+                                                datas.append(mdata[t])
+
 
 
 				timesD[jobID] 	= times
@@ -1999,7 +2006,17 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 	                                datas.append(mdata[t])	
                                 timesD[jobID]   = times
                                 arrD[jobID]     = datas
-		
+ 	              	elif year0=='FullSpinUp':
+				times,datas=[],[]
+                                for t in sorted(mdata.keys()):
+                        		if jobID == 'u-ak900': t1 = t - 2106
+                        	        if jobID == 'u-an869': t1 = t - (2061-56) + (3996-2106)      #-1862
+                	                if jobID == 'u-ao586': t1 = t - (2561 - 556)+ (3996-2106)    #-1869
+        	                        print jobID, t1,t, [t0, tm1]
+ 		                        times.append(float(t1))
+                                	datas.append(mdata[t])
+                                timesD[jobID]   = times
+                                arrD[jobID]     = datas
 			else:
 				timesD[jobID] 	= sorted(mdata.keys())
 				arrD[jobID]	= [mdata[t] for t in timesD[jobID]]
@@ -2337,6 +2354,17 @@ if __name__=="__main__":
 		exit
 	else:
 
+                jobs = ['u-an869','u-ao586','u-ak900',]
+                colours = {i:standards[i] for i in jobs}
+                timeseries_compare({
+                        i:standards[i] for i in jobs},
+                        physics=1,
+                        bio=1,
+                        debug=0,
+                        year0='FullSpinUp', 
+                        jobDescriptions=jobDescriptions,
+                        analysisname='OriginalOceanOnlySpinUp')
+
                 jobs = ['u-an869','u-ao586',]
                 colours = {i:standards[i] for i in jobs}
                 timeseries_compare({
@@ -2383,15 +2411,15 @@ if __name__=="__main__":
                         jobDescriptions=jobDescriptions,
 			analysisname='AllOceanOnlySpinUps')
 
-                jobs = [ 'u-an989','u-an908','u-an619']
-                timeseries_compare(
-                	{i:standards[i] for i in jobs},
-                	physics=1,
-                	bio=1,
-                	debug=0,
-                	year0=False,
-                	jobDescriptions=jobDescriptions,
-                	analysisname='IC_Observations')
+#                jobs = [ 'u-an989','u-an908','u-an619']
+#                timeseries_compare(
+#                	{i:standards[i] for i in jobs},
+#                	physics=1,
+#                	bio=1,
+#                	debug=0,
+#                	year0=False,
+#                	jobDescriptions=jobDescriptions,
+#                	analysisname='IC_Observations')
                 
                 
                 jobs = ['u-an631','u-an869','u-an629','u-an911']
@@ -2429,16 +2457,16 @@ if __name__=="__main__":
                         analysisname='atmos_u-am515')
 
 
-                jobs = ['u-ao365','u-ao404',]
-                colours = {i:standards[i] for i in jobs}
-                timeseries_compare({
-                        i:standards[i] for i in jobs},
-                        physics=1,
-                        bio=1,
-                        debug=0,
-                        year0=False,
-                        jobDescriptions=jobDescriptions,
-                        analysisname='UKESM_0.7')
+#                jobs = ['u-ao365','u-ao404',]
+#                colours = {i:standards[i] for i in jobs}
+#                timeseries_compare({
+#                        i:standards[i] for i in jobs},
+#                        physics=1,
+#                        bio=1,
+#                        debug=0,
+#                        year0=False,
+#                        jobDescriptions=jobDescriptions,
+#                        analysisname='UKESM_0.7')
 						
 
 #                jobs = ['u-am001','u-am004',]
@@ -2448,22 +2476,21 @@ if __name__=="__main__":
 #                jobs = ['u-ak900','u-an631','u-an629','u-an619',]
 #                colours = {i:standards[i] for i in jobs}
 #                timeseries_compare(colours, physics=1,bio=1,year0='2000-2600normu-ak900',debug=0,jobDescriptions=jobDescriptions, analysisname='OceanOnlySpinUp_u-ak900')
-                assert 0
 
 
-                jobs = ['u-ai611','u-aj391','u-al901','u-am064','u-am927','u-am515',]
-                colours = {i:standards[i] for i in jobs}
-                timeseries_compare(colours, physics=1,bio=0,year0=False,debug=0,jobDescriptions=jobDescriptions, analysisname='TillsCoupledRuns_physics')
+#                jobs = ['u-ai611','u-aj391','u-al901','u-am064','u-am927','u-am515',]
+#                colours = {i:standards[i] for i in jobs}
+#                timeseries_compare(colours, physics=1,bio=0,year0=False,debug=0,jobDescriptions=jobDescriptions, analysisname='TillsCoupledRuns_physics')
                 
-		jobs = ['u-am927','u-am515',]
-                colours = {i:standards[i] for i in jobs}
-                timeseries_compare(colours, physics=0,bio=1,year0=True,debug=0,jobDescriptions=jobDescriptions, analysisname='TillsCoupledRuns_BGC')
+#		jobs = ['u-am927','u-am515',]
+#                colours = {i:standards[i] for i in jobs}
+#                timeseries_compare(colours, physics=0,bio=1,year0=True,debug=0,jobDescriptions=jobDescriptions, analysisname='TillsCoupledRuns_BGC')
 
 
 	
-                jobs = ['u-ai567','u-aj588','u-am696','u-am792','u-am892','u-ak900']
-                colours = {i:standards[i] for i in jobs}
-                timeseries_compare(colours, physics=1,bio=1,year0='First100Years',debug=0,jobDescriptions=jobDescriptions, analysisname='CirculationTests-june17')
+#                jobs = ['u-ai567','u-aj588','u-am696','u-am792','u-am892','u-ak900']
+#                colours = {i:standards[i] for i in jobs}
+#                timeseries_compare(colours, physics=1,bio=1,year0='First100Years',debug=0,jobDescriptions=jobDescriptions, analysisname='CirculationTests-june17')
 
 
 

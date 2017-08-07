@@ -164,7 +164,7 @@ def findLastFinishedYear(jobID,dividby=1,numberfiles=6):
 	return False
 	#assert 0	
 
-def downloadField(jobID, keys, extension='grid[-_]T', timeslice='m',name='',dryrun=False):
+def downloadField(jobID, keys, extension='grid[-_]T', timeslice='m',name='',timerange='*', dryrun=False):
 	"""
 	:param jobID: The job ID
 	:param keys: a list of fields as they are saved in the Netcdf. (can also be a single string)
@@ -217,7 +217,7 @@ def downloadField(jobID, keys, extension='grid[-_]T', timeslice='m',name='',dryr
 	
 	#####
 	# moose file path:
-	massfp = "moose:/crum/"+jobID+"/on"+ts+".nc.file/*_1"+ts+"_*"+extension+".nc"
+	massfp = "moose:/crum/"+jobID+"/on"+ts+".nc.file/*_1"+ts+'_'+timerange+'_'+extension+".nc"
 	print "downloadField:\tmoose path:",massfp
 		
 	######
@@ -265,6 +265,13 @@ def nemoMonthlyIce(jobID):
 def nemoMonthlyMLD(jobID):
 	downloadField(jobID, ['somxl010',], extension='grid[-_]T', timeslice='m',name = 'monthlyMLD',dryrun=False)	
 
+def monthlyChl(jobID):
+	for months in ['01','02','06','07','08','12']: # They want JJA and DJF
+		ts = '????'+months+'01-??????01'
+	        downloadField(jobID, ['CHD',], extension='ptrc[-_]T', timeslice='m',timerange=ts,name = 'monthlyCHD',dryrun=False)
+	        downloadField(jobID, ['CHN',], extension='ptrc[-_]T', timeslice='m',timerange=ts,name = 'monthlyCHN',dryrun=False)
+
+
 
 def downloadMass(jobID,doMoo=True):
 	"""
@@ -307,11 +314,12 @@ def downloadMass(jobID,doMoo=True):
 		print "\tTo skip this warning, use the \"anymachine\" option at the command line"
 		return
 
+        deleteBadLinksAndZeroSize(outputFold,jobID)
 	
         fixFilePaths(outputFold,jobID)
         deleteBadLinksAndZeroSize(outputFold,jobID)
 	
-	doLs = False
+	doLs = True
 	doDL = True
 
 	if not doMoo: return	
@@ -324,13 +332,22 @@ def downloadMass(jobID,doMoo=True):
 		process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
 		output = process.communicate()[0]
 
+		if len(output.split('\n')) > 6000:
+			for i in range(10): 
+	                        bashCommand = "moo get --fill-gaps moose:/crum/"+jobID+"/ony.nc.file/*_1y_"+str(i)+"*.nc "+outputFold
+        	                print "running the command:",bashCommand
+                	        process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
+                        	output = process.communicate()[0]
 
-	if doDL:
-		print "Downloading at the following files:"
-		bashCommand = "moo get --fill-gaps moose:/crum/"+jobID+"/ony.nc.file/*.nc "+outputFold
-		print "running the command:",bashCommand
-		process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
-		output = process.communicate()[0]
+
+		else:
+
+#	if doDL:
+			print "Downloading at the following files:"
+			bashCommand = "moo get --fill-gaps moose:/crum/"+jobID+"/ony.nc.file/*.nc "+outputFold
+			print "running the command:",bashCommand
+			process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
+			output = process.communicate()[0]
 
 	fixFilePaths(outputFold,jobID)
 	deleteBadLinksAndZeroSize(outputFold,jobID)
@@ -349,9 +366,9 @@ def fixFilePaths(outputFold,jobID):
 	        if os.path.exists(correctfn):
 	        	print "downloadFromMass:\tfixFilePaths:\tcorrect path exists.",correctfn
 	        	continue
-                print "downloadFromMass:\tfixFilePaths:\tFixing file prefix",
+                print "downloadFromMass:\tfixFilePaths:\tFixing file prefix",fn, '-->',correctfn
         	os.symlink(fn,correctfn)
-	        print "downloadFromMass:\tfixFilePaths:\t", correctfn
+#	        print "downloadFromMass:\tfixFilePaths:\t", correctfn
 
 
         #####
@@ -443,7 +460,12 @@ if __name__=="__main__":
 	#####
 	# Monthly MLD
 	elif keys in [['mld',], ['MLD',],]:
-		nemoMonthlyMLD(jobID)		
+		nemoMonthlyMLD(jobID)	
+        #####
+        # Monthly chl
+        elif keys in [['chl',], ['CHL',],]:
+                monthlyChl(jobID)
+	
 	#####
 	# Other specific monthly files.
 	else:
