@@ -48,12 +48,43 @@ def getYearFromFile(fn):
 	      	return yr
 	    			      
 	return False
+
+def getDatesFromFilename(fn):
+	""" 
+	Takes a file anem, and looks for 8 consequetive numbers, then removes those that are months, and returns the year.
+	"""
+	a = findall(r'\d\d\d\d\d\d\d\d',fn)
+	dates = []
+	for i in a:
+		i = int(i) 	    			      
+		if i < 10000101:continue
+		if i > 99999999:continue		
+		dates.append(i)
+	return dates
+
+def getMonthsFromFilename(fn):
+	""" 
+	Takes a file anem, and looks for 8 consequetive numbers, then removes those that are months, and returns the year.
+	"""
+	a = findall(r'\d\d\d\d\d\d\d\d',fn)
+	#dates = []
+	year = getYearFromFile(fn)
+	mns = [ukp.mnStr(m) for m in range(1,13)]	
+	months = []
+	for i in a:
+		mn = i[4:6]
+		if mn not in mns: continue
+		months.apend(mn)
+	return months
+	
+		
 	
 def getAnnualFilename(files, outfolder,year):
 	files = sorted(files)
 	#####
 	# determinig filename on the way out
-	if outfolder=='':	outfolder = ukp.folder(os.path.dirname(files[0])+'/Annual')
+	if outfolder=='':	
+		outfolder = ukp.folder(os.path.dirname(files[0])+'/Annual')
 	
 	mintime = ''
 	maxtime = ''
@@ -69,7 +100,7 @@ def getAnnualFilename(files, outfolder,year):
 		if max(startstop) > maxtime: maxtime = max(startstop)
 
 	#####
-	# Create a fulkename that reflects the new times.
+	# Create a filename that reflects the new times.
 	basefile = 'Annual-'+os.path.basename(files[0])
 	startstop = findall(r'\d\d\d\d\d\d\d\d',basefile)
 	if len(startstop) ==2:
@@ -79,7 +110,8 @@ def getAnnualFilename(files, outfolder,year):
 	filenameOut = outfolder+basefile
 	return 	filenameOut	
 
-def mergeMonthlyFiles(files,outfolder='',cal='360_day'):
+
+def mergeMonthlyFiles(files,outfolder='',cal='360_day',timeAverage=False,):
 	#####
 	# This assuemd that the files have already been split up using the moo filter tool
 	# done in the the bgcvalTools/downloadFromMass.py
@@ -105,13 +137,48 @@ def mergeMonthlyFiles(files,outfolder='',cal='360_day'):
 		filenameOut = getAnnualFilename(yearFiles, outfolder,yr)
 		
 		if  ukp.shouldIMakeFile(yearFiles,filenameOut): 
-			m = mergeNC( years[yr], filenameOut, [], timeAverage=False,debug=True,calendar=cal)
+			m = mergeNC( years[yr], filenameOut, [], timeAverage=timeAverage,debug=True,calendar=cal)
 		
 		filesOut.append(filenameOut)
 	return filesOut
 
 	
+def meanDJF(files,outfolder='',cal='360_day'):
+	#####
+	# This assuemd that the files have already been split up using the moo filter tool
+	# done in the the bgcvalTools/downloadFromMass.py
+	filesOut=[]
+	years = {}
 
+	#####
+	# Load file
+	for fn in sorted(files):
+		dates  = getDatesFromFilename(fn)
+		year   = getYearFromFile(fn)
+		months = getMonthsFromFilename(fn)
+		if months in [['12','01'],['01','12'],]:
+			yrstr  = str(int(year+1))+'_DJF'
+		else:
+			yrstr  = str(int(year))+'_DJF'			
+			
+		try:	years[yrstr].append(fn)
+		except: years[yrstr] = [fn,]
+	
+	#####
+	for yr in sorted(years.keys()):
+		yearFiles= sorted(years[yr])
+		if len(yearFiles)!=3:
+			print "Not enough files in ",yr, len(years[yr])
+			continue
+
+		filenameOut = getAnnualFilename(yearFiles, outfolder)
+		if  ukp.shouldIMakeFile(yearFiles,filenameOut): 
+			m = mergeNC( years[yr], filenameOut, [], timeAverage=True,debug=True,calendar=cal)
+		
+		filesOut.append(filenameOut)
+	return filesOut
+
+	
 
 
 

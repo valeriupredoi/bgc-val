@@ -50,7 +50,7 @@ from timeseries import timeseriesAnalysis
 from timeseries import profileAnalysis
 from timeseries import timeseriesTools as tst
 
-from bgcvaltools.mergeMonthlyFiles import mergeMonthlyFiles
+from bgcvaltools.mergeMonthlyFiles import mergeMonthlyFiles,meanDJF
 from bgcvaltools.AOU import AOU
 from bgcvaltools.dataset import dataset
 
@@ -256,7 +256,10 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('Iron')			# work in progress
                         #analysisKeys.append('N')                        # WOA Nitrate
                         #analysisKeys.append('IntPP_OSU')               # OSU Integrated primpary production
-                       
+                        analysisKeys.append('Chl_CCI')
+			analysisKeys.append('CHL_JJA')
+#			analysisKeys.append('CHL_DJF')
+			                      
                         #####
                         # Physics switches:
                         #analysisKeys.append('T')                       # WOA Temperature
@@ -264,7 +267,7 @@ def analysis_timeseries(jobID = "u-ab671",
                         #analysisKeys.append('MLD')                      # MLD
                         #analysisKeys.append('MaxMonthlyMLD')            # MLD                       
                         #analysisKeys.append('MinMonthlyMLD')
-                        analysisKeys.append('Chl_CCI')
+
                         #analysisKeys.append('NorthernTotalIceArea')    # work in progress
                         #analysisKeys.append('SouthernTotalIceArea')    # work in progress
                         #analysisKeys.append('TotalIceArea')            # work in progress
@@ -632,6 +635,67 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= paths.orcaGridfn
 		av[name]['Dimensions']		= 3
+
+
+#	if 'CHL_JJA' in analysisKeys or 'CHL_DJF' in analysisKeys:
+	for name in ['CHL_JJA', 'CHL_DJF']:
+		if name not in analysisKeys: continue
+		
+		if name == 'CHL_JJA':
+			monthlyFiles = glob(paths.ModelFolder_pref+'/'+jobID+'/monthlyCHD/'+jobID+'o_1m_????0[678]*_grid_T.nc')
+		if name == 'CHL_DJF':
+			continue
+			monthlyFiles = glob(paths.ModelFolder_pref+'/'+jobID+'/monthlyCHD/'+jobID+'o_1m_????{12,01,02}*_grid_T.nc')
+						
+		if len(monthlyFiles):
+			if name == 'CHL_JJA':	chlfiles = timeAverage(monthlyFiles, outfolder='',cal=medusaCoords['cal'], timeAverage=True)
+			if name == 'CHL_DJF':	chlfiles = meanDJF(    monthlyFiles, outfolder='',cal=medusaCoords['cal'], timeAverage=True)
+		
+
+			def CHL_MODEL(nc,keys):			
+				chl = nc.variables[keys[0]][:].mean(0) + nc.variables[keys[1]][:].mean(0)
+				return chl
+
+			def CHLJJA_Data(nc,keys):			
+				chl = nc.variables[keys[0]][5:8].mean(0)
+				return chl
+				
+			def CHLDJF_Data(nc,keys):			
+				chl = nc.variables[keys[0]][0]  + nc.variables[keys[0]][1]+ nc.variables[keys[0]][11]
+				return chl
+			
+
+			av[name]['modelFiles']  	= chlfiles
+			av[name]['dataFile'] 		= paths.CCIDir+'ESACCI-OC-L3S-OC_PRODUCTS-CLIMATOLOGY-16Y_MONTHLY_1degree_GEO_PML_OC4v6_QAA-all-fv2.0.nc'
+
+			av[name]['modelcoords'] 	= medusaCoords
+			av[name]['datacoords'] 		= cciCoords
+
+			av[name]['modeldetails'] 	= {'name': name, 'vars':['CHN','CHD'], 'convert': CHLJJA_MODEL,'units':'mg C/m^3'}	
+				
+			if name =='CHL_JJA':
+				av[name]['datadetails']  	= {'name': name, 'vars':['chlor_a',], 'convert':  ukp.NoChange,'units':'mg C/m^3'}
+		        if name =='CHL_DJF':
+				av[name]['datadetails']  	= {'name': name, 'vars':['chlor_a',], 'convert':  ukp.NoChange,'units':'mg C/m^3'}
+
+			av[name]['layers'] 		= ['Surface',]
+
+			av[name]['regions'] 		= regionList
+			av[name]['metrics']		= metricList
+
+			av[name]['datasource'] 		= 'CCI'
+			av[name]['model']		= 'NEMO'
+
+			av[name]['modelgrid']		= 'eORCA1'
+			av[name]['gridFile']		= paths.orcaGridfn
+			av[name]['Dimensions']		= 2
+
+		else:
+			print "No monthly CHL files found"
+		
+		
+		
+		
 
         if 'DTC' in analysisKeys:
             for name in ['DTC',]:
