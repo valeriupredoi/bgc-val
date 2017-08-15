@@ -349,7 +349,7 @@ def html5Maker(
                           'ADRC_26N',                          
                           'ZonalCurrent','MeridionalCurrent','VerticalCurrent',
 		  	  'MLD',                          
-                          'MaxMonthlyMLD'
+                          'MaxMonthlyMLD', 'MinMonthlyMLD'
 			 ]
 		lev1physFields = [
                           'Temperature',
@@ -362,7 +362,7 @@ def html5Maker(
                           'ADRC_26N',                                                
 		  	  'ZonalCurrent','MeridionalCurrent','VerticalCurrent',	
 		  	  'MLD',
-		  	  'MaxMonthlyMLD',		  
+		  	  'MaxMonthlyMLD','MinMonthlyMLD',
 			 ]		 
 		SectionTitle= 'Level 1'
 		hrefs 	= []

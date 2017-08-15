@@ -74,7 +74,7 @@ def getMonthsFromFilename(fn):
 	for i in a:
 		mn = i[4:6]
 		if mn not in mns: continue
-		months.apend(mn)
+		months.append(mn)
 	return months
 	
 		
@@ -111,7 +111,7 @@ def getAnnualFilename(files, outfolder,year):
 	return 	filenameOut	
 
 
-def mergeMonthlyFiles(files,outfolder='',cal='360_day',timeAverage=False,):
+def mergeMonthlyFiles(files,outfolder='',cal='360_day',timeAverage=False,expectedNumberOfFiles=12):
 	#####
 	# This assuemd that the files have already been split up using the moo filter tool
 	# done in the the bgcvalTools/downloadFromMass.py
@@ -130,8 +130,8 @@ def mergeMonthlyFiles(files,outfolder='',cal='360_day',timeAverage=False,):
 	# 
 	for yr in sorted(years.keys()):
 		yearFiles= sorted(years[yr])
-		if len(yearFiles)!=12:
-			print "Not enough files in ",yr, len(years[yr])
+		if len(yearFiles)!=expectedNumberOfFiles:
+			print "Not enough files in ",yr, len(years[yr]), 'expecting:', expectedNumberOfFiles
 			continue
 
 		filenameOut = getAnnualFilename(yearFiles, outfolder,yr)
@@ -143,7 +143,7 @@ def mergeMonthlyFiles(files,outfolder='',cal='360_day',timeAverage=False,):
 	return filesOut
 
 	
-def meanDJF(files,outfolder='',cal='360_day'):
+def meanDJF(files,outfolder='',cal='360_day',timeAverage=False,):
 	#####
 	# This assuemd that the files have already been split up using the moo filter tool
 	# done in the the bgcvalTools/downloadFromMass.py
@@ -157,7 +157,7 @@ def meanDJF(files,outfolder='',cal='360_day'):
 		year   = getYearFromFile(fn)
 		months = getMonthsFromFilename(fn)
 		if months in [['12','01'],['01','12'],]:
-			yrstr  = str(int(year+1))+'_DJF'
+			yrstr  = str(int(year)+1)+'_DJF'
 		else:
 			yrstr  = str(int(year))+'_DJF'			
 			
@@ -171,9 +171,9 @@ def meanDJF(files,outfolder='',cal='360_day'):
 			print "Not enough files in ",yr, len(years[yr])
 			continue
 
-		filenameOut = getAnnualFilename(yearFiles, outfolder)
+		filenameOut = getAnnualFilename(yearFiles, outfolder,yr)
 		if  ukp.shouldIMakeFile(yearFiles,filenameOut): 
-			m = mergeNC( years[yr], filenameOut, [], timeAverage=True,debug=True,calendar=cal)
+			m = mergeNC( years[yr], filenameOut, [], timeAverage=timeAverage,debug=True,calendar=cal)
 		
 		filesOut.append(filenameOut)
 	return filesOut

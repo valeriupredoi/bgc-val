@@ -123,7 +123,9 @@ if True:
 	##### 
 	# unused:
 
-#       #physKeys.append('MaxMonthlyMLD')               # MLD Monthly max           
+        physKeys.append('MaxMonthlyMLD')               # MLD Monthly max           
+        physKeys.append('MinMonthlyMLD')               # MLD Monthly min           
+
 #       physKeys.append('WindStress')                   # Wind Stress                           
 #       physKeys.append('sohefldo')                     # Net downward Water Flux                       
 #       physKeys.append('sofmflup')                     # Water flux due to freezing/melting
@@ -156,6 +158,14 @@ keymetricsfirstKeys = [
 		]
 keymetricsfirstDict = {i:n for i,n in enumerate(keymetricsfirstKeys)}
 
+def listModelDataFiles(jobID, filekey, datafolder, annual):
+                print "listing model data files:\njobID:\t",jobID, '\nfile key:\t',filekey,'\ndata folder:\t', datafolder, '\nannual flag:\t',annual
+                if annual:
+                        print "listing model data files:",datafolder+jobID+"/"+jobID+"o_1y_*_"+filekey+".nc"
+                        return sorted(glob(datafolder+jobID+"/"+jobID+"o_1y_*_"+filekey+".nc"))
+                else:
+                        print "listing model data files:",datafolder+jobID+"/"+jobID+"o_1m_*_"+filekey+".nc"
+                        return sorted(glob(datafolder+jobID+"/"+jobID+"o_1m_*_"+filekey+".nc"))
 
 
 
@@ -256,9 +266,9 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('Iron')			# work in progress
                         #analysisKeys.append('N')                        # WOA Nitrate
                         #analysisKeys.append('IntPP_OSU')               # OSU Integrated primpary production
-                        analysisKeys.append('Chl_CCI')
+                        #analysisKeys.append('Chl_CCI')
 			analysisKeys.append('CHL_JJA')
-#			analysisKeys.append('CHL_DJF')
+			analysisKeys.append('CHL_DJF')
 			                      
                         #####
                         # Physics switches:
@@ -430,33 +440,69 @@ def analysis_timeseries(jobID = "u-ab671",
         # Because we can never be sure someone won't randomly rename the 
         # time dimension without saying anything.
         # if jobID in ['u-am515','u-am927','u-am064','u-an326',]:
-	if jobID > 'u-am514' and jobID not in ['u-an619','u-an629','u-an631','u-an869', 'u-an908', 'u-an911','u-an989',]:
-		# There are other changes here too.
-                #####
-                # Because we can never be sure someone won't randomly rename the 
-                # time dimension without saying anything.
-		ukesmkeys={}
-                ukesmkeys['time'] 	= 'time_centered'
-		ukesmkeys['temp3d'] 	= 'thetao'
-                ukesmkeys['sst'] 	= 'tos'
-                ukesmkeys['sal3d']     = 'so'
-                ukesmkeys['sss']        = 'sos'
-                ukesmkeys['v3d']     = 'vo'
-                ukesmkeys['u3d']     = 'uo'
-                ukesmkeys['e3u']    = 'thkcello'
-                ukesmkeys['w3d']     = 'wo'
+        try:
+		tmpModelFiles  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)
+	except:
+		print "No grid_T Model files available to figure out what naming convention is used."
+		tmpModelFiles = []
+        ukesmkeys={}
+	if len(tmpModelFiles):
+		nctmp = dataset(tmpModelFiles[0],'r')
+		nctmpkeys = nctmp.variables.keys()
+		nctmp.close()
+		if 'votemper' in nctmpkeys:
+			ukesmkeys={}
+                	ukesmkeys['time'] = 'time_counter'
+        	        ukesmkeys['temp3d']     = 'votemper'
+	                ukesmkeys['sst']        = ''
+                	ukesmkeys['sal3d']     = 'vosaline'
+        	        ukesmkeys['sss']        = ''
+	                ukesmkeys['v3d']     = 'vomecrty'
+                	ukesmkeys['u3d']     = 'vozocrtx'
+        	        ukesmkeys['e3u']    = 'e3u'
+	                ukesmkeys['w3d']     = 'vovecrtz'
+		else:
+                	ukesmkeys['time']       = 'time_centered'
+        	        ukesmkeys['temp3d']     = 'thetao'
+	                ukesmkeys['sst']        = 'tos'
+                	ukesmkeys['sal3d']     = 'so'
+        	        ukesmkeys['sss']        = 'sos'
+	                ukesmkeys['v3d']     = 'vo'
+                	ukesmkeys['u3d']     = 'uo'
+        	        ukesmkeys['e3u']    = 'thkcello'
+	                ukesmkeys['w3d']     = 'wo'
+		
+	
 
-        else:
-                ukesmkeys={}
-                ukesmkeys['time'] = 'time_counter'
-                ukesmkeys['temp3d']     = 'votemper'
-                ukesmkeys['sst']        = ''
-                ukesmkeys['sal3d']     = 'vosaline'
-                ukesmkeys['sss']        = ''
-                ukesmkeys['v3d']     = 'vomecrty'
-                ukesmkeys['u3d']     = 'vozocrtx'
-                ukesmkeys['e3u']    = 'e3u'
-                ukesmkeys['w3d']     = 'vovecrtz'
+#	if jobID > 'u-am514' and jobID not in ['u-an619','u-an629','u-an631','u-an869', 'u-an908', 'u-an911','u-an989',]:
+#		# There are other changes here too.
+#                #####
+#                # Because we can never be sure someone won't randomly rename the 
+#                # time dimension without saying anything.
+#		ukesmkeys={}
+#                ukesmkeys['time'] 	= 'time_centered'
+#		ukesmkeys['temp3d'] 	= 'thetao'
+#                ukesmkeys['sst'] 	= 'tos'
+#                ukesmkeys['sal3d']     = 'so'
+#                ukesmkeys['sss']        = 'sos'
+#                ukesmkeys['v3d']     = 'vo'
+#                ukesmkeys['u3d']     = 'uo'
+#                ukesmkeys['e3u']    = 'thkcello'
+#                ukesmkeys['w3d']     = 'wo'
+#
+#        else:
+#                ukesmkeys={}
+#                ukesmkeys['time'] = 'time_counter'
+#                ukesmkeys['temp3d']     = 'votemper'
+#                ukesmkeys['sst']        = ''
+#                ukesmkeys['sal3d']     = 'vosaline'
+#                ukesmkeys['sss']        = ''
+#                ukesmkeys['v3d']     = 'vomecrty'
+#                ukesmkeys['u3d']     = 'vozocrtx'
+#                ukesmkeys['e3u']    = 'e3u'
+#                ukesmkeys['w3d']     = 'vovecrtz'
+
+
 	#####
 	# Coordinate dictionairy
 	# These are python dictionairies, one for each data source and model.
@@ -486,14 +532,14 @@ def analysis_timeseries(jobID = "u-ab671",
 	godasCoords 	= {'t':'index_t',    'z':'level',  'lat': 'lat',      'lon': 'lon', 'cal': 'standard','tdict':['ZeroToZero'] }
 
 
-	def listModelDataFiles(jobID, filekey, datafolder, annual):
-		print "listing model data files:\njobID:\t",jobID, '\nfile key:\t',filekey,'\ndata folder:\t', datafolder, '\nannual flag:\t',annual
-		if annual:
-			print "listing model data files:",datafolder+jobID+"/"+jobID+"o_1y_*_"+filekey+".nc"
-			return sorted(glob(datafolder+jobID+"/"+jobID+"o_1y_*_"+filekey+".nc"))
-		else:
-                        print "listing model data files:",datafolder+jobID+"/"+jobID+"o_1m_*_"+filekey+".nc"
-			return sorted(glob(datafolder+jobID+"/"+jobID+"o_1m_*_"+filekey+".nc"))
+#	def listModelDataFiles(jobID, filekey, datafolder, annual):
+#		print "listing model data files:\njobID:\t",jobID, '\nfile key:\t',filekey,'\ndata folder:\t', datafolder, '\nannual flag:\t',annual
+#		if annual:
+#			print "listing model data files:",datafolder+jobID+"/"+jobID+"o_1y_*_"+filekey+".nc"
+#			return sorted(glob(datafolder+jobID+"/"+jobID+"o_1y_*_"+filekey+".nc"))
+#		else:
+#                        print "listing model data files:",datafolder+jobID+"/"+jobID+"o_1m_*_"+filekey+".nc"
+#			return sorted(glob(datafolder+jobID+"/"+jobID+"o_1m_*_"+filekey+".nc"))
 
 
 	masknc = dataset(paths.orcaGridfn,'r')
@@ -642,26 +688,33 @@ def analysis_timeseries(jobID = "u-ab671",
 		if name not in analysisKeys: continue
 		
 		if name == 'CHL_JJA':
-			monthlyFiles = glob(paths.ModelFolder_pref+'/'+jobID+'/monthlyCHD/'+jobID+'o_1m_????0[678]*_grid_T.nc')
+			monthlyFiles = glob(paths.ModelFolder_pref+'/'+jobID+'/monthlyCHL/'+jobID+'o_1m_????0[678]*_ptrc_T.nc')
 		if name == 'CHL_DJF':
-			continue
-			monthlyFiles = glob(paths.ModelFolder_pref+'/'+jobID+'/monthlyCHD/'+jobID+'o_1m_????{12,01,02}*_grid_T.nc')
+			monthlyFiles=[]
+			for month in ['12','01','02']:
+				monthlyFiles.extend(glob(paths.ModelFolder_pref+'/'+jobID+'/monthlyCHL/'+jobID+'o_1m_????'+month+'*_ptrc_T.nc'))
 						
 		if len(monthlyFiles):
-			if name == 'CHL_JJA':	chlfiles = timeAverage(monthlyFiles, outfolder='',cal=medusaCoords['cal'], timeAverage=True)
+			if name == 'CHL_JJA':	chlfiles = mergeMonthlyFiles(monthlyFiles, outfolder='',cal=medusaCoords['cal'], timeAverage=True,expectedNumberOfFiles=3)
 			if name == 'CHL_DJF':	chlfiles = meanDJF(    monthlyFiles, outfolder='',cal=medusaCoords['cal'], timeAverage=True)
 		
 
 			def CHL_MODEL(nc,keys):			
-				chl = nc.variables[keys[0]][:].mean(0) + nc.variables[keys[1]][:].mean(0)
+				chl = nc.variables[keys[0]][:,0] + nc.variables[keys[1]][:,0]
+				chl = np.ma.array(chl)
+				chl = np.ma.masked_where(chl.mask + (chl>10E10),chl)
 				return chl
 
 			def CHLJJA_Data(nc,keys):			
 				chl = nc.variables[keys[0]][5:8].mean(0)
+                                chl = np.ma.array(chl)
+                                chl = np.ma.masked_where(chl.mask + (chl>10E10),chl)
 				return chl
 				
 			def CHLDJF_Data(nc,keys):			
 				chl = nc.variables[keys[0]][0]  + nc.variables[keys[0]][1]+ nc.variables[keys[0]][11]
+                                chl = np.ma.array(chl)
+                                chl = np.ma.masked_where(chl.mask + (chl>10E10),chl)
 				return chl
 			
 
@@ -671,16 +724,19 @@ def analysis_timeseries(jobID = "u-ab671",
 			av[name]['modelcoords'] 	= medusaCoords
 			av[name]['datacoords'] 		= cciCoords
 
-			av[name]['modeldetails'] 	= {'name': name, 'vars':['CHN','CHD'], 'convert': CHLJJA_MODEL,'units':'mg C/m^3'}	
+			av[name]['modeldetails'] 	= {'name': name, 'vars':['CHN','CHD'], 'convert': CHL_MODEL,'units':'mg C/m^3'}	
 				
 			if name =='CHL_JJA':
-				av[name]['datadetails']  	= {'name': name, 'vars':['chlor_a',], 'convert':  ukp.NoChange,'units':'mg C/m^3'}
+				av[name]['datadetails']  	= {'name': name, 'vars':['chlor_a',], 'convert':  CHLJJA_Data,'units':'mg C/m^3'}
+	                        av[name]['regions']             = ['Equator10', 'Remainder', 'NorthernSubpolarAtlantic','NorthernSubpolarPacific','CCI_JJA']
+                                
+
 		        if name =='CHL_DJF':
-				av[name]['datadetails']  	= {'name': name, 'vars':['chlor_a',], 'convert':  ukp.NoChange,'units':'mg C/m^3'}
+				av[name]['datadetails']  	= {'name': name, 'vars':['chlor_a',], 'convert':  CHLDJF_Data,'units':'mg C/m^3'}
+	                        av[name]['regions']             = ['Equator10', 'Remainder', 'NorthernSubpolarAtlantic','NorthernSubpolarPacific','CCI_DJF']
 
 			av[name]['layers'] 		= ['Surface',]
 
-			av[name]['regions'] 		= regionList
 			av[name]['metrics']		= metricList
 
 			av[name]['datasource'] 		= 'CCI'

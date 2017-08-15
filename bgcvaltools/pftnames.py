@@ -388,7 +388,10 @@ def makeLongNameDict():
   	lnd['ignoreMidArtics'] = "No Arctic Oceans (65 degrees)"  
   	lnd['ignoreArtics'] = "No Arctic Oceans (70 degrees)" 
         lnd['ignoreCaspian'] = "Ignoring Caspian Sea"
-  	
+  
+	lnd['CHL_JJA'] = '(with CCI JJA mask)'
+        lnd['CHL_DJF'] = '(with CCI DJF mask)'
+
   	
   	lnd['Depth_0-10m'] = 'Depth <10m'
   	lnd['Depth_10-20m'] = '10m <= Depth < 20m'

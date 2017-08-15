@@ -55,6 +55,7 @@ from timeseries import profileAnalysis
 from timeseries import timeseriesPlots as tsp 
 try:	from bgcvaltools.pftnames import getLongName
 except:	from pftnames import getLongName
+from bgcvaltools.mergeMonthlyFiles import mergeMonthlyFiles,meanDJF
 from alwaysInclude import  alwaysInclude
 from makeReport import comparehtml5Maker
 import paths
@@ -108,6 +109,8 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
         	analysisKeys.append('T')                        # WOA Temperature
 	        analysisKeys.append('S')                        # WOA Salinity   
                 analysisKeys.append('MLD')                      # MLD
+        	analysisKeys.append('MaxMonthlyMLD')               # MLD Monthly max           
+	        analysisKeys.append('MinMonthlyMLD')               # MLD Monthly min        
 
                	analysisKeys.append('ZonalCurrent')             # Zonal Veloctity
                	analysisKeys.append('MeridionalCurrent')        # Meridional Veloctity
@@ -159,9 +162,9 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
         	####
         	# Supercedes other flags.
 		analysisKeys = []
-#                analysisKeys.append('DrakePassageTransport')    # DrakePassageTransport         
+                analysisKeys.append('DrakePassageTransport')    # DrakePassageTransport         
 #                analysisKeys.append('AMOC_26N')
-                analysisKeys.append('NoCaspianAirSeaFluxCO2')   # work in progress                      
+#                analysisKeys.append('NoCaspianAirSeaFluxCO2')   # work in progress                      
 
 #		analysisKeys.append('CHD')
 #		analysisKeys.append('CHN')
@@ -1285,6 +1288,59 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 		        av[name]['gridFile']            = paths.orcaGridfn
 		        av[name]['Dimensions']          = 2
 
+	        if 'MaxMonthlyMLD' in analysisKeys or 'MinMonthlyMLD' in analysisKeys:
+
+        	        #/group_workspaces/jasmin2/ukesm/BGC_data/u-ad371/monthlyMLD/MetOffice_data_licence.325210916
+                	monthlyFiles = glob(paths.ModelFolder_pref+'/'+jobID+'/monthlyMLD/'+jobID+'o_1m_*_grid_T.nc')
+	                if len(monthlyFiles):
+        	                maxmldfiles = mergeMonthlyFiles(monthlyFiles,outfolder='',cal=medusaCoords['cal'])
+
+                	        for name in ['MaxMonthlyMLD','MinMonthlyMLD']:
+                        	        if name not in analysisKeys:continue
+
+	                                def mldapplymask(nc,keys):
+        	                                mld = np.ma.array(nc.variables[keys[0]][:]).max(0)
+                	                        mld = np.ma.masked_where((nc.variables[keys[1]][:]==0.)+mld.mask+(mld==1.E9),mld)
+                        	                return mld
+
+                                	def mldmonthlymask(nc,keys):
+                                        	mld = np.ma.array(np.ma.abs(nc.variables[keys[0]][:])).max(0)
+	                                        mld = np.ma.masked_where(mld.mask+(mld.data>1.E10),mld)
+        	                                return mld
+
+                	                def mldapplymask_min(nc,keys):
+                        	                mld = np.ma.array(nc.variables[keys[0]][:]).min(0)
+                                	        mld = np.ma.masked_where((nc.variables[keys[1]][:]==0.)+mld.mask+(mld==1.E9),mld)
+                                        	return mld
+
+	                                def mldmonthlymask_min(nc,keys):
+        	                                mld = np.ma.array(np.ma.abs(nc.variables[keys[0]][:])).min(0)
+                	                        mld = np.ma.masked_where(mld.mask+(mld.data>1.E10),mld)
+                        	                return mld
+
+
+	                                av[name]['modelFiles']          = maxmldfiles #listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)
+        	                        av[name]['dataFile']            = paths.MLDFolder+"mld_DT02_c1m_reg2.0.nc"      #mld_DT02_c1m_reg2.0.nc"
+
+                	                av[name]['modelcoords']         = medusaCoords
+                        	        av[name]['datacoords']          = mldCoords
+
+        	                        if name =='MaxMonthlyMLD':
+	                                        av[name]['modeldetails']        = {'name': 'mld', 'vars':['somxl010',],   'convert': mldmonthlymask,'units':'m'}
+                	                        av[name]['datadetails']         = {'name': 'mld', 'vars':['mld','mask',], 'convert': mldapplymask,'units':'m'}
+                        	        if name =='MinMonthlyMLD':
+                                	        av[name]['modeldetails']        = {'name': 'mld', 'vars':['somxl010',],   'convert': mldmonthlymask_min,'units':'m'}
+                                        	av[name]['datadetails']         = {'name': 'mld', 'vars':['mld','mask',], 'convert': mldapplymask_min,'units':'m'}
+
+	                                av[name]['layers']              = ['layerless',]
+                                	av[name]['regions']             = regionList
+	                                av[name]['metrics']             = metricList
+        	                        av[name]['datasource']          = 'IFREMER'
+                	                av[name]['model']               = 'NEMO'
+                        	        av[name]['modelgrid']           = 'eORCA1'
+                                	av[name]['gridFile']            = paths.orcaGridfn
+	                                av[name]['Dimensions']          = 2
+
 
 
 		if 'ZonalCurrent' in analysisKeys:
@@ -1773,9 +1829,11 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 	 			 	 'ZonalCurrent','MeridionalCurrent','VerticalCurrent']:
 				mdata = modeldataD[(jobID,name )][('Global', 'Surface', 'mean')]
 				title = ' '.join(['Global', 'Surface', 'Mean',  getLongName(name)])
-			elif name in [  'OMZThickness', 'OMZMeanDepth', 'DMS','MLD','DMS_ARAN','Dust',]:
-				mdata = modeldataD[(jobID,name )][('Global', 'layerless', 'mean')]
-				title = ' '.join(['Global', getLongName(name)])	
+			elif name in [  'OMZThickness', 'OMZMeanDepth', 'DMS','MLD','DMS_ARAN','Dust','MaxMonthlyMLD','MinMonthlyMLD',]:
+				try:
+					mdata = modeldataD[(jobID,name )][('Global', 'layerless', 'mean')]
+					title = ' '.join(['Global', getLongName(name)])	
+				except: continue
                         elif name in ['DTC',]:
                                 mdata = modeldataD[(jobID,name )][('Global', '3000m', 'mean')]
                                 title = ' '.join(['Global', '3000m', 'Mean',  getLongName(name)])
@@ -1849,7 +1907,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
                                                 print jobID, t1,t, [t0, tm1]
 						
 						if t1<540:continue
-                                                if t1>600:continue
+                                                if t1>700:continue
 
                                                 times.append(float(t1))
                                                 datas.append(mdata[t])
@@ -1878,16 +1936,20 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
                                         datas.append(mdata[t])
                                 timesD[jobID]   = times
                                 arrD[jobID]     = datas    					
-                        elif year0=='juggling2':
-                                if jobID == 'u-an869': t1 = t - (2061-56)       #-1862
-                                if jobID == 'u-ao586': t1 = t - (2561 - 556)    #-1869
-                                print jobID, t1,t, [t0, tm1]
+                        elif year0=='UKESM0.8':
+                                times,datas=[],[]
+                                for t in sorted(mdata.keys()):
+                                        if jobID == 'u-am004': t1 = t -1978 - 203
+                                        if jobID == 'u-ao365': t1 = t -1978 - 33      
+                                        if jobID == 'u-ao837': t1 = t -1978 
+                                        if t1<0:continue
 
-                                if t1<540:continue
-                                if t1>600:continue
+                                        print jobID, t1,t
+                                        times.append(float(t1))
+                                        datas.append(mdata[t])
+                                timesD[jobID]   = times
+                                arrD[jobID]     = datas
 
-                                times.append(float(t1))
-                                datas.append(mdata[t])
 	
 			else:
 				timesD[jobID] 	= sorted(mdata.keys())
@@ -1983,7 +2045,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 
         	
         	
-	for name in ['DiaFrac','CHD','CHN','CHL','N','Si','Iron','Alk','DIC','Chlorophyll','DMS','Nitrate','Silicate','MLD','mld','Dust',]:
+	for name in ['DiaFrac','CHD','CHN','CHL','N','Si','Iron','Alk','DIC','Chlorophyll','DMS','Nitrate','Silicate','MLD','mld','MaxMonthlyMLD','MinMonthlyMLD','Dust',]:
 	  if name not in av.keys():continue
 	  for region in regionList:
 	    for layer in ['Surface','100m','200m','layerless',]:
@@ -1997,11 +2059,12 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 			title = ' '.join([region, layer, 'Mean',  getLongName(name)])
 			if year0=='juggling2':
 				times,datas=[],[]
+				
                                 for t in sorted(mdata.keys()):
    	                                if jobID == 'u-an869': t1 = t - (2061-56)       #-1862
         	                        if jobID == 'u-ao586': t1 = t - (2561 - 556)    #-1869
                 	                if t1<540:continue
-                        	        if t1>600:continue
+                        	        if t1>700:continue
                                 	times.append(float(t1))
 	                                datas.append(mdata[t])	
                                 timesD[jobID]   = times
@@ -2017,6 +2080,20 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
                                 	datas.append(mdata[t])
                                 timesD[jobID]   = times
                                 arrD[jobID]     = datas
+			elif year0=='UKESM0.8':
+                                times,datas=[],[]
+                                for t in sorted(mdata.keys()):
+                                        if jobID == 'u-am004': t1 = t -1978 - 203 
+                                        if jobID == 'u-ao365': t1 = t -1978 - 33  
+                                        if jobID == 'u-ao837': t1 = t -1978
+					if t1<0:continue
+					
+                                        print jobID, t1,t  
+                                        times.append(float(t1))
+                                        datas.append(mdata[t])
+                                timesD[jobID]   = times
+                                arrD[jobID]     = datas
+			
 			else:
 				timesD[jobID] 	= sorted(mdata.keys())
 				arrD[jobID]	= [mdata[t] for t in timesD[jobID]]
@@ -2278,6 +2355,7 @@ if __name__=="__main__":
 		
 		'u-ao365':'red',
 		'u-ao404':'blue',
+		'u-ao837':'teal',
 
         }
 	jobDescriptions = {
@@ -2298,6 +2376,10 @@ if __name__=="__main__":
 		'u-an911': "Ocean Only, IC=u-ak900, atmos=u-am515, bulk=old",
 		'u-an989': "Ocean Only, IC=OBS, atmos=u-am515, bulk=old",
                 'u-an869': "Ocean Only, IC=u-ak900, atmos=u-am515, bulk=new",
+
+		'u-am004': "UKESM 0.6",
+                'u-ao837': "UKESM 0.8",
+
 
 		'u-an766': 'copy of u-am001 but with PI oxidants.',
 
@@ -2354,6 +2436,17 @@ if __name__=="__main__":
 		exit
 	else:
 
+                jobs = ['u-ao365','u-am004','u-ao837',]
+                colours = {i:standards[i] for i in jobs}
+                timeseries_compare({
+                        i:standards[i] for i in jobs},
+                        physics=1,
+                        bio=1,
+                        debug=0,
+                        year0='UKESM0.8',
+                        jobDescriptions=jobDescriptions,
+                        analysisname='UKESM_0.8')
+
                 jobs = ['u-an869','u-ao586','u-ak900',]
                 colours = {i:standards[i] for i in jobs}
                 timeseries_compare({
@@ -2364,6 +2457,18 @@ if __name__=="__main__":
                         year0='FullSpinUp', 
                         jobDescriptions=jobDescriptions,
                         analysisname='OriginalOceanOnlySpinUp')
+
+                jobs = ['u-an869','u-ao586',]
+                colours = {i:standards[i] for i in jobs}
+                timeseries_compare({
+                        i:standards[i] for i in jobs},
+                        physics=1,
+                        bio=1,
+                        debug=0,
+                        year0=False,
+                        jobDescriptions=jobDescriptions,
+                        analysisname='u-an869_u-ao586')
+
 
                 jobs = ['u-an869','u-ao586',]
                 colours = {i:standards[i] for i in jobs}
@@ -2387,16 +2492,16 @@ if __name__=="__main__":
                         jobDescriptions=jobDescriptions,
                         analysisname='Re-couplingTest_juggled')
 
-                jobs = ['u-ao365','u-ao404',]
-                colours = {i:standards[i] for i in jobs}
-                timeseries_compare({
-                        i:standards[i] for i in jobs},
-                        physics=1,
-                        bio=1,
-                        debug=0,
-                        year0=False,
-                        jobDescriptions=jobDescriptions,
-                        analysisname='UKESM_0.7')
+#                jobs = ['u-ao365','u-ao404',]
+#                colours = {i:standards[i] for i in jobs}
+#                timeseries_compare({
+#                        i:standards[i] for i in jobs},
+#                        physics=1,
+#                        bio=1,
+#                        debug=0,
+#                        year0=False,
+#                        jobDescriptions=jobDescriptions,
+#                        analysisname='UKESM_0.7')
 
 
 

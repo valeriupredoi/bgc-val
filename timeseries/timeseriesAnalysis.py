@@ -526,7 +526,12 @@ class timeseriesAnalysis:
   	"""	Makes a map plot of model vs data for each string-named layer (not numbered layers). 
   	"""
   	newlayers = [l for l in self.layers if type(l) not in [type(0),type(0.) ]]
-	mDL = tst.DataLoader(self.modelFiles[-1],'',self.modelcoords,self.modeldetails, regions = self.regions, layers = newlayers,)
+	fn = self.modelFiles[-1]
+	mDL = tst.DataLoader(fn,'',self.modelcoords,self.modeldetails, regions = self.regions, layers = newlayers,)
+        nc = dataset(fn,'r')
+        ts = tst.getTimes(nc,self.modelcoords)
+        meantime = np.mean(ts)
+ 
 	for r in self.regions:
 	    for l in self.layers:	
 		if type(l) in [type(0),type(0.)]:continue
@@ -556,7 +561,7 @@ class timeseriesAnalysis:
 	  	print "mapplotsRegionsLayers:\t",r,l, "data lat:",len(datalat),datalat.min(),datalat.mean(),datalat.max()
 	  	print "mapplotsRegionsLayers:\t",r,l, "data lon:",len(datalon),datalon.min(),datalon.mean(),datalon.max()
 	
-		titles = [' '.join([getLongName(t) for t in [self.model,'('+self.jobID+')',str(l),self.modeldetails['name']]]),
+		titles = [' '.join([getLongName(t) for t in [self.model,'('+self.jobID+')',str(l),self.modeldetails['name'],str(int(meantime))]]),
 			  ' '.join([getLongName(t) for t in [self.datasource,str(l),self.datadetails['name']]])]
 			  
 	  	tsp.mapPlotPair(modellon, modellat, modeldata,

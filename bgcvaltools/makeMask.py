@@ -266,6 +266,16 @@ def makeMask(name,newSlice, xt,xz,xy,xx,xd,debug=False):
 		mshw = np.ma.masked_where( (xy > -45.) + SHwinter ,nmask).mask 
 		return   np.ma.masked_where( mnhw*mshw,nmask).mask 
 
+        if newSlice == 'CCI_JJA':
+                mx = np.ma.masked_where(  xy < -53.,nmask).mask
+                mx += np.ma.masked_where(  xy > 80.,nmask).mask
+                return np.ma.masked_where( mx,nmask).mask
+
+        if newSlice == 'CCI_DJF':
+                mx = np.ma.masked_where(  xy > 53.,nmask).mask
+                mx += np.ma.masked_where(  xy > 80.,nmask).mask
+                return np.ma.masked_where( mx,nmask).mask
+
 
 	#####
 	# Depths masks

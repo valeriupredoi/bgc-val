@@ -63,14 +63,24 @@ def folder(name):
 	#os.chmod(name , 02775)
         return name
 
+def mnStr(month):
+        """ 
+        :param month: An int between 1 and 100.
+        Returns a 2 digit number string with a leading zero, if needed.
+        """
+        mn = '%02d' %  month
+        return mn
+
 
 def getYearFromFile(fn):
 	""" 
 	Takes a file anem, and looks for 8 consequetive numbers, then removes those that are months, and returns the year.
 	"""
 	a = findall(r'\d\d\d\d\d\d\d\d',fn)
+	datestrs = ['1130',]
+	datestrs.extend([mnStr(i)+'01' for i in range(1,13)])
 	for i in a:
-	    if i[-4:] in ['1130','1201']: 
+	    if i[-4:] in datestrs: 
 	    	yr = i[:4]
 	      	return yr
 	    			      
@@ -164,7 +174,7 @@ def findLastFinishedYear(jobID,dividby=1,numberfiles=6):
 	return False
 	#assert 0	
 
-def downloadField(jobID, keys, extension='grid[-_]T', timeslice='m',name='',timerange='*', dryrun=False):
+def downloadField(jobID, keys, extension='grid[-_]T', timeslice='m',name='',timerange='*', dryrun=False,starttime=0,stoptime=1E20):
 	"""
 	:param jobID: The job ID
 	:param keys: a list of fields as they are saved in the Netcdf. (can also be a single string)
@@ -208,7 +218,7 @@ def downloadField(jobID, keys, extension='grid[-_]T', timeslice='m',name='',time
 
 	#####
 	# make query file:
-	querytxt = '-v '+' '.join(keys)
+	querytxt = '-v '+','.join(keys)
 	queryfile = folder('queryfiles/')+name+'.txt'
 	qf = open(queryfile,'w')
 	qf.write(querytxt)
@@ -232,11 +242,17 @@ def downloadField(jobID, keys, extension='grid[-_]T', timeslice='m',name='',time
 	# create a bash command to download the files:
 	shell = '/bin/bash'
 	bashCommand ='#!'+shell+' \n'
+	filesToDL = 0
 	for l,line in enumerate(output.split('\n')):
 		if line in ['', ' ',]:continue 
 		outfn = outputFold+os.path.basename(line)
 		if os.path.exists(outfn):continue
-                bashCommand +="\nmoo filter "+queryfile+" "+line+" "+outfn 
+		yr = int(getYearFromFile(line))
+		if not starttime < yr < stoptime:
+			print "File outside requireste time:", line, 'not ',starttime, '<',yr,'<', stoptime
+			continue
+                bashCommand +="\nmoo filter --fill-gaps "+queryfile+" "+line+" "+outfn 
+		filesToDL+=1
         bashCommand+="\necho \"The End of "+jobID +' '+name+"\"\n"
         print "running the command:\n######\n",bashCommand
         bashfile = folder('queryfiles/')+jobID+'-'+name+'.sh'
@@ -248,7 +264,7 @@ def downloadField(jobID, keys, extension='grid[-_]T', timeslice='m',name='',time
 	
 	#####
 	# Run the bash command to download the files:        
-        if not dryrun:
+        if not dryrun and filesToDL>0:
 		script = shell +" "+bashfile
 		print script
                 process = subprocess.Popen(script.split(), stdout=subprocess.PIPE,)#shell=True, executable=shell)
@@ -262,14 +278,13 @@ def downloadField(jobID, keys, extension='grid[-_]T', timeslice='m',name='',time
 def nemoMonthlyIce(jobID):
 	downloadField(jobID, ['soicecov',], extension='grid[-_]T', timeslice='m',name = 'monthlyIce',dryrun=False)
 	
-def nemoMonthlyMLD(jobID):
-	downloadField(jobID, ['somxl010',], extension='grid[-_]T', timeslice='m',name = 'monthlyMLD',dryrun=False)	
+def nemoMonthlyMLD(jobID,starttime=0,stoptime=1E20):
+	downloadField(jobID, ['somxl010',], extension='grid[-_]T', timeslice='m',name = 'monthlyMLD',dryrun=False,starttime=starttime,stoptime=stoptime)	
 
 def monthlyChl(jobID):
 	for months in ['01','02','06','07','08','12']: # They want JJA and DJF
 		ts = '????'+months+'01-??????01'
-	        downloadField(jobID, ['CHD',], extension='ptrc[-_]T', timeslice='m',timerange=ts,name = 'monthlyCHD',dryrun=False)
-	        downloadField(jobID, ['CHN',], extension='ptrc[-_]T', timeslice='m',timerange=ts,name = 'monthlyCHN',dryrun=False)
+	        downloadField(jobID, ['CHD','CHN'], extension='ptrc[-_]T', timeslice='m',timerange=ts,name = 'monthlyCHL',dryrun=False)
 
 
 
@@ -326,7 +341,7 @@ def downloadMass(jobID,doMoo=True):
 	if doLs:	
 		print "Looking at the following files:"
 	
-		bashCommand = "moo ls moose:/crum/"+jobID+"/ony.nc.file/*.nc "
+		bashCommand = "moo ls moose:/crum/"+jobID+"/ony.nc.file/*.nc"
 		print "running the command:",bashCommand
 		
 		process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
@@ -336,8 +351,8 @@ def downloadMass(jobID,doMoo=True):
 			for i in range(10): 
 	                        bashCommand = "moo get --fill-gaps moose:/crum/"+jobID+"/ony.nc.file/*_1y_"+str(i)+"*.nc "+outputFold
         	                print "running the command:",bashCommand
-                	        process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
-                        	output = process.communicate()[0]
+                	        process1 = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
+                        	output1 = process.communicate()[0]
 
 
 		else:
@@ -366,8 +381,12 @@ def fixFilePaths(outputFold,jobID):
 	        if os.path.exists(correctfn):
 	        	print "downloadFromMass:\tfixFilePaths:\tcorrect path exists.",correctfn
 	        	continue
+		if correctfn == fn:continue
                 print "downloadFromMass:\tfixFilePaths:\tFixing file prefix",fn, '-->',correctfn
-        	os.symlink(fn,correctfn)
+        	try:os.symlink(fn,correctfn)
+		except:
+			print "Unable to make link:",correctfn
+			continue
 #	        print "downloadFromMass:\tfixFilePaths:\t", correctfn
 
 
@@ -409,7 +428,10 @@ def fixFilePaths(outputFold,jobID):
                                 print "downloadFromMass:\tfixFilePaths:\tcorrect path exists.",correctfn
                                 continue
                         print "downloadFromMass:\tfixFilePaths:\tFixing file suffix",badsuff,'->',suff,
-                        os.symlink(fn,correctfn)
+	                if correctfn == fn:continue
+
+			try: 	os.symlink(fn,correctfn)
+			except: continue
                         print "downloadFromMass:\tfixFilePaths:\t", correctfn
 
 	#####
@@ -460,7 +482,7 @@ if __name__=="__main__":
 	#####
 	# Monthly MLD
 	elif keys in [['mld',], ['MLD',],]:
-		nemoMonthlyMLD(jobID)	
+		nemoMonthlyMLD(jobID,starttime=2570,stoptime=2610)	
         #####
         # Monthly chl
         elif keys in [['chl',], ['CHL',],]:
