@@ -1603,6 +1603,10 @@ def getORCAdepth(z,depth_arr,debug=True):
 	"""
 	d = 1000.
 	best = -1
+	depth_arr = np.array(depth_arr)	
+	print "getORCAdepth:",z, depth_arr
+	if len(depth_arr) ==1:return 0
+
 	for i,zz in enumerate(depth_arr.squeeze()):
 		d2 = abs(abs(z)-abs(zz))
 		if d2<d:

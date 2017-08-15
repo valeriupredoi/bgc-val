@@ -267,7 +267,9 @@ def analysis_timeseries(jobID = "u-ab671",
                         #analysisKeys.append('N')                        # WOA Nitrate
                         #analysisKeys.append('IntPP_OSU')               # OSU Integrated primpary production
                         #analysisKeys.append('Chl_CCI')
+			analysisKeys.append('CHL_MAM')
 			analysisKeys.append('CHL_JJA')
+			analysisKeys.append('CHL_SON')			
 			analysisKeys.append('CHL_DJF')
 			                      
                         #####
@@ -684,18 +686,25 @@ def analysis_timeseries(jobID = "u-ab671",
 
 
 #	if 'CHL_JJA' in analysisKeys or 'CHL_DJF' in analysisKeys:
-	for name in ['CHL_JJA', 'CHL_DJF']:
+	for name in ['CHL_JJA', 'CHL_DJF','CHL_SON','CHL_MAM']:
 		if name not in analysisKeys: continue
 		
+		if name == 'CHL_MAM':
+			monthlyFiles = glob(paths.ModelFolder_pref+'/'+jobID+'/monthlyCHL/'+jobID+'o_1m_????0[345]*_ptrc_T.nc')
 		if name == 'CHL_JJA':
 			monthlyFiles = glob(paths.ModelFolder_pref+'/'+jobID+'/monthlyCHL/'+jobID+'o_1m_????0[678]*_ptrc_T.nc')
+		if name == 'CHL_SON':
+			monthlyFiles=[]
+			for month in ['09','10','11']:
+				monthlyFiles.extend(glob(paths.ModelFolder_pref+'/'+jobID+'/monthlyCHL/'+jobID+'o_1m_????'+month+'*_ptrc_T.nc'))			
 		if name == 'CHL_DJF':
 			monthlyFiles=[]
 			for month in ['12','01','02']:
 				monthlyFiles.extend(glob(paths.ModelFolder_pref+'/'+jobID+'/monthlyCHL/'+jobID+'o_1m_????'+month+'*_ptrc_T.nc'))
 						
 		if len(monthlyFiles):
-			if name == 'CHL_JJA':	chlfiles = mergeMonthlyFiles(monthlyFiles, outfolder='',cal=medusaCoords['cal'], timeAverage=True,expectedNumberOfFiles=3)
+			if name in ['CHL_JJA','CHL_SON','CHL_MAM',]:
+						chlfiles = mergeMonthlyFiles(monthlyFiles, outfolder='',cal=medusaCoords['cal'], timeAverage=True,expectedNumberOfFiles=3)
 			if name == 'CHL_DJF':	chlfiles = meanDJF(    monthlyFiles, outfolder='',cal=medusaCoords['cal'], timeAverage=True)
 		
 
@@ -705,15 +714,26 @@ def analysis_timeseries(jobID = "u-ab671",
 				chl = np.ma.masked_where(chl.mask + (chl>10E10),chl)
 				return chl
 
+			def CHLMAM_Data(nc,keys):			
+				chl = nc.variables[keys[0]][2:5].mean(0)
+                                chl = np.ma.array(chl)
+                                chl = np.ma.masked_where(chl.mask + (chl>10E10),chl)
+				return chl
+
 			def CHLJJA_Data(nc,keys):			
 				chl = nc.variables[keys[0]][5:8].mean(0)
                                 chl = np.ma.array(chl)
                                 chl = np.ma.masked_where(chl.mask + (chl>10E10),chl)
 				return chl
 				
+			def CHLSON_Data(nc,keys):			
+				chl = nc.variables[keys[0]][8:11].mean(0)
+                                chl = np.ma.masked_where(chl.mask + (chl>10E10),chl)
+				return chl
+								
 			def CHLDJF_Data(nc,keys):			
 				chl = nc.variables[keys[0]][0]  + nc.variables[keys[0]][1]+ nc.variables[keys[0]][11]
-                                chl = np.ma.array(chl)
+                                chl = np.ma.array(chl).mean(0)
                                 chl = np.ma.masked_where(chl.mask + (chl>10E10),chl)
 				return chl
 			
@@ -726,11 +746,18 @@ def analysis_timeseries(jobID = "u-ab671",
 
 			av[name]['modeldetails'] 	= {'name': name, 'vars':['CHN','CHD'], 'convert': CHL_MODEL,'units':'mg C/m^3'}	
 				
+			if name =='CHL_MAM':
+				av[name]['datadetails']  	= {'name': name, 'vars':['chlor_a',], 'convert':  CHLMAM_Data,'units':'mg C/m^3'}
+	                        av[name]['regions']             = ['Equator10', 'Remainder', 'NorthernSubpolarAtlantic','NorthernSubpolarPacific',]#'CCI_MAM']
+                                
 			if name =='CHL_JJA':
 				av[name]['datadetails']  	= {'name': name, 'vars':['chlor_a',], 'convert':  CHLJJA_Data,'units':'mg C/m^3'}
 	                        av[name]['regions']             = ['Equator10', 'Remainder', 'NorthernSubpolarAtlantic','NorthernSubpolarPacific','CCI_JJA']
                                 
-
+		        if name =='CHL_SON':
+				av[name]['datadetails']  	= {'name': name, 'vars':['chlor_a',], 'convert':  CHLSON_Data,'units':'mg C/m^3'}
+	                        av[name]['regions']             = ['Equator10', 'Remainder', 'NorthernSubpolarAtlantic','NorthernSubpolarPacific',]#'CCI_SON']
+	                        
 		        if name =='CHL_DJF':
 				av[name]['datadetails']  	= {'name': name, 'vars':['chlor_a',], 'convert':  CHLDJF_Data,'units':'mg C/m^3'}
 	                        av[name]['regions']             = ['Equator10', 'Remainder', 'NorthernSubpolarAtlantic','NorthernSubpolarPacific','CCI_DJF']

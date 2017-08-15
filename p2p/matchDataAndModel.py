@@ -639,13 +639,16 @@ class matchDataAndModel:
   	#ncER = ncdfView("data/mesh_mask_ORCA1_75.nc",Quiet=True)
   	if 'nav_lat' in ncER.variables.keys():	self.latcc    = ncER.variables['nav_lat'][:].squeeze()
 	elif 'lat' in ncER.variables.keys():	self.latcc    = ncER.variables['lat'][:].squeeze()
-
+	else:					self.latcc    = ncER.variables[self.modelcoords['lat']][:].squeeze()
+	
   	if 'nav_lon' in ncER.variables.keys():	self.loncc    = ncER.variables['nav_lon'][:].squeeze()
 	elif 'lon' in ncER.variables.keys():	self.loncc    = ncER.variables['lon'][:].squeeze()
+	else:					self.loncc    = ncER.variables[self.modelcoords['lon']][:].squeeze()
 
   	if 'deptht' in ncER.variables.keys():	self.depthcc  = ncER.variables['deptht'][:].squeeze()
 	elif 'gdept_0' in ncER.variables.keys():self.depthcc  = ncER.variables['gdept_0'][:].squeeze()
 	elif 'lev' in ncER.variables.keys():	self.depthcc  = ncER.variables['lev'][:].squeeze()	
+	else:					self.depthcc  = ncER.variables[self.modelcoords['z']][:]	
 	
 	if self.loncc.ndim ==1 and  self.loncc.shape!= self.latcc.shape:
 		self.loncc,self.latcc = np.meshgrid(self.loncc,self.latcc)
