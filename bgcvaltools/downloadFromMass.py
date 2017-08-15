@@ -281,9 +281,9 @@ def nemoMonthlyIce(jobID):
 def nemoMonthlyMLD(jobID,starttime=0,stoptime=1E20):
 	downloadField(jobID, ['somxl010',], extension='grid[-_]T', timeslice='m',name = 'monthlyMLD',dryrun=False,starttime=starttime,stoptime=stoptime)	
 
-def monthlyChl(jobID):
-	for months in ['01','02','06','07','08','12']: # They want JJA and DJF
-		ts = '????'+months+'01-??????01'
+def monthlyChl(jobID,months = ['01','02','06','07','08','12']):
+	for month in months : #['01','02','06','07','08','12']: # They want JJA and DJF
+		ts = '????'+month+'01-??????01'
 	        downloadField(jobID, ['CHD','CHN'], extension='ptrc[-_]T', timeslice='m',timerange=ts,name = 'monthlyCHL',dryrun=False)
 
 
@@ -486,7 +486,7 @@ if __name__=="__main__":
         #####
         # Monthly chl
         elif keys in [['chl',], ['CHL',],]:
-                monthlyChl(jobID)
+                monthlyChl(jobID, months = ['01','02','03','04','05','06','07','08','09','10','11','12',])
 	
 	#####
 	# Other specific monthly files.

@@ -269,7 +269,7 @@ def analysis_timeseries(jobID = "u-ab671",
                         #analysisKeys.append('Chl_CCI')
 			analysisKeys.append('CHL_MAM')
 			analysisKeys.append('CHL_JJA')
-			analysisKeys.append('CHL_SON')			
+			#analysisKeys.append('CHL_SON')			
 			analysisKeys.append('CHL_DJF')
 			                      
                         #####
