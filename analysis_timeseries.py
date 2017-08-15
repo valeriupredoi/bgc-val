@@ -731,10 +731,13 @@ def analysis_timeseries(jobID = "u-ab671",
                                 chl = np.ma.masked_where(chl.mask + (chl>10E10),chl)
 				return chl
 								
-			def CHLDJF_Data(nc,keys):			
-				chl = nc.variables[keys[0]][0]  + nc.variables[keys[0]][1]+ nc.variables[keys[0]][11]
-                                chl = np.ma.array(chl).mean(0)
-                                chl = np.ma.masked_where(chl.mask + (chl>10E10),chl)
+			def CHLDJF_Data(nc,keys):	
+				chl = []
+				chl.append(nc.variables[keys[0]][0])
+				chl.append(nc.variables[keys[0]][1])
+				chl.append(nc.variables[keys[0]][11])
+				chl = np.ma.array(chl)
+                                chl = np.ma.masked_where(chl.mask + (chl>10E10),chl).mean(0)
 				return chl
 			
 
