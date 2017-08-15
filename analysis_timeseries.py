@@ -269,9 +269,12 @@ def analysis_timeseries(jobID = "u-ab671",
                         #analysisKeys.append('Chl_CCI')
 			analysisKeys.append('CHL_MAM')
 			analysisKeys.append('CHL_JJA')
-			#analysisKeys.append('CHL_SON')			
+			analysisKeys.append('CHL_SON')			
 			analysisKeys.append('CHL_DJF')
-			                      
+			analysisKeys.append('GC_CHL_MAM')
+			analysisKeys.append('GC_CHL_JJA')
+			analysisKeys.append('GC_CHL_SON')			
+			analysisKeys.append('GC_CHL_DJF')			                      
                         #####
                         # Physics switches:
                         #analysisKeys.append('T')                       # WOA Temperature
@@ -531,6 +534,7 @@ def analysis_timeseries(jobID = "u-ab671",
 	mldCoords	= {'t':'index_t', 'z':'index_z','lat':'lat',       'lon': 'lon','cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
 	dmsCoords	= {'t':'time',    'z':'depth',  'lat':'Latitude',  'lon': 'Longitude','cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
 	cciCoords	= {'t':'index_t', 'z':'index_z','lat': 'lat',      'lon': 'lon', 'cal': 'standard','tdict':['ZeroToZero'] }
+	mogcCoords	= {'t':'index_t', 'z':'depth','lat': 'latitude',      'lon': 'longitude',  'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}			
 	godasCoords 	= {'t':'index_t',    'z':'level',  'lat': 'lat',      'lon': 'lon', 'cal': 'standard','tdict':['ZeroToZero'] }
 
 
@@ -685,28 +689,27 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['Dimensions']		= 3
 
 
-#	if 'CHL_JJA' in analysisKeys or 'CHL_DJF' in analysisKeys:
-	for name in ['CHL_JJA', 'CHL_DJF','CHL_SON','CHL_MAM']:
+	for name in ['CHL_JJA', 'CHL_DJF','CHL_SON','CHL_MAM','GC_CHL_JJA', 'GC_CHL_DJF','GC_CHL_SON','GC_CHL_MAM']:
 		if name not in analysisKeys: continue
 		
-		if name == 'CHL_MAM':
+		if name in ['CHL_MAM','GC_CHL_MAM']:
 			monthlyFiles = glob(paths.ModelFolder_pref+'/'+jobID+'/monthlyCHL/'+jobID+'o_1m_????0[345]*_ptrc_T.nc')
-		if name == 'CHL_JJA':
+		if name in ['CHL_JJA','GC_CHL_JJA',]:
 			monthlyFiles = glob(paths.ModelFolder_pref+'/'+jobID+'/monthlyCHL/'+jobID+'o_1m_????0[678]*_ptrc_T.nc')
-		if name == 'CHL_SON':
+		if name in ['CHL_SON','GC_CHL_SON',]:
 			monthlyFiles=[]
 			for month in ['09','10','11']:
 				monthlyFiles.extend(glob(paths.ModelFolder_pref+'/'+jobID+'/monthlyCHL/'+jobID+'o_1m_????'+month+'*_ptrc_T.nc'))			
-		if name == 'CHL_DJF':
+		if name in ['CHL_DJF','GC_CHL_DJF']:
 			monthlyFiles=[]
 			for month in ['12','01','02']:
 				monthlyFiles.extend(glob(paths.ModelFolder_pref+'/'+jobID+'/monthlyCHL/'+jobID+'o_1m_????'+month+'*_ptrc_T.nc'))
 						
 		if len(monthlyFiles):
-			if name in ['CHL_JJA','CHL_SON','CHL_MAM',]:
-						chlfiles = mergeMonthlyFiles(monthlyFiles, outfolder='',cal=medusaCoords['cal'], timeAverage=True,expectedNumberOfFiles=3)
-			if name == 'CHL_DJF':	chlfiles = meanDJF(    monthlyFiles, outfolder='',cal=medusaCoords['cal'], timeAverage=True)
-		
+			if name in ['CHL_JJA','CHL_SON','CHL_MAM','GC_CHL_JJA','GC_CHL_SON','GC_CHL_MAM']:
+				chlfiles = mergeMonthlyFiles(monthlyFiles, outfolder='',cal=medusaCoords['cal'], timeAverage=True,expectedNumberOfFiles=3)
+			if name in ['CHL_DJF', 'GC_CHL_DJF',]:	
+				chlfiles = meanDJF(    monthlyFiles, outfolder='',cal=medusaCoords['cal'], timeAverage=True)
 
 			def CHL_MODEL(nc,keys):			
 				chl = nc.variables[keys[0]][:,0] + nc.variables[keys[1]][:,0]
@@ -739,37 +742,44 @@ def analysis_timeseries(jobID = "u-ab671",
 				chl = np.ma.array(chl)
                                 chl = np.ma.masked_where(chl.mask + (chl>10E10),chl).mean(0)
 				return chl
-			
 
 			av[name]['modelFiles']  	= chlfiles
-			av[name]['dataFile'] 		= paths.CCIDir+'ESACCI-OC-L3S-OC_PRODUCTS-CLIMATOLOGY-16Y_MONTHLY_1degree_GEO_PML_OC4v6_QAA-all-fv2.0.nc'
-
 			av[name]['modelcoords'] 	= medusaCoords
-			av[name]['datacoords'] 		= cciCoords
+
+			if name[:2] == 'GC':
+				av[name]['dataFile'] 		= paths.ObsFolder+'MO-GlobColour/qrclim_globcolour_masked.sea.nc'
+				av[name]['datacoords'] 		= gcCoords
+				av[name]['datasource'] 		= 'MO-GlobColour'
+				chldatakey = 'chl'							
+			else:
+				av[name]['dataFile'] 		= paths.CCIDir+'ESACCI-OC-L3S-OC_PRODUCTS-CLIMATOLOGY-16Y_MONTHLY_1degree_GEO_PML_OC4v6_QAA-all-fv2.0.nc'
+				av[name]['datacoords'] 		= cciCoords
+				av[name]['datasource'] 		= 'CCI'				
+				chldatakey = 'chlor_a'				
 
 			av[name]['modeldetails'] 	= {'name': name, 'vars':['CHN','CHD'], 'convert': CHL_MODEL,'units':'mg C/m^3'}	
 				
 			if name =='CHL_MAM':
-				av[name]['datadetails']  	= {'name': name, 'vars':['chlor_a',], 'convert':  CHLMAM_Data,'units':'mg C/m^3'}
+				av[name]['datadetails']  	= {'name': name, 'vars':[chldatakey,], 'convert':  CHLMAM_Data,'units':'mg C/m^3'}
 	                        av[name]['regions']             = ['Equator10', 'Remainder', 'NorthernSubpolarAtlantic','NorthernSubpolarPacific',]#'CCI_MAM']
                                 
 			if name =='CHL_JJA':
-				av[name]['datadetails']  	= {'name': name, 'vars':['chlor_a',], 'convert':  CHLJJA_Data,'units':'mg C/m^3'}
+				av[name]['datadetails']  	= {'name': name, 'vars':[chldatakey,], 'convert':  CHLJJA_Data,'units':'mg C/m^3'}
 	                        av[name]['regions']             = ['Equator10', 'Remainder', 'NorthernSubpolarAtlantic','NorthernSubpolarPacific','CCI_JJA']
                                 
 		        if name =='CHL_SON':
-				av[name]['datadetails']  	= {'name': name, 'vars':['chlor_a',], 'convert':  CHLSON_Data,'units':'mg C/m^3'}
+				av[name]['datadetails']  	= {'name': name, 'vars':[chldatakey,], 'convert':  CHLSON_Data,'units':'mg C/m^3'}
 	                        av[name]['regions']             = ['Equator10', 'Remainder', 'NorthernSubpolarAtlantic','NorthernSubpolarPacific',]#'CCI_SON']
 	                        
 		        if name =='CHL_DJF':
-				av[name]['datadetails']  	= {'name': name, 'vars':['chlor_a',], 'convert':  CHLDJF_Data,'units':'mg C/m^3'}
+				av[name]['datadetails']  	= {'name': name, 'vars':[chldatakey,], 'convert':  CHLDJF_Data,'units':'mg C/m^3'}
 	                        av[name]['regions']             = ['Equator10', 'Remainder', 'NorthernSubpolarAtlantic','NorthernSubpolarPacific','CCI_DJF']
 
 			av[name]['layers'] 		= ['Surface',]
 
 			av[name]['metrics']		= metricList
 
-			av[name]['datasource'] 		= 'CCI'
+
 			av[name]['model']		= 'NEMO'
 
 			av[name]['modelgrid']		= 'eORCA1'
