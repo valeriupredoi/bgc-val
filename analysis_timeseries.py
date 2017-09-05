@@ -534,7 +534,7 @@ def analysis_timeseries(jobID = "u-ab671",
 	mldCoords	= {'t':'index_t', 'z':'index_z','lat':'lat',       'lon': 'lon','cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
 	dmsCoords	= {'t':'time',    'z':'depth',  'lat':'Latitude',  'lon': 'Longitude','cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
 	cciCoords	= {'t':'index_t', 'z':'index_z','lat': 'lat',      'lon': 'lon', 'cal': 'standard','tdict':['ZeroToZero'] }
-	mogcCoords	= {'t':'index_t', 'z':'depth','lat': 'latitude',      'lon': 'longitude',  'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}			
+	mogcCoords	= {'t':'index_t', 'z':'index_z','lat': 'latitude', 'lon': 'longitude',  'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}			
 	godasCoords 	= {'t':'index_t',    'z':'level',  'lat': 'lat',      'lon': 'lon', 'cal': 'standard','tdict':['ZeroToZero'] }
 
 
@@ -718,13 +718,13 @@ def analysis_timeseries(jobID = "u-ab671",
 				return chl
 
 			def CHLMAM_Data(nc,keys):			
-				chl = nc.variables[keys[0]][2:5].mean(0)
+				chl = nc.variables[keys[0]][2:5].mean(0).squeeze()
                                 chl = np.ma.array(chl)
                                 chl = np.ma.masked_where(chl.mask + (chl>10E10),chl)
 				return chl
 
 			def CHLJJA_Data(nc,keys):			
-				chl = nc.variables[keys[0]][5:8].mean(0)
+				chl = nc.variables[keys[0]][5:8].mean(0).squeeze()
                                 chl = np.ma.array(chl)
                                 chl = np.ma.masked_where(chl.mask + (chl>10E10),chl)
 				return chl
@@ -739,8 +739,8 @@ def analysis_timeseries(jobID = "u-ab671",
 				chl.append(nc.variables[keys[0]][0])
 				chl.append(nc.variables[keys[0]][1])
 				chl.append(nc.variables[keys[0]][11])
-				chl = np.ma.array(chl)
-                                chl = np.ma.masked_where(chl.mask + (chl>10E10),chl).mean(0)
+				chl = np.ma.array(chl).mean(0)
+                                chl = np.ma.masked_where(chl.mask + (chl>10E10),chl)
 				return chl
 
 			av[name]['modelFiles']  	= chlfiles
@@ -748,32 +748,31 @@ def analysis_timeseries(jobID = "u-ab671",
 
 			if name[:2] == 'GC':
 				av[name]['dataFile'] 		= paths.ObsFolder+'MO-GlobColour/qrclim_globcolour_masked.sea.nc'
-				av[name]['datacoords'] 		= gcCoords
+				av[name]['datacoords'] 		= mogcCoords
 				av[name]['datasource'] 		= 'MO-GlobColour'
-				chldatakey = 'chl'							
+				chldatakey 			= 'chl'							
 			else:
 				av[name]['dataFile'] 		= paths.CCIDir+'ESACCI-OC-L3S-OC_PRODUCTS-CLIMATOLOGY-16Y_MONTHLY_1degree_GEO_PML_OC4v6_QAA-all-fv2.0.nc'
 				av[name]['datacoords'] 		= cciCoords
 				av[name]['datasource'] 		= 'CCI'				
-				chldatakey = 'chlor_a'				
+				chldatakey 			= 'chlor_a'				
 
 			av[name]['modeldetails'] 	= {'name': name, 'vars':['CHN','CHD'], 'convert': CHL_MODEL,'units':'mg C/m^3'}	
 				
-			if name =='CHL_MAM':
+			if name in ['CHL_MAM','GC_CHL_MAM']:	
 				av[name]['datadetails']  	= {'name': name, 'vars':[chldatakey,], 'convert':  CHLMAM_Data,'units':'mg C/m^3'}
-	                        av[name]['regions']             = ['Equator10', 'Remainder', 'NorthernSubpolarAtlantic','NorthernSubpolarPacific',]#'CCI_MAM']
-                                
-			if name =='CHL_JJA':
+	                        av[name]['regions']             = ['Equator10', 'Remainder', 'NorthernSubpolarAtlantic','NorthernSubpolarPacific','Global','SouthernOcean',]#'CCI_MAM']
+			if name in ['CHL_JJA','GC_CHL_JJA',]:                                
 				av[name]['datadetails']  	= {'name': name, 'vars':[chldatakey,], 'convert':  CHLJJA_Data,'units':'mg C/m^3'}
-	                        av[name]['regions']             = ['Equator10', 'Remainder', 'NorthernSubpolarAtlantic','NorthernSubpolarPacific','CCI_JJA']
+	                        av[name]['regions']             = ['Equator10', 'Remainder', 'NorthernSubpolarAtlantic','NorthernSubpolarPacific','CCI_JJA','Global','SouthernOcean',]
                                 
-		        if name =='CHL_SON':
+			if name in ['CHL_SON','GC_CHL_SON',]:
 				av[name]['datadetails']  	= {'name': name, 'vars':[chldatakey,], 'convert':  CHLSON_Data,'units':'mg C/m^3'}
-	                        av[name]['regions']             = ['Equator10', 'Remainder', 'NorthernSubpolarAtlantic','NorthernSubpolarPacific',]#'CCI_SON']
-	                        
-		        if name =='CHL_DJF':
+	                        av[name]['regions']             = ['Equator10', 'Remainder', 'NorthernSubpolarAtlantic','NorthernSubpolarPacific','Global','CCI_SON','SouthernOcean',]
+
+			if name in ['CHL_DJF','GC_CHL_DJF']:	                        
 				av[name]['datadetails']  	= {'name': name, 'vars':[chldatakey,], 'convert':  CHLDJF_Data,'units':'mg C/m^3'}
-	                        av[name]['regions']             = ['Equator10', 'Remainder', 'NorthernSubpolarAtlantic','NorthernSubpolarPacific','CCI_DJF']
+	                        av[name]['regions']             = ['Equator10', 'Remainder', 'NorthernSubpolarAtlantic','NorthernSubpolarPacific','CCI_DJF','Global','SouthernOcean',]
 
 			av[name]['layers'] 		= ['Surface',]
 

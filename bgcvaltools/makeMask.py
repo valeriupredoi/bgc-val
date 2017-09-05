@@ -271,6 +271,10 @@ def makeMask(name,newSlice, xt,xz,xy,xx,xd,debug=False):
                 mx += np.ma.masked_where(  xy > 80.,nmask).mask
                 return np.ma.masked_where( mx,nmask).mask
 
+        if newSlice == 'CCI_SON':
+                mx = np.ma.masked_where(  np.abs(xy) > 80.,nmask).mask
+                return np.ma.masked_where( mx,nmask).mask
+
         if newSlice == 'CCI_DJF':
                 mx = np.ma.masked_where(  xy > 53.,nmask).mask
                 mx += np.ma.masked_where(  xy > 80.,nmask).mask

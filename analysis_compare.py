@@ -162,9 +162,9 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
         	####
         	# Supercedes other flags.
 		analysisKeys = []
-                analysisKeys.append('DrakePassageTransport')    # DrakePassageTransport         
+#                analysisKeys.append('DrakePassageTransport')    # DrakePassageTransport         
 #                analysisKeys.append('AMOC_26N')
-#                analysisKeys.append('NoCaspianAirSeaFluxCO2')   # work in progress                      
+                analysisKeys.append('NoCaspianAirSeaFluxCO2')   # work in progress                      
 
 #		analysisKeys.append('CHD')
 #		analysisKeys.append('CHN')
@@ -1985,8 +1985,24 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 				lineStyle	= ls,
 				colours		= colours,
 			)
+
+                        if name == 'NoCaspianAirSeaFluxCO2':
+
+                            tsp.multitimeseries(
+                                timesD,                 # model times (in floats)
+                                arrD,                   # model time series
+                                data    = 0.,         # in situ data distribution
+				dataname= 'Target',
+                                title   = title,
+                                filename= ukp.folder(imageFolder)+name+'_'+ts+'_'+'movingav30years'+'.png',
+                                units   = units,
+                                plotStyle       = ts,
+                                lineStyle       = 'movingav30years',
+                                colours         = colours,
+                            )
+
 	
-	
+
 	
 			
 							
@@ -2142,6 +2158,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 				lineStyle	= ls,
 				colours		= colours,
 			)
+
 	try:
 		AllImages = glob(imageFolder, recursive=True)
 	except:
@@ -2356,7 +2373,16 @@ if __name__=="__main__":
 		'u-ao365':'red',
 		'u-ao404':'blue',
 		'u-ao837':'teal',
+		'u-ao949':'purple',
 
+		'u-ao912':'black',
+		'u-ao913':'green',
+		'u-ao914':'blue',
+		'u-ao884':'orange',
+		'u-ao886':'purple',
+		
+		'u-ap848' : 'teal',
+		
         }
 	jobDescriptions = {
 		
@@ -2380,6 +2406,15 @@ if __name__=="__main__":
 		'u-am004': "UKESM 0.6",
                 'u-ao837': "UKESM 0.8",
 
+		'u-ao949': "UKESM0.8-CN PD",
+                'u-ap848': "UKESM0.8 -  copy of u-ap721, Chl not coupled anymore",
+
+
+		'u-ao912':'chlorophyll coupling off (as in u-ao404)',
+		'u-ao913':'lai_min=0.7 for grasses (as in u-ao404)',
+		'u-ao914':'snow-albedo tuning on NLE only',
+		'u-ao884':'snow-albedo tuning on BL as well',
+		'u-ao886':'Reduced snow canopy clumping on NL for snow-albedo tuning',
 
 		'u-an766': 'copy of u-am001 but with PI oxidants.',
 
@@ -2435,6 +2470,42 @@ if __name__=="__main__":
 		print "Successful command line comparison"
 		exit
 	else:
+
+                jobs = ['u-ao869','u-ap848',]
+                colours = {i:standards[i] for i in jobs}
+                timeseries_compare({
+                        i:standards[i] for i in jobs},
+                        physics=1,
+                        bio=1,
+                        debug=0,
+                        year0=False,
+                        jobDescriptions=jobDescriptions,
+                        analysisname='UKESM0.8-MEDUSA')
+
+
+
+                jobs = ['u-ao949','u-ao837',]
+                colours = {i:standards[i] for i in jobs}
+                timeseries_compare({
+                        i:standards[i] for i in jobs},
+                        physics=1,
+                        bio=1,
+                        debug=0,
+                        year0=False,
+                        jobDescriptions=jobDescriptions,
+                        analysisname='u-ao837_u-ao949')
+
+
+                jobs = ['u-ao912','u-ao913','u-ao914','u-ao884','u-ao886',]#'u-ao837',]
+                colours = {i:standards[i] for i in jobs}
+                timeseries_compare({
+                        i:standards[i] for i in jobs},
+                        physics=1,
+                        bio=1,
+                        debug=0,
+                        year0=False,
+                        jobDescriptions=jobDescriptions,
+                        analysisname='LandChlTests')
 
                 jobs = ['u-ao365','u-am004','u-ao837',]
                 colours = {i:standards[i] for i in jobs}

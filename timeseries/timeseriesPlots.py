@@ -559,6 +559,7 @@ def multitimeseries(
 		data = -999,		# in situ data distribution
 		title 	='',
 		filename='',
+		dataname='Data',
 		units = '',
 		colours = ['red','orange','green','purple','blue','pink','yellow','lime',],
 		plotStyle = 'Together',	
@@ -657,6 +658,11 @@ def multitimeseries(
                         arr_new = movingaverage_DT(arr,times, window_len=5.,window_units='years')
 			pyplot.plot(times,arr_new,c=colours[jobID],ls='-',label=jobID,)
 
+                if lineStyle.lower() in ['movingav30years',]:
+                        pyplot.plot(times,arr,c=colours[jobID],ls='-',lw=0.25)#label=jobID,)
+                        arr_new = movingaverage_DT(arr,times, window_len=30.,window_units='years')
+                        pyplot.plot(times,arr_new,c=colours[jobID],ls='-',label=jobID,)
+
 
 
 		if lineStyle.lower() in ['movingaverage12',]:
@@ -664,6 +670,7 @@ def multitimeseries(
 			if len(arr)>12:
  	                	arr_new = movingaverage2(arr, window_len=window,window='flat',extrapolate='periodically')
 				pyplot.plot(times,arr_new,c=colours[jobID],ls='-',lw=2.,label=jobID,)#label=jobID+' smooth',)
+
 				
 		if lineStyle.lower() in ['movingaverage60',]:
 			window = 60
@@ -684,7 +691,7 @@ def multitimeseries(
 
 	
 	if data != -999:
-		pyplot.axhline(y=data,c='k',ls='-',lw=1,label = 'Data')
+		pyplot.axhline(y=data,c='k',ls='-',lw=1,label = dataname)
 	
 
 

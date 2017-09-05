@@ -446,7 +446,9 @@ def makeLongNameDict():
    	lnd['maskBelowBathy'] = 'Masked Below Bathymetery' 
    	lnd['OnShelf'] = 'On Shelf'
    	lnd['OffShelf'] = 'Off Shelf'  
-   	
+   
+	lnd['movingav30years']	= '30 year moving average'
+	
 	#####
 	# Models
   	lnd['NEMO'] = 'NEMO'  	  	
