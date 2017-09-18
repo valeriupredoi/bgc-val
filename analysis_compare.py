@@ -60,6 +60,7 @@ from alwaysInclude import  alwaysInclude
 from makeReport import comparehtml5Maker
 import paths
 
+from comparison.shifttimes import shifttimes
 
 def listModelDataFiles(jobID, filekey, datafolder, annual,year=''):
 	if year == '':
@@ -1865,99 +1866,10 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 				mdata = modeldataD[(jobID,name )][('regionless', 'layerless', 'metricless')]
 				title = getLongName(name)
 
-			if year0 in ['True', True,'First100Years','2000-2250','2000-2600normu-ak900','juggling','juggling2','FullSpinUp']:
-				if len(mdata.keys())==0:
-					timesD[jobID]=[]
-                                        arrD[jobID]=[]
-					continue
-				t0 = float(sorted(mdata.keys())[0])
-                                tm1 = float(sorted(mdata.keys())[-1])
+			times,datas = shifttimes(mdata, jobID,year0=year0)
+			timesD[jobID] 	= times
+			arrD[jobID]	= datas
 
-				times = []
-				datas = []
-				for t in sorted(mdata.keys()):
-					if year0=='First100Years':
-						if float(t) - t0 > 100.:continue
-						times.append(float(t)-t0)
-						datas.append(mdata[t])
-                                        elif year0=='2000-2250':
-						if float(t) <2000.:continue
-                                                if float(t) >2250.:continue
-                                                times.append(float(t))
-                                                datas.append(mdata[t])
-					elif year0 =='2000-2600normu-ak900':
-						if jobID == 'u-ak900': t = t - 1937.
-                                                if float(t) <2000.:continue
-                                                if float(t) >2600.:continue
-                                                times.append(float(t))
-                                                datas.append(mdata[t])
-
-					elif year0=='juggling':
-                                                if jobID == 'u-am515': t1 = t - t0
-                                                if jobID == 'u-an869': t1 = t - (2061-56)	#-1862
-                                                if jobID == 'u-ao586': t1 = t - (2561 - 556)	#-1869
-                                                print jobID, t1,t, [t0, tm1]
-
-                                                times.append(float(t1))
-                                                datas.append(mdata[t])
-
-                                        elif year0=='juggling2':
-                                                if jobID == 'u-an869': t1 = t - (2061-56)       #-1862
-                                                if jobID == 'u-ao586': t1 = t - (2561 - 556)    #-1869
-                                                print jobID, t1,t, [t0, tm1]
-						
-						if t1<540:continue
-                                                if t1>700:continue
-
-                                                times.append(float(t1))
-                                                datas.append(mdata[t])
-                                        elif year0=='FullSpinUp':
-                                                if jobID == 'u-ak900': t1 = t - 2106
-                                                if jobID == 'u-an869': t1 = t - 2061 +       3996-2106      #-1862
-                                                if jobID == 'u-ao586': t1 = t - 2561 + 500 + 3996-2106    #-1869
-                                                times.append(float(t1))
-                                                datas.append(mdata[t])
-					elif year0 in ['True',True]:
-                                                times.append(float(t)-t0)
-                                                datas.append(mdata[t])
-
-
-
-				timesD[jobID] 	= times
-				arrD[jobID]	= datas
-                        elif year0=='u-ai567-minus3':      
-                                if len(mdata.keys())==0:
-                                        timesD[jobID]=[]
-                                        arrD[jobID]=[]
-                                        continue
-                                t0 = float(sorted(mdata.keys())[0])
-                                if jobID =='u-ai567': t0 = t0+3
-                                times = []
-                                datas = []
-                                for t in sorted(mdata.keys()):
-                                        times.append(float(t)-t0)
-                                        datas.append(mdata[t])
-                                timesD[jobID]   = times
-                                arrD[jobID]     = datas    					
-                        elif year0=='UKESM0.8':
-                                times,datas=[],[]
-                                for t in sorted(mdata.keys()):
-                                        if jobID == 'u-am004': t1 = t -1978 - 203
-                                        if jobID == 'u-ao365': t1 = t -1978 - 33      
-                                        if jobID == 'u-ao837': t1 = t -1978 
-                                        if t1<0:continue
-
-                                        print jobID, t1,t
-                                        times.append(float(t1))
-                                        datas.append(mdata[t])
-                                timesD[jobID]   = times
-                                arrD[jobID]     = datas
-
-	
-			else:
-				timesD[jobID] 	= sorted(mdata.keys())
-				arrD[jobID]	= [mdata[t] for t in timesD[jobID]]
-		
 		#####
 		# To account for changing units.
 		if name in ['TotalAirSeaFluxCO2', 'TotalAirSeaFlux']: 
@@ -2028,24 +1940,11 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 			try:	mdata = modeldataD[(jobID,name )][(region, layer, 'mean')]
 			except: continue
 			title = ' '.join([region, layer, 'Mean',  getLongName(name)])
-
-                        if year0 in ['True', True,'First100Years']:
-                                if len(mdata.keys())==0:
-                                        timesD[jobID]=[]
-                                        arrD[jobID]=[]
-                                        continue
-                                t0 = float(sorted(mdata.keys())[0])
-                                times = []
-                                datas = []
-                                for t in sorted(mdata.keys()):
-                                        if year0=='First100Years' and float(t) - t0 > 100.:continue
-                                        times.append(float(t)-t0)
-                                        datas.append(mdata[t])
-                                timesD[jobID]   = times
-                                arrD[jobID]     = datas
-			else:
-				timesD[jobID] 	= sorted(mdata.keys())
-				arrD[jobID]	= [mdata[t] for t in timesD[jobID]]
+			times,datas = shifttimes(mdata, jobID,year0=year0)
+			timesD[jobID] 	= times
+			arrD[jobID]	= datas
+			
+			
                 units = av[name]['modeldetails']['units']
 		
 		for ts in ['Together',]:#'Separate']:
@@ -2076,61 +1975,10 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 			try:mdata = modeldataD[(jobID,name )][(region, layer, 'mean')]
 			except: continue
 			title = ' '.join([region, layer, 'Mean',  getLongName(name)])
-			if year0=='juggling2':
-				times,datas=[],[]
-				
-                                for t in sorted(mdata.keys()):
-   	                                if jobID == 'u-an869': t1 = t - (2061-56)       #-1862
-        	                        if jobID == 'u-ao586': t1 = t - (2561 - 556)    #-1869
-                	                if t1<540:continue
-                        	        if t1>700:continue
-                                	times.append(float(t1))
-	                                datas.append(mdata[t])	
-                                timesD[jobID]   = times
-                                arrD[jobID]     = datas
- 	              	elif year0=='FullSpinUp':
-				times,datas=[],[]
-                                for t in sorted(mdata.keys()):
-                        		if jobID == 'u-ak900': t1 = t - 2106
-                        	        if jobID == 'u-an869': t1 = t - (2061-56) + (3996-2106)      #-1862
-                	                if jobID == 'u-ao586': t1 = t - (2561 - 556)+ (3996-2106)    #-1869
-        	                        print jobID, t1,t, [t0, tm1]
- 		                        times.append(float(t1))
-                                	datas.append(mdata[t])
-                                timesD[jobID]   = times
-                                arrD[jobID]     = datas
-			elif year0=='UKESM0.8':
-                                times,datas=[],[]
-                                for t in sorted(mdata.keys()):
-                                        if jobID == 'u-am004': t1 = t -1978 - 203 
-                                        if jobID == 'u-ao365': t1 = t -1978 - 33  
-                                        if jobID == 'u-ao837': t1 = t -1978
-					if t1<0:continue
-					
-                                        print jobID, t1,t  
-                                        times.append(float(t1))
-                                        datas.append(mdata[t])
-                                timesD[jobID]   = times
-                                arrD[jobID]     = datas
-                        elif year0 in ['True', True,'First100Years',]:
-                                times = []
-                                datas = []
-
-				try:	t0 = float(sorted(mdata.keys())[0])
-				except:
-        	                        timesD[jobID]   = times
-	                                arrD[jobID]     = datas
-					continue
-                                for t in sorted(mdata.keys()):
-                                        if year0=='First100Years' and float(t) - t0 > 100.:continue
-                                        times.append(float(t)-t0)
-                                        datas.append(mdata[t])
-                                timesD[jobID]   = times
-                                arrD[jobID]     = datas
-				
-			else:
-				timesD[jobID] 	= sorted(mdata.keys())
-				arrD[jobID]	= [mdata[t] for t in timesD[jobID]]
+			times,datas = shifttimes(mdata, jobID,year0=year0)
+			timesD[jobID] 	= times
+			arrD[jobID]	= datas
+						
                 units = av[name]['modeldetails']['units']
 		
 		for ts in ['Together',]:#'Separate']:
