@@ -489,6 +489,7 @@ def robinPlotSingle(lons,lats,data,filename,title, zrange=[-100,100],drawCbar=Tr
 	lats = np.array(lats)
 	data = np.ma.array(data)
 	
+	
 	rbmi = min([data.min(),])
 	rbma = max([data.max(),])
 	

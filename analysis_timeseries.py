@@ -1688,7 +1688,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		
 		av[name]['modeldetails'] 	= {'name': name, 'vars':[ukesmkeys['sal3d'],], 'convert': sumMeanLandMask,'units':'PSU'}
 		av[name]['datadetails']  	= {'name': '', 'units':''}
-		#av[name]['datadetails']  	= {'name': name, 'vars':['t_an',], 'convert': ukp.NoChange,'units':'degrees C'}
+		#av[name]['datadetails']  	globalVolumeMean= {'name': name, 'vars':['t_an',], 'convert': ukp.NoChange,'units':'degrees C'}
 
 		av[name]['layers'] 		= ['layerless',]
 		av[name]['regions'] 		= ['regionless',]
