@@ -61,6 +61,7 @@ from makeReport import comparehtml5Maker
 import paths
 
 from comparison.shifttimes import shifttimes
+from config.configToDict import configToDict
 
 def listModelDataFiles(jobID, filekey, datafolder, annual,year=''):
 	if year == '':
@@ -2132,171 +2133,10 @@ def CompareTwoRuns(jobIDA,jobIDB,physics=True,bio=False,yearA='',yearB='',debug=
 				maptype = 'Cartopy',
 				scatter=False)	
 		
-		
+def main():		
 
-if __name__=="__main__":
-	#colours = {'u-af981':'red', 'u-af982':'orange','u-af983':'blue','u-af984':'purple', }
-	#timeseries_compare(colours)
-	
-
-		
-#	colours = {'u-ad371':'green',}#'u-aj287':'purple', 'u-aj289':'blue','u-ai567':'orange'}
-#        timeseries_compare(colours, physics=True,bio=False,year0=True,debug=0)
-
-	#####
-	# These are stephen's runs:	
-#        colours = {'u-ah882':'green','u-ai611':'purple', 'u-ai661':'blue',}#'u-aj321':'orange',}
-#        timeseries_compare(colours, physics=True,bio=False,year0=False,debug=0)#False)
-
-#	CompareTwoRuns('u-ai567','u-aj588',physics=True,bio=False,yearA='2107',yearB='2107',debug=True)
-#        CompareTwoRuns('u-ai567','u-aj588',physics=True,bio=False,yearA='2108',yearB='2108',debug=True)
-        standards = {
-		#####
-		# Old Spin ups:
-                'u-af981':'black',
-                'u-af982':'purple',
-                'u-af983':'blue',
-                'u-af984':'green',
-		'u-ah882':'red',
-
-		# Coupled models:
-                'u-ai567':'orange',
-		# Salinity relaxation
-                'u-aj237':'green',
-                'u-aj287':'purple',
-                'u-aj289':'blue',
-                'u-aj478':'red',
-
-                # Jobs from Steve
-                'u-aj479':'sienna',
-                'u-aj504':'dodgerblue',
-                'u-aj506':'chocolate',
-
-		#x1.7 DMS
-		'u-al901':'purple', 
-                'u-aj391':'blue',
-                'u-ai611':'green',
-                'u-am064':'#41b6c4',
-                'u-am927':'sienna',
-                'u-am515':'orange',
-                
-
-		#x1.9 DMS
-                'u-al902':'sienna',
-                'u-aj392':'red',
-                'u-ai661':'orange',
-
-		# T S relaxation
-                'u-aj588':'#41b6c4',	# blue-ish
-                'u-aj613':'purple',
-		'u-aj876':'green',
-
-
-		# New ak jobs
-		'u-ak033':'green',
-		'u-ak040':'blue',
-		'u-ak133':'green',
-		'u-ak129':'red',
-		'u-ak131':'purple',
-		'u-ak251':'sienna',
-		'u-ak252':'purple',
-		'u-ak262':'dodgerblue',
-                'u-ak661':'chocolate',
-		'u-ak895':'purple',
-
-		'u-al598':'green',
-		'u-al284':'red',
-		'u-ak900':'blue',
-		'u-ak033':'purple',
-                'u-am459':'fushia',
-		'u-am184':'teal',
-                'u-am220':'#41b6c4',    # blue-ish
-
-
-		# Colins tests
-		'u-am696':'red',
-		'u-am792':'purple',
-		'u-am892':'green',
-
-		'u-an631':'red',
-		'u-an629':'green',
-		'u-an619':'purple',
-		'u-an869':'teal',
-		'u-an908':'magenta',
-		'u-an911':'blue',
-                'u-an989':'gold',
-
-		'u-ao586':'purple',
-
-		#####
-		# Atmospheric jobs.
-                'u-am001':'teal',
-                'u-am004':'blue',
-                'u-am005':'red',
-                'u-am007':'magenta',
-                'u-am008':'green',
-		
-		'u-ao365':'red',
-		'u-ao404':'blue',
-		'u-ao837':'teal',
-		'u-ao949':'purple',
-
-		'u-ao912':'black',
-		'u-ao913':'green',
-		'u-ao914':'blue',
-		'u-ao884':'orange',
-		'u-ao886':'purple',
-		'u-ap951' : 'red',
-
-		'u-ap450': 'orange',
-		'u-ap865':'green',
-		'u-aq142': 'greenonion' 
-        }
-	jobDescriptions = {
-		
-		'u-ad371': "Very short old run for debugging evaluation suite",	
-		'u-ak900': "Long runnning Ocean Only Spin up Candidate",
-
-                'u-am515': "Fully coupled, CMIP5 then CMIP6",
-                'u-am927': "Fully coupled, CMIP6 only",
-				
-                'u-an619': "Ocean Only, IC=OBS, atmos=u-am927, bulk=new",
-
-		'u-an629': "Ocean Only, IC=u-ak900, atmos=u-am927, bulk=old",
-		'u-an631': "Ocean Only, IC=u-ak900, atmos=u-am927, bulk=new",
-
-		
-		'u-an908': "Ocean Only, IC=OBS, atmos=u-am515, bulk=new",
-		'u-an911': "Ocean Only, IC=u-ak900, atmos=u-am515, bulk=old",
-		'u-an989': "Ocean Only, IC=OBS, atmos=u-am515, bulk=old",
-                'u-an869': "Ocean Only, IC=u-ak900, atmos=u-am515, bulk=new",
-
-		'u-am004': "UKESM 0.6",
-                'u-ao837': "UKESM 0.8",
-
-		'u-ao949': "UKESM0.8-CN PD",
-                'u-ap951': "UKESM0.8 -  copy of u-ap721, Chl not coupled anymore",
-
-
-		'u-ao912':'chlorophyll coupling off (as in u-ao404)',
-		'u-ap450':'like u-ao912, except chl scaled down coupling factor.',
-                'u-ap865':'UKESM 0.8 with prescribed vegetation. old and broken?',
-		'u-aq142':'UKESM 0.8 with prescribed vegetation. new and fixed.',
-
-		'u-ao913':'lai_min=0.7 for grasses (as in u-ao404)',
-		'u-ao914':'snow-albedo tuning on NLE only',
-		'u-ao884':'snow-albedo tuning on BL as well',
-		'u-ao886':'Reduced snow canopy clumping on NL for snow-albedo tuning',
-
-		'u-an766': 'copy of u-am001 but with PI oxidants.',
-
-                'u-ao365':'UKESM 0.7 CN, lai_min = 0.7',
-                'u-ao404':'UKESM 0.7 CN, lai_min = 1.0, (southern ocean dust deposition should be higher) ',
-
-                'u-ao586':'Coupled extension - based on 56 years of coupled u-am515, then 500 years of Ocean Only u-an869.',
-
-		}
-
+        standards = configToDict('config/jobIDcolours.ini')
+        jobDescriptions = configToDict('config/jobIDdescriptions.ini')   
 
 	try:
 		args = argv[1:]
@@ -2607,4 +2447,5 @@ if __name__=="__main__":
 
 	
 
+if __name__=="__main__": main()
 
