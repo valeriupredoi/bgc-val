@@ -1880,19 +1880,19 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 						if float(t) - t0 > 100.:continue
 						times.append(float(t)-t0)
 						datas.append(mdata[t])
-                                        if year0=='2000-2250':
+                                        elif year0=='2000-2250':
 						if float(t) <2000.:continue
                                                 if float(t) >2250.:continue
                                                 times.append(float(t))
                                                 datas.append(mdata[t])
-					if year0 =='2000-2600normu-ak900':
+					elif year0 =='2000-2600normu-ak900':
 						if jobID == 'u-ak900': t = t - 1937.
                                                 if float(t) <2000.:continue
                                                 if float(t) >2600.:continue
                                                 times.append(float(t))
                                                 datas.append(mdata[t])
 
-					if year0=='juggling':
+					elif year0=='juggling':
                                                 if jobID == 'u-am515': t1 = t - t0
                                                 if jobID == 'u-an869': t1 = t - (2061-56)	#-1862
                                                 if jobID == 'u-ao586': t1 = t - (2561 - 556)	#-1869
@@ -1901,7 +1901,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
                                                 times.append(float(t1))
                                                 datas.append(mdata[t])
 
-                                        if year0=='juggling2':
+                                        elif year0=='juggling2':
                                                 if jobID == 'u-an869': t1 = t - (2061-56)       #-1862
                                                 if jobID == 'u-ao586': t1 = t - (2561 - 556)    #-1869
                                                 print jobID, t1,t, [t0, tm1]
@@ -1911,11 +1911,14 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 
                                                 times.append(float(t1))
                                                 datas.append(mdata[t])
-                                        if year0=='FullSpinUp':
+                                        elif year0=='FullSpinUp':
                                                 if jobID == 'u-ak900': t1 = t - 2106
                                                 if jobID == 'u-an869': t1 = t - 2061 +       3996-2106      #-1862
                                                 if jobID == 'u-ao586': t1 = t - 2561 + 500 + 3996-2106    #-1869
                                                 times.append(float(t1))
+                                                datas.append(mdata[t])
+					elif year0 in ['True',True]:
+                                                times.append(float(t)-t0)
                                                 datas.append(mdata[t])
 
 
@@ -2109,7 +2112,17 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
                                         datas.append(mdata[t])
                                 timesD[jobID]   = times
                                 arrD[jobID]     = datas
-			
+                        elif year0 in ['True', True,'First100Years',]:
+				t0 = float(sorted(mdata.keys())[0])
+                                times = []
+                                datas = []
+                                for t in sorted(mdata.keys()):
+                                        if year0=='First100Years' and float(t) - t0 > 100.:continue
+                                        times.append(float(t)-t0)
+                                        datas.append(mdata[t])
+                                timesD[jobID]   = times
+                                arrD[jobID]     = datas
+				
 			else:
 				timesD[jobID] 	= sorted(mdata.keys())
 				arrD[jobID]	= [mdata[t] for t in timesD[jobID]]
@@ -2380,9 +2393,10 @@ if __name__=="__main__":
 		'u-ao914':'blue',
 		'u-ao884':'orange',
 		'u-ao886':'purple',
-		
-		'u-ap848' : 'teal',
-		
+		'u-ap951' : 'red',
+
+		'u-ap450': 'orange',
+		'u-ap865':'green', 
         }
 	jobDescriptions = {
 		
@@ -2407,10 +2421,13 @@ if __name__=="__main__":
                 'u-ao837': "UKESM 0.8",
 
 		'u-ao949': "UKESM0.8-CN PD",
-                'u-ap848': "UKESM0.8 -  copy of u-ap721, Chl not coupled anymore",
+                'u-ap951': "UKESM0.8 -  copy of u-ap721, Chl not coupled anymore",
 
 
 		'u-ao912':'chlorophyll coupling off (as in u-ao404)',
+		'u-ap450':'like u-ao912, except chl scaled down coupling factor.',
+                'u-ap865':'UKESM 0.8 with prescribed vegetation. ',
+
 		'u-ao913':'lai_min=0.7 for grasses (as in u-ao404)',
 		'u-ao914':'snow-albedo tuning on NLE only',
 		'u-ao884':'snow-albedo tuning on BL as well',
@@ -2470,8 +2487,66 @@ if __name__=="__main__":
 		print "Successful command line comparison"
 		exit
 	else:
+                jobs = ['u-ap951','u-ao586',]
+                colours = {i:standards[i] for i in jobs}
+                timeseries_compare({
+                        i:standards[i] for i in jobs},
+                        physics=1,
+                        bio=1,
+                        debug=0,
+                        year0=True,
+                        jobDescriptions=jobDescriptions,
+                        analysisname='u-ap951_vs_u-ao586')
+		assert 0
 
-                jobs = ['u-ao869','u-ap848',]
+                jobs = ['u-an869','u-ao586','u-ap951',]
+                colours = {i:standards[i] for i in jobs}
+                timeseries_compare({
+                        i:standards[i] for i in jobs},
+                        physics=1,
+                        bio=1,
+                        debug=0,
+                        year0=False,
+                        jobDescriptions=jobDescriptions,
+                        analysisname='UKESM_spinUp_Updated')
+
+                jobs = ['u-ap951','u-an869',]
+                colours = {i:standards[i] for i in jobs}
+                timeseries_compare({
+                        i:standards[i] for i in jobs},
+                        physics=1,
+                        bio=1,
+                        debug=0,
+                        year0=False,
+                        jobDescriptions=jobDescriptions,
+                        analysisname='u-ap951_vs_u-an869')
+
+		
+
+                jobs = ['u-ao912','u-ap450',]
+                colours = {i:standards[i] for i in jobs}
+                timeseries_compare({
+                        i:standards[i] for i in jobs},
+                        physics=1,
+                        bio=1,
+                        debug=0,
+                        year0=False,
+                        jobDescriptions=jobDescriptions,
+                        analysisname='UKESM0.8-PMOA')
+
+                jobs = ['u-ao912','u-ap865',]
+                colours = {i:standards[i] for i in jobs}
+                timeseries_compare({
+                        i:standards[i] for i in jobs},
+                        physics=1,
+                        bio=1,
+                        debug=0,
+                        year0=False,
+                        jobDescriptions=jobDescriptions,
+                        analysisname='UKESM0.8-PrescribedVeg')
+
+
+                jobs = ['u-an869','u-ap951',]
                 colours = {i:standards[i] for i in jobs}
                 timeseries_compare({
                         i:standards[i] for i in jobs},
