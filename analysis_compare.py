@@ -2113,9 +2113,14 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
                                 timesD[jobID]   = times
                                 arrD[jobID]     = datas
                         elif year0 in ['True', True,'First100Years',]:
-				t0 = float(sorted(mdata.keys())[0])
                                 times = []
                                 datas = []
+
+				try:	t0 = float(sorted(mdata.keys())[0])
+				except:
+        	                        timesD[jobID]   = times
+	                                arrD[jobID]     = datas
+					continue
                                 for t in sorted(mdata.keys()):
                                         if year0=='First100Years' and float(t) - t0 > 100.:continue
                                         times.append(float(t)-t0)
@@ -2494,10 +2499,9 @@ if __name__=="__main__":
                         physics=1,
                         bio=1,
                         debug=0,
-                        year0=True,
+                        year0='True',
                         jobDescriptions=jobDescriptions,
                         analysisname='u-ap951_vs_u-ao586')
-		assert 0
 
                 jobs = ['u-an869','u-ao586','u-ap951',]
                 colours = {i:standards[i] for i in jobs}
