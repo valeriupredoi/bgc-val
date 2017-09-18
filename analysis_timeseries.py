@@ -394,12 +394,14 @@ def analysis_timeseries(jobID = "u-ab671",
 		print "analysis-timeseries.py:\tBeing run at CEDA on ",gethostname()
 		#machinelocation = 'JASMIN'
 
-		shelvedir 	= ukp.folder("/group_workspaces/jasmin2/ukesm/BGC_data/"+getuser()+"/shelves/timeseries/"+jobID)
+		
+		try:	shelvedir 	= ukp.folder("/group_workspaces/jasmin2/ukesm/BGC_data/"+getuser()+"/shelves/timeseries/"+jobID)
+		except: shelvedir       =            "/group_workspaces/jasmin2/ukesm/BGC_data/"+getuser()+"/shelves/timeseries/"+jobID
 		if annual:	WOAFolder = paths.WOAFolder_annual
 		else:		WOAFolder = paths.WOAFolder
 
-		imagedir	 = ukp.folder(paths.imagedir+'/'+jobID+'/timeseries')
-
+		try:	imagedir	 = ukp.folder(paths.imagedir+'/'+jobID+'/timeseries')
+		except:	imagedir         =            paths.imagedir+'/'+jobID+'/timeseries'
 
         if gethostname().find('monsoon')>-1:
         	print "Please set up paths.py"
