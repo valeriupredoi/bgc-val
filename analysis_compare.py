@@ -2401,7 +2401,8 @@ if __name__=="__main__":
 		'u-ap951' : 'red',
 
 		'u-ap450': 'orange',
-		'u-ap865':'green', 
+		'u-ap865':'green',
+		'u-aq142': 'greenonion' 
         }
 	jobDescriptions = {
 		
@@ -2431,7 +2432,8 @@ if __name__=="__main__":
 
 		'u-ao912':'chlorophyll coupling off (as in u-ao404)',
 		'u-ap450':'like u-ao912, except chl scaled down coupling factor.',
-                'u-ap865':'UKESM 0.8 with prescribed vegetation. ',
+                'u-ap865':'UKESM 0.8 with prescribed vegetation. old and broken?',
+		'u-aq142':'UKESM 0.8 with prescribed vegetation. new and fixed.',
 
 		'u-ao913':'lai_min=0.7 for grasses (as in u-ao404)',
 		'u-ao914':'snow-albedo tuning on NLE only',
@@ -2538,7 +2540,7 @@ if __name__=="__main__":
                         jobDescriptions=jobDescriptions,
                         analysisname='UKESM0.8-PMOA')
 
-                jobs = ['u-ao912','u-ap865',]
+                jobs = ['u-ao912','u-ap865',' u-aq142']
                 colours = {i:standards[i] for i in jobs}
                 timeseries_compare({
                         i:standards[i] for i in jobs},
