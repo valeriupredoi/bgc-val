@@ -2182,6 +2182,29 @@ def main():
 		print "Successful command line comparison"
 		exit
 	else:
+                jobs = ['u-an869','u-ao586','u-ak900',]
+                colours = {i:standards[i] for i in jobs}
+                timeseries_compare({
+                        i:standards[i] for i in jobs},
+                        physics=1,
+                        bio=1,
+                        debug=0,
+                        year0='FullSpinUp',
+                        jobDescriptions=jobDescriptions,
+                        analysisname='OriginalOceanOnlySpinUp')
+
+
+                jobs = ['u-ao912','u-ap865','u-aq142']
+                colours = {i:standards[i] for i in jobs}
+                timeseries_compare({
+                        i:standards[i] for i in jobs},
+                        physics=1,
+                        bio=1,
+                        debug=0,
+                        year0=False,
+                        jobDescriptions=jobDescriptions,
+                        analysisname='UKESM0.8-PrescribedVeg')
+
                 jobs = ['u-ap951','u-ao586',]
                 colours = {i:standards[i] for i in jobs}
                 timeseries_compare({
@@ -2227,17 +2250,6 @@ def main():
                         year0=False,
                         jobDescriptions=jobDescriptions,
                         analysisname='UKESM0.8-PMOA')
-
-                jobs = ['u-ao912','u-ap865',' u-aq142']
-                colours = {i:standards[i] for i in jobs}
-                timeseries_compare({
-                        i:standards[i] for i in jobs},
-                        physics=1,
-                        bio=1,
-                        debug=0,
-                        year0=False,
-                        jobDescriptions=jobDescriptions,
-                        analysisname='UKESM0.8-PrescribedVeg')
 
 
                 jobs = ['u-an869','u-ap951',]
@@ -2287,16 +2299,16 @@ def main():
                         jobDescriptions=jobDescriptions,
                         analysisname='UKESM_0.8')
 
-                jobs = ['u-an869','u-ao586','u-ak900',]
-                colours = {i:standards[i] for i in jobs}
-                timeseries_compare({
-                        i:standards[i] for i in jobs},
-                        physics=1,
-                        bio=1,
-                        debug=0,
-                        year0='FullSpinUp', 
-                        jobDescriptions=jobDescriptions,
-                        analysisname='OriginalOceanOnlySpinUp')
+#                jobs = ['u-an869','u-ao586','u-ak900',]
+#                colours = {i:standards[i] for i in jobs}
+#                timeseries_compare({
+#                        i:standards[i] for i in jobs},
+#                        physics=1,
+#                        bio=1,
+#                        debug=0,
+#                        year0='FullSpinUp', 
+#                        jobDescriptions=jobDescriptions,
+#                        analysisname='OriginalOceanOnlySpinUp')
 
                 jobs = ['u-an869','u-ao586',]
                 colours = {i:standards[i] for i in jobs}

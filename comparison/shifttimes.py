@@ -43,7 +43,7 @@ def shifttimes(mdata, jobID,year0=False):
         		if jobID == 'u-ak900': t1 = t - 2106
         	        if jobID == 'u-an869': t1 = t - (2061-56) + (3996-2106)      #-1862
 	                if jobID == 'u-ao586': t1 = t - (2561 - 556)+ (3996-2106)    #-1869
-                        print jobID, t1,t, [t0, tm1]
+                        print jobID, t1,t, t0 
                         times.append(float(t1))
                 	datas.append(mdata[t])
                return times, datas
