@@ -532,21 +532,30 @@ def movingaverage_DT(data,times, window_len=5.,window_units='years'):
 	window_units = window_units.lower()
 	if window_units not in ['days','months','years']:
      	   	raise ValueError("movingaverage_DT: window_units not recognised"+str(window_units))
-	if len(data) !=len(times):
+
+        data = np.ma.array(data)
+        times= np.ma.array(times)
+
+	if len(data) != len(times):
      	   	raise ValueError("movingaverage_DT: Data and times are different lengths.")
-	data = np.ma.array(data)
 	
 	#####
 	# Assuming time 
 	if window_units in ['years',]:	window = float(window_len)/2.
 	if window_units in ['months',]:	window = float(window_len)/(2.*12.)
 	if window_units in ['days',]:	window = float(window_len)/(2.*365.25)
-	output = np.ma.zeros(data.shape)
-	for i,o in enumerate(output):
-		t = times[i]
-		av = np.ma.masked_where((times < t-window ) + (times > t+window ), data).mean()
-		output[i] = av
-	return output
+
+	output = []#np.ma.zeros(data.shape)
+	for i,t in enumerate(times):
+		
+		tmin = t-window
+		tmax = t+window
+		arr = np.ma.masked_where((times < tmin) + (times > tmax), data)
+		
+		print [i,t],[tmin,tmax],[t,data[i]], arr.mean(), 'mask:',arr.mask.sum()
+		output.append(arr.mean())
+
+	return np.array(output)
 	
 	
 
@@ -659,11 +668,10 @@ def multitimeseries(
 			pyplot.plot(times,arr_new,c=colours[jobID],ls='-',label=jobID,)
 
                 if lineStyle.lower() in ['movingav30years',]:
-                        pyplot.plot(times,arr,c=colours[jobID],ls='-',lw=0.25)#label=jobID,)
+                        pyplot.plot(times,arr,c=colours[jobID],ls='-',lw=0.15)
+
                         arr_new = movingaverage_DT(arr,times, window_len=30.,window_units='years')
-                        pyplot.plot(times,arr_new,c=colours[jobID],ls='-',label=jobID,)
-
-
+                        pyplot.plot(times,arr_new,c=colours[jobID],ls='-',lw=1.,label=jobID,)
 
 		if lineStyle.lower() in ['movingaverage12',]:
 			window = 12

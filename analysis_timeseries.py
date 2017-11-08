@@ -337,7 +337,7 @@ def analysis_timeseries(jobID = "u-ab671",
 	# It's not advised to run all the metrics and all the layers, as it'll slow down the analysis.
 	# if z_component in ['SurfaceOnly',]:
 
-	layerList = ['Surface','500m','1000m',]
+	layerList = ['Surface',]#'500m','1000m',]
 	metricList = ['mean','median', '10pc','20pc','30pc','40pc','50pc','60pc','70pc','80pc','90pc','min','max']
 
 #	if z_component in ['FullDepth',]:

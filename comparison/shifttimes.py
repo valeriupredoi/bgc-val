@@ -42,6 +42,7 @@ def shifttimes(mdata, jobID,year0=False):
                for t in sorted(mdata.keys()):
         		if jobID == 'u-ak900': t1 = t - 2106
         	        if jobID == 'u-an869': t1 = t - (2061-56) + (3996-2106)      #-1862
+                        if jobID == 'u-ar538': t1 = t - (2061-56) + (3996-2106)      #-1862
 	                if jobID == 'u-ao586': t1 = t - (2561 - 556)+ (3996-2106)    #-1869
                         print jobID, t1,t, t0 
                         times.append(float(t1))
@@ -60,6 +61,15 @@ def shifttimes(mdata, jobID,year0=False):
                         datas.append(mdata[t])
                return times, datas
 
+        if year0=='UKESM_0.9.1':
+               for t in sorted(mdata.keys()):
+                        if jobID == 'u-ar379': t1 = t + 458.
+			else: t1=t
+                        times.append(float(t1))
+                        datas.append(mdata[t])
+               return times, datas
+
+
         if year0=='u-ai567-minus3':  
                t0 = float(sorted(mdata.keys())[0])
                if jobID =='u-ai567': t0 = t0+3
@@ -67,7 +77,14 @@ def shifttimes(mdata, jobID,year0=False):
                         times.append(float(t)-t0)
                         datas.append(mdata[t])
                return times, datas
-                                
+
+        if year0=='ignoreStart':
+               t0 = float(sorted(mdata.keys())[0])
+               for t in sorted(mdata.keys()):
+			if float(t) < 4600.:continue
+                        times.append(float(t))
+                        datas.append(mdata[t])
+               return times, datas
 
        	if year0=='2000-2250':
                for t in sorted(mdata.keys()):       
@@ -85,6 +102,16 @@ def shifttimes(mdata, jobID,year0=False):
 		        times.append(float(t))
 		        datas.append(mdata[t])
                return times, datas		        
+
+        if year0 =='2500-3000':
+               for t in sorted(mdata.keys()):
+                        if float(t) <2500.:continue
+                        if float(t) >3000.:continue
+                        times.append(float(t))
+                        datas.append(mdata[t])
+               return times, datas
+
+
             
         #####
         # Set all jobs to start at time zero.
