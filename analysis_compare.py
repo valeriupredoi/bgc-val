@@ -197,7 +197,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 #       	  	analysisKeys.append('TotalOMZVolume')           # Total Oxygen Minimum zone Volume
 #       	 	analysisKeys.append('OMZThickness')             # Oxygen Minimum Zone Thickness
 #        	analysisKeys.append('OMZMeanDepth')             # Oxygen Minimum Zone mean depth    
-		analysisKeys.append('O2')                       # WOA Oxygen        	
+#		analysisKeys.append('O2')                       # WOA Oxygen        	
 #       	if bio ==False:return
 #       	if physics == True:return  
                                	
@@ -1891,6 +1891,11 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
                                         mdata = modeldataD[(jobID,name )][('ignoreCaspian', 'layerless', 'sum')]
                                         title = ' '.join(['Total',  getLongName(name), '(No Caspian)'])
                                 except: continue
+                        elif name in ['VolumeMeanTemperature',]:
+                                try:
+                                        mdata = modeldataD[(jobID,name )][('Global', 'layerless', 'sum')]
+                                        title = ' '.join(['Global',  getLongName(name), ])
+                                except: continue
 						
 			elif name in [ 'sowaflup','sohefldo','sofmflup','sosfldow','sossheig', 'soicecov',]:
 				
@@ -2284,12 +2289,11 @@ def main():
                         i:standards[i] for i in jobs},
                         physics=1,
                         bio=1,
-                        debug=1,
+                        debug=0,
                         year0='Drift',
                         jobDescriptions=jobDescriptions,
                         analysisname='DriftTest_bak',
                         lineThicknesses= thicknesses)
-		assert 0
 
                 jobs = ['u-ar783','u-ar855','u-ar799','u-ar835']
                 colours = {i:standards[i] for i in jobs}
