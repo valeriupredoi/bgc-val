@@ -167,10 +167,10 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
         	####
         	# Supercedes other flags.
 		analysisKeys = []
-                analysisKeys.append('DrakePassageTransport')    # DrakePassageTransport         
-                analysisKeys.append('AMOC_26N')
-                analysisKeys.append('NoCaspianAirSeaFluxCO2')   # work in progress                      
-
+                #analysisKeys.append('DrakePassageTransport')    # DrakePassageTransport         
+                #analysisKeys.append('AMOC_26N')
+                #analysisKeys.append('NoCaspianAirSeaFluxCO2')   # work in progress                      
+               	analysisKeys.append('VolumeMeanTemperature')    # Global Mean Temperature                 	             	 	       
 #		analysisKeys.append('CHD')
 #		analysisKeys.append('CHN')
 #		analysisKeys.append('DiaFrac')
@@ -2284,10 +2284,10 @@ def main():
                         i:standards[i] for i in jobs},
                         physics=1,
                         bio=1,
-                        debug=0,
+                        debug=1,
                         year0='Drift',
                         jobDescriptions=jobDescriptions,
-                        analysisname='DriftTest',
+                        analysisname='DriftTest_bak',
                         lineThicknesses= thicknesses)
 		assert 0
 
