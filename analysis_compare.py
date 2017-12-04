@@ -247,7 +247,15 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 	dmsCoords	= {'t':'time',    'z':'depth',  'lat':'Latitude',  'lon': 'Longitude','cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
 	godasCoords 	= {'t':'index_t',    'z':'level',  'lat': 'lat',      'lon': 'lon', 'cal': 'standard','tdict':['ZeroToZero'] }
 
-			
+        #####
+        # Because we can never be sure someone won't randomly rename the 
+        # time dimension without saying anything.
+        # if jobID in ['u-am515','u-am927','u-am064','u-an326',]:
+        try:
+		tmpModelFiles  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)
+	except:
+		print "No grid_T Model files available to figure out what naming convention is used."
+		tmpModelFiles = []			
         ukesmkeys={}
 	if len(tmpModelFiles):
 		nctmp = dataset(tmpModelFiles[0],'r')
