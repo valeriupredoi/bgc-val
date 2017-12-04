@@ -1675,11 +1675,10 @@ def analysis_timeseries(jobID = "u-ab671",
                         #### works like no change, but applies a mask.
                         temp = np.ma.array(nc.variables[keys[0]][:].squeeze())
                         temp = np.ma.masked_where((gmttmask==0) + (temp.mask),temp)
-                        #try:    vol = np.ma.masked_where(temp.mask, nc('thkcello')[:].squeeze() * nc('area')[:]) # preferentially use in file volume.
-                        #except: 
+
                         vol = np.ma.masked_where(temp.mask, pvol)
-                        return (((temp*vol).sum(0)/(vol.sum(0))) * (vol.sum(0)/vol.sum())).sum()
-                        #return (temp*vol).sum(0)/(vol.sum(0)) * (vol.sum(0)/vol.sum())
+
+                        return (((temp*vol).sum(0)/(vol.sum(0))) * (vol.sum(0)/vol.sum()))#.sum()
 
 		av[name]['modeldetails'] 	= {'name': name, 'vars':[ukesmkeys['temp3d'],], 'convert': sumMeanLandMask,'units':'degrees C'}
 		av[name]['datadetails']  	= {'name': '', 'units':''}
@@ -1687,7 +1686,7 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		av[name]['layers'] 		= ['layerless',]
 		av[name]['regions'] 		= ['Global', 'ignoreInlandSeas','Equator10','SouthernOcean','ArcticOcean',  'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific',]
-		av[name]['metrics']		= ['metricless',]
+		av[name]['metrics']		= ['sum',]
 		av[name]['datasource'] 		= ''
 		av[name]['model']		= 'NEMO'
 		av[name]['modelgrid']		= 'eORCA1'
