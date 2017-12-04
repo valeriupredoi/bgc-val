@@ -279,14 +279,14 @@ def analysis_timeseries(jobID = "u-ab671",
                         #####
                         # Physics switches:
                         #analysisKeys.append('T')                       # WOA Temperature
-                        analysisKeys.append('GlobalVolWeightedT')             		# WOA Temperature  
-                        analysisKeys.append('ignoreInlandSeasVolWeightedT')             # WOA Temperature  
-                        analysisKeys.append('SouthernOceanVolWeightedT')             	# WOA Temperature  
-                        analysisKeys.append('ArcticOceanVolWeightedT')             	# WOA Temperature  
-                        analysisKeys.append('Equator10VolWeightedT')             	# WOA Temperature  
-                        analysisKeys.append('RemainderVolWeightedT')             	# WOA Temperature  
-                        analysisKeys.append('NorthernSubpolarAtlanticVolWeightedT')	# WOA Temperature  
-                        analysisKeys.append('NorthernSubpolarPacificVolWeightedT')    	# WOA Temperature  
+                        #analysisKeys.append('GlobalVolWeightedT')             		# WOA Temperature  
+                        #analysisKeys.append('ignoreInlandSeasVolWeightedT')             # WOA Temperature  
+                        #analysisKeys.append('SouthernOceanVolWeightedT')             	# WOA Temperature  
+                        #analysisKeys.append('ArcticOceanVolWeightedT')             	# WOA Temperature  
+                        #analysisKeys.append('Equator10VolWeightedT')             	# WOA Temperature  
+                        #analysisKeys.append('RemainderVolWeightedT')             	# WOA Temperature  
+                        #analysisKeys.append('NorthernSubpolarAtlanticVolWeightedT')	# WOA Temperature  
+                        #analysisKeys.append('NorthernSubpolarPacificVolWeightedT')    	# WOA Temperature  
 			
 			analysisKeys.append('VolumeMeanTemperature')
                         #analysisKeys.append('S')                        # WOA Salinity
