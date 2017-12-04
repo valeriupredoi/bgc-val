@@ -1723,7 +1723,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		#av[name]['datadetails']  	= {'name': name, 'vars':['t_an',], 'convert': ukp.NoChange,'units':'degrees C'}
 
 		av[name]['layers'] 		= ['layerless',]
-		av[name]['regions'] 		=  vwtregions
+		av[name]['regions'] 		= ['regionless',]
 		av[name]['metrics']		= ['metricless',]
 		av[name]['datasource'] 		= ''
 		av[name]['model']		= 'NEMO'
