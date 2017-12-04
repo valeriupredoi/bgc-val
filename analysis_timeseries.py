@@ -1663,6 +1663,8 @@ def analysis_timeseries(jobID = "u-ab671",
 
 	vwtregions = ['Global', 'ignoreInlandSeas','SouthernOcean','ArcticOcean', 'Equator10', 'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific',]
 	vwtregionsnames = [r+'VolWeightedT' for r in vwtregions]
+	vwtpvol = {}
+	vwttmask = {}	
 	for r, name in zip(vwtregions, vwtregionsnames):
 		if name not in analysisKeys: continue
 		
@@ -1676,22 +1678,20 @@ def analysis_timeseries(jobID = "u-ab671",
 		nc.close()
 		
 		nc = dataset(paths.orcaGridfn,'r')
-		pvol = {}
-		gmttmask = {}
 		try:
 			pvol[r]   = nc.variables['pvol' ][:]
-			gmttmask[r] = nc.variables['tmask'][:]
+			vwttmask[r] = nc.variables['tmask'][:]
 		except:
-			gmttmask[r] = nc.variables['tmask'][:]
+			vwttmask[r] = nc.variables['tmask'][:]
 			area = nc.variables['e2t'][:] * nc.variables['e1t'][:]
 			pvol[r] = nc.variables['e3t'][:] * area
-			pvol[r] = np.ma.masked_where(gmttmask[r]==0,pvol[r])
+			pvol[r] = np.ma.masked_where(vwttmask[r]==0,pvol[r])
 		nc.close()
 
                 def sumMeanLandMask(nc,keys,maskname):
                         #### works like no change, but applies a mask.
                         temp = np.ma.array(nc.variables[keys[0]][:].squeeze())
-                        temp = np.ma.masked_where((gmttmask[maskname]==0) + (temp.mask),temp)
+                        temp = np.ma.masked_where((vwttmask[maskname]==0) + (temp.mask),temp)
                         try:    vol = np.ma.masked_where(temp.mask, nc('thkcello')[:].squeeze() * nc('area')[:]) # preferentially use in file volume.
                         except: vol = np.ma.masked_where(temp.mask, pvol[maskname])
                         return (temp*vol).sum()/(vol.sum())
