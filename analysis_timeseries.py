@@ -1692,7 +1692,7 @@ def analysis_timeseries(jobID = "u-ab671",
                         #### works like no change, but applies a mask.
                         temp = np.ma.array(nc.variables[keys[0]][:].squeeze())
                         temp = np.ma.masked_where((vwtpvol[maskname].mask) + (temp.mask),temp)
-                        vol = np.ma.masked_where(temp.mask+ , vwtpvol[maskname])
+                        vol = np.ma.masked_where(temp.mask, vwtpvol[maskname])
                         return (temp*vol).sum()/(vol.sum())
 		
 		def GlobalsumMeanLandMask(nc,keys,): 			return sumMeanLandMask(nc,keys,maskname='Global')
