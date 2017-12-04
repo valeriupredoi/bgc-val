@@ -1667,13 +1667,14 @@ def analysis_timeseries(jobID = "u-ab671",
 	vwttmask = {}	
 	for r, name in zip(vwtregions, vwtregionsnames):
 		if name not in analysisKeys: continue
-		
+		print "VolWeightedT:\t",r,name
 		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)
 		av[name]['dataFile'] 	= ''
 		av[name]['modelcoords'] = medusaCoords
 		av[name]['datacoords'] 	= woaCoords
 
 		nc = dataset('data/eORCA1_masks.nc','r')
+		print nc.keys()
 		rmask = nc.variables[r][:]
 		nc.close()
 		
