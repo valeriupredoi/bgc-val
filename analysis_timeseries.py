@@ -1681,21 +1681,18 @@ def analysis_timeseries(jobID = "u-ab671",
 		nc = dataset(paths.orcaGridfn,'r')
 		try:
 			vwtpvol[r]   = nc.variables['pvol' ][:]
-			vwttmask[r] = nc.variables['tmask'][:]
-			vwtpvol[r] = np.ma.masked_where((vwttmask[r]==0) + (rmask!=1),vwtpvol[r])			
 		except:
-			vwttmask[r] = nc.variables['tmask'][:]
 			area = nc.variables['e2t'][:] * nc.variables['e1t'][:]
 			vwtpvol[r] = nc.variables['e3t'][:] * area
-			vwtpvol[r] = np.ma.masked_where((vwttmask[r]==0) + (rmask!=1),vwtpvol[r])
 		nc.close()
-
+		
+		vwtpvol[r] = np.ma.masked_where(rmask==-127,vwtpvol[r])
+				
                 def sumMeanLandMask(nc,keys,maskname):
                         #### works like no change, but applies a mask.
                         temp = np.ma.array(nc.variables[keys[0]][:].squeeze())
-                        temp = np.ma.masked_where((vwttmask[maskname]==0) + (temp.mask),temp)
-                        try:    vol = np.ma.masked_where(temp.mask, nc('thkcello')[:].squeeze() * nc('area')[:]) # preferentially use in file volume.
-                        except: vol = np.ma.masked_where(temp.mask, vwtpvol[maskname])
+                        temp = np.ma.masked_where((vwtpvol[maskname].mask) + (temp.mask),temp)
+                        vol = np.ma.masked_where(temp.mask+ , vwtpvol[maskname])
                         return (temp*vol).sum()/(vol.sum())
 		
 		def GlobalsumMeanLandMask(nc,keys,): 			return sumMeanLandMask(nc,keys,maskname='Global')
