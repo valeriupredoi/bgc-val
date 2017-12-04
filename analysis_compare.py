@@ -118,7 +118,8 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
                	analysisKeys.append('ZonalCurrent')             # Zonal Veloctity
                	analysisKeys.append('MeridionalCurrent')        # Meridional Veloctity
                	analysisKeys.append('VerticalCurrent')          # Vertical Veloctity  
-               	analysisKeys.append('GlobalMeanTemperature')    # Global Mean Temperature               	 	       
+               	analysisKeys.append('GlobalMeanTemperature')    # Global Mean Temperature  
+               	analysisKeys.append('VolumeMeanTemperature')    # Global Mean Temperature                 	             	 	       
                	analysisKeys.append('GlobalMeanSalinity')       # Global Mean Salinity
                	analysisKeys.append('IcelessMeanSST')    	# Global Mean Surface Temperature with no ice               		
                	
@@ -1114,6 +1115,44 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 			av[name]['gridFile']		= paths.orcaGridfn
 			av[name]['Dimensions']		= 1
 
+		if 'VolumeMeanTemperature' in analysisKeys:
+			name = 'VolumeMeanTemperature'
+			av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)
+			av[name]['dataFile'] 	= ''
+			av[name]['modelcoords'] = medusaCoords
+			av[name]['datacoords'] 	= woaCoords
+
+			nc = dataset(paths.orcaGridfn,'r')
+			try:
+				pvol   = nc.variables['pvol' ][:]
+				gmttmask = nc.variables['tmask'][:]
+			except:
+				gmttmask = nc.variables['tmask'][:]
+				area = nc.variables['e2t'][:] * nc.variables['e1t'][:]
+				pvol = nc.variables['e3t'][:] *area
+				pvol = np.ma.masked_where(gmttmask==0,pvol)
+			nc.close()
+
+		        def sumMeanLandMask(nc,keys):
+		                #### works like no change, but applies a mask.
+		                temp = np.ma.array(nc.variables[keys[0]][:].squeeze())
+		                temp = np.ma.masked_where((gmttmask==0) + (temp.mask),temp)
+		              	try:    vol = np.ma.masked_where(temp.mask, nc('thkcello')[:].squeeze() * nc('area')[:]) # preferentially use in file volume.
+		                except: vol = np.ma.masked_where(temp.mask, pvol)
+		                return (((temp*vol).sum(0)/(vol.sum(0))) * (vol.sum(0)/vol.sum()))#.sum()
+
+			av[name]['modeldetails'] 	= {'name': name, 'vars':[ukesmkeys['temp3d'],], 'convert': sumMeanLandMask,'units':'degrees C'}
+			av[name]['datadetails']  	= {'name': '', 'units':''}
+			av[name]['layers'] 		= ['layerless',]
+			av[name]['regions'] 		= ['Global', 'ignoreInlandSeas','Equator10','SouthernOcean','ArcticOcean',  'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific',]
+			av[name]['metrics']		= ['sum',]
+			av[name]['datasource'] 		= ''
+			av[name]['model']		= 'NEMO'
+			av[name]['modelgrid']		= 'eORCA1'
+			av[name]['gridFile']		= paths.orcaGridfn
+			av[name]['Dimensions']		= 1
+		
+
 		if 'GlobalMeanSalinity' in analysisKeys:
 			name = 'GlobalMeanSalinity'
 			av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)										
@@ -1971,7 +2010,36 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 				colours		= colours,
 				thicknesses	= lineThicknesses,
 			)
-
+	for name in ['VolumeMeanTemperature',]:
+	  if name not in av.keys():continue
+	  for region in regionList:
+	    for layer in ['layerless',]:
+		timesD  = {}
+		arrD	= {}
+		
+		for jobID in jobs:
+			try:	mdata = modeldataD[(jobID,name )][(region, layer, 'sum')]
+			except: continue
+			title = ' '.join([region, layer, getLongName(name)])
+			times,datas = shifttimes(mdata, jobID,year0=year0)
+			timesD[jobID] 	= times
+			arrD[jobID]	= datas
+			
+                units = av[name]['modeldetails']['units']
+		for ts in ['Together',]:#'Separate']:
+		    for ls in ['DataOnly',]:#'','Both',]:						
+			tsp.multitimeseries(
+				timesD, 		# model times (in floats)
+				arrD,			# model time series
+				data 	= -999,		# in situ data distribution
+				title 	= title,
+				filename=ukp.folder(imageFolder)+'_'.join([name,region,layer,ts,ls+'.png']),
+				units = units,
+				plotStyle 	= ts,
+				lineStyle	= ls,
+				colours		= colours,
+				thicknesses	= lineThicknesses,
+			)
         	
         	
 	for name in ['DiaFrac','CHD','CHN','CHL','N','Si','Iron','Alk','DIC','Chlorophyll','DMS','Nitrate','Silicate','MLD','mld','MaxMonthlyMLD','MinMonthlyMLD','Dust',]:

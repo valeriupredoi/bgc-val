@@ -98,6 +98,7 @@ if True:
 	physKeys.append('T')                        	# WOA Temperature
 	#physKeys.append('VolWeightedT')			# Volume weighted WOA Temperature
 	physKeys.append('GlobalMeanTemperature')    	# Global Mean Temperature
+	physKeys.append('VolumeMeanTemperature')    	# Global Mean Temperature
 	physKeys.append('GlobalMeanSalinity')    	# Global Mean Salinity
 #	physKeys.append('IcelessMeanSST')    		# Global Mean Surface Temperature with no ice	
 	physKeys.append('S')                        	# WOA Salinity
