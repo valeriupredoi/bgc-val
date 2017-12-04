@@ -111,7 +111,36 @@ def addSci1jobs(configfn='',startinghour = 21):
 					job + ' >  /users/modellers/ledm/ImagesFromJasmin/cron_sci1_phys_'+\
 					job + '.log 2>&1'
 	return scijobs	
+
+def runNow(configfn=''):
+	#####
+	# this script 
+
+	cp = checkConfig(configfn,)
+	jobs = loadJobs(cp)
+	scijobs = ''
+	scijobs += "\n# Run evaluation\n"			
+	for i, job in enumerate(jobs):
+		options = 	parseList(cp,'jobs',job)
+		if 'standard' in options:	
+			scijobs	+= '/users/modellers/ledm/workspace/ukesm-validation/RemoteScripts/pmlcron_mass.sh '+job + '; '
+		
+		if 'MLD' in options:	
+			scijobs	+= '/users/modellers/ledm/workspace/ukesm-validation/RemoteScripts/pmlcron_mass_MLD.sh '+job + '; '
+			
+			
+	for i, job in enumerate(jobs):
+		options = 	parseList(cp,'jobs',job)
+		if 'standard' in options:	
+			scijobs	+= '/users/modellers/ledm/workspace/ukesm-validation/RemoteScripts/pmlcron_sci1.sh '+job + '; '
+		
+		if 'physics' in options:	
+			scijobs	+= '/users/modellers/ledm/workspace/ukesm-validation/RemoteScripts/pmlcron_sci1_physOnly.sh '+job + '; '
+		
+	return scijobs	
 	
+	
+		
 def main():
 	fn = str(package_directory+'/jobids_config.ini')
 
@@ -140,5 +169,7 @@ def main():
 		f.close()
 		print "saved as :", cfn
 		print "install with: \ncrontab "+cfn
+	
+	print runNow(fn)
 	
 main()

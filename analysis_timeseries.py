@@ -96,6 +96,7 @@ physKeys = []
 if True:
 
 	physKeys.append('T')                        	# WOA Temperature
+	physKeys.append('VolWeightedT')			# Volume weighted WOA Temperature
 	physKeys.append('GlobalMeanTemperature')    	# Global Mean Temperature
 	physKeys.append('GlobalMeanSalinity')    	# Global Mean Salinity
 #	physKeys.append('IcelessMeanSST')    		# Global Mean Surface Temperature with no ice	
@@ -1615,13 +1616,8 @@ def analysis_timeseries(jobID = "u-ab671",
 		name = 'GlobalMeanTemperature'
 		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)
 		av[name]['dataFile'] 	= ''
-		#if annual:
-		#	av[name]['dataFile'] 		= WOAFolder+'woa13_decav_t00_01v2.nc'
-		#else:
-		#	av[name]['dataFile'] 		= WOAFolder+'temperature_monthly_1deg.nc'
-
-		av[name]['modelcoords'] 	= medusaCoords
-		av[name]['datacoords'] 		= woaCoords
+		av[name]['modelcoords'] = medusaCoords
+		av[name]['datacoords'] 	= woaCoords
 
 		nc = dataset(paths.orcaGridfn,'r')
 		try:
@@ -1642,8 +1638,6 @@ def analysis_timeseries(jobID = "u-ab671",
                         except: vol = np.ma.masked_where(temp.mask, pvol)
                         return (temp*vol).sum()/(vol.sum())
 
-		
-		
 		av[name]['modeldetails'] 	= {'name': name, 'vars':[ukesmkeys['temp3d'],], 'convert': sumMeanLandMask,'units':'degrees C'}
 		av[name]['datadetails']  	= {'name': '', 'units':''}
 		#av[name]['datadetails']  	= {'name': name, 'vars':['t_an',], 'convert': ukp.NoChange,'units':'degrees C'}
@@ -1651,13 +1645,14 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['layers'] 		= ['layerless',]
 		av[name]['regions'] 		= ['regionless',]
 		av[name]['metrics']		= ['metricless',]
-
 		av[name]['datasource'] 		= ''
 		av[name]['model']		= 'NEMO'
-
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= paths.orcaGridfn
 		av[name]['Dimensions']		= 1
+
+		
+		
 
 	if 'GlobalMeanSalinity' in analysisKeys:
 		name = 'GlobalMeanSalinity'
@@ -1790,8 +1785,42 @@ def analysis_timeseries(jobID = "u-ab671",
 
 
 
+	if 'VolWeightedT' in analysisKeys:
+		name = 'VolWeightedT'
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)
+		if annual:
+			#av[name]['modelFiles']  	= sorted(glob(paths.ModelFolder_pref+jobID+"/"+jobID+"o_1y_*_grid_T.nc"))
+			av[name]['dataFile'] 		= WOAFolder+'woa13_decav_t00_01v2.nc'
+		else:
+			#av[name]['modelFiles']  	= sorted(glob(paths.ModelFolder_pref+jobID+"/"+jobID+"o_1m_*_grid_T.nc"))
+			av[name]['dataFile'] 		= WOAFolder+'temperature_monthly_1deg.nc'
+		av[name]['modelcoords'] 	= medusaCoords
+		av[name]['datacoords'] 		= woaCoords
+
+		av[name]['modeldetails'] 	= {'name': name, 'vars':[ukesmkeys['temp3d'],], 'convert': applyLandMask,'units':'degrees C'}
+		av[name]['datadetails']  	= {'name': name, 'vars':['t_an',], 'convert': ukp.NoChange,'units':'degrees C'}
+
+		av[name]['layers'] 		= ['layerless',]
+		av[name]['regions'] 		=  ['Global', 'ignoreInlandSeas','SouthernOcean','ArcticOcean',	'Equator10', 'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific',]
+		av[name]['metrics']		= ['mean',]
+                	
+		try:	
+			if analysisSuite.lower() in ['debug',]:
+		                av[name]['layers']              =   ['layerless',]
+        		        av[name]['regions']             =  ['Global', 'ignoreInlandSeas','SouthernOcean',]
+		except:pass
+
+		av[name]['datasource'] 		= 'WOA'
+		av[name]['model']		= 'NEMO'
+
+		av[name]['modelgrid']		= 'eORCA1'
+		av[name]['gridFile']		= paths.orcaGridfn
+		av[name]['Dimensions']		= 3
+		
 	if 'T' in analysisKeys:
 		name = 'Temperature'
+				
+
 		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)
 		if annual:
 			#av[name]['modelFiles']  	= sorted(glob(paths.ModelFolder_pref+jobID+"/"+jobID+"o_1y_*_grid_T.nc"))
@@ -1815,14 +1844,14 @@ def analysis_timeseries(jobID = "u-ab671",
         		        av[name]['regions']             =  ['Global',]
 		except:pass
 
-
 		av[name]['datasource'] 		= 'WOA'
 		av[name]['model']		= 'NEMO'
 
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= paths.orcaGridfn
 		av[name]['Dimensions']		= 3
-
+		
+		
 	if 'S' in analysisKeys:
 		name = 'Salinity'
 		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)

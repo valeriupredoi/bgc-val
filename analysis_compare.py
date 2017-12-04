@@ -2132,9 +2132,9 @@ def CompareTwoRuns(jobIDA,jobIDB,physics=True,bio=False,yearA='',yearB='',debug=
 				vmin=dmin,vmax=dmax,
 				maptype = 'Cartopy',
 				scatter=False)	
+
 		
 def main():		
-
         standards = configToDict('config/jobIDcolours.ini')
         jobDescriptions = configToDict('config/jobIDdescriptions.ini')   
 
