@@ -554,7 +554,7 @@ def movingaverage_DT(data,times, window_len=5.,window_units='years'):
 		tmax = t+window
 		arr = np.ma.masked_where((times < tmin) + (times > tmax), data)
 		
-		print [i,t],[tmin,tmax],[t,data[i]], arr.mean(), 'mask:',arr.mask.sum()
+		#print [i,t],[tmin,tmax],[t,data[i]], arr.mean(), 'mask:',arr.mask.sum()
 		output.append(arr.mean())
 
 	return np.array(output)
