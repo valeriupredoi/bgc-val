@@ -38,6 +38,8 @@ import cartopy
 import numpy as np
 from numpy import hanning,hamming,bartlett,blackman 
 from scipy import interpolate 
+from collections import defaultdict
+
 #from statsmodels.nonparametric.smoothers_lowess import lowess
 
 
@@ -573,6 +575,8 @@ def multitimeseries(
 		colours = ['red','orange','green','purple','blue','pink','yellow','lime',],
 		plotStyle = 'Together',	
 		lineStyle = '',	
+                thicknesses  = defaultdict(lambda:1),
+
 	):
 
         if 0 in [len(timesD) , len(timesD.keys())]:return
@@ -640,7 +644,7 @@ def multitimeseries(
 		if lineStyle.lower() in ['spline','all']:
 			tnew = np.linspace(times[0],times[-1],60)
 			arr_smooth = interpolate.spline(times,arr,tnew)
-			pyplot.plot(tnew,arr_smooth,c=colours[jobID],ls='-',label=jobID+' spline',)
+			pyplot.plot(tnew,arr_smooth,c=colours[jobID],ls='-',lw=thicknesses[jobID],label=jobID+' spline',)
 
 		if lineStyle.lower() in ['movingaverage','both','all']:
 			if len(times)>100.: window = 30
@@ -650,28 +654,28 @@ def multitimeseries(
 			
 			#arr_new = movingaverage(arr, window)
                         arr_new = movingaverage2(arr, window_len=window,window='flat',extrapolate='periodically')
-			pyplot.plot(times,arr_new,c=colours[jobID],ls='-',label=jobID,)#label=jobID+' smooth',)
+			pyplot.plot(times,arr_new,c=colours[jobID],ls='-',lw=thicknesses[jobID],label=jobID,)#label=jobID+' smooth',)
 
 		if lineStyle.lower() in ['movingaverage5',]:
 			window = 5
                         arr_new = movingaverage2(arr,times, window_len=window,window='flat',extrapolate='periodically')
-			pyplot.plot(times,arr_new,c=colours[jobID],ls='-',label=jobID,)#label=jobID+' smooth',)
+			pyplot.plot(times,arr_new,c=colours[jobID],ls='-',label=jobID,lw=thicknesses[jobID],)#label=jobID+' smooth',)
 
 
 
 
 		if lineStyle.lower() in ['movingav1year',]:
                         arr_new = movingaverage_DT(arr,times, window_len=1.,window_units='years')
-			pyplot.plot(times,arr_new,c=colours[jobID],ls='-',label=jobID,)
+			pyplot.plot(times,arr_new,c=colours[jobID],ls='-',lw=thicknesses[jobID],label=jobID,)
 		if lineStyle.lower() in ['movingav5years',]:
                         arr_new = movingaverage_DT(arr,times, window_len=5.,window_units='years')
-			pyplot.plot(times,arr_new,c=colours[jobID],ls='-',label=jobID,)
+			pyplot.plot(times,arr_new,c=colours[jobID],ls='-',lw=thicknesses[jobID],label=jobID,)
 
                 if lineStyle.lower() in ['movingav30years',]:
                         pyplot.plot(times,arr,c=colours[jobID],ls='-',lw=0.15)
 
                         arr_new = movingaverage_DT(arr,times, window_len=30.,window_units='years')
-                        pyplot.plot(times,arr_new,c=colours[jobID],ls='-',lw=1.,label=jobID,)
+                        pyplot.plot(times,arr_new,c=colours[jobID],ls='-',lw=thicknesses[jobID],label=jobID,)
 
 		if lineStyle.lower() in ['movingaverage12',]:
 			window = 12
@@ -694,12 +698,12 @@ def multitimeseries(
 			pyplot.plot(times,arr,c=colours[jobID],ls='-',lw=0.25)#label=jobID,)
 
                 if lineStyle.lower() in ['dataonly']:
-                        pyplot.plot(times,arr,c=colours[jobID],ls='-',lw=0.75,label=jobID,)
+                        pyplot.plot(times,arr,c=colours[jobID],ls='-',lw=thicknesses[jobID],label=jobID,)
 
 
 	
 	if data != -999:
-		pyplot.axhline(y=data,c='k',ls='-',lw=1,label = dataname)
+		pyplot.axhline(y=data,c='k',ls='--',lw=1., label = dataname)
 	
 
 

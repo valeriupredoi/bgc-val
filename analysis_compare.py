@@ -46,6 +46,7 @@ from scipy.interpolate import interp1d
 import numpy as np
 import os,sys,fnmatch
 from getpass import getuser
+from collections import defaultdict
 
 #####	
 # Load specific local code:
@@ -76,7 +77,7 @@ def listModelDataFiles(jobID, filekey, datafolder, annual,year=''):
 		else:
 			return sorted(glob(datafolder+jobID+"/"+jobID+"o_1m_*"+year+"????_"+filekey+".nc"))
 				
-def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,analysisname='',jobDescriptions={}):
+def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,analysisname='',jobDescriptions={},lineThicknesses= defaultdict(lambda:1)):
 	### strategy here is a simple wrapper.
 	# It's a little cheat-y, as I'm copying straight from analysis_timeseries.py
 	
@@ -164,8 +165,8 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
         	####
         	# Supercedes other flags.
 		analysisKeys = []
-#                analysisKeys.append('DrakePassageTransport')    # DrakePassageTransport         
-#                analysisKeys.append('AMOC_26N')
+                analysisKeys.append('DrakePassageTransport')    # DrakePassageTransport         
+                analysisKeys.append('AMOC_26N')
                 analysisKeys.append('NoCaspianAirSeaFluxCO2')   # work in progress                      
 
 #		analysisKeys.append('CHD')
@@ -180,7 +181,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 #                analysisKeys.append('TotalAirSeaFlux')          # work in progress              
 #                analysisKeys.append('AirSeaFlux')          # work in progress              
 
-#                analysisKeys.append('ADRC_26N')                # AMOC 26N                        
+                #analysisKeys.append('ADRC_26N')                # AMOC 26N                        
 #                analysisKeys.append('VerticalCurrent')          # Vertical Veloctity           
 #                analysisKeys.append('sossheig')                 # SSH
 #                analysisKeys.append('NorthernTotalIceArea')     # North TotalIceArea
@@ -194,7 +195,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 #       	  	analysisKeys.append('TotalOMZVolume')           # Total Oxygen Minimum zone Volume
 #       	 	analysisKeys.append('OMZThickness')             # Oxygen Minimum Zone Thickness
 #        	analysisKeys.append('OMZMeanDepth')             # Oxygen Minimum Zone mean depth    
-#		analysisKeys.append('O2')                       # WOA Oxygen        	
+		analysisKeys.append('O2')                       # WOA Oxygen        	
 #       	if bio ==False:return
 #       	if physics == True:return  
                                	
@@ -1777,12 +1778,13 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 					plotStyle 	= ts,
 					lineStyle	= ls,
 					colours		= colours,
+	                                thicknesses     = lineThicknesses,
 				)	
 		####
 		# North Atlantic Salinity
-		for name in ['Salinity','Temperature',]:
+		for name in ['Temperature',]:
 		  if name not in av.keys():continue
-		  for region in nasregionList:
+		  for region in regionList:
 		    for layer in ['Surface','500m','1000m']:
 			timesD  = {}
 			arrD	= {}
@@ -1807,11 +1809,12 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 					arrD,			# model time series
 					data 	= -999,		# in situ data distribution
 					title 	= title,
-					filename=ukp.folder(imageFolder+'/NAS')+'_'.join(['NAS',name,region,layer,ts,ls+'.png']),
+					filename=ukp.folder(imageFolder)+'_'.join([name,region,layer,ts,ls+'.png']),
 					units = units,
 					plotStyle 	= ts,
 					lineStyle	= ls,
 					colours		= colours,
+	                                thicknesses     = lineThicknesses,
 				)
 					
 #		assert 0	
@@ -1825,7 +1828,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 		title= ''	
 		for jobID in jobs:
 			if name in ['Iron','Nitrate','Silicate',
-					'Oxygen','Temperature','Salinity',
+					'Oxygen','Temperature','Salinity','O2',
 					 'Alkalinity','DIC',
 					 'CHD','CHN','DiaFrac','CHL','Chlorophyll',
 	 			 	 'ZonalCurrent','MeridionalCurrent','VerticalCurrent']:
@@ -1900,14 +1903,19 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 				plotStyle 	= ts,
 				lineStyle	= ls,
 				colours		= colours,
+                                thicknesses     = lineThicknesses,
 			)
 
-                        if name in ['NoCaspianAirSeaFluxCO2','AMOC_26N','ADRC_26N','AMOC_32S',]:
-
+                        if name in ['NoCaspianAirSeaFluxCO2','AMOC_26N','ADRC_26N','AMOC_32S']:
+			    targetdict = {'NoCaspianAirSeaFluxCO2':0.,
+					'AMOC_26N':17.,
+					'ADRC_26N':-999,
+                                        'AMOC_32S':-999,
+					}
                             tsp.multitimeseries(
                                 timesD,                 # model times (in floats)
                                 arrD,                   # model time series
-                                data    = 0.,         # in situ data distribution
+                                data    = targetdict[name] ,         # in situ gata distribution
 				dataname= 'Target',
                                 title   = title,
                                 filename= ukp.folder(imageFolder)+name+'_'+ts+'_'+'movingav30years'+'.png',
@@ -1915,6 +1923,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
                                 plotStyle       = ts,
                                 lineStyle       = 'movingav30years',
                                 colours         = colours,
+                                thicknesses     = lineThicknesses,
                             )
 
 	
@@ -1930,7 +1939,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 			'Equator10', 'Remainder',
   			'NorthernSubpolarAtlantic','NorthernSubpolarPacific',
   			]	
-	for name in ['Oxygen',]:
+	for name in ['Oxygen','O2',]:
 	  if name not in av.keys():continue
 	  for region in regionList:
 	    for layer in ['Surface','500m','1000m']:
@@ -1960,6 +1969,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 				plotStyle 	= ts,
 				lineStyle	= ls,
 				colours		= colours,
+				thicknesses	= lineThicknesses,
 			)
 
         	
@@ -1994,6 +2004,8 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 				plotStyle 	= ts,
 				lineStyle	= ls,
 				colours		= colours,
+                                thicknesses     = lineThicknesses,
+
 			)
 
 	for name in ['DMS',]:
@@ -2024,6 +2036,8 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 				plotStyle 	= ts,
 				lineStyle	= ls,
 				colours		= colours,
+                                thicknesses     = lineThicknesses,
+
 			)
 
 	try:
@@ -2136,6 +2150,9 @@ def CompareTwoRuns(jobIDA,jobIDB,physics=True,bio=False,yearA='',yearB='',debug=
 def main():		
 
         standards = configToDict('config/jobIDcolours.ini')
+	thicknesses = defaultdict(lambda: 0.75)
+	thicknesses['u-ar783'] = 2.2
+
         jobDescriptions = configToDict('config/jobIDdescriptions.ini')   
 
 	try:
@@ -2193,20 +2210,117 @@ def main():
 #                        jobDescriptions=jobDescriptions,
 #                        analysisname='Re-couplingTestReduced_2')
 #		assert 0
-
-                jobs = ['u-aq853','u-ar549',]
+                jobs = ['u-ar977','u-as462','u-as643',]
                 colours = {i:standards[i] for i in jobs}
                 timeseries_compare({
                         i:standards[i] for i in jobs},
                         physics=1,
                         bio=1,
                         debug=0,
-                        year0=False,
+                        year0='Drift',
                         jobDescriptions=jobDescriptions,
-                        analysisname='CoupledRunwithOOIC_vs_CoupledRun')
+                        analysisname='DriftTest',
+                        lineThicknesses= thicknesses)
+		assert 0
+
+                jobs = ['u-ar783','u-ar855','u-ar799','u-ar835']
+                colours = {i:standards[i] for i in jobs}
+                timeseries_compare({
+                        i:standards[i] for i in jobs},
+                        physics=1,
+                        bio=1,
+                        debug=0,
+                        year0=True,
+                        jobDescriptions=jobDescriptions,
+                        analysisname='StratTropTests',
+                        lineThicknesses= thicknesses)
 
 
-                jobs = ['u-ar748','u-ar773','u-ar761','u-ar769']
+                jobs = ['u-an869','u-ao586']
+                colours = {i:standards[i] for i in jobs}
+                timeseries_compare({
+                        i:standards[i] for i in jobs},
+                        physics=1,
+                        bio=1,
+                        debug=0,
+                        year0='OOvFC1',
+                        jobDescriptions=jobDescriptions,
+                        analysisname='OceanOnlyVsFullCoupled_1',
+                        lineThicknesses= thicknesses)
+
+                jobs = ['u-ar538','u-ar783']
+                colours = {i:standards[i] for i in jobs}
+                timeseries_compare({
+                        i:standards[i] for i in jobs},
+                        physics=1,
+                        bio=1,
+                        debug=0,
+                        year0='OOvFC2',
+                        jobDescriptions=jobDescriptions,
+                        analysisname='OceanOnlyVsFullCoupled_2',
+                        lineThicknesses= thicknesses)
+
+                jobs = ['u-an869','u-ao586','u-ak900','u-ar538','u-ar783']
+                colours = {i:standards[i] for i in jobs}
+                timeseries_compare({
+                        i:standards[i] for i in jobs},
+                        physics=1,
+                        bio=1,
+                        debug=0,
+                        year0='FullSpinUp',
+                        jobDescriptions=jobDescriptions,
+                        analysisname='OriginalOceanOnlySpinUp_debug',
+                        lineThicknesses= thicknesses)
+
+                jobs = ['u-an869','u-ao586','u-ak900','u-ar538']
+                colours = {i:standards[i] for i in jobs}
+                timeseries_compare({
+                        i:standards[i] for i in jobs},
+                        physics=1,
+                        bio=1,
+                        debug=0,
+                        year0='FullSpinUp',
+                        jobDescriptions=jobDescriptions,
+                        analysisname='OriginalOceanOnlySpinUp')
+
+                jobs = ['u-ar783','u-ar538','u-am927i','u-am927ii','u-am927iii','u-aq853iii',]
+                colours = {i:standards[i] for i in jobs}
+                timeseries_compare({
+                        i:standards[i] for i in jobs},
+                        physics=1,
+                        bio=1,
+                        debug=0,
+                        year0='4945-5110',
+                        jobDescriptions=jobDescriptions,
+                        analysisname='UKESM_0.9.2_from4945',
+                        lineThicknesses= thicknesses)
+
+                jobs = ['u-ar977','u-ar538','u-ar975',]
+                colours = {i:standards[i] for i in jobs}
+                timeseries_compare({
+                        i:standards[i] for i in jobs},
+                        physics=1,
+                        bio=1,
+                        debug=0,
+                        year0='from4950',
+                        jobDescriptions=jobDescriptions,
+                        analysisname='UKESM_NOC_runs',)
+
+
+
+#                jobs = ['u-ar538','u-ar748','u-ar773','u-ar761','u-ar769', 'u-ar976','u-ar977']
+#                colours = {i:standards[i] for i in jobs}
+#                timeseries_compare({
+#                        i:standards[i] for i in jobs},
+#                        physics=1,
+#                        bio=1,
+#                        debug=0,
+#                        year0='4830-5000',#'UKESM_0.9.1',
+#                        jobDescriptions=jobDescriptions,
+#                        analysisname='UKESM_0.9.1_NewSuiteDebugging')
+
+
+                jobs = ['u-ar538','u-ar976','u-ar977']
                 colours = {i:standards[i] for i in jobs}
                 timeseries_compare({
                         i:standards[i] for i in jobs},
@@ -2215,31 +2329,54 @@ def main():
                         debug=0,
                         year0=False,#'UKESM_0.9.1',
                         jobDescriptions=jobDescriptions,
+                        analysisname='UKESM_0.9.1_longerTermSuff')
+
+                #jobs = ['u-an869','u-ar783','u-ar538','u-am064','u-am927','u-aq853']
+                #colours = {i:standards[i] for i in jobs}
+                #timeseries_compare({
+                #        i:standards[i] for i in jobs},
+                #        physics=1,
+                #        bio=1,
+                #        debug=0,
+                #        year0=False, #UKESM_0.9.1',
+                #        jobDescriptions=jobDescriptions,
+                #        analysisname='UKESM_0.9.2')
+		
+                jobs = ['u-ar951','u-ar379',]
+                colours = {i:standards[i] for i in jobs}
+                timeseries_compare({
+                        i:standards[i] for i in jobs},
+                        physics=1,
+                        bio=1,
+                        debug=0,
+                        year0='True',
+                        jobDescriptions=jobDescriptions,
+                        analysisname='IceburgVsNoIceburgFix')
+
+
+                jobs = ['u-aq853','u-ar549',]
+                colours = {i:standards[i] for i in jobs}
+                timeseries_compare({
+                        i:standards[i] for i in jobs},
+                        physics=1,
+                        bio=1,
+                        debug=0,
+                        year0='True',
+                        jobDescriptions=jobDescriptions,
+                        analysisname='CoupledRunwithOOIC_vs_CoupledRun')
+
+                jobs = ['u-ar538','u-ar748','u-ar773','u-ar761','u-ar769', 'u-ar976','u-ar977']
+                colours = {i:standards[i] for i in jobs}
+                timeseries_compare({
+                        i:standards[i] for i in jobs},
+                        physics=1,
+                        bio=1,
+                        debug=0,
+                        year0='4830-5000',#'UKESM_0.9.1',
+                        jobDescriptions=jobDescriptions,
                         analysisname='UKESM_0.9.1_NewSuiteDebugging')
 
-                jobs = ['u-aq853','u-ar379',]
-                colours = {i:standards[i] for i in jobs}
-                timeseries_compare({
-                        i:standards[i] for i in jobs},
-                        physics=1,
-                        bio=1,
-                        debug=0,
-                        year0='UKESM_0.9.1',
-                        jobDescriptions=jobDescriptions,
-                        analysisname='UKESM_0.9.1')
 
-
-
-                jobs = ['u-an869','u-ar480','u-ar549']
-                colours = {i:standards[i] for i in jobs}
-                timeseries_compare({
-                        i:standards[i] for i in jobs},
-                        physics=1,
-                        bio=1,
-                        debug=0,
-                        year0='ignoreStart',
-                        jobDescriptions=jobDescriptions,
-                        analysisname='UKESM_0.9.1_oceanonly')
 
 
                 #jobs = ['u-an869','u-ar537','u-ar538','u-ar541', 'u-ar615','u-ar616' ]
@@ -2264,16 +2401,16 @@ def main():
                         jobDescriptions=jobDescriptions,
                         analysisname='OriginalOceanOnlySpinUp')
 
-                jobs = ['u-ao912','u-ap865','u-aq142','u-aq710']
-                colours = {i:standards[i] for i in jobs}
-                timeseries_compare({
-                        i:standards[i] for i in jobs},
-                        physics=1,
-                        bio=1,
-                        debug=0,
-                        year0=False,
-                        jobDescriptions=jobDescriptions,
-                        analysisname='UKESM0.8-PrescribedVeg')
+#                jobs = ['u-ao912','u-ap865','u-aq142','u-aq710']
+#                colours = {i:standards[i] for i in jobs}
+#                timeseries_compare({
+#                        i:standards[i] for i in jobs},
+#                        physics=1,
+#                        bio=1,
+#                        debug=0,
+#                        year0=False,
+#                        jobDescriptions=jobDescriptions,
+#                        analysisname='UKESM0.8-PrescribedVeg')
 
                 jobs = ['u-am064','u-am515','u-aq378','u-am927','u-aq853']
                 colours = {i:standards[i] for i in jobs}
