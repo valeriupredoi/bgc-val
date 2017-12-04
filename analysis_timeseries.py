@@ -1672,7 +1672,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['datacoords'] 	= woaCoords
 
 		nc = dataset('data/eORCA1_masks.nc','r')
-		rmask = ncnc.variables[r][:]
+		rmask = nc.variables[r][:]
 		nc.close()
 		
 		nc = dataset(paths.orcaGridfn,'r')
