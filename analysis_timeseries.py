@@ -1676,7 +1676,10 @@ def analysis_timeseries(jobID = "u-ab671",
                         temp = np.ma.array(nc.variables[keys[0]][:].squeeze())
                         temp = np.ma.masked_where((gmttmask==0) + (temp.mask),temp)
 
-                        vol = np.ma.masked_where(temp.mask, pvol)
+                      	try:    vol = np.ma.masked_where(temp.mask, nc('thkcello')[:].squeeze() * nc('area')[:]) # preferentially use in file volume.
+                        except: vol = np.ma.masked_where(temp.mask, pvol)
+                        
+                        #vol = np.ma.masked_where(temp.mask, pvol)
 
                         return (((temp*vol).sum(0)/(vol.sum(0))) * (vol.sum(0)/vol.sum()))#.sum()
 
