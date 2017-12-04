@@ -643,7 +643,7 @@ class timeseriesAnalysis:
 
 			if dataslice == []:
 				datamean = -999.
-			elif m in not in ['mean', 'metricless',]:
+			elif m in ['mean', 'metricless',]:
 				if len(dataweights)!=0 and dataweights.sum()!=0.:
 					datamean = np.average(dataslice, weights = dataweights)
 				else:	datamean = np.mean(dataslice)
