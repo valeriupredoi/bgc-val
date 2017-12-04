@@ -1674,7 +1674,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['datacoords'] 	= woaCoords
 
 		nc = dataset('data/eORCA1_masks.nc','r')
-		print nc.keys()
+		print nc.variables.keys()
 		rmask = nc.variables[r][:]
 		nc.close()
 		
