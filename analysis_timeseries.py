@@ -1682,11 +1682,12 @@ def analysis_timeseries(jobID = "u-ab671",
 		try:
 			vwtpvol[r]   = nc.variables['pvol' ][:]
 			vwttmask[r] = nc.variables['tmask'][:]
+			vwtpvol[r] = np.ma.masked_where((vwttmask[r]==0) + (rmask!=1),vwtpvol[r])			
 		except:
 			vwttmask[r] = nc.variables['tmask'][:]
 			area = nc.variables['e2t'][:] * nc.variables['e1t'][:]
 			vwtpvol[r] = nc.variables['e3t'][:] * area
-			vwtpvol[r] = np.ma.masked_where(vwttmask[r]==0,vwtpvol[r])
+			vwtpvol[r] = np.ma.masked_where((vwttmask[r]==0) + (rmask!=1),vwtpvol[r])
 		nc.close()
 
                 def sumMeanLandMask(nc,keys,maskname):
