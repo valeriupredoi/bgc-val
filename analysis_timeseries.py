@@ -279,14 +279,6 @@ def analysis_timeseries(jobID = "u-ab671",
                         #####
                         # Physics switches:
                         #analysisKeys.append('T')                       # WOA Temperature
-                        #analysisKeys.append('GlobalVolWeightedT')             		# WOA Temperature  
-                        #analysisKeys.append('ignoreInlandSeasVolWeightedT')             # WOA Temperature  
-                        #analysisKeys.append('SouthernOceanVolWeightedT')             	# WOA Temperature  
-                        #analysisKeys.append('ArcticOceanVolWeightedT')             	# WOA Temperature  
-                        #analysisKeys.append('Equator10VolWeightedT')             	# WOA Temperature  
-                        #analysisKeys.append('RemainderVolWeightedT')             	# WOA Temperature  
-                        #analysisKeys.append('NorthernSubpolarAtlanticVolWeightedT')	# WOA Temperature  
-                        #analysisKeys.append('NorthernSubpolarPacificVolWeightedT')    	# WOA Temperature  
 			
 			analysisKeys.append('VolumeMeanTemperature')
                         #analysisKeys.append('S')                        # WOA Salinity
@@ -1693,78 +1685,13 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		av[name]['layers'] 		= ['layerless',]
 		av[name]['regions'] 		= ['Global', 'ignoreInlandSeas','Equator10','SouthernOcean','ArcticOcean',  'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific',]
-		av[name]['metrics']		= ['metricless',]
+		av[name]['metrics']		= metricList
 		av[name]['datasource'] 		= ''
 		av[name]['model']		= 'NEMO'
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= paths.orcaGridfn
 		av[name]['Dimensions']		= 2
 
-	vwtregions = ['Global', 'ignoreInlandSeas','Equator10',]#'SouthernOcean','ArcticOcean',  'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific',]
-	vwtregionsnames = [r+'VolWeightedT' for r in vwtregions]
-	vwtpvol = {}
-	vwttmask = {}	
-	for reg, name in zip(vwtregions, vwtregionsnames):
-		if name not in analysisKeys: continue
-		print "VolWeightedT:\t",reg,name
-		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)
-		av[name]['dataFile'] 	= ''
-		av[name]['modelcoords'] = medusaCoords
-		av[name]['datacoords'] 	= woaCoords
-
-		nc = dataset('data/eORCA1_masks.nc','r')
-		print nc.variables.keys()
-		rmask = nc.variables[reg][:]
-		nc.close()
-		
-		nc = dataset(paths.orcaGridfn,'r')
-		try:
-			vwtpvol[r]   = nc.variables['pvol' ][:]
-		except:
-			area = nc.variables['e2t'][:] * nc.variables['e1t'][:]
-			vwtpvol[r] = nc.variables['e3t'][:] * area
-		nc.close()
-		
-		vwtpvol[r] = np.ma.masked_where(rmask==-127,vwtpvol[r])
-				
-                def sumMeanLandMask(nc,keys,maskname):
-                        #### works like no change, but applies a mask.
-                        temp = np.ma.array(nc.variables[keys[0]][:].squeeze())
-                        temp = np.ma.masked_where((vwtpvol[maskname].mask) + (temp.mask),temp)
-                        vol = np.ma.masked_where(temp.mask, vwtpvol[maskname])
-                        return (temp*vol).sum()/(vol.sum())
-		
-		def GlobalsumMeanLandMask(nc,keys,): 			return sumMeanLandMask(nc,keys,maskname='Global')
-		def ignoreInlandSeassumMeanLandMask(nc,keys,): 		return sumMeanLandMask(nc,keys,maskname='ignoreInlandSeas')
-		def SouthernOceansumMeanLandMask(nc,keys,): 		return sumMeanLandMask(nc,keys,maskname='SouthernOcean')
-		def ArcticOceansumMeanLandMask(nc,keys,): 		return sumMeanLandMask(nc,keys,maskname='ArcticOcean')
-		def Equator10sumMeanLandMask(nc,keys,): 		return sumMeanLandMask(nc,keys,maskname='Equator10')
-		def RemaindersumMeanLandMask(nc,keys,): 		return sumMeanLandMask(nc,keys,maskname='Remainder')
-		def NorthernSubpolarAtlanticsumMeanLandMask(nc,keys,): 	return sumMeanLandMask(nc,keys,maskname='NorthernSubpolarAtlantic')
-		def NorthernSubpolarPacificsumMeanLandMask(nc,keys,): 	return sumMeanLandMask(nc,keys,maskname='NorthernSubpolarPacific')
-		
-		if reg == 'Global': 			function = GlobalsumMeanLandMask
-		if reg == 'ignoreInlandSeas': 		function = ignoreInlandSeassumMeanLandMask
-		if reg == 'SouthernOcean': 		function = SouthernOceansumMeanLandMask
-		if reg == 'ArcticOcean': 		function = ArcticOceansumMeanLandMask
-		if reg == 'Equator10': 			function = Equator10sumMeanLandMask
-		if reg == 'Remainder': 			function = RemaindersumMeanLandMask								
-		if reg == 'NorthernSubpolarAtlantic':	function = NorthernSubpolarAtlanticsumMeanLandMask
-		if reg == 'NorthernSubpolarPacific': 	function = NorthernSubpolarPacificsumMeanLandMask
-		
-		av[name]['modeldetails'] 	= {'name': name, 'vars':[ukesmkeys['temp3d'],], 'convert': function,'units':'degrees C'}
-		av[name]['datadetails']  	= {'name': '', 'units':''}
-		#av[name]['datadetails']  	= {'name': name, 'vars':['t_an',], 'convert': ukp.NoChange,'units':'degrees C'}
-
-		av[name]['layers'] 		= ['layerless',]
-		av[name]['regions'] 		= ['regionless',]
-		av[name]['metrics']		= ['metricless',]
-		av[name]['datasource'] 		= ''
-		av[name]['model']		= 'NEMO'
-		av[name]['modelgrid']		= 'eORCA1'
-		av[name]['gridFile']		= paths.orcaGridfn
-		av[name]['Dimensions']		= 1
-		
 
 				
 		
