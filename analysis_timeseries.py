@@ -1661,7 +1661,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['Dimensions']		= 1
 
 
-	vwtregions = ['Global', 'ignoreInlandSeas','SouthernOcean','ArcticOcean', 'Equator10', 'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific',]
+	vwtregions = ['Global', 'ignoreInlandSeas','Equator10',]#'SouthernOcean','ArcticOcean',  'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific',]
 	vwtregionsnames = [r+'VolWeightedT' for r in vwtregions]
 	vwtpvol = {}
 	vwttmask = {}	
@@ -1706,19 +1706,16 @@ def analysis_timeseries(jobID = "u-ab671",
 		def NorthernSubpolarAtlanticsumMeanLandMask(nc,keys,): 	return sumMeanLandMask(nc,keys,maskname='NorthernSubpolarAtlantic')
 		def NorthernSubpolarPacificsumMeanLandMask(nc,keys,): 	return sumMeanLandMask(nc,keys,maskname='NorthernSubpolarPacific')
 		
-		functionsDict = {}						
-		functionsDict['Global'] 		= GlobalsumMeanLandMask
-		functionsDict['ignoreInlandSeas'] 	= ignoreInlandSeassumMeanLandMask
-		functionsDict['SouthernOcean'] 		= SouthernOceansumMeanLandMask
-		functionsDict['ArcticOcean'] 		= ArcticOceansumMeanLandMask
-		functionsDict['Equator10'] 		= Equator10sumMeanLandMask
-		functionsDict['Remainder'] 		= RemaindersumMeanLandMask								
-		functionsDict['NorthernSubpolarAtlantic'] = NorthernSubpolarAtlanticsumMeanLandMask
-		functionsDict['NorthernSubpolarPacific']= NorthernSubpolarPacificsumMeanLandMask
-
-
-
-		av[name]['modeldetails'] 	= {'name': name, 'vars':[ukesmkeys['temp3d'],], 'convert': functionsDict[r],'units':'degrees C'}
+		if region == 'Global': 			function = GlobalsumMeanLandMask
+		if region == 'ignoreInlandSeas': 	function = ignoreInlandSeassumMeanLandMask
+		if region == 'SouthernOcean': 		function = SouthernOceansumMeanLandMask
+		if region == 'ArcticOcean': 		function = ArcticOceansumMeanLandMask
+		if region == 'Equator10': 		function = Equator10sumMeanLandMask
+		if region == 'Remainder': 		function = RemaindersumMeanLandMask								
+		if region == 'NorthernSubpolarAtlantic':function = NorthernSubpolarAtlanticsumMeanLandMask
+		if region == 'NorthernSubpolarPacific': function = NorthernSubpolarPacificsumMeanLandMask
+		
+		av[name]['modeldetails'] 	= {'name': name, 'vars':[ukesmkeys['temp3d'],], 'convert': function,'units':'degrees C'}
 		av[name]['datadetails']  	= {'name': '', 'units':''}
 		#av[name]['datadetails']  	= {'name': name, 'vars':['t_an',], 'convert': ukp.NoChange,'units':'degrees C'}
 
