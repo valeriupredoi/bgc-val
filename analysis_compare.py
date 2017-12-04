@@ -247,41 +247,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 	dmsCoords	= {'t':'time',    'z':'depth',  'lat':'Latitude',  'lon': 'Longitude','cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
 	godasCoords 	= {'t':'index_t',    'z':'level',  'lat': 'lat',      'lon': 'lon', 'cal': 'standard','tdict':['ZeroToZero'] }
 
-        #####
-        # Because we can never be sure someone won't randomly rename the 
-        # time dimension without saying anything.
-        # if jobID in ['u-am515','u-am927','u-am064','u-an326',]:
-        try:
-		tmpModelFiles  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)
-	except:
-		print "No grid_T Model files available to figure out what naming convention is used."
-		tmpModelFiles = []			
-        ukesmkeys={}
-	if len(tmpModelFiles):
-		nctmp = dataset(tmpModelFiles[0],'r')
-		nctmpkeys = nctmp.variables.keys()
-		nctmp.close()
-		if 'votemper' in nctmpkeys:
-			ukesmkeys={}
-                	ukesmkeys['time'] = 'time_counter'
-        	        ukesmkeys['temp3d']     = 'votemper'
-	                ukesmkeys['sst']        = ''
-                	ukesmkeys['sal3d']     = 'vosaline'
-        	        ukesmkeys['sss']        = ''
-	                ukesmkeys['v3d']     = 'vomecrty'
-                	ukesmkeys['u3d']     = 'vozocrtx'
-        	        ukesmkeys['e3u']    = 'e3u'
-	                ukesmkeys['w3d']     = 'vovecrtz'
-		else:
-                	ukesmkeys['time']       = 'time_centered'
-        	        ukesmkeys['temp3d']     = 'thetao'
-	                ukesmkeys['sst']        = 'tos'
-                	ukesmkeys['sal3d']     = 'so'
-        	        ukesmkeys['sss']        = 'sos'
-	                ukesmkeys['v3d']     = 'vo'
-                	ukesmkeys['u3d']     = 'uo'
-        	        ukesmkeys['e3u']    = 'thkcello'
-	                ukesmkeys['w3d']     = 'wo'
+
 
 
 	dataD = {}		
@@ -1175,7 +1141,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 		                except: vol = np.ma.masked_where(temp.mask, pvol)
 		                return (((temp*vol).sum(0)/(vol.sum(0))) * (vol.sum(0)/vol.sum()))#.sum()
 
-			av[name]['modeldetails'] 	= {'name': name, 'vars':[ukesmkeys['temp3d'],], 'convert': sumMeanLandMask,'units':'degrees C'}
+			av[name]['modeldetails'] 	= {'name': name, 'vars':['votemper',], 'convert': sumMeanLandMask,'units':'degrees C'}
 			av[name]['datadetails']  	= {'name': '', 'units':''}
 			av[name]['layers'] 		= ['layerless',]
 			av[name]['regions'] 		= ['Global', 'ignoreInlandSeas','Equator10','SouthernOcean','ArcticOcean',  'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific',]
