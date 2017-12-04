@@ -96,7 +96,7 @@ physKeys = []
 if True:
 
 	physKeys.append('T')                        	# WOA Temperature
-	physKeys.append('VolWeightedT')			# Volume weighted WOA Temperature
+	#physKeys.append('VolWeightedT')			# Volume weighted WOA Temperature
 	physKeys.append('GlobalMeanTemperature')    	# Global Mean Temperature
 	physKeys.append('GlobalMeanSalinity')    	# Global Mean Salinity
 #	physKeys.append('IcelessMeanSST')    		# Global Mean Surface Temperature with no ice	
@@ -243,7 +243,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('OMZMeanDepth')		# work in progress
 			#analysisKeys.append('OMZThickness')            # Oxygen Minimum Zone Thickness
 			#analysisKeys.append('TotalOMZVolume')		# work in progress
-                        analysisKeys.append('O2')                      # WOA Oxygen
+                        #analysisKeys.append('O2')                      # WOA Oxygen
                         #analysisKeys.append('AOU')                      # Apparent Oxygen Usage 
                         #analysisKeys.append('WindStress')               # Wind Stress                        
                         #analysisKeys.append('Dust')                    # Dust
@@ -279,6 +279,8 @@ def analysis_timeseries(jobID = "u-ab671",
                         #####
                         # Physics switches:
                         #analysisKeys.append('T')                       # WOA Temperature
+                        analysisKeys.append('VolWeightedT')             # WOA Temperature                        
+                        
                         #analysisKeys.append('S')                        # WOA Salinity
                         #analysisKeys.append('MLD')                      # MLD
                         #analysisKeys.append('MaxMonthlyMLD')            # MLD                       
@@ -295,7 +297,7 @@ def analysis_timeseries(jobID = "u-ab671",
                         #analysisKeys.append('AMOC_26N_nomexico')
                         #analysisKeys.append('ADRC_26N')                # AMOC 26N                        
 
-                       	#analysisKeys.append('GlobalMeanTemperature')    # Global Mean Temperature
+                        analysisKeys.append('GlobalMeanTemperature')    # Global Mean Temperature
 			#analysisKeys.append('GlobalMeanSalinity')    	# Global Mean Salinity                       	
                        	#analysisKeys.append('IcelessMeanSST')    	# Global Mean Surface Temperature with no ice
                        	#analysisKeys.append('quickSST')    		# Area Weighted Mean Surface Temperature
