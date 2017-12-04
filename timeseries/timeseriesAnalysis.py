@@ -580,7 +580,7 @@ class timeseriesAnalysis:
 		#####
 		# Don't make pictures for each integer or float layer, only the ones that are strings. 
 		if type(l) in [type(0),type(0.)]:continue
-                if self.debug: print "\ntimeseriesAnalysis:\t makePlots.\t",r,l
+                if self.debug: print "timeseriesAnalysis:\t makePlots.\t",r,l
 		    
 		#####
 		# Test for presence/absence of in situ data.
@@ -625,35 +625,15 @@ class timeseriesAnalysis:
 
 			if not ukp.shouldIMakeFile([self.shelvefn, self.shelvefn_insitu],filename,debug=False):continue
 			tsp.percentilesPlot(timesDict,modeldataDict,dataslice,dataweights=dataweights,title = title,filename=filename,units =self.modeldetails['units'],greyband=greyband)
- 	    
-	  	#####
-	    	# Percentiles plots.		  	    
-	    	for m in self.metrics: 
-	    		if m not in ['sum', ]: continue 
-			filename = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join([m,self.jobID,self.dataType,r,str(l),m,])+'.png'
-                        if self.debug: print "timeseriesAnalysis:\t makePlots.\tInvestigating:",filename
+ 	    	else:
+	    		print "timeseriesAnalysis:\t makePlots, \tNo percentile plots:",(r,l)		
 
-			if not ukp.shouldIMakeFile([self.shelvefn, self.shelvefn_insitu],filename,debug=False):	continue
-				    		
-			modeldataDict = self.modeldataD[(r,l,m)]
-			times = sorted(modeldataDict.keys())
-			modeldata = [modeldataDict[t] for t in times]
-			title = ' '.join([getLongName(t) for t in [r,str(l),m,self.dataType]])
-
-                        if len(dataweights)!=0 and dataweights.sum()!=0.:
-                                datamean = np.sum(dataslice, weights = dataweights)
-                        else:   datamean = np.sum(dataslice)
-
-			
-			#tsp.trafficlightsPlot(times,modeldata,dataslice,dataweights=dataweights,metric = m, title = title,filename=filename,units = self.modeldetails['units'],greyband=False)
-                        tsp.simpletimeseries(times,modeldata,datamean,title = title,filename=filename,units = self.modeldetails['units'],greyband=False)
-	    
 	    	#####
-	    	# Mean plots.
+	    	# simpletimeseries plots.
 	    	for m in self.metrics:  
 	    		if m not in ['mean', 'metricless','sum',]: continue
 			filename = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join([m,self.jobID,self.dataType,r,str(l),m,])+'.png'
-		        if self.debug: print "timeseriesAnalysis:\t makePlots.\tInvestigating:",filename
+		        if self.debug: print "timeseriesAnalysis:\t makePlots.\tInvestigating simpletimeseries: ",filename
 			if not ukp.shouldIMakeFile([self.shelvefn, self.shelvefn_insitu],filename,debug=False):	continue
 			    		
 			modeldataDict = self.modeldataD[(r,l,m)]
@@ -661,9 +641,16 @@ class timeseriesAnalysis:
 			modeldata = [modeldataDict[t] for t in times]
 			title = ' '.join([getLongName(t) for t in [r,str(l),m,self.dataType]])
 
-			if len(dataweights)!=0 and dataweights.sum()!=0.:
-				datamean = np.average(dataslice, weights = dataweights)
-			else:	datamean = np.mean(dataslice)
+			if dataslice == []:
+				datamean = -999.
+			elif m in not in ['mean', 'metricless',]:
+				if len(dataweights)!=0 and dataweights.sum()!=0.:
+					datamean = np.average(dataslice, weights = dataweights)
+				else:	datamean = np.mean(dataslice)
+			elif m in ['sum',]:
+		     		if len(dataweights)!=0 and dataweights.sum()!=0.:
+		                        datamean = np.sum(dataslice, weights = dataweights)
+		                else:   datamean = np.sum(dataslice)
 			
 			tsp.simpletimeseries(times,modeldata,datamean,title = title,filename=filename,units = self.modeldetails['units'],greyband=False)
 							
