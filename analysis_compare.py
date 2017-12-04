@@ -63,6 +63,7 @@ import paths
 
 from comparison.shifttimes import shifttimes
 from config.configToDict import configToDict
+from bgcvaltools.dataset import dataset
 
 def listModelDataFiles(jobID, filekey, datafolder, annual,year=''):
 	if year == '':
