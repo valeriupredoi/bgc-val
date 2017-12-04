@@ -88,8 +88,8 @@ p2pKeys_level2 = [
 		  'Alk','DIC','AirSeaFlux',
 		  'IntPP_OSU',
 		  'Dust',
-		  'T','S','MLD',
-		  'ZonalCurrent','MeridionalCurrent','VerticalCurrent'			  
+		  'T','S',#'MLD',
+		  #'ZonalCurrent','MeridionalCurrent','VerticalCurrent'			  
 		  ]
 
 p2pKeys_physics = [
@@ -270,7 +270,7 @@ def analysis_p2p(
         #####
         # Because we can never be sure someone won't randomly rename the 
         # time dimension without saying anything.
-        if jobID in ['u-am515','u-am927','u-am064']:
+        if jobID in ['u-am515','u-am927','u-am064','u-ar783']:
                 #####
                 # Because we can never be sure someone won't randomly rename the 
                 # time dimension without saying anything.

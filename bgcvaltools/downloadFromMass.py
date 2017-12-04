@@ -287,6 +287,9 @@ def monthlyChl(jobID,months = ['01','02','06','07','08','12']):
 	        downloadField(jobID, ['CHD','CHN'], extension='ptrc[-_]T', timeslice='m',timerange=ts,name = 'monthlyCHL',dryrun=False)
 
 
+def medusaMonthlyexport(jobID):
+        downloadField(jobID, ['SDT__100','FDT__100','SDT__200','FDT__200','SDT__500','FDT__500','SDT_1000','FDT_1000','PRD','PRN',], extension='diad[-_]T', timeslice='m',name = 'monthlyExport',dryrun=False)
+
 
 def downloadMass(jobID,doMoo=True):
 	"""
@@ -348,16 +351,26 @@ def downloadMass(jobID,doMoo=True):
 		output = process.communicate()[0]
 
 		if len(output.split('\n')) > 6000:
-			for i in range(10): 
-	                        bashCommand = "moo get --fill-gaps moose:/crum/"+jobID+"/ony.nc.file/*_1y_"+str(i)+"*.nc "+outputFold
-        	                print "running the command:",bashCommand
-                	        process1 = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
-                        	output1 = process.communicate()[0]
-
-
+			#bashCommand = ''
+			failed=0
+			process1={}
+			output1={}
+			#for i in reversed(range(100)):
+                        for i in range(100):
+				 
+	                        bashCommand = "moo get --fill-gaps moose:/crum/"+jobID+"/ony.nc.file/*_1y_??"+mnStr(i)+"*.nc "+outputFold 
+       		                print "running the command:",bashCommand
+	               	        try:	
+					process1[i] = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
+					process1[i].wait()
+	                	       	output1[i] = process.communicate()[0]
+					print i, output1[i]
+				except:	
+					failed+=1
+					print "Failed",i,'\t',bashCommand
+			if failed>10:
+				assert 0
 		else:
-
-#	if doDL:
 			print "Downloading at the following files:"
 			bashCommand = "moo get --fill-gaps moose:/crum/"+jobID+"/ony.nc.file/*.nc "+outputFold
 			print "running the command:",bashCommand
@@ -409,7 +422,7 @@ def fixFilePaths(outputFold,jobID):
 
         #####
         # Some runs have nemo/medusa as a preface to the file name.
-        suffDict= {'grid-T':'grid_T',
+        suffDict= { 'grid-T':'grid_T',
                     'grid-U':'grid_U',
                     'grid-V': 'grid_V',
                     'grid-W':'grid_W',
@@ -487,7 +500,9 @@ if __name__=="__main__":
         # Monthly chl
         elif keys in [['chl',], ['CHL',],]:
                 monthlyChl(jobID, months = ['01','02','03','04','05','06','07','08','09','10','11','12',])
-	
+
+        elif keys in [['EXPORT',], ['export',],]:
+		medusaMonthlyexport(jobID)	
 	#####
 	# Other specific monthly files.
 	else:

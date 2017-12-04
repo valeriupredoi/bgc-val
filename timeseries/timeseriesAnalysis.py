@@ -178,7 +178,7 @@ class timeseriesAnalysis:
 	#####
 	# Check if the Input file has changed since the shelve file last changed.
 	for fn in sorted(readFiles):
-		if ukp.shouldIMakeFile(fn, self.shelvefn): 
+		if ukp.shouldIMakeFile(fn, self.shelvefn,debug=False): 
 			print "timeseriesAnalysis:\tloadModel\t:this file should be re-analysed:", fn
 			readFiles.remove(fn)
 			
@@ -239,7 +239,7 @@ class timeseriesAnalysis:
 					print "timeseriesAnalysis:\tloadModel\tAlready created ",int(meantime),':\t',(r,l,m),'\t=',a
 				except: 
 					skip = False
-					print "timeseriesAnalysis:\tloadModel\tNeed to create ",int(meantime),':\t',(r,l,m)
+					print "timeseriesAnalysis:\tloadModel\tNeed to create:\t",int(meantime),'\t',(r,l,m)
 			if fn in reDoFiles: 
                                 print "timeseriesAnalysis:\tloadModel\tNeed to re-load ",int(meantime),':\t',(r,l,m)
 				skip = False
@@ -248,7 +248,6 @@ class timeseriesAnalysis:
 		    	#####
 		    	# can't skip it, need to load it.
 			layerdata = DL.load[(r,l)]
-			print "0 len(layerdata):",len(layerdata)
 			#####
 			# get Weights:
 			volumeWeightedLayers = ['All', 'Transect']
@@ -271,7 +270,6 @@ class timeseriesAnalysis:
 			else:	weights = np.ones_like(layerdata)
 			
 			
-			print "1 len(layerdata):",len(layerdata),'\tlen(weights):', len(weights)
 			
 			if type(layerdata) == type(np.ma.array([1,-999,],mask=[False, True,])):
 				weights = np.ma.array(weights)
@@ -284,7 +282,6 @@ class timeseriesAnalysis:
 					print "1.b len(	layerdata)!= len(weights)", len(layerdata),'!=', len(weights)
 					assert 0				
 
-			print "2 len(layerdata):",len(layerdata),'\tlen(weights):', len(weights)
 							
 			if len(layerdata)==0:
 				for m in self.metrics:
@@ -321,7 +318,7 @@ class timeseriesAnalysis:
 				modeldataD[(r,l,ukp.mnStr(pc)+'pc')][meantime] = dat
 				if pc==50.:	modeldataD[(r,l,'median')][meantime] = dat
 					  		
-	  		print "timeseriesAnalysis:\tloadModel\tLoaded metric:", int(meantime),'\t',[(r,l,m)], '\t',modeldataD[(r,l,m)][meantime]
+	  		print "timeseriesAnalysis:\tloadModel\tLoaded metric:\t", int(meantime),'\t',[(r,l,m)], '\t',modeldataD[(r,l,m)][meantime]
 				
 										
 		readFiles.append(fn)		

@@ -243,7 +243,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('OMZMeanDepth')		# work in progress
 			#analysisKeys.append('OMZThickness')            # Oxygen Minimum Zone Thickness
 			#analysisKeys.append('TotalOMZVolume')		# work in progress
-                        #analysisKeys.append('O2')                      # WOA Oxygen
+                        analysisKeys.append('O2')                      # WOA Oxygen
                         #analysisKeys.append('AOU')                      # Apparent Oxygen Usage 
                         #analysisKeys.append('WindStress')               # Wind Stress                        
                         #analysisKeys.append('Dust')                    # Dust
@@ -268,14 +268,14 @@ def analysis_timeseries(jobID = "u-ab671",
                         #analysisKeys.append('N')                        # WOA Nitrate
                         #analysisKeys.append('IntPP_OSU')               # OSU Integrated primpary production
                         #analysisKeys.append('Chl_CCI')
-			analysisKeys.append('CHL_MAM')
-			analysisKeys.append('CHL_JJA')
-			analysisKeys.append('CHL_SON')			
-			analysisKeys.append('CHL_DJF')
-			analysisKeys.append('GC_CHL_MAM')
-			analysisKeys.append('GC_CHL_JJA')
-			analysisKeys.append('GC_CHL_SON')			
-			analysisKeys.append('GC_CHL_DJF')			                      
+			#analysisKeys.append('CHL_MAM')
+			#analysisKeys.append('CHL_JJA')
+			#analysisKeys.append('CHL_SON')			
+			#analysisKeys.append('CHL_DJF')
+			#analysisKeys.append('GC_CHL_MAM')
+			#analysisKeys.append('GC_CHL_JJA')
+			#analysisKeys.append('GC_CHL_SON')			
+			#analysisKeys.append('GC_CHL_DJF')			                      
                         #####
                         # Physics switches:
                         #analysisKeys.append('T')                       # WOA Temperature
@@ -338,7 +338,7 @@ def analysis_timeseries(jobID = "u-ab671",
 	# It's not advised to run all the metrics and all the layers, as it'll slow down the analysis.
 	# if z_component in ['SurfaceOnly',]:
 
-	layerList = ['Surface','500m','1000m',]
+	layerList = ['Surface',]#'500m','1000m',]
 	metricList = ['mean','median', '10pc','20pc','30pc','40pc','50pc','60pc','70pc','80pc','90pc','min','max']
 
 #	if z_component in ['FullDepth',]:
@@ -913,7 +913,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modeldetails'] 	= {'name': name, 'vars':['OXY',], 'convert': ukp.NoChange,'units':'mmol O2/m^3'}
 		av[name]['datadetails']  	= {'name': name, 'vars':['o_an',], 'convert': ukp.oxconvert,'units':'mmol O2/m^3'}
 
-		av[name]['layers'] 		=  layerList
+		av[name]['layers'] 		=  ['Surface','500m','1000m',] #layerList
 		av[name]['regions'] 		= regionList
 		av[name]['metrics']		= metricList
 
