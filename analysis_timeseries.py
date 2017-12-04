@@ -1665,9 +1665,9 @@ def analysis_timeseries(jobID = "u-ab671",
 	vwtregionsnames = [r+'VolWeightedT' for r in vwtregions]
 	vwtpvol = {}
 	vwttmask = {}	
-	for r, name in zip(vwtregions, vwtregionsnames):
+	for reg, name in zip(vwtregions, vwtregionsnames):
 		if name not in analysisKeys: continue
-		print "VolWeightedT:\t",r,name
+		print "VolWeightedT:\t",reg,name
 		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)
 		av[name]['dataFile'] 	= ''
 		av[name]['modelcoords'] = medusaCoords
@@ -1675,7 +1675,7 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		nc = dataset('data/eORCA1_masks.nc','r')
 		print nc.variables.keys()
-		rmask = nc.variables[r][:]
+		rmask = nc.variables[reg][:]
 		nc.close()
 		
 		nc = dataset(paths.orcaGridfn,'r')
@@ -1706,14 +1706,14 @@ def analysis_timeseries(jobID = "u-ab671",
 		def NorthernSubpolarAtlanticsumMeanLandMask(nc,keys,): 	return sumMeanLandMask(nc,keys,maskname='NorthernSubpolarAtlantic')
 		def NorthernSubpolarPacificsumMeanLandMask(nc,keys,): 	return sumMeanLandMask(nc,keys,maskname='NorthernSubpolarPacific')
 		
-		if region == 'Global': 			function = GlobalsumMeanLandMask
-		if region == 'ignoreInlandSeas': 	function = ignoreInlandSeassumMeanLandMask
-		if region == 'SouthernOcean': 		function = SouthernOceansumMeanLandMask
-		if region == 'ArcticOcean': 		function = ArcticOceansumMeanLandMask
-		if region == 'Equator10': 		function = Equator10sumMeanLandMask
-		if region == 'Remainder': 		function = RemaindersumMeanLandMask								
-		if region == 'NorthernSubpolarAtlantic':function = NorthernSubpolarAtlanticsumMeanLandMask
-		if region == 'NorthernSubpolarPacific': function = NorthernSubpolarPacificsumMeanLandMask
+		if reg == 'Global': 			function = GlobalsumMeanLandMask
+		if reg == 'ignoreInlandSeas': 		function = ignoreInlandSeassumMeanLandMask
+		if reg == 'SouthernOcean': 		function = SouthernOceansumMeanLandMask
+		if reg == 'ArcticOcean': 		function = ArcticOceansumMeanLandMask
+		if reg == 'Equator10': 			function = Equator10sumMeanLandMask
+		if reg == 'Remainder': 			function = RemaindersumMeanLandMask								
+		if reg == 'NorthernSubpolarAtlantic':	function = NorthernSubpolarAtlanticsumMeanLandMask
+		if reg == 'NorthernSubpolarPacific': 	function = NorthernSubpolarPacificsumMeanLandMask
 		
 		av[name]['modeldetails'] 	= {'name': name, 'vars':[ukesmkeys['temp3d'],], 'convert': function,'units':'degrees C'}
 		av[name]['datadetails']  	= {'name': '', 'units':''}
