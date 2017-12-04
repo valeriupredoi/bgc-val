@@ -401,16 +401,16 @@ def simpletimeseries(
 	# This is exclusively used for sums now.
 	
 	if len(times) ==0 or len(arr) == 0:
-		print "trafficlightsPlot:\tWARNING:\tdata or time arrays are empty.",len(times),len(arr),title
+		print "simpletimeseries:\tWARNING:\tdata or time arrays are empty.",len(times),len(arr),title
 		return
 	if np.ma.is_masked(arr):
-		print "trafficlightsPlot:\tWARNING:\tdata arrays is masked",len(times),len(arr),title
+		print "simpletimeseries:\tWARNING:\tdata arrays is masked",len(times),len(arr),title
 		return
 				
 	xlims= [times[0],times[-1]]
 	
 	fig = pyplot.figure()
-	print "simpletimeseries,",arr, times
+	#print "simpletimeseries,",arr, times
 	ax = fig.add_subplot(111)	
 	
         arr_new = movingaverage_DT(arr,times, window_len=5.,window_units='years')	# 5 year average.
