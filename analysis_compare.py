@@ -1122,35 +1122,22 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 			av[name]['modelcoords'] = medusaCoords
 			av[name]['datacoords'] 	= woaCoords
 
-			nc = dataset(paths.orcaGridfn,'r')
-			try:
-				pvol   = nc.variables['pvol' ][:]
-				gmttmask = nc.variables['tmask'][:]
-			except:
-				gmttmask = nc.variables['tmask'][:]
-				area = nc.variables['e2t'][:] * nc.variables['e1t'][:]
-				pvol = nc.variables['e3t'][:] *area
-				pvol = np.ma.masked_where(gmttmask==0,pvol)
-			nc.close()
+	
 
 		        def sumMeanLandMask(nc,keys):
-		                #### works like no change, but applies a mask.
-		                temp = np.ma.array(nc.variables[keys[0]][:].squeeze())
-		                temp = np.ma.masked_where((gmttmask==0) + (temp.mask),temp)
-		              	try:    vol = np.ma.masked_where(temp.mask, nc('thkcello')[:].squeeze() * nc('area')[:]) # preferentially use in file volume.
-		                except: vol = np.ma.masked_where(temp.mask, pvol)
-		                return (((temp*vol).sum(0)/(vol.sum(0))) * (vol.sum(0)/vol.sum()))#.sum()
+		        	assert 0
 
 			av[name]['modeldetails'] 	= {'name': name, 'vars':['votemper',], 'convert': sumMeanLandMask,'units':'degrees C'}
 			av[name]['datadetails']  	= {'name': '', 'units':''}
 			av[name]['layers'] 		= ['layerless',]
 			av[name]['regions'] 		= ['Global', 'ignoreInlandSeas','Equator10','SouthernOcean','ArcticOcean',  'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific',]
-			av[name]['metrics']		= ['sum',]
+			av[name]['metrics']		= ['wcvweighted',]
 			av[name]['datasource'] 		= ''
 			av[name]['model']		= 'NEMO'
 			av[name]['modelgrid']		= 'eORCA1'
 			av[name]['gridFile']		= paths.orcaGridfn
-			av[name]['Dimensions']		= 1
+			av[name]['Dimensions']		= 2
+
 		
 
 		if 'GlobalMeanSalinity' in analysisKeys:
