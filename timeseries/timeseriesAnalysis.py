@@ -400,7 +400,9 @@ class timeseriesAnalysis:
   	  
 	nc = dataset(self.gridFile,'r')
 	tmask 	= nc.variables['tmask'][:]
-        area  	= nc.variables['area' ][:]
+        try:	area  = nc.variables['area' ][:]
+        except: area = nc.variables['e2t'][:] * nc.variables['e1t'][:]
+
 	#####
 	#        mbathy  = (tmask*nc('e3t')).sum(0)
 
