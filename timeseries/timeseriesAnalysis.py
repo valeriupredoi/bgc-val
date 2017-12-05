@@ -111,7 +111,7 @@ class timeseriesAnalysis:
 	#####
 	# Load Model File
 	self.loadModelWeightsDict()
-	if 'bathyweighted' in self.metrics: self.loadModelBathyDict()
+	if 'wcvweighted' in self.metrics: self.loadModelwcvDict()
   	self.loadModel()  	
 	#assert 0
   	
@@ -270,16 +270,16 @@ class timeseriesAnalysis:
 							
 			else:	weights = np.ones_like(layerdata)
 
-			if 'bathyweighted' in self.metrics:
+			if 'wcvweighted' in self.metrics:
 				lats = DL.load[(r,l,'lat')]
 				lons = DL.load[(r,l,'lon')]
-				bweights = []
+				wcvweights = []
                                 for la,lo,da in zip(lats,lons,layerdata):
-                                	try:    bweights.append(self.bathyDict[(la,lo)] )
-                                        except: continue #bweights.append(0.)
-				bweights = np.array(bweights)
+                                	try:    wcvweights.append(self.wcvDict[(la,lo)] )
+                                        except: continue #wcvweights.append(0.)
+				wcvweights = np.array(wcvweights)
 										
-				print "Loaded Bathy Weights", bweights.min(), bweights.mean(),bweights.max()
+				print "Loaded Water Column Volume Weights", wcvweights.min(), wcvweights.mean(),wcvweights.max()
 			
 			if type(layerdata) == type(np.ma.array([1,-999,],mask=[False, True,])):
 				weights = np.ma.array(weights)
@@ -320,10 +320,10 @@ class timeseriesAnalysis:
 			if 'max'	in self.metrics:   	modeldataD[(r,l,'max') ][meantime] = np.ma.max(layerdata)
 			if 'metricless' in self.metrics:	modeldataD[(r,l,'metricless') ][meantime] = np.ma.sum(layerdata)
 			
-			if 'bathyweighted' in self.metrics:	
-					print 'bweights', bweights.shape, bweights.min(), bweights.mean(),bweights.max()
-					print 'layerdata:',layerdata.shape, layerdata.min(), layerdata.mean(),layerdata.max()
-					modeldataD[(r,l,'bathyweighted') ][meantime] =np.ma.average(layerdata,weights=bweights)
+			if 'wcvweighted' in self.metrics:	
+					#print 'wcvweights', wcvweights.shape, wcvweights.min(), wcvweights.mean(),wcvweights.max()
+					#print 'layerdata:',layerdata.shape, layerdata.min(), layerdata.mean(),layerdata.max()
+					modeldataD[(r,l,'wcvweighted') ][meantime] =np.ma.average(layerdata,weights=wcvweights)
 					
 			if len(percentiles)==0: continue
 			out_pc = ukp.weighted_percentiles(layerdata, percentiles, weights = weights)
@@ -393,9 +393,9 @@ class timeseriesAnalysis:
 	if self.debug: print "timeseriesAnalysis:\t loadModelWeightsDict.",self.weightsDict.keys()[0]		
 
 
-  def loadModelBathyDict(self,):
+  def loadModelwcvDict(self,):
   	"""
-  	Adding bathymetry dictionany for Model.
+  	Adding Water Column Volume (WCV) dictionainy for Model.
   	"""
   	  
 	nc = dataset(self.gridFile,'r')
@@ -406,25 +406,25 @@ class timeseriesAnalysis:
 	#####
 	#        mbathy  = (tmask*nc('e3t')).sum(0)
 
-	wcvol  = (tmask*nc('e3t')).sum(0) * area
+	wcv  = (tmask*nc('e3t')).sum(0) * area
 	
 	
 	lats = nc.variables['nav_lat'][:]
 	lons = nc.variables['nav_lon'][:]
 	nc.close()
 
-	self.bathyDict={}	
+	self.wcvDict={}	
 	if lats.ndim ==2:
-		for (i,j), a in np.ndenumerate(wcvol):
+		for (i,j), a in np.ndenumerate(wcv):
 			if np.ma.is_masked(a):continue
-			self.bathyDict[(lats[i,j],lons[i,j])] = a
+			self.wcvDict[(lats[i,j],lons[i,j])] = a
 			
 	if lats.ndim ==1:
-		for (i,j), a in np.ndenumerate(wcvol):
+		for (i,j), a in np.ndenumerate(wcv):
 			if np.ma.is_masked(a):continue
-			self.bathyDict[(lats[i],lons[j])] = a
+			self.wcvDict[(lats[i],lons[j])] = a
 					
-	if self.debug: print "timeseriesAnalysis:\t loadModelBathyDict.",self.bathyDict.keys()[0]	
+	if self.debug: print "timeseriesAnalysis:\t loadModelwcvDict.",self.wcvDict.keys()[0]	
 	
 	
 
@@ -680,7 +680,7 @@ class timeseriesAnalysis:
 	    	#####
 	    	# simpletimeseries plots.
 	    	for m in self.metrics:  
-	    		if m not in ['mean', 'metricless','sum','bathyweighted',]: continue
+	    		if m not in ['mean', 'metricless','sum','wcvweighted',]: continue
 			filename = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join([m,self.jobID,self.dataType,r,str(l),m,])+'.png'
 		        if self.debug: print "timeseriesAnalysis:\t makePlots.\tInvestigating simpletimeseries: ",filename
 			if not ukp.shouldIMakeFile([self.shelvefn, self.shelvefn_insitu],filename,debug=False):	continue
