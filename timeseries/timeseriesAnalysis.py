@@ -111,6 +111,7 @@ class timeseriesAnalysis:
 	#####
 	# Load Model File
 	self.loadModelWeightsDict()
+	if 'bathyweighted' in self.metrics: self.loadModelBathyDict()
   	self.loadModel()  	
 	#assert 0
   	
@@ -268,7 +269,13 @@ class timeseriesAnalysis:
 							weights.append(0.)
 							
 			else:	weights = np.ones_like(layerdata)
-			
+
+			if len(ukp.intersection(['bathyweighted'], self.metrics)):
+				lats = DL.load[(r,l,'lat')]
+				lons = DL.load[(r,l,'lon')]
+				if l in volumeWeightedLayers:
+					bweights = np.array([self.bathyDict[(la,lo)] for la,lo in zip(lats,lons)])
+										
 			
 			
 			if type(layerdata) == type(np.ma.array([1,-999,],mask=[False, True,])):
@@ -310,7 +317,8 @@ class timeseriesAnalysis:
 			if 'max'	in self.metrics:   	modeldataD[(r,l,'max') ][meantime] = np.ma.max(layerdata)
 			if 'metricless' in self.metrics:	modeldataD[(r,l,'metricless') ][meantime] = np.ma.sum(layerdata)
 			
-			
+			if 'bathyweighted' in self.metrics:	modeldataD[(r,l,'bathyweighted') ][meantime] =np.ma.average(layerdata,weights=bweights)
+					
 			if len(percentiles)==0: continue
 			out_pc = ukp.weighted_percentiles(layerdata, percentiles, weights = weights)
 			
@@ -378,6 +386,34 @@ class timeseriesAnalysis:
 					
 	if self.debug: print "timeseriesAnalysis:\t loadModelWeightsDict.",self.weightsDict.keys()[0]		
 
+
+  def loadModelBathyDict(self,):
+  	"""
+  	Adding bathymetry dictionany for Model.
+  	"""
+  	  
+	nc = dataset(self.gridFile,'r')
+	tmask = nc.variables['tmask'][:]
+	mbathy  = tmask*nc('e3t')).sum(0)
+	
+	lats = nc.variables['nav_lat'][:]
+	lons = nc.variables['nav_lon'][:]
+	nc.close()
+
+	self.bathyDict={}	
+	if lats.ndim ==2:
+		for (i,j), a in np.ndenumerate(mbathy):
+			#if np.ma.is_masked(a):continue
+			self.bathyDict[(lats[i,j],lons[i,j])] = a
+			
+	if lats.ndim ==1:
+		for (i,j), a in np.ndenumerate(mbathy):
+			#if np.ma.is_masked(a):continue
+			self.bathyDict[(lats[i],lons[j])] = a
+					
+	if self.debug: print "timeseriesAnalysis:\t loadModelBathyDict.",self.bathyDict.keys()[0]	
+	
+	
 
   def AddDataArea(self,):
   	"""
@@ -631,7 +667,7 @@ class timeseriesAnalysis:
 	    	#####
 	    	# simpletimeseries plots.
 	    	for m in self.metrics:  
-	    		if m not in ['mean', 'metricless','sum',]: continue
+	    		if m not in ['mean', 'metricless','sum','bathyweighted',]: continue
 			filename = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join([m,self.jobID,self.dataType,r,str(l),m,])+'.png'
 		        if self.debug: print "timeseriesAnalysis:\t makePlots.\tInvestigating simpletimeseries: ",filename
 			if not ukp.shouldIMakeFile([self.shelvefn, self.shelvefn_insitu],filename,debug=False):	continue
@@ -654,71 +690,6 @@ class timeseriesAnalysis:
 			
 			tsp.simpletimeseries(times,modeldata,datamean,title = title,filename=filename,units = self.modeldetails['units'],greyband=False)
 							
-	"""
-	#####
-	# Hovmoeller plots
-	for r in self.regions:
-	    for m in self.metrics: 
-	    	if m not in ['mean','median',]:continue
-	    	
-	   	#####
-	   	# Load data layers:
-		data = {}
-		modeldata = {}
-	  	for l in self.layers:
-	  		#print "Hovmoeller plots:",r,m,l
-	  		
-	  		if type(l) == type('str'):continue	# no strings, only numbered layers.
-			#####
-			# Test for presence/absence of in situ data.
-			try:	
-				dataslice = self.dataD[(r,l)]	  
-				dataslice = dataslice.compressed()				
-			except:	dataslice = np.ma.array([-1000,],mask=[True,])
-						
-			if m == 'mean': 
-				try:	data[l] = np.ma.mean(dataslice)
-				except:	data[l] = np.ma.array([-1000,],mask=[True,])				
-			elif m == 'median':
-				try: 	data[l] = np.ma.median(dataslice)
-				except:	data[l] = np.ma.array([-1000,],mask=[True,])
-			elif m == 'min': 
-				try: 	data[l] = np.ma.min(dataslice)
-				except:	data[l] = np.ma.array([-1000,],mask=[True,])
-			elif m == 'max':
-				try:	data[l] = np.ma.max(dataslice)
-				except:	data[l] = np.ma.array([-1000,],mask=[True,])				
-			else: continue		
-			
-			#print "makePlots:\tHovmoeller plots:",r,m,l,'modeldata',self.modeldataD[(r,l,m)]
-			#print "makePlots:\tHovmoeller plots:",r,m,l,'data',data[l]			
-			modeldata[l] = self.modeldataD[(r,l,m)]
-
-		#####
-		# check that multiple layers were requested.
-		if len(data.keys())<1: continue
-
-		#####
-		# create a dictionary of model depths and layers.
-	  	mnc = dataset(self.modelFiles[-1],'r')		
-		modelZcoords = {i:z for i,z in enumerate(mnc.variables[self.modelcoords['z']][:])}
-	  	mnc.close()  	
-
-		if self.dataFile:
-		  	dnc = dataset(self.dataFile,'r')	
-		  	dataZcoords = {i:z for i,z in enumerate(dnc.variables[self.datacoords['z']][:])}
-		  	dnc.close()  	
-		else: 	dataZcoords = {}
-
-		title = ' '.join([getLongName(t) for t in [r,m,self.dataType]])	
-	    	hovfilename = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join(['profile',self.jobID,self.dataType,r,m,])+'.png'
-		if  ukp.shouldIMakeFile([self.shelvefn, self.shelvefn_insitu],hovfilename,debug=False):				
-			tsp.hovmoellerPlot(modeldata,data,hovfilename, modelZcoords = modelZcoords, dataZcoords= dataZcoords, title = title,diff=False)		
-	
-	    	hovfilename = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join(['profileDiff',self.jobID,self.dataType,r,m,])+'.png'
-		if  ukp.shouldIMakeFile([self.shelvefn, self.shelvefn_insitu],hovfilename,debug=False):					    	
-			tsp.hovmoellerPlot(modeldata,data,hovfilename, modelZcoords = modelZcoords, dataZcoords= dataZcoords, title = title,diff=True)		
-	"""
 
 	#####
 	# map plots for specific regions:	
