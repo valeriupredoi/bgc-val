@@ -1656,7 +1656,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		
 	if 'VolumeMeanTemperature' in analysisKeys:
 		name = 'VolumeMeanTemperature'
-		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)[:9]
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)
 		av[name]['dataFile'] 	= ''
 		av[name]['modelcoords'] = medusaCoords
 		av[name]['datacoords'] 	= woaCoords
