@@ -270,13 +270,16 @@ class timeseriesAnalysis:
 							
 			else:	weights = np.ones_like(layerdata)
 
-			if len(ukp.intersection(['bathyweighted'], self.metrics)):
+			if 'bathyweighted' in self.metrics:
 				lats = DL.load[(r,l,'lat')]
 				lons = DL.load[(r,l,'lon')]
-				if l in volumeWeightedLayers:
-					bweights = np.array([self.bathyDict[(la,lo)] for la,lo in zip(lats,lons)])
+				bweights = []
+                                for la,lo,da in zip(lats,lons,layerdata):
+                                	try:    bweights.append(self.bathyDict[(la,lo)] )
+                                        except: continue #bweights.append(0.)
+				bweights = np.array(bweights)
 										
-			
+				print "Loaded Bathy Weights", bweights.min(), bweights.mean(),bweights.max()
 			
 			if type(layerdata) == type(np.ma.array([1,-999,],mask=[False, True,])):
 				weights = np.ma.array(weights)
@@ -317,7 +320,10 @@ class timeseriesAnalysis:
 			if 'max'	in self.metrics:   	modeldataD[(r,l,'max') ][meantime] = np.ma.max(layerdata)
 			if 'metricless' in self.metrics:	modeldataD[(r,l,'metricless') ][meantime] = np.ma.sum(layerdata)
 			
-			if 'bathyweighted' in self.metrics:	modeldataD[(r,l,'bathyweighted') ][meantime] =np.ma.average(layerdata,weights=bweights)
+			if 'bathyweighted' in self.metrics:	
+					print 'bweights', bweights.shape, bweights.min(), bweights.mean(),bweights.max()
+					print 'layerdata:',layerdata.shape, layerdata.min(), layerdata.mean(),layerdata.max()
+					modeldataD[(r,l,'bathyweighted') ][meantime] =np.ma.average(layerdata,weights=bweights)
 					
 			if len(percentiles)==0: continue
 			out_pc = ukp.weighted_percentiles(layerdata, percentiles, weights = weights)
@@ -393,8 +399,13 @@ class timeseriesAnalysis:
   	"""
   	  
 	nc = dataset(self.gridFile,'r')
-	tmask = nc.variables['tmask'][:]
-	mbathy  = tmask*nc('e3t')).sum(0)
+	tmask 	= nc.variables['tmask'][:]
+        area  	= nc.variables['area' ][:]
+	#####
+	#        mbathy  = (tmask*nc('e3t')).sum(0)
+
+	wcvol  = (tmask*nc('e3t')).sum(0) * area
+	
 	
 	lats = nc.variables['nav_lat'][:]
 	lons = nc.variables['nav_lon'][:]
@@ -402,13 +413,13 @@ class timeseriesAnalysis:
 
 	self.bathyDict={}	
 	if lats.ndim ==2:
-		for (i,j), a in np.ndenumerate(mbathy):
-			#if np.ma.is_masked(a):continue
+		for (i,j), a in np.ndenumerate(wcvol):
+			if np.ma.is_masked(a):continue
 			self.bathyDict[(lats[i,j],lons[i,j])] = a
 			
 	if lats.ndim ==1:
-		for (i,j), a in np.ndenumerate(mbathy):
-			#if np.ma.is_masked(a):continue
+		for (i,j), a in np.ndenumerate(wcvol):
+			if np.ma.is_masked(a):continue
 			self.bathyDict[(lats[i],lons[j])] = a
 					
 	if self.debug: print "timeseriesAnalysis:\t loadModelBathyDict.",self.bathyDict.keys()[0]	
