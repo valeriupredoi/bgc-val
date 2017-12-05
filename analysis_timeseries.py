@@ -1656,14 +1656,15 @@ def analysis_timeseries(jobID = "u-ab671",
 		
 	if 'VolumeMeanTemperature' in analysisKeys:
 		name = 'VolumeMeanTemperature'
-		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)[:9]
 		av[name]['dataFile'] 	= ''
 		av[name]['modelcoords'] = medusaCoords
 		av[name]['datacoords'] 	= woaCoords
 
 		nc = dataset(paths.orcaGridfn,'r')
 		try:
-			pvol   = nc.variables['pvol' ][:]
+			pvol   = nc.variables['pvol'][:]
+                        area   = nc.variables['area'][:]
 			gmttmask = nc.variables['tmask'][:]
 		except:
 			gmttmask = nc.variables['tmask'][:]
@@ -1681,8 +1682,8 @@ def analysis_timeseries(jobID = "u-ab671",
                         except: vol = np.ma.masked_where(temp.mask, pvol)
                         
                         #vol = np.ma.masked_where(temp.mask, pvol)
-
-                        return (((temp*vol).sum(0)/(vol.sum(0))) * (vol.sum(0)/vol.sum()))#.sum()
+                        return ((temp*vol).sum(0)/vol.sum(0)) #*(area/area.sum())
+                        #return (((temp*vol).sum(0)/(vol.sum(0))) * (vol.sum(0)/vol.sum()))#.sum()
 
 		av[name]['modeldetails'] 	= {'name': name, 'vars':[ukesmkeys['temp3d'],], 'convert': sumMeanLandMask,'units':'degrees C'}
 		av[name]['datadetails']  	= {'name': '', 'units':''}
@@ -1690,12 +1691,12 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		av[name]['layers'] 		= ['layerless',]
 		av[name]['regions'] 		= ['Global', 'ignoreInlandSeas','Equator10','SouthernOcean','ArcticOcean',  'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific',]
-		av[name]['metrics']		= ['sum',]
+		av[name]['metrics']		= ['mean',]
 		av[name]['datasource'] 		= ''
 		av[name]['model']		= 'NEMO'
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= paths.orcaGridfn
-		av[name]['Dimensions']		= 1
+		av[name]['Dimensions']		= 2
 
 
 				
