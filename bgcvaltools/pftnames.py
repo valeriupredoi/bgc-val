@@ -125,7 +125,8 @@ def makeLongNameDict():
 	lnd['DiatomChlorophyll'] = "Diatom Chlorophyll"
 	lnd['NonDiatomChlorophyll'] = "Non-Diatom Chlorophyll"	
 	lnd['DiaFrac'] = "Diatom Fraction"	
-			  	
+        lnd['Dust'] = "Dust"
+		  	
   	lnd['picophyto'] = 'Picophytoplankton'
   	lnd['microzoo'] = 'Microzooplankton'
   	lnd['mesozoo'] = 'Mesozooplankton'

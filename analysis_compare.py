@@ -1880,7 +1880,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
                                 except: continue
                         elif name in ['VolumeMeanTemperature',]:
                                 try:
-                                        mdata = modeldataD[(jobID,name )][('Global', 'layerless', 'sum')]
+                                        mdata = modeldataD[(jobID,name )][('Global', 'layerless', 'wcvweighted')]
                                         title = ' '.join(['Global',  getLongName(name), ])
                                 except: continue
 						
@@ -2010,7 +2010,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 		arrD	= {}
 		
 		for jobID in jobs:
-			try:	mdata = modeldataD[(jobID,name )][(region, layer, 'sum')]
+			try:	mdata = modeldataD[(jobID,name )][(region, layer, 'wcvweighted')]
 			except: continue
 			title = ' '.join([region, layer, getLongName(name)])
 			times,datas = shifttimes(mdata, jobID,year0=year0)
@@ -2269,7 +2269,6 @@ def main():
 #                        year0='2500-3000',
 #                        jobDescriptions=jobDescriptions,
 #                        analysisname='Re-couplingTestReduced_2')
-#		assert 0
                 jobs = ['u-ar977','u-as462','u-as643',]
                 colours = {i:standards[i] for i in jobs}
                 timeseries_compare({
