@@ -2292,7 +2292,7 @@ def main():
                         debug=0,
                         year0='Drift',
                         jobDescriptions=jobDescriptions,
-                        analysisname='DriftTest_bak',
+                        analysisname='DriftTest',
                         lineThicknesses= thicknesses)
 
                 jobs = ['u-ar783','u-ar855','u-ar799','u-ar835']
