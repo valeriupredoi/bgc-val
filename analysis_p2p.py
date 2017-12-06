@@ -267,7 +267,15 @@ def analysis_p2p(
                # paths.p2p_ppDir         = "/projects/ukesm/"+getuser()+"/UKESM_postprocessed"
                 #imgDir          = ukp.folder('images')
 
-                
+	def listModelDataFiles(jobID, filekey, datafolder, annual):
+		print "listing model data files:",jobID, filekey, datafolder, annual
+		if annual:
+			keystr = datafolder+jobID+"/"+jobID+"o_1y_*1201[-_]"+year+'????_'+filekey+".nc"
+			print keystr
+			return sorted(glob(keystr))[0]
+		else:
+			return sorted(glob(datafolder+jobID+"/"+jobID+"o_1m_*"+year+"????_"+filekey+".nc"))[-1]
+			                
 
         #####
         # Because we can never be sure someone won't randomly rename the 
@@ -333,14 +341,6 @@ def analysis_p2p(
 	takahashiCoords	= {'t':'index_t', 'z':'index_z','lat': 'LAT',      'lon': 'LON',       'cal': 'standard','tdict':ukp.tdicts['ZeroToZero']}
 	godasCoords 	= {'t':'index_t', 'z':'level',  'lat': 'lat',      'lon': 'lon', 'cal': 'standard',   'tdict':ukp.tdicts['ZeroToZero'] }		
 
-	def listModelDataFiles(jobID, filekey, datafolder, annual):
-		print "listing model data files:",jobID, filekey, datafolder, annual
-		if annual:
-			keystr = datafolder+jobID+"/"+jobID+"o_1y_*1201[-_]"+year+'????_'+filekey+".nc"
-			print keystr
-			return sorted(glob(keystr))[0]
-		else:
-			return sorted(glob(datafolder+jobID+"/"+jobID+"o_1m_*"+year+"????_"+filekey+".nc"))[-1]
 			
 
 	shelvesAV = []	
