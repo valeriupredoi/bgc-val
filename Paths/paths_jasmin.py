@@ -66,7 +66,8 @@ if gethostname().find('ceda.ac.uk')>-1:
 	
 	######
 	# Output location for plots.
-	imagedir	 = folder('images/')
+	#imagedir	 = folder('images/')
+	imagedir	 = folder('/group_workspaces/jasmin2/ukesm/BGC_data/ldemora/images/')
 
 	#####
 	# Location of model files.

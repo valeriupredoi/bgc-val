@@ -291,7 +291,8 @@ def analysis_p2p(
 		tmpModelFiles = []
         ukesmkeys={}
 	if len(tmpModelFiles):
-		nctmp = dataset(tmpModelFiles[0],'r')
+		print 'test opening:', tmpModelFiles
+		nctmp = Dataset(tmpModelFiles,'r')
 		nctmpkeys = nctmp.variables.keys()
 		nctmp.close()
 		if 'votemper' in nctmpkeys:
