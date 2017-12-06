@@ -271,7 +271,7 @@ def analysis_p2p(
 		print "listing model data files:",jobID, filekey, datafolder, annual
 		if annual:
 			keystr = datafolder+jobID+"/"+jobID+"o_1y_*1201[-_]"+year+'????_'+filekey+".nc"
-			print keystr
+			print "listModelDataFiles:",keystr
 			return sorted(glob(keystr))[0]
 		else:
 			return sorted(glob(datafolder+jobID+"/"+jobID+"o_1m_*"+year+"????_"+filekey+".nc"))[-1]
@@ -281,6 +281,9 @@ def analysis_p2p(
         # Because we can never be sure someone won't randomly rename the 
         # time dimension without saying anything.
         # if jobID in ['u-am515','u-am927','u-am064','u-an326',]:
+	print jobID, 'grid_T', paths.ModelFolder_pref, annual
+        tmpModelFiles  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)
+
         try:
 		tmpModelFiles  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)
 	except:
@@ -312,8 +315,9 @@ def analysis_p2p(
                 	ukesmkeys['u3d']     = 'uo'
         	        ukesmkeys['e3u']    = 'thkcello'
 	                ukesmkeys['w3d']     = 'wo'
-	                
-	print ukesmkeys['sal3d']                          
+	else:
+		print "No grid_T files Found"                
+	print 'ukesmkeys[sal3d]:',ukesmkeys['sal3d']                          
 
 						
 	#####
