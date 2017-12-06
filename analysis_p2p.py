@@ -267,37 +267,45 @@ def analysis_p2p(
                # paths.p2p_ppDir         = "/projects/ukesm/"+getuser()+"/UKESM_postprocessed"
                 #imgDir          = ukp.folder('images')
 
+                
+
         #####
         # Because we can never be sure someone won't randomly rename the 
         # time dimension without saying anything.
-        if jobID in ['u-am515','u-am927','u-am064','u-ar783']:
-                #####
-                # Because we can never be sure someone won't randomly rename the 
-                # time dimension without saying anything.
-		ukesmkeys={}
-                ukesmkeys['time'] 	= 'time_centered'
-		ukesmkeys['temp3d'] 	= 'thetao'
-                ukesmkeys['sst'] 	= 'tos'
-                ukesmkeys['sal3d']     = 'so'
-                ukesmkeys['sss']        = 'sos'
-                ukesmkeys['v3d']     = 'vo'
-                ukesmkeys['u3d']     = 'uo'
-                ukesmkeys['e3u']    = 'thkcello'
-                ukesmkeys['w3d']     = 'wo'
-
-        else:
-                ukesmkeys={}
-                ukesmkeys['time'] = 'time_counter'
-                ukesmkeys['temp3d']     = 'votemper'
-                ukesmkeys['sst']        = ''
-                ukesmkeys['sal3d']     = 'vosaline'
-                ukesmkeys['sss']        = ''
-                ukesmkeys['v3d']     = 'vomecrty'
-                ukesmkeys['u3d']     = 'vozocrtx'
-                ukesmkeys['e3u']    = 'e3u'
-                ukesmkeys['w3d']     = 'vovecrtz'
-                
-                
+        # if jobID in ['u-am515','u-am927','u-am064','u-an326',]:
+        try:
+		tmpModelFiles  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)
+	except:
+		print "No grid_T Model files available to figure out what naming convention is used."
+		tmpModelFiles = []
+        ukesmkeys={}
+	if len(tmpModelFiles):
+		nctmp = dataset(tmpModelFiles[0],'r')
+		nctmpkeys = nctmp.variables.keys()
+		nctmp.close()
+		if 'votemper' in nctmpkeys:
+			ukesmkeys={}
+                	ukesmkeys['time'] = 'time_counter'
+        	        ukesmkeys['temp3d']     = 'votemper'
+	                ukesmkeys['sst']        = ''
+                	ukesmkeys['sal3d']     = 'vosaline'
+        	        ukesmkeys['sss']        = ''
+	                ukesmkeys['v3d']     = 'vomecrty'
+                	ukesmkeys['u3d']     = 'vozocrtx'
+        	        ukesmkeys['e3u']    = 'e3u'
+	                ukesmkeys['w3d']     = 'vovecrtz'
+		else:
+                	ukesmkeys['time']       = 'time_centered'
+        	        ukesmkeys['temp3d']     = 'thetao'
+	                ukesmkeys['sst']        = 'tos'
+                	ukesmkeys['sal3d']     = 'so'
+        	        ukesmkeys['sss']        = 'sos'
+	                ukesmkeys['v3d']     = 'vo'
+                	ukesmkeys['u3d']     = 'uo'
+        	        ukesmkeys['e3u']    = 'thkcello'
+	                ukesmkeys['w3d']     = 'wo'
+	                
+	                                
 
 						
 	#####
