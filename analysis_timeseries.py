@@ -95,13 +95,13 @@ bgcKeysDict = {i:n for i,n in enumerate(bgcKeys)}
 physKeys = []
 if True:
 
-	physKeys.append('T')                        	# WOA Temperature
+	physKeys.appena('Temperature')                        	# WOA Temperature
 	#physKeys.append('VolWeightedT')			# Volume weighted WOA Temperature
 	physKeys.append('GlobalMeanTemperature')    	# Global Mean Temperature
 	physKeys.append('VolumeMeanTemperature')    	# Global Mean Temperature
 	physKeys.append('GlobalMeanSalinity')    	# Global Mean Salinity
 #	physKeys.append('IcelessMeanSST')    		# Global Mean Surface Temperature with no ice	
-	physKeys.append('S')                        	# WOA Salinity
+	physKeys.append('Salinity')                        	# WOA Salinity
 	physKeys.append('MLD')				# iFERMER Mixed Layer Depth 
 	      			
 #	physKeys.append('TotalIceArea')			# work in progress
@@ -279,10 +279,10 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('GC_CHL_DJF')			                      
                         #####
                         # Physics switches:
-                        #analysisKeys.append('T')                       # WOA Temperature
+                        #analysisKeys.append('Temperature')                       # WOA Temperature
 			
 			analysisKeys.append('VolumeMeanTemperature')
-                        #analysisKeys.append('S')                        # WOA Salinity
+                        #analysisKeys.append('Salinity')                        # WOA Salinity
                         #analysisKeys.append('MLD')                      # MLD
                         #analysisKeys.append('MaxMonthlyMLD')            # MLD                       
                         #analysisKeys.append('MinMonthlyMLD')
@@ -1832,7 +1832,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			av[name]['Dimensions']		= 1
 
 	
-	if 'T' in analysisKeys:
+	if 'Temperature' in analysisKeys:
 		name = 'Temperature'
 				
 
@@ -1867,7 +1867,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['Dimensions']		= 3
 		
 		
-	if 'S' in analysisKeys:
+	if 'Salinity' in analysisKeys:
 		name = 'Salinity'
 		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)
 		if annual:
