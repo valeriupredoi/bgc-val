@@ -110,8 +110,8 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
         	analysisKeys.append('AMOC_26N')
 	        analysisKeys.append('AMOC_32S')
                 analysisKeys.append('ADRC_26N')                # AMOC 26N                        	        
-        	analysisKeys.append('T')                        # WOA Temperature
-	        analysisKeys.append('S')                        # WOA Salinity   
+        	analysisKeys.append('Temperature')             # WOA Temperature
+	        analysisKeys.append('Salinity')                # WOA Salinity   
                 analysisKeys.append('MLD')                      # MLD
         	analysisKeys.append('MaxMonthlyMLD')               # MLD Monthly max           
 	        analysisKeys.append('MinMonthlyMLD')               # MLD Monthly min        
@@ -1052,7 +1052,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 			av[name]['Dimensions']		= 3		
 		
 						
-		if 'T' in analysisKeys:
+		if 'Temperature' in analysisKeys:
 			name = 'Temperature'
 			av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)										
 			if annual:		
@@ -1260,7 +1260,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 			av[name]['Dimensions']		= 1
 				
 					
-		if 'S' in analysisKeys:
+		if 'Salinity' in analysisKeys:
 			name = 'Salinity'
 			av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)												
 			if annual:
@@ -1808,7 +1808,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 				)	
 		####
 		# North Atlantic Salinity
-		for name in ['Temperature',]:
+		for name in ['Temperature','Salinity',]:
 		  if name not in av.keys():continue
 		  for region in regionList:
 		    for layer in ['Surface','500m','1000m']:
