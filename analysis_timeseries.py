@@ -95,7 +95,7 @@ bgcKeysDict = {i:n for i,n in enumerate(bgcKeys)}
 physKeys = []
 if True:
 
-	physKeys.appena('Temperature')                        	# WOA Temperature
+	physKeys.append('Temperature')                        	# WOA Temperature
 	#physKeys.append('VolWeightedT')			# Volume weighted WOA Temperature
 	physKeys.append('GlobalMeanTemperature')    	# Global Mean Temperature
 	physKeys.append('VolumeMeanTemperature')    	# Global Mean Temperature

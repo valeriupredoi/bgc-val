@@ -380,7 +380,7 @@ def downloadMass(jobID,doMoo=True):
 	fixFilePaths(outputFold,jobID)
 	deleteBadLinksAndZeroSize(outputFold,jobID)
 
-def fixFilePaths(outputFold,jobID):
+def fixFilePaths(outputFold,jobID,debug=False):
 	#####
 	# The coupled model looses the first two characters of the name in the netcdf file.
 	fns = glob(outputFold+"/*"+jobID[2:]+"*.nc")
@@ -392,7 +392,7 @@ def fixFilePaths(outputFold,jobID):
 		correctfn = correctfn.replace('u-u-','u-')
 
 	        if os.path.exists(correctfn):
-	        	print "downloadFromMass:\tfixFilePaths:\tcorrect path exists.",correctfn
+	        	if debug: print "downloadFromMass:\tfixFilePaths:\tcorrect path exists.",correctfn
 	        	continue
 		if correctfn == fn:continue
                 print "downloadFromMass:\tfixFilePaths:\tFixing file prefix",fn, '-->',correctfn
@@ -413,7 +413,7 @@ def fixFilePaths(outputFold,jobID):
         	        #####
                 	correctfn = os.path.dirname(fn) +'/'+ os.path.basename(fn).replace(pref,'')
 	                if os.path.exists(correctfn):
-        	                print "downloadFromMass:\tfixFilePaths:\tcorrect path exists.",correctfn
+        	                if debug: print "downloadFromMass:\tfixFilePaths:\tcorrect path exists.",correctfn
                 	        continue
 	                print "downloadFromMass:\tfixFilePaths:\tFixing file prefix",pref,
 	                os.symlink(fn,correctfn)
@@ -438,7 +438,7 @@ def fixFilePaths(outputFold,jobID):
                         #####
                         correctfn = os.path.dirname(fn) +'/'+ os.path.basename(fn).replace(badsuff,suff)
                         if os.path.exists(correctfn):
-                                print "downloadFromMass:\tfixFilePaths:\tcorrect path exists.",correctfn
+                                if debug: print "downloadFromMass:\tfixFilePaths:\tcorrect path exists.",correctfn
                                 continue
                         print "downloadFromMass:\tfixFilePaths:\tFixing file suffix",badsuff,'->',suff,
 	                if correctfn == fn:continue

@@ -85,12 +85,12 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 	jobs = sorted(colours.keys())
 
 	if analysisname=='':
-		imageFolder = 'images/TimeseriesCompare/'
+		imageFolder = paths.imagedir+'/TimeseriesCompare/'
         	if len(jobs)==1:   imageFolder+= jobs[0]
 	       	elif len(jobs)==2: imageFolder+= jobs[0]+'_and_'+jobs[1]
         	else: 		   imageFolder+= str(len(jobs))+'Runs_'+jobs[0]
 	else:
-		imageFolder = 'images/TimeseriesCompare/'+analysisname
+		imageFolder = paths.imagedir+'/TimeseriesCompare/'+analysisname
 
 
 	annual = True
@@ -2294,17 +2294,17 @@ def main():
                         lineThicknesses= thicknesses)
 
 
-                jobs = ['u-an869','u-ao586']
-                colours = {i:standards[i] for i in jobs}
-                timeseries_compare({
-                        i:standards[i] for i in jobs},
-                        physics=1,
-                        bio=1,
-                        debug=0,
-                        year0='OOvFC1',
-                        jobDescriptions=jobDescriptions,
-                        analysisname='OceanOnlyVsFullCoupled_1',
-                        lineThicknesses= thicknesses)
+#                jobs = ['u-an869','u-ao586']
+#                colours = {i:standards[i] for i in jobs}
+#                timeseries_compare({
+#                        i:standards[i] for i in jobs},
+#                        physics=1,
+#                        bio=1,
+#                        debug=0,
+#                        year0='OOvFC1',
+#                        jobDescriptions=jobDescriptions,
+#                        analysisname='OceanOnlyVsFullCoupled_1',
+#                        lineThicknesses= thicknesses)
 
                 jobs = ['u-ar538','u-ar783']
                 colours = {i:standards[i] for i in jobs}
@@ -2400,40 +2400,40 @@ def main():
                 #        jobDescriptions=jobDescriptions,
                 #        analysisname='UKESM_0.9.2')
 		
-                jobs = ['u-ar951','u-ar379',]
-                colours = {i:standards[i] for i in jobs}
-                timeseries_compare({
-                        i:standards[i] for i in jobs},
-                        physics=1,
-                        bio=1,
-                        debug=0,
-                        year0='True',
-                        jobDescriptions=jobDescriptions,
-                        analysisname='IceburgVsNoIceburgFix')
+#                jobs = ['u-ar951','u-ar379',]
+#                colours = {i:standards[i] for i in jobs}
+#                timeseries_compare({
+#                        i:standards[i] for i in jobs},
+#                        physics=1,
+#                        bio=1,
+#                        debug=0,
+#                        year0='True',
+#                        jobDescriptions=jobDescriptions,
+#                        analysisname='IceburgVsNoIceburgFix')
 
 
-                jobs = ['u-aq853','u-ar549',]
-                colours = {i:standards[i] for i in jobs}
-                timeseries_compare({
-                        i:standards[i] for i in jobs},
-                        physics=1,
-                        bio=1,
-                        debug=0,
-                        year0='True',
-                        jobDescriptions=jobDescriptions,
-                        analysisname='CoupledRunwithOOIC_vs_CoupledRun')
+#                jobs = ['u-aq853','u-ar549',]
+#                colours = {i:standards[i] for i in jobs}
+#                timeseries_compare({
+#                        i:standards[i] for i in jobs},
+#                        physics=1,
+#                        bio=1,
+#                        debug=0,
+#                        year0='True',
+#                        jobDescriptions=jobDescriptions,
+#                        analysisname='CoupledRunwithOOIC_vs_CoupledRun')
 
-                jobs = ['u-ar538','u-ar748','u-ar773','u-ar761','u-ar769', 'u-ar976','u-ar977']
-                colours = {i:standards[i] for i in jobs}
-                timeseries_compare({
-                        i:standards[i] for i in jobs},
-                        physics=1,
-                        bio=1,
-                        debug=0,
-                        year0='4830-5000',#'UKESM_0.9.1',
-                        jobDescriptions=jobDescriptions,
-                        analysisname='UKESM_0.9.1_NewSuiteDebugging')
-
+#                jobs = ['u-ar538','u-ar748','u-ar773','u-ar761','u-ar769', 'u-ar976','u-ar977']
+#                colours = {i:standards[i] for i in jobs}
+#                timeseries_compare({
+#                        i:standards[i] for i in jobs},
+#                        physics=1,
+#                        bio=1,
+#                        debug=0,
+#                        year0='4830-5000',#'UKESM_0.9.1',
+#                        jobDescriptions=jobDescriptions,
+#                        analysisname='UKESM_0.9.1_NewSuiteDebugging')
+#
 
 
 
