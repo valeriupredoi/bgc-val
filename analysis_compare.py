@@ -2269,6 +2269,44 @@ def main():
 #                        year0='2500-3000',
 #                        jobDescriptions=jobDescriptions,
 #                        analysisname='Re-couplingTestReduced_2')
+
+                jobs = ['u-at572','u-at482',]
+                colours = {i:standards[i] for i in jobs}
+                timeseries_compare({
+                        i:standards[i] for i in jobs},
+                        physics=1,
+                        bio=1,
+                        debug=0,
+                        year0=False,
+                        jobDescriptions=jobDescriptions,
+                        analysisname='Set1_UM10.7_dmsmin1.25',
+                        lineThicknesses= thicknesses)
+
+                jobs = ['u-at572','u-at574',]
+                colours = {i:standards[i] for i in jobs}
+                timeseries_compare({
+                        i:standards[i] for i in jobs},
+                        physics=1,
+                        bio=1,
+                        debug=0,
+                        year0=False,
+                        jobDescriptions=jobDescriptions,
+                        analysisname='Set2_UM10.7_CN',
+                        lineThicknesses= thicknesses)
+
+                jobs = ['u-at643', 'u-at629', 'u-at646',]
+                colours = {i:standards[i] for i in jobs}
+                timeseries_compare({
+                        i:standards[i] for i in jobs},
+                        physics=1,
+                        bio=1,
+                        debug=0,
+                        year0=False,
+                        jobDescriptions=jobDescriptions,
+                        analysisname='Set3_UM10.7_STRATROP',
+                        lineThicknesses= thicknesses)
+                                                
+                        
                 jobs = ['u-ar977','u-as462','u-as643',]
                 colours = {i:standards[i] for i in jobs}
                 timeseries_compare({
