@@ -73,14 +73,24 @@ def shifttimes(mdata, jobID,year0=False):
 
 	if year0=='Drift':
                for t in sorted(mdata.keys()):
-                        if jobID in ['u-as462','u-as643',]:
-				t1 = t  +3312.
+#                        if jobID in ['u-as462','u-as643',]:	t1 = t  +3312.
 			if jobID == 'u-ar977': t1 =t
+			else:      t1 = t  +3312.
 			if t1 < 5400. : continue	
                         times.append(float(t1))
                         datas.append(mdata[t])
                return times, datas
 
+        if year0=='Drift2':
+               for t in sorted(mdata.keys()):
+#                        if jobID in ['u-as462','u-as643',]:    t1 = t  +3312.
+                        if jobID == 'u-ar977': t1 =t
+                        else:      t1 = t  +3312.
+                        if t1 < 5450. : continue
+                        if t1 > 5550. : continue
+                        times.append(float(t1))
+                        datas.append(mdata[t])
+               return times, datas
                
 	if year0=='UKESM0.8':
                for t in sorted(mdata.keys()):

@@ -1756,7 +1756,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 
 	#####
 	# 2D fields for North Atlantic analysis 
-	doNorthAtlanticSalt = True
+	doNorthAtlanticSalt = False
 	if doNorthAtlanticSalt:
 		nasregionList	= [
 				'NordicSea', 'LabradorSea', 'NorwegianSea'
@@ -1819,11 +1819,18 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 				try:	mdata = modeldataD[(jobID,name )][(region, layer, 'mean')]
 				except: continue
 				title = ' '.join([region, layer, 'Mean',  getLongName(name)])
-	
-				timesD[jobID] 	= sorted(mdata.keys())
-				arrD[jobID]	= [mdata[t] for t in timesD[jobID]]
+				
+				#timesD[jobID] 	= sorted(mdata.keys())
+				#arrD[jobID]	= [mdata[t] for t in timesD[jobID]]
+                                times,datas = shifttimes(mdata, jobID,year0=year0)
+                                timesD[jobID]   = times #mdata.keys())
+                                arrD[jobID]     = datas #t] for t in timesD[jobID]]
+
+				
                                 if jobID == 'u-aj588':
                                         arrD[jobID]     = np.ma.masked_where(arrD[jobID]==0.,arrD[jobID])
+
+	                        #times,datas = shifttimes(mdata, jobID,year0=year0)
 
 			if len(arrD.keys()) ==0:continue
                         units = av[name]['modeldetails']['units']
@@ -2097,9 +2104,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 				lineStyle	= ls,
 				colours		= colours,
                                 thicknesses     = lineThicknesses,
-
 			)
-
 	try:
 		AllImages = glob(imageFolder, recursive=True)
 	except:
@@ -2269,6 +2274,30 @@ def main():
 #                        year0='2500-3000',
 #                        jobDescriptions=jobDescriptions,
 #                        analysisname='Re-couplingTestReduced_2')
+                jobs = ['u-at643', 'u-at629', 'u-at646','u-ar977']
+                colours = {i:standards[i] for i in jobs}
+                timeseries_compare({
+                        i:standards[i] for i in jobs},
+                        physics=1,
+                        bio=1,
+                        debug=0,
+                        year0='Drift2',
+                        jobDescriptions=jobDescriptions,
+                        analysisname='Set3_UM10.7_STRATROP_plusOceanOnly',
+                        lineThicknesses= thicknesses)
+
+                jobs = ['u-at643', 'u-at629', 'u-at646',]
+                colours = {i:standards[i] for i in jobs}
+                timeseries_compare({
+                        i:standards[i] for i in jobs},
+                        physics=1,
+                        bio=1,
+                        debug=0,
+                        year0=False,
+                        jobDescriptions=jobDescriptions,
+                        analysisname='Set3_UM10.7_STRATROP',
+                        lineThicknesses= thicknesses)
+		
 
                 jobs = ['u-at572','u-at482',]
                 colours = {i:standards[i] for i in jobs}
@@ -2305,7 +2334,6 @@ def main():
                         jobDescriptions=jobDescriptions,
                         analysisname='Set3_UM10.7_STRATROP',
                         lineThicknesses= thicknesses)
-                                                
                         
                 jobs = ['u-ar977','u-as462','u-as643',]
                 colours = {i:standards[i] for i in jobs}
