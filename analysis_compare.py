@@ -167,10 +167,11 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
         	####
         	# Supercedes other flags.
 		analysisKeys = []
-                #analysisKeys.append('DrakePassageTransport')    # DrakePassageTransport         
-                #analysisKeys.append('AMOC_26N')
-                #analysisKeys.append('NoCaspianAirSeaFluxCO2')   # work in progress                      
-               	analysisKeys.append('VolumeMeanTemperature')    # Global Mean Temperature                 	             	 	       
+		analysisKeys.append('ERSST')
+#                analysisKeys.append('DrakePassageTransport')    # DrakePassageTransport         
+                analysisKeys.append('AMOC_26N')
+#                analysisKeys.append('NoCaspianAirSeaFluxCO2')   # work in progress                      
+#               	analysisKeys.append('VolumeMeanTemperature')    # Global Mean Temperature                 	             	 	       
 #		analysisKeys.append('CHD')
 #		analysisKeys.append('CHN')
 #		analysisKeys.append('DiaFrac')
@@ -1078,6 +1079,29 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 			av[name]['gridFile']		= orcaGridfn
 			av[name]['Dimensions']		= 3
 
+                if 'ERSST' in analysisKeys:
+                        name = 'ERSST'
+                        av[name]['modelFiles']  = "/group_workspaces/jasmin/esmeval/example_data/bgc/ERSST.v4/sst.mnmean.v4.nc"
+		        ERSSTCoords     = {'t':'time',    'z':'',  'lat': 'lat',      'lon': 'lon', 'cal': 'standard','tdict':['ZeroToZero'] }
+
+                        av[name]['modelcoords']         = ERSSTCoords
+                        #av[name]['datacoords']          = woaCoords
+
+                        av[name]['modeldetails']        = {'name': name, 'vars':['sst',], 'convert': ukp.NoChange,'units':'degrees C'}
+                        av[name]['datadetails']         = {'name': name, 'vars':[], 'units':''}
+
+                        av[name]['layers']              = ['layerless',]
+                        av[name]['regions']             = regionList
+                        av[name]['metrics']             = metricList
+
+                        av[name]['datasource']          = ''
+                        av[name]['model']               = 'ERSST'
+
+                        av[name]['modelgrid']           = 'ERSST_2g'
+                        av[name]['gridFile']            = '/group_workspaces/jasmin/esmeval/example_data/bgc/ERSST.v4/sst.mnmean.v4.nc'
+                        av[name]['Dimensions']          = 2
+		
+
 		if 'GlobalMeanTemperature' in analysisKeys:
 			name = 'GlobalMeanTemperature'
 			av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)										
@@ -1805,7 +1829,8 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 					lineStyle	= ls,
 					colours		= colours,
 	                                thicknesses     = lineThicknesses,
-				)	
+				)
+	
 		####
 		# North Atlantic Salinity
 		for name in ['Temperature','Salinity',]:
@@ -1928,7 +1953,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
                                         arrD[j][i] =d/1000000.
 		
 		for ts in ['Together',]:#'Separate']:
-		    for ls in ['DataOnly',]:#'','Both',]:			
+		    for ls in ['DataOnly',]:#'','Both',]:
                         if ls=='' and name not in level3: continue
 
 			tsp.multitimeseries(
@@ -2275,6 +2300,19 @@ def main():
 #                        jobDescriptions=jobDescriptions,
 #                        analysisname='Re-couplingTestReduced_2')
 
+                jobs = ['u-at643', 'u-at629', 'u-at646','u-ar977','u-as858',]#'u-ar462']
+                colours = {i:standards[i] for i in jobs}
+                timeseries_compare({
+                        i:standards[i] for i in jobs},
+                        physics=1,
+                        bio=1,
+                        debug=0,
+                        year0='Drift2',
+                        jobDescriptions=jobDescriptions,
+                        analysisname='Set3_UM10.7_STRATROP_OO_0.9.3',
+			)
+#		assert 0
+
                 jobs = ['u-as051', 'u-as412', 'u-as558']
                 colours = {i:standards[i] for i in jobs}
                 timeseries_compare({
@@ -2286,7 +2324,7 @@ def main():
                         jobDescriptions=jobDescriptions,
                         analysisname='UKESM0.9.2-CN_historical',
                         lineThicknesses= thicknesses)
-                        
+		#assert 0 
                 jobs = ['u-at643', 'u-at629', 'u-at646','u-ar977']
                 colours = {i:standards[i] for i in jobs}
                 timeseries_compare({

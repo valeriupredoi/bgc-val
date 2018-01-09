@@ -25,6 +25,7 @@
 import numpy as np
 from netCDF4 import num2date
 import os 
+from datetime import datetime,timedelta
 #from pyproj import Proj
 
 #Specific local code:
@@ -49,8 +50,19 @@ def getTimes(nc, coords):
 	if type(nc) == type('filename'):
 		nc = dataset(nc,'r')
 	dtimes = num2date(nc.variables[coords['t']][:], nc.variables[coords['t']].units,calendar=coords['cal'])[:]
-	ts = np.array([float(dt.year) + dt.dayofyr/365. for dt in dtimes])
-	return ts
+	print dtimes
+	try:
+		ts = np.array([float(dt.year) + dt.dayofyr/365. for dt in dtimes])
+		return ts
+	except: pass
+	ts= []
+	for dt in dtimes:
+		t  = float(dt.year)
+		tdel = dt - datetime(dt.year,1,1,0,0) 
+		t += tdel.days/365.
+		ts.append(t)
+		print dt,t
+	return np.array(ts)
 
 
 def loadData(nc,details):

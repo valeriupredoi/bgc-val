@@ -365,18 +365,24 @@ class timeseriesAnalysis:
   	  
 	nc = dataset(self.gridFile,'r')
 	tmask = nc.variables['tmask'][:]
-	try:	
-		pvol  = nc.variables['pvol' ][:]	
-		area  = nc.variables['area' ][:]		
-	except:
-		area = nc.variables['e2t'][:] * nc.variables['e1t'][:]
-		pvol = nc.variables['e3t'][:] *area
-	area  = np.ma.masked_where(tmask[0]==0,area )
-	pvol = np.ma.masked_where(tmask==0,pvol)	
+        try:
+                area  = nc.variables['area' ][:]
+        except:
+                area = nc.variables['e2t'][:] * nc.variables['e1t'][:]
+	if tmask.ndim==3:       area  = np.ma.masked_where(tmask[0]==0,area )
+        if tmask.ndim==2:       area  = np.ma.masked_where(tmask==0,area )
+
+	#if 'layerless' in self.layers:
+	#try:	
+	#	pvol  = nc.variables['pvol' ][:]	
+	#except:
+	#	pvol = nc.variables['e3t'][:] *area
+	#pvol = np.ma.masked_where(tmask==0,pvol)	
 	
-	print "timeseriesAnalysis:\t loadModelWeightsDict\tWARNING:\t this is a hack added at the last minute for the nemo-medusa ukesm run and will not work elsewhere."
-	lats = nc.variables['nav_lat'][:]
-	lons = nc.variables['nav_lon'][:]
+#print "timeseriesAnalysis:\t loadModelWeightsDict\tWARNING:\t this is a hack added at the last minute for the nemo-medusa ukesm run and will not work elsewhere."
+
+	lats = nc.variables[self.modelcoords['lat']][:]
+	lons = nc.variables[self.modelcoords['lon']][:]
 	nc.close()
 
 	self.weightsDict={}	

@@ -281,7 +281,7 @@ def analysis_timeseries(jobID = "u-ab671",
                         # Physics switches:
                         #analysisKeys.append('Temperature')                       # WOA Temperature
 			
-			analysisKeys.append('VolumeMeanTemperature')
+			#analysisKeys.append('VolumeMeanTemperature')
                         #analysisKeys.append('Salinity')                        # WOA Salinity
                         #analysisKeys.append('MLD')                      # MLD
                         #analysisKeys.append('MaxMonthlyMLD')            # MLD                       
@@ -298,7 +298,9 @@ def analysis_timeseries(jobID = "u-ab671",
                         #analysisKeys.append('AMOC_26N_nomexico')
                         #analysisKeys.append('ADRC_26N')                # AMOC 26N                        
 
-                        analysisKeys.append('GlobalMeanTemperature')    # Global Mean Temperature
+                        analysisKeys.append('ERSST')    		# Global Surface Mean Temperature
+
+                        #analysisKeys.append('GlobalMeanTemperature')    # Global Mean Temperature
 			#analysisKeys.append('GlobalMeanSalinity')    	# Global Mean Salinity                       	
                        	#analysisKeys.append('IcelessMeanSST')    	# Global Mean Surface Temperature with no ice
                        	#analysisKeys.append('quickSST')    		# Area Weighted Mean Surface Temperature
@@ -1699,6 +1701,29 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['Dimensions']		= 2
 
 
+        if 'ERSST' in analysisKeys:
+                name = 'ERSST'
+                av[name]['modelFiles']  = ["/group_workspaces/jasmin/esmeval/example_data/bgc/ERSST.v4/sst.mnmean.v4.nc",]
+                av[name]['dataFile']    = ''
+		
+                ERSSTCoords     = {'t':'time',    'z':'',  'lat': 'lat',      'lon': 'lon', 'cal': 'standard','tdict':['ZeroToZero'] }
+
+                av[name]['modelcoords']         = ERSSTCoords
+                av[name]['datacoords']          = woaCoords
+
+                av[name]['modeldetails']        = {'name': name, 'vars':['sst',], 'convert': ukp.NoChange,'units':'degrees C'}
+                av[name]['datadetails']         = {'name': name, 'vars':[], 'units':''}
+
+                av[name]['layers']              = ['layerless',]
+                av[name]['regions']             = regionList
+                av[name]['metrics']             = metricList
+
+                av[name]['datasource']          = ''
+                av[name]['model']               = 'ERSST'
+
+                av[name]['modelgrid']           = 'ERSST_2g'
+                av[name]['gridFile']            = '/group_workspaces/jasmin/esmeval/example_data/bgc/ERSST.v4/ERSST_sst_grid.nc'
+                av[name]['Dimensions']          = 2
 				
 		
 

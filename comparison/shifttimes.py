@@ -86,7 +86,7 @@ def shifttimes(mdata, jobID,year0=False):
 #                        if jobID in ['u-as462','u-as643',]:    t1 = t  +3312.
                         if jobID == 'u-ar977': t1 =t
                         else:      t1 = t  +3312.
-                        if t1 < 5450. : continue
+                        if t1 < 5300. : continue
                         if t1 > 5550. : continue
                         times.append(float(t1))
                         datas.append(mdata[t])

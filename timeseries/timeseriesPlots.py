@@ -701,11 +701,10 @@ def multitimeseries(
                         pyplot.plot(times,arr,c=colours[jobID],ls='-',lw=thicknesses[jobID],label=jobID,)
 
 
+	if type(data) == type(10.):
+		if data != -999:
+			pyplot.axhline(y=data,c='k',ls='--',lw=1., label = dataname)
 	
-	if data != -999:
-		pyplot.axhline(y=data,c='k',ls='--',lw=1., label = dataname)
-	
-
 
 
 	if plotStyle == 'Together':
