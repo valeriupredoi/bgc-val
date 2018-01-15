@@ -18,5 +18,5 @@ export jobid=$jobid
 python /home/users/ldemora/workspace/ukesm-validation/RemoteScripts/hello.py $jobid
 ssh -X -A jasmin-sci1 "rsync -av /home/users/ldemora/workspace/ukesm-validation/images/TimeseriesCompare/* /group_workspaces/jasmin/esmeval/public/Intercomparison/."
 
-ssh -X -A jasmin-sci1 "cd /home/users/ldemora/workspace/ukesm-validation; ipython /home/users/ldemora/workspace/ukesm-validation/analysis_compare.py; rsync -a /home/users/ldemora/workspace/ukesm-validation/images/TimeseriesCompare/* /group_workspaces/jasmin/esmeval/public/Intercomparison/."
+ssh -X -A jasmin-sci1 "cd /home/users/ldemora/workspace/ukesm-validation; ipython /home/users/ldemora/workspace/ukesm-validation/analysis_compare.py; rsync -a /home/users/ldemora/workspace/ukesm-validation/images/TimeseriesCompare/* /group_workspaces/jasmin/esmeval/public/Intercomparison/.; rsync -av /home/users/ldemora/workspace/ukesm-validation/CompareReports /group_workspaces/jasmin/esmeval/public/."
 echo "The end of runCompareOnSci1.sh on login lander"

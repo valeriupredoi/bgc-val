@@ -294,14 +294,14 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('NorthernTotalIceExtent')	# work in progress
 			#analysisKeys.append('SouthernTotalIceExtent')	# work in progress
                         #analysisKeys.append('AMOC_32S')                # AMOC 32S
-                        #analysisKeys.append('AMOC_26N')                # AMOC 26N
+                        analysisKeys.append('AMOC_26N')                # AMOC 26N
                         #analysisKeys.append('AMOC_26N_nomexico')
                         #analysisKeys.append('ADRC_26N')                # AMOC 26N                        
 
-                        analysisKeys.append('ERSST')    		# Global Surface Mean Temperature
+ #                       analysisKeys.append('ERSST')    		# Global Surface Mean Temperature
 
-                        #analysisKeys.append('GlobalMeanTemperature')    # Global Mean Temperature
-			#analysisKeys.append('GlobalMeanSalinity')    	# Global Mean Salinity                       	
+                        analysisKeys.append('GlobalMeanTemperature')    # Global Mean Temperature
+			analysisKeys.append('GlobalMeanSalinity')    	# Global Mean Salinity                       	
                        	#analysisKeys.append('IcelessMeanSST')    	# Global Mean Surface Temperature with no ice
                        	#analysisKeys.append('quickSST')    		# Area Weighted Mean Surface Temperature
 

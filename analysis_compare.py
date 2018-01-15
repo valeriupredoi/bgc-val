@@ -167,7 +167,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
         	####
         	# Supercedes other flags.
 		analysisKeys = []
-		analysisKeys.append('ERSST')
+#		analysisKeys.append('ERSST')
 #                analysisKeys.append('DrakePassageTransport')    # DrakePassageTransport         
                 analysisKeys.append('AMOC_26N')
 #                analysisKeys.append('NoCaspianAirSeaFluxCO2')   # work in progress                      
@@ -2242,6 +2242,11 @@ def main():
         standards = configToDict('config/jobIDcolours.ini')
 	thicknesses = defaultdict(lambda: 0.75)
 	thicknesses['u-ar783'] = 2.2
+        thicknesses['u-at793'] = 2.2
+        thicknesses['u-at760'] = 2.2
+        thicknesses['u-at628'] = 2.2
+        thicknesses['u-at629'] = 2.2
+
 
         jobDescriptions = configToDict('config/jobIDdescriptions.ini')   
 
@@ -2299,6 +2304,32 @@ def main():
 #                        year0='2500-3000',
 #                        jobDescriptions=jobDescriptions,
 #                        analysisname='Re-couplingTestReduced_2')
+
+		
+                jobs = ['u-am064','u-am927','u-aq853','u-ar766',]
+                colours = {i:standards[i] for i in jobs}
+                timeseries_compare({
+                        i:standards[i] for i in jobs},
+                        physics=1,
+                        bio=1,
+                        debug=0,
+                        year0=False,
+                        jobDescriptions=jobDescriptions,
+                        analysisname='piControlSpinup',
+                        lineThicknesses= thicknesses)
+
+
+		jobs = ['u-ar977','u-as462','u-as858','u-at629','u-at793', 'u-at628',  'u-at760',]
+		colours = {i:standards[i] for i in jobs}
+		timeseries_compare({
+		        i:standards[i] for i in jobs},
+		        physics=1,
+		        bio=1,
+		        debug=0,
+		        year0='Drift3',
+		        jobDescriptions=jobDescriptions,
+        		analysisname='UKESM1_candidates',
+                        lineThicknesses= thicknesses)
 
                 jobs = ['u-at643', 'u-at629', 'u-at646','u-ar977','u-as858',]#'u-ar462']
                 colours = {i:standards[i] for i in jobs}
