@@ -106,6 +106,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 	        analysisKeys.append('TotalIceExtent')           # work in progress      
         	analysisKeys.append('NorthernTotalIceExtent')   # work in progress      
 	        analysisKeys.append('SouthernTotalIceExtent')   # work in progress      
+	        analysisKeys.append('WeddelIceExent')   # work in progress      	        
 
         	analysisKeys.append('AMOC_26N')
 	        analysisKeys.append('AMOC_32S')
@@ -305,7 +306,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 			av[name]['Dimensions']		= 1
 
 
-		icekeys = ['NorthernTotalIceArea','SouthernTotalIceArea','TotalIceArea','NorthernTotalIceExtent','SouthernTotalIceExtent','TotalIceExtent']
+		icekeys = ['NorthernTotalIceArea','SouthernTotalIceArea','TotalIceArea','NorthernTotalIceExtent','SouthernTotalIceExtent','WeddelIceExent','TotalIceExtent']
 		if len(set(icekeys).intersection(set(analysisKeys))):
 		    for name in icekeys:
 		    	if name not in analysisKeys:continue
@@ -336,7 +337,11 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 
 			def calcTotalIceExtentS(nc,keys): # South
 				return np.ma.masked_where((tmask==0)+(nc.variables[keys[0]][:].squeeze()<0.15)+(lat>0.),area).sum()/1E12
-								
+
+			weddelmask = (lat<-80.)+(lat>-65.)+(lon <-60.)+(lon > -20.)
+			def calcTotalIceExtentWS(nc,keys): # South
+				return np.ma.masked_where((tmask==0)+(nc.variables[keys[0]][:].squeeze()<0.15)+weddelmask,area).sum()/1E12
+											
 			av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)												
 			av[name]['dataFile'] 		= ''
 			
@@ -1154,7 +1159,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 			av[name]['modeldetails'] 	= {'name': name, 'vars':['votemper',], 'convert': sumMeanLandMask,'units':'degrees C'}
 			av[name]['datadetails']  	= {'name': '', 'units':''}
 			av[name]['layers'] 		= ['layerless',]
-			av[name]['regions'] 		= ['Global', 'ignoreInlandSeas','Equator10','SouthernOcean','ArcticOcean',  'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific',]
+			av[name]['regions'] 		= ['Global', 'ignoreInlandSeas','Equator10','SouthernOcean','ArcticOcean',  'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific','WeddelSea',]
 			av[name]['metrics']		= ['wcvweighted',]
 			av[name]['datasource'] 		= ''
 			av[name]['model']		= 'NEMO'
@@ -1330,6 +1335,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 
 		        av[name]['layers']              = ['layerless',]#'Surface - 1000m','Surface - 300m',]#'depthint']
 		        mldregions =regionList
+			mldregions.extend(['WeddelSea',])# 'LabradorSea', 'NorwegianSea'])				        
 #		        mldregions.extend(['NordicSea', 'LabradorSea', 'NorwegianSea'])
 		        av[name]['regions']             = mldregions
 		        av[name]['metrics']             = metricList

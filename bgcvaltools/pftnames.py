@@ -208,6 +208,7 @@ def makeLongNameDict():
   	  	
   	lnd['NorthernTotalIceExtent'] = 'Northern Hemisphere Ice Extent'
   	lnd['SouthernTotalIceExtent'] = 'Southern Hemisphere Ice Extent'
+  	lnd['WeddelIceExent'] = 'Weddel Sea Ice Extent'  	
   	lnd['TotalIceExtent'] = 'Total Ice Extent'  	  	
 
   	lnd['NorthernTotalIceArea'] = 'Northern Hemisphere Ice Area'
@@ -349,8 +350,9 @@ def makeLongNameDict():
   	lnd['EquatorialAtlanticOcean'] = "Equatorial Atlantic Ocean"	  		  	  	
   	lnd['EquatorialPacificOcean'] = "Equatorial Pacific Ocean"	  		  	  	  	  	
   	lnd['IndianOcean'] = "Indian Ocean"
-  	lnd['NorthHemisphere'] = "North Hemisphere"
-  	lnd['SouthHemisphere'] = "South Hemisphere"  
+  	lnd['NorthHemisphere'] 	= "North Hemisphere"
+  	lnd['SouthHemisphere'] 	= "South Hemisphere"  
+  	lnd['WeddelSea'] 	= "Weddel Sea" 	
         lnd['26N'] = "26N"
         lnd['32S'] = "32S"
        
