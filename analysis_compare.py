@@ -2073,6 +2073,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
         	
 	for name in ['DiaFrac','CHD','CHN','CHL','N','Si','Iron','Alk','DIC','Chlorophyll','DMS','Nitrate','Silicate','MLD','mld','MaxMonthlyMLD','MinMonthlyMLD','Dust',]:
 	  if name not in av.keys():continue
+	  
 	  for region in regionList:
 	    for layer in ['Surface','100m','200m','layerless',]:
 	    
@@ -2104,6 +2105,39 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
                                 thicknesses     = lineThicknesses,
 
 			)
+	for name in ['MLD','mld','MaxMonthlyMLD','MinMonthlyMLD',]:
+	  if name not in av.keys():continue
+	  for region in vmtregionList:
+	    for layer in ['layerless',]:
+	    
+		timesD  = {}
+		arrD	= {}
+		
+		for jobID in jobs:
+			try:mdata = modeldataD[(jobID,name )][(region, layer, 'mean')]
+			except: continue
+			title = ' '.join([region, layer, 'Mean',  getLongName(name)])
+			times,datas = shifttimes(mdata, jobID,year0=year0)
+			timesD[jobID] 	= times
+			arrD[jobID]	= datas
+						
+                units = av[name]['modeldetails']['units']
+		
+		for ts in ['Together',]:#'Separate']:
+		    for ls in ['DataOnly',]:#'','Both',]:			
+			tsp.multitimeseries(
+				timesD, 		# model times (in floats)
+				arrD,			# model time series
+				data 	= -999,		# in situ data distribution
+				title 	= title,
+				filename=ukp.folder(imageFolder+'/MLD')+'_'.join([name,region,layer,ts,ls+'.png']),
+				units = units,
+				plotStyle 	= ts,
+				lineStyle	= ls,
+				colours		= colours,
+                                thicknesses     = lineThicknesses,
+			)
+			
 
 	for name in ['DMS',]:
 	  if name not in av.keys():continue
