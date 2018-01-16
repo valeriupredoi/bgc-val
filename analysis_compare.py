@@ -207,6 +207,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 	metricList 	= ['mean',]
   	regionList	= ['Global',]
 
+	vmtregionList = ['Global', 'ignoreInlandSeas','Equator10','SouthernOcean','ArcticOcean',  'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific','WeddelSea',]
 	level3 = ['DMS',]	
 	
 	#####
@@ -1152,15 +1153,13 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 			av[name]['modelcoords'] = medusaCoords
 			av[name]['datacoords'] 	= woaCoords
 
-	
-
 		        def sumMeanLandMask(nc,keys):
 		        	assert 0
 
 			av[name]['modeldetails'] 	= {'name': name, 'vars':['votemper',], 'convert': sumMeanLandMask,'units':'degrees C'}
 			av[name]['datadetails']  	= {'name': '', 'units':''}
 			av[name]['layers'] 		= ['layerless',]
-			av[name]['regions'] 		= ['Global', 'ignoreInlandSeas','Equator10','SouthernOcean','ArcticOcean',  'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific','WeddelSea',]
+			av[name]['regions'] 		= vmtregionList
 			av[name]['metrics']		= ['wcvweighted',]
 			av[name]['datasource'] 		= ''
 			av[name]['model']		= 'NEMO'
@@ -1168,7 +1167,6 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 			av[name]['gridFile']		= paths.orcaGridfn
 			av[name]['Dimensions']		= 2
 
-		
 
 		if 'GlobalMeanSalinity' in analysisKeys:
 			name = 'GlobalMeanSalinity'
@@ -2043,7 +2041,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 			)
 	for name in ['VolumeMeanTemperature',]:
 	  if name not in av.keys():continue
-	  for region in regionList:
+	  for region in vmtregionList:
 	    for layer in ['layerless',]:
 		timesD  = {}
 		arrD	= {}
