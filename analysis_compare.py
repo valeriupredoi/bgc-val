@@ -2364,7 +2364,6 @@ def main():
                         jobDescriptions=jobDescriptions,
                         analysisname='UKESM_0.9.3_from4945',
                         lineThicknesses= thicknesses2)
-		assert 0
 	
                 jobs = ['u-am064','u-am927','u-aq853','u-ar766',]
                 colours = {i:standards[i] for i in jobs}
@@ -2377,7 +2376,6 @@ def main():
                         jobDescriptions=jobDescriptions,
                         analysisname='piControlSpinup',
                         lineThicknesses= thicknesses)
-		assert 0
 
 		jobs = ['u-ar977','u-as462','u-as858','u-at629','u-at793', 'u-at628',  'u-at760',]
 		colours = {i:standards[i] for i in jobs}
