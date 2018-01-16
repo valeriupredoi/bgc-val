@@ -27,6 +27,15 @@ def shifttimes(mdata, jobID,year0=False):
 	times,datas=[],[]
 	try:	t0 = float(sorted(mdata.keys())[0])
 	except:	return times, datas       
+
+	if year0=='piControl':  
+               for t in sorted(mdata.keys()):
+                        if jobID == 'u-ar766': t1 = t + (2594 -1850)    #-1869
+			else: t1 = t 
+                        times.append(float(t1))
+                        datas.append(mdata[t])  
+               return times, datas
+
 				
 	if year0=='juggling2':	
                for t in sorted(mdata.keys()):
@@ -175,9 +184,12 @@ def shifttimes(mdata, jobID,year0=False):
 	# Start time series (x-axis) at year 4945 (20 years before u-ar783 started) and plot forwards from this point to the end point of u-ar783+20 years (this will change each night as u-ar783 progresses). By Monday the end point of u-ar783 is likely ~ 4965 + 25 years = 4990, hence the time axes would run 4945 to 5110. Options 1 and 2 can be plotted between these evolving time axes.
 	#
  	#Then add in 3 realizations of 3 separate 100 year periods drawn from option 3 (e.g. years (i) 2130-2230, (ii) 2290-2390, (iii) 2450-2550, with each period started at year 4965 in the figure and plotted to the end point of the time-axis. So for the example above on Monday this would imply 45 years of each of the segments, with them getting longer each night (assuming u-ar783 progresses at 5 years/day) by 5 years.
-		if jobID in ['u-an869','u-ar783','u-ar538']:
+		if jobID in ['u-an869','u-ar783','u-ar538','u-ar766','u-at629','u-at793','u-at628','u-at760',]:
 	               	for t in sorted(mdata.keys()):
-				if jobID  in ['u-ar783',]: t1 = t + (4965. - 2108.)
+				if jobID in ['u-at629','u-at793','u-at628','u-at760',]:
+								t1 = t + 2794.
+				elif jobID  in ['u-ar783',]: 	t1 = t + 4965. - 2108.
+                                elif jobID  in ['u-ar766',]: 	t1 = t + 3115.
 				else:	t1 = t
 	
         	                if float(t1) <4945.:continue
@@ -185,14 +197,13 @@ def shifttimes(mdata, jobID,year0=False):
                         	times.append(float(t1))
 	                        datas.append(mdata[t])
 
-
                 if jobID in ['u-am064','u-am927','u-aq853','u-am064i','u-am927i','u-aq853i','u-am064ii','u-am927ii','u-aq853ii','u-am064iii','u-am927iii','u-aq853iii',]:
                         for t in sorted(mdata.keys()):
                                 if jobID in ['u-am064i','u-am927i','u-aq853i',]:     t1 = t+2835     # 2130-2230
                                 if jobID in ['u-am064ii','u-am927ii','u-aq853ii',]:      t1 = t+2675     # 2290-2390
                                 if jobID in ['u-am064iii','u-am927iii','u-aq853iii',]:     t1 = t+2515     # 2450-2550
 
-				#if year0 == '4945-5110i':	t1 = t+2835	# 2130-2230
+				#if year0 == '4945-5110i':	 t1 = t+2835	# 2130-2230
                                 #if year0 == '4945-5110ii':      t1 = t+2675	# 2290-2390
                                 #if year0 == '4945-5110iii':     t1 = t+2515	# 2450-2550
 				if jobID=='u-am927iii':
@@ -202,7 +213,6 @@ def shifttimes(mdata, jobID,year0=False):
                                 if float(t1) >5110.:continue
                                 times.append(float(t1))
                                 datas.append(mdata[t])
-
                	return times, datas
 
 	if year0 =='from4950':

@@ -2305,7 +2305,28 @@ def main():
 #                        jobDescriptions=jobDescriptions,
 #                        analysisname='Re-couplingTestReduced_2')
 
-		
+	
+                #jobs = ['u-ar783','u-ar538','u-am927i','u-am927ii','u-am927iii','u-aq853iii','u-ar766']
+                jobs = ['u-at629','u-at793','u-at628','u-at760','u-am927i','u-am927ii','u-am927iii','u-aq853iii','u-ar766']
+                colours = {i:standards[i] for i in jobs}
+        	thicknesses2 = defaultdict(lambda: 0.75)
+        	thicknesses2['u-ar766'] = 1.7
+                thicknesses2['u-at629'] = 2.2
+                thicknesses2['u-at793'] = 2.2
+                thicknesses2['u-at628'] = 2.2
+                thicknesses2['u-at760'] = 2.2
+
+                timeseries_compare({
+                        i:standards[i] for i in jobs},
+                        physics=1,
+                        bio=1,
+                        debug=0,
+                        year0='4945-5110',
+                        jobDescriptions=jobDescriptions,
+                        analysisname='UKESM_0.9.3_from4945',
+                        lineThicknesses= thicknesses2)
+		assert 0
+	
                 jobs = ['u-am064','u-am927','u-aq853','u-ar766',]
                 colours = {i:standards[i] for i in jobs}
                 timeseries_compare({
@@ -2313,11 +2334,11 @@ def main():
                         physics=1,
                         bio=1,
                         debug=0,
-                        year0=False,
+                        year0='piControl',
                         jobDescriptions=jobDescriptions,
                         analysisname='piControlSpinup',
                         lineThicknesses= thicknesses)
-
+		assert 0
 
 		jobs = ['u-ar977','u-as462','u-as858','u-at629','u-at793', 'u-at628',  'u-at760',]
 		colours = {i:standards[i] for i in jobs}
