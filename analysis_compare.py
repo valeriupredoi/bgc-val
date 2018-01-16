@@ -315,6 +315,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 			area = nc.variables['e2t'][:] * nc.variables['e1t'][:]			
 			tmask = nc.variables['tmask'][0,:,:]
 			lat = nc.variables['nav_lat'][:,:]
+                        lon = nc.variables['nav_lon'][:,:]
 			nc.close()			
 
 			def calcTotalIceArea(nc,keys):	#Global
