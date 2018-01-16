@@ -281,9 +281,10 @@ def analysis_timeseries(jobID = "u-ab671",
                         # Physics switches:
                         #analysisKeys.append('Temperature')                       # WOA Temperature
 			
-			#analysisKeys.append('VolumeMeanTemperature')
+			analysisKeys.append('VolumeMeanTemperature')
+			analysisKeys.append('WeddelIceExent')
                         #analysisKeys.append('Salinity')                        # WOA Salinity
-                        #analysisKeys.append('MLD')                      # MLD
+                        analysisKeys.append('MLD')                      # MLD
                         #analysisKeys.append('MaxMonthlyMLD')            # MLD                       
                         #analysisKeys.append('MinMonthlyMLD')
 
@@ -1692,7 +1693,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		#av[name]['datadetails']  	= {'name': name, 'vars':['t_an',], 'convert': ukp.NoChange,'units':'degrees C'}
 
 		av[name]['layers'] 		= ['layerless',]
-		av[name]['regions'] 		= ['Global', 'ignoreInlandSeas','Equator10','SouthernOcean','ArcticOcean',  'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific',]
+		av[name]['regions'] 		= ['Global', 'ignoreInlandSeas','Equator10','SouthernOcean','ArcticOcean',  'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific','WeddelSea']
 		av[name]['metrics']		= ['wcvweighted',]
 		av[name]['datasource'] 		= ''
 		av[name]['model']		= 'NEMO'
@@ -2169,7 +2170,7 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		av[name]['layers'] 		= ['layerless',]#'Surface - 1000m','Surface - 300m',]#'depthint']
 		mldregions =regionList
-		#mldregions.extend(['NordicSea', 'LabradorSea', 'NorwegianSea'])		
+		mldregions.extend(['WeddelSea',])# 'LabradorSea', 'NorwegianSea'])		
 		av[name]['regions'] 		= mldregions
 		av[name]['metrics']		= metricList
 
@@ -2240,7 +2241,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			print "No monthly MLD files found"		
 		
 
-	icekeys = ['NorthernTotalIceArea','SouthernTotalIceArea','TotalIceArea','NorthernTotalIceExtent','SouthernTotalIceExtent','TotalIceExtent']
+	icekeys = ['NorthernTotalIceArea','SouthernTotalIceArea','TotalIceArea','NorthernTotalIceExtent','WeddelIceExent','SouthernTotalIceExtent','TotalIceExtent']
 	if len(set(icekeys).intersection(set(analysisKeys))):
 	    for name in icekeys:
 	    	if name not in analysisKeys:continue
@@ -2249,6 +2250,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		area = nc.variables['e2t'][:] * nc.variables['e1t'][:]
 		tmask = nc.variables['tmask'][0,:,:]
 		lat = nc.variables['nav_lat'][:,:]
+		lon = nc.variables['nav_lon'][:,:]		
 		nc.close()
 
 		def calcTotalIceArea(nc,keys):	#Global
@@ -2271,7 +2273,12 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		def calcTotalIceExtentS(nc,keys): # South
 			return np.ma.masked_where((tmask==0)+(nc.variables[keys[0]][:].squeeze()<0.15)+(lat>0.),area).sum()/1E12
-
+		
+		weddelmask = (lat<-80.)+(lat>-65.)+(lon <-60.)+(lon > -20.)
+		def calcTotalIceExtentWS(nc,keys): # South
+			return np.ma.masked_where((tmask==0)+(nc.variables[keys[0]][:].squeeze()<0.15)+weddelmask,area).sum()/1E12
+			
+			
 		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)
 		av[name]['dataFile'] 		= ''
 
@@ -2298,6 +2305,10 @@ def analysis_timeseries(jobID = "u-ab671",
 			av[name]['modeldetails'] 	= {'name': name, 'vars':['soicecov',], 'convert': calcTotalIceExtentS,'units':'1E6 km^2'}
 		#	av[name]['regions'] 		=  ['SouthHemisphere',]
 
+	    	if name in ['WeddelIceExent',]:
+			av[name]['modeldetails'] 	= {'name': name, 'vars':['soicecov',], 'convert': calcTotalIceExtentWS,'units':'1E6 km^2'}
+		#	av[name]['regions'] 		=  ['SouthHemisphere',]
+		
 	    	if name in ['TotalIceExtent',]:
 			av[name]['modeldetails'] 	= {'name': name, 'vars':['soicecov',], 'convert': calcTotalIceExtent,'units':'1E6 km^2'}
 		#	av[name]['regions'] 		=  ['Global',]

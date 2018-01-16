@@ -75,7 +75,7 @@ def addMassjobs(configfn='',startinghour = 18):
 		hour = hourcheck(startinghour+i)
 
 		options = 	parseList(cp,'jobs',job)
-		if 'standard' in options:	
+		if 'standard' in options or 'physics' in options:	
 			massscripts	+= '\n1  '+str(int(hour))+\
 					'   * * * /users/modellers/ledm/workspace/ukesm-validation/RemoteScripts/pmlcron_mass.sh '+\
 					job + ' >  /users/modellers/ledm/ImagesFromJasmin/cron-mass_'+\
