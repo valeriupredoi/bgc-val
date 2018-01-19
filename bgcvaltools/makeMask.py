@@ -209,6 +209,29 @@ def makeMask(name,newSlice, xt,xz,xy,xx,xd,debug=False):
 		mx  = np.ma.masked_outside(xx, -60., -20.).mask
 		mx += np.ma.masked_outside(xy, -80., -64.).mask
 		return mx
+
+  	# Regions from Pierce 1995 - https://doi.org/10.1175/1520-0485(1995)025<2046:CROHAF>2.0.CO;2
+
+	if newSlice == 'Enderby':
+		mx  = np.ma.masked_outside(xx,    0.,   97.5 ).mask
+		mx += np.ma.masked_outside(xy, -80., -60.).mask		
+		return mx
+	if newSlice == 'Wilkes':
+		mx  = np.ma.masked_outside(xx, 97.5,  172.5).mask
+		mx += np.ma.masked_outside(xy, -80., -60.).mask
+		return mx
+	if newSlice == 'Ross':
+		mx  = np.ma.masked_outside(xx, 172.5, -137.5).mask
+		mx += np.ma.masked_outside(xy, -80., -60.).mask
+		return mx
+	if newSlice == 'Amundsen':
+		mx  = np.ma.masked_outside(xx, -137.5, -72.5).mask
+		mx += np.ma.masked_outside(xy, -80., -60.).mask
+		return mx
+	if newSlice == 'Weddel':
+		mx  = np.ma.masked_outside(xx, -72.5, 0.).mask
+		mx += np.ma.masked_outside(xy, -80., -60.).mask
+		return mx								
 		
 		
 	if newSlice == 'YevgenyNordicSea':

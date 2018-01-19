@@ -354,10 +354,17 @@ def makeLongNameDict():
   	lnd['IndianOcean'] = "Indian Ocean"
   	lnd['NorthHemisphere'] 	= "North Hemisphere"
   	lnd['SouthHemisphere'] 	= "South Hemisphere"  
-  	lnd['WeddelSea'] 	= "Weddel Sea" 	
         lnd['26N'] = "26N"
         lnd['32S'] = "32S"
-       
+
+  	lnd['WeddelSea'] 	= "Weddel Sea" 	
+  	lnd['Enderby'] 		= "Enderby Region" 		# Regions from Pierce 1995 - https://doi.org/10.1175/1520-0485(1995)025<2046:CROHAF>2.0.CO;2
+  	lnd['Wilkes'] 		= "Wilkes Region" 	
+  	lnd['Ross'] 		= "Ross Region" 	
+  	lnd['Amundsen']		= "Amundsen Region" 	
+  	lnd['Weddel'] 		= "Weddel Region" 	  	  	  	  	
+
+  	  	       
   	lnd['Global'] = "Global"	
   	lnd['Equator10'] = "Equator (+/-10)"	
   	lnd['Remainder'] = "Oligotrophic Gyres"

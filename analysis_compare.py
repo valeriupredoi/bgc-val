@@ -211,8 +211,11 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 	layerList 	= ['Surface',]
 	metricList 	= ['mean',]
   	regionList	= ['Global',]
-
+  	
+	PierceRegions = ['Enderby','Wilkes','Ross','Amundsen','Weddel',]
+	
 	vmtregionList = ['Global', 'ignoreInlandSeas','Equator10','SouthernOcean','ArcticOcean',  'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific','WeddelSea',]
+	vmtregionList.extend(PierceRegions)
 	level3 = ['DMS',]	
 	
 	#####
@@ -1081,7 +1084,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 			av[name]['datadetails']  	= {'name': name, 'vars':['t_an',], 'convert': ukp.NoChange,'units':'degrees C'}
 	
 			av[name]['layers'] 		=  layerList
-			av[name]['regions'] 		= regionList	
+			av[name]['regions'] 		= vmtregionList	
 			av[name]['metrics']		= metricList
 
 			av[name]['datasource'] 		= 'WOA'
@@ -1338,10 +1341,8 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 		        av[name]['datadetails']         = {'name': 'mld', 'vars':['mld','mask',], 'convert': mldapplymask,'units':'m'}
 
 		        av[name]['layers']              = ['layerless',]#'Surface - 1000m','Surface - 300m',]#'depthint']
-		        mldregions =regionList
-			mldregions.extend(['WeddelSea',])# 'LabradorSea', 'NorwegianSea'])				        
-#		        mldregions.extend(['NordicSea', 'LabradorSea', 'NorwegianSea'])
-		        av[name]['regions']             = mldregions
+		        
+		        av[name]['regions']             = vmtregionList
 		        av[name]['metrics']             = metricList
 
 		        av[name]['datasource']          = 'IFREMER'
@@ -1842,10 +1843,10 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 				)
 	
 	####
-	for name in ['Temperature','Salinity',]:
+	for name in ['Temperature','Salinity','MLD',]:
 		  if name not in av.keys():continue
 		  for region in vmtregionList:
-		    for layer in ['Surface','500m','1000m']:
+		    for layer in ['Surface','500m','1000m','layerless',]:
 			timesD  = {}
 			arrD	= {}
 		

@@ -357,6 +357,7 @@ def html5Maker(
                           'Salinity', 'GlobalMeanSalinity',
                           'TotalIceArea',
                           'TotalIceExtent',   
+                          'WeddelIceExtent',                                                                           
                           'DrakePassageTransport',
                           'AMOC_26N',
                           'ADRC_26N',                                                

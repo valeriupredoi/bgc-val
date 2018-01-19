@@ -338,6 +338,9 @@ def analysis_timeseries(jobID = "u-ab671",
 	if regions == 'short':
 		regionList 	= ['Global','SouthernHemisphere','NorthernHemisphere',]
 
+	# Regions from Pierce 1995 - https://doi.org/10.1175/1520-0485(1995)025<2046:CROHAF>2.0.CO;2
+	PierceRegions = ['Enderby','Wilkes','Ross','Amundsen','Weddel',]
+
 	#if analysisSuite.lower() in ['debug',]:
         #        regionList      = ['Global', 'ArcticOcean',]
 
@@ -1717,8 +1720,11 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['datadetails']  	= {'name': '', 'units':''}
 		#av[name]['datadetails']  	= {'name': name, 'vars':['t_an',], 'convert': ukp.NoChange,'units':'degrees C'}
 
+		vmtregions = ['Global', 'ignoreInlandSeas','Equator10','SouthernOcean','ArcticOcean',  'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific','WeddelSea']
+		vmtregions.extend(PierceRegions)
+		
 		av[name]['layers'] 		= ['layerless',]
-		av[name]['regions'] 		= ['Global', 'ignoreInlandSeas','Equator10','SouthernOcean','ArcticOcean',  'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific','WeddelSea']
+		av[name]['regions'] 		= vmtregions
 		av[name]['metrics']		= ['wcvweighted',]
 		av[name]['datasource'] 		= ''
 		av[name]['model']		= 'NEMO'
@@ -1904,7 +1910,9 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modeldetails'] 	= {'name': name, 'vars':[ukesmkeys['temp3d'],], 'convert': applyLandMask,'units':'degrees C'}
 		av[name]['datadetails']  	= {'name': name, 'vars':['t_an',], 'convert': ukp.NoChange,'units':'degrees C'}
 
-		av[name]['layers'] 		=  layerList
+		tregions = ['Global', 'ignoreInlandSeas','Equator10','SouthernOcean','ArcticOcean',  'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific','WeddelSea']
+		tregions.extend(PierceRegions)
+		av[name]['layers'] 		=  tregions
 		av[name]['regions'] 		= regionList
 		av[name]['metrics']		= metricList
                 	
@@ -1938,8 +1946,8 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modeldetails'] 	= {'name': name, 'vars':[ukesmkeys['sal3d'],], 'convert': applyLandMask,'units':'PSU'}
 		av[name]['datadetails']  	= {'name': name, 'vars':['s_an',], 'convert': ukp.NoChange,'units':'PSU'}
 		
-		salregions = regionList
-		salregions.append('WeddelSea')
+		salregions = ['Global', 'ignoreInlandSeas','Equator10','SouthernOcean','ArcticOcean',  'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific','WeddelSea']
+		salregions.extend(PierceRegions)		
 		av[name]['layers'] 		=  layerList
 		av[name]['regions'] 		= salregions
 		av[name]['metrics']		= metricList
@@ -2201,7 +2209,9 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		av[name]['layers'] 		= ['layerless',]#'Surface - 1000m','Surface - 300m',]#'depthint']
 		mldregions =regionList
-		mldregions.extend(['WeddelSea',])# 'LabradorSea', 'NorwegianSea'])		
+		mldregions.extend(['WeddelSea',])# 'LabradorSea', 'NorwegianSea'])
+		mldregions.extend(PierceRegions)
+						
 		av[name]['regions'] 		= mldregions
 		av[name]['metrics']		= metricList
 
