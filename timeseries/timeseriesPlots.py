@@ -46,6 +46,7 @@ from collections import defaultdict
 import timeseriesTools as tst
 from bgcvaltools.viridis import viridis,discrete_viridis
 import UKESMpython as ukp
+from bgcvaltools.pftnames import getLongName
 
 try:	
 	defcmap = pyplot.cm.jet
@@ -399,7 +400,7 @@ def simpletimeseries(
 	):
 	#####
 	# This is exclusively used for sums now.
-	
+	#title = ' '.join([getLongName(t) for t in title])
 	if len(times) ==0 or len(arr) == 0:
 		print "simpletimeseries:\tWARNING:\tdata or time arrays are empty.",len(times),len(arr),title
 		return
@@ -412,7 +413,7 @@ def simpletimeseries(
 	fig = pyplot.figure()
 	#print "simpletimeseries,",arr, times
 	ax = fig.add_subplot(111)	
-	
+		
         arr_new = movingaverage_DT(arr,times, window_len=5.,window_units='years')	# 5 year average.
 	pyplot.plot(times,arr,    c='b',ls='-',lw=0.2, label = 'Model')	
 	pyplot.plot(times,arr_new,c='b',ls='-',lw=2. , label='Model 5yr moving average')
@@ -628,10 +629,10 @@ def multitimeseries(
 			
 		
 		if len(times) ==0 or len(arr) == 0:
-			print "multitimeseries:\tWARNING:\tdata or time arrays are empty.",len(times),len(arr),title
+			print "multitimeseries:\tWARNING:\tdata or time arrays are empty.",len(times),len(arr),title, (i,jobID)
 			continue
 		if np.ma.is_masked(arr):
-			print "multitimeseries:\tWARNING:\tdata arrays is masked",len(times),len(arr),title
+			print "multitimeseries:\tWARNING:\tdata arrays is masked",len(times),len(arr),title, (i,jobID)
 			continue
 		if times[0]  < xlims[0]: 	xlims[0] = times[0]
 		if times[-1] > xlims[1]: 	xlims[1] = times[-1]

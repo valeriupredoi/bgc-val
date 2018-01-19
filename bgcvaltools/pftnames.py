@@ -228,6 +228,7 @@ def makeLongNameDict():
   	lnd['mld_DR003'] = 'MLD:Fixed Threshold Density'
   	lnd['mld_DReqDTm02'] = 'MLD:Variable Threshold Density'  	  	
 
+
 	#####
 	# Depth layers/transects.
   	lnd['AtlanticTransect'] = "Atlantic Transect"    
@@ -269,7 +270,8 @@ def makeLongNameDict():
 	lnd['SummaryTargets'] = "Summary Diagrams"  		
 	lnd['RobustTarget'] = "Robust Statisitcs Target Diagram" 			
    	lnd['regionless'] = ''    	
-   	lnd['layerless'] = ''    	   	   
+   	lnd['layerless'] = ''    	   	  
+        lnd['metricless'] = ''
         lnd['together'] = ''
         lnd['dataonly'] = ''
         lnd['wcvweighted'] = ''

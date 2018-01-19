@@ -170,7 +170,7 @@ class timeseriesAnalysis:
 	# Check if the Input file has changed since the shelve file last changed.
         reDoFiles = []
 	for fn in sorted(readFiles):
-                if self.debug:print "timeseriesAnalysis:\tloadModel\tChecking: ",fn
+                #if self.debug:print "timeseriesAnalysis:\tloadModel\tChecking: ",fn
 		if ukp.shouldIMakeFile(fn, self.shelvefn,debug=False): 
 			print "timeseriesAnalysis:\tloadModel\t:this file should be re-analysed:", fn
 			readFiles.remove(fn)

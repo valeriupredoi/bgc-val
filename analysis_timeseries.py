@@ -104,13 +104,15 @@ if True:
 	physKeys.append('Salinity')                        	# WOA Salinity
 	physKeys.append('MLD')				# iFERMER Mixed Layer Depth 
 	      			
-#	physKeys.append('TotalIceArea')			# work in progress
-#	physKeys.append('NorthernTotalIceArea')		# work in progress
-#	physKeys.append('SouthernTotalIceArea')		# work in progress
+	physKeys.append('TotalIceArea')			# work in progress
+	physKeys.append('NorthernTotalIceArea')		# work in progress
+	physKeys.append('SouthernTotalIceArea')		# work in progress
+	physKeys.append('WeddelTotalIceArea')
 	physKeys.append('TotalIceExtent')		# work in progress
 	physKeys.append('NorthernTotalIceExtent')	# work in progress
 	physKeys.append('SouthernTotalIceExtent')	# work in progress
-	
+        physKeys.append('WeddelIceExent')       # work in progress
+
 	physKeys.append('DrakePassageTransport')	# DrakePassageTransport
 	physKeys.append('AMOC_32S')                 	# AMOC 32S
 	physKeys.append('AMOC_26N')                 	# AMOC 26N
@@ -281,21 +283,22 @@ def analysis_timeseries(jobID = "u-ab671",
                         # Physics switches:
                         #analysisKeys.append('Temperature')                       # WOA Temperature
 			
-			analysisKeys.append('VolumeMeanTemperature')
+			#analysisKeys.append('VolumeMeanTemperature')
 			analysisKeys.append('WeddelIceExent')
-                        #analysisKeys.append('Salinity')                        # WOA Salinity
-                        analysisKeys.append('MLD')                      # MLD
+                        analysisKeys.append('Salinity')                        # WOA Salinity
+                        #analysisKeys.append('MLD')                      # MLD
                         #analysisKeys.append('MaxMonthlyMLD')            # MLD                       
                         #analysisKeys.append('MinMonthlyMLD')
 
-                        #analysisKeys.append('NorthernTotalIceArea')    # work in progress
-                        #analysisKeys.append('SouthernTotalIceArea')    # work in progress
-                        #analysisKeys.append('TotalIceArea')            # work in progress
-			#analysisKeys.append('TotalIceExtent')		# work in progress
-			#analysisKeys.append('NorthernTotalIceExtent')	# work in progress
-			#analysisKeys.append('SouthernTotalIceExtent')	# work in progress
+                        analysisKeys.append('NorthernTotalIceArea')    # work in progress
+                        analysisKeys.append('SouthernTotalIceArea')    # work in progress
+                        analysisKeys.append('WeddelTotalIceArea')
+                        analysisKeys.append('TotalIceArea')            # work in progress
+			analysisKeys.append('TotalIceExtent')		# work in progress
+			analysisKeys.append('NorthernTotalIceExtent')	# work in progress
+			analysisKeys.append('SouthernTotalIceExtent')	# work in progress
                         #analysisKeys.append('AMOC_32S')                # AMOC 32S
-                        analysisKeys.append('AMOC_26N')                # AMOC 26N
+                        #analysisKeys.append('AMOC_26N')                # AMOC 26N
                         #analysisKeys.append('AMOC_26N_nomexico')
                         #analysisKeys.append('ADRC_26N')                # AMOC 26N                        
 
@@ -465,7 +468,6 @@ def analysis_timeseries(jobID = "u-ab671",
 		nctmpkeys = nctmp.variables.keys()
 		nctmp.close()
 		if 'votemper' in nctmpkeys:
-			ukesmkeys={}
                 	ukesmkeys['time'] = 'time_counter'
         	        ukesmkeys['temp3d']     = 'votemper'
 	                ukesmkeys['sst']        = ''
@@ -485,8 +487,27 @@ def analysis_timeseries(jobID = "u-ab671",
                 	ukesmkeys['u3d']     = 'uo'
         	        ukesmkeys['e3u']    = 'thkcello'
 	                ukesmkeys['w3d']     = 'wo'
-		
-	
+	else:		
+                        ukesmkeys['time']       = 'time_centered'
+                        ukesmkeys['temp3d']     = 'thetao'
+                        ukesmkeys['sst']        = 'tos'
+                        ukesmkeys['sal3d']     = 'so'
+                        ukesmkeys['sss']        = 'sos'
+                        ukesmkeys['v3d']     = 'vo'
+                        ukesmkeys['u3d']     = 'uo'
+                        ukesmkeys['e3u']    = 'thkcello'
+                        ukesmkeys['w3d']     = 'wo'
+
+#                        ukesmkeys['time'] = 'time_counter'
+#                        ukesmkeys['temp3d']     = 'votemper'
+#                        ukesmkeys['sst']        = ''
+#                        ukesmkeys['sal3d']     = 'vosaline'
+#                        ukesmkeys['sss']        = ''
+#                        ukesmkeys['v3d']     = 'vomecrty'
+#                        ukesmkeys['u3d']     = 'vozocrtx'
+#                        ukesmkeys['e3u']    = 'e3u'
+#                        ukesmkeys['w3d']     = 'vovecrtz'
+
 
 #	if jobID > 'u-am514' and jobID not in ['u-an619','u-an629','u-an631','u-an869', 'u-an908', 'u-an911','u-an989',]:
 #		# There are other changes here too.
@@ -1620,7 +1641,11 @@ def analysis_timeseries(jobID = "u-ab671",
 
 	if 'GlobalMeanTemperature' in analysisKeys:
 		name = 'GlobalMeanTemperature'
-		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)
+                if jobID == 'u-as462monthly':           av[name]['modelFiles']  = sorted(glob('/group_workspaces/jasmin2/ukesm/BGC_data/u-as462/monthly/*.nc'))
+                elif jobID == 'u-ar977monthly':         av[name]['modelFiles']  = sorted(glob('/group_workspaces/jasmin2/ukesm/BGC_data/u-ar977/monthly/*.nc'))
+                else:   av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)
+
+		#av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)
 		av[name]['dataFile'] 	= ''
 		av[name]['modelcoords'] = medusaCoords
 		av[name]['datacoords'] 	= woaCoords
@@ -1730,7 +1755,11 @@ def analysis_timeseries(jobID = "u-ab671",
 
 	if 'GlobalMeanSalinity' in analysisKeys:
 		name = 'GlobalMeanSalinity'
-		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)
+                if jobID == 'u-as462monthly':           av[name]['modelFiles']  = sorted(glob('/group_workspaces/jasmin2/ukesm/BGC_data/u-as462/monthly/*.nc'))
+                elif jobID == 'u-ar977monthly':         av[name]['modelFiles']  = sorted(glob('/group_workspaces/jasmin2/ukesm/BGC_data/u-ar977/monthly/*.nc'))
+                else:   av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)
+
+		#av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)
 		av[name]['dataFile'] 	= ''
 
 		av[name]['modelcoords'] 	= medusaCoords
@@ -1908,9 +1937,11 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		av[name]['modeldetails'] 	= {'name': name, 'vars':[ukesmkeys['sal3d'],], 'convert': applyLandMask,'units':'PSU'}
 		av[name]['datadetails']  	= {'name': name, 'vars':['s_an',], 'convert': ukp.NoChange,'units':'PSU'}
-
+		
+		salregions = regionList
+		salregions.append('WeddelSea')
 		av[name]['layers'] 		=  layerList
-		av[name]['regions'] 		= regionList
+		av[name]['regions'] 		= salregions
 		av[name]['metrics']		= metricList
 
 		av[name]['datasource'] 		= 'WOA'
@@ -2241,7 +2272,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			print "No monthly MLD files found"		
 		
 
-	icekeys = ['NorthernTotalIceArea','SouthernTotalIceArea','TotalIceArea','NorthernTotalIceExtent','WeddelIceExent','SouthernTotalIceExtent','TotalIceExtent']
+	icekeys = ['NorthernTotalIceArea','SouthernTotalIceArea','WeddelTotalIceArea','TotalIceArea','NorthernTotalIceExtent','WeddelIceExent','SouthernTotalIceExtent','TotalIceExtent']
 	if len(set(icekeys).intersection(set(analysisKeys))):
 	    for name in icekeys:
 	    	if name not in analysisKeys:continue
@@ -2277,9 +2308,14 @@ def analysis_timeseries(jobID = "u-ab671",
 		weddelmask = (lat<-80.)+(lat>-65.)+(lon <-60.)+(lon > -20.)
 		def calcTotalIceExtentWS(nc,keys): # South
 			return np.ma.masked_where((tmask==0)+(nc.variables[keys[0]][:].squeeze()<0.15)+weddelmask,area).sum()/1E12
+
+                def calcTotalIceAreaWS(nc,keys):  
+                        arr = nc.variables[keys[0]][:].squeeze() * area
+                        return np.ma.masked_where((tmask==0)+ weddelmask,arr).sum()/1E12
 			
-			
-		av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)
+		if jobID == 'u-as462monthly': 		av[name]['modelFiles']  = sorted(glob('/group_workspaces/jasmin2/ukesm/BGC_data/u-as462/monthly/*.nc'))	
+                elif jobID == 'u-ar977monthly':         av[name]['modelFiles']  = sorted(glob('/group_workspaces/jasmin2/ukesm/BGC_data/u-ar977/monthly/*.nc')) 
+		else:	av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)
 		av[name]['dataFile'] 		= ''
 
 		av[name]['modelcoords'] 	= medusaCoords
@@ -2291,7 +2327,10 @@ def analysis_timeseries(jobID = "u-ab671",
 
 	    	if name in ['SouthernTotalIceArea',]:
 			av[name]['modeldetails'] 	= {'name': name, 'vars':['soicecov',], 'convert': calcTotalIceAreaS,'units':'1E6 km^2'}
-		#	av[name]['regions'] 		=  ['SouthHemisphere',]
+
+                if name in ['WeddelTotalIceArea',]:
+                        av[name]['modeldetails']        = {'name': name, 'vars':['soicecov',], 'convert': calcTotalIceAreaWS,'units':'1E6 km^2'}
+
 
 	    	if name in ['TotalIceArea',]:
 			av[name]['modeldetails'] 	= {'name': name, 'vars':['soicecov',], 'convert': calcTotalIceArea,'units':'1E6 km^2'}
