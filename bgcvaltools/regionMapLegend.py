@@ -271,8 +271,10 @@ def makeRegionMapNA(regionList):
 	for i,r in enumerate(regionList):
 		data += (i+1)* masks[r]
 		if plotAll:
-			fn = imageFold+'Region_Legend_NA_'+r+'.png'		
+			fn = imageFold+'Region_Legend_NA_'+r+'_robin.png'		
 			ukp.robinPlotSingle(xy, xx, masks[r],fn,r,drawCbar=True,cbarlabel='',doLog=False,dpi=100,)
+			
+						
 	data = np.ma.masked_where(data==0,data)
 	
 	#####
@@ -281,6 +283,59 @@ def makeRegionMapNA(regionList):
 	for c in colourmaps:
 		fn = imageFold+'Region_Legend_NorthAtlantic.png'
 		robinPlotCustom(xy, xx, data,fn,'',regionList,drawCbar=False,cbarlabel='',doLog=False,dpi=200,cmapname = c)
+
+def makeRegionMapPierce():
+
+	PierceRegions = ['Enderby','Wilkes','Ross','Amundsen','Weddel',]	
+	plotAll = 1#True	# make plots for all regions
+	imageFold = ukp.folder('images/maps')
+	#####
+	# Load data.
+	nc = Dataset(orcaGridfn,'r')
+	bathy = nc.variables['mbathy'][:]
+	xy = np.ma.masked_where(bathy==0,nc.variables['nav_lat'][:]).compressed()
+	xx = np.ma.masked_where(bathy==0,nc.variables['nav_lon'][:]).compressed()
+	nc.close()
+	
+	cbathy = np.ma.masked_where(bathy==0,bathy).compressed()
+	xt = np.ones_like(cbathy)
+	xz = np.ones_like(cbathy)
+
+	####
+	# Calculate masks, based on lat/lon.
+	masks = {}
+	for i,r in enumerate(PierceRegions):	
+		masks[r] = ~makeMask('',r, xt,xz,xy,xx,cbathy,debug=True)
+
+	#####
+	# Turn mask into one field.
+	data = np.zeros_like(cbathy)
+	for i,r in enumerate(PierceRegions):
+		print i,r, ':',i
+		data += (i+1)* masks[r]
+		data = np.clip(data, 0, i+1)
+		if plotAll:
+			fn = imageFold+'Region_Legend_Pierce_'+r+'_robin.png'		
+			ukp.robinPlotSingle(xy, xx, masks[r],fn,r,drawCbar=True,cbarlabel='',doLog=False,dpi=100,)
+			
+			fn = imageFold+'Region_Legend_Pierce_'+r+'_polar.png'	
+			td = np.ma.masked_where(masks[r]==0., cbathy).compressed()
+			tx = np.ma.masked_where(masks[r]==0., xx).compressed()
+			ty = np.ma.masked_where(masks[r]==0., xy).compressed()						
+			#robinPlotTransects(ty, tx, td,fn,r, dpi=100,cmapname='jet',proj='Antartic')	
+						
+	data = np.ma.masked_where(data==0,data)
+	
+	#####
+	# Send it to the plotting tool.
+	colourmaps = ['default',]#'rainbow','jet','gist_earth','terrain','ocean','hsv','gist_rainbow','nipy_spectral',]
+	for c in colourmaps:
+		fn = imageFold+'Pierce_SouthernOceanRegions.png'
+		robinPlotCustom(xy, xx, data,fn,'',PierceRegions,drawCbar=True,cbarlabel='',doLog=False,dpi=200,cmapname = c)
+	
+	
+	
+	
 				
 def makeRegionMapYevgeny():
 
@@ -437,6 +492,8 @@ def makeTransectsMap(proj='robin'):
 	robinPlotTransects(lat, lon, maps,fn, '',legends=transects,drawCbar=False,cbarlabel='',doLog=False,dpi=200,proj=proj)
 
 def main():
+	makeRegionMapPierce()
+	assert 0
 	makeRegionMapYevgeny()			
 
 	makeRegionMapNA(['NordicSea', 'LabradorSea', 'NorwegianSea'])		
