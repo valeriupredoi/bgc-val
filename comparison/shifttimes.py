@@ -60,6 +60,17 @@ def shifttimes(mdata, jobID,year0=False):
                 	datas.append(mdata[t])
                return times, datas
 
+        if year0=='Staggered':
+               for t in sorted(mdata.keys()):
+                        if   jobID in ['u-au362', ]: t1 = t + 40. 
+                        elif jobID in ['u-au364', ]: t1 = t + 45.
+                        elif jobID in ['u-au365', ]: t1 = t + 50.
+			else: t1 = t
+                        if t1<2215.:continue
+
+                        times.append(float(t1))
+                        datas.append(mdata[t])
+               return times, datas
 
 	if year0 in ['OOvFC','OOvFC1','OOvFC2',]:
                for t in sorted(mdata.keys()):
@@ -182,13 +193,9 @@ def shifttimes(mdata, jobID,year0=False):
                         datas.append(mdata[t])
                return times, datas
         if year0 in ['4945-5110','4945-5110i','4945-5110ii','4945-5110iii','4800-5100']:
-	#Colin's instructions:
-	# Start time series (x-axis) at year 4945 (20 years before u-ar783 started) and plot forwards from this point to the end point of u-ar783+20 years (this will change each night as u-ar783 progresses). By Monday the end point of u-ar783 is likely ~ 4965 + 25 years = 4990, hence the time axes would run 4945 to 5110. Options 1 and 2 can be plotted between these evolving time axes.
-	#
- 	#Then add in 3 realizations of 3 separate 100 year periods drawn from option 3 (e.g. years (i) 2130-2230, (ii) 2290-2390, (iii) 2450-2550, with each period started at year 4965 in the figure and plotted to the end point of the time-axis. So for the example above on Monday this would imply 45 years of each of the segments, with them getting longer each night (assuming u-ar783 progresses at 5 years/day) by 5 years.
-		if jobID in ['u-an869','u-ar783','u-ar538','u-ar766','u-at629','u-at793','u-at628','u-at760','u-as462','u-as858',]:
+		if jobID in ['u-an869','u-ar783','u-ar538','u-ar766','u-at629','u-at793','u-at628','u-at760','u-as462','u-as858', 'u-at572', 'u-au027']:
 	               	for t in sorted(mdata.keys()):
-                                if jobID in ['u-at629','u-at793','u-at628','u-at760','u-as462','u-as858',]:  t1 = t + 2838.
+                                if jobID in ['u-at629','u-at793','u-at628','u-at760','u-as462','u-as858','u-at572', 'u-au027']:  t1 = t + 2838.
 				#if jobID in ['u-at629','u-at793','u-at628','u-at760',]:#'u-as462','u-as858',]:
 				#				t1 = t + 2794.
                                 #elif jobID in ['u-as462','u-as858',]:    t1 = t  +2858.
@@ -198,10 +205,10 @@ def shifttimes(mdata, jobID,year0=False):
 	
 				if year0 in ['4945-5110','4945-5110i','4945-5110ii','4945-5110iii',]:
 	       		                if float(t1) <4945.: continue
-                		        if float(t1) >5110.: continue
+                		        if float(t1) >5410.: continue
                                 if year0 in ['4800-5100',]:
                                         if float(t1) <4780. : continue
-                                        if float(t1) >5110. : continue
+                                        if float(t1) >5410. : continue
 
 	                        if jobID == 'u-as462':
 					if t > 2126.: continue
@@ -232,12 +239,28 @@ def shifttimes(mdata, jobID,year0=False):
                                 datas.append(mdata[t])
                	return times, datas
 
-	if year0 =='from4950':
-               for t in sorted(mdata.keys()):           
-                        if float(t) <4950.:continue
+        if year0 =='from2228':
+		buff= 0
+                for t in sorted(mdata.keys()):
+                        if float(t) <2228. - buff :continue
                         times.append(float(t))
                         datas.append(mdata[t])
-               return times, datas   
+                return times, datas
+        if year0 =='from2265':
+                buff= 0
+                for t in sorted(mdata.keys()):
+                        if float(t) <2265. - buff :continue
+                        times.append(float(t))
+                        datas.append(mdata[t])
+                return times, datas
+        if year0 =='from4950':
+		buff = 0
+                for t in sorted(mdata.keys()):
+                        if float(t) <4950.-buff:continue
+                        times.append(float(t))
+                        datas.append(mdata[t])
+                return times, datas
+
 
 	if year0 =='2000-2600normu-ak900':
                for t in sorted(mdata.keys()):       	

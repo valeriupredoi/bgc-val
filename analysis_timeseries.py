@@ -281,22 +281,21 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('GC_CHL_DJF')			                      
                         #####
                         # Physics switches:
-                        #analysisKeys.append('Temperature')                       # WOA Temperature
-			
-			#analysisKeys.append('VolumeMeanTemperature')
+                        analysisKeys.append('Temperature')                       # WOA Temperature
+			analysisKeys.append('VolumeMeanTemperature')
 			analysisKeys.append('WeddelIceExent')
                         analysisKeys.append('Salinity')                        # WOA Salinity
-                        #analysisKeys.append('MLD')                      # MLD
+                        analysisKeys.append('MLD')                      # MLD
                         #analysisKeys.append('MaxMonthlyMLD')            # MLD                       
                         #analysisKeys.append('MinMonthlyMLD')
 
-                        analysisKeys.append('NorthernTotalIceArea')    # work in progress
-                        analysisKeys.append('SouthernTotalIceArea')    # work in progress
-                        analysisKeys.append('WeddelTotalIceArea')
-                        analysisKeys.append('TotalIceArea')            # work in progress
-			analysisKeys.append('TotalIceExtent')		# work in progress
-			analysisKeys.append('NorthernTotalIceExtent')	# work in progress
-			analysisKeys.append('SouthernTotalIceExtent')	# work in progress
+                        #analysisKeys.append('NorthernTotalIceArea')    # work in progress
+                        #analysisKeys.append('SouthernTotalIceArea')    # work in progress
+                        #analysisKeys.append('WeddelTotalIceArea')
+                        #analysisKeys.append('TotalIceArea')            # work in progress
+			#analysisKeys.append('TotalIceExtent')		# work in progress
+			#analysisKeys.append('NorthernTotalIceExtent')	# work in progress
+			#analysisKeys.append('SouthernTotalIceExtent')	# work in progress
                         #analysisKeys.append('AMOC_32S')                # AMOC 32S
                         #analysisKeys.append('AMOC_26N')                # AMOC 26N
                         #analysisKeys.append('AMOC_26N_nomexico')
@@ -490,16 +489,16 @@ def analysis_timeseries(jobID = "u-ab671",
                 	ukesmkeys['u3d']     = 'uo'
         	        ukesmkeys['e3u']    = 'thkcello'
 	                ukesmkeys['w3d']     = 'wo'
-	else:		
-                        ukesmkeys['time']       = 'time_centered'
-                        ukesmkeys['temp3d']     = 'thetao'
-                        ukesmkeys['sst']        = 'tos'
-                        ukesmkeys['sal3d']     = 'so'
-                        ukesmkeys['sss']        = 'sos'
-                        ukesmkeys['v3d']     = 'vo'
-                        ukesmkeys['u3d']     = 'uo'
-                        ukesmkeys['e3u']    = 'thkcello'
-                        ukesmkeys['w3d']     = 'wo'
+#	else:		
+#                        ukesmkeys['time']       = 'time_centered'
+#                        ukesmkeys['temp3d']     = 'thetao'
+#                        ukesmkeys['sst']        = 'tos'
+#                        ukesmkeys['sal3d']     = 'so'
+#                        ukesmkeys['sss']        = 'sos'
+#                        ukesmkeys['v3d']     = 'vo'
+#                        ukesmkeys['u3d']     = 'uo'
+#                        ukesmkeys['e3u']    = 'thkcello'
+#                        ukesmkeys['w3d']     = 'wo'
 
 #                        ukesmkeys['time'] = 'time_counter'
 #                        ukesmkeys['temp3d']     = 'votemper'
@@ -1912,8 +1911,8 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		tregions = ['Global', 'ignoreInlandSeas','Equator10','SouthernOcean','ArcticOcean',  'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific','WeddelSea']
 		tregions.extend(PierceRegions)
-		av[name]['layers'] 		=  tregions
-		av[name]['regions'] 		= regionList
+		av[name]['layers'] 		= layerList 
+		av[name]['regions'] 		= tregions
 		av[name]['metrics']		= metricList
                 	
 		try:	
@@ -2207,11 +2206,11 @@ def analysis_timeseries(jobID = "u-ab671",
 		#av[name]['modeldetails'] 	= {'name': 'mld', 'vars':[ukesmkeys['temp3d'],],   'convert': calcMLD,'units':'m'}
 		av[name]['datadetails']  	= {'name': 'mld', 'vars':['mld','mask',], 'convert': mldapplymask,'units':'m'}
 
-		av[name]['layers'] 		= ['layerless',]#'Surface - 1000m','Surface - 300m',]#'depthint']
-		mldregions =regionList
-		mldregions.extend(['WeddelSea',])# 'LabradorSea', 'NorwegianSea'])
-		mldregions.extend(PierceRegions)
-						
+		av[name]['layers'] 		= ['layerless',]#'Surface - 1000m','Surface - 300m',]#'depthint'
+
+                mldregions = ['Global', 'ignoreInlandSeas','Equator10','SouthernOcean','ArcticOcean',  'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific','WeddelSea']
+                mldregions.extend(PierceRegions)
+
 		av[name]['regions'] 		= mldregions
 		av[name]['metrics']		= metricList
 
