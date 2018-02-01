@@ -281,11 +281,11 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('GC_CHL_DJF')			                      
                         #####
                         # Physics switches:
-                        analysisKeys.append('Temperature')                       # WOA Temperature
-			analysisKeys.append('VolumeMeanTemperature')
-			analysisKeys.append('WeddelIceExent')
-                        analysisKeys.append('Salinity')                        # WOA Salinity
-                        analysisKeys.append('MLD')                      # MLD
+#                        analysisKeys.append('Temperature')          #             # WOA Temperature
+#			analysisKeys.append('VolumeMeanTemperature')#
+#			analysisKeys.append('WeddelIceExent')
+#                        analysisKeys.append('Salinity')                        # WOA Salinity
+#                        analysisKeys.append('MLD')                      # MLD
                         #analysisKeys.append('MaxMonthlyMLD')            # MLD                       
                         #analysisKeys.append('MinMonthlyMLD')
 
@@ -302,9 +302,10 @@ def analysis_timeseries(jobID = "u-ab671",
                         #analysisKeys.append('ADRC_26N')                # AMOC 26N                        
 
  #                       analysisKeys.append('ERSST')    		# Global Surface Mean Temperature
+			analysisKeys.append('VolumeMeanOxygen')
 
-                        analysisKeys.append('GlobalMeanTemperature')    # Global Mean Temperature
-			analysisKeys.append('GlobalMeanSalinity')    	# Global Mean Salinity                       	
+#                        analysisKeys.append('GlobalMeanTemperature')    # Global Mean Temperature#
+#			analysisKeys.append('GlobalMeanSalinity')    	# Global Mean Salinity                       	
                        	#analysisKeys.append('IcelessMeanSST')    	# Global Mean Surface Temperature with no ice
                        	#analysisKeys.append('quickSST')    		# Area Weighted Mean Surface Temperature
 
@@ -339,7 +340,8 @@ def analysis_timeseries(jobID = "u-ab671",
 
 	# Regions from Pierce 1995 - https://doi.org/10.1175/1520-0485(1995)025<2046:CROHAF>2.0.CO;2
 	PierceRegions = ['Enderby','Wilkes','Ross','Amundsen','Weddel',]
-
+	OMZRegions = ['EquatorialPacificOcean','IndianOcean','EquatorialAtlanticOcean']#'Ross','Amundsen','Weddel',]
+	
 	#if analysisSuite.lower() in ['debug',]:
         #        regionList      = ['Global', 'ArcticOcean',]
 
@@ -1143,6 +1145,52 @@ def analysis_timeseries(jobID = "u-ab671",
 		av['TotalOMZVolume']['gridFile']		= paths.orcaGridfn
 		av['TotalOMZVolume']['Dimensions']		= 1
 
+	if 'VolumeMeanOxygen' in analysisKeys:
+		name = 'VolumeMeanOxygen'
+		av[name]['modelFiles']  = listModelDataFiles(jobID, 'ptrc_T', paths.ModelFolder_pref, annual)
+		av[name]['dataFile'] 	= ''
+		av[name]['modelcoords'] = medusaCoords
+		av[name]['datacoords'] 	= woaCoords
+
+		nc = dataset(paths.orcaGridfn,'r')
+		try:
+			pvol   = nc.variables['pvol'][:]
+                        area   = nc.variables['area'][:]
+			gmttmask = nc.variables['tmask'][:]
+		except:
+			gmttmask = nc.variables['tmask'][:]
+			area = nc.variables['e2t'][:] * nc.variables['e1t'][:]
+			pvol = nc.variables['e3t'][:] *area
+			pvol = np.ma.masked_where(gmttmask==0,pvol)
+		nc.close()
+
+                def sumMeanLandMask(nc,keys):
+                        #### works like no change, but applies a mask.
+                        ox = np.ma.array(nc.variables[keys[0]][:].squeeze())
+                        ox = np.ma.masked_where((gmttmask==0) + (ox.mask),ox)
+
+                      	try:    vol = np.ma.masked_where(ox.mask, nc('thkcello')[:].squeeze() * nc('area')[:]) # preferentially use in file volume.
+                        except: vol = np.ma.masked_where(ox.mask, pvol)
+                        
+                        return ((ox*vol).sum(0)/vol.sum(0)) #*(area/area.sum())
+
+		av[name]['modeldetails'] 	= {'name': name, 'vars':[ukesmkeys['OXY'],], 'convert': sumMeanLandMask,'units':'degrees C'}
+		av[name]['datadetails']  	= {'name': '', 'units':''}
+		#av[name]['datadetails']  	= {'name': name, 'vars':['t_an',], 'convert': ukp.NoChange,'units':'degrees C'}
+
+		oxregions = ['Global', ]#'ignoreInlandSeas','Equator10','SouthernOcean','ArcticOcean',  'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific',]#'WeddelSea']
+		oxregions.extend(OMZRegions)
+		
+		av[name]['layers'] 		= ['layerless',]
+		av[name]['regions'] 		= oxregions
+		av[name]['metrics']		= ['wcvweighted',]
+		av[name]['datasource'] 		= ''
+		av[name]['model']		= 'NEMO'
+		av[name]['modelgrid']		= 'eORCA1'
+		av[name]['gridFile']		= paths.orcaGridfn
+		av[name]['Dimensions']		= 2
+		
+		
 
 	if 'AOU' in analysisKeys:
 		name = 'AOU'
