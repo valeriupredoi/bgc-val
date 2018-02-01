@@ -31,6 +31,7 @@ import numpy as np
 from calendar import month_name
 
 from bgcvaltools.dataset import dataset
+from UKESMpython import makeLonSafeArr
 
 ####
 
@@ -176,7 +177,6 @@ def makeMask(name,newSlice, xt,xz,xy,xx,xd,debug=False):
 	if newSlice == 'NorthAtlanticOcean': 	return np.ma.masked_outside(makeLonSafeArr(xx), -80.,0.).mask + np.ma.masked_outside(xy, 10.,60.).mask
 	if newSlice == 'SouthAtlanticOcean':	return np.ma.masked_outside(makeLonSafeArr(xx), -65.,20.).mask + np.ma.masked_outside(xy, -50.,-10.).mask
 	if newSlice == 'EquatorialAtlanticOcean':
-	
 		return np.ma.masked_outside(makeLonSafeArr(xx), -65.,20.).mask + np.ma.masked_outside(xy, -15.,15.).mask
 
 	if newSlice == 'ArcticOcean': 	

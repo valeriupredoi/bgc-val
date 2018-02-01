@@ -1174,11 +1174,11 @@ def analysis_timeseries(jobID = "u-ab671",
                         
                         return ((ox*vol).sum(0)/vol.sum(0)) #*(area/area.sum())
 
-		av[name]['modeldetails'] 	= {'name': name, 'vars':[ukesmkeys['OXY'],], 'convert': sumMeanLandMask,'units':'degrees C'}
+		av[name]['modeldetails'] 	= {'name': name, 'vars':['OXY',], 'convert': sumMeanLandMask,'units':'mmol O2/m^3'}
 		av[name]['datadetails']  	= {'name': '', 'units':''}
 		#av[name]['datadetails']  	= {'name': name, 'vars':['t_an',], 'convert': ukp.NoChange,'units':'degrees C'}
 
-		oxregions = ['Global', ]#'ignoreInlandSeas','Equator10','SouthernOcean','ArcticOcean',  'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific',]#'WeddelSea']
+		oxregions = ['Global', 'ignoreInlandSeas','Equator10','SouthernOcean','ArcticOcean',  'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific',]#'WeddelSea']
 		oxregions.extend(OMZRegions)
 		
 		av[name]['layers'] 		= ['layerless',]
