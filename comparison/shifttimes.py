@@ -51,10 +51,10 @@ def shifttimes(mdata, jobID,year0=False):
                for t in sorted(mdata.keys()):
         		if jobID == 'u-ak900': t1 = t - 2106
         	        if jobID == 'u-an869': t1 = t - (2061-56) + (3996-2106)      #-1862
-                        if jobID == 'u-ar538': t1 = t - (2061-56) + (3996-2106)      #-1862
+                        if jobID in ['u-ar538','u-ar977']: t1 = t - (2061-56) + (3996-2106)      #-1862
 	                if jobID == 'u-ao586': t1 = t - (2561 - 556)+ (3996-2106)    #-1869
                         if jobID  in ['u-ar783',]: t1 = t + (4965. - 2108.)
-
+			
                         print jobID, t1,t, t0 
                         times.append(float(t1))
                 	datas.append(mdata[t])
