@@ -1011,14 +1011,10 @@ def analysis_timeseries(jobID = "u-ab671",
 		av['OMZMeanDepth']['Dimensions']	= 2
 
 
-
-
-
 	if 'OMZThickness' in analysisKeys or 'OMZThickness50' in analysisKeys:
 		if 'OMZThickness' in analysisKeys and 'OMZThickness50' in analysisKeys:
 			print "Only run one of these at a time"
 			assert 0
-
 
 		if annual:
 			av['OMZThickness']['modelFiles']  	= sorted(glob(paths.ModelFolder_pref+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))

@@ -166,7 +166,8 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
       	  	analysisKeys.append('TotalOMZVolume')           # Total Oxygen Minimum zone Volume
        	 	analysisKeys.append('OMZThickness')             # Oxygen Minimum Zone Thickness
         	analysisKeys.append('OMZMeanDepth')             # Oxygen Minimum Zone mean depth      
-        
+        	analysisKeys.append('VolumeMeanOxygen')         # Volume weighted mean Oxygen
+        	
         if debug:
         	####
         	# Supercedes other flags.
@@ -221,6 +222,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 	
 	vmtregionList = ['Global', 'ignoreInlandSeas','Equator10','SouthernOcean','ArcticOcean',  'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific','WeddelSea',]
 	vmtregionList.extend(PierceRegions)
+	OMZRegions = ['EquatorialPacificOcean','IndianOcean','EquatorialAtlanticOcean']#'Ross','Amundsen','Weddel',]
 	level3 = ['DMS',]	
 	
 	#####
@@ -1013,6 +1015,51 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 			av['TotalOMZVolume']['Dimensions']		= 1	
 			
 
+		if 'VolumeMeanOxygen' in analysisKeys:
+			name = 'VolumeMeanOxygen'
+			av[name]['modelFiles']  = listModelDataFiles(jobID, 'ptrc_T', paths.ModelFolder_pref, annual)
+			av[name]['dataFile'] 	= ''
+			av[name]['modelcoords'] = medusaCoords
+			av[name]['datacoords'] 	= woaCoords
+
+			nc = dataset(paths.orcaGridfn,'r')
+			try:
+				pvol   = nc.variables['pvol'][:]
+		                area   = nc.variables['area'][:]
+				gmttmask = nc.variables['tmask'][:]
+			except:
+				gmttmask = nc.variables['tmask'][:]
+				area = nc.variables['e2t'][:] * nc.variables['e1t'][:]
+				pvol = nc.variables['e3t'][:] *area
+				pvol = np.ma.masked_where(gmttmask==0,pvol)
+			nc.close()
+
+		        def sumMeanLandMask(nc,keys):
+		                #### works like no change, but applies a mask.
+		                ox = np.ma.array(nc.variables[keys[0]][:].squeeze())
+		                ox = np.ma.masked_where((gmttmask==0) + (ox.mask),ox)
+
+		              	try:    vol = np.ma.masked_where(ox.mask, nc('thkcello')[:].squeeze() * nc('area')[:]) # preferentially use in file volume.
+		                except: vol = np.ma.masked_where(ox.mask, pvol)
+		                
+		                return ((ox*vol).sum(0)/vol.sum(0)) #*(area/area.sum())
+
+			av[name]['modeldetails'] 	= {'name': name, 'vars':['OXY',], 'convert': sumMeanLandMask,'units':'mmol O2/m^3'}
+			av[name]['datadetails']  	= {'name': '', 'units':''}
+			#av[name]['datadetails']  	= {'name': name, 'vars':['t_an',], 'convert': ukp.NoChange,'units':'degrees C'}
+
+			oxregions = ['Global', 'ignoreInlandSeas','Equator10','SouthernOcean','ArcticOcean',  'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific',]#'WeddelSea']
+			oxregions.extend(OMZRegions)
+		
+			av[name]['layers'] 		= ['layerless',]
+			av[name]['regions'] 		= oxregions
+			av[name]['metrics']		= ['wcvweighted',]
+			av[name]['datasource'] 		= ''
+			av[name]['model']		= 'NEMO'
+			av[name]['modelgrid']		= 'eORCA1'
+			av[name]['gridFile']		= paths.orcaGridfn
+			av[name]['Dimensions']		= 2
+		
 
 		if 'DIC' in analysisKeys:
 	
@@ -1925,7 +1972,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
                                         mdata = modeldataD[(jobID,name )][('ignoreCaspian', 'layerless', 'sum')]
                                         title = ' '.join(['Total',  getLongName(name), '(No Caspian)'])
                                 except: continue
-                        elif name in ['VolumeMeanTemperature',]:
+                        elif name in ['VolumeMeanTemperature','VolumeMeanSalinity','VolumeMeanOxygen',]:
                                 try:
                                         mdata = modeldataD[(jobID,name )][('Global', 'layerless', 'wcvweighted')]
                                         title = ' '.join(['Global',  getLongName(name), ])
@@ -2049,9 +2096,11 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 				colours		= colours,
 				thicknesses	= lineThicknesses,
 			)
-	for name in ['VolumeMeanTemperature',]:
+	wcvwRegions = vmtregionList[:]
+	wcvwRegions.extend(OMZRegions)
+	for name in ['VolumeMeanTemperature','VolumeMeanSalinity','VolumeMeanOxygen',]:			
 	  if name not in av.keys():continue
-	  for region in vmtregionList:
+	  for region in wcvwRegions:
 	    for layer in ['layerless',]:
 		timesD  = {}
 		arrD	= {}
@@ -2063,7 +2112,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 			times,datas = shifttimes(mdata, jobID,year0=year0)
 			timesD[jobID] 	= times
 			arrD[jobID]	= datas
-			
+		if len(arrD.keys()) == 0: continue
                 units = av[name]['modeldetails']['units']
 		for ts in ['Together',]:#'Separate']:
 		    for ls in ['DataOnly',]:#'','Both',]:						
