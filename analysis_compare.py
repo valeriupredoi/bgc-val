@@ -166,28 +166,28 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
       	  	analysisKeys.append('TotalOMZVolume')           # Total Oxygen Minimum zone Volume
        	 	analysisKeys.append('OMZThickness')             # Oxygen Minimum Zone Thickness
         	analysisKeys.append('OMZMeanDepth')             # Oxygen Minimum Zone mean depth      
-        
+       	 
         if debug:
         	####
         	# Supercedes other flags.
 		analysisKeys = []
 #		analysisKeys.append('ERSST')
                 analysisKeys.append('DrakePassageTransport')    # DrakePassageTransport         
-                analysisKeys.append('AMOC_26N')
-                analysisKeys.append('NoCaspianAirSeaFluxCO2')   # work in progress                      
+#                analysisKeys.append('AMOC_26N')
+#                analysisKeys.append('NoCaspianAirSeaFluxCO2')   # work in progress                      
 #               	analysisKeys.append('VolumeMeanTemperature')    # Global Mean Temperature                 	             	 	       
 #		analysisKeys.append('CHD')
 #		analysisKeys.append('CHN')
 #		analysisKeys.append('DiaFrac')
 #                analysisKeys.append('AMOC_26N')
-                analysisKeys.append('MLD')
-                analysisKeys.append('Temperature')             # WOA Temperature
-                analysisKeys.append('Salinity')                # WOA Salinity   
+#                analysisKeys.append('MLD')
+#                analysisKeys.append('Temperature')             # WOA Temperature
+#                analysisKeys.append('Salinity')                # WOA Salinity   
 #                analysisKeys.append('DMS')
 #                analysisKeys.append('N')                        # WOA Nitrate
 #                analysisKeys.append('Si')                       # WOA Siliate
 
-                analysisKeys.append('TotalAirSeaFlux')          # work in progress              
+#                analysisKeys.append('TotalAirSeaFlux')          # work in progress              
 #                analysisKeys.append('AirSeaFlux')          # work in progress              
 
                 #analysisKeys.append('ADRC_26N')                # AMOC 26N                        
@@ -202,8 +202,8 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 #                analysisKeys.append('TotalIceExtent')           # work in progress      
 
 
-                analysisKeys.append('GlobalMeanTemperature')
-                analysisKeys.append('GlobalMeanSalinity')
+#                analysisKeys.append('GlobalMeanTemperature')
+#                analysisKeys.append('GlobalMeanSalinity')
 
 #               	analysisKeys.append('quickSST')    		# Area Weighted Mean Surface Temperature
 #       	  	analysisKeys.append('TotalOMZVolume')           # Total Oxygen Minimum zone Volume
@@ -2348,6 +2348,7 @@ def main():
 		print "Successful command line comparison"
 		exit
 	else:
+
                 jobs = ['u-au563', 'u-au564','u-au565','u-at793','u-at760', 'u-au362', 'u-au364','u-au365',] 
                 colours = {i:standards[i] for i in jobs}
                 timeseries_compare({
@@ -2476,8 +2477,7 @@ def main():
 
 
 
-
-                jobs = ['u-an869','u-ao586','u-ak900','u-ar538','u-ar977']
+                jobs = ['u-an869','u-ak900','u-ar538','u-ar977']
                 colours = {i:standards[i] for i in jobs}
                 timeseries_compare({
                         i:standards[i] for i in jobs},
@@ -2650,19 +2650,9 @@ def main():
                         debug=0,
                         year0='FullSpinUp',
                         jobDescriptions=jobDescriptions,
-                        analysisname='OriginalOceanOnlySpinUp_debug',
+                        analysisname='OriginalOceanOnlySpinUp',
                         lineThicknesses= thicknesses)
 
-#                jobs = ['u-an869','u-ao586','u-ak900','u-ar538']
-#                colours = {i:standards[i] for i in jobs}
-#                timeseries_compare({
-#                        i:standards[i] for i in jobs},
-#                        physics=1,
-#                        bio=1,
-#                        debug=0,
-#                        year0='FullSpinUp',
-#                        jobDescriptions=jobDescriptions,
-#                        analysisname='OriginalOceanOnlySpinUp')
 
                 jobs = ['u-ar977','u-ar538','u-ar975',]
                 colours = {i:standards[i] for i in jobs}

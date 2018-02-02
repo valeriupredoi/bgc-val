@@ -76,8 +76,9 @@ if True:
 #	bgcKeys.append('LocalExportRatio')         # Export ratio (no data)
 	bgcKeys.append('GlobalExportRatio')        # Export ratio (no data)
 	bgcKeys.append('TotalOMZVolume')           # Total Oxygen Minimum zone Volume
-#	bgcKeys.append('OMZThickness')             # Oxygen Minimum Zone Thickness
-#	bgcKeys.append('OMZMeanDepth')             # Oxygen Minimum Zone mean depth
+	bgcKeys.append('OMZThickness')             # Oxygen Minimum Zone Thickness
+	bgcKeys.append('OMZMeanDepth')             # Oxygen Minimum Zone mean depth
+	bgcKeys.append('TotalOMZVolume')	   # Volune Mean regional oxygen concentation
 #	bgcKeys.append('AOU')                      # Apparent Oxygen Usage                         
 	bgcKeys.append('Iron')                     # Iron
 	bgcKeys.append('Dust')                     # Dust
@@ -241,11 +242,11 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('AirSeaFlux')		# work in progress
 			#analysisKeys.append('TotalAirSeaFluxCO2')	# work in progress
 			#analysisKeys.append('NoCaspianAirSeaFluxCO2')	# work in progress			
-			#analysisKeys.append('TotalOMZVolume')		# work in progress
+			analysisKeys.append('TotalOMZVolume')		# work in progress
 			#analysisKeys.append('TotalOMZVolume50')	# work in progress
-			#analysisKeys.append('OMZMeanDepth')		# work in progress
-			#analysisKeys.append('OMZThickness')            # Oxygen Minimum Zone Thickness
-			#analysisKeys.append('TotalOMZVolume')		# work in progress
+			analysisKeys.append('OMZMeanDepth')		# work in progress
+			analysisKeys.append('OMZThickness')            # Oxygen Minimum Zone Thickness
+			analysisKeys.append('TotalOMZVolume')		# work in progress
                         #analysisKeys.append('O2')                      # WOA Oxygen
                         #analysisKeys.append('AOU')                      # Apparent Oxygen Usage 
                         #analysisKeys.append('WindStress')               # Wind Stress                        
