@@ -173,8 +173,8 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
         	# Supercedes other flags.
 		analysisKeys = []
 #		analysisKeys.append('ERSST')
-                analysisKeys.append('DrakePassageTransport')    # DrakePassageTransport     
-                analysisKeys.append('VolumeMeanOxygen')         # Volume weighted mean Oxygen    
+#                analysisKeys.append('DrakePassageTransport')    # DrakePassageTransport     
+#                analysisKeys.append('VolumeMeanOxygen')         # Volume weighted mean Oxygen    
 #                analysisKeys.append('AMOC_26N')
 #                analysisKeys.append('NoCaspianAirSeaFluxCO2')   # work in progress                      
 #               	analysisKeys.append('VolumeMeanTemperature')    # Global Mean Temperature                 	             	 	       
@@ -203,7 +203,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 #                analysisKeys.append('WeddelIceExent')   # work in progress       
 #                analysisKeys.append('TotalIceExtent')           # work in progress      
 
-
+		analysisKeys.append('FreshwaterFlux')		# Fresh water flux
 #                analysisKeys.append('GlobalMeanTemperature')
 #                analysisKeys.append('GlobalMeanSalinity')
 
@@ -1458,7 +1458,39 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
                                 	av[name]['gridFile']            = paths.orcaGridfn
 	                                av[name]['Dimensions']          = 2
 
+		if 'FreshwaterFlux' in analysisKeys:
 
+			#ficeberg + friver + fsitherm + pr + prsn - evs
+		
+			adds = ['ficeberg', 'friver', 'fsitherm', 'pr', 'prsn'] # - evs
+		
+			def calcFreshflux(nc,keys):
+				total = -1.*nc.variables['evs'][:]
+				for a in adds:
+					total += nc.variables[a][:] 
+				#a = (nc.variables['SDT__100'][:] +nc.variables['FDT__100'][:])/ (nc.variables['PRD'][:] +nc.variables['PRN'][:] )
+				#a = np.ma.masked_where(a>1.01, a)
+				return 	total *1000000.
+
+			name = 'FreshwaterFlux'
+			av[name]['modelFiles']  	= listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)
+
+			av[name]['dataFile'] 		= ""
+			av[name]['modelcoords'] 	= medusaCoords
+			av[name]['datacoords'] 		= maredatCoords
+			av[name]['modeldetails'] 	= {'name': name, 'vars':['ficeberg', 'friver', 'fsitherm', 'pr', 'prsn','evs'], 'convert': calcFreshflux,'units':'mg/m2/s'}
+			av[name]['datadetails']  	= {'name':'','units':'',}
+			av[name]['layers'] 		= ['layerless',]#'100m','200m','Surface - 1000m','Surface - 300m',]#'depthint']
+
+		        freshregions = ['Global', 'ignoreInlandSeas','Equator10','SouthernOcean','ArcticOcean',  'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific',]
+		        freshregions.extend(PierceRegions)
+			av[name]['regions'] 		= freshregions
+			av[name]['metrics']		= metricList
+			av[name]['datasource'] 		= ''
+			av[name]['model']		= 'MEDUSA'
+			av[name]['modelgrid']		= 'eORCA1'
+			av[name]['gridFile']		= paths.orcaGridfn
+			av[name]['Dimensions']		= 2
 
 		if 'ZonalCurrent' in analysisKeys:
 			name = 'ZonalCurrent'
@@ -1896,7 +1928,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 				)
 	
 	####
-	for name in ['Temperature','Salinity','MLD',]:
+	for name in ['Temperature','Salinity','MLD','FreshwaterFlux']:
 		  if name not in av.keys():continue
 		  for region in vmtregionList:
 		    for layer in ['Surface','500m','1000m','layerless',]:
@@ -1979,7 +2011,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
                                         title = ' '.join(['Global',  getLongName(name), ])
                                 except: continue
 						
-			elif name in [ 'sowaflup','sohefldo','sofmflup','sosfldow','sossheig', 'soicecov',]:
+			elif name in [ 'sowaflup','sohefldo','sofmflup','sosfldow','sossheig', 'soicecov','FreshwaterFlux']:
 				
                                 try:
 					mdata = modeldataD[(jobID,name )][('Global', 'layerless', 'mean')]

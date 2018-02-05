@@ -1200,6 +1200,8 @@ def comparehtml5Maker(
 			'SouthernTotalIceExtent',
                         'Temperature_Global_Surface',
                         'Salinty_Global_Surface',
+                        'FreshwaterFlux_Global_layerless',
+                        'FreshwaterFlux_Global',                        
 			]
 			
 	bgcKM 		= [
