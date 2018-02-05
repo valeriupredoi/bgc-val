@@ -2214,9 +2214,9 @@ def analysis_timeseries(jobID = "u-ab671",
 		
 	if 'FreshwaterFlux' in analysisKeys:
 
-		#ficeberg + friver + fsitherm + pr + prsn – evs
+		#ficeberg + friver + fsitherm + pr + prsn - evs
 		
-		adds = ['ficeberg', 'friver', 'fsitherm', 'pr', 'prsn'] # – evs
+		adds = ['ficeberg', 'friver', 'fsitherm', 'pr', 'prsn'] # - evs
 		
 		def calcFreshflux(nc,keys):
 			total = -1.*nc.variables['evs'][:]
@@ -2224,18 +2224,21 @@ def analysis_timeseries(jobID = "u-ab671",
 				total += nc.variables[a][:] 
 			#a = (nc.variables['SDT__100'][:] +nc.variables['FDT__100'][:])/ (nc.variables['PRD'][:] +nc.variables['PRN'][:] )
 			#a = np.ma.masked_where(a>1.01, a)
-			return 	total *1000.
+			return 	total *1000000.
 
 		name = 'FreshwaterFlux'
-		av[name]['modelFiles']  	= listModelDataFiles(jobID, 'diad_T', paths.ModelFolder_pref, annual)
+		av[name]['modelFiles']  	= listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)
 
 		av[name]['dataFile'] 		= ""
 		av[name]['modelcoords'] 	= medusaCoords
 		av[name]['datacoords'] 		= maredatCoords
-		av[name]['modeldetails'] 	= {'name': name, 'vars':['ficeberg', 'friver', 'fsitherm', 'pr', 'prsn','evs'], 'convert': calcFreshflux,'units':'g/m2/s'}
+		av[name]['modeldetails'] 	= {'name': name, 'vars':['ficeberg', 'friver', 'fsitherm', 'pr', 'prsn','evs'], 'convert': calcFreshflux,'units':'mg/m2/s'}
 		av[name]['datadetails']  	= {'name':'','units':'',}
 		av[name]['layers'] 		= ['layerless',]#'100m','200m','Surface - 1000m','Surface - 300m',]#'depthint']
-		av[name]['regions'] 		= regionList
+
+                freshregions = ['Global', 'ignoreInlandSeas','Equator10','SouthernOcean','ArcticOcean',  'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific',]
+                freshregions.extend(PierceRegions)
+		av[name]['regions'] 		= freshregions
 		av[name]['metrics']		= metricList
 		av[name]['datasource'] 		= ''
 		av[name]['model']		= 'MEDUSA'

@@ -164,7 +164,8 @@ def makeLongNameDict():
         lnd['sosfldow']  = "Downward salt flux" 
         lnd['soicecov']  = "Ice Fraction" 
         lnd['sossheig']  = "Sea Surface Height" 
-                
+        lnd['FreshwaterFlux']  = "Freshwater Flux"
+        
 	lnd['exportRatio'] = "Export Ratio"  
 	lnd['LocalExportRatio'] = "Export Ratio"  		
 	
@@ -569,6 +570,9 @@ def fancyUnits(units,debug=False):
   	if units in ['mmol S/m^3', ]: 			return 'mmol S m'+r'$^{-3}$'  	
   	if units in ['mmolSi/m3', 'mmol Si/m^3', ]: 	return 'mmol Si m'+r'$^{-3}$'  	  	
   	if units in ['mmolFe/m3',]:			return 'mmol Fe m'+r'$^{-3}$'  	
+
+        if units in ['mg/m2/s',]:                       return 'mg m'+r'$^{-2}$'+' s'+r'$^{-1}$'
+
   	
 	if units in ['ug/l','mg/m^3','ug/L',]:  	return 'mg m'+r'$^{-3}$'
 	if units in ['10^12 g Carbon year^-1',]:	return r'$10^{12}$'+' g Carbon/year'
