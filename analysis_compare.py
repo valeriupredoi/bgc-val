@@ -134,7 +134,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 		analysisKeys.append('sosfldow')			# Downward salt flux
 		analysisKeys.append('soicecov')			# Ice fraction			               
                 analysisKeys.append('sossheig')                 # SSH
-
+		analysisKeys.append('FreshwaterFlux')		# Fresh water flux
 		
 	if bio:
 		analysisKeys.append('TotalAirSeaFlux')          # work in progress             
@@ -2430,22 +2430,6 @@ def main():
 		print "Successful command line comparison"
 		exit
 	else:
-
-                jobs = ['u-an869','u-ak900','u-ar538','u-ar977']
-                colours = {i:standards[i] for i in jobs}
-                timeseries_compare({
-                        i:standards[i] for i in jobs},
-                        physics=1,
-                        bio=1,
-                        debug=1,
-                        year0='FullSpinUp',
-                        jobDescriptions=jobDescriptions,
-                        analysisname='OriginalOceanOnlySpinUp')
-
-
-
-                print "Finished... "
-#                return
 
 
                 jobs = ['u-au563', 'u-au564','u-au565','u-at793','u-at760', 'u-au362', 'u-au364','u-au365',] 

@@ -123,6 +123,7 @@ if True:
 #	physKeys.append('MeridionalCurrent')        	# Meridional Veloctity
 #	physKeys.append('VerticalCurrent')          	# Vertical Veloctity
 
+	physKeys.append('FreshwaterFlux') 		# Freshwater flux
 	physKeys.append('sowaflup')			# Net Upward Water Flux 
 #	physKeys.append('soicecov')			# Ice fraction
 	##### 

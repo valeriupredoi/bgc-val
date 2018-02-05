@@ -1200,7 +1200,6 @@ def comparehtml5Maker(
 			'SouthernTotalIceExtent',
                         'Temperature_Global_Surface',
                         'Salinty_Global_Surface',
-                        'FreshwaterFlux_Global_layerless',
                         'FreshwaterFlux_Global',                        
 			]
 			
@@ -1325,6 +1324,7 @@ def comparehtml5Maker(
 			'OMZ',
 			'Production',
 			'Export',
+			'FreshwaterFlux',
 			]
 		for key in sorted(names):
 			#####
