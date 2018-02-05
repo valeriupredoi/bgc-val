@@ -78,7 +78,7 @@ if True:
 	bgcKeys.append('TotalOMZVolume')           # Total Oxygen Minimum zone Volume
 	bgcKeys.append('OMZThickness')             # Oxygen Minimum Zone Thickness
 	bgcKeys.append('OMZMeanDepth')             # Oxygen Minimum Zone mean depth
-	bgcKeys.append('TotalOMZVolume')	   # Volune Mean regional oxygen concentation
+	bgcKeys.append('VolumeMeanOxygen')	   # Volune Mean regional oxygen concentation
 #	bgcKeys.append('AOU')                      # Apparent Oxygen Usage                         
 	bgcKeys.append('Iron')                     # Iron
 	bgcKeys.append('Dust')                     # Dust

@@ -2399,19 +2399,35 @@ def main():
 		exit
 	else:
 
+                jobs = ['u-an869','u-ak900','u-ar538','u-ar977']
+                colours = {i:standards[i] for i in jobs}
+                timeseries_compare({
+                        i:standards[i] for i in jobs},
+                        physics=1,
+                        bio=1,
+                        debug=1,
+                        year0='FullSpinUp',
+                        jobDescriptions=jobDescriptions,
+                        analysisname='OriginalOceanOnlySpinUp')
+
+
+
+                print "Finished... "
+#                return
+
+
                 jobs = ['u-au563', 'u-au564','u-au565','u-at793','u-at760', 'u-au362', 'u-au364','u-au365',] 
                 colours = {i:standards[i] for i in jobs}
                 timeseries_compare({
                         i:standards[i] for i in jobs},
                         physics=1,
                         bio=1,
-                        debug=0,
+                        debug=1,
                         year0='Staggered',
                         jobDescriptions=jobDescriptions,
                         analysisname='UKESM_0.9.3_HijackTheCN_staggered_2',
                         lineThicknesses= hjthicknesses,
                         )
-		#return
 
                 jobs = ['u-ar977','u-as462','u-as858','u-at629','u-at793', 'u-at628',  'u-at760','u-at572', 'u-au027']
                 colours = {i:standards[i] for i in jobs}
