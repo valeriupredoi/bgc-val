@@ -242,11 +242,11 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('AirSeaFlux')		# work in progress
 			#analysisKeys.append('TotalAirSeaFluxCO2')	# work in progress
 			#analysisKeys.append('NoCaspianAirSeaFluxCO2')	# work in progress			
-			analysisKeys.append('TotalOMZVolume')		# work in progress
+			#analysisKeys.append('TotalOMZVolume')		# work in progress
 			#analysisKeys.append('TotalOMZVolume50')	# work in progress
-			analysisKeys.append('OMZMeanDepth')		# work in progress
-			analysisKeys.append('OMZThickness')            # Oxygen Minimum Zone Thickness
-			analysisKeys.append('TotalOMZVolume')		# work in progress
+			#analysisKeys.append('OMZMeanDepth')		# work in progress
+			#analysisKeys.append('OMZThickness')            # Oxygen Minimum Zone Thickness
+			#analysisKeys.append('TotalOMZVolume')		# work in progress
                         #analysisKeys.append('O2')                      # WOA Oxygen
                         #analysisKeys.append('AOU')                      # Apparent Oxygen Usage 
                         #analysisKeys.append('WindStress')               # Wind Stress                        
@@ -303,7 +303,7 @@ def analysis_timeseries(jobID = "u-ab671",
                         #analysisKeys.append('ADRC_26N')                # AMOC 26N                        
 
  #                       analysisKeys.append('ERSST')    		# Global Surface Mean Temperature
-			analysisKeys.append('VolumeMeanOxygen')
+			#analysisKeys.append('VolumeMeanOxygen')
 
 #                        analysisKeys.append('GlobalMeanTemperature')    # Global Mean Temperature#
 #			analysisKeys.append('GlobalMeanSalinity')    	# Global Mean Salinity                       	
@@ -320,7 +320,7 @@ def analysis_timeseries(jobID = "u-ab671",
 #			analysisKeys.append('sosfldow')			# Downward salt flux
 #			analysisKeys.append('soicecov')			# Ice fraction
 #                       analysisKeys.append('sossheig')                 # Sea surface height
-
+			analysisKeys.append('FreshwaterFlux')		# Fresh water flux
 			#analysisKeys.append('max_soshfldo')		# Max short wave radiation.
 
                         #####
@@ -2212,7 +2212,37 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['gridFile']		= paths.orcaGridfn
 		av[name]['Dimensions']		= 1		
 		
+	if 'FreshwaterFlux' in analysisKeys:
+
+		#ficeberg + friver + fsitherm + pr + prsn – evs
 		
+		adds = ['ficeberg', 'friver', 'fsitherm', 'pr', 'prsn'] # – evs
+		
+		def calcFreshflux(nc,keys):
+			total = -1.*nc.variables['evs'][:]
+			for a in adds:
+				total += nc.variables[a][:] 
+			#a = (nc.variables['SDT__100'][:] +nc.variables['FDT__100'][:])/ (nc.variables['PRD'][:] +nc.variables['PRN'][:] )
+			#a = np.ma.masked_where(a>1.01, a)
+			return 	total *1000.
+
+		name = 'FreshwaterFlux'
+		av[name]['modelFiles']  	= listModelDataFiles(jobID, 'diad_T', paths.ModelFolder_pref, annual)
+
+		av[name]['dataFile'] 		= ""
+		av[name]['modelcoords'] 	= medusaCoords
+		av[name]['datacoords'] 		= maredatCoords
+		av[name]['modeldetails'] 	= {'name': name, 'vars':['ficeberg', 'friver', 'fsitherm', 'pr', 'prsn','evs'], 'convert': calcFreshflux,'units':'g/m2/s'}
+		av[name]['datadetails']  	= {'name':'','units':'',}
+		av[name]['layers'] 		= ['layerless',]#'100m','200m','Surface - 1000m','Surface - 300m',]#'depthint']
+		av[name]['regions'] 		= regionList
+		av[name]['metrics']		= metricList
+		av[name]['datasource'] 		= ''
+		av[name]['model']		= 'MEDUSA'
+		av[name]['modelgrid']		= 'eORCA1'
+		av[name]['gridFile']		= paths.orcaGridfn
+		av[name]['Dimensions']		= 2
+				
 
 	if 'MLD' in analysisKeys:
 
