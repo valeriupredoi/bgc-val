@@ -23,7 +23,6 @@
 
 def shifttimes(mdata, jobID,year0=False):
 
-
 	times,datas=[],[]
 	try:	t0 = float(sorted(mdata.keys())[0])
 	except:	return times, datas       

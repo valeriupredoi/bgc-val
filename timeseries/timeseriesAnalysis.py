@@ -582,8 +582,8 @@ class timeseriesAnalysis:
 	mDL = tst.DataLoader(fn,'',self.modelcoords,self.modeldetails, regions = self.regions, layers = newlayers,)
         nc = dataset(fn,'r')
         ts = tst.getTimes(nc,self.modelcoords)
-        meantime = np.mean(ts)
- 
+        #meantime = np.mean(ts)
+	cbarlabel = getLongName(self.modeldetails['name'])+', '+getLongName(self.modeldetails['units'])  
 	for r in self.regions:
 	    for l in self.layers:	
 		if type(l) in [type(0),type(0.)]:continue
@@ -591,7 +591,18 @@ class timeseriesAnalysis:
    		modeldata	= mDL.load[(r,l)]
    		modellat	= mDL.load[(r,l,'lat')]
    		modellon	= mDL.load[(r,l,'lon')]
-		  	
+		modelt		= mDL.load[(r,l,'t')]
+
+		maxtime 	= ts.max()
+		maxtime_index 	= mDL.timedict_ti[maxtime]
+                timestr         = str(int(maxtime))
+
+		timemask 	= np.ma.masked_where(modelt!=maxtime_index,modelt).mask
+                modeldata 	= np.ma.masked_where(timemask,modeldata).compressed()
+                modellat 	= np.ma.masked_where(timemask,modellat).compressed()
+                modellon 	= np.ma.masked_where(timemask,modellon).compressed()
+
+  	
 		if not len(modeldata): continue
 		if modellat.mean() == 0. and modellon.mean() == 0. : continue
 		
@@ -613,14 +624,17 @@ class timeseriesAnalysis:
 	  	print "mapplotsRegionsLayers:\t",r,l, "data lat:",len(datalat),datalat.min(),datalat.mean(),datalat.max()
 	  	print "mapplotsRegionsLayers:\t",r,l, "data lon:",len(datalon),datalon.min(),datalon.mean(),datalon.max()
 	
-		titles = [' '.join([getLongName(t) for t in [self.model,'('+self.jobID+')',str(l),self.modeldetails['name'],str(int(meantime))]]),
+		titles = [' '.join([getLongName(t) for t in [self.model,'('+self.jobID+')',str(l),self.modeldetails['name'],timestr]]),
 			  ' '.join([getLongName(t) for t in [self.datasource,str(l),self.datadetails['name']]])]
 			  
 	  	tsp.mapPlotPair(modellon, modellat, modeldata,
 	  			datalon,datalat,datadata,
 	  			mapfilename,
 	  			titles	= titles,
-	  			lon0=0.,drawCbar=True,cbarlabel='',dpi=100,)
+	  			lon0=0.,
+				drawCbar=True,
+				cbarlabel=cbarlabel,
+				dpi=100,)
 
 	
 	
