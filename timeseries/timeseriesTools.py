@@ -248,7 +248,7 @@ class DataLoader:
   def _makeTimeDict_(self,):
 	""" Make a dictionairy linking the time index with the float time.
 	"""
-	try:	ts = bvp.getTimes(self.nc,self.coords)
+	try:	ts = ukp.getTimes(self.nc,self.coords)
 	except: 
 		print "DataLoaded:\t_makeTimeDict_:\tUnable to load time array, probably due to time zero in file."
 		return

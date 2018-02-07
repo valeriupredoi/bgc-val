@@ -1956,7 +1956,8 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
                         units = av[name]['modeldetails']['units']
 
 			for ts in ['Together',]:
-			    for ls in ['DataOnly',]:
+				if name == 'FreshwaterFlux': ls = 'movingav30years'
+				else: ls = 'DataOnly'
 				tsp.multitimeseries(
 					timesD, 		# model times (in floats)
 					arrD,			# model time series
@@ -1969,7 +1970,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 					colours		= colours,
 	                                thicknesses     = lineThicknesses,
 				)
-					
+	
 #		assert 0	
 		
 	####
