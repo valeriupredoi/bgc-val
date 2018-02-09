@@ -712,12 +712,41 @@ def multitimeseries(
 		pyplot.title(title)
                 pyplot.xlabel('Year')
 		pyplot.ylabel(units)		
-		pyplot.xlim(xlims)					
-		try:	
-			legend = pyplot.legend(loc='best',  numpoints = 1, ncol=len(timesD.keys())/2, prop={'size':12}) 
-			legend.draw_frame(False) 
-			legend.get_frame().set_alpha(0.)
-		except:pass
+		pyplot.xlim(xlims)				
+
+		#if len(timesD.keys()) < 10:
+		#	try:	
+		#		legend = pyplot.legend(loc='best',  numpoints = 1, ncol=len(timesD.keys())/2, prop={'size':12}) 
+		#		legend.draw_frame(False) 
+		#		legend.get_frame().set_alpha(0.)
+		#	except:pass
+		#else:
+		#	ncol = int(len(timesD.keys())/5.) +1
+		#      	leg2 = pyplot.legend(ncol=ncol,
+                #		loc='upper center', bbox_to_anchor=(0.5, -0.1),)
+		#      	leg2.draw_frame(False)
+		#      	leg2.get_frame().set_alpha(0.)
+
+	        #####
+	        # Add legend:
+	        legendSize = len(timesD.keys())
+	        ncols = int(legendSize/25)+1
+	        box = ax.get_position()
+	        ax.set_position([box.x0,
+	                          box.y0 ,
+	                          box.width*(1.-0.1*ncols),
+	                          box.height ])
+
+	        #for jobID in sorted(timesD.keys()):
+	        #        pyplot.plot([], [], c=colours[jobID],ls='-',lw=thicknesses[jobID],label=jobID)
+
+	        legd = ax.legend(loc='center left', ncol=ncols,prop={'size':11},bbox_to_anchor=(1., 0.5))
+	        legd.draw_frame(False)
+	        legd.get_frame().set_alpha(0.)
+
+
+
+
 		
 	elif plotStyle == 'Separate':
 		for ax in axs:

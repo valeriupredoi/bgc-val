@@ -173,7 +173,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
         	# Supercedes other flags.
 		analysisKeys = []
 #		analysisKeys.append('ERSST')
-#                analysisKeys.append('DrakePassageTransport')    # DrakePassageTransport     
+                analysisKeys.append('DrakePassageTransport')    # DrakePassageTransport     
 #                analysisKeys.append('VolumeMeanOxygen')         # Volume weighted mean Oxygen    
 #                analysisKeys.append('AMOC_26N')
 #                analysisKeys.append('NoCaspianAirSeaFluxCO2')   # work in progress                      
@@ -203,7 +203,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 #                analysisKeys.append('WeddelIceExent')   # work in progress       
 #                analysisKeys.append('TotalIceExtent')           # work in progress      
 
-		analysisKeys.append('FreshwaterFlux')		# Fresh water flux
+#		analysisKeys.append('FreshwaterFlux')		# Fresh water flux
 #                analysisKeys.append('GlobalMeanTemperature')
 #                analysisKeys.append('GlobalMeanSalinity')
 
@@ -2433,13 +2433,40 @@ def main():
 	else:
 
 
+                jobs = ['u-at628','u-at760','u-am927i','u-am927ii','u-am927iii','u-aq853iii','u-ar766','u-as462','u-as858', 'u-at572', 'u-au027','u-ar783','u-au835','u-au521','u-au756','u-au828',]
+                colours = {i:standards[i] for i in jobs}
+                thicknesses3 = defaultdict(lambda: 0.75)
+                thicknesses3['u-ar766'] = 1.5
+                thicknesses3['u-ar783'] = 2.
+                thicknesses3['u-au835'] = 2.
+                thicknesses3['u-at628'] = 2.
+                thicknesses3['u-at760'] = 2.
+                thicknesses3['u-at572'] = 2.
+                thicknesses3['u-au027'] = 2.
+                thicknesses3['u-au835'] = 4.2
+                thicknesses3['u-au521'] = 4.2
+                thicknesses3['u-au756'] = 4.2
+                thicknesses3['u-au828'] = 4.2
+
+
+                timeseries_compare({
+                        i:standards[i] for i in jobs},
+                        physics=1,
+                        bio=1,
+                        debug=0,
+                        year0='4800-5100',
+                        jobDescriptions=jobDescriptions,
+                        analysisname='UKESM_0.9.4_from4945',
+                        lineThicknesses= thicknesses3)
+
+
                 jobs = ['u-au563', 'u-au564','u-au565','u-at793','u-at760', 'u-au362', 'u-au364','u-au365',] 
                 colours = {i:standards[i] for i in jobs}
                 timeseries_compare({
                         i:standards[i] for i in jobs},
                         physics=1,
                         bio=1,
-                        debug=1,
+                        debug=0,
                         year0='Staggered',
                         jobDescriptions=jobDescriptions,
                         analysisname='UKESM_0.9.3_HijackTheCN_staggered_2',

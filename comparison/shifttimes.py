@@ -194,13 +194,15 @@ def shifttimes(mdata, jobID,year0=False):
                         datas.append(mdata[t])
                return times, datas
         if year0 in ['4945-5110','4945-5110i','4945-5110ii','4945-5110iii','4800-5100']:
-		if jobID in ['u-an869','u-ar783','u-ar538','u-ar766','u-at629','u-at793','u-at628','u-at760','u-as462','u-as858', 'u-at572', 'u-au027']:
+		if jobID in ['u-an869','u-ar783','u-ar538','u-ar766','u-at629','u-at793','u-at628','u-at760','u-as462','u-as858', 'u-at572', 'u-au027','u-au835','u-au521','u-au756','u-au828',]:
 	               	for t in sorted(mdata.keys()):
-                                if jobID in ['u-at629','u-at793','u-at628','u-at760','u-as462','u-as858','u-at572', 'u-au027']:  t1 = t + 2838.
+                                if jobID in ['u-at629','u-at793','u-at628','u-at760','u-as462','u-as858','u-at572', 'u-au027','u-au521','u-au756','u-au828',]:  t1 = t + 2838.
 				#if jobID in ['u-at629','u-at793','u-at628','u-at760',]:#'u-as462','u-as858',]:
 				#				t1 = t + 2794.
-                                #elif jobID in ['u-as462','u-as858',]:    t1 = t  +2858.
+                                #elif jobID in ['u-as462','u-as858',]:    t1 = t  +2858.:
 				elif jobID  in ['u-ar783',]: 	t1 = t + 4965. - 2108.
+                                elif jobID  in ['u-au835',]:    t1 = t + 4965. - 2108. # +233.
+
                                 elif jobID  in ['u-ar766',]: 	t1 = t + 3095.
 				else:	t1 = t
 	
