@@ -49,7 +49,8 @@ def getTimes(nc, coords):
 	"""
 	if type(nc) == type('filename'):
 		nc = dataset(nc,'r')
-	dtimes = num2date(nc.variables[coords['t']][:], nc.variables[coords['t']].units,calendar=coords['cal'])[:]
+        dtimes = num2date(nc.variables[coords['t']][:], nc.variables[coords['t']].units,calendar=nc.variables[coords['t']].calendar)[:]
+#	dtimes = num2date(nc.variables[coords['t']][:], nc.variables[coords['t']].units,calendar=coords['cal'])[:]
 	print dtimes
 	try:
 		ts = np.array([float(dt.year) + dt.dayofyr/365. for dt in dtimes])

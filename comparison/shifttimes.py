@@ -201,7 +201,7 @@ def shifttimes(mdata, jobID,year0=False):
 				#				t1 = t + 2794.
                                 #elif jobID in ['u-as462','u-as858',]:    t1 = t  +2858.:
 				elif jobID  in ['u-ar783',]: 	t1 = t + 4965. - 2108.
-                                elif jobID  in ['u-au835',]:    t1 = t + 4965. - 2108. # +233.
+                                elif jobID  in ['u-au835',]:    t1 = t + 4965. - 2108. + 33. # +233.
 
                                 elif jobID  in ['u-ar766',]: 	t1 = t + 3095.
 				else:	t1 = t
