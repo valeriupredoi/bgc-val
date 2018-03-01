@@ -2433,6 +2433,32 @@ def main():
 	else:
 
 		
+                jobs = ['u-au835','u-av293', 'u-av450']
+                colours = {i:standards[i] for i in jobs}
+                timeseries_compare({
+                        i:standards[i] for i in jobs},
+                        physics=1,
+                        bio=1,
+                        debug=0,
+                        year0=False,
+                        jobDescriptions=jobDescriptions,
+                        analysisname='CarbonateChemistryBugFix',
+                        lineThicknesses= hjthicknesses,
+                        )
+
+                jobs = ['u-au828','u-au944',]#-au730','u-au775', ]
+                colours = {i:standards[i] for i in jobs}
+                timeseries_compare({
+                        i:standards[i] for i in jobs},
+                        physics=1,
+                        bio=1,
+                        debug=0,
+                        year0=False,
+                        jobDescriptions=jobDescriptions,
+                        analysisname='Ocean_Upgrade',
+                        lineThicknesses= hjthicknesses,
+                        )
+		
                 jobs = ['u-ar977','u-au528','u-au730','u-au775', ]
                 colours = {i:standards[i] for i in jobs}
                 timeseries_compare({
@@ -2459,7 +2485,6 @@ def main():
                         analysisname='CRESCENDO_OO_test',
                         lineThicknesses= hjthicknesses,
                         )
-
 
                 jobs = ['u-at628','u-at760','u-am927i','u-am927ii','u-am927iii','u-aq853iii','u-ar766','u-as462','u-as858', 'u-at572', 'u-au027','u-ar783','u-au835','u-au756','u-au828',]
                 colours = {i:standards[i] for i in jobs}
