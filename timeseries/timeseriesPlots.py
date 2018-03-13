@@ -678,6 +678,13 @@ def multitimeseries(
                         arr_new = movingaverage_DT(arr,times, window_len=30.,window_units='years')
                         pyplot.plot(times,arr_new,c=colours[jobID],ls='-',lw=thicknesses[jobID],label=jobID,)
 
+                if lineStyle.lower() in ['movingav100years',]:
+                        pyplot.plot(times,arr,c=colours[jobID],ls='-',lw=0.15)
+
+                        arr_new = movingaverage_DT(arr,times, window_len=100.,window_units='years')
+                        pyplot.plot(times,arr_new,c=colours[jobID],ls='-',lw=thicknesses[jobID],label=jobID,)
+
+
 		if lineStyle.lower() in ['movingaverage12',]:
 			window = 12
 			if len(arr)>12:

@@ -375,7 +375,7 @@ def makeLongNameDict():
   	lnd['NorthernSubpolarPacific'] = "Northern Subpolar Pacific"	
 
   	lnd['SouthernOcean'] = "Southern Ocean"	  	  	  	  	  	  		
-	
+	lnd['AtlanticSOcean'] = 'Atlantic S. Ocean'
   	lnd['NorthTemperate'] = "North Temperate"
   	lnd['SouthTemperate'] = "South Temperate"  	
   	lnd['NorthTropics'] = "North Tropics"
@@ -465,6 +465,8 @@ def makeLongNameDict():
    	lnd['OffShelf'] = 'Off Shelf'  
    
 	lnd['movingav30years']	= '30 year moving average'
+        lnd['movingav100years']  = '100 year moving average'
+
 	
 	#####
 	# Models

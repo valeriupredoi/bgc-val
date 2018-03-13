@@ -49,8 +49,12 @@ def getTimes(nc, coords):
 	"""
 	if type(nc) == type('filename'):
 		nc = dataset(nc,'r')
-        dtimes = num2date(nc.variables[coords['t']][:], nc.variables[coords['t']].units,calendar=nc.variables[coords['t']].calendar)[:]
-#	dtimes = num2date(nc.variables[coords['t']][:], nc.variables[coords['t']].units,calendar=coords['cal'])[:]
+	try:	cal = nc.variables[coords['t']].calendar
+	except: cal = calendar=coords['cal']
+	
+        dtimes = num2date(nc.variables[coords['t']][:], nc.variables[coords['t']].units,calendar=cal) 
+	#nc.variables[coords['t']].calendar)[:]
+	#dtimes = num2date(nc.variables[coords['t']][:], nc.variables[coords['t']].units,calendar=coords['cal'])[:]
 	print dtimes
 	try:
 		ts = np.array([float(dt.year) + dt.dayofyr/365. for dt in dtimes])
@@ -249,7 +253,7 @@ class DataLoader:
   def _makeTimeDict_(self,):
 	""" Make a dictionairy linking the time index with the float time.
 	"""
-	try:	ts = ukp.getTimes(self.nc,self.coords)
+	try:	ts = getTimes(self.nc,self.coords)
 	except: 
 		print "DataLoaded:\t_makeTimeDict_:\tUnable to load time array, probably due to time zero in file."
 		return

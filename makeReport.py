@@ -246,8 +246,8 @@ def html5Maker(
 		timestrs=[]	
 		for field in fields:
 		 	if physicsOnly and field not in physFields:continue
-			if field in ['Nitrate','Silicate','DIC','Alkalinity',]:
-			    for (r,l,m) in [('Global', 'Surface', 'mean'),('SouthernOcean', 'Surface', 'mean')]:
+			if field in ['Nitrate','Silicate','DIC','Alkalinity','Temperature','Salinity']:
+			    for (r,l,m) in [('Global', 'Surface', 'mean'),('SouthernOcean', 'Surface', 'mean'),('AtlanticSOcean', 'Surface', 'mean')]:
 
 				#####
 				# Data column:
@@ -451,6 +451,7 @@ def html5Maker(
 	if Level1Regional:
 		l1regions = ['Global',
 		  'SouthernOcean',
+	  	  'AtlanticSOcean',
 		  'NorthernSubpolarAtlantic',
 		  'NorthernSubpolarPacific',		  	
 		  'Equator10', 
@@ -564,6 +565,7 @@ def html5Maker(
 	    for plottype in ['profile',]:		# without hovs.
 		l1regions = ['Global',
 		  'SouthernOcean',
+		  'AtlanticSOcean',
 		  'NorthernSubpolarAtlantic',
 		  'NorthernSubpolarPacific',		  	
 		  'Equator10', 
@@ -1411,7 +1413,23 @@ def comparehtml5Maker(
 				FileOrder=FileOrder)
 				
 				
-				
+	legend=True			
+        if legend:
+                vfiles = []
+                vfiles.extend(glob('html5/html5Assets/images/*Legend*.png'))
+                relfns = [addImageToHtml(fn, imagesfold, reportdir) for fn in vfiles]
+                print relfns
+                href = 'regionMap_default'
+                html5Tools.AddSubSections(
+                        indexhtmlfn,
+                        [href,],
+                        'Legends',
+                        SidebarTitles={href:'Regional and Transect Legends',},
+                        Titles={href:'Regional and Transect Legends',},
+                        Descriptions={href:'Maps showing the boundaries of the regions and transects used in this report.',},
+                        FileLists={href:relfns,},
+                        )
+
 				
 				
 

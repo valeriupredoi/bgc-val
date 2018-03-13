@@ -190,6 +190,12 @@ def makeMask(name,newSlice, xt,xz,xy,xx,xd,debug=False):
 		mx *= np.ma.masked_outside(xx, -45., 15.).mask + np.ma.masked_outside(xy, 60.,80.).mask
 		return mx	
 
+
+        if newSlice == 'AtlanticSOcean':
+                mx = np.ma.masked_outside(xx,-40., 20. ).mask + np.ma.masked_outside(xy,-50., -75. ).mask
+                return mx
+
+
 	if newSlice == 'NordicSea':
 		mx = np.ma.masked_outside(xx,-44., -5. ).mask 
 		mx += np.ma.masked_outside(xy, 53., 65.).mask 

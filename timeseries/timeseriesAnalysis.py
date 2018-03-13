@@ -579,6 +579,7 @@ class timeseriesAnalysis:
   	"""
   	newlayers = [l for l in self.layers if type(l) not in [type(0),type(0.) ]]
 	fn = self.modelFiles[-1]
+	print "mapplotsRegionsLayers:\tLoading file:", fn
 	mDL = tst.DataLoader(fn,'',self.modelcoords,self.modeldetails, regions = self.regions, layers = newlayers,)
         nc = dataset(fn,'r')
         ts = tst.getTimes(nc,self.modelcoords)

@@ -283,7 +283,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('GC_CHL_DJF')			                      
                         #####
                         # Physics switches:
-#                        analysisKeys.append('Temperature')          #             # WOA Temperature
+                        analysisKeys.append('Temperature')          #             # WOA Temperature
 #			analysisKeys.append('VolumeMeanTemperature')#
 #			analysisKeys.append('WeddelIceExent')
 #                        analysisKeys.append('Salinity')                        # WOA Salinity
@@ -321,19 +321,20 @@ def analysis_timeseries(jobID = "u-ab671",
 #			analysisKeys.append('sosfldow')			# Downward salt flux
 #			analysisKeys.append('soicecov')			# Ice fraction
 #                       analysisKeys.append('sossheig')                 # Sea surface height
-			analysisKeys.append('FreshwaterFlux')		# Fresh water flux
+			#analysisKeys.append('FreshwaterFlux')		# Fresh water flux
 			#analysisKeys.append('max_soshfldo')		# Max short wave radiation.
 
                         #####
                         # Physics switches:
-
+	if jobID in ['u-aj588','u-ak900','u-ar538','u-an869','u-ar977',]:
+		analysisKeys.remove('FreshwaterFlux')
 	#####
 	# Some lists of region.
 	# This are pre-made lists of regions that can be investigated.
 	# Note that each analysis below can be given its own set of regions.
 	if regions == 'all':
   		regionList	= ['Global', 'ignoreInlandSeas',
-		  		'SouthernOcean','ArcticOcean',
+		  		'SouthernOcean','ArcticOcean','AtlanticSOcean', 
 				'Equator10', 'Remainder',
   				'NorthernSubpolarAtlantic','NorthernSubpolarPacific',
   				]
@@ -1176,7 +1177,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['datadetails']  	= {'name': '', 'units':''}
 		#av[name]['datadetails']  	= {'name': name, 'vars':['t_an',], 'convert': ukp.NoChange,'units':'degrees C'}
 
-		oxregions = ['Global', 'ignoreInlandSeas','Equator10','SouthernOcean','ArcticOcean',  'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific',]#'WeddelSea']
+		oxregions = ['Global', 'ignoreInlandSeas','Equator10','AtlanticSOcean','SouthernOcean','ArcticOcean',  'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific',]#'WeddelSea']
 		oxregions.extend(OMZRegions)
 		
 		av[name]['layers'] 		= ['layerless',]
@@ -1765,7 +1766,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['datadetails']  	= {'name': '', 'units':''}
 		#av[name]['datadetails']  	= {'name': name, 'vars':['t_an',], 'convert': ukp.NoChange,'units':'degrees C'}
 
-		vmtregions = ['Global', 'ignoreInlandSeas','Equator10','SouthernOcean','ArcticOcean',  'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific','WeddelSea']
+		vmtregions = ['Global', 'ignoreInlandSeas','Equator10','AtlanticSOcean','SouthernOcean','ArcticOcean',  'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific','WeddelSea']
 		vmtregions.extend(PierceRegions)
 		
 		av[name]['layers'] 		= ['layerless',]
@@ -1955,17 +1956,17 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modeldetails'] 	= {'name': name, 'vars':[ukesmkeys['temp3d'],], 'convert': applyLandMask,'units':'degrees C'}
 		av[name]['datadetails']  	= {'name': name, 'vars':['t_an',], 'convert': ukp.NoChange,'units':'degrees C'}
 
-		tregions = ['Global', 'ignoreInlandSeas','Equator10','SouthernOcean','ArcticOcean',  'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific','WeddelSea']
+		tregions = ['Global', 'ignoreInlandSeas','Equator10','AtlanticSOcean','SouthernOcean','ArcticOcean',  'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific','WeddelSea']
 		tregions.extend(PierceRegions)
 		av[name]['layers'] 		= layerList 
 		av[name]['regions'] 		= tregions
 		av[name]['metrics']		= metricList
                 	
-		try:	
-			if analysisSuite.lower() in ['debug',]:
-		                av[name]['layers']              =  ['Surface',]
-        		        av[name]['regions']             =  ['Global',]
-		except:pass
+		#try:	
+		#	if analysisSuite.lower() in ['debug',]:
+		#               av[name]['layers']              =  ['Surface',]
+        	#	        av[name]['regions']             =  ['Global',]
+		#except:pass
 
 		av[name]['datasource'] 		= 'WOA'
 		av[name]['model']		= 'NEMO'
@@ -1991,7 +1992,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modeldetails'] 	= {'name': name, 'vars':[ukesmkeys['sal3d'],], 'convert': applyLandMask,'units':'PSU'}
 		av[name]['datadetails']  	= {'name': name, 'vars':['s_an',], 'convert': ukp.NoChange,'units':'PSU'}
 		
-		salregions = ['Global', 'ignoreInlandSeas','Equator10','SouthernOcean','ArcticOcean',  'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific','WeddelSea']
+		salregions = ['Global', 'ignoreInlandSeas','Equator10','AtlanticSOcean','SouthernOcean','ArcticOcean',  'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific','WeddelSea']
 		salregions.extend(PierceRegions)		
 		av[name]['layers'] 		=  layerList
 		av[name]['regions'] 		= salregions
@@ -2237,7 +2238,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['datadetails']  	= {'name':'','units':'',}
 		av[name]['layers'] 		= ['layerless',]#'100m','200m','Surface - 1000m','Surface - 300m',]#'depthint']
 
-                freshregions = ['Global', 'ignoreInlandSeas','Equator10','SouthernOcean','ArcticOcean',  'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific',]
+                freshregions = ['Global', 'ignoreInlandSeas','Equator10','AtlanticSOcean','SouthernOcean','ArcticOcean',  'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific',]
                 freshregions.extend(PierceRegions)
 		av[name]['regions'] 		= freshregions
 		av[name]['metrics']		= metricList
@@ -2287,7 +2288,7 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		av[name]['layers'] 		= ['layerless',]#'Surface - 1000m','Surface - 300m',]#'depthint'
 
-                mldregions = ['Global', 'ignoreInlandSeas','Equator10','SouthernOcean','ArcticOcean',  'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific','WeddelSea']
+                mldregions = ['Global', 'ignoreInlandSeas','Equator10','AtlanticSOcean','SouthernOcean','ArcticOcean',  'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific','WeddelSea']
                 mldregions.extend(PierceRegions)
 
 		av[name]['regions'] 		= mldregions
