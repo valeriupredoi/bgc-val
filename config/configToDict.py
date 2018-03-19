@@ -50,4 +50,6 @@ def configToDict(fn):
 	for section in sections:
 		options 	= Config.options(section)
 		d[section] 	= {o:Config.get(section, o) for o in options}
-	return d		
+	return d	
+
+	

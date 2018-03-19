@@ -64,7 +64,7 @@ def hourcheck(hour):
 		if hour <0: assert 0
 	return hour
 
-def addMassjobs(configfn='',startinghour = 18):
+def addMassjobs(configfn='',startinghour = 17):
 	cp = checkConfig(configfn,)
 	jobs = loadJobs(cp)
 	
@@ -88,7 +88,7 @@ def addMassjobs(configfn='',startinghour = 18):
 					job + '.log 2>&1'
 	return massscripts	
 
-def addSci1jobs(configfn='',startinghour = 21):
+def addSci1jobs(configfn='',startinghour = 19):
 	cp = checkConfig(configfn,)
 	jobs = loadJobs(cp)
 	
