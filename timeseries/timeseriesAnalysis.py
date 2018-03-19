@@ -579,9 +579,18 @@ class timeseriesAnalysis:
   	"""
   	newlayers = [l for l in self.layers if type(l) not in [type(0),type(0.) ]]
 	fn = self.modelFiles[-1]
+	print "mapplotsRegionsLayers:\tLoading file:", fn
 	mDL = tst.DataLoader(fn,'',self.modelcoords,self.modeldetails, regions = self.regions, layers = newlayers,)
         nc = dataset(fn,'r')
         ts = tst.getTimes(nc,self.modelcoords)
+
+        if len(ts)>1:
+  		maxtime         = ts.max()
+                maxtime_index   = mDL.timedict_ti[maxtime]
+                timestr         = str(int(maxtime))
+	else:
+                timestr         = str(int(ts[0]))
+
         #meantime = np.mean(ts)
 	cbarlabel = getLongName(self.modeldetails['name'])+', '+getLongName(self.modeldetails['units'])  
 	for r in self.regions:
@@ -593,14 +602,11 @@ class timeseriesAnalysis:
    		modellon	= mDL.load[(r,l,'lon')]
 		modelt		= mDL.load[(r,l,'t')]
 
-		maxtime 	= ts.max()
-		maxtime_index 	= mDL.timedict_ti[maxtime]
-                timestr         = str(int(maxtime))
-
-		timemask 	= np.ma.masked_where(modelt!=maxtime_index,modelt).mask
-                modeldata 	= np.ma.masked_where(timemask,modeldata).compressed()
-                modellat 	= np.ma.masked_where(timemask,modellat).compressed()
-                modellon 	= np.ma.masked_where(timemask,modellon).compressed()
+		if len(ts)>1:	
+			timemask 	= np.ma.masked_where(modelt!=maxtime_index,modelt).mask
+   	        	modeldata 	= np.ma.masked_where(timemask,modeldata).compressed()
+                	modellat 	= np.ma.masked_where(timemask,modellat).compressed()
+                	modellon 	= np.ma.masked_where(timemask,modellon).compressed()
 
   	
 		if not len(modeldata): continue

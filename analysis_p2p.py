@@ -327,7 +327,7 @@ def analysis_p2p(
 	justAll		= ['All',]				# All is not a slice, it has no cut on location, time, or depth.
 	AllStandard	= ['All','Standard','ignoreInlandSeas']	
 	HighLatWinter	= ['All','HighLatWinter',]
-	tsRegions	= ['Global','Equator10', 'Remainder','ArcticOcean','NorthernSubpolarAtlantic','NorthernSubpolarPacific','ignoreInlandSeas','SouthernOcean',]
+	tsRegions	= ['Global','Equator10', 'Remainder','ArcticOcean','NorthernSubpolarAtlantic','NorthernSubpolarPacific','ignoreInlandSeas','SouthernOcean','AtlanticSOcean']
 	
 	depthLevels 	= ['Surface','500m','1000m','Transect','PTransect','SOTransect','ArcTransect','AntTransect','CanRusTransect',]
 
@@ -582,7 +582,7 @@ def analysis_p2p(
 			av[name]['MEDUSA']['grid']		= modelGrid		
 			av[name]['depthLevels'] 		= ['Surface','500m','1000m','Transect','PTransect','SOTransect','AntTransect',]
 				
-			alkregions	= ['Global','Equator10', 'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific','ignoreInlandSeas','SouthernOcean',]
+			alkregions	= ['Global','Equator10', 'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific','ignoreInlandSeas','SouthernOcean','AtlanticSOcean',]
 			#### very little arctic alkalinty
 			if annual:	av[name]['plottingSlices'] 	= alkregions
 			else:		av[name]['plottingSlices'] 	= HighLatWinter

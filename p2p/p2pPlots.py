@@ -696,7 +696,7 @@ class makePlots:
 		if newSlice in slicesDict['Months']:
 			 newSlice = ukp.mnStr(self.months[newSlice]+1)+newSlice	
 		if dictkey == 'Default': dictkey=''
-		filename = ukp.folder([file_prefix,dictkey])+self.name+self.depthLevel+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
+	filename = ukp.folder([file_prefix,dictkey])+self.name+self.depthLevel+'_'+newSlice+'_'+xkey+'vs'+ykey+file_suffix
 
 	return filename
 

@@ -61,6 +61,28 @@ def shifttimes(mdata, jobID,year0=False):
                 	datas.append(mdata[t])
                return times, datas
 
+        if year0=='UKESMv1SpinUp':
+               	for t in sorted(mdata.keys()):
+                        if jobID == 'u-aj588':          t1 = t - 2406
+                        if jobID == 'u-ak900':		t1 = t - 2106
+                        if jobID == 'u-an869': 		t1 = t - (2061-56) + (3996-2106)      #-1862
+                        if jobID in ['u-ar538',]: 	t1 = t - (2061-56) + (3996-2106)      #-1862
+                        #if jobID in ['u-ar977',]: t1 = t - (2061-56) + (3996-2106)      #-1862
+                        if jobID  in ['u-ar783',]: 	t1 = t + (4965. - 2108.)
+                        if jobID  in ['u-au835','u-av450']:    	t1 = t + 4965. - 2108. + 33. # +233.
+
+                        if jobID == 'u-aj588' and t1 >    0. : continue
+			if jobID == 'u-ak900' and t1 > 1947. : continue
+                        if jobID == 'u-an869' and t1 > 4537. : continue
+                        if jobID == 'u-ar538' and t1 > 4966. : continue
+                        if jobID == 'u-au835' and t1 > 5269. : continue
+                        times.append(float(t1))
+                        datas.append(mdata[t])
+		
+		print 'shifttimes:\t',year0,jobID, min(times), max(times)
+                return times, datas
+
+
         if year0=='Staggered':
                for t in sorted(mdata.keys()):
                         if   jobID in ['u-au362', ]: t1 = t + 40. 
@@ -194,13 +216,15 @@ def shifttimes(mdata, jobID,year0=False):
                         datas.append(mdata[t])
                return times, datas
         if year0 in ['4945-5110','4945-5110i','4945-5110ii','4945-5110iii','4800-5100']:
-		if jobID in ['u-an869','u-ar783','u-ar538','u-ar766','u-at629','u-at793','u-at628','u-at760','u-as462','u-as858', 'u-at572', 'u-au027']:
+		if jobID in ['u-an869','u-ar783','u-ar538','u-ar766','u-at629','u-at793','u-at628','u-at760','u-as462','u-as858', 'u-at572', 'u-au027','u-au835','u-au521','u-au756','u-au828','u-av450','u-av472']:
 	               	for t in sorted(mdata.keys()):
-                                if jobID in ['u-at629','u-at793','u-at628','u-at760','u-as462','u-as858','u-at572', 'u-au027']:  t1 = t + 2838.
+                                if jobID in ['u-at629','u-at793','u-at628','u-at760','u-as462','u-as858','u-at572', 'u-au027','u-au521','u-au756','u-au828',]:  t1 = t + 2838.
 				#if jobID in ['u-at629','u-at793','u-at628','u-at760',]:#'u-as462','u-as858',]:
 				#				t1 = t + 2794.
-                                #elif jobID in ['u-as462','u-as858',]:    t1 = t  +2858.
+                                #elif jobID in ['u-as462','u-as858',]:    t1 = t  +2858.:
 				elif jobID  in ['u-ar783',]: 	t1 = t + 4965. - 2108.
+                                elif jobID  in ['u-au835','u-av450','u-av472']:    t1 = t + 4965. - 2108. + 33. # +233.
+
                                 elif jobID  in ['u-ar766',]: 	t1 = t + 3095.
 				else:	t1 = t
 	
@@ -209,7 +233,7 @@ def shifttimes(mdata, jobID,year0=False):
                 		        if float(t1) >5410.: continue
                                 if year0 in ['4800-5100',]:
                                         if float(t1) <4780. : continue
-                                        if float(t1) >5410. : continue
+                                        #if float(t1) >5410. : continue
 
 	                        if jobID == 'u-as462':
 					if t > 2126.: continue
@@ -240,6 +264,64 @@ def shifttimes(mdata, jobID,year0=False):
                                 datas.append(mdata[t])
                	return times, datas
 
+        if year0 in ['ransom',]:
+                if jobID in ['u-am927i','u-am927ii','u-aq853iii','u-aq853']:
+                        for t in sorted(mdata.keys()):
+                                if jobID in ['u-am927i',]:     t1 = t+2835     # 2130-2230
+                                if jobID in ['u-am927ii','u-aq853iii','u-aq853',]:      t1 = t+2535     # 2290-2390
+
+                                if float(t1) <4945.:continue
+                                if float(t1) >5245.:continue
+
+                                times.append(float(t1))
+                                datas.append(mdata[t])
+                else: 
+                        for t in sorted(mdata.keys()):
+                                if   jobID in ['u-at629','u-at793','u-at628','u-at760','u-as462','u-as858','u-at572', 'u-au027','u-au521','u-au756','u-au828',]:  t1 = t + 2838.
+                                elif jobID  in ['u-ar783',]:    t1 = t + 4965. - 2108.
+                                elif jobID  in ['u-au835','u-av450','u-av472']:    t1 = t + 4965. - 2108. + 33. # +233.
+                                elif jobID  in ['u-ar766',]:    t1 = t + 3095.
+                                else:   t1 = t
+
+                                if float(t1) <4945. : continue
+                                if jobID == 'u-as462' and t > 2126.: continue
+                                if jobID == 'u-as858' and t > 2175.: continue
+                                times.append(float(t1))
+                                datas.append(mdata[t])
+                return times, datas
+
+        if year0 in ['Strattrop','Strattrop_fromStart',]:
+                for t in sorted(mdata.keys()):
+                        #if jobID == 'u-as462':
+                        #        if t > 2126.: continue
+                        #if jobID == 'u-as858':
+                        #        if t > 2175.: continue
+			
+                        if jobID in ['u-at629','u-at793','u-at628','u-at760','u-as462','u-as858','u-at572', 'u-au027','u-au521','u-au756','u-au828',]:  
+				t1 = t + 2838.                                    
+                        elif jobID  in ['u-ar783',]:
+				t1 = t + 4965. - 2108.
+                        elif jobID  in ['u-au835','u-av450','u-av472','u-av651']:
+				t1 = t + 4965. - 2108. + 33. # +233.
+                        elif jobID  in ['u-av937','u-aw072',]: #DECK RUNS
+                                t1 = t + 4965. - 2108. + 33. + 589 # +233.
+
+                        elif jobID  in ['u-ar766',]:    
+				t1 = t + 3095.
+                        else:   
+                                print jobID
+                                assert 0
+				t1 = t + 2838.
+
+                      	if year0 in ['Strattrop',] and float(t1) < 5100. : continue
+                        #if float(t1) >5410. : continue
+
+                        times.append(float(t1))
+                        datas.append(mdata[t])
+                print year0, jobID,'\t',min(mdata.keys()),max(mdata.keys()), '--->',min(times),max(times)
+                return times, datas
+
+
         if year0 =='from2228':
 		buff= 0
                 for t in sorted(mdata.keys()):
@@ -258,6 +340,31 @@ def shifttimes(mdata, jobID,year0=False):
 		buff = 0
                 for t in sorted(mdata.keys()):
                         if float(t) <4950.-buff:continue
+                        times.append(float(t))
+                        datas.append(mdata[t])
+                return times, datas
+
+
+        if year0 =='from2350':
+                buff= 0
+                for t in sorted(mdata.keys()):
+                        if float(t) <2350. - buff :continue
+                        times.append(float(t))
+                        datas.append(mdata[t])
+                return times, datas
+
+        if year0 =='from2240':
+                buff= 0
+                for t in sorted(mdata.keys()):
+                        if float(t) <2240. - buff :continue
+                        times.append(float(t))
+                        datas.append(mdata[t])
+                return times, datas
+
+        if year0 =='from6400':
+                buff= 1
+                for t in sorted(mdata.keys()):
+                        if float(t) < 6400. - buff :continue
                         times.append(float(t))
                         datas.append(mdata[t])
                 return times, datas
