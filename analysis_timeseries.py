@@ -1082,7 +1082,6 @@ def analysis_timeseries(jobID = "u-ab671",
 		if 'TotalOMZVolume' in analysisKeys and 'TotalOMZVolume50' in analysisKeys:
 			print "Only run one of these at a time"
 			assert 0
-
 		if annual:
 			av['TotalOMZVolume']['modelFiles']  	= sorted(glob(paths.ModelFolder_pref+jobID+"/"+jobID+"o_1y_*_ptrc_T.nc"))
 			av['TotalOMZVolume']['dataFile'] 	=  WOAFolder+'woa13_all_o00_01.nc'

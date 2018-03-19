@@ -264,6 +264,32 @@ def shifttimes(mdata, jobID,year0=False):
                                 datas.append(mdata[t])
                	return times, datas
 
+        if year0 in ['ransom',]:
+                if jobID in ['u-am927i','u-am927ii','u-aq853iii','u-aq853']:
+                        for t in sorted(mdata.keys()):
+                                if jobID in ['u-am927i',]:     t1 = t+2835     # 2130-2230
+                                if jobID in ['u-am927ii','u-aq853iii','u-aq853',]:      t1 = t+2535     # 2290-2390
+
+                                if float(t1) <4945.:continue
+                                if float(t1) >5245.:continue
+
+                                times.append(float(t1))
+                                datas.append(mdata[t])
+                else: 
+                        for t in sorted(mdata.keys()):
+                                if   jobID in ['u-at629','u-at793','u-at628','u-at760','u-as462','u-as858','u-at572', 'u-au027','u-au521','u-au756','u-au828',]:  t1 = t + 2838.
+                                elif jobID  in ['u-ar783',]:    t1 = t + 4965. - 2108.
+                                elif jobID  in ['u-au835','u-av450','u-av472']:    t1 = t + 4965. - 2108. + 33. # +233.
+                                elif jobID  in ['u-ar766',]:    t1 = t + 3095.
+                                else:   t1 = t
+
+                                if float(t1) <4945. : continue
+                                if jobID == 'u-as462' and t > 2126.: continue
+                                if jobID == 'u-as858' and t > 2175.: continue
+                                times.append(float(t1))
+                                datas.append(mdata[t])
+                return times, datas
+
         if year0 in ['Strattrop','Strattrop_fromStart',]:
                 for t in sorted(mdata.keys()):
                         #if jobID == 'u-as462':
@@ -277,6 +303,9 @@ def shifttimes(mdata, jobID,year0=False):
 				t1 = t + 4965. - 2108.
                         elif jobID  in ['u-au835','u-av450','u-av472','u-av651']:
 				t1 = t + 4965. - 2108. + 33. # +233.
+                        elif jobID  in ['u-av937','u-aw072',]: #DECK RUNS
+                                t1 = t + 4965. - 2108. + 33. + 589 # +233.
+
                         elif jobID  in ['u-ar766',]:    
 				t1 = t + 3095.
                         else:   
