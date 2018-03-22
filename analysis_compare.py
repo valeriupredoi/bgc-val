@@ -2025,7 +2025,6 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 				#mdata = modeldataD[(jobID,name )][('regionless', 'layerless', 'mean')]
 				#title = getLongName(name)				
 			else:
-				print name, jobID, name
 				mdata = modeldataD[(jobID,name )][('regionless', 'layerless', 'metricless')]
 				title = getLongName(name)
 
@@ -2433,6 +2432,32 @@ def main():
 		exit
 	else:
 
+                jobs = ['u-am927i','u-aq853','u-ar783','u-au835','u-av450']
+                colours = {i:standards[i] for i in jobs}
+                thicknesses3 = defaultdict(lambda: 0.75)
+                thicknesses3['u-ar766'] = 1.5
+                thicknesses3['u-ar783'] = 2.
+                thicknesses3['u-au835'] = 2.
+                thicknesses3['u-at628'] = 2.
+                thicknesses3['u-at760'] = 2.
+                thicknesses3['u-at572'] = 2.
+                thicknesses3['u-au027'] = 2.
+                thicknesses3['u-au835'] = 2
+                thicknesses3['u-au756'] = 2
+                thicknesses3['u-au828'] = 2
+                thicknesses3['u-av450'] = 2.6
+
+                timeseries_compare(
+                        {i:standards[i] for i in jobs},
+                        physics=1,
+                        bio=1,
+                        debug=1,
+                        year0='ransom2',
+                        jobDescriptions=jobDescriptions,
+                        analysisname='HCCP_C2.3',      # Called ransom because Colin requested this in exchange for help with my CMR.
+                        lineThicknesses= thicknesses3)
+
+
                 jobs = ['u-ar783','u-au835','u-av450','u-av472', 'u-av651','u-av937','u-aw072']
                 timeseries_compare({
                          i:standards[i] for i in jobs},
@@ -2457,30 +2482,29 @@ def main():
                          lineThicknesses= hjthicknesses)
 
 
-                jobs = ['u-am927i','u-am927ii','u-am927iii','u-aq853','u-ar783','u-au835','u-av450']
-                colours = {i:standards[i] for i in jobs}
-                thicknesses3 = defaultdict(lambda: 0.75)
-                thicknesses3['u-ar766'] = 1.5
-                thicknesses3['u-ar783'] = 2.
-                thicknesses3['u-au835'] = 2.
-                thicknesses3['u-at628'] = 2.
-                thicknesses3['u-at760'] = 2.
-                thicknesses3['u-at572'] = 2.
-                thicknesses3['u-au027'] = 2.
-                thicknesses3['u-au835'] = 2
-                thicknesses3['u-au756'] = 2
-                thicknesses3['u-au828'] = 2
-                thicknesses3['u-av450'] = 2.6
-
-                timeseries_compare({
-                        i:standards[i] for i in jobs},
-                        physics=1,
-                        bio=1,
-                        debug=1,
-                        year0='ransom',
-                        jobDescriptions=jobDescriptions,
-                        analysisname='CMR_Ransom',	# Called ransom because Colin requested this in exchange for help with my CMR.
-                        lineThicknesses= thicknesses3)
+#               jobs = ['u-am927i','u-am927ii','u-am927iii','u-aq853','u-ar783','u-au835','u-av450']
+#               colours = {i:standards[i] for i in jobs}
+#               thicknesses3 = defaultdict(lambda: 0.75)
+#               thicknesses3['u-ar766'] = 1.5
+#               thicknesses3['u-ar783'] = 2.
+#               thicknesses3['u-au835'] = 2.
+#               thicknesses3['u-at628'] = 2.
+#               thicknesses3['u-at760'] = 2.
+#               thicknesses3['u-at572'] = 2.
+#               thicknesses3['u-au027'] = 2.
+ #              thicknesses3['u-au835'] = 2
+#               thicknesses3['u-au756'] = 2
+#               thicknesses3['u-au828'] = 2
+#               thicknesses3['u-av450'] = 2.6
+#               timeseries_compare({
+#                       i:standards[i] for i in jobs},
+#                       physics=1,
+#                       bio=1,
+#                       debug=1,
+#                       year0='ransom',
+#                       jobDescriptions=jobDescriptions,
+#                       analysisname='CMR_Ransom',	# Called ransom because Colin requested this in exchange for help with my CMR.
+#                       lineThicknesses= thicknesses3)
 
 
 #                jobs = ['u-as051', 'u-as412', 'u-as558']

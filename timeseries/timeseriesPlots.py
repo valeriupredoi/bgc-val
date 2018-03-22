@@ -577,7 +577,6 @@ def multitimeseries(
 		plotStyle = 'Together',	
 		lineStyle = '',	
                 thicknesses  = defaultdict(lambda:1),
-
 	):
 
         if 0 in [len(timesD) , len(timesD.keys())]:return
@@ -616,7 +615,10 @@ def multitimeseries(
 	for i,jobID in enumerate(sorted(timesD.keys())):
 		times = timesD[jobID]
 		arr = arrD[jobID]
-		
+		try:	print "multitimeseries:",jobID,dataname, min(times),max(times)
+		except: print "multitimeseries:",jobID,dataname, 'no data'
+
+	
 		if plotStyle == 'Separate':
 			if len(timesD.keys()) <= 4:	axs.append(fig.add_subplot(2,2,i+1))
 			elif len(timesD.keys()) <= 6:	axs.append(fig.add_subplot(2,3,i+1))
@@ -653,7 +655,6 @@ def multitimeseries(
 			elif len(times)>10.: window = 4			
 			else: window = 1
 			
-			#arr_new = movingaverage(arr, window)
                         arr_new = movingaverage2(arr, window_len=window,window='flat',extrapolate='periodically')
 			pyplot.plot(times,arr_new,c=colours[jobID],ls='-',lw=thicknesses[jobID],label=jobID,)#label=jobID+' smooth',)
 
@@ -661,8 +662,6 @@ def multitimeseries(
 			window = 5
                         arr_new = movingaverage2(arr,times, window_len=window,window='flat',extrapolate='periodically')
 			pyplot.plot(times,arr_new,c=colours[jobID],ls='-',label=jobID,lw=thicknesses[jobID],)#label=jobID+' smooth',)
-
-
 
 
 		if lineStyle.lower() in ['movingav1year',]:
