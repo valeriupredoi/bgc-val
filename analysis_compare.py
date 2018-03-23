@@ -78,7 +78,7 @@ def listModelDataFiles(jobID, filekey, datafolder, annual,year=''):
 		else:
 			return sorted(glob(datafolder+jobID+"/"+jobID+"o_1m_*"+year+"????_"+filekey+".nc"))
 				
-def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,analysisname='',jobDescriptions={},lineThicknesses= defaultdict(lambda:1)):
+def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,analysisname='',jobDescriptions={},lineThicknesses= defaultdict(lambda:1),linestyles= defaultdict(lambda:'-')):
 	### strategy here is a simple wrapper.
 	# It's a little cheat-y, as I'm copying straight from analysis_timeseries.py
 	
@@ -1980,6 +1980,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 					lineStyle	= ls,
 					colours		= colours,
 	                                thicknesses     = lineThicknesses,
+	                                linestyles	= linestyles,
 				)
 	
 	####
@@ -2024,6 +2025,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 					lineStyle	= ls,
 					colours		= colours,
 	                                thicknesses     = lineThicknesses,
+	                                linestyles	= linestyles,	                                
 				)
 	
 #		assert 0	
@@ -2117,6 +2119,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 				lineStyle	= ls,
 				colours		= colours,
                                 thicknesses     = lineThicknesses,
+                                linestyles	= linestyles,                                
 			)
 
                         if name in ['NoCaspianAirSeaFluxCO2','AMOC_26N','ADRC_26N','AMOC_32S']:
@@ -2138,6 +2141,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
                                 lineStyle       = ls,
                                 colours         = colours,
                                 thicknesses     = lineThicknesses,
+                                linestyles	= linestyles,                                                                
                               )
 
 	
@@ -2184,6 +2188,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 				lineStyle	= ls,
 				colours		= colours,
 				thicknesses	= lineThicknesses,
+                                linestyles	= linestyles,                                				
 			)
 	wcvwRegions = vmtregionList[:]
 	wcvwRegions.extend(OMZRegions)
@@ -2216,6 +2221,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 				lineStyle	= ls,
 				colours		= colours,
 				thicknesses	= lineThicknesses,
+                                linestyles	= linestyles,                                				
 			)
         	
         	
@@ -2251,6 +2257,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 				lineStyle	= ls,
 				colours		= colours,
                                 thicknesses     = lineThicknesses,
+                                linestyles	= linestyles,                                                             
 
 			)
 
@@ -2282,6 +2289,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
                                 lineStyle       = ls,
                                 colours         = colours,
                                 thicknesses     = lineThicknesses,
+                                linestyles	= linestyles,                                                                
                         )
 
 	for name in ['MaxMonthlyMLD','MinMonthlyMLD',]:
@@ -2315,6 +2323,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 				lineStyle	= ls,
 				colours		= colours,
                                 thicknesses     = lineThicknesses,
+                                linestyles	= linestyles,                                                                
 			)
 			
 
@@ -2347,6 +2356,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 				lineStyle	= ls,
 				colours		= colours,
                                 thicknesses     = lineThicknesses,
+                                linestyles	= linestyles,                                                                
 			)
 	try:
 		AllImages = glob(imageFolder, recursive=True)
@@ -2519,6 +2529,23 @@ def main():
 	else:
 
 
+                jobs = ['u-av651','u-ar766','u-av651','u-aw072','u-as371','u-aw331',]
+                #'u-av937','u-aw310', 'u-aw331']
+                linestyles = defaultdict(lambda: '-')
+                linestyles['u-av651'] = '--'
+                linestyles['u-ar766'] = '--'
+                linestyles['u-av651'] = '--'
+                timeseries_compare({
+                         i:standards[i] for i in jobs},
+                         physics=1,
+                         bio=1,
+                         debug=0,
+                         year0=False,
+                         jobDescriptions=jobDescriptions,
+                         analysisname='UKESM1_CN_DECK',
+                         lineThicknesses= hjthicknesses,
+                         linestyles = linestyles,)
+		return                         
 
                 jobs = ['u-av937','u-aw310','u-aw072', 'u-aw331']
                 timeseries_compare({

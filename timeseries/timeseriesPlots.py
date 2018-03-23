@@ -576,7 +576,8 @@ def multitimeseries(
 		colours = ['red','orange','green','purple','blue','pink','yellow','lime',],
 		plotStyle = 'Together',	
 		lineStyle = '',	
-                thicknesses  = defaultdict(lambda:1),
+                thicknesses  	= defaultdict(lambda:1),
+                linestyles	= defaultdict(lambda:'-'),                                                
 	):
 
         if 0 in [len(timesD) , len(timesD.keys())]:return
@@ -647,65 +648,57 @@ def multitimeseries(
 		if lineStyle.lower() in ['spline','all']:
 			tnew = np.linspace(times[0],times[-1],60)
 			arr_smooth = interpolate.spline(times,arr,tnew)
-			pyplot.plot(tnew,arr_smooth,c=colours[jobID],ls='-',lw=thicknesses[jobID],label=jobID+' spline',)
+			pyplot.plot(tnew,arr_smooth,c=colours[jobID],ls=linestyles[jobID],lw=thicknesses[jobID],label=jobID+' spline',)
 
 		if lineStyle.lower() in ['movingaverage','both','all']:
 			if len(times)>100.: window = 30
 			elif len(times)>30.: window = 15
 			elif len(times)>10.: window = 4			
 			else: window = 1
-			
                         arr_new = movingaverage2(arr, window_len=window,window='flat',extrapolate='periodically')
-			pyplot.plot(times,arr_new,c=colours[jobID],ls='-',lw=thicknesses[jobID],label=jobID,)#label=jobID+' smooth',)
+			pyplot.plot(times,arr_new,c=colours[jobID],ls=linestyles[jobID],lw=thicknesses[jobID],label=jobID,)
 
 		if lineStyle.lower() in ['movingaverage5',]:
 			window = 5
                         arr_new = movingaverage2(arr,times, window_len=window,window='flat',extrapolate='periodically')
-			pyplot.plot(times,arr_new,c=colours[jobID],ls='-',label=jobID,lw=thicknesses[jobID],)#label=jobID+' smooth',)
-
+			pyplot.plot(times,arr_new,c=colours[jobID],ls=linestyles[jobID],label=jobID,lw=thicknesses[jobID],)
 
 		if lineStyle.lower() in ['movingav1year',]:
                         arr_new = movingaverage_DT(arr,times, window_len=1.,window_units='years')
-			pyplot.plot(times,arr_new,c=colours[jobID],ls='-',lw=thicknesses[jobID],label=jobID,)
+			pyplot.plot(times,arr_new,c=colours[jobID],ls=linestyles[jobID],lw=thicknesses[jobID],label=jobID,)
 		if lineStyle.lower() in ['movingav5years',]:
                         arr_new = movingaverage_DT(arr,times, window_len=5.,window_units='years')
-			pyplot.plot(times,arr_new,c=colours[jobID],ls='-',lw=thicknesses[jobID],label=jobID,)
+			pyplot.plot(times,arr_new,c=colours[jobID],ls=linestyles[jobID],lw=thicknesses[jobID],label=jobID,)
 
                 if lineStyle.lower() in ['movingav30years',]:
-                        pyplot.plot(times,arr,c=colours[jobID],ls='-',lw=0.15)
+                        pyplot.plot(times,arr,c=colours[jobID],ls=linestyles[jobID],lw=0.15)
 
                         arr_new = movingaverage_DT(arr,times, window_len=30.,window_units='years')
-                        pyplot.plot(times,arr_new,c=colours[jobID],ls='-',lw=thicknesses[jobID],label=jobID,)
+                        pyplot.plot(times,arr_new,c=colours[jobID],ls=linestyles[jobID],lw=thicknesses[jobID],label=jobID,)
 
                 if lineStyle.lower() in ['movingav100years',]:
-                        pyplot.plot(times,arr,c=colours[jobID],ls='-',lw=0.15)
+                        pyplot.plot(times,arr,c=colours[jobID],ls=linestyles[jobID],lw=0.15)
 
                         arr_new = movingaverage_DT(arr,times, window_len=100.,window_units='years')
-                        pyplot.plot(times,arr_new,c=colours[jobID],ls='-',lw=thicknesses[jobID],label=jobID,)
-
+                        pyplot.plot(times,arr_new,c=colours[jobID],ls=linestyles[jobID],lw=thicknesses[jobID],label=jobID,)
 
 		if lineStyle.lower() in ['movingaverage12',]:
 			window = 12
 			if len(arr)>12:
  	                	arr_new = movingaverage2(arr, window_len=window,window='flat',extrapolate='periodically')
-				pyplot.plot(times,arr_new,c=colours[jobID],ls='-',lw=2.,label=jobID,)#label=jobID+' smooth',)
+				pyplot.plot(times,arr_new,c=colours[jobID],ls=linestyles[jobID],lw=2.,label=jobID,)
 
-				
 		if lineStyle.lower() in ['movingaverage60',]:
 			window = 60
 			if len(arr)>60:
  	                	arr_new = movingaverage2(arr, window_len=window,window='flat',extrapolate='periodically')
-				pyplot.plot(times,arr_new,c=colours[jobID],ls='-',lw=2.,label=jobID,)#label=jobID+' smooth',)
+				pyplot.plot(times,arr_new,c=colours[jobID],ls=linestyles[jobID],lw=2.,label=jobID,)
 													
-		#if lineStyle.lower() in ['lowess','all','both',]:
-		#	filtered = lowess(arr, times, is_sorted=True, frac=0.025, it=0)			
-		#	pyplot.plot(filtered[:,0], filtered[:,1], colour[i],ls='-',label=jobID+' lowess',)
-			
 		if lineStyle.lower() in ['','both','all',]:
-			pyplot.plot(times,arr,c=colours[jobID],ls='-',lw=0.25)#label=jobID,)
+			pyplot.plot(times,arr,c=colours[jobID],ls=linestyles[jobID],lw=0.25)
 
                 if lineStyle.lower() in ['dataonly']:
-                        pyplot.plot(times,arr,c=colours[jobID],ls='-',lw=thicknesses[jobID],label=jobID,)
+                        pyplot.plot(times,arr,c=colours[jobID],ls=linestyles[jobID],lw=thicknesses[jobID],label=jobID,)
 
 
 	if type(data) == type(10.):
