@@ -2529,23 +2529,28 @@ def main():
 	else:
 
 
-                jobs = ['u-av651','u-ar766','u-av651','u-aw072','u-as371','u-aw331',]
-                #'u-av937','u-aw310', 'u-aw331']
+                jobs = ['u-av651','u-aq853','u-as371','u-aw331',]
                 linestyles = defaultdict(lambda: '-')
                 linestyles['u-av651'] = '--'
-                linestyles['u-ar766'] = '--'
-                linestyles['u-av651'] = '--'
-                timeseries_compare({
-                         i:standards[i] for i in jobs},
+                linestyles['u-aq853'] = '--'
+		customColours = {'u-av651': 'black',
+			 'u-aq853': 'red',
+			 'u-as371': 'red',
+			 'u-aw331': 'black',}
+        	cnthicknesses = defaultdict(lambda: 1.75)
+                cnthicknesses['u-av651'] = 1.1
+                cnthicknesses['u-aq853'] = 1.1
+
+                timeseries_compare(
+                         customColours, #{i:standards[i] for i in jobs},
                          physics=1,
                          bio=1,
                          debug=0,
-                         year0=False,
+                         year0='AlignToDECK',
                          jobDescriptions=jobDescriptions,
                          analysisname='UKESM1_CN_DECK',
-                         lineThicknesses= hjthicknesses,
+                         lineThicknesses= cnthicknesses,
                          linestyles = linestyles,)
-		return                         
 
                 jobs = ['u-av937','u-aw310','u-aw072', 'u-aw331']
                 timeseries_compare({

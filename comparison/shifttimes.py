@@ -82,6 +82,19 @@ def shifttimes(mdata, jobID,year0=False):
 		print 'shifttimes:\t',year0,jobID, min(times), max(times)
                 return times, datas
 
+        if year0 in ['AlignToDECK',]:
+                for t in sorted(mdata.keys()):
+			t1 = t
+			if jobID in ['u-ar766',]:	t1 = t
+			elif jobID in ['u-av651',]:	t1 = t - 618.
+			elif jobID in ['u-av450',]:	t1 = t 
+			elif jobID in ['u-aq853']:	t1 = t - 743
+			if t1 < 1799. : continue
+                        times.append(float(t1))
+                        datas.append(mdata[t])
+                print year0, jobID,'\t',min(mdata.keys()),max(mdata.keys()), '--->',min(times),max(times)
+                return times, datas
+
 
         if year0=='Staggered':
                for t in sorted(mdata.keys()):
