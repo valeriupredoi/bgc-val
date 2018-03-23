@@ -2458,7 +2458,7 @@ def main():
                         lineThicknesses= thicknesses3)
 
 
-                jobs = ['u-ar783','u-au835','u-av450','u-av472', 'u-av651','u-av937','u-aw072']
+                jobs = ['u-ar783','u-au835','u-av450','u-av472', 'u-av651','u-aw310','u-aw072']
                 timeseries_compare({
                          i:standards[i] for i in jobs},
                          physics=1,
@@ -2470,7 +2470,7 @@ def main():
                          lineThicknesses= hjthicknesses)
 
 
-                jobs = ['u-av937','u-aw072']
+                jobs = ['u-aw310','u-aw072']
                 timeseries_compare({
                          i:standards[i] for i in jobs},
                          physics=1,
