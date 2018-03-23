@@ -1328,7 +1328,7 @@ def comparehtml5Maker(
 			'Production',
 			'Export',
 			'FreshwaterFlux',
-			'lHeatFlux',
+			'HeatFlux',
 			]
 		for key in sorted(names):
 			#####

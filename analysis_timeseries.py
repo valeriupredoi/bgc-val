@@ -131,8 +131,8 @@ if True:
 
         physKeys.append('MaxMonthlyMLD')               # MLD Monthly max           
         physKeys.append('MinMonthlyMLD')               # MLD Monthly min           
-#                physKeys.append('HeatFlux')
-#                physKeys.append('TotalHeatFlux')
+        physKeys.append('HeatFlux')
+        physKeys.append('TotalHeatFlux')
 
 #       physKeys.append('WindStress')                   # Wind Stress                           
 #       physKeys.append('sohefldo')                     # Net downward Water Flux                       
@@ -1761,11 +1761,11 @@ def analysis_timeseries(jobID = "u-ab671",
 
         if 'HeatFlux' in analysisKeys:
                 name = 'HeatFlux'
-                av[name]['modelFiles']          = listModelDataFiles(jobID, 'ptrc_T', paths.ModelFolder_pref, annual)
+                av[name]['modelFiles']          = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)
                 av[name]['dataFile']            =  ''
                 av[name]['modelcoords']         = medusaCoords
-                av[name]['datacoords']          = takahashiCoords
-                av[name]['modeldetails']        = {'name': 'HeatFlux', 'vars':['hfds',], 'convert': NoChange,'units':'W/m2'}
+                #av[name]['datacoords']          = takahashiCoords
+                av[name]['modeldetails']        = {'name': 'HeatFlux', 'vars':['hfds',], 'convert': ukp.NoChange,'units':'W/m2'}
                 av[name]['datadetails']         = {'name': '', 'units':''}
                 av[name]['layers']              = ['layerless',]
                 av[name]['regions']             = regionList
@@ -1788,15 +1788,15 @@ def analysis_timeseries(jobID = "u-ab671",
                 nc.close()
 
                 def areatotal(nc,keys):
-                        if area in nc.variables.keys(): area = nc.variables['area' ][:]
+                        if 'area' in nc.variables.keys(): area = nc.variables['area' ][:]
                         else: area = ncarea
                         flux = np.ma.array(nc.variables[keys[0]][:].squeeze()) * ncarea
                         flux = np.ma.masked_where((surfmask==0) + (flux.mask),flux)
-			return flux.sum()
+			return flux.sum() *1e-12
 
                 av[name]['modelcoords']         = medusaCoords
-                av[name]['modelFiles']          = listModelDataFiles(jobID, 'diad_T', paths.ModelFolder_pref, annual)
-                av[name]['modeldetails']        = {'name': name, 'vars':['hfds',], 'convert': areatotal,'units':'W/m2'}
+                av[name]['modelFiles']          = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)
+                av[name]['modeldetails']        = {'name': name, 'vars':['hfds',], 'convert': areatotal,'units':'TW'}
                 av[name]['layers']              = ['layerless',]
                 av[name]['regions']             = ['regionless',]
                 av[name]['metrics']             = ['metricless',]

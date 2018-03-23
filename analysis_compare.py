@@ -135,8 +135,8 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 		analysisKeys.append('soicecov')			# Ice fraction			               
                 analysisKeys.append('sossheig')                 # SSH
 		analysisKeys.append('FreshwaterFlux')		# Fresh water flux
-#                analysisKeys.append('HeatFlux')
-#                analysisKeys.append('TotalHeatFlux')
+                analysisKeys.append('HeatFlux')
+                analysisKeys.append('TotalHeatFlux')
                 		
 	if bio:
 		analysisKeys.append('TotalAirSeaFlux')          # work in progress             
@@ -1787,7 +1787,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 		        av[name]['dataFile']            =  ''
 		        av[name]['modelcoords']         = medusaCoords
 		        av[name]['datacoords']          = takahashiCoords
-		        av[name]['modeldetails']        = {'name': 'HeatFlux', 'vars':['hfds',], 'convert': NoChange,'units':'W/m2'}
+		        av[name]['modeldetails']        = {'name': 'HeatFlux', 'vars':['hfds',], 'convert': ukp.NoChange,'units':'W/m2'}
 		        av[name]['datadetails']         = {'name': '', 'units':''}
 		        av[name]['layers']              = ['layerless',]
 		        av[name]['regions']             = regionList
@@ -1814,11 +1814,11 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 		                else: area = ncarea
 		                flux = np.ma.array(nc.variables[keys[0]][:].squeeze()) * ncarea
 		                flux = np.ma.masked_where((surfmask==0) + (flux.mask),flux)
-				return flux.sum()
+				return flux.sum() *1e-12
 
 		        av[name]['modelcoords']         = medusaCoords
 		        av[name]['modelFiles']          = listModelDataFiles(jobID, 'diad_T', paths.ModelFolder_pref, annual)
-		        av[name]['modeldetails']        = {'name': name, 'vars':['hfds',], 'convert': areatotal,'units':'W/m2'}
+		        av[name]['modeldetails']        = {'name': name, 'vars':['hfds',], 'convert': areatotal,'units':'TW'}
 		        av[name]['layers']              = ['layerless',]
 		        av[name]['regions']             = ['regionless',]
 		        av[name]['metrics']             = ['metricless',]
@@ -2067,12 +2067,12 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
                                         title = ' '.join(['Global',  getLongName(name), ])
                                 except: continue
 						
-			elif name in [ 'sowaflup','sohefldo','sofmflup','sosfldow','sossheig', 'soicecov','FreshwaterFlux']:
+			elif name in [ 'sowaflup','sohefldo','sofmflup','sosfldow','sossheig', 'soicecov','FreshwaterFlux', 'HeatFlux']:
 				
                                 try:
 					mdata = modeldataD[(jobID,name )][('Global', 'layerless', 'mean')]
 				except: continue
-                                title = ' '.join(['Global', getLongName(name)])
+                                title = ' '.join(['Global mean', getLongName(name)])
 				
 				#####
 				# Special hack for these guys.
@@ -2253,6 +2253,37 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
                                 thicknesses     = lineThicknesses,
 
 			)
+
+        for name in ['HeatFlux',]:
+          if name not in av.keys():continue
+          for region in vmtregionList:
+            for layer in ['layerless',]:
+                timesD  = {}
+                arrD    = {}
+                for jobID in jobs:
+                        try:mdata = modeldataD[(jobID,name )][(region, layer, 'mean')]
+                        except: continue
+                        title = ' '.join([region, layer, 'Mean',  getLongName(name)])
+                        times,datas = shifttimes(mdata, jobID,year0=year0)
+                        timesD[jobID]   = times
+                        arrD[jobID]     = datas
+
+                units = av[name]['modeldetails']['units']
+                for ts in ['Together',]:#'Separate']:
+                    for ls in ['DataOnly',]:#'','Both',]:                       
+                        tsp.multitimeseries(
+                                timesD,                 # model times (in floats)
+                                arrD,                   # model time series
+                                data    = -999,         # in situ data distribution
+                                title   = title,
+                                filename=ukp.folder(imageFolder)+'_'.join([name,region,layer,ts,ls+'.png']),
+                                units = units,
+                                plotStyle       = ts,
+                                lineStyle       = ls,
+                                colours         = colours,
+                                thicknesses     = lineThicknesses,
+                        )
+
 	for name in ['MaxMonthlyMLD','MinMonthlyMLD',]:
 	  if name not in av.keys():continue
 	  for region in vmtregionList:
@@ -2487,6 +2518,19 @@ def main():
 		exit
 	else:
 
+
+
+                jobs = ['u-av937','u-aw310','u-aw072', 'u-aw331']
+                timeseries_compare({
+                         i:standards[i] for i in jobs},
+                         physics=1,
+                         bio=1,
+                         debug=0,
+                         year0=False,
+                         jobDescriptions=jobDescriptions,
+                         analysisname='UKESM1_DECK',
+                         lineThicknesses= hjthicknesses)
+
                 jobs = ['u-am927i','u-aq853','u-ar783','u-au835','u-av450']
                 colours = {i:standards[i] for i in jobs}
                 thicknesses3 = defaultdict(lambda: 0.75)
@@ -2512,7 +2556,6 @@ def main():
                         analysisname='HCCP_C2.3',      # Called ransom because Colin requested this in exchange for help with my CMR.
                         lineThicknesses= thicknesses3)
 
-
                 jobs = ['u-ar783','u-au835','u-av450','u-av472', 'u-av651','u-av937','u-aw310','u-aw072']
                 timeseries_compare({
                          i:standards[i] for i in jobs},
@@ -2522,18 +2565,6 @@ def main():
                          year0='Strattrop_fromStart',     #'from2240',#False, #'4800-5100',
                          jobDescriptions=jobDescriptions,
                          analysisname='UKESM0.9.4-strattrop_finalspinup_2',
-                         lineThicknesses= hjthicknesses)
-
-
-                jobs = ['u-av937','u-aw310','u-aw072']
-                timeseries_compare({
-                         i:standards[i] for i in jobs},
-                         physics=1,
-                         bio=1,
-                         debug=0,
-                         year0=False, 
-                         jobDescriptions=jobDescriptions,
-                         analysisname='UKESM1_DECK',
                          lineThicknesses= hjthicknesses)
 
 
