@@ -1,3 +1,4 @@
+#!/usr/bin/ipython -i
 #
 # Copyright 2015, Plymouth Marine Laboratory
 #
@@ -52,4 +53,14 @@ def configToDict(fn):
 		d[section] 	= {o:Config.get(section, o) for o in options}
 	return d	
 
+if __name__=="__main__":	
+	from sys import argv
+	try:	fn = argv[1]
+	except:	
+		print "Please provide a config file"
+		exit()
+		
+	d = configToDict(fn)	
 	
+	
+	#

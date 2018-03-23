@@ -131,6 +131,8 @@ if True:
 
         physKeys.append('MaxMonthlyMLD')               # MLD Monthly max           
         physKeys.append('MinMonthlyMLD')               # MLD Monthly min           
+#                physKeys.append('HeatFlux')
+#                physKeys.append('TotalHeatFlux')
 
 #       physKeys.append('WindStress')                   # Wind Stress                           
 #       physKeys.append('sohefldo')                     # Net downward Water Flux                       
@@ -283,7 +285,11 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('GC_CHL_DJF')			                      
                         #####
                         # Physics switches:
-                        analysisKeys.append('Temperature')          #             # WOA Temperature
+#                        analysisKeys.append('Temperature')          #             # WOA Temperature
+                        analysisKeys.append('HeatFlux')
+                        analysisKeys.append('TotalHeatFlux')
+
+                   
 #			analysisKeys.append('VolumeMeanTemperature')#
 #			analysisKeys.append('WeddelIceExent')
 #                        analysisKeys.append('Salinity')                        # WOA Salinity
@@ -1347,28 +1353,6 @@ def analysis_timeseries(jobID = "u-ab671",
 		area = nc.variables['e1t'][:]*nc.variables['e2t'][:]
 		nc.close()
 
-#                def uam515_TotalCO2(nc,keys):
-#                	#####
-#                	# Hack to deal with the problem in the caspian sea in the spin up job, u-am515.
-#                	# This is only to dfea
-#                        factor =  365.25 * 12./1000. / 1.E15
-#                        times =  tst.getTimes(nc, medusaCoords)
-#                        if times[0] <2262.:#
-#				arr = nc.variables['CO2FLUX'][:].squeeze()
-#				arr = np.ma.masked_where(np.ma.abs(arr)>1E10,arr)
-#                      	  	arr = arr * factor *area    # mmolC/m2/d                        	
-#                                print "uam515_TotalCO2:\tMasking u-am515", arr.min(),arr.mean(),arr.max()
-#                        else:#
-#	                        arr = nc.variables['CO2FLUX'][:].squeeze() * factor  *area   # mmolC/m2/d
-#                        
-#                        if arr.ndim ==3:
-#                                for i in np.arange(arr.shape[0]):
-#                                      uam515_TotalCO2  arr[i] = arr[i]*area
-#                        elif arr.ndim ==2: arr = arr*area
-#                        else: assert 0
-#                        return np.ma.sum(arr)
-
-			
 
 		def eOrcaTotal(nc,keys):
 			factor =  365.25 * 12./1000. / 1.E15
@@ -1388,8 +1372,6 @@ def analysis_timeseries(jobID = "u-ab671",
 			return arr.sum()
 			# area 10^6 km^2
 			# flux:  10^15 g Carbon month^-1. (GT)/m2/month
-
-
 
 
 		av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', paths.ModelFolder_pref, annual)
@@ -1777,6 +1759,56 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['gridFile']		= paths.orcaGridfn
 		av[name]['Dimensions']		= 2
 
+        if 'HeatFlux' in analysisKeys:
+                name = 'HeatFlux'
+                av[name]['modelFiles']          = listModelDataFiles(jobID, 'ptrc_T', paths.ModelFolder_pref, annual)
+                av[name]['dataFile']            =  ''
+                av[name]['modelcoords']         = medusaCoords
+                av[name]['datacoords']          = takahashiCoords
+                av[name]['modeldetails']        = {'name': 'HeatFlux', 'vars':['hfds',], 'convert': NoChange,'units':'W/m2'}
+                av[name]['datadetails']         = {'name': '', 'units':''}
+                av[name]['layers']              = ['layerless',]
+                av[name]['regions']             = regionList
+                av[name]['metrics']             = metricList
+                av[name]['datasource']          = ''
+                av[name]['model']               = 'MEDUSA'
+                av[name]['modelgrid']           = 'eORCA1'
+                av[name]['gridFile']            = paths.orcaGridfn
+                av[name]['Dimensions']          = 2
+                
+        if 'TotalHeatFlux' in analysisKeys:
+                name = 'TotalHeatFlux'
+                nc = dataset(paths.orcaGridfn,'r')
+                try:
+                        ncarea   = nc.variables['area' ][:]
+                        surfmask = nc.variables['tmask'][:]
+                except:
+                        surfmask = nc.variables['tmask'][0]
+                        ncarea = nc.variables['e2t'][:] * nc.variables['e1t'][:]
+                nc.close()
+
+                def areatotal(nc,keys):
+                        if area in nc.variables.keys(): area = nc.variables['area' ][:]
+                        else: area = ncarea
+                        flux = np.ma.array(nc.variables[keys[0]][:].squeeze()) * ncarea
+                        flux = np.ma.masked_where((surfmask==0) + (flux.mask),flux)
+			return flux.sum()
+
+                av[name]['modelcoords']         = medusaCoords
+                av[name]['modelFiles']          = listModelDataFiles(jobID, 'diad_T', paths.ModelFolder_pref, annual)
+                av[name]['modeldetails']        = {'name': name, 'vars':['hfds',], 'convert': areatotal,'units':'W/m2'}
+                av[name]['layers']              = ['layerless',]
+                av[name]['regions']             = ['regionless',]
+                av[name]['metrics']             = ['metricless',]
+                av[name]['model']               = 'NEMO'
+                av[name]['modelgrid']           = 'eORCA1'
+                av[name]['gridFile']            = paths.orcaGridfn
+                av[name]['Dimensions']          = 2
+                av[name]['datacoords']          = {'name': '', 'units':''}
+                av[name]['datadetails']         =  {'name': '', 'units':''}
+                av[name]['dataFile']            = ''
+                av[name]['datasource']          = ''
+                
 
         if 'ERSST' in analysisKeys:
                 name = 'ERSST'

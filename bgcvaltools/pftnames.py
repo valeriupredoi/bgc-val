@@ -155,8 +155,12 @@ def makeLongNameDict():
         lnd['VolumeMeanTemperature'] 	= "Volume-weighted Mean Temperature"
         lnd['GlobalMeanSalinity'] 	= "Global Volume-weighted Mean Salinity"         
                
-        lnd['IcelessMeanSST'] 		= "Global Area-weighted Mean SST (masked above 15% ice coverage)"
-        lnd['quickSST']           = "Global Area-weighted Mean SST"
+        lnd['VolumeMeanTemperature'] 	= "Volume-weighted Mean Temperature"
+        lnd['GlobalMeanSalinity'] 	= "Global Volume-weighted Mean Salinity"   
+                
+        lnd['TotalHeatFlux'] 		= "Global Total Heat Flux"
+        lnd['HeatFlux']           	= "Heat Flux"
+        
 
         lnd['sowaflup']  = "Net Upward Water Flux" 
         lnd['sohefldo']  = "Net Downward Heat Flux" 

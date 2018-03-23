@@ -135,7 +135,9 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 		analysisKeys.append('soicecov')			# Ice fraction			               
                 analysisKeys.append('sossheig')                 # SSH
 		analysisKeys.append('FreshwaterFlux')		# Fresh water flux
-		
+#                analysisKeys.append('HeatFlux')
+#                analysisKeys.append('TotalHeatFlux')
+                		
 	if bio:
 		analysisKeys.append('TotalAirSeaFlux')          # work in progress             
                 analysisKeys.append('NoCaspianAirSeaFluxCO2')   # work in progress                      
@@ -207,6 +209,9 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
                 analysisKeys.append('GlobalMeanTemperature')
                 analysisKeys.append('GlobalMeanSalinity')
 
+                analysisKeys.append('HeatFlux')
+                analysisKeys.append('TotalHeatFlux')
+                        
 #               	analysisKeys.append('quickSST')    		# Area Weighted Mean Surface Temperature
 #       	  	analysisKeys.append('TotalOMZVolume')           # Total Oxygen Minimum zone Volume
 #       	 	analysisKeys.append('OMZThickness')             # Oxygen Minimum Zone Thickness
@@ -1775,7 +1780,57 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 		#sohefldo = "Net Downward Heat Flux" ;
 		#sofmflup = "Water flux due to freezing/melting" ;
 		#sosfldow = "Downward salt flux" ;
-			
+
+		if 'HeatFlux' in analysisKeys:
+		        name = 'HeatFlux'
+		        av[name]['modelFiles']          = listModelDataFiles(jobID, 'ptrc_T', paths.ModelFolder_pref, annual)
+		        av[name]['dataFile']            =  ''
+		        av[name]['modelcoords']         = medusaCoords
+		        av[name]['datacoords']          = takahashiCoords
+		        av[name]['modeldetails']        = {'name': 'HeatFlux', 'vars':['hfds',], 'convert': NoChange,'units':'W/m2'}
+		        av[name]['datadetails']         = {'name': '', 'units':''}
+		        av[name]['layers']              = ['layerless',]
+		        av[name]['regions']             = regionList
+		        av[name]['metrics']             = metricList
+		        av[name]['datasource']          = ''
+		        av[name]['model']               = 'MEDUSA'
+		        av[name]['modelgrid']           = 'eORCA1'
+		        av[name]['gridFile']            = paths.orcaGridfn
+		        av[name]['Dimensions']          = 2
+                
+		if 'TotalHeatFlux' in analysisKeys:
+		        name = 'TotalHeatFlux'
+		        nc = dataset(paths.orcaGridfn,'r')
+		        try:
+		                ncarea   = nc.variables['area' ][:]
+		                surfmask = nc.variables['tmask'][:]
+		        except:
+		                surfmask = nc.variables['tmask'][0]
+		                ncarea = nc.variables['e2t'][:] * nc.variables['e1t'][:]
+		        nc.close()
+
+		        def areatotal(nc,keys):
+		                if area in nc.variables.keys(): area = nc.variables['area' ][:]
+		                else: area = ncarea
+		                flux = np.ma.array(nc.variables[keys[0]][:].squeeze()) * ncarea
+		                flux = np.ma.masked_where((surfmask==0) + (flux.mask),flux)
+				return flux.sum()
+
+		        av[name]['modelcoords']         = medusaCoords
+		        av[name]['modelFiles']          = listModelDataFiles(jobID, 'diad_T', paths.ModelFolder_pref, annual)
+		        av[name]['modeldetails']        = {'name': name, 'vars':['hfds',], 'convert': areatotal,'units':'W/m2'}
+		        av[name]['layers']              = ['layerless',]
+		        av[name]['regions']             = ['regionless',]
+		        av[name]['metrics']             = ['metricless',]
+		        av[name]['model']               = 'NEMO'
+		        av[name]['modelgrid']           = 'eORCA1'
+		        av[name]['gridFile']            = paths.orcaGridfn
+		        av[name]['Dimensions']          = 2
+		        av[name]['datacoords']          = {'name': '', 'units':''}
+		        av[name]['datadetails']         =  {'name': '', 'units':''}
+		        av[name]['dataFile']            = ''
+		        av[name]['datasource']          = ''
+                			
 		naskeys = ['sowaflup','sohefldo','sofmflup','sosfldow','soicecov','sossheig']
 		if len(set(naskeys).intersection(set(analysisKeys))):
 		    for name in naskeys:
@@ -2458,7 +2513,7 @@ def main():
                         lineThicknesses= thicknesses3)
 
 
-                jobs = ['u-ar783','u-au835','u-av450','u-av472', 'u-av651','u-aw310','u-aw072']
+                jobs = ['u-ar783','u-au835','u-av450','u-av472', 'u-av651','u-av937','u-aw310','u-aw072']
                 timeseries_compare({
                          i:standards[i] for i in jobs},
                          physics=1,
@@ -2470,7 +2525,7 @@ def main():
                          lineThicknesses= hjthicknesses)
 
 
-                jobs = ['u-aw310','u-aw072']
+                jobs = ['u-av937','u-aw310','u-aw072']
                 timeseries_compare({
                          i:standards[i] for i in jobs},
                          physics=1,

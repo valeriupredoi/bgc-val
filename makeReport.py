@@ -1203,6 +1203,7 @@ def comparehtml5Maker(
                         'Temperature_Global_Surface',
                         'Salinty_Global_Surface',
                         'FreshwaterFlux_Global',                        
+                        'TotalHeatFlux',                                                
 			]
 			
 	bgcKM 		= [
@@ -1327,6 +1328,7 @@ def comparehtml5Maker(
 			'Production',
 			'Export',
 			'FreshwaterFlux',
+			'lHeatFlux',
 			]
 		for key in sorted(names):
 			#####

@@ -43,7 +43,8 @@ def parseList(Config,section,option):
 def addCompare(txt=''):
 	txt += headerline
 	txt += "\n# analysis_compare"
-	txt += "\n1 8   * * * /users/modellers/ledm/workspace/ukesm-validation/RemoteScripts/pmlcron_compare.sh >  /users/modellers/ledm/ImagesFromJasmin/cron-compare.log 2>&1"
+	txt += "\n1 7   * * * /users/modellers/ledm/workspace/ukesm-validation/RemoteScripts/pmlcron_compare.sh >  /users/modellers/ledm/ImagesFromJasmin/cron-compare.log 2>&1"
+        txt += "\n1 21  * * * /users/modellers/ledm/workspace/ukesm-validation/RemoteScripts/pmlcron_compare.sh >  /users/modellers/ledm/ImagesFromJasmin/cron-compare.log 2>&1"
 	return txt
 
 
