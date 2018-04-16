@@ -139,7 +139,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
                 analysisKeys.append('TotalHeatFlux')
                 		
 	if bio:
-		analysisKeys.append('TotalAirSeaFlux')          # work in progress             
+		analysisKeys.append('TotalAirSeaFluxCO2')          # work in progress             
                 analysisKeys.append('NoCaspianAirSeaFluxCO2')   # work in progress                      
  
                 analysisKeys.append('AirSeaFlux')               # work in progress              
@@ -175,9 +175,9 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
         	# Supercedes other flags.
 		analysisKeys = []
 #		analysisKeys.append('ERSST')
-                analysisKeys.append('DrakePassageTransport')    # DrakePassageTransport     
+#                analysisKeys.append('DrakePassageTransport')    # DrakePassageTransport     
 #                analysisKeys.append('VolumeMeanOxygen')         # Volume weighted mean Oxygen    
-                analysisKeys.append('AMOC_26N')
+#                analysisKeys.append('AMOC_26N')
                 analysisKeys.append('NoCaspianAirSeaFluxCO2')   # work in progress                      
 #               	analysisKeys.append('VolumeMeanTemperature')    # Global Mean Temperature                 	             	 	       
 #		analysisKeys.append('CHD')
@@ -191,8 +191,8 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 #                analysisKeys.append('N')                        # WOA Nitrate
 #                analysisKeys.append('Si')                       # WOA Siliate
 
-                analysisKeys.append('TotalAirSeaFlux')          # work in progress              
-#                analysisKeys.append('AirSeaFlux')          # work in progress              
+                analysisKeys.append('TotalAirSeaFluxCO2')          # work in progress              
+                analysisKeys.append('AirSeaFlux')          # work in progress              
 
                 #analysisKeys.append('ADRC_26N')                # AMOC 26N                        
 #                analysisKeys.append('VerticalCurrent')          # Vertical Veloctity           
@@ -495,7 +495,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 			av[name]['Dimensions']		= 1
 		
 
-		if 'TotalAirSeaFlux' in analysisKeys:
+		if 'TotalAirSeaFluxCO2' in analysisKeys:
 			name = 'TotalAirSeaFluxCO2'	
 			nc = Dataset(orcaGridfn,'r')
 			area = nc.variables['e1t'][:]*nc.variables['e2t'][:]
@@ -2122,11 +2122,12 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
                                 linestyles	= linestyles,                                
 			)
 
-                        if name in ['NoCaspianAirSeaFluxCO2','AMOC_26N','ADRC_26N','AMOC_32S']:
+                        if name in ['NoCaspianAirSeaFluxCO2','AMOC_26N','ADRC_26N','AMOC_32S','TotalAirSeaFluxCO2',]:
 			    targetdict = {'NoCaspianAirSeaFluxCO2':0.,
 					'AMOC_26N':17.,
 					'ADRC_26N':-999,
                                         'AMOC_32S':-999,
+					'TotalAirSeaFluxCO2':0.,
 					}
 			    for ls in ['movingav30years', 'movingav100years']:
                               tsp.multitimeseries(
@@ -2528,6 +2529,91 @@ def main():
 		exit
 	else:
 
+                jobs = ['u-aq853','u-as371','u-av651','u-aw331',]
+                linestyles = defaultdict(lambda: '-')
+                linestyles['u-av651'] = '--'
+                linestyles['u-aq853'] = '--'
+                customColours = {
+                         'u-av651': 'black',
+                         'u-as371': 'red',
+                         'u-aq853': 'red',
+                         'u-aw331': 'black',
+                         }
+                cnthicknesses = defaultdict(lambda: 1.1)
+		cnthicknesses['u-aw331'] = 1.7
+                timeseries_compare(
+                         customColours, #{i:standards[i] for i in jobs},
+                         physics=1,
+                         bio=1,
+                         debug=0,
+                         year0='HistoricalDECK1930',
+                         jobDescriptions=jobDescriptions,
+                         analysisname='UKESM1_historical',
+                         lineThicknesses= cnthicknesses,
+                         linestyles = linestyles,)
+
+                jobs = ['u-aw310','u-ar766','u-av651','u-aq853','u-av450',]
+                linestyles = defaultdict(lambda: '-')
+                linestyles['u-av651'] = '--'
+                linestyles['u-aq853'] = '--'
+                customColours = {
+                         'u-av651': 'black',
+                         'u-ar766': 'red',
+                         'u-aq853': 'red',
+                         'u-av450': 'blue',
+                         'u-aw310': 'black',
+                         }
+                cnthicknesses = defaultdict(lambda: 1.1)
+                cnthicknesses['u-aw310'] = 1.7
+                timeseries_compare(
+                         customColours, #{i:standards[i] for i in jobs},
+                         physics=1,
+                         bio=1,
+                         debug=0,
+                         year0='AlignToDECK1930',
+                         jobDescriptions=jobDescriptions,
+                         analysisname='UKESM1_piControl',
+                         lineThicknesses= cnthicknesses,
+                         linestyles = linestyles,)
+
+
+                jobs = ['u-aw310','u-aw448',]
+                linestyles = defaultdict(lambda: '-')
+                customColours = {
+                         'u-aw310': 'black',
+                         'u-aw448': 'blue',
+                         }
+                cnthicknesses = defaultdict(lambda: 1.1)
+                timeseries_compare(
+                         customColours, #{i:standards[i] for i in jobs},
+                         physics=1,
+                         bio=1,
+                         debug=0,
+                         year0='AlignToDECK1930',
+                         jobDescriptions=jobDescriptions,
+                         analysisname='UKESM1_1pco2',
+                         lineThicknesses= cnthicknesses,
+                         linestyles = linestyles,)
+                         
+    
+                jobs = ['u-aw310','u-aw447',]
+                linestyles = defaultdict(lambda: '-')
+                customColours = {
+                         'u-aw310': 'black',
+                         'u-aw447': 'green',
+                         }
+                cnthicknesses = defaultdict(lambda: 1.1)
+                timeseries_compare(
+                         customColours, #{i:standards[i] for i in jobs},
+                         physics=1,
+                         bio=1,
+                         debug=0,
+                         year0='AlignToDECK1930',
+                         jobDescriptions=jobDescriptions,
+                         analysisname='UKESM1_4xco2',
+                         lineThicknesses= cnthicknesses,
+                         linestyles = linestyles,)
+                         
 
                 jobs = ['u-av651','u-aq853','u-as371','u-aw331',]
                 linestyles = defaultdict(lambda: '-')

@@ -82,14 +82,19 @@ def shifttimes(mdata, jobID,year0=False):
 		print 'shifttimes:\t',year0,jobID, min(times), max(times)
                 return times, datas
 
-        if year0 in ['AlignToDECK',]:
+        if year0 in ['AlignToDECK','AlignToDECK1930', 'HistoricalDECK1930']:
                 for t in sorted(mdata.keys()):
 			t1 = t
 			if jobID in ['u-ar766',]:	t1 = t
 			elif jobID in ['u-av651',]:	t1 = t - 618.
-			elif jobID in ['u-av450',]:	t1 = t 
-			elif jobID in ['u-aq853']:	t1 = t - 743
+			elif jobID in ['u-av450',]:	t1 = t - 527.
+			elif jobID in ['u-aq853']:	t1 = t - 743.
 			if t1 < 1799. : continue
+			if year0 == 'AlignToDECK1930' and t1 > 1931.: continue
+                        if year0 == 'HistoricalDECK1930':
+				if t1 > 1931.: continue
+				if jobID in ['u-av651',] and t1>1851: continue
+
                         times.append(float(t1))
                         datas.append(mdata[t])
                 print year0, jobID,'\t',min(mdata.keys()),max(mdata.keys()), '--->',min(times),max(times)
@@ -341,7 +346,7 @@ def shifttimes(mdata, jobID,year0=False):
 				t1 = t + 4965. - 2108.
                         elif jobID  in ['u-au835','u-av450','u-av472','u-av651']:
 				t1 = t + 4965. - 2108. + 33. # +233.
-                        elif jobID  in ['u-av937','u-aw072',]: #DECK RUNS
+                        elif jobID  in ['u-av937','u-aw072','u-aw310',]: #DECK RUNS
                                 t1 = t + 4965. - 2108. + 33. + 589 # +233.
 
                         elif jobID  in ['u-ar766',]:    
