@@ -2381,6 +2381,50 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
                                 linestyles	= linestyles,                                                                
                         )
 
+        for name in ['scalarHeatContent',]:
+          if name not in av.keys():continue
+          	region 	= 'regionless'
+          	layer  	= 'layerless' 
+          	metric	= 'metricless'
+                timesD  = {}
+                arrD    = {}
+                for jobID in jobs:
+                        try:mdata = modeldataD[(jobID,name )][(region, layer, metric)]
+                        except: continue
+                        title = ' '.join(['Year to year change in ',getLongName(name)])
+                        times,datas = shifttimes(mdata, jobID,year0=year0)
+                        if len(times)<3: continue
+                        dtimes, ddatas = [],[]
+                        
+			for i, t in enumerate(times[-1]):
+				tdiff = times[i+1]-t			# time difference in years
+				dtimes.append( (times[i+1]+t)/2.)	# midpoint
+				ddatas.append( (ddatas[i+1] - ddatas[i])/tdiff)
+                        timesD[jobID]   = dtimes
+                        arrD[jobID]     = ddatas
+			
+
+
+                units = 'Delta '+av[name]['modeldetails']['units']+'/y'
+                for ts in ['Together',]:#'Separate']:
+                    for ls in ['DataOnly',]:#'','Both',]:                       
+                        tsp.multitimeseries(
+                                timesD,                 # model times (in floats)
+                                arrD,                   # model time series
+                                data    = -999,         # in situ data distribution
+                                title   = title,
+                                filename=ukp.folder(imageFolder)+'_'.join(['Change_in_',name,region,layer,ts,ls+'.png']),
+                                units = units,
+                                plotStyle       = ts,
+                                lineStyle       = ls,
+                                colours         = colours,
+                                thicknesses     = lineThicknesses,
+                                linestyles	= linestyles,                                                                
+                        )
+                        
+                        
+                        
+
 	for name in ['MaxMonthlyMLD','MinMonthlyMLD',]:
 	  if name not in av.keys():continue
 	  for region in vmtregionList:
