@@ -289,9 +289,9 @@ def analysis_timeseries(jobID = "u-ab671",
                         analysisKeys.append('HeatFlux')
                         analysisKeys.append('TotalHeatFlux')
 
-#                        analysisKeys.append('scvoltot')
-#                        analysisKeys.append('soga')
-#                        analysisKeys.append('thetaoga')
+                        analysisKeys.append('scvoltot')
+                        analysisKeys.append('soga')
+                        analysisKeys.append('thetaoga')
 
 #			analysisKeys.append('VolumeMeanTemperature')#
 #			analysisKeys.append('WeddelIceExent')
@@ -1761,6 +1761,62 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= paths.orcaGridfn
 		av[name]['Dimensions']		= 2
+
+
+	if 'scvoltot' in analysisKeys:
+		name = 'scvoltot'
+                av[name]['modelFiles']  = listModelDataFiles(jobID, 'scalar', paths.ModelFolder_pref, annual)
+		av[name]['dataFile'] 	= ''
+		av[name]['modelcoords'] = medusaCoords
+		av[name]['datacoords'] 	= woaCoords
+		av[name]['modeldetails'] 	= {'name': name, 'vars':['scvoltot'],], 'convert': ukp.NoChange,'units':'m3'}
+		av[name]['datadetails']  	= {'name': '', 'units':''}
+		av[name]['layers'] 		= ['layerless',]
+		av[name]['regions'] 		= ['regionless',]
+		av[name]['metrics']		= ['metricless',]
+		av[name]['datasource'] 		= ''
+		av[name]['model']		= 'NEMO'
+		av[name]['modelgrid']		= 'eORCA1'
+		av[name]['gridFile']		= paths.orcaGridfn
+		av[name]['Dimensions']		= 1
+		
+	if 'soga' in analysisKeys:
+		name = 'soga'
+                av[name]['modelFiles']  = listModelDataFiles(jobID, 'scalar', paths.ModelFolder_pref, annual)
+		av[name]['dataFile'] 	= ''
+		av[name]['modelcoords'] = medusaCoords
+		av[name]['datacoords'] 	= woaCoords
+		av[name]['modeldetails'] 	= {'name': name, 'vars':['soga'],], 'convert': ukp.NoChange,'units':'psu'}
+		av[name]['datadetails']  	= {'name': '', 'units':''}
+		av[name]['layers'] 		= ['layerless',]
+		av[name]['regions'] 		= ['regionless',]
+		av[name]['metrics']		= ['metricless',]
+		av[name]['datasource'] 		= ''
+		av[name]['model']		= 'NEMO'
+		av[name]['modelgrid']		= 'eORCA1'
+		av[name]['gridFile']		= paths.orcaGridfn
+		av[name]['Dimensions']		= 1
+
+	if 'thetaoga' in analysisKeys:
+		name = 'thetaoga'
+                av[name]['modelFiles']  = listModelDataFiles(jobID, 'scalar', paths.ModelFolder_pref, annual)
+		av[name]['dataFile'] 	= ''
+		av[name]['modelcoords'] = medusaCoords
+		av[name]['datacoords'] 	= woaCoords
+		av[name]['modeldetails'] 	= {'name': name, 'vars':['thetaoga'],], 'convert': ukp.NoChange,'units':'degrees C'}
+		av[name]['datadetails']  	= {'name': '', 'units':''}
+		av[name]['layers'] 		= ['layerless',]
+		av[name]['regions'] 		= ['regionless',]
+		av[name]['metrics']		= ['metricless',]
+		av[name]['datasource'] 		= ''
+		av[name]['model']		= 'NEMO'
+		av[name]['modelgrid']		= 'eORCA1'
+		av[name]['gridFile']		= paths.orcaGridfn
+		av[name]['Dimensions']		= 1
+				
+
+
+
 
         if 'HeatFlux' in analysisKeys:
                 name = 'HeatFlux'
