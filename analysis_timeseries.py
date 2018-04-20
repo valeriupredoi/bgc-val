@@ -1833,15 +1833,16 @@ def analysis_timeseries(jobID = "u-ab671",
                		rcp   =  3991.8679571196299  #J / (K * kg)	ocean specific heat capacity
                 	thetaoga = nc('thetaoga')[:]	#		global average seawater potential temperature 
                 	scvoltot = nc('scvoltot')[:]      # m3		ocean volume
-                	
-                	return thetaoga * scvoltot * rau0 * rcp
+#                	print nc('time_centered'), thetaoga ,scvoltot , rau0 , rcp, thetaoga * scvoltot * rau0 * rcp
+#			assert 0
+                	return thetaoga * scvoltot * rau0 * rcp *1e-24
                 	
                 if len(files) >0:
 	                av[name]['modelFiles']  	= files
 			av[name]['dataFile'] 		= ''
 	               	av[name]['modelcoords']         = {'lat':False,'lon':False,'z':False,'t':'time_centered',}
 			av[name]['datacoords'] 		= woaCoords
-			av[name]['modeldetails'] 	= {'name': name, 'vars':['thetaoga','scvoltot',], 'convert': ukp.NoChange,'units':'J'}
+			av[name]['modeldetails'] 	= {'name': name, 'vars':['thetaoga','scvoltot',], 'convert': scalarFunction,'units':'YottaJoules'}
 			av[name]['datadetails']  	= {'name': '', 'units':''}
 			av[name]['layers'] 		= ['layerless',]
 			av[name]['regions'] 		= ['regionless',]

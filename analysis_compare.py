@@ -1304,14 +1304,14 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 		        	thetaoga = nc('thetaoga')[:]	#		global average seawater potential temperature 
 		        	scvoltot = nc('scvoltot')[:]      # m3		ocean volume
 		        	
-		        	return thetaoga * scvoltot * rau0 * rcp
+		        	return thetaoga * scvoltot * rau0 * rcp * 1e-24
 		        	
 		        if len(files) >0:
 			        av[name]['modelFiles']  	= files
 				av[name]['dataFile'] 		= ''
 			       	av[name]['modelcoords']         = {'lat':False,'lon':False,'z':False,'t':'time_centered',}
 				av[name]['datacoords'] 		= woaCoords
-				av[name]['modeldetails'] 	= {'name': name, 'vars':['thetaoga','scvoltot',], 'convert': ukp.NoChange,'units':'J'}
+				av[name]['modeldetails'] 	= {'name': name, 'vars':['thetaoga','scvoltot',], 'convert': ukp.NoChange,'units':'YottaJoules'}
 				av[name]['datadetails']  	= {'name': '', 'units':''}
 				av[name]['layers'] 		= ['layerless',]
 				av[name]['regions'] 		= ['regionless',]
@@ -2170,7 +2170,9 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 				#mdata = modeldataD[(jobID,name )][('regionless', 'layerless', 'mean')]
 				#title = getLongName(name)				
 			else:
-				mdata = modeldataD[(jobID,name )][('regionless', 'layerless', 'metricless')]
+				try:	mdata = modeldataD[(jobID,name )][('regionless', 'layerless', 'metricless')]
+                                except: continue
+
 				title = getLongName(name)
 
 			times,datas = shifttimes(mdata, jobID,year0=year0)
@@ -2642,13 +2644,12 @@ def main():
                          customColours, #{i:standards[i] for i in jobs},
                          physics=1,
                          bio=1,
-                         debug=1,
+                         debug=0,
                          year0='AlignToDECK1600-1930',
                          jobDescriptions=jobDescriptions,
                          analysisname='UKESM1_piControl_1600-1930',
                          lineThicknesses= cnthicknesses,
                          linestyles = linestyles,)
-		return 
 
                 jobs = ['u-aq853','u-as371','u-av651','u-aw331',]
                 linestyles = defaultdict(lambda: '-')

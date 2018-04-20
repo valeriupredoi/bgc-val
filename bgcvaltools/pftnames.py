@@ -583,8 +583,8 @@ def fancyUnits(units,debug=False):
   	if units in ['mmolFe/m3',]:			return 'mmol Fe m'+r'$^{-3}$'  	
 
         if units in ['mg/m2/s',]:                       return 'mg m'+r'$^{-2}$'+' s'+r'$^{-1}$'
-
-  	
+	if units in ['J','Joules']:			return 'Joules'
+  		
 	if units in ['ug/l','mg/m^3','ug/L',]:  	return 'mg m'+r'$^{-3}$'
 	if units in ['10^12 g Carbon year^-1',]:	return r'$10^{12}$'+' g Carbon/year'
 	if units in ['mol C/m^',]:			return 'mol C/m'+r'$^{2}$'
