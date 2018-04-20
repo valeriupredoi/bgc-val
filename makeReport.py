@@ -1330,7 +1330,7 @@ def comparehtml5Maker(
 			'Export',
 			'FreshwaterFlux',
 			'HeatFlux',
-			'soga','scvoltot','thetaoga',
+			'soga','scvoltot','thetaoga', 'scalarHeatContent',
 			]
 		for key in sorted(names):
 			#####
