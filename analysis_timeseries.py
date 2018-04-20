@@ -134,6 +134,9 @@ if True:
         physKeys.append('MinMonthlyMLD')               # MLD Monthly min           
         physKeys.append('HeatFlux')
         physKeys.append('TotalHeatFlux')
+        physKeys.append('scvoltot')
+        physKeys.append('soga')
+        physKeys.append('thetaoga')
 
 #       physKeys.append('WindStress')                   # Wind Stress                           
 #       physKeys.append('sohefldo')                     # Net downward Water Flux                       
@@ -293,6 +296,7 @@ def analysis_timeseries(jobID = "u-ab671",
                         analysisKeys.append('scvoltot')
                         analysisKeys.append('soga')
                         analysisKeys.append('thetaoga')
+                        analysisKeys.append('scalarHeatContent')                        
 
 #			analysisKeys.append('VolumeMeanTemperature')#
 #			analysisKeys.append('WeddelIceExent')
@@ -1821,7 +1825,32 @@ def analysis_timeseries(jobID = "u-ab671",
 			av[name]['gridFile']		= paths.orcaGridfn
 			av[name]['Dimensions']		= 1
 				
-
+	if 'scalarHeatContent' in analysisKeys:
+		name = 'scalarHeatContent'
+                files = listModelDataFiles(jobID, 'scalar', paths.ModelFolder_pref, annual)
+                def scalarFunction(nc,keys):
+               		rau0  =  1026.  #kg / m3	#		volume reference mass,
+               		rcp   =  3991.8679571196299  #J / (K * kg)	ocean specific heat capacity
+                	thetaoga = nc('thetaoga')[:]	#		global average seawater potential temperature 
+                	scvoltot = nc('scvoltot')[:]      # m3		ocean volume
+                	
+                	return thetaoga * scvoltot * rau0 * rcp
+                	
+                if len(files) >0:
+	                av[name]['modelFiles']  	= files
+			av[name]['dataFile'] 		= ''
+	               	av[name]['modelcoords']         = {'lat':False,'lon':False,'z':False,'t':'time_centered',}
+			av[name]['datacoords'] 		= woaCoords
+			av[name]['modeldetails'] 	= {'name': name, 'vars':['thetaoga','scvoltot',], 'convert': ukp.NoChange,'units':'J'}
+			av[name]['datadetails']  	= {'name': '', 'units':''}
+			av[name]['layers'] 		= ['layerless',]
+			av[name]['regions'] 		= ['regionless',]
+			av[name]['metrics']		= ['metricless',]
+			av[name]['datasource'] 		= ''
+			av[name]['model']		= 'NEMO'
+			av[name]['modelgrid']		= 'eORCA1'
+			av[name]['gridFile']		= paths.orcaGridfn
+			av[name]['Dimensions']		= 1
 
 
 

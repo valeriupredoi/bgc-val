@@ -139,7 +139,10 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 		analysisKeys.append('FreshwaterFlux')		# Fresh water flux
                 analysisKeys.append('HeatFlux')
                 analysisKeys.append('TotalHeatFlux')
-                		
+		analysisKeys.append('scvoltot')
+		analysisKeys.append('soga')
+		analysisKeys.append('thetaoga')
+                        		
 	if bio:
 		analysisKeys.append('TotalAirSeaFluxCO2')          # work in progress             
                 analysisKeys.append('NoCaspianAirSeaFluxCO2')   # work in progress                      
@@ -200,6 +203,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
                 analysisKeys.append('scvoltot')
                 analysisKeys.append('soga')
                 analysisKeys.append('thetaoga')
+                analysisKeys.append('scalarHeatContent')                
                         
                 #analysisKeys.append('ADRC_26N')                # AMOC 26N                        
 #                analysisKeys.append('VerticalCurrent')          # Vertical Veloctity           
@@ -1291,6 +1295,33 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 			av[name]['gridFile']		= paths.orcaGridfn
 			av[name]['Dimensions']		= 1
 
+		if 'scalarHeatContent' in analysisKeys:
+			name = 'scalarHeatContent'
+		        files = listModelDataFiles(jobID, 'scalar', paths.ModelFolder_pref, annual)
+		        def scalarFunction(nc,keys):
+		       		rau0  =  1026.  #kg / m3	#		volume reference mass,
+		       		rcp   =  3991.8679571196299  #J / (K * kg)	ocean specific heat capacity
+		        	thetaoga = nc('thetaoga')[:]	#		global average seawater potential temperature 
+		        	scvoltot = nc('scvoltot')[:]      # m3		ocean volume
+		        	
+		        	return thetaoga * scvoltot * rau0 * rcp
+		        	
+		        if len(files) >0:
+			        av[name]['modelFiles']  	= files
+				av[name]['dataFile'] 		= ''
+			       	av[name]['modelcoords']         = {'lat':False,'lon':False,'z':False,'t':'time_centered',}
+				av[name]['datacoords'] 		= woaCoords
+				av[name]['modeldetails'] 	= {'name': name, 'vars':['thetaoga','scvoltot',], 'convert': ukp.NoChange,'units':'J'}
+				av[name]['datadetails']  	= {'name': '', 'units':''}
+				av[name]['layers'] 		= ['layerless',]
+				av[name]['regions'] 		= ['regionless',]
+				av[name]['metrics']		= ['metricless',]
+				av[name]['datasource'] 		= ''
+				av[name]['model']		= 'NEMO'
+				av[name]['modelgrid']		= 'eORCA1'
+				av[name]['gridFile']		= paths.orcaGridfn
+				av[name]['Dimensions']		= 1
+			
 		if 'GlobalMeanSalinity' in analysisKeys:
 			name = 'GlobalMeanSalinity'
 			av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)										
