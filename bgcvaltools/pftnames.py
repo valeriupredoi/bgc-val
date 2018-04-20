@@ -160,7 +160,11 @@ def makeLongNameDict():
                 
         lnd['TotalHeatFlux'] 		= "Global Total Heat Flux"
         lnd['HeatFlux']           	= "Heat Flux"
-        
+   
+        lnd['scvoltot']           	= "Sea Water Volume"
+        lnd['soga']           		= "Global Average Sea Water Salinity"        
+        lnd['thetaoga']           	= "Global Average Sea Water Potential Temperature"
+                             
 
         lnd['sowaflup']  = "Net Upward Water Flux" 
         lnd['sohefldo']  = "Net Downward Heat Flux" 

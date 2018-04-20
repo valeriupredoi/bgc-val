@@ -196,7 +196,11 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
                 analysisKeys.append('TotalAirSeaFluxCO2')          # work in progress              
                 analysisKeys.append('AirSeaFlux')          # work in progress              
                 analysisKeys.append('AirSeaFluxCO2')          # work in progress              
-
+                
+                analysisKeys.append('scvoltot')
+                analysisKeys.append('soga')
+                analysisKeys.append('thetaoga')
+                        
                 #analysisKeys.append('ADRC_26N')                # AMOC 26N                        
 #                analysisKeys.append('VerticalCurrent')          # Vertical Veloctity           
 #                analysisKeys.append('sossheig')                 # SSH
@@ -2557,12 +2561,13 @@ def main():
                          customColours, #{i:standards[i] for i in jobs},
                          physics=1,
                          bio=1,
-                         debug=0,
+                         debug=1,
                          year0='AlignToDECK1600-1930',
                          jobDescriptions=jobDescriptions,
                          analysisname='UKESM1_piControl_1600-1930',
                          lineThicknesses= cnthicknesses,
                          linestyles = linestyles,)
+		return 
 
                 jobs = ['u-aq853','u-as371','u-av651','u-aw331',]
                 linestyles = defaultdict(lambda: '-')
