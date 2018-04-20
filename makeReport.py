@@ -1310,7 +1310,7 @@ def comparehtml5Maker(
 			'Salinity',
 			'Temperature',
 			'Current',
-			'so',
+			#'so',
 			'Ice',
 			'DIC',
 			'DMS',
@@ -1330,6 +1330,7 @@ def comparehtml5Maker(
 			'Export',
 			'FreshwaterFlux',
 			'HeatFlux',
+			'soga','scvoltot','thetaoga',
 			]
 		for key in sorted(names):
 			#####
