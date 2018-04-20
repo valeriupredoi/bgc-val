@@ -287,8 +287,8 @@ def analysis_timeseries(jobID = "u-ab671",
                         #####
                         # Physics switches:
 #                        analysisKeys.append('Temperature')          #             # WOA Temperature
-                        analysisKeys.append('HeatFlux')
-                        analysisKeys.append('TotalHeatFlux')
+#                        analysisKeys.append('HeatFlux')
+#                        analysisKeys.append('TotalHeatFlux')
 
                         analysisKeys.append('scvoltot')
                         analysisKeys.append('soga')
