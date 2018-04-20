@@ -1765,11 +1765,11 @@ def analysis_timeseries(jobID = "u-ab671",
 
 	if 'scvoltot' in analysisKeys:
 		name = 'scvoltot'
-                av[name]['modelFiles']  = listModelDataFiles(jobID, 'scalar', paths.ModelFolder_pref, annual)
-		av[name]['dataFile'] 	= ''
-		av[name]['modelcoords'] = medusaCoords
-		av[name]['datacoords'] 	= woaCoords
-		av[name]['modeldetails'] 	= {'name': name, 'vars':['scvoltot'],], 'convert': ukp.NoChange,'units':'m3'}
+                av[name]['modelFiles']  	= listModelDataFiles(jobID, 'scalar', paths.ModelFolder_pref, annual)
+		av[name]['dataFile'] 		= ''
+		av[name]['modelcoords'] 	= {'lat':False,'lon':False,'z':False,'t':'time_centered',}
+		av[name]['datacoords'] 		= woaCoords
+		av[name]['modeldetails'] 	= {'name': name, 'vars':['scvoltot',], 'convert': ukp.NoChange,'units':'m3'}
 		av[name]['datadetails']  	= {'name': '', 'units':''}
 		av[name]['layers'] 		= ['layerless',]
 		av[name]['regions'] 		= ['regionless',]
@@ -1782,11 +1782,11 @@ def analysis_timeseries(jobID = "u-ab671",
 		
 	if 'soga' in analysisKeys:
 		name = 'soga'
-                av[name]['modelFiles']  = listModelDataFiles(jobID, 'scalar', paths.ModelFolder_pref, annual)
-		av[name]['dataFile'] 	= ''
-		av[name]['modelcoords'] = medusaCoords
-		av[name]['datacoords'] 	= woaCoords
-		av[name]['modeldetails'] 	= {'name': name, 'vars':['soga'],], 'convert': ukp.NoChange,'units':'psu'}
+                av[name]['modelFiles']  	= listModelDataFiles(jobID, 'scalar', paths.ModelFolder_pref, annual)
+		av[name]['dataFile'] 		= ''
+                av[name]['modelcoords']         = {'lat':False,'lon':False,'z':False,'t':'time_centered',}
+		av[name]['datacoords'] 		= woaCoords
+		av[name]['modeldetails'] 	= {'name': name, 'vars':['soga',], 'convert': ukp.NoChange,'units':'psu'}
 		av[name]['datadetails']  	= {'name': '', 'units':''}
 		av[name]['layers'] 		= ['layerless',]
 		av[name]['regions'] 		= ['regionless',]
@@ -1799,11 +1799,11 @@ def analysis_timeseries(jobID = "u-ab671",
 
 	if 'thetaoga' in analysisKeys:
 		name = 'thetaoga'
-                av[name]['modelFiles']  = listModelDataFiles(jobID, 'scalar', paths.ModelFolder_pref, annual)
-		av[name]['dataFile'] 	= ''
-		av[name]['modelcoords'] = medusaCoords
-		av[name]['datacoords'] 	= woaCoords
-		av[name]['modeldetails'] 	= {'name': name, 'vars':['thetaoga'],], 'convert': ukp.NoChange,'units':'degrees C'}
+                av[name]['modelFiles']  	= listModelDataFiles(jobID, 'scalar', paths.ModelFolder_pref, annual)
+		av[name]['dataFile'] 		= ''
+                av[name]['modelcoords']         = {'lat':False,'lon':False,'z':False,'t':'time_centered',}
+		av[name]['datacoords'] 		= woaCoords
+		av[name]['modeldetails'] 	= {'name': name, 'vars':['thetaoga',], 'convert': ukp.NoChange,'units':'degrees C'}
 		av[name]['datadetails']  	= {'name': '', 'units':''}
 		av[name]['layers'] 		= ['layerless',]
 		av[name]['regions'] 		= ['regionless',]

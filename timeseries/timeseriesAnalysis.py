@@ -378,14 +378,20 @@ class timeseriesAnalysis:
 	#except:
 	#	pvol = nc.variables['e3t'][:] *area
 	#pvol = np.ma.masked_where(tmask==0,pvol)	
-	
-#print "timeseriesAnalysis:\t loadModelWeightsDict\tWARNING:\t this is a hack added at the last minute for the nemo-medusa ukesm run and will not work elsewhere."
 
+        self.weightsDict={}
+	if self.modelcoords['lat'] == self.modelcoords['lon'] == False:
+		####
+		# A scalar field with no lat or lon coordinates.
+	        self.weightsDict[(0,0)] = 1.
+                self.weightsDict[(False,False)] = 1.
+		return		
+		
+	
 	lats = nc.variables[self.modelcoords['lat']][:]
 	lons = nc.variables[self.modelcoords['lon']][:]
 	nc.close()
 
-	self.weightsDict={}	
 	if lats.ndim ==2:
 		for (i,j), a in np.ndenumerate(area):
 			#if np.ma.is_masked(a):continue

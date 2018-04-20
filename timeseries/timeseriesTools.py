@@ -320,12 +320,21 @@ class DataLoader:
 
 	#####
 	# load lat, lon and data.
-  	lat = self.nc.variables[self.coords['lat']][:]
-  	lon = ukp.makeLonSafeArr(self.nc.variables[self.coords['lon']][:]) # makes sure it's between +/-180
+        if self.coords['lat'] == self.coords['lon'] == False:
+		####
+		# scalar fields
+	        dat = self.__getlayerDat__(layer)
 
-	dims =   self.nc.variables[self.details['vars'][0]].dimensions
-  	
-  	dat = self.__getlayerDat__(layer)
+		lat = np.zeros_like(dat)
+                lon = np.zeros_like(dat)
+                dims =   self.nc.variables[self.details['vars'][0]].dimensions
+
+	else:
+	  	lat = self.nc.variables[self.coords['lat']][:]
+  		lon = ukp.makeLonSafeArr(self.nc.variables[self.coords['lon']][:]) # makes sure it's between +/-180
+
+		dims =   self.nc.variables[self.details['vars'][0]].dimensions
+  		dat = self.__getlayerDat__(layer)
 	if dat.ndim == 2:	dat =dat[None,:,:]
 
 	try:	l = len(dat)
@@ -337,7 +346,6 @@ class DataLoader:
 		a = np.ma.array([-999.,],mask=[True,])
 		return a,a,a,a,a
 
-		
 	#####
 	# Create Temporary Output Arrays.
   	arr 	= []
@@ -346,10 +354,8 @@ class DataLoader:
   	arr_t 	= []  	  		
   	arr_z 	= []  	
 
-
 	latnames = ['lat','latitude','latbnd','nav_lat','y',u'lat',]
 	lonnames = ['lon','longitude','lonbnd','nav_lon','x',u'lon',]
-	
 
 	####
 	# Different data has differnt shapes, and order or dimensions, this takes those differences into account.
@@ -358,7 +364,6 @@ class DataLoader:
 	  
   	    #print 'createDataArray',self.details['name'],layer, "Sensible dimsions order:",dims		
  	    for index,v in ukp.maenumerate(dat):
-
   			try:	(t,z,y,x) 	= index
   			except: 
   				(t,y,x) 	= index 
@@ -425,7 +430,6 @@ class DataLoader:
   	else:
   		print "Unknown dimensions order", dims
   		assert False
-  			
 
   	arr = np.ma.masked_invalid(np.ma.array(arr))
   	mask = np.ma.masked_where((arr>1E20) + arr.mask,arr).mask
@@ -437,7 +441,6 @@ class DataLoader:
   	self.oneDData['arr_t']   = np.ma.masked_where(mask,arr_t  ).compressed()
   	self.oneDData['arr']     = np.ma.masked_where(mask,arr    ).compressed()
 
-	
   	#print 'createDataArray:',arr.min(),arr.mean(),arr.max(),arr, len(arr)  	
   	#print 'createDataArray:',region, arr_lat.min(),arr_lat.mean(),arr_lat.max(),arr_lat, len(arr_lat)  	  	
   	#print 'createDataArray:',region, arr_lon.min(),arr_lon.mean(),arr_lon.max(),arr_lon, len(arr_lon)  	  	  	
