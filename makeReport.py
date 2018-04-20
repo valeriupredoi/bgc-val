@@ -461,6 +461,7 @@ def html5Maker(
 		   ]
 		   	
 		regionalFields = [
+			  'AirSeaFluxCO2',
 			  'Nitrate',
 			  'Silicate', 
 			  'Iron',

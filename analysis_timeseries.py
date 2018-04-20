@@ -69,7 +69,7 @@ if True:
 	bgcKeys.append('O2')                       # WOA Oxygen
 	bgcKeys.append('Alk')                      # Glodap Alkalinity
 	bgcKeys.append('DIC')                      # Globap tCO2
-	bgcKeys.append('AirSeaFlux')               # Air Sea Flux
+	bgcKeys.append('AirSeaFluxCO2')               # Air Sea Flux
 	bgcKeys.append('TotalAirSeaFluxCO2')       # Total global air sea flux
 	bgcKeys.append('IntPP_OSU')                # OSU Integrated primpary production
 	bgcKeys.append('PP_OSU')                   # OSU Integrated primpary production
@@ -289,7 +289,10 @@ def analysis_timeseries(jobID = "u-ab671",
                         analysisKeys.append('HeatFlux')
                         analysisKeys.append('TotalHeatFlux')
 
-                   
+#                        analysisKeys.append('scvoltot')
+#                        analysisKeys.append('soga')
+#                        analysisKeys.append('thetaoga')
+
 #			analysisKeys.append('VolumeMeanTemperature')#
 #			analysisKeys.append('WeddelIceExent')
 #                        analysisKeys.append('Salinity')                        # WOA Salinity
@@ -1294,7 +1297,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['Dimensions']		= 3
 
 
-	if 'AirSeaFlux' in analysisKeys:
+	if 'AirSeaFluxCO2' in analysisKeys:
 
 		#nc = dataset(paths.orcaGridfn,'r')
 		#area = nc.variables['e1t'][:]*nc.variables['e2t'][:]

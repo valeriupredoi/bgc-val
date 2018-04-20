@@ -82,18 +82,45 @@ def shifttimes(mdata, jobID,year0=False):
 		print 'shifttimes:\t',year0,jobID, min(times), max(times)
                 return times, datas
 
-        if year0 in ['AlignToDECK','AlignToDECK1930', 'HistoricalDECK1930']:
+        if year0 in ['AlignToDECK','AlignToDECK1930', 'HistoricalDECK1930','AlignToDECK1600-1930']:
                 for t in sorted(mdata.keys()):
 			t1 = t
 			if jobID in ['u-ar766',]:	t1 = t
 			elif jobID in ['u-av651',]:	t1 = t - 618.
 			elif jobID in ['u-av450',]:	t1 = t - 527.
 			elif jobID in ['u-aq853']:	t1 = t - 743.
-			if t1 < 1799. : continue
-			if year0 == 'AlignToDECK1930' and t1 > 1931.: continue
+
+                        elif jobID in ['u-ar783']:
+				if t < 2108. - 1.: continue
+				if t > 2341. + 1.  : continue
+				t1 = t - 2341. +1690. 
+                        elif jobID in ['u-au835']:      
+                                if t < 2308. - 1.: continue
+                                if t > 2378. + 1. : continue
+                                t1 = t - 2405. + 1850. - 63.
+                        elif jobID in ['u-av472']:
+                                if t < 2378. -1. : continue
+                                if t > 2405. +1. : continue
+                                t1 = t - 2405. + 1850. - 63.
+
+
+
+			# early cut:
+			if year0 in ['AlignToDECK','AlignToDECK1930', 'HistoricalDECK1930',]:
+	                        if t1 < 1799. : continue
+
+                        if year0 in ['AlignToDECK1600-1930',]:
+                                if t1 < 1599. : continue
+
+                        # Mid poing cut: 
+                        if jobID in ['u-av651',] and t1>1851: continue
+
+			# late cut
+			if year0 in ['AlignToDECK1930','AlignToDECK1600-1930']:
+				if t1 > 1931.: continue
+
                         if year0 == 'HistoricalDECK1930':
 				if t1 > 1931.: continue
-				if jobID in ['u-av651',] and t1>1851: continue
 
                         times.append(float(t1))
                         datas.append(mdata[t])
