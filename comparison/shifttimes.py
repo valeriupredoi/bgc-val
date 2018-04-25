@@ -82,7 +82,7 @@ def shifttimes(mdata, jobID,year0=False):
 		print 'shifttimes:\t',year0,jobID, min(times), max(times)
                 return times, datas
 
-        if year0 in ['AlignToDECK','AlignToDECK1930', 'HistoricalDECK1930','AlignToDECK1600-1930']:
+        if year0 in ['AlignToDECK','AlignToDECK1930', 'HistoricalDECK1930','AlignToDECK1600-1930','AlignToDECK1950', 'HistoricalDECK1950','AlignToDECK1600-1950',]:
                 for t in sorted(mdata.keys()):
 			t1 = t
 			if jobID in ['u-ar766',]:	t1 = t
@@ -116,15 +116,16 @@ def shifttimes(mdata, jobID,year0=False):
                         if jobID in ['u-av651',] and t1>1851: continue
 
 			# late cut
-			if year0 in ['AlignToDECK1930','AlignToDECK1600-1930']:
+			if year0 in ['AlignToDECK1930','AlignToDECK1600-1930','HistoricalDECK1930']:
 				if t1 > 1931.: continue
 
-                        if year0 == 'HistoricalDECK1930':
-				if t1 > 1931.: continue
+                        if year0 in ['AlignToDECK1950','AlignToDECK1600-1950','HistoricalDECK1950']:
+                                if t1 > 1951.: continue
+
 
                         times.append(float(t1))
                         datas.append(mdata[t])
-                print year0, jobID,'\t',min(mdata.keys()),max(mdata.keys()), '--->',min(times),max(times)
+                #print year0, jobID,'\t',min(mdata.keys()),max(mdata.keys()), '--->',min(times),max(times)
                 return times, datas
 
 

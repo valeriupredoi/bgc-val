@@ -29,7 +29,7 @@
 
 """
 
-from sys import argv 
+from sys import argv,stdout 
 import subprocess
 from socket import gethostname
 import os
@@ -346,6 +346,7 @@ def downloadMass(jobID,doMoo=True):
 	
 		bashCommand = "moo ls moose:/crum/"+jobID+"/ony.nc.file/*.nc"
 		print "running the command:",bashCommand
+		stdout.flush()
 		
 		process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
 		output = process.communicate()[0]
@@ -360,6 +361,7 @@ def downloadMass(jobID,doMoo=True):
 				 
 	                        bashCommand = "moo get --fill-gaps moose:/crum/"+jobID+"/ony.nc.file/*_1y_??"+mnStr(i)+"*.nc "+outputFold 
        		                print "running the command:",bashCommand
+				stdout.flush()
 	               	        try:	
 					process1[i] = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
 					process1[i].wait()

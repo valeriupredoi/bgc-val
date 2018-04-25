@@ -341,7 +341,8 @@ def analysis_timeseries(jobID = "u-ab671",
                         #####
                         # Physics switches:
 	if jobID in ['u-aj588','u-ak900','u-ar538','u-an869','u-ar977',]:
-		analysisKeys.remove('FreshwaterFlux')
+		try:	analysisKeys.remove('FreshwaterFlux')
+		except: pass
 	#####
 	# Some lists of region.
 	# This are pre-made lists of regions that can be investigated.

@@ -2384,7 +2384,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
                         )
 
         for name in ['scalarHeatContent',]:
-          if name not in av.keys():continue
+          	if name not in av.keys():continue
           	region 	= 'regionless'
           	layer  	= 'layerless' 
           	metric	= 'metricless'
@@ -2398,24 +2398,25 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
                         if len(times)<3: continue
                         dtimes, ddatas = [],[]
                         
-			for i, t in enumerate(times[-1]):
+			for i, t in enumerate(times[:-1]):
 				tdiff = times[i+1]-t			# time difference in years
 				dtimes.append( (times[i+1]+t)/2.)	# midpoint
-				ddatas.append( (ddatas[i+1] - ddatas[i])/tdiff)
+				ddatas.append( (datas[i+1] - datas[i])/tdiff)
                         timesD[jobID]   = dtimes
                         arrD[jobID]     = ddatas
 			
 
 
-                units = 'Delta '+av[name]['modeldetails']['units']+'/y'
+                units = r'$\Delta$ '+av[name]['modeldetails']['units']+' y'+r'$^{-1}$'
                 for ts in ['Together',]:#'Separate']:
-                    for ls in ['DataOnly',]:#'','Both',]:                       
+                    for ls in ['DataOnly','movingav30years']:#'','Both',]:                       
                         tsp.multitimeseries(
                                 timesD,                 # model times (in floats)
                                 arrD,                   # model time series
-                                data    = -999,         # in situ data distribution
+                                data    = 0.,         # in situ data distribution
+				dataname= 'Zero',
                                 title   = title,
-                                filename=ukp.folder(imageFolder)+'_'.join(['Change_in_',name,region,layer,ts,ls+'.png']),
+                                filename=ukp.folder(imageFolder)+'_'.join(['Change_in',name,region,layer,ts,ls+'.png']),
                                 units = units,
                                 plotStyle       = ts,
                                 lineStyle       = ls,
@@ -2689,7 +2690,7 @@ def main():
                          physics=1,
                          bio=1,
                          debug=0,
-                         year0='AlignToDECK1600-1930',
+                         year0='AlignToDECK1600-1950',
                          jobDescriptions=jobDescriptions,
                          analysisname='UKESM1_piControl_1600-1930',
                          lineThicknesses= cnthicknesses,
@@ -2712,7 +2713,7 @@ def main():
                          physics=1,
                          bio=1,
                          debug=0,
-                         year0='HistoricalDECK1930',
+                         year0='HistoricalDECK1950',
                          jobDescriptions=jobDescriptions,
                          analysisname='UKESM1_historical',
                          lineThicknesses= cnthicknesses,
@@ -2736,7 +2737,7 @@ def main():
                          physics=1,
                          bio=1,
                          debug=0,
-                         year0='AlignToDECK1930',
+                         year0='AlignToDECK1950',
                          jobDescriptions=jobDescriptions,
                          analysisname='UKESM1_piControl',
                          lineThicknesses= cnthicknesses,
