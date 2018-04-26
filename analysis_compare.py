@@ -2671,13 +2671,13 @@ def main():
                 linestyles['u-av472'] = '--'
                 linestyles['u-ar783'] = '--'
                 linestyles['u-au835'] = ':'
-		
+               
                 customColours = {
                          'u-av651': 'black',
                          'u-ar766': 'red',
                          'u-aq853': 'red',
                          'u-aw310': 'black',
-			 'u-ar783': 'black',
+                         'u-ar783': 'black',
                          'u-au835': 'black',
                          'u-av472': 'black',
                          }
@@ -2696,7 +2696,11 @@ def main():
                          lineThicknesses= cnthicknesses,
                          linestyles = linestyles,)
 
-                jobs = ['u-aq853','u-as371','u-av651','u-aw331',]
+		return
+
+
+
+                jobs = ['u-aq853','u-as371','u-av651','u-aw331','u-ax195']
                 linestyles = defaultdict(lambda: '-')
                 linestyles['u-av651'] = '--'
                 linestyles['u-aq853'] = '--'
@@ -2705,6 +2709,7 @@ def main():
                          'u-as371': 'red',
                          'u-aq853': 'red',
                          'u-aw331': 'black',
+			 'u-ax195': 'green',
                          }
                 cnthicknesses = defaultdict(lambda: 1.1)
 		cnthicknesses['u-aw331'] = 1.7
@@ -2744,11 +2749,12 @@ def main():
                          linestyles = linestyles,)
 
 
-                jobs = ['u-aw310','u-aw448',]
+                jobs = ['u-aw310','u-aw448','u-ax202']
                 linestyles = defaultdict(lambda: '-')
                 customColours = {
                          'u-aw310': 'black',
                          'u-aw448': 'blue',
+			 'u-ax202': 'magenta',
                          }
                 cnthicknesses = defaultdict(lambda: 1.1)
                 timeseries_compare(
@@ -2782,14 +2788,16 @@ def main():
                          linestyles = linestyles,)
                          
 
-                jobs = ['u-av651','u-aq853','u-as371','u-aw331',]
+                jobs = ['u-av651','u-aq853','u-as371','u-aw331','u-ax231']
                 linestyles = defaultdict(lambda: '-')
                 linestyles['u-av651'] = '--'
                 linestyles['u-aq853'] = '--'
 		customColours = {'u-av651': 'black',
 			 'u-aq853': 'red',
 			 'u-as371': 'red',
-			 'u-aw331': 'black',}
+			 'u-aw331': 'black',
+			 'u-ax231': 'green',
+			}
         	cnthicknesses = defaultdict(lambda: 1.75)
                 cnthicknesses['u-av651'] = 1.1
                 cnthicknesses['u-aq853'] = 1.1
