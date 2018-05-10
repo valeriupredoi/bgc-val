@@ -76,12 +76,12 @@ if gethostname().find('ceda.ac.uk')>-1:
 
 	#####
 	# eORCA1 grid		
-	#orcaGridfn 	= '/group_workspaces/jasmin/esmeval/example_data/bgc/mesh_mask_eORCA1_wrk.nc'
+	#orcaGridfn 	= '/group_workspaces/jasmin4/esmeval/example_data/bgc/mesh_mask_eORCA1_wrk.nc'
 	orcaGridfn     = '/home/users/ldemora/workspace/ukesm-validation/data/mesh_mask_eORCA1_wrk.nc'
 
 	#####
 	# Location of data files.
-	ObsFolder 	= "/group_workspaces/jasmin/esmeval/example_data/bgc/"
+	ObsFolder 	= "/group_workspaces/jasmin4/esmeval/example_data/bgc/"
 	Dustdir		= ObsFolder+"/MahowaldDust/"		
 	WOAFolder_annual= ObsFolder+"WOA/annual/"
 	WOAFolder 	= ObsFolder+"WOA/"

@@ -43,8 +43,11 @@ class dataset:
 	self.__filename__ = filename
 	self.netcdfPath = filename
 	self.filename 	= filename
+	try:	self.dataset = netCDF4.Dataset(filename,'r')
+	except:	
+		print "dataset:\tUnable to open", filename	
+		self.dataset = netCDF4.Dataset(filename,'r')	# This is a ham fisted way to print the file name being loaded and the error message.
 	
-	self.dataset = netCDF4.Dataset(filename,'r')
 
 	#####
 	# link to various fields, so that the user experience is similar.

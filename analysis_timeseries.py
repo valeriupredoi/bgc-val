@@ -1909,7 +1909,7 @@ def analysis_timeseries(jobID = "u-ab671",
 
         if 'ERSST' in analysisKeys:
                 name = 'ERSST'
-                av[name]['modelFiles']  = ["/group_workspaces/jasmin/esmeval/example_data/bgc/ERSST.v4/sst.mnmean.v4.nc",]
+                av[name]['modelFiles']  = ["/group_workspaces/jasmin4/esmeval/example_data/bgc/ERSST.v4/sst.mnmean.v4.nc",]
                 av[name]['dataFile']    = ''
 		
                 ERSSTCoords     = {'t':'time',    'z':'',  'lat': 'lat',      'lon': 'lon', 'cal': 'standard','tdict':['ZeroToZero'] }
@@ -1928,7 +1928,7 @@ def analysis_timeseries(jobID = "u-ab671",
                 av[name]['model']               = 'ERSST'
 
                 av[name]['modelgrid']           = 'ERSST_2g'
-                av[name]['gridFile']            = '/group_workspaces/jasmin/esmeval/example_data/bgc/ERSST.v4/ERSST_sst_grid.nc'
+                av[name]['gridFile']            = '/group_workspaces/jasmin4/esmeval/example_data/bgc/ERSST.v4/ERSST_sst_grid.nc'
                 av[name]['Dimensions']          = 2
 				
 		

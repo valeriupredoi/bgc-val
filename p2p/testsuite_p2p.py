@@ -128,7 +128,6 @@ def testsuite_p2p(	model='ERSEM',#'MEDUSA','ERSEM','NEMO'],
 		print "No autovivification nested dictionary given. - See testsuite_p2p documentation or a working example."
 		exit(0)
 	
-
 	# Location of processing files
 	if len( workingDir) == 0:
 		workingDir = ukp.folder("WorkingFiles/"+model+'-'+jobID+'-'+year)

@@ -203,8 +203,8 @@ def analysis_p2p(
 	if gethostname().find('ceda.ac.uk')>-1:
 		print "analysis-p2p.py:\tBeing run at CEDA on ",gethostname()
 			
-		ObsFolder 	= "/group_workspaces/jasmin/esmeval/example_data/bgc/"
-		modelFolder 	= "/group_workspaces/jasmin2/ukesm/BGC_data/"
+		ObsFolder 	= paths.ObsFolder #"/group_workspaces/jasmin/esmeval/example_data/bgc/"
+		modelFolder 	= paths.ModelFolder_pref #"/group_workspaces/jasmin2/ukesm/BGC_data/"
 		#####
 		# Location of model files.	
 		ModelFolder_pref	= ukp.folder(modelFolder)

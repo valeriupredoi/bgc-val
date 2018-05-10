@@ -82,7 +82,10 @@ def shifttimes(mdata, jobID,year0=False):
 		print 'shifttimes:\t',year0,jobID, min(times), max(times)
                 return times, datas
 
-        if year0 in ['AlignToDECK','AlignToDECK1930', 'HistoricalDECK1930','AlignToDECK1600-1930','AlignToDECK1950', 'HistoricalDECK1950','AlignToDECK1600-1950',]:
+        if year0 in ['AlignToDECK','AlignToDECK1930', 'HistoricalDECK1930','AlignToDECK1600-1930',
+				   'AlignToDECK1950', 'HistoricalDECK1950','AlignToDECK1600-1950',
+                                   'AlignToDECK2000', 'HistoricalDECK2000','AlignToDECK1600-2000',
+                                   'AlignToDECK2050', 'HistoricalDECK2050','AlignToDECK1600-2050',]:
                 for t in sorted(mdata.keys()):
 			t1 = t
 			if jobID in ['u-ar766',]:	t1 = t
@@ -122,6 +125,11 @@ def shifttimes(mdata, jobID,year0=False):
                         if year0 in ['AlignToDECK1950','AlignToDECK1600-1950','HistoricalDECK1950']:
                                 if t1 > 1951.: continue
 
+                        if year0 in ['AlignToDECK2000','AlignToDECK1600-2000','HistoricalDECK2000']:
+                                if t1 > 2001.: continue
+
+                        if year0 in ['AlignToDECK2050','AlignToDECK1600-2050','HistoricalDECK2050']:
+                                if t1 > 2051.: continue
 
                         times.append(float(t1))
                         datas.append(mdata[t])
