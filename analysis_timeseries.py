@@ -247,8 +247,8 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		if analysisSuite.lower() in ['debug',]:
 			#analysisKeys.append('AirSeaFlux')		# work in progress
-			#analysisKeys.append('TotalAirSeaFluxCO2')	# work in progress
-			#analysisKeys.append('NoCaspianAirSeaFluxCO2')	# work in progress			
+			analysisKeys.append('TotalAirSeaFluxCO2')	# work in progress
+			analysisKeys.append('NoCaspianAirSeaFluxCO2')	# work in progress			
 			#analysisKeys.append('TotalOMZVolume')		# work in progress
 			#analysisKeys.append('TotalOMZVolume50')	# work in progress
 			#analysisKeys.append('OMZMeanDepth')		# work in progress

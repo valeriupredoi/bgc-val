@@ -2664,6 +2664,63 @@ def main():
 		print "Successful command line comparison"
 		exit
 	else:
+                jobs = ['u-aq853','u-as371','u-av651','u-aw331','u-ax195','u-ax589','u-ax718']
+                linestyles = defaultdict(lambda: '-')
+                linestyles['u-av651'] = '--'
+                linestyles['u-aq853'] = '--'
+                customColours = {
+                         'u-av651': 'black',
+                         'u-as371': 'red',
+                         'u-aq853': 'red',
+                         'u-aw331': 'black',
+                         'u-ax195': 'green',
+                         'u-ax589': 'blue',
+                         'u-ax718': 'purple'
+                         }
+                cnthicknesses = defaultdict(lambda: 1.1)
+                cnthicknesses['u-aw331'] = 1.7
+                timeseries_compare(
+                         customColours, #{i:standards[i] for i in jobs},
+                         physics=1,
+                         bio=1,
+                         debug=0,
+                         year0='HistoricalDECK2050',
+                         jobDescriptions=jobDescriptions,
+                         analysisname='UKESM1_historical',
+                         lineThicknesses= cnthicknesses,
+                         linestyles = linestyles,)
+
+                #jobs.append('u-aw310')
+                linestyles['u-aw310']=':'
+                customColours['u-aw310'] = 'black'
+                customColours['u-aw331'] = 'teal'
+                cnthicknesses['u-aw310'] = 1.7
+                del customColours['u-aq853']
+                del customColours['u-as371']
+                timeseries_compare(
+                         customColours, #{i:standards[i] for i in jobs},
+                         physics=1,
+                         bio=1,
+                         debug=0,
+                         year0='HistoricalDECK2050',
+                         jobDescriptions=jobDescriptions,
+                         analysisname='UKESM1_historical_pi',
+                         lineThicknesses= cnthicknesses,
+                         linestyles = linestyles,)
+
+		return
+
+                jobs = ['u-au984','u-av079', 'u-ax628', 'u-ax629', ]
+                timeseries_compare({
+                        i:standards[i] for i in jobs},
+                        physics=1,
+                        bio=1,
+                        debug=0,
+                        year0=False,
+                        jobDescriptions=jobDescriptions,
+                        analysisname='CRESCENDO_OO_test_4',
+                        lineThicknesses= hjthicknesses,
+                        )
 
                 jobs = ['u-aw310','u-ar766','u-av651','u-aq853','u-ar783', 'u-au835','u-av472',]
                 linestyles = defaultdict(lambda: '-')
@@ -2691,13 +2748,13 @@ def main():
                          physics=1,
                          bio=1,
                          debug=0,
-                         year0='AlignToDECK1600-2000',
+                         year0='AlignToDECK1600-2050',
                          jobDescriptions=jobDescriptions,
                          analysisname='UKESM1_piControl_1600-1930',
                          lineThicknesses= cnthicknesses,
                          linestyles = linestyles,)
 
-                jobs = ['u-aq853','u-as371','u-av651','u-aw331','u-ax195','u-ax589']
+                jobs = ['u-aq853','u-as371','u-av651','u-aw331','u-ax195','u-ax589','u-ax718']
                 linestyles = defaultdict(lambda: '-')
                 linestyles['u-av651'] = '--'
                 linestyles['u-aq853'] = '--'
@@ -2708,6 +2765,7 @@ def main():
                          'u-aw331': 'black',
 			 'u-ax195': 'green',
                          'u-ax589': 'blue',
+	  		 'u-ax718': 'purple'
                          }
                 cnthicknesses = defaultdict(lambda: 1.1)
 		cnthicknesses['u-aw331'] = 1.7
@@ -2716,11 +2774,31 @@ def main():
                          physics=1,
                          bio=1,
                          debug=0,
-                         year0='HistoricalDECK2000',
+                         year0='HistoricalDECK2050',
                          jobDescriptions=jobDescriptions,
                          analysisname='UKESM1_historical',
                          lineThicknesses= cnthicknesses,
                          linestyles = linestyles,)
+
+		#jobs.append('u-aw310')
+		linestyles['u-aw310']=':'
+		customColours['u-aw310'] = 'black'
+		customColours['u-aw331'] = 'teal'
+                cnthicknesses['u-aw310'] = 1.7
+		del customColours['u-aq853']
+                del customColours['u-ar766']
+                timeseries_compare(
+                         customColours, #{i:standards[i] for i in jobs},
+                         physics=1,
+                         bio=1,
+                         debug=0,
+                         year0='HistoricalDECK2050',
+                         jobDescriptions=jobDescriptions,
+                         analysisname='UKESM1_historical_pi',
+                         lineThicknesses= cnthicknesses,
+                         linestyles = linestyles,)
+
+
 
                 jobs = ['u-aw310','u-ar766','u-av651','u-aq853','u-av450',]
                 linestyles = defaultdict(lambda: '-')
@@ -2740,19 +2818,21 @@ def main():
                          physics=1,
                          bio=1,
                          debug=0,
-                         year0='AlignToDECK2000',
+                         year0='AlignToDECK2050',
                          jobDescriptions=jobDescriptions,
                          analysisname='UKESM1_piControl',
                          lineThicknesses= cnthicknesses,
                          linestyles = linestyles,)
 
 
-                jobs = ['u-aw310','u-aw448','u-ax202']
+                jobs = ['u-aw310','u-aw448','u-ax202','u-ax663','u-ax725']
                 linestyles = defaultdict(lambda: '-')
                 customColours = {
                          'u-aw310': 'black',
                          'u-aw448': 'blue',
 			 'u-ax202': 'magenta',
+                         'u-ax663': 'red',
+			 'u-ax725': 'purple'
                          }
                 cnthicknesses = defaultdict(lambda: 1.1)
                 timeseries_compare(
@@ -2760,7 +2840,7 @@ def main():
                          physics=1,
                          bio=1,
                          debug=0,
-                         year0='AlignToDECK2000',
+                         year0='AlignToDECK2050',
                          jobDescriptions=jobDescriptions,
                          analysisname='UKESM1_1pco2',
                          lineThicknesses= cnthicknesses,
@@ -2779,7 +2859,7 @@ def main():
                          physics=1,
                          bio=1,
                          debug=0,
-                         year0='AlignToDECK2000',
+                         year0='AlignToDECK2050',
                          jobDescriptions=jobDescriptions,
                          analysisname='UKESM1_4xco2',
                          lineThicknesses= cnthicknesses,

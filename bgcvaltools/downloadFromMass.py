@@ -1,4 +1,4 @@
-#!/usr/bin/python 
+#!/usr/bin/python2.7 
 
 #
 # Copyright 2015, Plymouth Marine Laboratory
@@ -77,6 +77,7 @@ def getYearFromFile(fn):
 	Takes a file anem, and looks for 8 consequetive numbers, then removes those that are months, and returns the year.
 	"""
 	a = findall(r'\d\d\d\d\d\d\d\d',fn)
+	a.reverse() # prefer second year.
 	datestrs = ['1130',]
 	datestrs.extend([mnStr(i)+'01' for i in range(1,13)])
 	for i in a:
