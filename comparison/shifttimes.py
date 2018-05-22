@@ -131,12 +131,27 @@ def shifttimes(mdata, jobID,year0=False):
                         if year0 in ['AlignToDECK2050','AlignToDECK1600-2050','HistoricalDECK2050']:
                                 if t1 > 2051.: continue
 
+                                
                         times.append(float(t1))
                         datas.append(mdata[t])
                 #print year0, jobID,'\t',min(mdata.keys()),max(mdata.keys()), '--->',min(times),max(times)
                 return times, datas
-
-
+                
+	if year0[:10] == 'hist_vs_pi':
+		y = float(year0[11:])
+		diff = y - 1850.
+                for t in sorted(mdata.keys()):
+                	if jobID in ['u-aw310']: t1 = t - diff
+                	else:             	 t1 = t
+                		
+                	if t1 > 2020.: continue
+                	if t1 < 1830.: continue
+                	
+                        times.append(float(t1))
+                        datas.append(mdata[t])
+                return times, datas
+                
+                
         if year0=='Staggered':
                for t in sorted(mdata.keys()):
                         if   jobID in ['u-au362', ]: t1 = t + 40. 

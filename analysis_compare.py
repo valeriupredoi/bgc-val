@@ -2665,9 +2665,6 @@ def main():
 		exit
 	else:
                 jobs = ['u-aq853','u-as371','u-av651','u-aw331','u-ax195','u-ax589','u-ax718']
-                linestyles = defaultdict(lambda: '-')
-                linestyles['u-av651'] = '--'
-                linestyles['u-aq853'] = '--'
                 customColours = {
                          'u-av651': 'black',
                          'u-as371': 'red',
@@ -2677,37 +2674,30 @@ def main():
                          'u-ax589': 'blue',
                          'u-ax718': 'purple'
                          }
-                cnthicknesses = defaultdict(lambda: 1.1)
-                cnthicknesses['u-aw331'] = 1.7
-                timeseries_compare(
-                         customColours, #{i:standards[i] for i in jobs},
-                         physics=1,
-                         bio=1,
-                         debug=0,
-                         year0='HistoricalDECK2050',
-                         jobDescriptions=jobDescriptions,
-                         analysisname='UKESM1_historical',
-                         lineThicknesses= cnthicknesses,
-                         linestyles = linestyles,)
 
-                #jobs.append('u-aw310')
-                linestyles['u-aw310']=':'
-                customColours['u-aw310'] = 'black'
-                customColours['u-aw331'] = 'teal'
-                cnthicknesses['u-aw310'] = 1.7
-                del customColours['u-aq853']
-                del customColours['u-as371']
-                timeseries_compare(
-                         customColours, #{i:standards[i] for i in jobs},
-                         physics=1,
-                         bio=1,
-                         debug=0,
-                         year0='HistoricalDECK2050',
-                         jobDescriptions=jobDescriptions,
-                         analysisname='UKESM1_historical_pi',
-                         lineThicknesses= cnthicknesses,
-                         linestyles = linestyles,)
-
+		histruns = {	'u-aw331': 1850, #	UKESM1 first historical member (1850)
+				'u-ax195': 1880, #	UKESM1 second Historical member (1880)
+				'u-ax589': 1960, #	UKESM1 third Historical member (1960)
+				'u-ax718': 1922, #	UKESM1 fourth Historical run (1922)}
+			   }
+		jobsyears = {yr:j for j,yr in histruns.items()}
+		for i,yr in enumerate(sorted(jobsyears.keys()))
+			i+=1
+			j = jobsyears[yr]
+			colourpair = {j: customColours[j], 'u-aw310': 'black'}
+			lineThicknesses = {j: 1.7, 'u-aw310': 1.7}
+			linestyles 	= {j: '-', 'u-aw310': '-'}
+		        timeseries_compare(
+		                 colourpair, 
+		                 physics=1,
+		                 bio=1,
+		                 debug=0,
+		                 year0='hist_vs_pi_'+str(yr),
+		                 analysisname='UKESM1_hist_vs_pi_'+str(i),)
+		                 jobDescriptions =jobDescriptions,		                 
+		                 lineThicknesses = lineThicknesses,
+		                 linestyles 	 = linestyles, )
+                         		
 		return
 
                 jobs = ['u-au984','u-av079', 'u-ax628', 'u-ax629', ]
@@ -2779,25 +2769,25 @@ def main():
                          analysisname='UKESM1_historical',
                          lineThicknesses= cnthicknesses,
                          linestyles = linestyles,)
-
-		#jobs.append('u-aw310')
-		linestyles['u-aw310']=':'
-		customColours['u-aw310'] = 'black'
-		customColours['u-aw331'] = 'teal'
+                        
+                #jobs.append('u-aw310')
+                linestyles['u-aw310']=':'
+                customColours['u-aw310'] = 'black'
+                customColours['u-aw331'] = 'teal'
                 cnthicknesses['u-aw310'] = 1.7
-		del customColours['u-aq853']
-                del customColours['u-ar766']
+                del customColours['u-aq853']
+                del customColours['u-as371']
                 timeseries_compare(
                          customColours, #{i:standards[i] for i in jobs},
                          physics=1,
                          bio=1,
                          debug=0,
-                         year0='HistoricalDECK2050',
+                         year0='AlignToDECK',
                          jobDescriptions=jobDescriptions,
                          analysisname='UKESM1_historical_pi',
                          lineThicknesses= cnthicknesses,
                          linestyles = linestyles,)
-
+                         
 
 
                 jobs = ['u-aw310','u-ar766','u-av651','u-aq853','u-av450',]
