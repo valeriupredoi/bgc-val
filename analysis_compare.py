@@ -2415,7 +2415,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
                                 arrD,                   # model time series
                                 data    = -999,         # in situ data distribution
                                 title   = title,
-                                filename=ukp.folder(imageFolder)+'_'.join(['Change_in_',name,region,layer,ts,ls+'.png']),
+                                filename=ukp.folder(imageFolder)+'_'.join(['Change_in',name,region,layer,ts,ls+'.png']),
                                 units = units,
                                 plotStyle       = ts,
                                 lineStyle       = ls,
