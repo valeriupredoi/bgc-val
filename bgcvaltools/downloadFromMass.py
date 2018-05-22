@@ -1,4 +1,4 @@
-#!/usr/bin/python 
+#!/usr/bin/python2.7 
 
 #
 # Copyright 2015, Plymouth Marine Laboratory
@@ -29,7 +29,7 @@
 
 """
 
-from sys import argv 
+from sys import argv,stdout 
 import subprocess
 from socket import gethostname
 import os
@@ -77,6 +77,7 @@ def getYearFromFile(fn):
 	Takes a file anem, and looks for 8 consequetive numbers, then removes those that are months, and returns the year.
 	"""
 	a = findall(r'\d\d\d\d\d\d\d\d',fn)
+	a.reverse() # prefer second year.
 	datestrs = ['1130',]
 	datestrs.extend([mnStr(i)+'01' for i in range(1,13)])
 	for i in a:
@@ -346,6 +347,7 @@ def downloadMass(jobID,doMoo=True):
 	
 		bashCommand = "moo ls moose:/crum/"+jobID+"/ony.nc.file/*.nc"
 		print "running the command:",bashCommand
+		stdout.flush()
 		
 		process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
 		output = process.communicate()[0]
@@ -360,6 +362,7 @@ def downloadMass(jobID,doMoo=True):
 				 
 	                        bashCommand = "moo get --fill-gaps moose:/crum/"+jobID+"/ony.nc.file/*_1y_??"+mnStr(i)+"*.nc "+outputFold 
        		                print "running the command:",bashCommand
+				stdout.flush()
 	               	        try:	
 					process1[i] = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
 					process1[i].wait()

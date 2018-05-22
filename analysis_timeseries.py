@@ -247,8 +247,8 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		if analysisSuite.lower() in ['debug',]:
 			#analysisKeys.append('AirSeaFlux')		# work in progress
-			#analysisKeys.append('TotalAirSeaFluxCO2')	# work in progress
-			#analysisKeys.append('NoCaspianAirSeaFluxCO2')	# work in progress			
+			analysisKeys.append('TotalAirSeaFluxCO2')	# work in progress
+			analysisKeys.append('NoCaspianAirSeaFluxCO2')	# work in progress			
 			#analysisKeys.append('TotalOMZVolume')		# work in progress
 			#analysisKeys.append('TotalOMZVolume50')	# work in progress
 			#analysisKeys.append('OMZMeanDepth')		# work in progress
@@ -341,7 +341,8 @@ def analysis_timeseries(jobID = "u-ab671",
                         #####
                         # Physics switches:
 	if jobID in ['u-aj588','u-ak900','u-ar538','u-an869','u-ar977',]:
-		analysisKeys.remove('FreshwaterFlux')
+		try:	analysisKeys.remove('FreshwaterFlux')
+		except: pass
 	#####
 	# Some lists of region.
 	# This are pre-made lists of regions that can be investigated.
@@ -1908,7 +1909,7 @@ def analysis_timeseries(jobID = "u-ab671",
 
         if 'ERSST' in analysisKeys:
                 name = 'ERSST'
-                av[name]['modelFiles']  = ["/group_workspaces/jasmin/esmeval/example_data/bgc/ERSST.v4/sst.mnmean.v4.nc",]
+                av[name]['modelFiles']  = ["/group_workspaces/jasmin4/esmeval/example_data/bgc/ERSST.v4/sst.mnmean.v4.nc",]
                 av[name]['dataFile']    = ''
 		
                 ERSSTCoords     = {'t':'time',    'z':'',  'lat': 'lat',      'lon': 'lon', 'cal': 'standard','tdict':['ZeroToZero'] }
@@ -1927,7 +1928,7 @@ def analysis_timeseries(jobID = "u-ab671",
                 av[name]['model']               = 'ERSST'
 
                 av[name]['modelgrid']           = 'ERSST_2g'
-                av[name]['gridFile']            = '/group_workspaces/jasmin/esmeval/example_data/bgc/ERSST.v4/ERSST_sst_grid.nc'
+                av[name]['gridFile']            = '/group_workspaces/jasmin4/esmeval/example_data/bgc/ERSST.v4/ERSST_sst_grid.nc'
                 av[name]['Dimensions']          = 2
 				
 		
