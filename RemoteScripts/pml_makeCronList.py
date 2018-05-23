@@ -43,8 +43,8 @@ def parseList(Config,section,option):
 def addCompare(txt=''):
 	txt += headerline
 	txt += "\n# analysis_compare"
-	txt += "\n1 7   * * * /users/modellers/ledm/workspace/ukesm-validation/RemoteScripts/pmlcron_compare.sh >  /users/modellers/ledm/ImagesFromJasmin/cron-compare.log 2>&1"
-        txt += "\n1 21  * * * /users/modellers/ledm/workspace/ukesm-validation/RemoteScripts/pmlcron_compare.sh >  /users/modellers/ledm/ImagesFromJasmin/cron-compare.log 2>&1"
+	txt += "\n1 7   * * * "+package_directory+"/pmlcron_compare.sh >  /users/modellers/ledm/ImagesFromJasmin/cron-compare.log 2>&1"
+        txt += "\n1 21  * * * "+package_directory+"/pmlcron_compare.sh >  /users/modellers/ledm/ImagesFromJasmin/cron-compare.log 2>&1"
 	return txt
 
 
@@ -78,13 +78,13 @@ def addMassjobs(configfn='',startinghour = 17):
 		options = 	parseList(cp,'jobs',job)
 		if 'standard' in options or 'physics' in options:	
 			massscripts	+= '\n1  '+str(int(hour))+\
-					'   * * * /users/modellers/ledm/workspace/ukesm-validation/RemoteScripts/pmlcron_mass.sh '+\
+					'   * * * '+package_directory+'/pmlcron_mass.sh '+\
 					job + ' >  /users/modellers/ledm/ImagesFromJasmin/cron-mass_'+\
 					job + '.log 2>&1'
 		
 		if 'MLD' in options:	
 			massscripts	+= '\n30 '+str(int(hour))+\
-					'   * * * /users/modellers/ledm/workspace/ukesm-validation/RemoteScripts/pmlcron_mass_MLD.sh '+\
+					'   * * * '+package_directory+'/pmlcron_mass_MLD.sh '+\
 					job + ' >  /users/modellers/ledm/ImagesFromJasmin/cron-mass_mld_'+\
 					job + '.log 2>&1'
 	return massscripts	
@@ -102,13 +102,13 @@ def addSci1jobs(configfn='',startinghour = 19):
 		options = 	parseList(cp,'jobs',job)
 		if 'standard' in options:	
 			scijobs	+= '\n1  '+str(int(hour))+\
-					'   * * * /users/modellers/ledm/workspace/ukesm-validation/RemoteScripts/pmlcron_sci1.sh '+\
+					'   * * * '+package_directory+'/pmlcron_sci1.sh '+\
 					job + ' >  /users/modellers/ledm/ImagesFromJasmin/cron-sci1_'+\
 					job + '.log 2>&1'
 		
 		if 'physics' in options:	
 			scijobs	+= '\n30 '+str(int(hour))+\
-					'   * * * /users/modellers/ledm/workspace/ukesm-validation/RemoteScripts/pmlcron_sci1_physOnly.sh '+\
+					'   * * * '+package_directory+'/pmlcron_sci1_physOnly.sh '+\
 					job + ' >  /users/modellers/ledm/ImagesFromJasmin/cron_sci1_phys_'+\
 					job + '.log 2>&1'
 	return scijobs	
@@ -124,19 +124,19 @@ def runNow(configfn=''):
 	for i, job in enumerate(jobs):
 		options = 	parseList(cp,'jobs',job)
 		if 'standard' in options:	
-			scijobs	+= '/users/modellers/ledm/workspace/ukesm-validation/RemoteScripts/pmlcron_mass.sh '+job + '; '
+			scijobs	+= package_directory+'/pmlcron_mass.sh '+job + '; '
 		
 		if 'MLD' in options:	
-			scijobs	+= '/users/modellers/ledm/workspace/ukesm-validation/RemoteScripts/pmlcron_mass_MLD.sh '+job + '; '
+			scijobs	+= package_directory+'/pmlcron_mass_MLD.sh '+job + '; '
 			
 			
 	for i, job in enumerate(jobs):
 		options = 	parseList(cp,'jobs',job)
 		if 'standard' in options:	
-			scijobs	+= '/users/modellers/ledm/workspace/ukesm-validation/RemoteScripts/pmlcron_sci1.sh '+job + '; '
+			scijobs	+= package_directory+'/pmlcron_sci1.sh '+job + '; '
 		
 		if 'physics' in options:	
-			scijobs	+= '/users/modellers/ledm/workspace/ukesm-validation/RemoteScripts/pmlcron_sci1_physOnly.sh '+job + '; '
+			scijobs	+= package_directory+'/pmlcron_sci1_physOnly.sh '+job + '; '
 		
 	return scijobs	
 	

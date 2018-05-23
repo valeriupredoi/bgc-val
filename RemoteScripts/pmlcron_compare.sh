@@ -12,7 +12,7 @@ jobid=${1:-compare}
 echo jobid=$jobid
 export jobid=$jobid
 
-ssh -A -X ldemora@jasmin-login1.ceda.ac.uk "/home/users/ldemora/workspace/ukesm-validation/RemoteScripts/helloOnMass.sh $jobid"
+#ssh -A -X ldemora@jasmin-login1.ceda.ac.uk "/home/users/ldemora/workspace/ukesm-validation/RemoteScripts/helloOnMass.sh $jobid"
 
 ssh -A -X ldemora@jasmin-login1.ceda.ac.uk "/home/users/ldemora/workspace/ukesm-validation/RemoteScripts/runCompareOnSci1.sh $jobid;"
 
