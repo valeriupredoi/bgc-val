@@ -2664,12 +2664,8 @@ def main():
 		print "Successful command line comparison"
 		exit
 	else:
-                jobs = ['u-aq853','u-as371','u-av651','u-aw331','u-ax195','u-ax589','u-ax718']
                 customColours = {
-                         'u-av651': 'black',
-                         'u-as371': 'red',
-                         'u-aq853': 'red',
-                         'u-aw331': 'black',
+                         'u-aw331': 'teal',
                          'u-ax195': 'green',
                          'u-ax589': 'blue',
                          'u-ax718': 'purple'
@@ -2681,8 +2677,9 @@ def main():
 				'u-ax718': 1922, #	UKESM1 fourth Historical run (1922)}
 			   }
 		jobsyears = {yr:j for j,yr in histruns.items()}
-		for i,yr in enumerate(sorted(jobsyears.keys()))
+		for i,yr in enumerate(sorted(jobsyears.keys())):
 			i+=1
+			if i !=2: continue
 			j = jobsyears[yr]
 			colourpair = {j: customColours[j], 'u-aw310': 'black'}
 			lineThicknesses = {j: 1.7, 'u-aw310': 1.7}
@@ -2691,15 +2688,13 @@ def main():
 		                 colourpair, 
 		                 physics=1,
 		                 bio=1,
-		                 debug=0,
+		                 debug=1,
 		                 year0='hist_vs_pi_'+str(yr),
-		                 analysisname='UKESM1_hist_vs_pi_'+str(i),)
+		                 analysisname='UKESM1_hist_vs_pi_'+str(i),
 		                 jobDescriptions =jobDescriptions,		                 
 		                 lineThicknesses = lineThicknesses,
 		                 linestyles 	 = linestyles, )
-                         		
-		return
-
+                         
                 jobs = ['u-au984','u-av079', 'u-ax628', 'u-ax629', ]
                 timeseries_compare({
                         i:standards[i] for i in jobs},

@@ -146,7 +146,7 @@ def shifttimes(mdata, jobID,year0=False):
                 		
                 	if t1 > 2020.: continue
                 	if t1 < 1830.: continue
-                	
+                		
                         times.append(float(t1))
                         datas.append(mdata[t])
                 return times, datas
