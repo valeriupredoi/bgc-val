@@ -216,10 +216,10 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 #                analysisKeys.append('NorthernTotalIceArea')     # North TotalIceArea
 #                analysisKeys.append('SouthernTotalIceArea')     # South TotalIceArea
 #                analysisKeys.append('TotalIceArea')     	#  TotalIceArea
-#                analysisKeys.append('NorthernTotalIceExtent')   # work in progress      
-#                analysisKeys.append('SouthernTotalIceExtent')   # work in progress      
+                analysisKeys.append('NorthernTotalIceExtent')   # work in progress      
+                analysisKeys.append('SouthernTotalIceExtent')   # work in progress      
 #                analysisKeys.append('WeddelIceExent')   # work in progress       
-#                analysisKeys.append('TotalIceExtent')           # work in progress      
+                analysisKeys.append('TotalIceExtent')           # work in progress      
                 analysisKeys.append('NorthernMIZArea')
                 analysisKeys.append('SouthernMIZArea')
                 analysisKeys.append('TotalMIZArea') 
@@ -2719,7 +2719,7 @@ def main():
 		linestyles['u-aw447'] = '--'
 		customColours = {
 		 'u-aw331': 'teal',
-		 'u-aw310': 'black'
+		 'u-aw310': 'black',
 		 'u-aw447': 'red'		 
 	       	 }
 		cnthicknesses = defaultdict(lambda: 1.1)
@@ -2733,7 +2733,7 @@ def main():
 			 analysisname='MIZ-test',
 			 lineThicknesses= cnthicknesses,
 			 linestyles = linestyles,)
-
+		assert 0
 		linestyles = defaultdict(lambda: '-')
 		customColours = {
 		 'u-aw331': 'teal',
