@@ -2549,22 +2549,22 @@ def analysis_timeseries(jobID = "u-ab671",
 			
 		def calcMIZfraction(nc,keys):	#Global
 			arr = nc.variables[keys[0]][:].squeeze()		
-			arr = np.ma.masked_where(tmask==0 + (arr == 0.), arr)
-			value = np.ma.masked_where(arr.mask + (arr<0.15) + (arr>0.80),area).sum()
+			arr = np.ma.masked_where(tmask==0 + (arr < 0.15), arr)
+			value = np.ma.masked_where(arr.mask + (arr>0.80),area).sum()
 			denom = np.ma.masked_where(arr.mask,area).sum()
 			return value/denom 
 
 		def calcMIZfractionN(nc,keys): # North
 			arr = nc.variables[keys[0]][:].squeeze()		
-			arr = np.ma.masked_where(tmask==0 + (arr == 0.) + (lat<0.), arr)
-			value = np.ma.masked_where(arr.mask + (arr<0.15) + (arr>0.80),area).sum()
+			arr = np.ma.masked_where(tmask==0 + (arr < 0.15) + (lat<0.), arr)
+			value = np.ma.masked_where(arr.mask + (arr>0.80),area).sum()
 			denom = np.ma.masked_where(arr.mask,area).sum()
 			return value/denom 
 					
 		def calcMIZfractionS(nc,keys): # South
 			arr = nc.variables[keys[0]][:].squeeze()
-			arr = np.ma.masked_where(tmask==0 + (arr == 0.) + (lat>0.), arr)
-			value = np.ma.masked_where(arr.mask + (arr<0.15) + (arr>0.80),area).sum()
+			arr = np.ma.masked_where(tmask==0 + (arr < 0.15) + (lat>0.), arr)
+			value = np.ma.masked_where(arr.mask +  (arr>0.80),area).sum()
 			denom = np.ma.masked_where(arr.mask,area).sum()
 			return value/denom 
 			
