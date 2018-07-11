@@ -82,10 +82,17 @@ def shifttimes(mdata, jobID,year0=False):
 		print 'shifttimes:\t',year0,jobID, min(times), max(times)
                 return times, datas
 
-        if year0 in ['AlignToDECK','AlignToDECK1930', 'HistoricalDECK1930','AlignToDECK1600-1930',
-				   'AlignToDECK1950', 'HistoricalDECK1950','AlignToDECK1600-1950',
-                                   'AlignToDECK2000', 'HistoricalDECK2000','AlignToDECK1600-2000',
-                                   'AlignToDECK2050', 'HistoricalDECK2050','AlignToDECK1600-2050',]:
+        if year0 in [   'AlignToDECK',	   'HistoricalDECK',	'AlignToDECK1600',
+		        'AlignToDECK1930', 'HistoricalDECK1930','AlignToDECK1600-1930',
+			'AlignToDECK1950', 'HistoricalDECK1950','AlignToDECK1600-1950',
+                 	'AlignToDECK2000', 'HistoricalDECK2000','AlignToDECK1600-2000',
+                        'AlignToDECK2050', 'HistoricalDECK2050','AlignToDECK1600-2050',
+                        'AlignToDECK2100', 'HistoricalDECK2100','AlignToDECK1600-2100',
+                        'AlignToDECK2150', 'HistoricalDECK2150','AlignToDECK1600-2150',
+                        'AlignToDECK2200', 'HistoricalDECK2200','AlignToDECK1600-2200',
+                        'AlignToDECK2250', 'HistoricalDECK2250','AlignToDECK1600-2250',
+
+			]:
                 for t in sorted(mdata.keys()):
 			t1 = t
 			if jobID in ['u-ar766',]:	t1 = t
@@ -109,10 +116,11 @@ def shifttimes(mdata, jobID,year0=False):
 
 
 			# early cut:
-			if year0 in ['AlignToDECK','AlignToDECK1930', 'HistoricalDECK1930',]:
+			if year0 in ['AlignToDECK','AlignToDECK1930', 'HistoricalDECK1930','AlignToDECK2050',
+                                  'AlignToDECK2150']:
 	                        if t1 < 1799. : continue
 
-                        if year0 in ['AlignToDECK1600-1930',]:
+                        if year0 in ['AlignToDECK1600-1930','AlignToDECK1600', 'AlignToDECK1600-2100']:
                                 if t1 < 1599. : continue
 
                         # Mid poing cut: 
@@ -131,13 +139,25 @@ def shifttimes(mdata, jobID,year0=False):
                         if year0 in ['AlignToDECK2050','AlignToDECK1600-2050','HistoricalDECK2050']:
                                 if t1 > 2051.: continue
 
-                                
+                        if year0 in ['AlignToDECK2100','AlignToDECK1600-2100','HistoricalDECK2100']:
+                                if t1 > 2101.: continue
+
+                        if year0 in ['AlignToDECK2150','AlignToDECK1600-2150','HistoricalDECK2150']:
+                                if t1 > 2151.: continue
+
+                        if year0 in ['AlignToDECK2200','AlignToDECK1600-2200','HistoricalDECK2200']:
+                                if t1 > 2201.: continue
+
+                        if year0 in ['AlignToDECK2250','AlignToDECK1600-2250','HistoricalDECK2250']:
+                                if t1 > 2251.: continue
+        
                         times.append(float(t1))
                         datas.append(mdata[t])
                 #print year0, jobID,'\t',min(mdata.keys()),max(mdata.keys()), '--->',min(times),max(times)
                 return times, datas
                 
-	if year0[:10] == 'hist_vs_pi':
+	if type(year0) in [type('str'),]:
+	    if year0[:10] == 'hist_vs_pi':
 		y = float(year0[11:])
 		diff = y - 1850.
                 for t in sorted(mdata.keys()):
