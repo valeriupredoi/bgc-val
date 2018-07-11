@@ -308,6 +308,10 @@ def analysis_timeseries(jobID = "u-ab671",
                         #analysisKeys.append('NorthernTotalIceArea')    # work in progress
                         #analysisKeys.append('SouthernTotalIceArea')    # work in progress
                         #analysisKeys.append('WeddelTotalIceArea')
+                        analysisKeys.append('NorthernMIZArea')
+                        analysisKeys.append('SouthernMIZArea')
+                        analysisKeys.append('TotalMIZArea')                                                                        
+
                         #analysisKeys.append('TotalIceArea')            # work in progress
 			#analysisKeys.append('TotalIceExtent')		# work in progress
 			#analysisKeys.append('NorthernTotalIceExtent')	# work in progress
@@ -2489,7 +2493,11 @@ def analysis_timeseries(jobID = "u-ab671",
 			print "No monthly MLD files found"		
 		
 
-	icekeys = ['NorthernTotalIceArea','SouthernTotalIceArea','WeddelTotalIceArea','TotalIceArea','NorthernTotalIceExtent','WeddelIceExent','SouthernTotalIceExtent','TotalIceExtent']
+	icekeys = ['NorthernTotalIceArea','SouthernTotalIceArea',
+ 		   'WeddelTotalIceArea', 'TotalIceArea',
+ 		   'NorthernTotalIceExtent','WeddelIceExent',
+	           'SouthernTotalIceExtent','TotalIceExtent',
+	           'NorthernMIZArea','SouthernMIZArea','TotalMIZArea',]
 	if len(set(icekeys).intersection(set(analysisKeys))):
 	    for name in icekeys:
 	    	if name not in analysisKeys:continue
@@ -2513,6 +2521,22 @@ def analysis_timeseries(jobID = "u-ab671",
 			arr = nc.variables[keys[0]][:].squeeze() * area
 			return np.ma.masked_where((tmask==0)+(lat>0.),arr).sum()/1E12
 
+                def calcTotalIceAreaWS(nc,keys):  
+                        arr = nc.variables[keys[0]][:].squeeze() * area
+                        return np.ma.masked_where((tmask==0)+ weddelmask,arr).sum()/1E12
+
+		def calcMIZArea(nc,keys):	#Global
+			arr = nc.variables[keys[0]][:].squeeze() * area
+			return np.ma.masked_where(tmask==0 +(arr<0.15) + (arr>0.80),arr).sum()/1E12
+
+		def calcMIZAreaN(nc,keys): # North
+			arr = nc.variables[keys[0]][:].squeeze() * area
+			return np.ma.masked_where((tmask==0)+(lat<0.)+(arr<0.15) + (arr>0.80),arr).sum()/1E12
+
+		def calcMIZAreaS(nc,keys): # South
+			arr = nc.variables[keys[0]][:].squeeze() 
+			return np.ma.masked_where((tmask==0)+(lat>0.)+(arr<0.15) + (arr>0.80),arr * area).sum()/1E12
+
 		def calcTotalIceExtent(nc,keys):	#Global
 			return np.ma.masked_where((tmask==0)+(nc.variables[keys[0]][:].squeeze()<0.15),area).sum()/1E12
 
@@ -2526,9 +2550,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		def calcTotalIceExtentWS(nc,keys): # South
 			return np.ma.masked_where((tmask==0)+(nc.variables[keys[0]][:].squeeze()<0.15)+weddelmask,area).sum()/1E12
 
-                def calcTotalIceAreaWS(nc,keys):  
-                        arr = nc.variables[keys[0]][:].squeeze() * area
-                        return np.ma.masked_where((tmask==0)+ weddelmask,arr).sum()/1E12
+
 			
 		if jobID == 'u-as462monthly': 		av[name]['modelFiles']  = sorted(glob('/group_workspaces/jasmin2/ukesm/BGC_data/u-as462/monthly/*.nc'))	
                 elif jobID == 'u-ar977monthly':         av[name]['modelFiles']  = sorted(glob('/group_workspaces/jasmin2/ukesm/BGC_data/u-ar977/monthly/*.nc')) 
@@ -2547,7 +2569,6 @@ def analysis_timeseries(jobID = "u-ab671",
 
                 if name in ['WeddelTotalIceArea',]:
                         av[name]['modeldetails']        = {'name': name, 'vars':['soicecov',], 'convert': calcTotalIceAreaWS,'units':'1E6 km^2'}
-
 
 	    	if name in ['TotalIceArea',]:
 			av[name]['modeldetails'] 	= {'name': name, 'vars':['soicecov',], 'convert': calcTotalIceArea,'units':'1E6 km^2'}
@@ -2569,6 +2590,19 @@ def analysis_timeseries(jobID = "u-ab671",
 			av[name]['modeldetails'] 	= {'name': name, 'vars':['soicecov',], 'convert': calcTotalIceExtent,'units':'1E6 km^2'}
 		#	av[name]['regions'] 		=  ['Global',]
 
+
+	    	if name in ['NorthernMIZArea',]:
+			av[name]['modeldetails'] 	= {'name': name, 'vars':['soicecov',], 'convert': calcMIZAreaN,'units':'1E6 km^2'}
+		#	av[name]['regions'] 		=  ['NorthHemisphere',]
+
+	    	if name in ['SouthernMIZArea',]:
+			av[name]['modeldetails'] 	= {'name': name, 'vars':['soicecov',], 'convert': calcMIZAreaS,'units':'1E6 km^2'}
+
+
+	    	if name in ['TotalMIZArea',]:
+			av[name]['modeldetails'] 	= {'name': name, 'vars':['soicecov',], 'convert': calcMIZArea,'units':'1E6 km^2'}
+		#	av[name]['regions'] 		=  ['Global',]
+		
 		av[name]['regions'] 		=  ['regionless',]
 
 		av[name]['datadetails']  	= {'name':'','units':'',}
