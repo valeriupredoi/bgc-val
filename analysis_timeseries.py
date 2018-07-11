@@ -113,6 +113,9 @@ if True:
 	physKeys.append('NorthernTotalIceExtent')	# work in progress
 	physKeys.append('SouthernTotalIceExtent')	# work in progress
         physKeys.append('WeddelIceExent')       # work in progress
+        physKeys.append('NorthernMIZArea')
+        physKeys.append('SouthernMIZArea')
+        physKeys.append('TotalMIZArea')           
 
 	physKeys.append('DrakePassageTransport')	# DrakePassageTransport
 	physKeys.append('AMOC_32S')                 	# AMOC 32S

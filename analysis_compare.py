@@ -111,7 +111,10 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 	        analysisKeys.append('TotalIceExtent')           # work in progress      
         	analysisKeys.append('NorthernTotalIceExtent')   # work in progress      
 	        analysisKeys.append('SouthernTotalIceExtent')   # work in progress      
-	        analysisKeys.append('WeddelIceExent')   # work in progress      	        
+	        analysisKeys.append('WeddelIceExent')   # work in progress     
+                analysisKeys.append('NorthernMIZArea')
+                analysisKeys.append('SouthernMIZArea')
+                analysisKeys.append('TotalMIZArea')   	         	        
 
         	analysisKeys.append('AMOC_26N')
 	        analysisKeys.append('AMOC_32S')
@@ -143,6 +146,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 		analysisKeys.append('soga')
 		analysisKeys.append('thetaoga')
                 analysisKeys.append('scalarHeatContent')
+              
                         		
 	if bio:
 		analysisKeys.append('TotalAirSeaFluxCO2')          # work in progress             
@@ -2718,16 +2722,15 @@ def main():
 	       	 }
 		cnthicknesses = defaultdict(lambda: 1.1)
 		timeseries_compare(
-	         customColours, #{i:standards[i] for i in jobs},
-        	 physics=1,
-	         bio=1,
-        	 debug=1,
-	         year0='HistoricalDECK2050',
-        	 jobDescriptions=jobDescriptions,
-	         analysisname='MIZ-test',
-        	 lineThicknesses= cnthicknesses,
-	         linestyles = linestyles,)
-	        return
+			 customColours, #{i:standards[i] for i in jobs},
+			 physics=1,
+			 bio=1,
+			 debug=1,
+			 year0='HistoricalDECK2050',
+			 jobDescriptions=jobDescriptions,
+			 analysisname='MIZ-test',
+			 lineThicknesses= cnthicknesses,
+			 linestyles = linestyles,)
 
 		linestyles = defaultdict(lambda: '-')
 		customColours = {
