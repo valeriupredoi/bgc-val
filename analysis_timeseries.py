@@ -311,9 +311,12 @@ def analysis_timeseries(jobID = "u-ab671",
                         #analysisKeys.append('NorthernTotalIceArea')    # work in progress
                         #analysisKeys.append('SouthernTotalIceArea')    # work in progress
                         #analysisKeys.append('WeddelTotalIceArea')
-                        analysisKeys.append('NorthernMIZArea')
-                        analysisKeys.append('SouthernMIZArea')
-                        analysisKeys.append('TotalMIZArea')                                                                        
+#                        analysisKeys.append('NorthernMIZArea')
+#                        analysisKeys.append('SouthernMIZArea')
+#                        analysisKeys.append('TotalMIZArea')       
+                        analysisKeys.append('NorthernMIZfraction')
+                        analysisKeys.append('SouthernMIZfraction')
+                        analysisKeys.append('TotalMIZfraction')                                                                                                
 
                         #analysisKeys.append('TotalIceArea')            # work in progress
 			#analysisKeys.append('TotalIceExtent')		# work in progress
@@ -2500,7 +2503,8 @@ def analysis_timeseries(jobID = "u-ab671",
  		   'WeddelTotalIceArea', 'TotalIceArea',
  		   'NorthernTotalIceExtent','WeddelIceExent',
 	           'SouthernTotalIceExtent','TotalIceExtent',
-	           'NorthernMIZArea','SouthernMIZArea','TotalMIZArea',]
+	           'NorthernMIZArea','SouthernMIZArea','TotalMIZArea',
+	           'NorthernMIZfraction', 'SouthernMIZfraction', 'TotalMIZfraction']
 	if len(set(icekeys).intersection(set(analysisKeys))):
 	    for name in icekeys:
 	    	if name not in analysisKeys:continue
@@ -2539,7 +2543,28 @@ def analysis_timeseries(jobID = "u-ab671",
 		def calcMIZAreaS(nc,keys): # South
 			arr = nc.variables[keys[0]][:].squeeze() 
 			return np.ma.masked_where((tmask==0)+(lat>0.)+(arr<0.15) + (arr>0.80),arr * area).sum()/1E12
+			
+		def calcMIZfraction(nc,keys):	#Global
+			arr = nc.variables[keys[0]][:].squeeze()		
+			arr = np.ma.masked_where(tmask==0 + (arr == 0.), arr)
+			value = np.ma.masked_where(arr.mask + (arr<0.15) + (arr>0.80),area).sum()
+			denom = np.ma.masked_where(arr.mask,area).sum()
+			return value/denom 
 
+		def calcMIZfractionN(nc,keys): # North
+			arr = nc.variables[keys[0]][:].squeeze()		
+			arr = np.ma.masked_where(tmask==0 + (arr == 0.) + (lat<0.), arr)
+			value = np.ma.masked_where(arr.mask + (arr<0.15) + (arr>0.80),area).sum()
+			denom = np.ma.masked_where(arr.mask,area).sum()
+			return value/denom 
+					
+		def calcMIZfractionS(nc,keys): # South
+			arr = nc.variables[keys[0]][:].squeeze()
+			arr = np.ma.masked_where(tmask==0 + (arr == 0.) + (lat>0.), arr)
+			value = np.ma.masked_where(arr.mask + (arr<0.15) + (arr>0.80),area).sum()
+			denom = np.ma.masked_where(arr.mask,area).sum()
+			return value/denom 
+			
 		def calcTotalIceExtent(nc,keys):	#Global
 			return np.ma.masked_where((tmask==0)+(nc.variables[keys[0]][:].squeeze()<0.15),area).sum()/1E12
 
@@ -2596,16 +2621,22 @@ def analysis_timeseries(jobID = "u-ab671",
 
 	    	if name in ['NorthernMIZArea',]:
 			av[name]['modeldetails'] 	= {'name': name, 'vars':['soicecov',], 'convert': calcMIZAreaN,'units':'1E6 km^2'}
-		#	av[name]['regions'] 		=  ['NorthHemisphere',]
 
 	    	if name in ['SouthernMIZArea',]:
 			av[name]['modeldetails'] 	= {'name': name, 'vars':['soicecov',], 'convert': calcMIZAreaS,'units':'1E6 km^2'}
 
-
 	    	if name in ['TotalMIZArea',]:
 			av[name]['modeldetails'] 	= {'name': name, 'vars':['soicecov',], 'convert': calcMIZArea,'units':'1E6 km^2'}
-		#	av[name]['regions'] 		=  ['Global',]
-		
+
+	    	if name in ['NorthernMIZfraction',]:
+			av[name]['modeldetails'] 	= {'name': name, 'vars':['soicecov',], 'convert': calcMIZfractionN,'units':''}
+
+	    	if name in ['SouthernMIZfraction',]:
+			av[name]['modeldetails'] 	= {'name': name, 'vars':['soicecov',], 'convert': calcMIZfractionS,'units':''}
+
+	    	if name in ['TotalMIZfraction',]:
+			av[name]['modeldetails'] 	= {'name': name, 'vars':['soicecov',], 'convert': calcMIZfraction,'units':''}
+					
 		av[name]['regions'] 		=  ['regionless',]
 
 		av[name]['datadetails']  	= {'name':'','units':'',}

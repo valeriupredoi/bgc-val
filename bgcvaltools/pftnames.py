@@ -230,7 +230,10 @@ def makeLongNameDict():
   	lnd['NorthernMIZArea'] = 'Northern Hemisphere Marginal Ice Zone Area'
   	lnd['SouthernMIZArea'] = 'Southern Hemisphere Marginal Ice Zone Area'
   	lnd['TotalMIZArea'] = 'Total Marginal Ice Zone Area'  
-  	  	  		
+  	lnd['NorthernMIZfraction'] = 'Northern Hemisphere Marginal Ice Zone fraction'
+  	lnd['SouthernMIZfraction'] = 'Southern Hemisphere Marginal Ice Zone fraction'
+  	lnd['TotalMIZfraction'] = 'Total Marginal Ice Zone fraction'  
+  	
 	lnd['JFM'] = 'JFM'   	
 	lnd['AMJ'] = 'AMJ'   	
 	lnd['JAS'] = 'JAS'   	
