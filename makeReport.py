@@ -1172,8 +1172,9 @@ def comparehtml5Maker(
 			except:
 				print "comparehtml5Maker:\tjobID:",jobID," not in jobDescriptions."
 				jobdesc = jobID
-			table_data.append([jobID, colourhtml,jobdesc])
-			print "comparehtml5Maker:\tadded:",[jobID, colourhtml,jobdesc]	
+			jobIDlink = '<a href="http://gws-access.ceda.ac.uk/public/esmeval/bgcval/'+jobID+'">'+jobID+'</a>'
+			table_data.append([jobIDlink,colourhtml,jobdesc])
+			print "comparehtml5Maker:\tadded:",[jobIDlink, colourhtml,jobdesc]	
 			
 			
 		htmltable = htmltables.table(table_data,
