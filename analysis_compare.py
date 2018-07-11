@@ -112,10 +112,13 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
         	analysisKeys.append('NorthernTotalIceExtent')   # work in progress      
 	        analysisKeys.append('SouthernTotalIceExtent')   # work in progress      
 	        analysisKeys.append('WeddelIceExent')   # work in progress     
-                analysisKeys.append('NorthernMIZArea')
-                analysisKeys.append('SouthernMIZArea')
-                analysisKeys.append('TotalMIZArea')   	         	        
-
+                #analysisKeys.append('NorthernMIZArea')
+                #analysisKeys.append('SouthernMIZArea')
+                #analysisKeys.append('TotalMIZArea')   	         	        
+                analysisKeys.append('NorthernMIZfraction')
+                analysisKeys.append('SouthernMIZfraction')
+                analysisKeys.append('TotalMIZfraction') 
+                
         	analysisKeys.append('AMOC_26N')
 	        analysisKeys.append('AMOC_32S')
                 analysisKeys.append('ADRC_26N')                # AMOC 26N                        	        
@@ -224,6 +227,13 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
                 analysisKeys.append('SouthernMIZArea')
                 analysisKeys.append('TotalMIZArea') 
                         
+#                        analysisKeys.append('NorthernMIZArea')
+#                        analysisKeys.append('SouthernMIZArea')
+#                        analysisKeys.append('TotalMIZArea')       
+                analysisKeys.append('NorthernMIZfraction')
+                analysisKeys.append('SouthernMIZfraction')
+                analysisKeys.append('TotalMIZfraction') 
+                
 #		analysisKeys.append('FreshwaterFlux')		# Fresh water flux
                 analysisKeys.append('GlobalMeanTemperature')
                 analysisKeys.append('GlobalMeanSalinity')
@@ -351,7 +361,8 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 	 		   'WeddelTotalIceArea', 'TotalIceArea',
 	 		   'NorthernTotalIceExtent','WeddelIceExent',
 			   'SouthernTotalIceExtent','TotalIceExtent',
-			   'NorthernMIZArea','SouthernMIZArea','TotalMIZArea',]
+			   'NorthernMIZArea','SouthernMIZArea','TotalMIZArea',
+		           'NorthernMIZfraction', 'SouthernMIZfraction', 'TotalMIZfraction']			   
 		if len(set(icekeys).intersection(set(analysisKeys))):
 		    for name in icekeys:
 		    	if name not in analysisKeys:continue
@@ -390,7 +401,28 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 			def calcMIZAreaS(nc,keys): # South
 				arr = nc.variables[keys[0]][:].squeeze() 
 				return np.ma.masked_where((tmask==0)+(lat>0.)+(arr<0.15) + (arr>0.80),arr * area).sum()/1E12
+				
+			def calcMIZfraction(nc,keys):	#Global
+				arr = nc.variables[keys[0]][:].squeeze()		
+				arr = np.ma.masked_where(tmask==0 + (arr == 0.), arr)
+				value = np.ma.masked_where(arr.mask + (arr<0.15) + (arr>0.80),area).sum()
+				denom = np.ma.masked_where(arr.mask,area).sum()
+				return value/denom 
 
+			def calcMIZfractionN(nc,keys): # North
+				arr = nc.variables[keys[0]][:].squeeze()		
+				arr = np.ma.masked_where(tmask==0 + (arr == 0.) + (lat<0.), arr)
+				value = np.ma.masked_where(arr.mask + (arr<0.15) + (arr>0.80),area).sum()
+				denom = np.ma.masked_where(arr.mask,area).sum()
+				return value/denom 
+					
+			def calcMIZfractionS(nc,keys): # South
+				arr = nc.variables[keys[0]][:].squeeze()
+				arr = np.ma.masked_where(tmask==0 + (arr == 0.) + (lat>0.), arr)
+				value = np.ma.masked_where(arr.mask + (arr<0.15) + (arr>0.80),area).sum()
+				denom = np.ma.masked_where(arr.mask,area).sum()
+				return value/denom 
+			
 			def calcTotalIceExtent(nc,keys):	#Global
 				return np.ma.masked_where((tmask==0)+(nc.variables[keys[0]][:].squeeze()<0.15),area).sum()/1E12
 
@@ -447,16 +479,22 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 
 		    	if name in ['NorthernMIZArea',]:
 				av[name]['modeldetails'] 	= {'name': name, 'vars':['soicecov',], 'convert': calcMIZAreaN,'units':'1E6 km^2'}
-			#	av[name]['regions'] 		=  ['NorthHemisphere',]
 
 		    	if name in ['SouthernMIZArea',]:
 				av[name]['modeldetails'] 	= {'name': name, 'vars':['soicecov',], 'convert': calcMIZAreaS,'units':'1E6 km^2'}
 
-
 		    	if name in ['TotalMIZArea',]:
 				av[name]['modeldetails'] 	= {'name': name, 'vars':['soicecov',], 'convert': calcMIZArea,'units':'1E6 km^2'}
-			#	av[name]['regions'] 		=  ['Global',]
-		
+
+		    	if name in ['NorthernMIZfraction',]:
+				av[name]['modeldetails'] 	= {'name': name, 'vars':['soicecov',], 'convert': calcMIZfractionN,'units':''}
+
+		    	if name in ['SouthernMIZfraction',]:
+				av[name]['modeldetails'] 	= {'name': name, 'vars':['soicecov',], 'convert': calcMIZfractionS,'units':''}
+
+		    	if name in ['TotalMIZfraction',]:
+				av[name]['modeldetails'] 	= {'name': name, 'vars':['soicecov',], 'convert': calcMIZfraction,'units':''}
+					
 			av[name]['regions'] 		=  ['regionless',]
 
 			av[name]['datadetails']  	= {'name':'','units':'',}
