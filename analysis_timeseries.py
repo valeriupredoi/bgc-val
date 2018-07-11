@@ -2526,12 +2526,12 @@ def analysis_timeseries(jobID = "u-ab671",
                         return np.ma.masked_where((tmask==0)+ weddelmask,arr).sum()/1E12
 
 		def calcMIZArea(nc,keys):	#Global
-			arr = nc.variables[keys[0]][:].squeeze() * area
-			return np.ma.masked_where(tmask==0 +(arr<0.15) + (arr>0.80),arr).sum()/1E12
+			arr = nc.variables[keys[0]][:].squeeze() 
+			return np.ma.masked_where(tmask==0 +(arr<0.15) + (arr>0.80),arr* area).sum()/1E12
 
 		def calcMIZAreaN(nc,keys): # North
-			arr = nc.variables[keys[0]][:].squeeze() * area
-			return np.ma.masked_where((tmask==0)+(lat<0.)+(arr<0.15) + (arr>0.80),arr).sum()/1E12
+			arr = nc.variables[keys[0]][:].squeeze() 
+			return np.ma.masked_where((tmask==0)+(lat<0.)+(arr<0.15) + (arr>0.80),arr* area).sum()/1E12
 
 		def calcMIZAreaS(nc,keys): # South
 			arr = nc.variables[keys[0]][:].squeeze() 
