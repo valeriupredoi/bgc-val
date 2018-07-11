@@ -2710,6 +2710,24 @@ def main():
 		print "Successful command line comparison"
 		exit
 	else:
+		linestyles = defaultdict(lambda: '-')
+		linestyles['u-aw310'] = ':'
+		customColours = {
+		 'u-aw331': 'teal',
+		 'u-aw310': 'black'
+	       	 }
+		cnthicknesses = defaultdict(lambda: 1.1)
+		timeseries_compare(
+	         customColours, #{i:standards[i] for i in jobs},
+        	 physics=1,
+	         bio=1,
+        	 debug=1,
+	         year0='HistoricalDECK2050',
+        	 jobDescriptions=jobDescriptions,
+	         analysisname='MIZ-test',
+        	 lineThicknesses= cnthicknesses,
+	         linestyles = linestyles,)
+	        return
 
 		linestyles = defaultdict(lambda: '-')
 		customColours = {
