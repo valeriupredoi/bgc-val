@@ -2716,9 +2716,11 @@ def main():
 	else:
 		linestyles = defaultdict(lambda: '-')
 		linestyles['u-aw310'] = ':'
+		linestyles['u-aw447'] = '--'
 		customColours = {
 		 'u-aw331': 'teal',
 		 'u-aw310': 'black'
+		 'u-aw447': 'red'		 
 	       	 }
 		cnthicknesses = defaultdict(lambda: 1.1)
 		timeseries_compare(
