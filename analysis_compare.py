@@ -2752,6 +2752,57 @@ def main():
 		print "Successful command line comparison"
 		exit
 	else:
+	
+                customColours = {
+                         'u-aw331': 'teal',
+                         'u-ax195': 'green',
+                         'u-ax589': 'blue',
+                         'u-ax718': 'purple',
+                         'u-ay078': 'orange',
+                         'u-ay167': 'pink',
+                         'u-ay491': 'gold',
+
+                         }
+
+		histruns = {	'u-aw331': 1850, #	UKESM1 first historical member (1850)
+				'u-ax195': 1880, #	UKESM1 second Historical member (1880)
+				'u-ax589': 1960, #	UKESM1 third Historical member (1960)
+				'u-ax718': 1922, #	UKESM1 fourth Historical run (1922)
+				'u-ay078': 2020, #	UKESM1 fifth Historical run (2020)
+                                'u-ay167': 2050, #      UKESM1 sixth Historical run (2050)
+				'u-ay491': 1995,  #	UKESM1 seventh Historical run (1995)
+			   }
+		newemissionsruns = {
+				'u-ay078': 'u-az513', #	UKESM1 fifth Historical run (2020)
+                                'u-ay167': 'u-az515', #      UKESM1 sixth Historical run (2050)
+				'u-ay491': 'u-az524', #	UKESM1 seventh Historical run (1995)
+			   }
+			   
+		jobsyears = {yr:j for j,yr in histruns.items()}
+		for i,yr in enumerate(sorted(jobsyears.keys())):
+			i+=1
+			#if i !=2: continue
+			j = jobsyears[yr]
+			colourpair = {j: customColours[j], 'u-aw310': 'black'}
+			lineThicknesses = {j: 1.7, 'u-aw310': 1.7}
+			linestyles 	= {j: '-', 'u-aw310': '-'}
+			if j in newemissionsruns.keys():
+				newrun = newemissionsruns[j]
+				colourpair[newrun] = customColours[j]
+				lineThicknesses[newrun] = 2.
+				linestyles[newrun] = ':'			
+		        timeseries_compare(
+		                 colourpair, 
+		                 physics=1,
+		                 bio=1,
+		                 debug=0,
+		                 year0='hist_vs_pi_'+str(yr),
+		                 analysisname='UKESM1_hist_vs_pi_'+str(i),
+		                 jobDescriptions =jobDescriptions,		                 
+		                 lineThicknesses = lineThicknesses,
+		                 linestyles 	 = linestyles,)
+		assert 0
+
 		linestyles = defaultdict(lambda: '-')
 		linestyles['u-aw310'] = ':'
 		linestyles['u-aw447'] = '--'
@@ -2901,44 +2952,7 @@ def main():
                          lineThicknesses= cnthicknesses,
                          linestyles = linestyles,)
 
-                customColours = {
-                         'u-aw331': 'teal',
-                         'u-ax195': 'green',
-                         'u-ax589': 'blue',
-                         'u-ax718': 'purple',
-                         'u-ay078': 'orange',
-                         'u-ay167': 'pink',
-                         'u-ay491': 'gold',
 
-                         }
-
-		histruns = {	'u-aw331': 1850, #	UKESM1 first historical member (1850)
-				'u-ax195': 1880, #	UKESM1 second Historical member (1880)
-				'u-ax589': 1960, #	UKESM1 third Historical member (1960)
-				'u-ax718': 1922, #	UKESM1 fourth Historical run (1922)
-				'u-ay078': 2020, #	UKESM1 fifth Historical run (2020)
-                                'u-ay167': 2050, #      UKESM1 sixth Historical run (2050)
-				'u-ay491': 1995,  #	UKESM1 seventh Historical run (1995)
-			   }
-
-		jobsyears = {yr:j for j,yr in histruns.items()}
-		for i,yr in enumerate(sorted(jobsyears.keys())):
-			i+=1
-			#if i !=2: continue
-			j = jobsyears[yr]
-			colourpair = {j: customColours[j], 'u-aw310': 'black'}
-			lineThicknesses = {j: 1.7, 'u-aw310': 1.7}
-			linestyles 	= {j: '-', 'u-aw310': '-'}
-		        timeseries_compare(
-		                 colourpair, 
-		                 physics=1,
-		                 bio=1,
-		                 debug=0,
-		                 year0='hist_vs_pi_'+str(yr),
-		                 analysisname='UKESM1_hist_vs_pi_'+str(i),
-		                 jobDescriptions =jobDescriptions,		                 
-		                 lineThicknesses = lineThicknesses,
-		                 linestyles 	 = linestyles,)
                          
 #                jobs = ['u-au984','u-av079', 'u-ax628', 'u-ax629', ]
 #                timeseries_compare({
