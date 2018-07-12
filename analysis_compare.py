@@ -2771,7 +2771,7 @@ def main():
 			 analysisname='MIZ-test',
 			 lineThicknesses= cnthicknesses,
 			 linestyles = linestyles,)
-		assert 0
+
 		linestyles = defaultdict(lambda: '-')
 		customColours = {
 		 'u-aw331': 'teal',
