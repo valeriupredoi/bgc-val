@@ -2758,13 +2758,12 @@ def main():
         	         i:standards[i] for i in jobs},
 	                 physics=1,
                 	 bio=1,
-        	         debug=1,
+        	         debug=0,
 	                 year0=False,	#'from2240',#False, #'4800-5100',
                 	 jobDescriptions=jobDescriptions,
         	         analysisname='UKESM_hist_new_emissions',
 	                 lineThicknesses= hjthicknesses)
 
-	
                 customColours = {
                          'u-aw331': 'teal',
                          'u-ax195': 'green',
@@ -2813,7 +2812,6 @@ def main():
 		                 jobDescriptions =jobDescriptions,		                 
 		                 lineThicknesses = lineThicknesses,
 		                 linestyles 	 = linestyles,)
-		assert 0
 
 		linestyles = defaultdict(lambda: '-')
 		linestyles['u-aw310'] = ':'
