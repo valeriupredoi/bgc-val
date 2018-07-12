@@ -2548,25 +2548,25 @@ def analysis_timeseries(jobID = "u-ab671",
 			return np.ma.masked_where((tmask==0)+(lat>0.)+(arr<0.15) + (arr>0.80),arr * area).sum()/1E12
 			
 		def calcMIZfraction(nc,keys):	#Global
-			arr = nc.variables[keys[0]][:].squeeze()		
-			arr = np.ma.masked_where(tmask==0 + (arr < 0.15), arr)
-			value = np.ma.masked_where(arr.mask + (arr>0.80),area).sum()
-			denom = np.ma.masked_where(arr.mask,area).sum()
-			return value/denom 
+			ice = nc.variables[keys[0]][:].squeeze()
+			new_area = nc.variables['area'][:].squeeze()
+			miz_area = np.ma.masked_where((ice<0.15) + (ice>0.8) + ice.mask,new_area)
+			total_area = np.ma.masked_where((ice <0.15) + ice.mask, new_area)
+			return miz_area.sum()/total_area.sum()
 
 		def calcMIZfractionN(nc,keys): # North
-			arr = nc.variables[keys[0]][:].squeeze()		
-			arr = np.ma.masked_where(tmask==0 + (arr < 0.15) + (lat<0.), arr)
-			value = np.ma.masked_where(arr.mask + (arr>0.80),area).sum()
-			denom = np.ma.masked_where(arr.mask,area).sum()
-			return value/denom 
+			ice = nc.variables[keys[0]][:].squeeze()
+			new_area = nc.variables['area'][:].squeeze()
+			miz_area = np.ma.masked_where((lat<0.)+(ice<0.15) + (ice>0.8) + ice.mask,new_area)
+			total_area = np.ma.masked_where((lat<0.)+(ice <0.15) + ice.mask, new_area)
+			return miz_area.sum()/total_area.sum() 
 					
 		def calcMIZfractionS(nc,keys): # South
-			arr = nc.variables[keys[0]][:].squeeze()
-			arr = np.ma.masked_where(tmask==0 + (arr < 0.15) + (lat>0.), arr)
-			value = np.ma.masked_where(arr.mask +  (arr>0.80),area).sum()
-			denom = np.ma.masked_where(arr.mask,area).sum()
-			return value/denom 
+			ice = nc.variables[keys[0]][:].squeeze()
+			new_area = nc.variables['area'][:].squeeze()
+			miz_area = np.ma.masked_where((lat>0.)+(ice<0.15) + (ice>0.8) + ice.mask,new_area)
+			total_area = np.ma.masked_where((lat>0.)+(ice <0.15) + ice.mask, new_area)
+			return miz_area.sum()/total_area.sum() 
 			
 		def calcTotalIceExtent(nc,keys):	#Global
 			return np.ma.masked_where((tmask==0)+(nc.variables[keys[0]][:].squeeze()<0.15),area).sum()/1E12
