@@ -2752,6 +2752,18 @@ def main():
 		print "Successful command line comparison"
 		exit
 	else:
+
+        	jobs = ['u-az513','u-az515','u-az524','u-az508']
+	        timeseries_compare({
+        	         i:standards[i] for i in jobs},
+	                 physics=1,
+                	 bio=1,
+        	         debug=1,
+	                 year0=False,	#'from2240',#False, #'4800-5100',
+                	 jobDescriptions=jobDescriptions,
+        	         analysisname='UKESM_hist_new_emissions',
+	                 lineThicknesses= hjthicknesses)
+
 	
                 customColours = {
                          'u-aw331': 'teal',
