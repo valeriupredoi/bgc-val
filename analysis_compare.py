@@ -2752,14 +2752,13 @@ def main():
 		print "Successful command line comparison"
 		exit
 	else:
-
         	jobs = ['u-az513','u-az515','u-az524','u-az508']
 	        timeseries_compare({
         	         i:standards[i] for i in jobs},
 	                 physics=1,
                 	 bio=1,
         	         debug=0,
-	                 year0=False,	#'from2240',#False, #'4800-5100',
+	                 year0='new_emissions',	#'from2240',#False, #'4800-5100',
                 	 jobDescriptions=jobDescriptions,
         	         analysisname='UKESM_hist_new_emissions',
 	                 lineThicknesses= hjthicknesses)
@@ -2772,9 +2771,7 @@ def main():
                          'u-ay078': 'orange',
                          'u-ay167': 'pink',
                          'u-ay491': 'gold',
-
                          }
-
 		histruns = {	'u-aw331': 1850, #	UKESM1 first historical member (1850)
 				'u-ax195': 1880, #	UKESM1 second Historical member (1880)
 				'u-ax589': 1960, #	UKESM1 third Historical member (1960)
@@ -2788,7 +2785,6 @@ def main():
                                 'u-ay167': 'u-az515', #      UKESM1 sixth Historical run (2050)
 				'u-ay491': 'u-az524', #	UKESM1 seventh Historical run (1995)
 			   }
-			   
 		jobsyears = {yr:j for j,yr in histruns.items()}
 		for i,yr in enumerate(sorted(jobsyears.keys())):
 			i+=1
@@ -2800,8 +2796,8 @@ def main():
 			if j in newemissionsruns.keys():
 				newrun = newemissionsruns[j]
 				colourpair[newrun] = customColours[j]
-				lineThicknesses[newrun] = 2.
-				linestyles[newrun] = ':'			
+				lineThicknesses[newrun] = 2.4
+				linestyles[newrun] = '--'
 		        timeseries_compare(
 		                 colourpair, 
 		                 physics=1,

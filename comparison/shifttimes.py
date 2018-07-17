@@ -155,7 +155,16 @@ def shifttimes(mdata, jobID,year0=False):
                         datas.append(mdata[t])
                 #print year0, jobID,'\t',min(mdata.keys()),max(mdata.keys()), '--->',min(times),max(times)
                 return times, datas
-                
+               
+	if year0 == 'new_emissions': 
+               for t in sorted(mdata.keys()):
+                        if   jobID in ['u-az508', ]: t1 = t -110
+                        else: t1 = t
+                        times.append(float(t1))
+                        datas.append(mdata[t])
+               return times, datas
+
+	
 	if type(year0) in [type('str'),]:
 	    if year0[:10] == 'hist_vs_pi':
 		y = float(year0[11:])
