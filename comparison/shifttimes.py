@@ -175,7 +175,6 @@ def shifttimes(mdata, jobID,year0=False):
 			else:
 				print "shiftimes.py:\tControlAligned:\t, job not recognised:",jobID, "set to 1850"
 				t1 = t
-                        else: t1 = t
                         times.append(float(t1))
                         datas.append(mdata[t])
        		return times, datas
