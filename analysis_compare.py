@@ -2752,7 +2752,45 @@ def main():
 		print "Successful command line comparison"
 		exit
 	else:
-
+                customColours = {
+                         'u-av651': 'black',
+                         'u-aw310': 'black'
+                         'u-aw331': 'teal',
+			 'u-ax195': 'green',
+                         'u-ax589': 'blue',
+	  		 'u-ax718': 'purple',
+		 	 'u-ay078': 'orange',
+			 'u-ay167': 'pink',
+                         'u-ay491': 'gold',
+                         'u-az942': 'darkgoldenrod',
+                         }
+                linestyles = defaultdict(lambda: '-')
+                linestyles['u-av651'] = '--'                                                  
+                linestyles['u-aw310']=':'
+                cnthicknesses['u-aw310'] = 1.7
+                timeseries_compare(
+                         customColours, 
+                         physics=1,
+                         bio=1,
+                         debug=1,
+                         year0='ControlAligned',
+                         jobDescriptions=jobDescriptions,
+                         analysisname='UKESM1_historical_ControlAligned',
+                         lineThicknesses= cnthicknesses,
+                         linestyles = linestyles,)  
+                assert 0               
+                timeseries_compare(
+                         customColours, #{i:standards[i] for i in jobs},
+                         physics=1,
+                         bio=1,
+                         debug=0,
+                         year0='AlignToDECK2050',
+                         jobDescriptions=jobDescriptions,
+                         analysisname='UKESM1_historical_pi',
+                         lineThicknesses= cnthicknesses,
+                         linestyles = linestyles,)
+                         
+                         
                 linestyles = defaultdict(lambda: '-')
                 linestyles['u-av651'] = '--'
                 linestyles['u-aq853'] = '--'
@@ -2772,17 +2810,6 @@ def main():
                 cnthicknesses = defaultdict(lambda: 1.1)
 		cnthicknesses['u-aw331'] = 1.7
                 timeseries_compare(
-                         customColours, 
-                         physics=1,
-                         bio=1,
-                         debug=1,
-                         year0='ControlAligned',
-                         jobDescriptions=jobDescriptions,
-                         analysisname='UKESM1_historical_ControlAligned',
-                         lineThicknesses= cnthicknesses,
-                         linestyles = linestyles,)
-                assert 0
-                timeseries_compare(
                          customColours,
                          physics=1,
                          bio=1,
@@ -2792,8 +2819,10 @@ def main():
                          analysisname='UKESM1_historical',
                          lineThicknesses= cnthicknesses,
                          linestyles = linestyles,)
-
                          
+
+
+                        
                          
         	jobs = ['u-az513','u-az515','u-az524','u-az508']
 	        timeseries_compare({
@@ -2834,8 +2863,7 @@ def main():
                                 'u-az513': 'darkorange', # UKESM1 fifth Historical run (2020)
                                 'u-az515': 'deeppink', #      UKESM1 sixth Historical run (2050)
                                 'u-az524': 'goldenrod', # UKESM1 seventh Historical run (1995)
-                           }
-
+                           }                        
 		jobsyears = {yr:j for j,yr in histruns.items()}
 		for i,yr in enumerate(sorted(jobsyears.keys())):
 			i+=1
@@ -2860,6 +2888,9 @@ def main():
 		                 lineThicknesses = lineThicknesses,
 		                 linestyles 	 = linestyles,)
 
+
+                         
+                         
 #		linestyles = defaultdict(lambda: '-')
 #		linestyles['u-aw310'] = ':'
 #		linestyles['u-aw447'] = '--'
