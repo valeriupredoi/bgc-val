@@ -2552,7 +2552,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			new_area = nc.variables['area'][:].squeeze()
 			miz_area = np.ma.masked_where((ice<0.15) + (ice>0.8) + ice.mask,new_area)
 			total_area = np.ma.masked_where((ice <0.15) + ice.mask, new_area)
-			return miz_area.sum()/total_area.sum()
+			return miz_area.sum()/total_area.sum() 
 
 		def calcMIZfractionN(nc,keys): # North
 			ice = nc.variables[keys[0]][:].squeeze()

@@ -155,6 +155,31 @@ def shifttimes(mdata, jobID,year0=False):
                         datas.append(mdata[t])
                 #print year0, jobID,'\t',min(mdata.keys()),max(mdata.keys()), '--->',min(times),max(times)
                 return times, datas
+    
+	if year0 == 'ControlAligned':
+		histruns = {	'u-aw331': 1850, #	UKESM1 first historical member (1850)
+				'u-ax195': 1880, #	UKESM1 second Historical member (1880)
+				'u-ax589': 1960, #	UKESM1 third Historical member (1960)
+				'u-ax718': 1922, #	UKESM1 fourth Historical run (1922)
+				'u-ay078': 2020, #	UKESM1 fifth Historical run (2020)
+                                'u-ay167': 2050, #      UKESM1 sixth Historical run (2050)
+				'u-ay491': 1995,  #	UKESM1 seventh Historical run (1995)
+                                'u-az942': 1995,  #     UKESM1 seventh Historical run (1995) restarted
+			   }
+			   	
+       		for t in sorted(mdata.keys()):
+			if jobID in ['u-aw310',]:	t1 = t
+			elif jobID in ['u-av651',]:	t1 = t - 618. 
+			elif jobID in histruns.keys():
+				t1 = t + histruns[jobID] - 1850.
+			else:
+				print "shiftimes.py:\tControlAligned:\t, job not recognised:",jobID, "set to 1850"
+				t1 = t
+                        else: t1 = t
+                        times.append(float(t1))
+                        datas.append(mdata[t])
+       		return times, datas
+		
                
 	if year0 == 'new_emissions': 
                for t in sorted(mdata.keys()):
