@@ -2752,9 +2752,11 @@ def main():
 		print "Successful command line comparison"
 		exit
 	else:
+
+
                 customColours = {
                          'u-av651': 'black',
-                         'u-aw310': 'black'
+                         'u-aw310': 'black',
                          'u-aw331': 'teal',
 			 'u-ax195': 'green',
                          'u-ax589': 'blue',
@@ -2767,18 +2769,18 @@ def main():
                 linestyles = defaultdict(lambda: '-')
                 linestyles['u-av651'] = '--'                                                  
                 linestyles['u-aw310']=':'
+                cnthicknesses = defaultdict(lambda: 1.1)
                 cnthicknesses['u-aw310'] = 1.7
                 timeseries_compare(
                          customColours, 
                          physics=1,
                          bio=1,
-                         debug=1,
+                         debug=0,
                          year0='ControlAligned',
                          jobDescriptions=jobDescriptions,
                          analysisname='UKESM1_historical_ControlAligned',
                          lineThicknesses= cnthicknesses,
                          linestyles = linestyles,)  
-                assert 0               
                 timeseries_compare(
                          customColours, #{i:standards[i] for i in jobs},
                          physics=1,
@@ -2843,7 +2845,7 @@ def main():
                          'u-ay078': 'orange',
                          'u-ay167': 'pink',
                          'u-ay491': 'gold',
-                         'u-az942': 'gold',
+                         #'u-az942': 'gold',
                          }
 		histruns = {	'u-aw331': 1850, #	UKESM1 first historical member (1850)
 				'u-ax195': 1880, #	UKESM1 second Historical member (1880)
@@ -2852,7 +2854,7 @@ def main():
 				'u-ay078': 2020, #	UKESM1 fifth Historical run (2020)
                                 'u-ay167': 2050, #      UKESM1 sixth Historical run (2050)
 				'u-ay491': 1995,  #	UKESM1 seventh Historical run (1995)
-                                'u-az942': 1995,  #     UKESM1 seventh Historical run (1995) restarted
+                          #      'u-az942': 1995,  #     UKESM1 seventh Historical run (1995) restarted
 			   }
 		newemissionsruns = {
 				'u-ay078': 'u-az513', #	UKESM1 fifth Historical run (2020)
@@ -2877,6 +2879,10 @@ def main():
 				colourpair[newrun] = newemissionscolours[newrun]
 				lineThicknesses[newrun] = 2.4
 				linestyles[newrun] = '--'
+			if j == 'u-ay491':
+				colourpair['u-az942'] = 'gold'
+				lineThicknesses['u-az942'] = 2.
+                                linestyles['u-az942'] = ':'
 		        timeseries_compare(
 		                 colourpair, 
 		                 physics=1,
@@ -2888,6 +2894,19 @@ def main():
 		                 lineThicknesses = lineThicknesses,
 		                 linestyles 	 = linestyles,)
 
+
+
+                jobs = ['u-av079', 'u-aw721', 'u-au984', 'u-ax628','u-ax629']
+                timeseries_compare({
+                        i:standards[i] for i in jobs},
+                        physics=1,
+                        bio=1,
+                        debug=0,
+                        year0=False,
+                        jobDescriptions=jobDescriptions,
+                        analysisname='CRESCENDO_OO_test_7',
+                        lineThicknesses= hjthicknesses,
+                        )
 
                          
                          
@@ -3055,17 +3074,19 @@ def main():
 #                        lineThicknesses= hjthicknesses,
 #                        )
 
-                jobs = ['u-av079', 'u-aw721', 'u-ay123', 'u-ay108']
-                timeseries_compare({
-                        i:standards[i] for i in jobs},
-                        physics=1,
-                        bio=1,
-                        debug=0,
-                        year0=False,
-                        jobDescriptions=jobDescriptions,
-                        analysisname='CRESCENDO_OO_test_5',
-                        lineThicknesses= hjthicknesses,
-                        )
+#                jobs = ['u-av079', 'u-aw721', 'u-ay123', 'u-ay108']
+#                timeseries_compare({
+#                        i:standards[i] for i in jobs},
+#                        physics=1,
+#                        bio=1,
+#                        debug=0,
+#                        year0=False,
+#                        jobDescriptions=jobDescriptions,
+#                        analysisname='CRESCENDO_OO_test_5',
+#                        lineThicknesses= hjthicknesses,
+#                        )
+
+
 
 #                jobs = ['u-aw721', 'u-ax134']
 #		linestyles={}
@@ -3085,26 +3106,6 @@ def main():
 
 
                         
-                #jobs.append('u-aw310')
-                linestyles['u-aw310']=':'
-                customColours['u-aw310'] = 'black'
-                customColours['u-aw331'] = 'teal'
-                cnthicknesses['u-aw310'] = 1.7
-                del customColours['u-aq853']
-                del customColours['u-as371']
-                timeseries_compare(
-                         customColours, #{i:standards[i] for i in jobs},
-                         physics=1,
-                         bio=1,
-                         debug=0,
-                         year0='AlignToDECK2050',
-                         jobDescriptions=jobDescriptions,
-                         analysisname='UKESM1_historical_pi',
-                         lineThicknesses= cnthicknesses,
-                         linestyles = linestyles,)
-                         
-
-
                 jobs = ['u-aw310','u-ar766','u-av651','u-aq853','u-av450',]
                 linestyles = defaultdict(lambda: '-')
                 linestyles['u-av651'] = '--'
