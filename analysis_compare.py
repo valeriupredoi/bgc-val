@@ -2753,6 +2753,69 @@ def main():
 		exit
 	else:
 
+                customColours = {
+                         'u-aw331': 'teal',
+                         'u-ax195': 'green',
+                         'u-ax589': 'blue',
+                         'u-ax718': 'purple',
+                         'u-ay078': 'orange',
+                         'u-ay167': 'pink',
+                         'u-ay491': 'gold',
+                         #'u-az942': 'gold',
+                         }
+		histruns = {	'u-aw331': 1850, #	UKESM1 first historical member (1850)
+				'u-ax195': 1880, #	UKESM1 second Historical member (1880)
+				'u-ax589': 1960, #	UKESM1 third Historical member (1960)
+				'u-ax718': 1922, #	UKESM1 fourth Historical run (1922)
+				'u-ay078': 2020, #	UKESM1 fifth Historical run (2020)
+                                'u-ay167': 2050, #      UKESM1 sixth Historical run (2050)
+				'u-ay491': 1995,  #	UKESM1 seventh Historical run (1995)
+                          #      'u-az942': 1995,  #     UKESM1 seventh Historical run (1995) restarted
+			   }
+		newemissionsruns = {
+	                        'u-aw331': 'u-az021',		
+                                'u-ax718': 'u-az417',	
+                                'u-ax589': 'u-az418',                                                        
+				'u-ay078': 'u-az513', #	UKESM1 fifth Historical run (2020)
+                                'u-ay167': 'u-az515', #      UKESM1 sixth Historical run (2050)
+				'u-ay491': 'u-az524', #	UKESM1 seventh Historical run (1995)
+			   }
+                newemissionscolours= {
+	                        'u-az021': 'darkgreen',		
+                                'u-az417': 'rebeccapurple',	
+                                'u-az418': 'navy',                 
+                                'u-az513': 'darkorange', # UKESM1 fifth Historical run (2020)
+                                'u-az515': 'deeppink', #      UKESM1 sixth Historical run (2050)
+                                'u-az524': 'goldenrod', # UKESM1 seventh Historical run (1995)
+                           }                        
+		jobsyears = {yr:j for j,yr in histruns.items()}
+		for i,yr in enumerate(sorted(jobsyears.keys())):
+			i+=1
+			#if i !=2: continue
+			j = jobsyears[yr]
+			colourpair = {j: customColours[j], 'u-aw310': 'black'}
+			lineThicknesses = {j: 1.7, 'u-aw310': 1.7}
+			linestyles 	= {j: '-', 'u-aw310': '-'}
+			if j in newemissionsruns.keys():
+				newrun = newemissionsruns[j]
+				colourpair[newrun] = newemissionscolours[newrun]
+				lineThicknesses[newrun] = 2.4
+				linestyles[newrun] = '--'
+			if j == 'u-ay491':
+				colourpair['u-az942'] = 'gold'
+				lineThicknesses['u-az942'] = 2.
+                                linestyles['u-az942'] = ':'
+		        timeseries_compare(
+		                 colourpair, 
+		                 physics=1,
+		                 bio=1,
+		                 debug=0,
+		                 year0='hist_vs_pi_'+str(yr),
+		                 analysisname='UKESM1_hist_vs_pi_'+str(i),
+		                 jobDescriptions =jobDescriptions,		                 
+		                 lineThicknesses = lineThicknesses,
+		                 linestyles 	 = linestyles,)
+
 
                 customColours = {
                          'u-av651': 'black',
@@ -2837,62 +2900,7 @@ def main():
         	         analysisname='UKESM_hist_new_emissions',
 	                 lineThicknesses= hjthicknesses)
 
-                customColours = {
-                         'u-aw331': 'teal',
-                         'u-ax195': 'green',
-                         'u-ax589': 'blue',
-                         'u-ax718': 'purple',
-                         'u-ay078': 'orange',
-                         'u-ay167': 'pink',
-                         'u-ay491': 'gold',
-                         #'u-az942': 'gold',
-                         }
-		histruns = {	'u-aw331': 1850, #	UKESM1 first historical member (1850)
-				'u-ax195': 1880, #	UKESM1 second Historical member (1880)
-				'u-ax589': 1960, #	UKESM1 third Historical member (1960)
-				'u-ax718': 1922, #	UKESM1 fourth Historical run (1922)
-				'u-ay078': 2020, #	UKESM1 fifth Historical run (2020)
-                                'u-ay167': 2050, #      UKESM1 sixth Historical run (2050)
-				'u-ay491': 1995,  #	UKESM1 seventh Historical run (1995)
-                          #      'u-az942': 1995,  #     UKESM1 seventh Historical run (1995) restarted
-			   }
-		newemissionsruns = {
-				'u-ay078': 'u-az513', #	UKESM1 fifth Historical run (2020)
-                                'u-ay167': 'u-az515', #      UKESM1 sixth Historical run (2050)
-				'u-ay491': 'u-az524', #	UKESM1 seventh Historical run (1995)
-			   }
-                newemissionscolours= {
-                                'u-az513': 'darkorange', # UKESM1 fifth Historical run (2020)
-                                'u-az515': 'deeppink', #      UKESM1 sixth Historical run (2050)
-                                'u-az524': 'goldenrod', # UKESM1 seventh Historical run (1995)
-                           }                        
-		jobsyears = {yr:j for j,yr in histruns.items()}
-		for i,yr in enumerate(sorted(jobsyears.keys())):
-			i+=1
-			#if i !=2: continue
-			j = jobsyears[yr]
-			colourpair = {j: customColours[j], 'u-aw310': 'black'}
-			lineThicknesses = {j: 1.7, 'u-aw310': 1.7}
-			linestyles 	= {j: '-', 'u-aw310': '-'}
-			if j in newemissionsruns.keys():
-				newrun = newemissionsruns[j]
-				colourpair[newrun] = newemissionscolours[newrun]
-				lineThicknesses[newrun] = 2.4
-				linestyles[newrun] = '--'
-			if j == 'u-ay491':
-				colourpair['u-az942'] = 'gold'
-				lineThicknesses['u-az942'] = 2.
-                                linestyles['u-az942'] = ':'
-		        timeseries_compare(
-		                 colourpair, 
-		                 physics=1,
-		                 bio=1,
-		                 debug=0,
-		                 year0='hist_vs_pi_'+str(yr),
-		                 analysisname='UKESM1_hist_vs_pi_'+str(i),
-		                 jobDescriptions =jobDescriptions,		                 
-		                 lineThicknesses = lineThicknesses,
-		                 linestyles 	 = linestyles,)
+
 
 
 
