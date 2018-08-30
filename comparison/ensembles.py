@@ -39,8 +39,10 @@ def build_ensemble(timesD, arrD, ensembles={}):
 	# Determine time range
 	timeRange = {}
 	for jobID in sorted(timesD.keys()):
-		minT = 	np.min(timesD[jobID])
-		maxT = 	np.max(timesD[jobID])
+		try:
+			minT = 	np.min(timesD[jobID])
+			maxT = 	np.max(timesD[jobID])
+		except: continue
 		timeRange[minT] = True
 		timeRange[maxT] = True		
 	timeRange = [np.min(timeRange.keys()), np.max(timeRange.keys())]
@@ -50,30 +52,36 @@ def build_ensemble(timesD, arrD, ensembles={}):
 	# Make empty dicts:
 	newTimes = {}
 	newArr = {}
-   	for group in groups:
-   	    	newTimes[group] = {yr:[] for yr in allyears}
-   	    	newArr[group]   = {yr:[] for yr in allyears}
+        outTimes = {}
+        outArr = {}
+        for name, ensemble in ensembles.items():
+   	    	newTimes[name] = {yr:[] for yr in allyears}
+   	    	newArr[name]   = {yr:[] for yr in allyears}
+                outTimes[name] = []
+                outArr[name]   = []
 
 	#####
 	# Load the data
-	for group in groups:
+	for name, ensemble in ensembles.items():
 	    for jobID in sorted(timesD.keys()):	
-		if jobID not in group: continue
+		if jobID not in ensemble: continue
 			
 		for t, d in zip(timesD[jobID], arrD[jobID]):
 			yr = int(t)
-			newTimes[group][yr].append(t)
-			newArr[group][yr].append(d)			
-				
+			newTimes[name][yr].append(t)
+			newArr[name][yr].append(d)			
+
 	#####
 	# Take the mean of the ensemble	
-	for group in groups:
-	    for jobID in sorted(timesD.keys()):	
-		if jobID not in group: continue
-		newTimes[group][yr] = np.mean(newTimes[group][yr])
-		newArr[group][yr]   = np.mean(newArr[group][yr])
-	
-	return newTimes, newArr
+        for name, ensemble in ensembles.items():
+	    for yr in sorted(allyears):
+		if len(newTimes[name][yr]) ==0: continue
+                if len(newArr[name][yr]) ==0: continue
+
+		outTimes[name].append(np.ma.mean(newTimes[name][yr]))
+		outArr[name].append(np.ma.mean(newArr[name][yr]))
+		
+	return outTimes, outArr
 	
 	
 	

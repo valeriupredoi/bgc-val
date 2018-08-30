@@ -232,24 +232,24 @@ def timeseries_compare(
 #                analysisKeys.append('NorthernTotalIceArea')     # North TotalIceArea
 #                analysisKeys.append('SouthernTotalIceArea')     # South TotalIceArea
 #                analysisKeys.append('TotalIceArea')     	#  TotalIceArea
-                analysisKeys.append('NorthernTotalIceExtent')   # work in progress      
-                analysisKeys.append('SouthernTotalIceExtent')   # work in progress      
+#                analysisKeys.append('NorthernTotalIceExtent')   # work in progress      
+#                analysisKeys.append('SouthernTotalIceExtent')   # work in progress      
 #                analysisKeys.append('WeddelIceExent')   # work in progress       
-                analysisKeys.append('TotalIceExtent')           # work in progress      
-                analysisKeys.append('NorthernMIZArea')
-                analysisKeys.append('SouthernMIZArea')
-                analysisKeys.append('TotalMIZArea') 
+#                analysisKeys.append('TotalIceExtent')           # work in progress      
+#                analysisKeys.append('NorthernMIZArea')
+#                analysisKeys.append('SouthernMIZArea')
+#                analysisKeys.append('TotalMIZArea') 
                         
 #                        analysisKeys.append('NorthernMIZArea')
 #                        analysisKeys.append('SouthernMIZArea')
 #                        analysisKeys.append('TotalMIZArea')       
-                analysisKeys.append('NorthernMIZfraction')
-                analysisKeys.append('SouthernMIZfraction')
-                analysisKeys.append('TotalMIZfraction') 
+#                analysisKeys.append('NorthernMIZfraction')
+#                analysisKeys.append('SouthernMIZfraction')
+#                analysisKeys.append('TotalMIZfraction') 
                 
 #		analysisKeys.append('FreshwaterFlux')		# Fresh water flux
                 analysisKeys.append('GlobalMeanTemperature')
-                analysisKeys.append('GlobalMeanSalinity')
+#                analysisKeys.append('GlobalMeanSalinity')
 
 #                analysisKeys.append('HeatFlux')
 #                analysisKeys.append('TotalHeatFlux')
@@ -2553,6 +2553,9 @@ def timeseries_compare(
 		for root, dirnames, filenames in os.walk(imageFolder):
     			for filename in fnmatch.filter(filenames, '*.png'):
      			   AllImages.append(os.path.join(root, filename))		
+
+	if ensembles != {}:
+		jobs = ensembles.keys()
 	comparehtml5Maker(
 		jobIDs = jobs,
 		reportdir = ukp.folder('CompareReports/'+analysisname),
@@ -2720,12 +2723,12 @@ def main():
 		ensembles['PI Control'] = ['u-av651','u-aw310']
 		ensembles['New Emissions'] = ['u-az021', 'u-az417', 'u-az418', 'u-az513', 'u-az515', 'u-az524']
 		ensembles['Old Emissions'] = ['u-aw331', 'u-ax195', 'u-ax589', 'u-ax718', 'u-ay078', 'u-ay167', 'u-ay491']
-                customColours = {'PI Control': 'black',}
-                
                 jobs = [] 
-                jobs.extend(ensembles[ensemble] for ensemble in ensembles.keys()#
-	        customColours = {i:standards[i] for i in jobs}
-	        customColours['PI Control'] = 'k'
+		for ensemble in ensembles.keys():
+	                jobs.extend(ensembles[ensemble])
+	        
+		customColours = {i:standards[i] for i in jobs}
+	        customColours['PI Control'] = 'black'
 	        customColours['New Emissions'] = 'red'
 	        customColours['Old Emissions'] = 'blue'	        	        
 
@@ -2742,16 +2745,13 @@ def main():
                          customColours, 
                          physics=1,
                          bio=1,
-                         debug=1,
-                         year0='ControlAligned',
+                         debug=0,
+                         year0='AlignToDECK2020',
                          jobDescriptions=jobDescriptions,
                          analysisname='UKESM1_CMIP6_ensembles',
                          lineThicknesses= cnthicknesses,
                          linestyles = linestyles,
                          ensembles = ensembles) 
-               assert 0          
-		
-		
 		
 
                 jobs = ['u-az513','u-az515','u-az524','u-az508', 'u-az021', 'u-az417', 'u-az418']

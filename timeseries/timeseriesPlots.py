@@ -637,6 +637,7 @@ def multitimeseries(
 		if np.ma.is_masked(arr):
 			print "multitimeseries:\tWARNING:\tdata arrays is masked",len(times),len(arr),title, (i,jobID)
 			continue
+		print 'multitimeseries',times,xlims
 		if times[0]  < xlims[0]: 	xlims[0] = times[0]
 		if times[-1] > xlims[1]: 	xlims[1] = times[-1]
 

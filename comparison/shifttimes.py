@@ -86,6 +86,7 @@ def shifttimes(mdata, jobID,year0=False):
 		        'AlignToDECK1930', 'HistoricalDECK1930','AlignToDECK1600-1930',
 			'AlignToDECK1950', 'HistoricalDECK1950','AlignToDECK1600-1950',
                  	'AlignToDECK2000', 'HistoricalDECK2000','AlignToDECK1600-2000',
+                        'AlignToDECK2020', 'HistoricalDECK2020','AlignToDECK1600-2020',
                         'AlignToDECK2050', 'HistoricalDECK2050','AlignToDECK1600-2050',
                         'AlignToDECK2100', 'HistoricalDECK2100','AlignToDECK1600-2100',
                         'AlignToDECK2150', 'HistoricalDECK2150','AlignToDECK1600-2150',
@@ -116,9 +117,13 @@ def shifttimes(mdata, jobID,year0=False):
 
 
 			# early cut:
-			if year0 in ['AlignToDECK','AlignToDECK1930', 'HistoricalDECK1930','AlignToDECK2050',
+			if year0 in ['AlignToDECK','AlignToDECK1930', 'HistoricalDECK1930','AlignToDECK2020','AlignToDECK2050',
                                   'AlignToDECK2150']:
 	                        if t1 < 1799. : continue
+
+                        if year0 in ['AlignToDECK2020',]:
+                                if t1 < 1849. : continue
+
 
                         if year0 in ['AlignToDECK1600-1930','AlignToDECK1600', 'AlignToDECK1600-2100']:
                                 if t1 < 1599. : continue
@@ -135,6 +140,9 @@ def shifttimes(mdata, jobID,year0=False):
 
                         if year0 in ['AlignToDECK2000','AlignToDECK1600-2000','HistoricalDECK2000']:
                                 if t1 > 2001.: continue
+
+                        if year0 in ['AlignToDECK2020','AlignToDECK1600-2020','HistoricalDECK2020']:
+                                if t1 > 2021.: continue
 
                         if year0 in ['AlignToDECK2050','AlignToDECK1600-2050','HistoricalDECK2050']:
                                 if t1 > 2051.: continue
