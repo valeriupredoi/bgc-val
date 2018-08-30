@@ -62,6 +62,7 @@ from makeReport import comparehtml5Maker
 import paths
 
 from comparison.shifttimes import shifttimes
+from comparison.ensembles import build_ensemble
 from config.configToDict import configToDict
 from bgcvaltools.dataset import dataset
 
@@ -80,12 +81,24 @@ def listModelDataFiles(jobID, filekey, datafolder, annual,year=''):
 		else:
 			return sorted(glob(datafolder+jobID+"/"+jobID+"o_1m_*"+year+"????_"+filekey+".nc"))
 				
-def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,analysisname='',jobDescriptions={},lineThicknesses= defaultdict(lambda:1),linestyles= defaultdict(lambda:'-')):
+def timeseries_compare(
+		colours,
+		physics=True,
+		bio=False,
+		debug=False,
+		year0=False,
+		analysisname='', 
+		jobDescriptions={}, 
+		lineThicknesses= defaultdict(lambda:1), 
+		linestyles= defaultdict(lambda:'-'),
+		ensembles = {}):
 	### strategy here is a simple wrapper.
 	# It's a little cheat-y, as I'm copying straight from analysis_timeseries.py
 	
 	jobs = sorted(colours.keys())
-
+	for ensemble in ensembles.keys(): 
+		# ensembles names can not be the same as jobIDs	
+		jobs.remove(ensemble)
 	 
 	if analysisname=='':
 		imageFolder = paths.imagedir+'/TimeseriesCompare/'
@@ -314,6 +327,8 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 		imagedir	 = ukp.folder(paths.imagedir+'/'+jobID+'/timeseries')
 		shelvedir 	= ukp.folder(paths.shelvedir+"/timeseries/"+jobID)
 		
+		if jobID in ensembles.keys(): continue
+			# ensembles names can not be the same as jobIDs
 		
 
 
@@ -2106,60 +2121,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 	for k in modeldataD.keys():
 		print "Model Data D:",k
 
-	#####
-	# 2D fields for North Atlantic analysis 
-	doNorthAtlanticSalt = False
-	if doNorthAtlanticSalt:
-		nasregionList	= [
-				'NordicSea', 'LabradorSea', 'NorwegianSea'
-				]
-					
-		for name in ['sowaflup','sohefldo','sofmflup','sosfldow','soicecov','MLD','sossheig',]:
- 		  continue
-		  if name not in av.keys():continue
-		  for region in nasregionList:
-		    for layer in ['layerless',]:
-			timesD  = {}
-			arrD	= {}
-			
-			if name in ['',]: metric = 'metricless'
-			else:	metric = 'mean'
-			
-			for jobID in jobs:
-                                print name, region,layer, jobID#, mdata, title
-
-				try:
-					mdata = modeldataD[(jobID,name )][(region, layer,metric)]
-					title = ' '.join([getLongName(n) for n in [region, layer, metric, name]])
-				except: continue
-				print name, region,layer, jobID, mdata, title
-				
-				timesD[jobID] 	= sorted(mdata.keys())
-				arrD[jobID]	= [mdata[t] for t in timesD[jobID]]
-				if jobID == 'u-aj588':
-					arrD[jobID]     = np.ma.masked_where(arrD[jobID]==0.,arrD[jobID])
-
-			
-			if len(arrD.keys()) ==0:continue	
-			
-                        units = av[name]['modeldetails']['units']
-			
-			for ts in ['Together',]:
-			    for ls in ['DataOnly',]:
-				tsp.multitimeseries(
-					timesD, 		# model times (in floats)
-					arrD,			# model time series
-					data 	= -999,		# in situ data distribution
-					title 	= title,
-					filename=ukp.folder(imageFolder+'/NAS')+'_'.join(['NAS',name,region,layer,ts,ls+'.png']),
-					units = units,
-					plotStyle 	= ts,
-					lineStyle	= ls,
-					colours		= colours,
-	                                thicknesses     = lineThicknesses,
-	                                linestyles	= linestyles,
-				)
-	
+		
 	####
 	for name in ['Temperature','Salinity','MLD','FreshwaterFlux','AirSeaFluxCO2','AirSeaFlux','Chlorophyll','Nitrate',]:
 		  if name not in av.keys():continue
@@ -2184,7 +2146,8 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
                                         arrD[jobID]     = np.ma.masked_where(arrD[jobID]==0.,arrD[jobID])
 
 	                        #times,datas = shifttimes(mdata, jobID,year0=year0)
-
+			timesD, arrD = build_ensemble(timesD, arrD, ensembles)
+			
 			if len(arrD.keys()) ==0:continue
                         units = av[name]['modeldetails']['units']
 
@@ -2267,7 +2230,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 			times,datas = shifttimes(mdata, jobID,year0=year0)
 			timesD[jobID] 	= times
 			arrD[jobID]	= datas
-
+		timesD, arrD = build_ensemble(timesD, arrD, ensembles)
 		#####
 		# To account for changing units.
 		if name in ['TotalAirSeaFluxCO2', 'TotalAirSeaFlux']: 
@@ -2325,8 +2288,6 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
                               )
 
 	
-
-	
 			
 							
 	####
@@ -2352,7 +2313,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 			timesD[jobID] 	= times
 			arrD[jobID]	= datas
 			
-			
+		timesD, arrD = build_ensemble(timesD, arrD, ensembles)			
                 units = av[name]['modeldetails']['units']
 		
 		for ts in ['Together',]:#'Separate']:
@@ -2387,6 +2348,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 			timesD[jobID] 	= times
 			arrD[jobID]	= datas
 		if len(arrD.keys()) == 0: continue
+		timesD, arrD = build_ensemble(timesD, arrD, ensembles)		
                 units = av[name]['modeldetails']['units']
 		for ts in ['Together',]:#'Separate']:
 		    for ls in ['DataOnly',]:#'','Both',]:						
@@ -2421,7 +2383,8 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 			times,datas = shifttimes(mdata, jobID,year0=year0)
 			timesD[jobID] 	= times
 			arrD[jobID]	= datas
-						
+
+		timesD, arrD = build_ensemble(timesD, arrD, ensembles)						
                 units = av[name]['modeldetails']['units']
 		
 		for ts in ['Together',]:#'Separate']:
@@ -2454,7 +2417,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
                         times,datas = shifttimes(mdata, jobID,year0=year0)
                         timesD[jobID]   = times
                         arrD[jobID]     = datas
-
+		timesD, arrD = build_ensemble(timesD, arrD, ensembles)
                 units = av[name]['modeldetails']['units']
                 for ts in ['Together',]:#'Separate']:
                     for ls in ['DataOnly',]:#'','Both',]:                       
@@ -2493,8 +2456,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 				ddatas.append( (datas[i+1] - datas[i])/tdiff)
                         timesD[jobID]   = dtimes
                         arrD[jobID]     = ddatas
-			
-
+		timesD, arrD = build_ensemble(timesD, arrD, ensembles)			
 
                 units = r'$\Delta$ '+av[name]['modeldetails']['units']+' y'+r'$^{-1}$'
                 for ts in ['Together',]:#'Separate']:
@@ -2534,7 +2496,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 			arrD[jobID]	= datas
 						
                 units = av[name]['modeldetails']['units']
-		
+		timesD, arrD = build_ensemble(timesD, arrD, ensembles)		
 		for ts in ['Together',]:#'Separate']:
 		    for ls in ['DataOnly',]:#'','Both',]:			
 			tsp.multitimeseries(
@@ -2553,6 +2515,7 @@ def timeseries_compare(colours,physics=True,bio=False,debug=False,year0=False,an
 			
 
 	for name in ['DMS',]:
+	  continue
 	  if name not in av.keys():continue
 	  for region in regionList:
 	    for layer in ['Surface','100m','200m',]:
@@ -2753,6 +2716,43 @@ def main():
 		exit
 	else:
 
+		ensembles = {}
+		ensembles['PI Control'] = ['u-av651','u-aw310']
+		ensembles['New Emissions'] = ['u-az021', 'u-az417', 'u-az418', 'u-az513', 'u-az515', 'u-az524']
+		ensembles['Old Emissions'] = ['u-aw331', 'u-ax195', 'u-ax589', 'u-ax718', 'u-ay078', 'u-ay167', 'u-ay491']
+                customColours = {'PI Control': 'black',}
+                
+                jobs = [] 
+                jobs.extend(ensembles[ensemble] for ensemble in ensembles.keys()#
+	        customColours = {i:standards[i] for i in jobs}
+	        customColours['PI Control'] = 'k'
+	        customColours['New Emissions'] = 'red'
+	        customColours['Old Emissions'] = 'blue'	        	        
+
+	        jobDescriptions['PI Control'] = 'Pre industrial control'
+	        jobDescriptions['New Emissions'] = 'New SO2 emissions historial ensemble'
+	        jobDescriptions['Old Emissions'] = 'Initial CMIP6 historical ensemble'	    
+	        	        
+                linestyles = defaultdict(lambda: '-')
+                linestyles['PI Control'] = '--'                                                  
+                cnthicknesses = defaultdict(lambda: 1.1)
+                cnthicknesses['PI Control'] = 1.7
+                
+                timeseries_compare(
+                         customColours, 
+                         physics=1,
+                         bio=1,
+                         debug=1,
+                         year0='ControlAligned',
+                         jobDescriptions=jobDescriptions,
+                         analysisname='UKESM1_CMIP6_ensembles',
+                         lineThicknesses= cnthicknesses,
+                         linestyles = linestyles,
+                         ensembles = ensembles) 
+               assert 0          
+		
+		
+		
                 customColours = {
                          'u-aw331': 'teal',
                          'u-ax195': 'green',
@@ -2783,7 +2783,7 @@ def main():
                 newemissionscolours= {
 	                        'u-az021': 'darkgreen',		
                                 'u-az417': 'rebeccapurple',	
-                                'u-az418': 'navy',                 
+                                'u-az418': 'dodgerblue',                 
                                 'u-az513': 'darkorange', # UKESM1 fifth Historical run (2020)
                                 'u-az515': 'deeppink', #      UKESM1 sixth Historical run (2050)
                                 'u-az524': 'goldenrod', # UKESM1 seventh Historical run (1995)
@@ -2889,7 +2889,7 @@ def main():
 
                         
                          
-        	jobs = ['u-az513','u-az515','u-az524','u-az508']
+        	jobs = ['u-az513','u-az515','u-az524','u-az508', 'u-az021', 'u-az417', 'u-az418']
 	        timeseries_compare({
         	         i:standards[i] for i in jobs},
 	                 physics=1,
