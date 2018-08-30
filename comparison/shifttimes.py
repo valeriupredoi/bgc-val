@@ -165,6 +165,12 @@ def shifttimes(mdata, jobID,year0=False):
                                 'u-ay167': 2050, #      UKESM1 sixth Historical run (2050)
 				'u-ay491': 1995,  #	UKESM1 seventh Historical run (1995)
                                 'u-az942': 1995,  #     UKESM1 seventh Historical run (1995) restarted
+	                        'u-az021': 1850,
+                                'u-az417': 1922,
+                                'u-az418': 1960,
+				'u-az513': 2020, #	UKESM1 fifth Historical run (2020)
+                                'u-az515': 2050, #      UKESM1 sixth Historical run (2050)
+				'u-az524': 1995, #	UKESM1 seventh Historical run (1995)
 			   }
 			   	
        		for t in sorted(mdata.keys()):

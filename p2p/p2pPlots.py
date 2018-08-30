@@ -662,8 +662,11 @@ class makePlots:
 		cb = pyplot.colorbar()				
 		mmax = max(dx.max(),dy.max())
 		mmin = min(dx.min(),dy.min())
-			
-		fx = np.arange(mmin, mmax, (mmax-mmin)/20.)
+
+		try:	fx = np.arange(mmin, mmax, (mmax-mmin)/20.)
+		except: 
+	                print "CompareCoords: unable to make plot for \t",xkey, 'np.arange(',mmin, mmax, (mmax-mmin)/20.,') fails.'
+			continue
 		pyplot.plot(fx,fx, 'k--')
 		ax.set_aspect("equal")
 

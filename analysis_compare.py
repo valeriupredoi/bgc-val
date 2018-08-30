@@ -2753,6 +2753,44 @@ def main():
 		exit
 	else:
 
+
+                jobs = ['u-az513','u-az515','u-az524','u-az508', 'u-az021', 'u-az417', 'u-az418']
+                timeseries_compare({
+                         i:standards[i] for i in jobs},
+                         physics=1,
+                         bio=1,
+                         debug=0,
+                         year0='new_emissions', #'from2240',#False, #'4800-5100',
+                         jobDescriptions=jobDescriptions,
+                         analysisname='UKESM_hist_new_emissions',
+                         lineThicknesses= hjthicknesses)
+
+                newemissionscolours= {
+        	                'u-av651': 'black',
+	                        'u-aw310': 'black',                 
+                                'u-az021': 'darkgreen',
+                                'u-az417': 'rebeccapurple',
+                                'u-az418': 'dodgerblue',
+                                'u-az513': 'darkorange', # UKESM1 fifth Historical run (2020)
+                                'u-az515': 'deeppink', #      UKESM1 sixth Historical run (2050)
+                                'u-az524': 'goldenrod', # UKESM1 seventh Historical run (1995)
+                           }
+                linestyles = defaultdict(lambda: '-')
+                linestyles['u-av651'] = '--'
+                linestyles['u-aw310']=':'
+                cnthicknesses = defaultdict(lambda: 1.1)
+                cnthicknesses['u-aw310'] = 1.7
+                timeseries_compare(
+                         newemissionscolours,
+                         physics=1,
+                         bio=1,
+                         debug=0,
+                         year0='ControlAligned',
+                         jobDescriptions=jobDescriptions,
+                         analysisname='UKESM1_newEmissions_ControlAligned',
+                         lineThicknesses= cnthicknesses,
+                         linestyles = linestyles,)
+
                 customColours = {
                          'u-aw331': 'teal',
                          'u-ax195': 'green',
@@ -2783,7 +2821,7 @@ def main():
                 newemissionscolours= {
 	                        'u-az021': 'darkgreen',		
                                 'u-az417': 'rebeccapurple',	
-                                'u-az418': 'navy',                 
+                                'u-az418': 'dodgerblue',
                                 'u-az513': 'darkorange', # UKESM1 fifth Historical run (2020)
                                 'u-az515': 'deeppink', #      UKESM1 sixth Historical run (2050)
                                 'u-az524': 'goldenrod', # UKESM1 seventh Historical run (1995)
@@ -2815,7 +2853,6 @@ def main():
 		                 jobDescriptions =jobDescriptions,		                 
 		                 lineThicknesses = lineThicknesses,
 		                 linestyles 	 = linestyles,)
-
 
                 customColours = {
                          'u-av651': 'black',
@@ -2888,22 +2925,6 @@ def main():
 
 
                         
-                         
-        	jobs = ['u-az513','u-az515','u-az524','u-az508']
-	        timeseries_compare({
-        	         i:standards[i] for i in jobs},
-	                 physics=1,
-                	 bio=1,
-        	         debug=0,
-	                 year0='new_emissions',	#'from2240',#False, #'4800-5100',
-                	 jobDescriptions=jobDescriptions,
-        	         analysisname='UKESM_hist_new_emissions',
-	                 lineThicknesses= hjthicknesses)
-
-
-
-
-
                 jobs = ['u-av079', 'u-aw721', 'u-au984', 'u-ax628','u-ax629']
                 timeseries_compare({
                         i:standards[i] for i in jobs},
@@ -3431,5 +3452,6 @@ def main():
 	
 
 if __name__=="__main__": main()
+
 
 
