@@ -30,7 +30,7 @@ def ensembleMean_PI(times, data, startingYears = [1850., 1880., 1960., 1922., 20
 	# However, this is run after shiftimes. 
 	#times, data, are equal lenth arrays/lists
 	
-	outputTimeRange = np.arange(1849,2021)
+	outputTimeRange = np.arange(1840,2030)
 	outTimes = {t:[] for t in outputTimeRange}
 	outData  = {t:[] for t in outputTimeRange}
 
@@ -42,14 +42,29 @@ def ensembleMean_PI(times, data, startingYears = [1850., 1880., 1960., 1922., 20
 	   		# if trange < outyr < trange + 1.:
 	   		shifted =  t - startyear + 1850.
 	   		if outyr < shifted < outyr +1.:
-				outTimes[outyr].append(t)
+				outTimes[outyr].append(shifted)
 				outData[outyr].append(d)
-		 		print 'FOUND ONE', t, yr, startyear, shifted
+		 		#print 'FOUND ONE', t, yr, startyear, shifted
 
-	for o, arr in outTimes.items():	outTimes[o] = np.ma.mean(arr)
-	for o, arr in outData.items():	outData[o] = np.ma.mean(arr)
-	print outTimes,outData
-	return outTimes,outData		
+
+	for o, arr in outTimes.items():	
+		print 'times', o ,arr, np.ma.mean(arr), outData[o], np.ma.mean(outData[o])
+		if len(arr) == 0: continue
+		if len(outData[o]) ==0: continue
+		outTimes[o] = np.ma.mean(arr)
+		outData[o] = np.ma.mean(outData[o])
+
+	finalTimes = []	
+	finalData = []
+	for outyr in sorted(outputTimeRange):
+		if outTimes[outyr] and outData[outyr]:
+			finalTimes.append(outTimes[outyr])
+                	finalData.append(outData[outyr])
+	#print len(finalTimes), len(finalData)
+	if len(finalTimes) != len(finalData): assert 0
+	#print finalTimes, finalData
+	#assert 0
+	return finalTimes, finalData
 	
 	
 	
@@ -95,7 +110,6 @@ def build_ensemble(timesD, arrD, ensembles={}):
 			yr = int(t)
 			newTimes[name][yr].append(t)
 			newArr[name][yr].append(d)
-
 
 	#####
 	# Take the mean of the ensemble	

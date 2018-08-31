@@ -92,7 +92,7 @@ def shifttimes(mdata, jobID,year0=False):
                         'AlignToDECK2150', 'HistoricalDECK2150','AlignToDECK1600-2150',
                         'AlignToDECK2200', 'HistoricalDECK2200','AlignToDECK1600-2200',
                         'AlignToDECK2250', 'HistoricalDECK2250','AlignToDECK1600-2250',
-
+			'EnsembleAlign',
 			]:
                 for t in sorted(mdata.keys()):
 			t1 = t
@@ -121,7 +121,7 @@ def shifttimes(mdata, jobID,year0=False):
                                   'AlignToDECK2150']:
 	                        if t1 < 1799. : continue
 
-                        if year0 in ['AlignToDECK2020',]:
+                        if year0 in ['AlignToDECK2020','EnsembleAlign',]:
                                 if t1 < 1849. : continue
 
 

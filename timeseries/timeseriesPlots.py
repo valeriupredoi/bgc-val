@@ -616,6 +616,7 @@ def multitimeseries(
 	for i,jobID in enumerate(sorted(timesD.keys())):
 		times = timesD[jobID]
 		arr = arrD[jobID]
+		#print 'multitimeseries: ', len(times), len(arr)
 		try:	print "multitimeseries:",jobID,dataname, min(times),max(times)
 		except: print "multitimeseries:",jobID,dataname, 'no data'
 
@@ -644,7 +645,6 @@ def multitimeseries(
 		if np.min(arr) < ylims[0]: 	ylims[0] = np.min(arr)
 		if np.max(arr) > ylims[1]: 	ylims[1] = np.max(arr)
 		
-					
 		
 		if lineStyle.lower() in ['spline','all']:
 			tnew = np.linspace(times[0],times[-1],60)
@@ -699,6 +699,8 @@ def multitimeseries(
 			pyplot.plot(times,arr,c=colours[jobID],ls=linestyles[jobID],lw=0.25)
 
                 if lineStyle.lower() in ['dataonly']:
+			#print jobID, times,arr
+			#print len(times), len(arr)
                         pyplot.plot(times,arr,c=colours[jobID],ls=linestyles[jobID],lw=thicknesses[jobID],label=jobID,)
 
 
