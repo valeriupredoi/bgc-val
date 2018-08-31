@@ -2720,7 +2720,7 @@ def main():
 	else:
 
 		ensembles = {}
-		ensembles['PI Control'] = ['u-av651','u-aw310']
+		ensembles['PI Control'] = ['u-aw310',] #'u-av651',
 		ensembles['New Emissions'] = ['u-az021', 'u-az417', 'u-az418', 'u-az513', 'u-az515', 'u-az524']
 		ensembles['Old Emissions'] = ['u-aw331', 'u-ax195', 'u-ax589', 'u-ax718', 'u-ay078', 'u-ay167', 'u-ay491']
                 jobs = [] 
@@ -2752,7 +2752,7 @@ def main():
                          lineThicknesses= cnthicknesses,
                          linestyles = linestyles,
                          ensembles = ensembles) 
-		
+		assert 0
 
                 jobs = ['u-az513','u-az515','u-az524','u-az508', 'u-az021', 'u-az417', 'u-az418']
                 timeseries_compare({

@@ -23,18 +23,44 @@
 import numpy as np
 
 
+def ensembleMean_PI(times, data, startingYears = [1850., 1880., 1960., 1922., 2020., 2050., 1995.]):
+	#####
+	# This is for the ensemble mean Colin requested.
+	# Basically it is a mean of the same job with 7 versions.
+	# However, this is run after shiftimes. 
+	#times, data, are equal lenth arrays/lists
+	
+	outputTimeRange = np.arange(1849,2021)
+	outTimes = {t:[] for t in outputTimeRange}
+	outData  = {t:[] for t in outputTimeRange}
+
+	for startyear in startingYears:
+	    for outyr in outputTimeRange:
+		for t,d in zip(times, data,):
+			yr = int(t)
+	   		# trange =  yr - startyear + 1850.
+	   		# if trange < outyr < trange + 1.:
+	   		shifted =  t - startyear + 1850.
+	   		if outyr < shifted < outyr +1.:
+				outTimes[outyr].append(t)
+				outData[outyr].append(d)
+		 		print 'FOUND ONE', t, yr, startyear, shifted
+
+	for o, arr in outTimes.items():	outTimes[o] = np.ma.mean(arr)
+	for o, arr in outData.items():	outData[o] = np.ma.mean(arr)
+	print outTimes,outData
+	return outTimes,outData		
+	
+	
+	
+	
+
 def build_ensemble(timesD, arrD, ensembles={}):
 
 	#####
 	# Return no change if no ensembles requested
 	if ensembles == {}: return timesD, arrD
 
-	#####
-	# Create some ensembles 
-	#ensembles = {}
-	#ensembles['PiControl'] = ['',]
-	#ensembles['NewEmissions'] = ['u-az021', 'u-az417', 'u-az418', 'u-az513', 'u-az515', 'u-az524']
-	
 	#####
 	# Determine time range
 	timeRange = {}
@@ -63,13 +89,13 @@ def build_ensemble(timesD, arrD, ensembles={}):
 	#####
 	# Load the data
 	for name, ensemble in ensembles.items():
-	    for jobID in sorted(timesD.keys()):	
+	    for jobID in sorted(timesD.keys()):
 		if jobID not in ensemble: continue
-			
 		for t, d in zip(timesD[jobID], arrD[jobID]):
 			yr = int(t)
 			newTimes[name][yr].append(t)
-			newArr[name][yr].append(d)			
+			newArr[name][yr].append(d)
+
 
 	#####
 	# Take the mean of the ensemble	
@@ -80,7 +106,14 @@ def build_ensemble(timesD, arrD, ensembles={}):
 
 		outTimes[name].append(np.ma.mean(newTimes[name][yr]))
 		outArr[name].append(np.ma.mean(newArr[name][yr]))
-		
+
+	#####
+	# Add additional years into PI control.
+	if 'PI Control' in ensembles.keys() and 'u-aw310' in ensembles['PI Control']:
+	  	jobID = 'u-aw310'
+	  	name = 'PI Control'
+		outTimes[name], outArr[name] = ensembleMean_PI(outTimes[name], outArr[name])
+			
 	return outTimes, outArr
 	
 	
