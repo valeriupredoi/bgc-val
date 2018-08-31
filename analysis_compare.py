@@ -2745,7 +2745,7 @@ def main():
                          customColours, 
                          physics=1,
                          bio=1,
-                         debug=0,
+                         debug=1,
                          year0='AlignToDECK2020',
                          jobDescriptions=jobDescriptions,
                          analysisname='UKESM1_CMIP6_ensembles',
