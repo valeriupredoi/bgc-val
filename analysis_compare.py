@@ -2718,6 +2718,47 @@ def main():
 		print "Successful command line comparison"
 		exit
 	else:
+	
+		ensembles = {}
+		ensembles['PI Control 3'] = ['u-aw310',] #'u-av651',
+		ensembles['PI Control 6'] = ['u-aw310',] #'u-av651',		
+		ensembles['New Emissions'] = ['u-az021', 'u-az417', 'u-az418', 'u-az513', 'u-az515', 'u-az524']
+		ensembles['Old Emissions'] = ['u-aw331', 'u-ax195', 'u-ax589', 'u-ax718', 'u-ay078', 'u-ay167', 'u-ay491']
+                jobs = [] 
+		for ensemble in ensembles.keys():
+	                jobs.extend(ensembles[ensemble])
+	        
+		customColours = {i:standards[i] for i in jobs}
+	        customColours['PI Control 3'] = 'black'
+	        customColours['PI Control 6'] = 'black'	        
+	        customColours['New Emissions'] = 'red'
+	        customColours['Old Emissions'] = 'blue'	        	        
+
+	        jobDescriptions['PI Control 3'] = 'Pre industrial control 1850-1920'
+	        jobDescriptions['PI Control 6'] = 'Pre industrial control 1920-present'	        
+	        jobDescriptions['New Emissions'] = 'New SO2 emissions historial ensemble'
+	        jobDescriptions['Old Emissions'] = 'Initial CMIP6 historical ensemble'	    
+	        	        
+                linestyles = defaultdict(lambda: '-')
+                linestyles['PI Control 3'] = ':'                                                  
+                linestyles['PI Control 6'] = '--'                                                                  
+                cnthicknesses = defaultdict(lambda: 1.1)
+                cnthicknesses['PI Control 3 '] = 1.7
+                cnthicknesses['PI Control 6'] = 1.7
+                                
+                timeseries_compare(
+                         customColours, 
+                         physics=1,
+                         bio=1,
+                         debug=1,
+                         year0='EnsembleAlign',
+                         jobDescriptions=jobDescriptions,
+                         analysisname='UKESM1_CMIP6_ensembles_2',
+                         lineThicknesses= cnthicknesses,
+                         linestyles = linestyles,
+                         ensembles = ensembles) 
+  		assert 0                      
+                         	
                 ensembles = {}
                 ensembles['All New Emissions'] = ['u-az021', 'u-az417', 'u-az418', 'u-az513', 'u-az515', 'u-az524']
                 ensembles['Short new Emissions'] = ['u-az021', 'u-az417', 'u-az418', ]#-az513', 'u-az515', 'u-az524']
@@ -2774,7 +2815,7 @@ def main():
 
 
 		ensembles = {}
-		ensembles['PI Control'] = ['u-aw310',] #'u-av651',
+		ensembles['PI Control '] = ['u-aw310',] #'u-av651',
 		ensembles['New Emissions'] = ['u-az021', 'u-az417', 'u-az418', 'u-az513', 'u-az515', 'u-az524']
 		ensembles['Old Emissions'] = ['u-aw331', 'u-ax195', 'u-ax589', 'u-ax718', 'u-ay078', 'u-ay167', 'u-ay491']
                 jobs = [] 

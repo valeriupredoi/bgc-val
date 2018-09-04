@@ -131,7 +131,28 @@ def build_ensemble(timesD, arrD, ensembles={}):
 	  	jobID = 'u-aw310'
 	  	name = 'PI Control'
 		outTimes[name], outArr[name] = ensembleMean_PI(outTimes[name], outArr[name])
-			
+
+	if 'PI Control 3' in ensembles.keys() and 'u-aw310' in ensembles['PI Control']:
+	  	jobID = 'u-aw310'
+	  	name = 'PI Control 3'
+	  	
+		times, arr = ensembleMean_PI(outTimes[name], outArr[name],
+				startingYears = [2020., 2050., 1995.])
+		times = np.ma.masked_where((times < 1850.)+ times > 1920., times)
+		arr   = np.ma.masked_where((times < 1850.)+ times > 1920., arr)		
+		outTimes[name], outArr[name] = times.compressed(), arr.compressed()
+	
+	if 'PI Control 6' in ensembles.keys() and 'u-aw310' in ensembles['PI Control']:
+	  	jobID = 'u-aw310'
+	  	name = 'PI Control 6'
+		times, arr = ensembleMean_PI(outTimes[name], outArr[name],
+				startingYears = [1850., 1880., 1960., 2020., 2050., 1995.])
+				
+		times = np.ma.masked_where((times < 1920.), times)
+		arr   = np.ma.masked_where((times < 1920.), arr)		
+		outTimes[name], outArr[name] = times.compressed(), arr.compressed()
+			  	
+									
 	return outTimes, outArr
 	
 	
