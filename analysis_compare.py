@@ -2718,6 +2718,60 @@ def main():
 		print "Successful command line comparison"
 		exit
 	else:
+                ensembles = {}
+                ensembles['All New Emissions'] = ['u-az021', 'u-az417', 'u-az418', 'u-az513', 'u-az515', 'u-az524']
+                ensembles['Short new Emissions'] = ['u-az021', 'u-az417', 'u-az418', ]#-az513', 'u-az515', 'u-az524']
+                ensembles['Full New Emissions'] = ['u-az513', 'u-az515', 'u-az524']
+                ensembles['u-az021 - 1850'] = ['u-az021',]
+                ensembles['u-az417 - 1920'] = ['u-az417',]
+                ensembles['u-az418 - 1960'] = ['u-az418',]
+                ensembles['u-az513 - 2020'] = ['u-az513',]
+                ensembles['u-az515 - 2050'] = ['u-az515',]
+                ensembles['u-az524 - 1995'] = ['u-az524',]
+
+                jobs = []
+                for ensemble in ensembles.keys():
+                        jobs.extend(ensembles[ensemble])
+                        jobDescriptions[ensemble] = ensemble
+
+                customColours = {i:standards[i] for i in jobs}
+                customColours['All New Emissions'] = 'black'
+                customColours['Short new Emissions'] = 'navy' #customColours['u-az417']
+                customColours['Full New Emissions'] = 'pink' #customColours['u-az515']
+                customColours['u-az021 - 1850'] = 'green' #customColours['u-az021']
+                customColours['u-az417 - 1920'] = 'blue' #customColours['u-az417']
+                customColours['u-az418 - 1960'] = 'teal' #customColours['u-az418']
+                customColours['u-az513 - 2020'] = 'gold' #customColours['u-az513']
+                customColours['u-az515 - 2050'] = 'orange' #customColours['u-az515']
+                customColours['u-az524 - 1995'] = 'goldenrod' #customColours['u-az524']
+
+                jobDescriptions['All New Emissions'] = 'New SO2 emissions historial ensemble'
+                jobDescriptions['Short new Emissions'] = ['u-az021 u-az417 & u-az418', ]#-az513', 'u-az515', 'u-az524']
+                jobDescriptions['Full New Emissions'] = ['u-az513 u-az515 & u-az524']
+                jobDescriptions['u-az021 - 1850'] = ['u-az021 branched from PI control in 1850',]
+                jobDescriptions['u-az513 - 2020'] = ['u-az513 brnached from PI control in 2020',]
+                
+                linestyles = defaultdict(lambda: '-')
+                cnthicknesses = defaultdict(lambda: 1.1)
+                for j in ['Short new Emissions','Full New Emissions',]:
+   	             	linestyles[j] = '--'
+        	        cnthicknesses[j] = 1.7
+                linestyles['All New Emissions'] = ':'
+                cnthicknesses['All New Emissions'] = 2.2
+
+                timeseries_compare(
+                         customColours,
+                         physics=1,
+                         bio=1,
+                         debug=1,
+                         year0='EnsembleAlign',
+                         jobDescriptions=jobDescriptions,
+                         analysisname='UKESM1_CMIP6_NewEmissions_ensembles',
+                         lineThicknesses= cnthicknesses,
+                         linestyles = linestyles,
+                         ensembles = ensembles)
+
+
 
 		ensembles = {}
 		ensembles['PI Control'] = ['u-aw310',] #'u-av651',
@@ -2752,7 +2806,6 @@ def main():
                          lineThicknesses= cnthicknesses,
                          linestyles = linestyles,
                          ensembles = ensembles) 
-		assert 0
 
                 jobs = ['u-az513','u-az515','u-az524','u-az508', 'u-az021', 'u-az417', 'u-az418']
                 timeseries_compare({

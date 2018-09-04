@@ -48,7 +48,7 @@ def ensembleMean_PI(times, data, startingYears = [1850., 1880., 1960., 1922., 20
 
 
 	for o, arr in outTimes.items():	
-		print 'times', o ,arr, np.ma.mean(arr), outData[o], np.ma.mean(outData[o])
+		#print 'times', o ,arr, np.ma.mean(arr), outData[o], np.ma.mean(outData[o])
 		if len(arr) == 0: continue
 		if len(outData[o]) ==0: continue
 		outTimes[o] = np.ma.mean(arr)
@@ -85,7 +85,11 @@ def build_ensemble(timesD, arrD, ensembles={}):
 			maxT = 	np.max(timesD[jobID])
 		except: continue
 		timeRange[minT] = True
-		timeRange[maxT] = True		
+		timeRange[maxT] = True	
+
+        if len(timeRange.keys()) == 0: 
+		return timesD, arrD
+	
 	timeRange = [np.min(timeRange.keys()), np.max(timeRange.keys())]
 	allyears = np.arange(int(timeRange[0]), int(timeRange[1])+1)
 	
