@@ -2581,7 +2581,7 @@ def flatten(lats,lons,dataA,dataB):
 	
 		
 		
-def CompareTwoRuns(jobIDA,jobIDB,physics=True,bio=False,yearA='',yearB='',debug=True):
+def CompareTwoRuns(jobIDA,jobIDB,physics=True,bio=True,yearA='',yearB='',debug=True):
 	#
 	#spatial maps of specific fields
 
@@ -2611,6 +2611,9 @@ def CompareTwoRuns(jobIDA,jobIDB,physics=True,bio=False,yearA='',yearB='',debug=
 		lons = ncA.variables['nav_lon'][:]
 				
 		for key in keys:
+                        filename = ukp.folder(imageFolder+'/'+ft)+ft+'-'+key+'.png'
+                        if os.path.exists(filename):continue
+
 			dataA=0.
 			dataB=0.
 			if key in alwaysInclude: continue
@@ -2622,7 +2625,8 @@ def CompareTwoRuns(jobIDA,jobIDB,physics=True,bio=False,yearA='',yearB='',debug=
 			elif ncA.variables[key].ndim==3:
 				dataA = ncA.variables[key][0,:,:]
 				dataB = ncB.variables[key][0,:,:]	
-			elif ncA.variables[key].ndim==1:
+			elif ncA.variables[key].ndim==2:
+				continue
 				dataA = ncA.variables[key][:,:]
 				dataB = ncB.variables[key][:,:]	
 			else:
@@ -2639,7 +2643,8 @@ def CompareTwoRuns(jobIDA,jobIDB,physics=True,bio=False,yearA='',yearB='',debug=
 			print key, la.shape,lo.shape,data.shape,datb.shape
 			
 			if 0 in [len(la),len(lo),len(data),len(datb)]:continue
-			filename = ukp.folder(imageFolder+'/'+ft)+ft+'-'+key+'.png' 
+#		filename = ukp.folder(imageFolder+'/'+ft)+ft+'-'+key+'.png'
+#		if os.path.exists(filename):continue 
 			ukp.robinPlotQuad(
 				lo, la,
 				data,
@@ -2719,9 +2724,25 @@ def main():
 		exit
 	else:
 	
+		#CompareTwoRuns('u-ba811','u-aw448',yearA='1980',yearB='1980')
+		#return
+                jobs = ['u-ba811','u-aw448',]#-az524','u-az508', 'u-az021', 'u-az417', 'u-a8']
+                timeseries_compare({
+                         i:standards[i] for i in jobs},
+                         physics=1,
+                         bio=1,
+                         debug=0,
+                         year0=False, #issions', #'from2240',#False, #'4800-5100',
+                         jobDescriptions=jobDescriptions,
+                         analysisname='UKESM_CO2_mmr_bug',
+                         lineThicknesses= hjthicknesses)
+		#return
+
+	
 		ensembles = {}
 		ensembles['PI Control 3'] = ['u-aw310',] #'u-av651',
-		ensembles['PI Control 6'] = ['u-aw310',] #'u-av651',		
+		ensembles['PI Control 6'] = ['u-aw310',] #'u-av651',	
+                ensembles['PI Control 7'] = ['u-aw310',] #'u-av651',    
 		ensembles['New Emissions'] = ['u-az021', 'u-az417', 'u-az418', 'u-az513', 'u-az515', 'u-az524']
 		ensembles['Old Emissions'] = ['u-aw331', 'u-ax195', 'u-ax589', 'u-ax718', 'u-ay078', 'u-ay167', 'u-ay491']
                 jobs = [] 
@@ -2731,20 +2752,24 @@ def main():
 		customColours = {i:standards[i] for i in jobs}
 	        customColours['PI Control 3'] = 'black'
 	        customColours['PI Control 6'] = 'black'	        
+                customColours['PI Control 7'] = 'black'  
 	        customColours['New Emissions'] = 'red'
 	        customColours['Old Emissions'] = 'blue'	        	        
 
-	        jobDescriptions['PI Control 3'] = 'Pre industrial control 1850-1920'
-	        jobDescriptions['PI Control 6'] = 'Pre industrial control 1920-present'	        
+	        jobDescriptions['PI Control 3'] = 'Pre industrial control 1850-1920 with same starting points as 3 new emissions runs'
+	        jobDescriptions['PI Control 6'] = 'Pre industrial control 1920-present with same starting points as all 6 new emissions runs'	        
+                jobDescriptions['PI Control 7'] = 'Pre industrial control 1850-present with same starting points as all 7 initial historical runs.'         
 	        jobDescriptions['New Emissions'] = 'New SO2 emissions historial ensemble'
 	        jobDescriptions['Old Emissions'] = 'Initial CMIP6 historical ensemble'	    
 	        	        
                 linestyles = defaultdict(lambda: '-')
                 linestyles['PI Control 3'] = ':'                                                  
-                linestyles['PI Control 6'] = '--'                                                                  
+                linestyles['PI Control 6'] = ':'    
+                linestyles['PI Control 7'] = '-'                                                                  
+                                                             
                 cnthicknesses = defaultdict(lambda: 1.1)
-                cnthicknesses['PI Control 3 '] = 1.7
-                cnthicknesses['PI Control 6'] = 1.7
+                #cnthicknesses['PI Control 3'] = 1.7
+                #cnthicknesses['PI Control 6'] = 1.7
                                 
                 timeseries_compare(
                          customColours, 
@@ -2753,12 +2778,12 @@ def main():
                          debug=1,
                          year0='EnsembleAlign',
                          jobDescriptions=jobDescriptions,
-                         analysisname='UKESM1_CMIP6_ensembles_2',
+                         analysisname='UKESM1_CMIP6_ensembles_3',
                          lineThicknesses= cnthicknesses,
                          linestyles = linestyles,
                          ensembles = ensembles) 
-  		assert 0                      
-                         	
+                
+		"""         	
                 ensembles = {}
                 ensembles['All New Emissions'] = ['u-az021', 'u-az417', 'u-az418', 'u-az513', 'u-az515', 'u-az524']
                 ensembles['Short new Emissions'] = ['u-az021', 'u-az417', 'u-az418', ]#-az513', 'u-az515', 'u-az524']
@@ -2811,42 +2836,7 @@ def main():
                          lineThicknesses= cnthicknesses,
                          linestyles = linestyles,
                          ensembles = ensembles)
-
-
-
-		ensembles = {}
-		ensembles['PI Control '] = ['u-aw310',] #'u-av651',
-		ensembles['New Emissions'] = ['u-az021', 'u-az417', 'u-az418', 'u-az513', 'u-az515', 'u-az524']
-		ensembles['Old Emissions'] = ['u-aw331', 'u-ax195', 'u-ax589', 'u-ax718', 'u-ay078', 'u-ay167', 'u-ay491']
-                jobs = [] 
-		for ensemble in ensembles.keys():
-	                jobs.extend(ensembles[ensemble])
-	        
-		customColours = {i:standards[i] for i in jobs}
-	        customColours['PI Control'] = 'black'
-	        customColours['New Emissions'] = 'red'
-	        customColours['Old Emissions'] = 'blue'	        	        
-
-	        jobDescriptions['PI Control'] = 'Pre industrial control'
-	        jobDescriptions['New Emissions'] = 'New SO2 emissions historial ensemble'
-	        jobDescriptions['Old Emissions'] = 'Initial CMIP6 historical ensemble'	    
-	        	        
-                linestyles = defaultdict(lambda: '-')
-                linestyles['PI Control'] = '--'                                                  
-                cnthicknesses = defaultdict(lambda: 1.1)
-                cnthicknesses['PI Control'] = 1.7
-                
-                timeseries_compare(
-                         customColours, 
-                         physics=1,
-                         bio=1,
-                         debug=0,
-                         year0='EnsembleAlign',
-                         jobDescriptions=jobDescriptions,
-                         analysisname='UKESM1_CMIP6_ensembles',
-                         lineThicknesses= cnthicknesses,
-                         linestyles = linestyles,
-                         ensembles = ensembles) 
+		"""
 
                 jobs = ['u-az513','u-az515','u-az524','u-az508', 'u-az021', 'u-az417', 'u-az418']
                 timeseries_compare({
@@ -3033,17 +3023,17 @@ def main():
 
 
 
-                jobs = ['u-av079', 'u-aw721', 'u-au984', 'u-ax628','u-ax629']
-                timeseries_compare({
-                        i:standards[i] for i in jobs},
-                        physics=1,
-                        bio=1,
-                        debug=0,
-                        year0=False,
-                        jobDescriptions=jobDescriptions,
-                        analysisname='CRESCENDO_OO_test_7',
-                        lineThicknesses= hjthicknesses,
-                        )
+#                jobs = ['u-av079', 'u-aw721', 'u-au984', 'u-ax628','u-ax629']
+#                timeseries_compare({
+#                        i:standards[i] for i in jobs},
+#                        physics=1,
+#                        bio=1,
+#                        debug=0,
+#                        year0=False,
+#                        jobDescriptions=jobDescriptions,
+#                        analysisname='CRESCENDO_OO_test_7',
+#                        lineThicknesses= hjthicknesses,
+#                        )
 
                          
                          
