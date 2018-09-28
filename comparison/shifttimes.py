@@ -193,7 +193,7 @@ def shifttimes(mdata, jobID,year0=False):
                 #print year0, jobID,'\t',min(mdata.keys()),max(mdata.keys()), '--->',min(times),max(times)
                 return times, datas
     
-	if year0 == 'ControlAligned':
+	if year0 in ['ControlAligned',] :
 		histruns = {	'u-aw331': 1850, #	UKESM1 first historical member (1850)
 				'u-ax195': 1880, #	UKESM1 second Historical member (1880)
 				'u-ax589': 1960, #	UKESM1 third Historical member (1960)
@@ -208,6 +208,10 @@ def shifttimes(mdata, jobID,year0=False):
 				'u-az513': 2020, #	UKESM1 fifth Historical run (2020)
                                 'u-az515': 2050, #      UKESM1 sixth Historical run (2050)
 				'u-az524': 1995, #	UKESM1 seventh Historical run (1995)
+                                'u-bb075': 1960, #      
+                                'u-bb446': 1960, #
+                                'u-bb448': 1960, #
+				'u-bb277': 2395, #	UKESM1 seventh Historical run (1995)				
 			   }
 			   	
        		for t in sorted(mdata.keys()):
