@@ -82,6 +82,35 @@ def shifttimes(mdata, jobID,year0=False):
 		print 'shifttimes:\t',year0,jobID, min(times), max(times)
                 return times, datas
 
+	if year0 == 'UKESM_CN_control':
+                for t in sorted(mdata.keys()):
+			# align with u-aw310
+			if jobID == 'u-av651': 
+				if t < 2418: continue
+                                if t > 2568: continue
+                                t1 = t - (2418. - 1850.) - 50.
+
+                        if jobID == 'u-aw310': # this is the time basis. 
+				if t < 1850: continue
+				if t > 2070: continue
+				t1 = t  #- (2418. - 1850.)
+
+                        if jobID == 'u-ay124': 
+#                                if t < 1850: continue
+#				if t > 1900: continue
+				t1 = t - 29. # + 20. - 50.
+
+                        if jobID == 'u-ay694':
+#                                if t < 1850: continue
+#                                if t > 1930: continue
+				t1 = t + 20.
+
+                        times.append(float(t1))
+                        datas.append(mdata[t])
+                return times, datas
+
+
+
         if year0 in [   'AlignToDECK',	   'HistoricalDECK',	'AlignToDECK1600',
 		        'AlignToDECK1930', 'HistoricalDECK1930','AlignToDECK1600-1930',
 			'AlignToDECK1950', 'HistoricalDECK1950','AlignToDECK1600-1950',

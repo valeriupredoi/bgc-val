@@ -2723,9 +2723,22 @@ def main():
 		print "Successful command line comparison"
 		exit
 	else:
-	
+
+                cncolours = {'u-av651': 'black',
+                             'u-aw310': 'green',
+                             'u-ay124': 'purple',
+                             'u-ay694': 'violet',}
+                timeseries_compare(
+                         cncolours,		
+                         physics=1,
+                         bio=1,
+                         debug=0,
+                         year0='UKESM_CN_control', 
+                         jobDescriptions=jobDescriptions,
+                         analysisname='UKESM_CN_control',
+                         lineThicknesses= hjthicknesses)
+
 		#CompareTwoRuns('u-ba811','u-aw448',yearA='1980',yearB='1980')
-		#return
                 jobs = ['u-ba811','u-aw448',]#-az524','u-az508', 'u-az021', 'u-az417', 'u-a8']
                 timeseries_compare({
                          i:standards[i] for i in jobs},
@@ -2736,8 +2749,6 @@ def main():
                          jobDescriptions=jobDescriptions,
                          analysisname='UKESM_CO2_mmr_bug',
                          lineThicknesses= hjthicknesses)
-		#return
-
 	
 		ensembles = {}
 		ensembles['PI Control 3'] = ['u-aw310',] #'u-av651',
