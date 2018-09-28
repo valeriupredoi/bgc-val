@@ -2724,6 +2724,24 @@ def main():
 		exit
 	else:
 	
+                cncolours = {'u-av651':'black',
+                             'u-aw310': 'green'
+                             'u-ay124': 'purple'
+                             'u-ay694':'orange',}
+                timeseries_compare({
+                         cncolours,
+                         physics=1,
+                         bio=1,
+                         debug=1,
+                         year0=False, #issions', #'from2240',#False, #'4800-5100',
+                         jobDescriptions=jobDescriptions,
+                         analysisname='UKESM_CN_control',
+                         lineThicknesses= hjthicknesses)
+		return
+
+
+
+	
 		#CompareTwoRuns('u-ba811','u-aw448',yearA='1980',yearB='1980')
 		#return
                 jobs = ['u-ba811','u-aw448',]#-az524','u-az508', 'u-az021', 'u-az417', 'u-a8']
