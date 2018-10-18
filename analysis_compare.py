@@ -2723,7 +2723,23 @@ def main():
 		print "Successful command line comparison"
 		exit
 	else:
-	
+
+                a = 1
+                if a:
+                        cncolours = {
+                                     'u-aw310': 'black',
+                                     'u-az508': 'purple',
+                                     'u-bb458': 'red',}
+                        timeseries_compare(
+                                 cncolours,
+                                 physics=1,
+                                 bio=1,
+                                 debug=0,
+                                 year0='control_2100',
+                                 jobDescriptions=jobDescriptions,
+                                 analysisname='UKESM_control_2100',
+                                 lineThicknesses= hjthicknesses)
+
 		#####
 		# plot an individual job against the pi control. 
                 customColours = {
@@ -2747,28 +2763,24 @@ def main():
                          }
 
                 cr_name = { # Compare report name
-                         'u-bb075': 'hist_1960',	# UKESM1 Historical run (1960) with new SO2 emissions height
-                         'u-az524': 'hist_1960',	# UKESM1 Historical run (1995) with new SO2 emissions height	
-                         'u-az513': 'hist_1960',	# UKESM1 Historical run (2020) with new SO2 emissions height
-                         'u-az515': 'hist_1960',	# UKESM1 Historical run (2050) with new SO2 emissions height
-                         'u-bb277': 'hist_1960',	# UKESM1 Historical run (2395) with new SO2 emissions height
-                         'u-bb446': '4xCO2_1960',	# UKESM1 4xCO2 run (1960) with new SO2 emissions height    
-                         'u-bb448': '1pcCO2_1960',	# UKESM1 1%CO2 run (1960) with new SO2 emissions height   
+                         'u-bb075': 'hist',	# UKESM1 Historical run (1960) with new SO2 emissions height
+                         'u-az524': 'hist',	# UKESM1 Historical run (1995) with new SO2 emissions height	
+                         'u-az513': 'hist',	# UKESM1 Historical run (2020) with new SO2 emissions height
+                         'u-az515': 'hist',	# UKESM1 Historical run (2050) with new SO2 emissions height
+                         'u-bb277': 'hist',	# UKESM1 Historical run (2395) with new SO2 emissions height
+                         'u-bb446': '4xCO2',	# UKESM1 4xCO2 run (1960) with new SO2 emissions height    
+                         'u-bb448': '1pcCO2',	# UKESM1 1%CO2 run (1960) with new SO2 emissions height   
                          }
                 oldemssions = {}  
                 oldemssionscolours = {}                                                     
                      
-		jobsyears = {yr:j for j,yr in start_year.items()}
-		for i,yr in enumerate(sorted(jobsyears.keys())):
-			i+=1
-			#if i !=2: continue
-			j = jobsyears[yr]
-			if j in finished: continue
-			colourpair = {j: customColours[j], 'u-aw310': 'black'}
-			lineThicknesses = {j: 1.7, 'u-aw310': 1.7}
-			linestyles 	= {j: '-', 'u-aw310': '-'}
-			if j in oldemssions.keys():
-				newrun = oldemssions[j]
+		for jobID,yr in start_year.items():
+			if jobID in finished: continue
+			colourpair = {jobID: customColours[jobID], 'u-aw310': 'black'}
+			lineThicknesses = {jobID: 1.7, 'u-aw310': 1.7}
+			linestyles 	= {jobID: '-', 'u-aw310': '-'}
+			if jobID in oldemssions.keys():
+				newrun = oldemssions[jobID]
 				colourpair[newrun] = oldemssionscolours[newrun]
 				lineThicknesses[newrun] = 2.4
 				linestyles[newrun] = '--'
@@ -2778,11 +2790,12 @@ def main():
 		                 bio=1,
 		                 debug=0,
 		                 year0='hist_vs_pi_'+str(yr),
-		                 analysisname='UKESM1_pi_vs_'+cr_name(j),
+		                 analysisname='UKESM1_pi_vs_'+cr_name[jobID]+'_'+str(yr),
 		                 jobDescriptions =jobDescriptions,		                 
 		                 lineThicknesses = lineThicknesses,
 		                 linestyles 	 = linestyles,)
-		                 	
+
+		
 		a = False
 		if a:
 		        jobs = ['u-aw310','u-bb446',]
@@ -2961,6 +2974,47 @@ def main():
 		                 linestyles = linestyles,)
 
 
+                linestyles = defaultdict(lambda: '-')
+                customColours = {
+                         'u-aw310': 'black',
+                         'u-aw448': 'blue',
+                         'u-ax202': 'magenta',
+                         'u-ax663': 'red',
+                         'u-ax725': 'purple',
+                         'u-bb448': 'orange',   # UKESM1 1%CO2 run (1960) with new SO2 emissions height
+                         }
+                linestyles['u-bb448']= ':'
+                cnthicknesses = defaultdict(lambda: 1.1)
+                timeseries_compare(
+                         customColours, #{i:standards[i] for i in jobs},
+                         physics=1,
+                         bio=1,
+                         debug=0,
+                         year0='AlignToDECK2050',
+                         jobDescriptions=jobDescriptions,
+                         analysisname='UKESM1_1pco2_old_and_new_emissions',
+                         lineThicknesses= cnthicknesses,
+                         linestyles = linestyles,)
+
+
+                linestyles = defaultdict(lambda: '-')
+                customColours = {
+                         'u-aw310': 'black',
+                         'u-aw447': 'green',
+                         'u-bb446': 'orange',    # UKESM1 4xCO2 run (1960) with new SO2 emissions height
+                         }
+		linestyles['u-bb446']= ':'
+                cnthicknesses = defaultdict(lambda: 1.1)
+                timeseries_compare(
+                         customColours, #{i:standards[i] for i in jobs},
+                         physics=1,
+                         bio=1,
+                         debug=0,
+                         year0='AlignToDECK2200',
+                         jobDescriptions=jobDescriptions,
+                         analysisname='UKESM1_4xco2_old_and_new_emissions',
+                         lineThicknesses= cnthicknesses,
+                         linestyles = linestyles,)
 
                          
                 print "Finished... "

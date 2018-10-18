@@ -109,6 +109,13 @@ def shifttimes(mdata, jobID,year0=False):
                         datas.append(mdata[t])
                 return times, datas
 
+        if year0 == 'control_2100':
+                for t in sorted(mdata.keys()):
+                        if t < 2090: continue
+                        if t > 2200: continue
+                        times.append(float(t))
+                        datas.append(mdata[t])
+                return times, datas
 
 
         if year0 in [   'AlignToDECK',	   'HistoricalDECK',	'AlignToDECK1600',
