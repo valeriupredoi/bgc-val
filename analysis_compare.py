@@ -2750,6 +2750,9 @@ def main():
                          'u-bb277': 'orange',	# UKESM1 Historical run (2395) with new SO2 emissions height
                          'u-bb446': 'pink',	# UKESM1 4xCO2 run (1960) with new SO2 emissions height    
                          'u-bb448': 'gold',	# UKESM1 1%CO2 run (1960) with new SO2 emissions height   
+			 'u-bc019': 'dodgerblue',#                  :standard ; UKESM1 Historical run (2250)
+			 'u-bc041': 'brown',#                :standard ; UKESM1 Historical run(2165)
+
                          }
 		finished = [] # to save cpu and skip some runs.
                 start_year = {
@@ -2760,6 +2763,8 @@ def main():
                          'u-bb277': 2395,
                          'u-bb446': 1960,
                          'u-bb448': 1960,
+                         'u-bc019': 2250,
+                         'u-bc041': 2165,
                          }
 
                 cr_name = { # Compare report name
@@ -2768,6 +2773,8 @@ def main():
                          'u-az513': 'hist',	# UKESM1 Historical run (2020) with new SO2 emissions height
                          'u-az515': 'hist',	# UKESM1 Historical run (2050) with new SO2 emissions height
                          'u-bb277': 'hist',	# UKESM1 Historical run (2395) with new SO2 emissions height
+                         'u-bc019': 'hist',	# UKESM1 Historical run (2250)
+                         'u-bc041': 'hist',	# UKESM1 Historical run(2165)
                          'u-bb446': '4xCO2',	# UKESM1 4xCO2 run (1960) with new SO2 emissions height    
                          'u-bb448': '1pcCO2',	# UKESM1 1%CO2 run (1960) with new SO2 emissions height   
                          }
@@ -2880,6 +2887,8 @@ def main():
 		                        'u-az524': 'goldenrod', # UKESM1 seventh Historical run (1995)
 		                        'u-bb075': 'green',
 		                        'u-bb277': 'dodgerblue',
+		                        'u-bc019': 'fushia',#                  :standard ; UKESM1 Historical run (2250)
+                		        'u-bc041': 'brown',#                :standard ; UKESM1 Historical run(2165)
 		                   }
 		        linestyles = defaultdict(lambda: '-')
 		        linestyles['u-av651'] = '--'
