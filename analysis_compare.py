@@ -2723,6 +2723,17 @@ def main():
 		print "Successful command line comparison"
 		exit
 	else:
+                jobs = ['u-bc016', 'u-bc057', 'u-bc058', 'u-bc060']
+                timeseries_compare({
+                        i:standards[i] for i in jobs},
+                        physics=1,
+                        bio=1,
+                        debug=0,
+                        year0=False,
+                        jobDescriptions=jobDescriptions,
+                        analysisname='CRESCENDO_OO_test_7',
+                        lineThicknesses= hjthicknesses,
+                        )
 
                 a = 1
                 if a:
