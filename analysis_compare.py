@@ -2731,7 +2731,7 @@ def main():
                         debug=0,
                         year0=False,
                         jobDescriptions=jobDescriptions,
-                        analysisname='CRESCENDO_OO_test_7',
+                        analysisname='CRESCENDO_OO_test_8',
                         lineThicknesses= hjthicknesses,
                         )
 
@@ -2900,7 +2900,7 @@ def main():
 		                        'u-az524': 'goldenrod', # UKESM1 seventh Historical run (1995)
 		                        'u-bb075': 'green',
 		                        'u-bb277': 'dodgerblue',
-		                        'u-bc179': 'fushia',#                  :standard ; UKESM1 Historical run (2250)
+		                        'u-bc179': 'pink',#                  :standard ; UKESM1 Historical run (2250)
                 		        'u-bc292': 'brown',#                :standard ; UKESM1 Historical run(2165)
                                         'u-bc370': 'slateblue',#                :standard ; UKESM1 Historical run(2120)
 		                   }
