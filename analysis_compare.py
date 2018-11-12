@@ -2765,6 +2765,8 @@ def main():
 			 'u-bc292': 'brown',	#                :standard ; UKESM1 Historical run(2165)
                          'u-bc370': 'slateblue', # UKESM1 Historical run (2120)
                          'u-bc470': 'gold'	# UKESM1 Historical run (2285)
+                         'u-bc862': 'fushia', 	# UKESM1 Historical run (2340)
+			 'u-bc863': 'yellow',	# UKESM1 Historical run (2460)
                          }
 		finished = [] # to save cpu and skip some runs.
                 start_year = {
@@ -2778,7 +2780,9 @@ def main():
                          'u-bc179': 2250,
                          'u-bc292': 2165,
 			 'u-bc370': 2120,
-			 'u-bc470': 2285,			 
+			 'u-bc470': 2285,	
+                         'u-bc862': 2340,
+			 'u-bc863': 2460,
                          }
 
                 cr_name = { # Compare report name
@@ -2791,6 +2795,8 @@ def main():
                          'u-bc292': 'hist',	# UKESM1 Historical run (2165)
 			 'u-bc370': 'hist',     # UKESM1 Historical run (2120)
                          'u-bc470': 'hist',	# UKESM1 Historical run (2285)			 
+                         'u-bc862': 'hist', 	# UKESM1 Historical run (2340)
+			 'u-bc863': 'hist',	# UKESM1 Historical run (2460)                         		 
                          'u-bb446': '4xCO2',	# UKESM1 4xCO2 run (1960) with new SO2 emissions height    
                          'u-bb448': '1pcCO2',	# UKESM1 1%CO2 run (1960) with new SO2 emissions height   
                          }
@@ -2916,6 +2922,8 @@ def main():
                 		        'u-bc292': 'brown',#                :standard ; UKESM1 Historical run(2165)
                                         'u-bc370': 'slateblue',#                :standard ; UKESM1 Historical run(2120)
                                         'u-bc470': 'gold',#                :standard ; UKESM1 Historical run(2120)                                        
+		                        'u-bc862': 'fushia', 	# UKESM1 Historical run (2340)
+					'u-bc863': 'yellow',	# UKESM1 Historical run (2460)                                        
 		                   }
 		        linestyles = defaultdict(lambda: '-')
 		        linestyles['u-av651'] = '--'
