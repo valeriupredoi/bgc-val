@@ -2790,7 +2790,7 @@ def main():
                          'u-bc179': 'hist',	# UKESM1 Historical run (2250)
                          'u-bc292': 'hist',	# UKESM1 Historical run (2165)
 			 'u-bc370': 'hist',     # UKESM1 Historical run (2120)
-                         'u-bc470': 'hist'	# UKESM1 Historical run (2285)			 
+                         'u-bc470': 'hist',	# UKESM1 Historical run (2285)			 
                          'u-bb446': '4xCO2',	# UKESM1 4xCO2 run (1960) with new SO2 emissions height    
                          'u-bb448': '1pcCO2',	# UKESM1 1%CO2 run (1960) with new SO2 emissions height   
                          }
@@ -2817,9 +2817,9 @@ def main():
 		                 jobDescriptions =jobDescriptions,		                 
 		                 lineThicknesses = lineThicknesses,
 		                 linestyles 	 = linestyles,)
-				                 
-	        timeseries_compare({
-	                 {j:customColours[j] for j,h in cr_name.items() if h == 'hist'},
+		#hist_new_emissions = {j:customColours[j] for (j,h) in cr_name.items() if h == 'hist'}				                 
+	        timeseries_compare(
+	                 {j:customColours[j] for (j,h) in cr_name.items() if h == 'hist'},
 	                 physics=1,
 	                 bio=1,
 	                 debug=0,
@@ -3046,7 +3046,7 @@ def main():
                          physics=1,
                          bio=1,
                          debug=0,
-                         year0='AlignToDECK2200',
+                         year0='AlignToDECK2400',
                          jobDescriptions=jobDescriptions,
                          analysisname='UKESM1_4xco2_old_and_new_emissions',
                          lineThicknesses= cnthicknesses,

@@ -786,7 +786,9 @@ def robinPlotQuad(lons, lats, data1,data2,filename,titles=['',''],title='',lon0=
 		fig.text(0.5,0.975,title,horizontalalignment='center',verticalalignment='top')	
 	pyplot.tight_layout()		
 	print "UKESMpython:\trobinPlotQuad: \tSaving:" , filename
-	pyplot.savefig(filename ,dpi=dpi)		
+
+	try:	pyplot.savefig(filename, dpi=dpi)		
+	except: print "Unable to save image."
 	pyplot.close()
 
 	

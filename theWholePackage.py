@@ -225,6 +225,10 @@ if __name__=="__main__":
 		numberfiles = 6
         
 	year = False
+	for ar in argv:
+		try: 	ar = int(ar)
+		except:	continue
+		year = str(ar)
 	for divby in [100,50,25, 10, 5, 1]:
                 print "main", divby, year
 		if year: continue 

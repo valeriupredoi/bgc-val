@@ -67,7 +67,7 @@ import paths
 #####
 # suites:
 p2pKeys        = [
-		  'T','S','MLD',
+		  'T','S',#'MLD',
 		  'Chl_pig','Chl_CCI', 'N',
 		  'Si','O2','Alk',
 		  'DIC','AirSeaFlux', 'IntPP_OSU',
@@ -75,7 +75,7 @@ p2pKeys        = [
 		  ]
 
 p2pKeys_annual = [
-		  'T','S','MLD', 
+		  'T','S',#'MLD', 
 		  'Chl_CCI',
 		  'N','Si','O2',
 		  'Alk','DIC','AirSeaFlux',
@@ -88,12 +88,12 @@ p2pKeys_level2 = [
 		  'Alk','DIC','AirSeaFlux',
 		  'IntPP_OSU',
 		  'Dust',
-		  'T','S','MLD',
+		  'T','S',#'MLD',
 		  #'ZonalCurrent','MeridionalCurrent','VerticalCurrent'			  
 		  ]
 
 p2pKeys_physics = [
-		   'T','S','MLD', 
+		   'T','S',#'MLD', 
 		  'ZonalCurrent','MeridionalCurrent','VerticalCurrent'			  		   
 		  ]
 		  
