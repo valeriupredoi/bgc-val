@@ -2723,17 +2723,6 @@ def main():
 		print "Successful command line comparison"
 		exit
 	else:
-                jobs = ['u-bc016', 'u-bc057', 'u-bc058', 'u-bc060']
-                timeseries_compare({
-                        i:standards[i] for i in jobs},
-                        physics=1,
-                        bio=1,
-                        debug=0,
-                        year0=False,
-                        jobDescriptions=jobDescriptions,
-                        analysisname='CRESCENDO_OO_test_8',
-                        lineThicknesses= hjthicknesses,
-                        )
 
                 a = 1
                 if a:
@@ -2764,9 +2753,9 @@ def main():
 			 'u-bc179': 'dodgerblue',#                  :standard ; UKESM1 Historical run (2250)
 			 'u-bc292': 'brown',	#                :standard ; UKESM1 Historical run(2165)
                          'u-bc370': 'slateblue', # UKESM1 Historical run (2120)
-                         'u-bc470': 'gold'	# UKESM1 Historical run (2285)
-                         'u-bc862': 'fushia', 	# UKESM1 Historical run (2340)
-			 'u-bc863': 'yellow',	# UKESM1 Historical run (2460)
+                         'u-bc470': 'gold',	# UKESM1 Historical run (2285)
+                         'u-bc862': 'orchid', 	# UKESM1 Historical run (2340)
+			 'u-bc863': 'navy',	# UKESM1 Historical run (2460)
                          }
 		finished = [] # to save cpu and skip some runs.
                 start_year = {
@@ -2922,8 +2911,8 @@ def main():
                 		        'u-bc292': 'brown',#                :standard ; UKESM1 Historical run(2165)
                                         'u-bc370': 'slateblue',#                :standard ; UKESM1 Historical run(2120)
                                         'u-bc470': 'gold',#                :standard ; UKESM1 Historical run(2120)                                        
-		                        'u-bc862': 'fushia', 	# UKESM1 Historical run (2340)
-					'u-bc863': 'yellow',	# UKESM1 Historical run (2460)                                        
+		                        'u-bc862': 'orchid', 	# UKESM1 Historical run (2340)
+					'u-bc863': 'navy',	# UKESM1 Historical run (2460)                                        
 		                   }
 		        linestyles = defaultdict(lambda: '-')
 		        linestyles['u-av651'] = '--'
@@ -3155,6 +3144,17 @@ def main():
                          analysisname='UKESM_CO2_mmr_bug',
                          lineThicknesses= hjthicknesses)
 
+#                jobs = ['u-bc016', 'u-bc057', 'u-bc058', 'u-bc060']
+#                timeseries_compare({
+#                        i:standards[i] for i in jobs},
+#                        physics=1,
+#                        bio=1,
+#                        debug=0,
+#                        year0=False,
+#                        jobDescriptions=jobDescriptions,
+#                        analysisname='CRESCENDO_OO_test_8',
+#                        lineThicknesses= hjthicknesses,
+#                        )
 
 
 
