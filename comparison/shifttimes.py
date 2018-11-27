@@ -4,7 +4,7 @@
 # This file is part of the bgc-val library.
 #
 # bgc-val is free software: you can redistribute it and/or modify it
-# under the terms of the Revised Berkeley Software Distribution (BSD) 3-clause license. 
+# under the terms of the Revised Berkeley Software Distribution (BSD) 3-clause license.
 
 # bgc-val is distributed in the hope that it will be useful, but
 # without any warranty; without even the implied warranty of merchantability
@@ -25,27 +25,27 @@ def shifttimes(mdata, jobID,year0=False):
 
 	times,datas=[],[]
 	try:	t0 = float(sorted(mdata.keys())[0])
-	except:	return times, datas       
+	except:	return times, datas
 
-	if year0=='piControl':  
+	if year0=='piControl':
                for t in sorted(mdata.keys()):
                         if jobID == 'u-ar766': t1 = t + (2594 -1850)    #-1869
-			else: t1 = t 
+			else: t1 = t
                         times.append(float(t1))
-                        datas.append(mdata[t])  
+                        datas.append(mdata[t])
                return times, datas
 
-				
-	if year0=='juggling2':	
+
+	if year0=='juggling2':
                for t in sorted(mdata.keys()):
                         if jobID == 'u-an869': t1 = t - (2061-56)       #-1862
                         if jobID == 'u-ao586': t1 = t - (2561 - 556)    #-1869
 	                if t1<540:continue
         	        if t1>700:continue
                 	times.append(float(t1))
-                        datas.append(mdata[t])	
+                        datas.append(mdata[t])
                return times, datas
-               
+
       	if year0=='FullSpinUp':
                for t in sorted(mdata.keys()):
         		if jobID == 'u-ak900': t1 = t - 2106
@@ -55,8 +55,8 @@ def shifttimes(mdata, jobID,year0=False):
 
 	                if jobID == 'u-ao586': t1 = t - (2561 - 556)+ (3996-2106)    #-1869
                         if jobID  in ['u-ar783',]: t1 = t + (4965. - 2108.)
-			
-                        print jobID, t1,t, t0 
+
+                        print jobID, t1,t, t0
                         times.append(float(t1))
                 	datas.append(mdata[t])
                return times, datas
@@ -78,24 +78,24 @@ def shifttimes(mdata, jobID,year0=False):
                         if jobID == 'u-au835' and t1 > 5269. : continue
                         times.append(float(t1))
                         datas.append(mdata[t])
-		
+
 		print 'shifttimes:\t',year0,jobID, min(times), max(times)
                 return times, datas
 
 	if year0 == 'UKESM_CN_control':
                 for t in sorted(mdata.keys()):
 			# align with u-aw310
-			if jobID == 'u-av651': 
+			if jobID == 'u-av651':
 				if t < 2418: continue
                                 if t > 2568: continue
                                 t1 = t - (2418. - 1850.) - 50.
 
-                        if jobID == 'u-aw310': # this is the time basis. 
+                        if jobID == 'u-aw310': # this is the time basis.
 				if t < 1850: continue
 				if t > 2070: continue
 				t1 = t  #- (2418. - 1850.)
 
-                        if jobID == 'u-ay124': 
+                        if jobID == 'u-ay124':
 #                                if t < 1850: continue
 #				if t > 1900: continue
 				t1 = t - 29. # + 20. - 50.
@@ -141,8 +141,8 @@ def shifttimes(mdata, jobID,year0=False):
                         elif jobID in ['u-ar783']:
 				if t < 2108. - 1.: continue
 				if t > 2341. + 1.  : continue
-				t1 = t - 2341. +1690. 
-                        elif jobID in ['u-au835']:      
+				t1 = t - 2341. +1690.
+                        elif jobID in ['u-au835']:
                                 if t < 2308. - 1.: continue
                                 if t > 2378. + 1. : continue
                                 t1 = t - 2405. + 1850. - 63.
@@ -165,7 +165,7 @@ def shifttimes(mdata, jobID,year0=False):
                         if year0 in ['AlignToDECK1600-1930','AlignToDECK1600', 'AlignToDECK1600-2100']:
                                 if t1 < 1599. : continue
 
-                        # Mid poing cut: 
+                        # Mid poing cut:
                         if jobID in ['u-av651',] and t1>1851: continue
 
 			# late cut
@@ -198,13 +198,13 @@ def shifttimes(mdata, jobID,year0=False):
 
                         if year0 in ['AlignToDECK2400','AlignToDECK1600-2400','HistoricalDECK2400']:
                                 if t1 > 2401.: continue
-        
+
 
                         times.append(float(t1))
                         datas.append(mdata[t])
                 #print year0, jobID,'\t',min(mdata.keys()),max(mdata.keys()), '--->',min(times),max(times)
                 return times, datas
-    
+
 	if year0 in ['ControlAligned',] :
 		histruns = {	'u-aw331': 1850, #	UKESM1 first historical member (1850)
 				'u-ax195': 1880, #	UKESM1 second Historical member (1880)
@@ -220,21 +220,22 @@ def shifttimes(mdata, jobID,year0=False):
 				'u-az513': 2020, #	UKESM1 fifth Historical run (2020)
                                 'u-az515': 2050, #      UKESM1 sixth Historical run (2050)
 				'u-az524': 1995, #	UKESM1 seventh Historical run (1995)
-                                'u-bb075': 1960, #      
+                                'u-bb075': 1960, #
                                 'u-bb446': 1960, #
                                 'u-bb448': 1960, #
-				'u-bb277': 2395, #	UKESM1 seventh Historical run (1995)			
+				'u-bb277': 2395, #	UKESM1 seventh Historical run (1995)
 	                        'u-bc179': 2250, #      UKESM1 Historical run (2250)
         	                'u-bc292': 2165, #      UKESM1 Historical run(2165)
         	                'u-bc370': 2120, #      UKESM1 Historical run(2120)
         	                'u-bc470': 2285, #      UKESM1 Historical run(2285)
-				'u-bc862': 2340, #	UKESM1 Historical run (2340)
-				'u-bc863': 2460, #	UKESM1 Historical run (2460)        	               
+				'u-bd288': 2340, #	UKESM1 Historical run (2340)
+				'u-bd416': 2460, #	UKESM1 Historical run (2460)
+                                'u-bd483': 2200, #	UKESM1 Historical run (2200)
 			   }
-			   	
+
        		for t in sorted(mdata.keys()):
 			if jobID in ['u-aw310',]:	t1 = t
-			elif jobID in ['u-av651',]:	t1 = t - 618. 
+			elif jobID in ['u-av651',]:	t1 = t - 618.
 			elif jobID in histruns.keys():
 				t1 = t + histruns[jobID] - 1850.
 			else:
@@ -243,9 +244,9 @@ def shifttimes(mdata, jobID,year0=False):
                         times.append(float(t1))
                         datas.append(mdata[t])
        		return times, datas
-		
-               
-	if year0 == 'new_emissions': 
+
+
+	if year0 == 'new_emissions':
                for t in sorted(mdata.keys()):
                         if   jobID in ['u-az508', ]: t1 = t -110
                         else: t1 = t
@@ -253,7 +254,7 @@ def shifttimes(mdata, jobID,year0=False):
                         datas.append(mdata[t])
                return times, datas
 
-	
+
 	if type(year0) in [type('str'),]:
 	    if year0[:10] == 'hist_vs_pi':
 		y = float(year0[11:])
@@ -261,18 +262,18 @@ def shifttimes(mdata, jobID,year0=False):
                 for t in sorted(mdata.keys()):
                 	if jobID in ['u-aw310']: t1 = t - diff
                 	else:             	 t1 = t
-                		
+
                 	if t1 > 2020.: continue
                 	if t1 < 1830.: continue
-                		
+
                         times.append(float(t1))
                         datas.append(mdata[t])
                 return times, datas
-                
-                
+
+
         if year0=='Staggered':
                for t in sorted(mdata.keys()):
-                        if   jobID in ['u-au362', ]: t1 = t + 40. 
+                        if   jobID in ['u-au362', ]: t1 = t + 40.
                         elif jobID in ['u-au364', ]: t1 = t + 45.
                         elif jobID in ['u-au365', ]: t1 = t + 50.
 			else: t1 = t
@@ -290,7 +291,7 @@ def shifttimes(mdata, jobID,year0=False):
                         if jobID == 'u-ao586': t1 = t - (2561 - 556)+ (3996-2106)    #-1869
                         if jobID  in ['u-ar783',]: t1 = t + (4965. - 2108.)
 			if year0 in ['OOvFC','OOvFC2',]:
-				if t1 < 4940: continue 
+				if t1 < 4940: continue
         	                if t1 > 5110: continue
         	        if year0 in ['OOvFC1',]:
                                 if t1 < 2390: continue
@@ -341,15 +342,15 @@ def shifttimes(mdata, jobID,year0=False):
                         datas.append(mdata[t])
                return times, datas
 
-               
+
 	if year0=='UKESM0.8':
                for t in sorted(mdata.keys()):
-                        if jobID == 'u-am004': t1 = t -1978 - 203 
-                        if jobID == 'u-ao365': t1 = t -1978 - 33  
+                        if jobID == 'u-am004': t1 = t -1978 - 203
+                        if jobID == 'u-ao365': t1 = t -1978 - 33
                         if jobID == 'u-ao837': t1 = t -1978
 			if t1<0:continue
-			
-                        print jobID, t1,t  
+
+                        print jobID, t1,t
                         times.append(float(t1))
                         datas.append(mdata[t])
                return times, datas
@@ -366,13 +367,13 @@ def shifttimes(mdata, jobID,year0=False):
                for t in sorted(mdata.keys()):
    #                     if jobID == 'u-ar379': t1 = t + 458.
    #                     else: t1=t
-			
+
                         times.append(float(t1))
                         datas.append(mdata[t])
                return times, datas
 
 
-        if year0=='u-ai567-minus3':  
+        if year0=='u-ai567-minus3':
                t0 = float(sorted(mdata.keys())[0])
                if jobID =='u-ai567': t0 = t0+3
                for t in sorted(mdata.keys()):
@@ -389,12 +390,12 @@ def shifttimes(mdata, jobID,year0=False):
                return times, datas
 
        	if year0=='2000-2250':
-               for t in sorted(mdata.keys()):       
+               for t in sorted(mdata.keys()):
 			if float(t) <2000.:continue
 		        if float(t) >2250.:continue
 		        times.append(float(t))
 		        datas.append(mdata[t])
-               return times, datas		        
+               return times, datas
         if year0=='4830-5000':
                for t in sorted(mdata.keys()):
                         if float(t) <4830.:continue
@@ -414,7 +415,7 @@ def shifttimes(mdata, jobID,year0=False):
 
                                 elif jobID  in ['u-ar766',]: 	t1 = t + 3095.
 				else:	t1 = t
-	
+
 				if year0 in ['4945-5110','4945-5110i','4945-5110ii','4945-5110iii',]:
 	       		                if float(t1) <4945.: continue
                 		        if float(t1) >5410.: continue
@@ -462,7 +463,7 @@ def shifttimes(mdata, jobID,year0=False):
 
                                 times.append(float(t1))
                                 datas.append(mdata[t])
-                else: 
+                else:
                         for t in sorted(mdata.keys()):
                                 if   jobID in ['u-at629','u-at793','u-at628','u-at760','u-as462','u-as858','u-at572', 'u-au027','u-au521','u-au756','u-au828',]:  t1 = t + 2838.
                                 elif jobID  in ['u-ar783',]:    t1 = t + 4965. - 2108.
@@ -508,9 +509,9 @@ def shifttimes(mdata, jobID,year0=False):
                         #        if t > 2126.: continue
                         #if jobID == 'u-as858':
                         #        if t > 2175.: continue
-			
-                        if jobID in ['u-at629','u-at793','u-at628','u-at760','u-as462','u-as858','u-at572', 'u-au027','u-au521','u-au756','u-au828',]:  
-				t1 = t + 2838.                                    
+
+                        if jobID in ['u-at629','u-at793','u-at628','u-at760','u-as462','u-as858','u-at572', 'u-au027','u-au521','u-au756','u-au828',]:
+				t1 = t + 2838.
                         elif jobID  in ['u-ar783',]:
 				t1 = t + 4965. - 2108.
                         elif jobID  in ['u-au835','u-av450','u-av472','u-av651']:
@@ -518,9 +519,9 @@ def shifttimes(mdata, jobID,year0=False):
                         elif jobID  in ['u-av937','u-aw072','u-aw310',]: #DECK RUNS
                                 t1 = t + 4965. - 2108. + 33. + 589 # +233.
 
-                        elif jobID  in ['u-ar766',]:    
+                        elif jobID  in ['u-ar766',]:
 				t1 = t + 3095.
-                        else:   
+                        else:
                                 print jobID
                                 assert 0
 				t1 = t + 2838.
@@ -583,13 +584,13 @@ def shifttimes(mdata, jobID,year0=False):
 
 
 	if year0 =='2000-2600normu-ak900':
-               for t in sorted(mdata.keys()):       	
+               for t in sorted(mdata.keys()):
 			if jobID == 'u-ak900': t = t - 1937.
 		        if float(t) <2000.:continue
 		        if float(t) >2600.:continue
 		        times.append(float(t))
 		        datas.append(mdata[t])
-               return times, datas		        
+               return times, datas
 
         if year0 =='2500-3000':
                for t in sorted(mdata.keys()):
@@ -600,7 +601,7 @@ def shifttimes(mdata, jobID,year0=False):
                return times, datas
 
 
-            
+
         #####
         # Set all jobs to start at time zero.
         if year0 in ['True', True,'First100Years',]:
@@ -609,10 +610,9 @@ def shifttimes(mdata, jobID,year0=False):
                         times.append(float(t)-t0)
                         datas.append(mdata[t])
                return times, datas
-               
+
 	######
-	# No year shift requested, returning sorted arrays.	
+	# No year shift requested, returning sorted arrays.
 	times 	= sorted(mdata.keys())
 	datas	= [mdata[t] for t in times]
-        return times, datas				
-				
+        return times, datas
