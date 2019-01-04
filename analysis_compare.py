@@ -2757,7 +2757,10 @@ def main():
 		                         lineThicknesses= hjthicknesses)
 
                         runs = dict(r4_colours, **r5_colours)
-                                                                    
+		        linestyles = defaultdict(lambda: '-')
+		        for k in run.keys():
+		        	if k in r4_colours: linestyles[k] = '-'
+		        	if k in r5_colours: linestyles[k] = ':'
                         timeseries_compare(
                                  runs,
                                  physics=1,
@@ -2766,7 +2769,8 @@ def main():
                                  year0=False, 
                                  jobDescriptions=jobDescriptions,
                                  analysisname='UKESM_scenarios_r4_r5',
-                                 lineThicknesses= hjthicknesses)
+                                 lineThicknesses= hjthicknesses,
+                                 linestyles = linestyles,)
 
                                                                                                                    
                 if a:
