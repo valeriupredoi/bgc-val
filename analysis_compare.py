@@ -2678,7 +2678,8 @@ def main():
         hjthicknesses['u-at760'] = 1.
 
         jobDescriptions = configToDict('config/jobIDdescriptions.ini')
-
+        live_jobs = configToDict('RemoteScripts/jobids_config.ini')
+        
 	try:
 		args = argv[1:]
 		jobIDs = []
@@ -2724,6 +2725,66 @@ def main():
 		exit
 	else:
 
+
+                scenarios = 1
+                if scenarios:
+                        r4_colours = {
+                                     'u-bb075': 'black',
+                                     'u-be393': 'blue',
+                                     'u-be394': 'green',
+                                     'u-be335': 'pink',
+                                     'u-be392': 'red',
+                                     }
+                        r5_colours = {
+                                     'u-bb277': 'black',                                     
+                                     'u-be397': 'blue',
+                                     'u-be398': 'green',
+                                     'u-be395': 'pink',
+                                     'u-be396': 'red',   
+                                     }  
+                                                     
+                        run_dicts = [r4_colours, r5_colours]
+                        run_names = ['Run4', 'Run5']
+                        for run_colours, run_name in zip(run_dicts, run_names):                                                            
+		                timeseries_compare(
+		                         run_colours,
+		                         physics=1,
+		                         bio=1,
+		                         debug=0,
+		                         year0=False, 
+		                         jobDescriptions=jobDescriptions,
+		                         analysisname = 'UKESM_scenarios_' + run_name,
+		                         lineThicknesses= hjthicknesses)
+
+                        runs = dict(r4_colours, **r5_colours)
+                                                                    
+                        timeseries_compare(
+                                 runs,
+                                 physics=1,
+                                 bio=1,
+                                 debug=0,
+                                 year0=False, 
+                                 jobDescriptions=jobDescriptions,
+                                 analysisname='UKESM_scenarios_r4_r5',
+                                 lineThicknesses= hjthicknesses)
+
+                                                                                                                   
+                if a:
+                        cncolours = {
+                                     'u-aw310': 'black',
+                                     'u-az508': 'purple',
+                                     'u-bb458': 'red',}
+                        timeseries_compare(
+                                 cncolours,
+                                 physics=1,
+                                 bio=1,
+                                 debug=0,
+                                 year0='control_2100',
+                                 jobDescriptions=jobDescriptions,
+                                 analysisname='UKESM_control_2100',
+                                 lineThicknesses= hjthicknesses)
+                                 
+
                 a = 1
                 if a:
                         cncolours = {
@@ -2758,7 +2819,6 @@ def main():
                          'u-bd416': 'navy',	# UKESM1 Historical run (2460)
                          'u-bd483': 'olive',	# UKESM1 Historical run (2460)
                          }
-		finished = [] # to save cpu and skip some runs.
                 start_year = {
                          'u-bb075': 1960,
                          'u-az524': 1995,
@@ -2794,9 +2854,9 @@ def main():
                          }
                 oldemssions = {}
                 oldemssionscolours = {}
-
+		
 		for jobID,yr in start_year.items():
-			if jobID in finished: continue
+			if jobID not in live_jobs.keys(): continue
 			colourpair = {jobID: customColours[jobID], 'u-aw310': 'black'}
 			lineThicknesses = {jobID: 1.7, 'u-aw310': 1.7}
 			linestyles 	= {jobID: '-', 'u-aw310': '-'}
