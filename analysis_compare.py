@@ -2746,7 +2746,7 @@ def main():
                         run_dicts = [r4_colours, r5_colours]
                         run_names = ['Run4', 'Run5']
                         for run_colours, run_name in zip(run_dicts, run_names):                                                            
-		                timeseries_compare(
+				timeseries_compare(
 		                         run_colours,
 		                         physics=1,
 		                         bio=1,
@@ -2755,10 +2755,11 @@ def main():
 		                         jobDescriptions=jobDescriptions,
 		                         analysisname = 'UKESM_scenarios_' + run_name,
 		                         lineThicknesses= hjthicknesses)
-
-                        runs = dict(r4_colours, **r5_colours)
+			runs = run_dicts[0].copy()
+			for r_dict in run_dicts:
+	                        runs = dict(runs, **r_dict)
 		        linestyles = defaultdict(lambda: '-')
-		        for k in run.keys():
+		        for k in runs.keys():
 		        	if k in r4_colours: linestyles[k] = '-'
 		        	if k in r5_colours: linestyles[k] = ':'
                         timeseries_compare(
@@ -2771,8 +2772,7 @@ def main():
                                  analysisname='UKESM_scenarios_r4_r5',
                                  lineThicknesses= hjthicknesses,
                                  linestyles = linestyles,)
-
-                                                                                                                   
+		a = True                                                                                                                   
                 if a:
                         cncolours = {
                                      'u-aw310': 'black',
