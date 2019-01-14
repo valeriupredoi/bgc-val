@@ -2728,6 +2728,28 @@ def main():
 
                 scenarios = 1
                 if scenarios:
+                        r1_colours = {
+                                     'u-bc179': 'black',
+                                     'u-be509': 'blue',
+                                     'u-be537': 'green',
+                                     'u-be647': 'pink',
+                                     'u-be653': 'red',
+                                     }
+                        r2_colours = {
+                                     'u-bc292': 'black',
+                                     'u-be679': 'blue',
+                                     'u-be606': 'green',
+                                     'u-be690': 'pink',
+                                     'u-be693': 'red',
+                                     }
+                        r3_colours = {
+                                     'u-bc370': 'black',
+                                     'u-be682': 'blue',
+                                     'u-be683': 'green',
+                                     'u-be684': 'pink',
+                                     'u-be686': 'red',
+                                     }
+                                                                                                                                       
                         r4_colours = {
                                      'u-bb075': 'black',
                                      'u-be393': 'blue',
@@ -2735,43 +2757,73 @@ def main():
                                      'u-be335': 'pink',
                                      'u-be392': 'red',
                                      }
-                        r5_colours = {
-                                     'u-bb277': 'black',                                     
+                        r8_colours = {
+                                     'u-az513': 'black',                                     
                                      'u-be397': 'blue',
                                      'u-be398': 'green',
                                      'u-be395': 'pink',
                                      'u-be396': 'red',   
                                      }  
-                                                     
-                        run_dicts = [r4_colours, r5_colours]
-                        run_names = ['Run4', 'Run5']
-                        for run_colours, run_name in zip(run_dicts, run_names):                                                            
+                        run_names = {'Run1': r1_colours, 
+                        	     'Run2': r2_colours, 
+                        	     'Run3': r3_colours, 
+                        	     'Run4': r4_colours, 
+                        	     'Run8': r8_colours} 
+#                        run_dicts = [: r1_colours, r2_colours, r3_colours, r4_colours, r5_colours]
+#                        run_names = ['Run1', 'Run2', 'Run3', 'Run4', 'Run5']
+                        
+                        for run_name, run_colours,  in run_names.items():                                                            
 				timeseries_compare(
 		                         run_colours,
 		                         physics=1,
 		                         bio=1,
-		                         debug=0,
+		                         debug=1,
 		                         year0=False, 
 		                         jobDescriptions=jobDescriptions,
 		                         analysisname = 'UKESM_scenarios_' + run_name,
 		                         lineThicknesses= hjthicknesses)
-			runs = run_dicts[0].copy()
-			for r_dict in run_dicts:
-	                        runs = dict(runs, **r_dict)
-		        linestyles = defaultdict(lambda: '-')
-		        for k in runs.keys():
-		        	if k in r4_colours: linestyles[k] = '-'
-		        	if k in r5_colours: linestyles[k] = ':'
-                        timeseries_compare(
-                                 runs,
-                                 physics=1,
-                                 bio=1,
-                                 debug=0,
-                                 year0=False, 
-                                 jobDescriptions=jobDescriptions,
-                                 analysisname='UKESM_scenarios_r4_r5',
-                                 lineThicknesses= hjthicknesses,
-                                 linestyles = linestyles,)
+		                         
+                scenarios_figures = 1
+                if scenarios_figures:
+			ssp126 = {'r1': 'u-be509', 'r2': 'u-be679', 'r3': 'u-be682', 'r4': 'u-be393', 'r8': 'u-be397'}
+			ssp245 = {'r1': 'u-be537', 'r2': 'u-be606', 'r3': 'u-be683', 'r4': 'u-be394', 'r8': 'u-be398'}
+			ssp370 = {'r1': 'u-be647', 'r2': 'u-be690', 'r3': 'u-be684', 'r4': 'u-be335', 'r8': 'u-be395'}
+			ssp585 = {'r1': 'u-be653', 'r2': 'u-be693', 'r3': 'u-be686', 'r4': 'u-be392', 'r8': 'u-be396'}                
+			
+			run_colours = {'r1': 'red', 'r2': 'orange', 'r3': 'goldenrod', 'r4': 'green', 'r8': 'blue',}
+
+			scenarios = {'ssp126': ssp126,  'ssp245': ssp245, 'ssp370': ssp370, 'ssp585': ssp585}
+			for scean, sc_list in scenarios.items():
+			    	sc_colours = {jobID: run_colours[run_i]  for run_i, jobID in sc_list}
+    				sc_jobDescriptions = {jobID: ' '.join(['UKESM', scean, run_i.upper()]) for run_i, jobID in sc_list}
+				timeseries_compare(
+		                         sc_colours,
+		                         physics=1,
+		                         bio=1,
+		                         debug=1,
+		                         year0=False, 
+		                         jobDescriptions=sc_jobDescriptions,
+		                         analysisname = 'UKESM_scenario_' + scean,
+		                         lineThicknesses= hjthicknesses)
+		                         
+		assert 0                  
+#			runs = run_dicts[0].copy()
+#			for r_dict in run_dicts:
+#	                        runs = dict(runs, **r_dict)
+#		        linestyles = defaultdict(lambda: '-')
+#		        for k in runs.keys():
+#		        	if k in r4_colours: linestyles[k] = '-'
+#		        	if k in r5_colours: linestyles[k] = ':'
+#                        timeseries_compare(
+#                                 runs,
+#                                 physics=1,
+#                                 bio=1,
+#                                 debug=0,
+#                                 year0=False, 
+#                                 jobDescriptions=jobDescriptions,
+#                                 analysisname='UKESM_scenarios_r4_r5',
+#                                 lineThicknesses= hjthicknesses,
+#                                 linestyles = linestyles,)
 		a = True                                                                                                                   
                 if a:
                         cncolours = {
