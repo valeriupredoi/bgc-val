@@ -2758,7 +2758,7 @@ def main():
                                      'u-be392': 'red',
                                      }
                         r8_colours = {
-                                     'u-az513': 'black',                                     
+                                     'u-bb277': 'black',                                     
                                      'u-be397': 'blue',
                                      'u-be398': 'green',
                                      'u-be395': 'pink',
@@ -2777,7 +2777,7 @@ def main():
 		                         run_colours,
 		                         physics=1,
 		                         bio=1,
-		                         debug=1,
+		                         debug=0,
 		                         year0=False, 
 		                         jobDescriptions=jobDescriptions,
 		                         analysisname = 'UKESM_scenarios_' + run_name,
@@ -2794,13 +2794,13 @@ def main():
 
 			scenarios = {'ssp126': ssp126,  'ssp245': ssp245, 'ssp370': ssp370, 'ssp585': ssp585}
 			for scean, sc_list in scenarios.items():
-			    	sc_colours = {jobID: run_colours[run_i]  for run_i, jobID in sc_list}
-    				sc_jobDescriptions = {jobID: ' '.join(['UKESM', scean, run_i.upper()]) for run_i, jobID in sc_list}
+			    	sc_colours = {jobID: run_colours[run_i]  for run_i, jobID in sc_list.items()}
+    				sc_jobDescriptions = {jobID: ' '.join(['UKESM', scean, run_i.upper()]) for run_i, jobID in sc_list.items()}
 				timeseries_compare(
 		                         sc_colours,
 		                         physics=1,
 		                         bio=1,
-		                         debug=1,
+		                         debug=0,
 		                         year0=False, 
 		                         jobDescriptions=sc_jobDescriptions,
 		                         analysisname = 'UKESM_scenario_' + scean,
