@@ -2806,7 +2806,6 @@ def main():
 		                         analysisname = 'UKESM_scenario_' + scean,
 		                         lineThicknesses= hjthicknesses)
 		                         
-		assert 0                  
 #			runs = run_dicts[0].copy()
 #			for r_dict in run_dicts:
 #	                        runs = dict(runs, **r_dict)
