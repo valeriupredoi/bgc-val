@@ -2724,8 +2724,19 @@ def main():
 		print "Successful command line comparison"
 		exit
 	else:
+                jobs = ['u-be295', 'u-be363', 'u-be365', 'u-be367', 'u-be369']
+                timeseries_compare({
+                        i:standards[i] for i in jobs},
+                        physics=1,
+                        bio=1,
+                        debug=1,
+                        year0=False,
+                        jobDescriptions=jobDescriptions,
+                        analysisname='CRESCENDO_OO_test_9',
+                        lineThicknesses= hjthicknesses,
+                        )
 
-
+	
                 scenarios = 1
                 if scenarios:
                         r1_colours = {
@@ -2768,7 +2779,7 @@ def main():
                         	     'Run2': r2_colours, 
                         	     'Run3': r3_colours, 
                         	     'Run4': r4_colours, 
-                        	     'Run8': r8_colours} 
+                        	     'Run8': r8_colours}
 #                        run_dicts = [: r1_colours, r2_colours, r3_colours, r4_colours, r5_colours]
 #                        run_names = ['Run1', 'Run2', 'Run3', 'Run4', 'Run5']
                         
@@ -3167,6 +3178,7 @@ def main():
                          analysisname='UKESM1_4xco2_old_and_new_emissions',
                          lineThicknesses= cnthicknesses,
                          linestyles = linestyles,)
+
 
 
                 print "Finished... "
