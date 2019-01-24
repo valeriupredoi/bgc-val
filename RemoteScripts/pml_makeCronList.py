@@ -4,6 +4,9 @@
 from ConfigParser import ConfigParser
 import os
 
+from collections import defaultdict
+
+
 package_directory = os.path.dirname(os.path.abspath(__file__))
 headerline =  "\n\n####"
 
@@ -60,63 +63,139 @@ def loadJobs(cp):
 def hourcheck(hour):
 	if 0 <= hour < 24:
 		return hour
+	while hour < 0: 
+		hour += 24
 	while hour > 23:
 		hour -= 24
 		if hour <0: assert 0
 	return hour
 
-def addMassjobs(configfn='',startinghour = 17):
+
+
+def get_times(jobs, startinghour = 19, lasthour = 8, ):
+
+	""" Figure out the times to set the runs.
+	returns two dictionaries: minutes and hours
+	
+	"""
+	hours = {}
+	minutes = {}
+	hours_available = (24 - startinghour ) + lasthour
+	if len(jobs) < 	hours_available:
+		for i, job in enumerate(jobs):
+		    minutes[job] = ' 1'
+		    hours[job] = hourcheck(i + startinghour)
+		    
+	elif len(jobs) <= 2 * hours_available:	
+		for i, job in enumerate(jobs):
+			hour = hourcheck(i + startinghour)
+			if i <= hours_available:
+			    minutes[job] = ' 1'
+		    	    hours[job] = hour	    
+			elif hours_available < i <= 2 * hours_available:
+			    minutes[job] = '31'
+		    	    hours[job] = hourcheck(hour - hours_available)
+		    	else: assert 0
+		    	
+	elif len(jobs) <= 3 * hours_available:	
+		minutes = defaultdict(lambda:' 1')
+		for i, job in enumerate(jobs):
+			hour = hourcheck(i + startinghour)
+			if i <= hours_available:
+			    minutes[job] = '1'
+		    	    hours[job] = hour			    
+			elif hours_available < i <= 2 * hours_available:
+			    minutes[job] = '21'
+		    	    hours[job] = hourcheck(hour - (1*hours_available))
+			elif 2 * hours_available < i <= 3 * hours_available:
+			    minutes[job] = '41'
+		    	    hours[job] = hourcheck(hour - (2*hours_available))
+		    	else: assert 0
+		    	    	    			    
+	elif len(jobs) <= 4 * hours_available:	
+		minutes = defaultdict(lambda:' 1')
+		for i, job in enumerate(jobs):
+			hour = hourcheck(i + startinghour)
+			if i <= hours_available:
+			    minutes[job] = '1'
+		    	    hours[job] = hour			    
+			elif hours_available < i <= 2 * hours_available:
+			    minutes[job] = '16'
+		    	    hours[job] = hourcheck(hour - (1*hours_available))
+			elif 2 * hours_available < i <= 3 * hours_available:
+			    minutes[job] = '31'
+		    	    hours[job] = hourcheck(hour - (2*hours_available))
+			elif 3 * hours_available < i <= 4 * hours_available:
+			    minutes[job] = '46'
+		    	    hours[job] = hourcheck(hour - (3*hours_available))
+		    	else: assert 0		    	    
+	else:	
+		assert 0	
+	return hours, minutes
+
+
+
+def addMassjobs(configfn='',startinghour = 17, lasthour = 8,):
 	cp = checkConfig(configfn,)
 	jobs = loadJobs(cp)
 	
 	massscripts = ''
 	massscripts += headerline	
 	massscripts += "\n# DownloadFromMass"	
+
+	hours, minutes = get_times(jobs, startinghour = startinghour, lasthour = lasthour, )
+		
 	for i, job in enumerate(jobs):
-		hour = hourcheck(startinghour+i)
+		hour = str(int(hours[job]))
+		minute = minutes[job]
 
 		options = 	parseList(cp,'jobs',job)
 		if 'standard' in options or 'physics' in options:	
-			massscripts	+= '\n1  '+str(int(hour))+\
+			massscripts	+= '\n'+minute+'  '+hour+\
 					'   * * * '+package_directory+'/pmlcron_mass.sh '+\
 					job + ' >  /users/modellers/ledm/ImagesFromJasmin/cron-mass_'+\
 					job + '.log 2>&1'
 		
 		if 'MLD' in options:	
-			massscripts	+= '\n30 '+str(int(hour))+\
+			massscripts	+= '\n'+minute+' '+hour+\
 					'   * * * '+package_directory+'/pmlcron_mass_MLD.sh '+\
 					job + ' >  /users/modellers/ledm/ImagesFromJasmin/cron-mass_mld_'+\
 					job + '.log 2>&1'
 	return massscripts	
 
-def addSci1jobs(configfn='',startinghour = 19):
+
+
+def addSci1jobs(configfn='',startinghour = 18, lasthour = 8, ):
 	cp = checkConfig(configfn,)
 	jobs = loadJobs(cp)
 	
 	scijobs = ''
 	scijobs += headerline
-	scijobs += "\n# Run evaluation"			
+	scijobs += "\n# Run evaluation"	
+	
+	hours, minutes = get_times(jobs, startinghour = startinghour, lasthour = lasthour, )
+	
 	for i, job in enumerate(jobs):
-		hour = hourcheck(startinghour+i)
-
-		options = 	parseList(cp,'jobs',job)
+		hour = str(int(hours[job]))
+		minute = minutes[job]
+		options = parseList(cp,'jobs',job)
 		if 'standard' in options:	
-			scijobs	+= '\n1  '+str(int(hour))+\
+			scijobs	+= '\n'+ minute+'  '+hour+\
 					'   * * * '+package_directory+'/pmlcron_sci1.sh '+\
 					job + ' >  /users/modellers/ledm/ImagesFromJasmin/cron-sci1_'+\
 					job + '.log 2>&1'
 		
 		if 'physics' in options:	
-			scijobs	+= '\n30 '+str(int(hour))+\
+			scijobs	+= '\n'+ minute+'   '+hour+\
 					'   * * * '+package_directory+'/pmlcron_sci1_physOnly.sh '+\
 					job + ' >  /users/modellers/ledm/ImagesFromJasmin/cron_sci1_phys_'+\
 					job + '.log 2>&1'
 	return scijobs	
 
+
 def runNow(configfn=''):
 	#####
 	# this script 
-
 	cp = checkConfig(configfn,)
 	jobs = loadJobs(cp)
 	scijobs = ''
@@ -139,7 +218,6 @@ def runNow(configfn=''):
 			scijobs	+= package_directory+'/pmlcron_sci1_physOnly.sh '+job + '; '
 		
 	return scijobs	
-	
 	
 		
 def main():
