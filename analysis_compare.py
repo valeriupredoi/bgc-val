@@ -2736,6 +2736,23 @@ def main():
 #                        lineThicknesses= hjthicknesses,
 #                        )
 
+		a = True                                                                                                                   
+                if a:
+                        cncolours = {
+                                     'u-aw310': 'black',
+                                     'u-bf177': 'purple',
+                                     }
+                        timeseries_compare(
+                                 cncolours,
+                                 physics=1,
+                                 bio=1,
+                                 debug=0,
+                                 year0=False,
+                                 jobDescriptions=jobDescriptions,
+                                 analysisname='UKESM_control_2100',
+                                 lineThicknesses= hjthicknesses)
+                assert 0
+                            	
 	
                 scenarios = 1
                 if scenarios:
@@ -2834,6 +2851,8 @@ def main():
 #                                 analysisname='UKESM_scenarios_r4_r5',
 #                                 lineThicknesses= hjthicknesses,
 #                                 linestyles = linestyles,)
+
+
 		a = True                                                                                                                   
                 if a:
                         cncolours = {
