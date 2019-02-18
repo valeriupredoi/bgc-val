@@ -2747,12 +2747,10 @@ def main():
                                  physics=1,
                                  bio=1,
                                  debug=0,
-                                 year0=False,
+                                 year0='N48-ORCA1',
                                  jobDescriptions=jobDescriptions,
-                                 analysisname='UKESM_control_2100',
+                                 analysisname='UKESM1_N48_ORCA1',
                                  lineThicknesses= hjthicknesses)
-                assert 0
-                            	
 	
                 scenarios = 1
                 if scenarios:
