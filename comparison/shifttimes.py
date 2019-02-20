@@ -231,6 +231,10 @@ def shifttimes(mdata, jobID,year0=False):
 				'u-bd288': 2340, #	UKESM1 Historical run (2340)
 				'u-bd416': 2460, #	UKESM1 Historical run (2460)
                                 'u-bd483': 2200, #	UKESM1 Historical run (2200)
+                         	'u-bf647': 2619,  
+			 	'u-bf656': 2716, 
+			 	'u-bf703': 2760,
+			 	'u-bf705': 2815,                                
 			   }
 
        		for t in sorted(mdata.keys()):

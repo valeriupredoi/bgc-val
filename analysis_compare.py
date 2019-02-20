@@ -2903,6 +2903,10 @@ def main():
                          'u-bd288': 'orchid', 	# UKESM1 Historical run (2340)
                          'u-bd416': 'navy',	# UKESM1 Historical run (2460)
                          'u-bd483': 'olive',	# UKESM1 Historical run (2460)
+                         'u-bf647': 'red',	# ;UKESM1 Historical run (2619)  
+			 'u-bf656': 'black',	# ;UKESM1 Historical run (2716) 
+			 'u-bf703': 'darkgoldenrod',	# ;UKESM1 Historical run (2760)
+			 'u-bf705': 'yellow',	# ;UKESM1 Historical run (2815)
                          }
                 start_year = {
                          'u-bb075': 1960,
@@ -2919,6 +2923,11 @@ def main():
                          'u-bd288': 2340,
 			 'u-bd416': 2460,
                          'u-bd483': 2200,
+                         'u-bf647': 2619,  
+			 'u-bf656': 2716, 
+			 'u-bf703': 2760,
+			 'u-bf705': 2815,
+                         
                          }
 
                 cr_name = { # Compare report name
@@ -2934,6 +2943,10 @@ def main():
                          'u-bd288': 'hist', 	# UKESM1 Historical run (2340)
 			 'u-bd416': 'hist',	# UKESM1 Historical run (2460)
                          'u-bd483': 'hist',	# UKESM1 Historical run (2200)
+                         'u-bf647': 'hist',	# ;UKESM1 Historical run (2619)  
+			 'u-bf656': 'hist',	# ;UKESM1 Historical run (2716) 
+			 'u-bf703': 'hist',	# ;UKESM1 Historical run (2760)
+			 'u-bf705': 'hist',	# ;UKESM1 Historical run (2815)                         
                          'u-bb446': '4xCO2',	# UKESM1 4xCO2 run (1960) with new SO2 emissions height
                          'u-bb448': '1pcCO2',	# UKESM1 1%CO2 run (1960) with new SO2 emissions height
                          }
