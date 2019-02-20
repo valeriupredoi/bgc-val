@@ -2742,6 +2742,7 @@ def main():
                         cncolours = {
                                      'u-aw310': 'black',
                                      'u-bf177': 'purple',
+				     'u-bf984': 'green',
                                      }
                         timeseries_compare(
                                  cncolours,
