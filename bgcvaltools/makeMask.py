@@ -211,6 +211,11 @@ def makeMask(name,newSlice, xt,xz,xy,xx,xd,debug=False):
 		mx += np.ma.masked_outside(xy, 67., 76.).mask
 		return mx
 
+	if newSlice == 'Cornwall':
+		mx  = np.ma.masked_outside(xx,-8., -4.).mask
+		mx += np.ma.masked_outside(xy, 49., 52.).mask
+		return mx
+		
 	if newSlice == 'WeddelSea':
 		mx  = np.ma.masked_outside(xx, -60., -20.).mask
 		mx += np.ma.masked_outside(xy, -80., -64.).mask

@@ -265,6 +265,7 @@ def makeLongNameDict():
   	lnd['NordicSea'] = "Nordic Sea"    	
   	lnd['LabradorSea'] = "Labrador Sea"    	
   	lnd['NorwegianSea'] = "Norwegian Sea"    	  	
+  	lnd['Cornwall'] = "Sea around Cornwall"
   		  	    	  		  	
   	lnd['100m'] = "100m deep"  	
   	lnd['200m'] = "200m deep"  	  	  	
