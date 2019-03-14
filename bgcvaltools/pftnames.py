@@ -434,6 +434,7 @@ def makeLongNameDict():
   	lnd['Depth_50-100m'] = '50m <= Depth < 100m'
   	lnd['Depth_100-500m'] = '100m <= Depth < 500m'
   	lnd['Depth_500m'] = 'Depth > 500m'  	  	
+  	lnd['Depth_700m'] = 'Depth > 700m'  	  	  	
   	lnd['Depth_1000m'] = 'Depth > 1000m'  	  	
   	
   	lnd['Depth_0-50m'] = 'Depth <50m'
@@ -441,7 +442,8 @@ def makeLongNameDict():
   	lnd['Depth_100-200m'] = '100m <= Depth < 200m'
   	lnd['Depth_200-500m'] = '200m <= Depth < 500m'
   	lnd['Depth_500-1000m'] = '500m <= Depth < 1000m'
-  	lnd['Depth_1000-2000m'] = '1000m <= Depth < 2000m'  	
+  	lnd['Depth_700-2000m'] = '700m <= Depth < 2000m'  	
+  	lnd['Depth_1000-2000m'] = '1000m <= Depth < 2000m'  	 	
   	lnd['Depth_2000m'] = 'Depth > 2000m'
   	
    	lnd['0-1pc'] = '0-1 percentiles' 

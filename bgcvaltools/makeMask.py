@@ -329,11 +329,13 @@ def makeMask(name,newSlice, xt,xz,xy,xx,xd,debug=False):
 	if newSlice == 'Depth_50-100m': 	return np.ma.masked_where( (abs(xz) < 50.)+(abs(xz) > 100.),nmask).mask
 	if newSlice == 'Depth_100-500m':	return np.ma.masked_where( (abs(xz) < 100.)+(abs(xz) > 500.),nmask).mask
 	if newSlice == 'Depth_500m': 		return np.ma.masked_where(  abs(xz) < 500.,nmask).mask	
+	if newSlice == 'Depth_700m': 		return np.ma.masked_where(  abs(xz) < 500.,nmask).mask		
 	if newSlice == 'Depth_0-50m': 		return np.ma.masked_where( abs(xz) > 50.,nmask).mask
 	if newSlice == 'Depth_50-100m': 	return np.ma.masked_where( (abs(xz) < 50.)+(abs(xz) > 100.),nmask).mask		
 	if newSlice == 'Depth_100-200m':	return np.ma.masked_where( (abs(xz) < 100.)+(abs(xz) > 200.),nmask).mask
 	if newSlice == 'Depth_200-500m':	return np.ma.masked_where( (abs(xz) < 200.)+(abs(xz) > 500.),nmask).mask	
 	if newSlice == 'Depth_500-1000m':	return np.ma.masked_where( (abs(xz) < 500.)+(abs(xz) > 1000.),nmask).mask
+	if newSlice == 'Depth_700-2000m':	return np.ma.masked_where( (abs(xz) < 700.)+(abs(xz) > 2000.),nmask).mask	
 	if newSlice == 'Depth_1000-2000m':	return np.ma.masked_where( (abs(xz) < 1000.)+(abs(xz) > 2000.),nmask).mask	
 	if newSlice == 'Depth_1000m': 		return np.ma.masked_where(  abs(xz) < 1000.,nmask).mask	
 	if newSlice == 'Depth_2000m': 		return np.ma.masked_where(  abs(xz) < 2000.,nmask).mask	

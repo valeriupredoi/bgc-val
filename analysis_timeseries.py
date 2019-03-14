@@ -304,7 +304,7 @@ def analysis_timeseries(jobID = "u-ab671",
                         analysisKeys.append('thetaoga')
                         analysisKeys.append('scalarHeatContent')                        
 
-#			analysisKeys.append('VolumeMeanTemperature')#
+			analysisKeys.append('VolumeMeanTemperature')#
 #			analysisKeys.append('WeddelIceExent')
 #                        analysisKeys.append('Salinity')                        # WOA Salinity
 #                        analysisKeys.append('MLD')                      # MLD
@@ -1717,8 +1717,9 @@ def analysis_timeseries(jobID = "u-ab671",
                         #### works like no change, but applies a mask.
                         temp = np.ma.array(nc.variables[keys[0]][:].squeeze())
                         temp = np.ma.masked_where((gmttmask==0) + (temp.mask),temp)
-                        try:    vol = np.ma.masked_where(temp.mask, nc('thkcello')[:].squeeze() * nc('area')[:]) # preferentially use in file volume.
-                        except: vol = np.ma.masked_where(temp.mask, pvol)
+                        #try:    
+                        vol = np.ma.masked_where(temp.mask, nc('thkcello')[:].squeeze() * nc('area')[:]) # preferentially use in file volume.
+                        #except: vol = np.ma.masked_where(temp.mask, pvol)
                         return (temp*vol).sum()/(vol.sum())
 
 		av[name]['modeldetails'] 	= {'name': name, 'vars':[ukesmkeys['temp3d'],], 'convert': sumMeanLandMask,'units':'degrees C'}
@@ -1758,8 +1759,9 @@ def analysis_timeseries(jobID = "u-ab671",
                         temp = np.ma.array(nc.variables[keys[0]][:].squeeze())
                         temp = np.ma.masked_where((gmttmask==0) + (temp.mask),temp)
 
-                      	try:    vol = np.ma.masked_where(temp.mask, nc('thkcello')[:].squeeze() * nc('area')[:]) # preferentially use in file volume.
-                        except: vol = np.ma.masked_where(temp.mask, pvol)
+                      	#try:    
+                      	vol = np.ma.masked_where(temp.mask, nc('thkcello')[:].squeeze() * nc('area')[:]) # preferentially use in file volume.
+                        #except: vol = np.ma.masked_where(temp.mask, pvol)
                         
                         #vol = np.ma.masked_where(temp.mask, pvol)
                         return ((temp*vol).sum(0)/vol.sum(0)) #*(area/area.sum())
@@ -1769,7 +1771,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['datadetails']  	= {'name': '', 'units':''}
 		#av[name]['datadetails']  	= {'name': name, 'vars':['t_an',], 'convert': ukp.NoChange,'units':'degrees C'}
 
-		vmtregions = ['Global', 'ignoreInlandSeas','Equator10','AtlanticSOcean','SouthernOcean','ArcticOcean',  'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific','WeddelSea']
+		vmtregions = ['Global', 'Depth_700m', 'Depth_2000m', 'Depth_700-2000m', 'ignoreInlandSeas','Equator10','AtlanticSOcean','SouthernOcean','ArcticOcean',  'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific','WeddelSea']
 		vmtregions.extend(PierceRegions)
 		
 		av[name]['layers'] 		= ['layerless',]

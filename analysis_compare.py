@@ -205,7 +205,7 @@ def timeseries_compare(
 #                analysisKeys.append('VolumeMeanOxygen')         # Volume weighted mean Oxygen
                 analysisKeys.append('AMOC_26N')
 #                analysisKeys.append('NoCaspianAirSeaFluxCO2')   # work in progress
-#               	analysisKeys.append('VolumeMeanTemperature')    # Global Mean Temperature
+               	analysisKeys.append('VolumeMeanTemperature')    # Global Mean Temperature
 #		analysisKeys.append('CHD')
 #		analysisKeys.append('CHN')
 #		analysisKeys.append('DiaFrac')
@@ -268,7 +268,8 @@ def timeseries_compare(
 
 	PierceRegions = ['Enderby','Wilkes','Ross','Amundsen','Weddel',]
 
-	vmtregionList = ['Global', 'ignoreInlandSeas','Equator10','AtlanticSOcean','SouthernOcean','ArcticOcean',  'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific','WeddelSea']
+		vmtregions = ['Global', 'Depth_700m', 'Depth_2000m', 'Depth_700-2000m', 'ignoreInlandSeas','Equator10','AtlanticSOcean','SouthernOcean','ArcticOcean',  'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific','WeddelSea']
+	#vmtregionList = ['Global', 'ignoreInlandSeas','Equator10','AtlanticSOcean','SouthernOcean','ArcticOcean',  'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific','WeddelSea']
 	vmtregionList.extend(PierceRegions)
 	OMZRegions = ['EquatorialPacificOcean','IndianOcean','EquatorialAtlanticOcean']#'Ross','Amundsen','Weddel',]
 	level3 = ['DMS',]
