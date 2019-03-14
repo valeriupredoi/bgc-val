@@ -91,11 +91,11 @@ def ApplyDepthrange(arr,k1,k2):
 	if arr.ndim == 4: return arr[:,k1:k2,:,:]
 	if arr.ndim == 3: return arr[k1:k2,:,:]
 	if arr.ndim == 2: return arr
-		
+	
+	
 def getHorizontalSlice(nc,coords,details,layer,data = ''):
 	if type(nc) == type('filename'):
 		nc = dataset(nc,'r')
-	
 	#####
 	# In the case that there is no depth field provided, or the depth field is not the netcdf.
 	# We just attempt to extract the data. 
@@ -111,6 +111,7 @@ def getHorizontalSlice(nc,coords,details,layer,data = ''):
 		print "getHorizontalSlice:\tNo depth field only 1 value",details['name']	
 		if data =='': 	data = ukp.extractData(nc,details)
 		return ApplyDepthSlice(data, 0)
+
 	if layer in ['layerless',]:
 		print "getHorizontalSlice:\tNo layer data requested", layer
 		if type(data) == type(''): 	data = ukp.extractData(nc,details)
@@ -152,13 +153,17 @@ def getHorizontalSlice(nc,coords,details,layer,data = ''):
 			return ApplyDepthSlice(ukp.extractData(nc,details),k_surf) - ApplyDepthSlice(ukp.extractData(nc,details),k_low)
 		return ApplyDepthSlice(data, k_surf) - ApplyDepthSlice(data, k_low)
 		
-	elif layer in  ['Surface to 100m', 'Surface to 300m']:
+	elif layer in  ['Surface to 100m', 'Surface to 300m', 'Surface to 700m', 'Surface to 2000m']:
+                if layer == 'Surface to 100m':  z = 100.
 		if layer == 'Surface to 300m':  z = 300.
-		if layer == 'Surface to 100m': 	z = 100.
+		if layer == 'Surface to 500m': 	z = 500.
+                if layer == 'Surface to 700m':  z = 700.
+                if layer == 'Surface to 2000m': z = 2000.
+
 		k_surf =  ukp.getORCAdepth(0., nc.variables[coords['z']][:],debug=False)
 		k_low  =  ukp.getORCAdepth(z , nc.variables[coords['z']][:],debug=False)
 		print "getHorizontalSlice:\t",layer,"surface:",k_surf,'-->',k_low
-		if data =='': 
+		if len(data) == 0:
 			return ApplyDepthrange(ukp.extractData(nc,details),k_surf,k_low)
 		return ApplyDepthrange(data, k_surf,k_low)
 	elif layer == 'depthint':
@@ -373,7 +378,6 @@ class DataLoader:
   			except:	la = lat[y]
   			try:	lo = lon[y,x]  			
   			except:	lo = lon[x]  			
-  			
   			arr.append(v)
   			arr_t.append(t)
   			arr_z.append(z)

@@ -99,6 +99,9 @@ if True:
 	physKeys.append('Temperature')                        	# WOA Temperature
 	#physKeys.append('VolWeightedT')			# Volume weighted WOA Temperature
 	physKeys.append('GlobalMeanTemperature')    	# Global Mean Temperature
+        physKeys.append('GlobalMeanTemperature_700')
+        physKeys.append('GlobalMeanTemperature_2000')
+
 	physKeys.append('VolumeMeanTemperature')    	# Global Mean Temperature
 	physKeys.append('GlobalMeanSalinity')    	# Global Mean Salinity
 #	physKeys.append('IcelessMeanSST')    		# Global Mean Surface Temperature with no ice	
@@ -253,8 +256,8 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		if analysisSuite.lower() in ['debug',]:
 			#analysisKeys.append('AirSeaFlux')		# work in progress
-			analysisKeys.append('TotalAirSeaFluxCO2')	# work in progress
-			analysisKeys.append('NoCaspianAirSeaFluxCO2')	# work in progress			
+			#analysisKeys.append('TotalAirSeaFluxCO2')	# work in progress
+			#analysisKeys.append('NoCaspianAirSeaFluxCO2')	# work in progress			
 			#analysisKeys.append('TotalOMZVolume')		# work in progress
 			#analysisKeys.append('TotalOMZVolume50')	# work in progress
 			#analysisKeys.append('OMZMeanDepth')		# work in progress
@@ -299,12 +302,14 @@ def analysis_timeseries(jobID = "u-ab671",
 #                        analysisKeys.append('HeatFlux')
 #                        analysisKeys.append('TotalHeatFlux')
 
-                        analysisKeys.append('scvoltot')
-                        analysisKeys.append('soga')
-                        analysisKeys.append('thetaoga')
-                        analysisKeys.append('scalarHeatContent')                        
+#                        analysisKeys.append('scvoltot')
+#                        analysisKeys.append('soga')
+#                        analysisKeys.append('thetaoga')
+#                        analysisKeys.append('scalarHeatContent')                        
 
-			analysisKeys.append('VolumeMeanTemperature')#
+			#analysisKeys.append('VolumeMeanTemperature')#
+                        analysisKeys.append('GlobalMeanTemperature_700')
+                        analysisKeys.append('GlobalMeanTemperature_2000')
 #			analysisKeys.append('WeddelIceExent')
 #                        analysisKeys.append('Salinity')                        # WOA Salinity
 #                        analysisKeys.append('MLD')                      # MLD
@@ -317,9 +322,9 @@ def analysis_timeseries(jobID = "u-ab671",
 #                        analysisKeys.append('NorthernMIZArea')
 #                        analysisKeys.append('SouthernMIZArea')
 #                        analysisKeys.append('TotalMIZArea')       
-                        analysisKeys.append('NorthernMIZfraction')
-                        analysisKeys.append('SouthernMIZfraction')
-                        analysisKeys.append('TotalMIZfraction')                                                                                                
+                        #analysisKeys.append('NorthernMIZfraction')
+                        #analysisKeys.append('SouthernMIZfraction')
+                        #analysisKeys.append('TotalMIZfraction')                                                                                                
 
                         #analysisKeys.append('TotalIceArea')            # work in progress
 			#analysisKeys.append('TotalIceExtent')		# work in progress
@@ -1734,6 +1739,92 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= paths.orcaGridfn
 		av[name]['Dimensions']		= 1
+
+        if 'GlobalMeanTemperature_700' in analysisKeys:
+                name = 'GlobalMeanTemperature_700'
+                av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)
+
+                #av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)
+                av[name]['dataFile']    = ''
+                av[name]['modelcoords'] = medusaCoords
+                av[name]['datacoords']  = woaCoords
+
+                nc = dataset(paths.orcaGridfn,'r')
+                try:
+                        pvol   = nc.variables['pvol' ][:]
+                        gmttmask = nc.variables['tmask'][:]
+                except:
+                        gmttmask = nc.variables['tmask'][:]
+                        area = nc.variables['e2t'][:] * nc.variables['e1t'][:]
+                        pvol = nc.variables['e3t'][:] *area
+                        pvol = np.ma.masked_where(gmttmask==0,pvol)
+                nc.close()
+
+                def sumMeanLandMask(nc,keys):
+                        #### works like no change, but applies a mask.
+                        temp = np.ma.array(nc.variables[keys[0]][:].squeeze())
+                        temp = np.ma.masked_where((gmttmask==0) + (temp.mask),temp)
+			temp.mask[43:,:,:] = True 
+			#epth = nc.variables[medusaCoords['z']]
+                        vol = np.ma.masked_where(temp.mask, nc('thkcello')[:].squeeze() * nc('area')[:]) # preferentially use in file volume.
+                        return (temp*vol).sum()/(vol.sum())
+
+                av[name]['modeldetails']        = {'name': name, 'vars':[ukesmkeys['temp3d'],], 'convert': sumMeanLandMask,'units':'degrees C'}
+                av[name]['datadetails']         = {'name': '', 'units':''}
+                #av[name]['datadetails']        = {'name': name, 'vars':['t_an',], 'convert': ukp.NoChange,'units':'degrees C'}
+
+                av[name]['layers']              = ['layerless',]
+                av[name]['regions']             = ['regionless',]
+                av[name]['metrics']             = ['metricless',]
+                av[name]['datasource']          = ''
+                av[name]['model']               = 'NEMO'
+                av[name]['modelgrid']           = 'eORCA1'
+                av[name]['gridFile']            = paths.orcaGridfn
+                av[name]['Dimensions']          = 1
+
+        if 'GlobalMeanTemperature_2000' in analysisKeys:
+                name = 'GlobalMeanTemperature_2000'
+                av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)
+
+                #av[name]['modelFiles']  = listModelDataFiles(jobID, 'grid_T', paths.ModelFolder_pref, annual)
+                av[name]['dataFile']    = ''
+                av[name]['modelcoords'] = medusaCoords
+                av[name]['datacoords']  = woaCoords
+
+                nc = dataset(paths.orcaGridfn,'r')
+                try:
+                        pvol   = nc.variables['pvol' ][:]
+                        gmttmask = nc.variables['tmask'][:]
+                except:
+                        gmttmask = nc.variables['tmask'][:]
+                        area = nc.variables['e2t'][:] * nc.variables['e1t'][:]
+                        pvol = nc.variables['e3t'][:] *area
+                        pvol = np.ma.masked_where(gmttmask==0,pvol)
+                nc.close()
+
+                def sumMeanLandMask(nc,keys):
+                        #### works like no change, but applies a mask.
+                        temp = np.ma.array(nc.variables[keys[0]][:].squeeze())
+                        temp = np.ma.masked_where((gmttmask==0) + (temp.mask),temp)
+                        temp.mask[54:,:,:] = True
+                        #epth = nc.variables[medusaCoords['z']]
+                        vol = np.ma.masked_where(temp.mask, nc('thkcello')[:].squeeze() * nc('area')[:]) # preferentially use in file volume.
+                        return (temp*vol).sum()/(vol.sum())
+
+                av[name]['modeldetails']        = {'name': name, 'vars':[ukesmkeys['temp3d'],], 'convert': sumMeanLandMask,'units':'degrees C'}
+                av[name]['datadetails']         = {'name': '', 'units':''}
+                #av[name]['datadetails']        = {'name': name, 'vars':['t_an',], 'convert': ukp.NoChange,'units':'degrees C'}
+
+                av[name]['layers']              = ['layerless',]
+                av[name]['regions']             = ['regionless',]
+                av[name]['metrics']             = ['metricless',]
+                av[name]['datasource']          = ''
+                av[name]['model']               = 'NEMO'
+                av[name]['modelgrid']           = 'eORCA1'
+                av[name]['gridFile']            = paths.orcaGridfn
+                av[name]['Dimensions']          = 1
+
+
 		
 	if 'VolumeMeanTemperature' in analysisKeys:
 		name = 'VolumeMeanTemperature'
