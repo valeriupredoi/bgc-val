@@ -268,7 +268,7 @@ def timeseries_compare(
 
 	PierceRegions = ['Enderby','Wilkes','Ross','Amundsen','Weddel',]
 
-		vmtregionList = ['Global', 'Depth_700m', 'Depth_2000m', 'Depth_700-2000m', 'ignoreInlandSeas','Equator10','AtlanticSOcean','SouthernOcean','ArcticOcean',  'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific','WeddelSea', 'Cornwall',]
+	vmtregionList = ['Global', 'Depth_700m', 'Depth_2000m', 'Depth_700-2000m', 'ignoreInlandSeas','Equator10','AtlanticSOcean','SouthernOcean','ArcticOcean',  'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific','WeddelSea', 'Cornwall',]
 	#vmtregionList = ['Global', 'ignoreInlandSeas','Equator10','AtlanticSOcean','SouthernOcean','ArcticOcean',  'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific','WeddelSea']
 	vmtregionList.extend(PierceRegions)
 	OMZRegions = ['EquatorialPacificOcean','IndianOcean','EquatorialAtlanticOcean']#'Ross','Amundsen','Weddel',]

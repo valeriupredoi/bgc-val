@@ -69,14 +69,48 @@ def ensemblemean(dicts,operator = 'mean'):
 
 
 
-def getAMOCdata(j):
-        fn = '/group_workspaces/jasmin2/ukesm/BGC_data/ldemora/shelves/timeseries/'+j+'/'+j+'_AMOC_26N.shelve'
+def getAMOCdata(j, field='AMOC'):
+        index = ('regionless', 'layerless', 'metricless')
+
+	if field == 'AMOC':
+        	fn = '/group_workspaces/jasmin2/ukesm/BGC_data/ldemora/shelves/timeseries/'+j+'/'+j+'_AMOC_26N.shelve'
+        if field == 'Drake':
+                fn = '/group_workspaces/jasmin2/ukesm/BGC_data/ldemora/shelves/timeseries/'+j+'/'+j+'_DrakePassageTransport.shelve'
+        if field == 'GVT':
+                fn = '/group_workspaces/jasmin2/ukesm/BGC_data/ldemora/shelves/timeseries/'+j+'/'+j+'_GlobalMeanTemperature.shelve'
+        if field == 'GMT':
+                fn = '/group_workspaces/jasmin2/ukesm/BGC_data/ldemora/shelves/timeseries/'+j+'/'+j+'_Temperature.shelve'
+	        index = ('Global', 'Surface', 'mean')
+
+        if field == 'AirSeaFluxCO2':
+                fn = '/group_workspaces/jasmin2/ukesm/BGC_data/ldemora/shelves/timeseries/'+j+'/'+j+'_TotalAirSeaFluxCO2.shelve'
+
         shelve = shopen(fn)
-	data = shelve['modeldata'][('regionless', 'layerless', 'metricless')]
+	data = shelve['modeldata'][index]
         shelve.close() 
 #	times = sorted(data.keys())		
 #	data = [data[t] for t in times]
 	return data
+
+
+def add_co2_data():
+	co2fn = 'custom_plots/uptake_data_for_GFN_2014.txt'
+	co2f = open(co2fn)
+	co2datav = co2f.readlines()
+	co2f.close()
+	co2_time, co2uptake, co2_min, co2_max = [], [], [], []
+
+	for line in co2datav[1:]:
+		line = line.replace('\r\n', '')
+		line = [float(l) for l in line.split()]
+		print(line)
+		co2_time.append(line[0])
+		co2uptake.append(line[1])
+		co2_min.append(line[2])
+		co2_max.append(line[3])
+	color = 'black'
+	pyplot.fill_between(co2_time, co2_min, co2_max, color=color, alpha=0.2)
+        pyplot.plot(co2_time, co2uptake, color, lw=1.5, label = 'Khatiwala')
 
 
 def fig1():
@@ -94,9 +128,9 @@ def fig1():
 	pyplot.close()
 #fig1()
 
+	
 
-
-def fig2():
+def fig2(field, range_key = 'mine'):
 	piControl = ['u-aw310',]
 	historical = ['u-az513', 'u-az515', 'u-az524', 'u-bb075', 'u-bb277', 'u-bc179', 'u-bc292', 'u-bc370', 'u-bc470']
 	ssp126 = ['u-be509', 'u-be679', 'u-be682', 'u-be393', 'u-be397']
@@ -105,28 +139,66 @@ def fig2():
 	ssp585 = ['u-be653', 'u-be693', 'u-be686', 'u-be392', 'u-be396']                
 	
 	ssp_jobs = {'piControl':piControl, 'historical': historical, 'SSP 1 2.6': ssp126, 'SSP 2 4.5': ssp245, 'SSP 3 7.0': ssp370,'SSP 5 8.5': ssp585,}
-	ssp_colours = {'piControl': 'black', 'historical': 'purple', 'SSP 1 2.6': 'blue', 'SSP 2 4.5': 'green', 'SSP 3 7.0': 'pink','SSP 5 8.5': 'red',}
+#	ssp_colours = {'piControl': 'black', 'historical': 'purple', 'SSP 1 2.6': 'blue', 'SSP 2 4.5': 'green', 'SSP 3 7.0': 'pink','SSP 5 8.5': 'red',}
 	order = ['piControl', 'historical', 'SSP 1 2.6', 'SSP 2 4.5', 'SSP 3 7.0','SSP 5 8.5']
+#        ssp_colours = {'piControl': 'black', 'historical': 'purple', 'SSP 1 2.6': (0., 52./256, 102./256), 'SSP 2 4.5': (112./256, 160./256, 205./256), 'SSP 3 7.0': (196./256, 121./256, 0.),'SSP 5 8.5': (153./256, 0., 2./256),}
+        ssp_colours = {'piControl': 'green', 'historical': 'purple', 'SSP 1 2.6': '#003466', 'SSP 2 4.5': '#70a0cd', 'SSP 3 7.0': '#c47900','SSP 5 8.5': '#990002',}
 
-	for ssp in order:
-		jobs = ssp_jobs[ssp] 
-		runs={}
-	        for job in jobs:
-		        runs[job] = getAMOCdata(job)
-		times, data = ensemblemean(runs)
-		print ssp
-		if ssp == 'piControl': 
-			times, data = times[:250], data[:250]
-		data = movingaverage_DT(data, times,)
-		pyplot.plot(times, data, ssp_colours[ssp], lw=1.5, label = ssp)
 
-	for ssp in order:
-		continue
+        # Fill between. pi control:
+        for ssp in order:
+                if ssp != 'piControl':continue
+                jobs = ssp_jobs[ssp]
+                runs={}
+                for job in jobs:
+                        datas = getAMOCdata(job,field=field)
+                        times = np.array(sorted(datas.keys()))
+                        data = [datas[t] for t in times]
+
+			years = ['1960', '1995', '2020', '2050', '2120', '2165', '2200', '2250', '2285', '2340', '2395', '2460', '2619', '2716', '2760', '2815']
+			
+			for start_times in years:
+				jobname = job + '_' + str(start_times)
+				new_times = times - float(start_times) + 1601 -250.
+
+				new_times = np.ma.masked_where((new_times < 1600.) + (new_times > 1850.), new_times)
+				new_data = np.ma.masked_where(new_times.mask, data)
+				new_times = new_times.compressed()
+				new_data = new_data.compressed()
+
+                                #new_data = movingaverage_DT(new_data, new_times)
+   	                     	runs[jobname] = {t:d for t,d in zip(new_times, new_data)}
+
+                times, data_min  = ensemblemean(runs, operator='min')
+                times, data_max  = ensemblemean(runs, operator='max')
+                times, data_mean = ensemblemean(runs, operator='mean')
+
+              	data_min = movingaverage_DT(data_min, times)
+                data_max = movingaverage_DT(data_max, times)
+                data_mean = movingaverage_DT(data_mean, times)
+
+                pyplot.plot(times, data_mean, ssp_colours[ssp], lw=1.5, label = ssp)
+                pyplot.fill_between(times, data_min, data_max, color=ssp_colours[ssp], alpha=0.2)
+
+        # Ensemble mean lines
+        for ssp in order:
                 if ssp == 'piControl':continue
                 jobs = ssp_jobs[ssp]
                 runs={}
                 for job in jobs:
-                        datas = getAMOCdata(job)
+                        runs[job] = getAMOCdata(job, field=field)
+                times, data = ensemblemean(runs)
+                data = movingaverage_DT(data, times,)
+                pyplot.plot(times, data, ssp_colours[ssp], lw=1.5, label = ssp)
+
+
+	# Fill between. not pi control:
+	for ssp in order:
+                if ssp == 'piControl':continue
+                jobs = ssp_jobs[ssp]
+                runs={}
+                for job in jobs:
+                        datas = getAMOCdata(job, field=field)
 			times = sorted(datas.keys())             
 			data = [datas[t] for t in times]
 	                #data = movingaverage_DT(data, times,)
@@ -140,14 +212,49 @@ def fig2():
 		data_max = movingaverage_DT(data_max, times,)
                 pyplot.fill_between(times, data_min, data_max, color=ssp_colours[ssp], alpha=0.2)
 
+	if field == 'AMOC':
+	        pyplot.title('AMOC - 10 year moving average')
+	        pyplot.ylabel('Tg/s')
+	        pyplot.legend(loc = 'lower left')
 
-        pyplot.title('AMOC - 10 year moving average')
-	pyplot.ylabel('Sv')
-	pyplot.legend()
-#	pyplot.show()
-        pyplot.savefig('custom_plots/amoc_fig2_noFill.png', dpi=300)
+        if field == 'Drake':
+                pyplot.title('Drake Passage Current - 10 year moving average')
+		if range_key == 'colins':
+			pyplot.ylim([98., 208.])	# Colins suggestion
+                if range_key == 'mine':
+			pyplot.ylim([117., 193.])
+                pyplot.legend(loc = 'upper left')
+	        pyplot.ylabel('Tg/s')
+
+        if field == 'GVT':
+                pyplot.title('Global Volume weighted mean Temperature - 10 year moving average')
+	        pyplot.ylabel('Celsius')
+	        pyplot.legend(loc = 'upper left')
+
+        if field == 'GMT':
+                pyplot.title('Global Mean Surface Temperature - 10 year moving average')
+                pyplot.ylabel('Celsius')
+	        pyplot.legend(loc = 'upper left')
+
+
+	if field == 'AirSeaFluxCO2':
+                pyplot.title('Air Sea Flux of CO2 - 10 year moving average')
+                pyplot.ylabel('Pg/yr')
+		add_co2_data()
+                pyplot.legend(loc = 'upper left')
+
+	fn = 'custom_plots/'+field+'_fig2.png'
+	if range_key =='colins':
+		fn = 'custom_plots/'+field+'_fig2_colins_range.png'
+        pyplot.savefig(fn, dpi=300)
 	pyplot.close()
-fig2()
+
+fig2('GMT')
+fig2('AirSeaFluxCO2')
+fig2('AMOC')
+fig2('Drake',range_key='mine')
+fig2('Drake',range_key='colins')
+fig2('GVT')
 
 
 
