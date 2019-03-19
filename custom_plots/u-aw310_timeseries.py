@@ -171,7 +171,7 @@ def fig1(field, range_key='mine', job='u-aw310'):
         if field in ['AMOC', 'Drake']:
 	        pyplot.ylabel('Sv')  
 	        
-        if field in ['GMT', 'GVT', 'SO_Temperature', 'SA_Temperature','Weddel_Temperature','Wilkes_Temperature',]:
+        if field in ['GMT', 'GVT', ] or field.find('Temperature')>-1
 	        pyplot.ylabel('Celsius')
 
 	if field in ['AirSeaFluxCO2', 'SO_AirSeaFlux' ]:
@@ -206,7 +206,7 @@ def fig1(field, range_key='mine', job='u-aw310'):
 				
 	if field.find('MLD')>-1:
 		title += ' Mixed Layer Depth'
-			
+		pyplot.ylabel('m')			
         if field == 'Drake':
                 title = 'Drake Passage Current'
 		if range_key == 'colins':
@@ -222,7 +222,8 @@ def fig1(field, range_key='mine', job='u-aw310'):
                 
 	if field == 'SouthernTotalIceExtent':
                 title = 'Southern Hermisphere Total Ice Extent'	
-                
+		pyplot.ylabel('1E6 km^2')
+		                
         if field == 'GMT':
                 title = 'Global Mean Surface Temperature'
 
