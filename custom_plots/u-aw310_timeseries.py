@@ -121,7 +121,7 @@ def getAMOCdata(j, field='AMOC'):
 	        index = ('AtlanticSOcean', 'layerless', 'wcvweighted')
         if field == 'SA_MLD':
                 fn = prefix+j+'_MLD.shelve'
-	        index = ('AtlanticSOcean', 'Surface', 'mean')
+	        index = ('AtlanticSOcean', 'layerless', 'mean')
 
 	# Weddel and Wilkes region: SST, SSS, Mixed layer depth, volume integrated temp.
         if field == 'Weddel_Temperature':
@@ -135,7 +135,7 @@ def getAMOCdata(j, field='AMOC'):
 	        index = ('Weddel', 'layerless', 'wcvweighted')
         if field == 'Weddel_MLD':
                 fn = prefix+j+'_MLD.shelve'
-	        index = ('Weddel', 'Surface', 'mean')
+	        index = ('Weddel', 'layerless', 'mean')
 	        	
         if field == 'Wilkes_Temperature':
                 fn = prefix+j+'_Temperature.shelve'
@@ -148,16 +148,13 @@ def getAMOCdata(j, field='AMOC'):
 	        index = ('Wilkes', 'layerless', 'wcvweighted')
         if field == 'Wilkes_MLD':
                 fn = prefix+j+'_MLD.shelve'
-	        index = ('Wilkes', 'Surface', 'mean')
+	        index = ('Wilkes', 'layerless', 'mean')
 	        
         shelve = shopen(fn)
 	data = shelve['modeldata'][index]
         shelve.close() 
 	return data
 
-title_dict = {
-	'AMOC': 'AM
-}
 
 def fig1(field, range_key='mine', job='u-aw310'):
 	
