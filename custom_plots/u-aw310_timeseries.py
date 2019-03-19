@@ -161,7 +161,7 @@ title_dict = {
 
 def fig1(field, range_key='mine', job='u-aw310'):
 	
-	data1 = getAMOCdata(job, field='AMOC')
+	data1 = getAMOCdata(job, field=field)
 
         times1 = sorted(data1.keys())
         data1 = [data1[t] for t in times1]
@@ -226,6 +226,7 @@ def fig1(field, range_key='mine', job='u-aw310'):
         pyplot.title(title)
         fn = 'custom_plots/'+job+'/'+field+'.png'
 	pyplot.savefig(fn, dpi=300)
+	print(fn)
 	pyplot.close()
 
 
