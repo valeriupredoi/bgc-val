@@ -109,8 +109,8 @@ def add_co2_data():
 		co2_min.append(line[2])
 		co2_max.append(line[3])
 	color = 'black'
-	pyplot.fill_between(co2_time, co2_min, co2_max, color=color, alpha=0.2)
-        pyplot.plot(co2_time, co2uptake, color, lw=1.5, label = 'Khatiwala')
+	pyplot.fill_between(co2_time, co2_min, co2_max, color=color, alpha=0.15)
+        pyplot.plot(co2_time, co2uptake, color, lw=1.2, ls='--', label = 'Khatiwala 2014')
 
 
 def fig1():
@@ -214,7 +214,7 @@ def fig2(field, range_key = 'mine'):
 
 	if field == 'AMOC':
 	        pyplot.title('AMOC - 10 year moving average')
-	        pyplot.ylabel('Tg/s')
+	        pyplot.ylabel('Sv')
 	        pyplot.legend(loc = 'lower left')
 
         if field == 'Drake':
@@ -224,7 +224,7 @@ def fig2(field, range_key = 'mine'):
                 if range_key == 'mine':
 			pyplot.ylim([117., 193.])
                 pyplot.legend(loc = 'upper left')
-	        pyplot.ylabel('Tg/s')
+	        pyplot.ylabel('Sv')
 
         if field == 'GVT':
                 pyplot.title('Global Volume weighted mean Temperature - 10 year moving average')
@@ -243,10 +243,11 @@ def fig2(field, range_key = 'mine'):
 		add_co2_data()
                 pyplot.legend(loc = 'upper left')
 
+	pyplot.gca().tick_params(axis='y', left=True, right=True)
 	fn = 'custom_plots/'+field+'_fig2.png'
 	if range_key =='colins':
 		fn = 'custom_plots/'+field+'_fig2_colins_range.png'
-        pyplot.savefig(fn, dpi=300)
+        pyplot.savefig(fn, dpi=600)
 	pyplot.close()
 
 fig2('GMT')
