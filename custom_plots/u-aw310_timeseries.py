@@ -176,7 +176,14 @@ def fig1(field, range_key='mine', job='u-aw310'):
 
 	if field in ['AirSeaFluxCO2', 'SO_AirSeaFlux' ]:
                 pyplot.ylabel('Pg/yr')
-                	        	              
+
+	if field.find('Salinity')>-1:
+		pyplot.ylabel('PSU')
+		
+	for text in ['DIC', 'Nitrate', 'Oxygen',]:
+		if field.find(text)>-1:
+			pyplot.ylabel('mmol m^3')
+
 	if field == 'AMOC':
 	        title += 'AMOC '
 
@@ -189,15 +196,16 @@ def fig1(field, range_key='mine', job='u-aw310'):
 	for text in ['Weddel','Wilkes', 'DIC', 'Salinity', 'Nitrate', 'Oxygen',]:
 		if field.find(text)>-1:
 			title += ' '+text
+
 					
 	if field.find('VolumeMeanTemperature')>-1:
-		title += 'Volume-Mean Temperature'
+		title += ' Volume-Mean Temperature'
 
 	elif field.find('Temperature')>-1:
-		title += 'Temperature'
+		title += ' Temperature'
 				
 	if field.find('MLD')>-1:
-		title += 'Mixed Layer Depth'
+		title += ' Mixed Layer Depth'
 			
         if field == 'Drake':
                 title = 'Drake Passage Current'
@@ -207,7 +215,7 @@ def fig1(field, range_key='mine', job='u-aw310'):
 			pyplot.ylim([117., 193.])
 
 	if field in ['AirSeaFluxCO2', 'SO_AirSeaFlux' ]:
-                title = 'Air Sea Flux of CO2'
+                title = ' Air Sea Flux of CO2'
                 
         if field == 'GVT':
                 title = 'Global Volume Weighted Mean Temperature'
