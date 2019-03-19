@@ -155,10 +155,6 @@ def getAMOCdata(j, field='AMOC'):
         shelve.close() 
 	return data
 
-title_dict = {
-	'AMOC': 'AM
-}
-
 def fig1(field, range_key='mine', job='u-aw310'):
 	
 	data1 = getAMOCdata(job, field=field)
