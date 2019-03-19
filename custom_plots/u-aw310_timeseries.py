@@ -155,7 +155,9 @@ def getAMOCdata(j, field='AMOC'):
         shelve.close() 
 	return data
 
-
+title_dict = {
+	'AMOC': 'AM
+}
 
 def fig1(field, range_key='mine', job='u-aw310'):
 	
@@ -167,39 +169,65 @@ def fig1(field, range_key='mine', job='u-aw310'):
 	newd1 = movingaverage_DT(data1, times1)
         pyplot.plot(times1, newd1,'k',lw=1.5)     
         
-        pyplot.title(field)
-        
-	if field == 'AMOC':
-	        pyplot.title('AMOC - 10 year moving average')
-	        pyplot.ylabel('Sv')
-	        pyplot.legend(loc = 'lower left')
 
+        
+        title = ''
+        if field in ['AMOC', 'Drake']:
+	        pyplot.ylabel('Sv')  
+	        
+        if field in ['GMT', 'GVT', 'SO_Temperature', 'SA_Temperature','Weddel_Temperature','Wilkes_Temperature',]:
+	        pyplot.ylabel('Celsius')
+
+	if field in ['AirSeaFluxCO2', 'SO_AirSeaFlux' ]:
+                pyplot.ylabel('Pg/yr')
+                	        	              
+	if field == 'AMOC':
+	        pyplot.title('AMOC')
+
+	if field[:3] == 'SO_':
+		title += 'Southern Ocean'
+		
+	if field[:3] == 'SA_':
+		title += 'Southern Atlantic Ocean'
+		
+	if field.find('VolumeMeanTemperature')>-1:
+		title += 'VolumeMeanTemperature'
+
+	elif field.find('Temperature')>-1:
+		title += 'Temperature'
+				
+	if field.find('MLD')>-1:
+		title += 'Mixed Layer Depth'
+		
+	for text in ['Weddel','Wilkes', 'DIC', 'Salinity', 'Nitrate', 'Oxygen',]:
+		if field.find(text)>-1:
+			title += text
+		
         if field == 'Drake':
-                pyplot.title('Drake Passage Current - 10 year moving average')
+                title = 'Drake Passage Current'
 		if range_key == 'colins':
 			pyplot.ylim([98., 208.])	# Colins suggestion
                 if range_key == 'mine':
 			pyplot.ylim([117., 193.])
-	        pyplot.ylabel('Sv')
 
+	if field in ['AirSeaFluxCO2', 'SO_AirSeaFlux' ]:
+                title = 'Air Sea Flux of CO2'
+                
         if field == 'GVT':
-                pyplot.title('Global Volume weighted mean Temperature - 10 year moving average')
-	        pyplot.ylabel('Celsius')
+                title = 'Global Volume weighted mean Temperature'
 
         if field == 'GMT':
-                pyplot.title('Global Mean Surface Temperature - 10 year moving average')
-                pyplot.ylabel('Celsius')
+                title = 'Global Mean Surface Temperature'
 
 	if field == 'AirSeaFluxCO2':
-                pyplot.title('Air Sea Flux of CO2 - 10 year moving average')
-                pyplot.ylabel('Pg/yr')
-		add_co2_data()
-
-	        
-                     
+                title = 'Air Sea Flux of CO2'
+	
+	title += ' - 10 year moving average'
+        pyplot.title(title)
         fn = 'custom_plots/'+job+'/'+field+'.png'
 	pyplot.savefig(fn, dpi=300)
 	pyplot.close()
+
 
 # Global : AMOC 26N, ACC Drake,  SST
 fig1('AMOC')
@@ -212,7 +240,7 @@ fig1('AirSeaFluxCO2')
 
 # S. Ocean mean: Air-Sea CO2 flux, surface DIC, SH Ice extent, surface nitrate, surface O2, surface salinity, SST
 fig1('SouthernTotalIceExtent')
-fig1('SO_AirSeaFluxGVT')
+fig1('SO_AirSeaFlux')
 fig1('SO_DIC')
 fig1('SO_Nitrate')
 fig1('SO_Oxygen')
