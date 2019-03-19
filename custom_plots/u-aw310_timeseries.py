@@ -178,7 +178,7 @@ def fig1(field, range_key='mine', job='u-aw310'):
                 pyplot.ylabel('Pg/yr')
                 	        	              
 	if field == 'AMOC':
-	        pyplot.title('AMOC')
+	        title += 'AMOC'
 
 	if field[:3] == 'SO_':
 		title += 'Southern Ocean'
@@ -186,6 +186,10 @@ def fig1(field, range_key='mine', job='u-aw310'):
 	if field[:3] == 'SA_':
 		title += 'Southern Atlantic Ocean'
 		
+	for text in ['Weddel','Wilkes', 'DIC', 'Salinity', 'Nitrate', 'Oxygen',]:
+		if field.find(text)>-1:
+			title += ' '+text
+					
 	if field.find('VolumeMeanTemperature')>-1:
 		title += 'VolumeMeanTemperature'
 
@@ -194,11 +198,7 @@ def fig1(field, range_key='mine', job='u-aw310'):
 				
 	if field.find('MLD')>-1:
 		title += 'Mixed Layer Depth'
-		
-	for text in ['Weddel','Wilkes', 'DIC', 'Salinity', 'Nitrate', 'Oxygen',]:
-		if field.find(text)>-1:
-			title += text
-		
+			
         if field == 'Drake':
                 title = 'Drake Passage Current'
 		if range_key == 'colins':
@@ -211,7 +211,10 @@ def fig1(field, range_key='mine', job='u-aw310'):
                 
         if field == 'GVT':
                 title = 'Global Volume weighted mean Temperature'
-
+                
+	if field == 'SouthernTotalIceExtent':
+                title = 'Southern Hermisphere Total Ice Extent'	
+                
         if field == 'GMT':
                 title = 'Global Mean Surface Temperature'
 
