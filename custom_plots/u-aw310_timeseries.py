@@ -179,20 +179,20 @@ def fig1(field, range_key='mine', job='u-aw310'):
                 pyplot.ylabel('Pg/yr')
                 	        	              
 	if field == 'AMOC':
-	        title += 'AMOC'
+	        title += 'AMOC '
 
 	if field[:3] == 'SO_':
-		title += 'Southern Ocean'
+		title += 'Southern Ocean '
 		
 	if field[:3] == 'SA_':
-		title += 'Southern Atlantic Ocean'
+		title += 'Southern Atlantic Ocean '
 		
 	for text in ['Weddel','Wilkes', 'DIC', 'Salinity', 'Nitrate', 'Oxygen',]:
 		if field.find(text)>-1:
 			title += ' '+text
 					
 	if field.find('VolumeMeanTemperature')>-1:
-		title += 'VolumeMeanTemperature'
+		title += 'Volume-Mean Temperature'
 
 	elif field.find('Temperature')>-1:
 		title += 'Temperature'
@@ -211,7 +211,7 @@ def fig1(field, range_key='mine', job='u-aw310'):
                 title = 'Air Sea Flux of CO2'
                 
         if field == 'GVT':
-                title = 'Global Volume weighted mean Temperature'
+                title = 'Global Volume Weighted Mean Temperature'
                 
 	if field == 'SouthernTotalIceExtent':
                 title = 'Southern Hermisphere Total Ice Extent'	
@@ -223,6 +223,7 @@ def fig1(field, range_key='mine', job='u-aw310'):
                 title = 'Air Sea Flux of CO2'
 	
 	title += ' - 10 year moving average'
+	for i in range(5): title = title.replace('  ', ' ')
         pyplot.title(title)
         fn = 'custom_plots/'+job+'/'+field+'.png'
 	pyplot.savefig(fn, dpi=300)
@@ -233,7 +234,7 @@ def fig1(field, range_key='mine', job='u-aw310'):
 # Global : AMOC 26N, ACC Drake,  SST
 fig1('AMOC')
 fig1('Drake',range_key='mine')
-fig1('Drake',range_key='colins')
+#fig1('Drake',range_key='colins')
 fig1('GMT')
 fig1('GVT')
 fig1('AirSeaFluxCO2')
