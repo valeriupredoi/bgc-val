@@ -171,7 +171,7 @@ def fig1(field, range_key='mine', job='u-aw310'):
         if field in ['AMOC', 'Drake']:
 	        pyplot.ylabel('Sv')  
 	        
-        if field in ['GMT', 'GVT', ] or field.find('Temperature')>-1
+        if field in ['GMT', 'GVT', ] or field.find('Temperature')>-1:
 	        pyplot.ylabel('Celsius')
 
 	if field in ['AirSeaFluxCO2', 'SO_AirSeaFlux' ]:
