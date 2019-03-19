@@ -155,7 +155,6 @@ def getAMOCdata(j, field='AMOC'):
         shelve.close() 
 	return data
 
-
 def fig1(field, range_key='mine', job='u-aw310'):
 	
 	data1 = getAMOCdata(job, field=field)
