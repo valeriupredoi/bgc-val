@@ -335,7 +335,64 @@ def makeRegionMapPierce():
 	
 	
 	
+def makeRegionMapSouthAtlantic():
+
+	PierceRegions = ['Wilkes', 'Weddel', 'AtlanticSOcean', 'SouthernOcean',]
+	plotAll = 0 # 1#True	# make plots for all regions
+	imageFold = ukp.folder('images/maps')
 	
+	#####
+	# Load data.
+	nc = Dataset(orcaGridfn,'r')
+	bathy = nc.variables['mbathy'][:]
+	xy = np.ma.masked_where(bathy==0,nc.variables['nav_lat'][:]).compressed()
+	xx = np.ma.masked_where(bathy==0,nc.variables['nav_lon'][:]).compressed()
+	nc.close()
+	
+	cbathy = np.ma.masked_where(bathy==0,bathy).compressed()
+	xt = np.ones_like(cbathy)
+	xz = np.ones_like(cbathy)
+
+	####
+	# Calculate masks, based on lat/lon.
+	masks = {}
+	for i,r in enumerate(PierceRegions):	
+		# masks[r] = ~makeMask('',r, xt,xz,xy,xx,cbathy,debug=True)
+		masks[r] = makeMask('',r, xt,xz,xy,xx,cbathy,debug=True)
+		
+	#####
+	# Turn mask into one field.
+	data = np.zeros_like(cbathy)
+	for i,r in enumerate(PierceRegions):
+		i +=1
+		#data += (i+1)* masks[r]
+		for itr,d in enumerate(masks[r]):
+		    if data[itr] == 0 and not d:
+		    	data[itr] += i
+		#data = np.clip(data, 0, i+1)
+		
+		if plotAll:
+			fn = imageFold+'Region_Legend_SouthAtlantic_'+r+'_robin.png'		
+			ukp.robinPlotSingle(xy, xx, masks[r],fn,r,drawCbar=True,cbarlabel='',doLog=False,dpi=100,)
+			
+			fn = imageFold+'Region_Legend_SouthAtlantic_'+r+'_polar.png'	
+			td = np.ma.masked_where(masks[r]==0., cbathy).compressed()
+			tx = np.ma.masked_where(masks[r]==0., xx).compressed()
+			ty = np.ma.masked_where(masks[r]==0., xy).compressed()						
+			#robinPlotTransects(ty, tx, td,fn,r, dpi=100,cmapname='jet',proj='Antartic')	
+						
+	data = np.ma.masked_where(data==0,data)
+	
+	#####
+	# Send it to the plotting tool.
+	colourmaps = ['default','jet','viridis_r'] #'gist_earth','terrain','ocean','hsv','gist_rainbow','nipy_spectral','rainbow',]
+	for c in colourmaps:
+		fn = imageFold+'SouthAtlantic_'+c+'.png'
+		robinPlotCustom(xy, xx, data,fn,'',PierceRegions,drawCbar=True,cbarlabel='',doLog=False,dpi=200,cmapname = c)
+	
+	
+	
+		
 				
 def makeRegionMapYevgeny():
 
@@ -492,12 +549,14 @@ def makeTransectsMap(proj='robin'):
 	robinPlotTransects(lat, lon, maps,fn, '',legends=transects,drawCbar=False,cbarlabel='',doLog=False,dpi=200,proj=proj)
 
 def main():
+	makeRegionMapSouthAtlantic()
+	return
+
 	makeRegionMapPierce()
-	assert 0
+
 	makeRegionMapYevgeny()			
 
 	makeRegionMapNA(['NordicSea', 'LabradorSea', 'NorwegianSea'])		
-	assert 0					
 	regionList	= [#'Global', 'ignoreInlandSeas',
 	  		'SouthernOcean','Remainder',
 			'Equator10', 
