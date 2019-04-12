@@ -234,7 +234,8 @@ def shifttimes(mdata, jobID,year0=False):
                          	'u-bf647': 2619,  
 			 	'u-bf656': 2716, 
 			 	'u-bf703': 2760,
-			 	'u-bf705': 2815,                                
+			 	#'u-bf705': 2815, # dead                                
+			 	'u-bh162': 2815, 
 			   }
 
        		for t in sorted(mdata.keys()):
