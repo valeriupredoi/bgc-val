@@ -2774,8 +2774,8 @@ def main():
                         completed_runs = ['Run1', 'Run2', 'Run3', 'Run4', 'Run8']
                         
                         for run_name, run_colours,  in run_names.items():                                                            
-                        	if run_name in completed_runs:
-				timeseries_compare(
+                        	if run_name not in completed_runs:
+				    timeseries_compare(
 		                         run_colours,
 		                         physics=1,
 		                         bio=1,

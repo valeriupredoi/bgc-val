@@ -163,17 +163,17 @@ def fig1(field, range_key='mine', job='u-aw310'):
         data1 = [data1[t] for t in times1]
 
 	newd1 = movingaverage_DT(data1, times1)
-        pyplot.plot(times1, newd1,'k',lw=1.5)     
+        pyplot.plot(times1, newd1,'k',lw=0.5)     
 
 	newd2 = movingaverage_DT(data1, times1, window_len=30., window_units='years')
-        pyplot.plot(times1, newd2,'r',lw=0.5)            
+        pyplot.plot(times1, newd2,'r',lw=1.5)            
 
         
         title = ''
         if field in ['AMOC', 'Drake']:
 	        pyplot.ylabel('Sv')  
 	        
-        if field in ['GMT', 'GVT', ] or field.find('Temperature')>-1
+        if field in ['GMT', 'GVT', ] or field.find('Temperature')>-1:
 	        pyplot.ylabel('Celsius')
 
 	if field in ['AirSeaFluxCO2', 'SO_AirSeaFlux' ]:
