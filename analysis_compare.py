@@ -2726,6 +2726,33 @@ def main():
 		exit
 	else:
 
+		pi_aerosols = True
+		if pi_aerosols:
+		        jobs = ['u-bg705', 'u-bg723', 'u-bg724', 'u-bc179', 'u-bc292', 'u-bc370']	        		        		        
+		        customColours = {
+		        	 'u-bg705': 'orange', 
+		        	 'u-bg723': 'orange', 
+		        	 'u-bg724': 'orange', 
+		        	 'u-bc179': 'black', 
+		        	 'u-bc292': 'black', 
+		        	 'u-bc370': 'black',
+		                 }
+		        cnthicknesses = defaultdict(lambda: 1.1)
+		        linestyles = defaultdict(lambda: '-')
+		        linestyles['u-bg705'] = '--'
+		        linestyles['u-bg723'] = '--'
+		        linestyles['u-bg724'] = '--'		        
+		        timeseries_compare(
+		                 customColours, #{i:standards[i] for i in jobs},
+		                 physics=1,
+		                 bio=1,
+		                 debug=1,
+		                 year0=False,
+		                 jobDescriptions=jobDescriptions,
+		                 analysisname='UKESM1_pi_aerosols',
+		                 lineThicknesses= cnthicknesses,
+		                 linestyles = linestyles,)			
+
                 scenarios = 1
                 if scenarios:
                         r1_colours = {
