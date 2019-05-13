@@ -2726,6 +2726,30 @@ def main():
 		exit
 	else:
 
+                low_res_atmosphere = True
+                if low_res_atmosphere:
+                        jobs = ['u-bi481', 'u-bi700', 'u-aw310']
+                        customColours = {
+                                 'u-bi481': 'blue',
+                                 'u-bi700': 'red',
+                                 'u-aw310': 'black',
+                                 }
+                        cnthicknesses = defaultdict(lambda: 1.1)
+                        linestyles = defaultdict(lambda: '-')
+                        linestyles['u-bi481'] = '--'
+                        linestyles['u-bi700'] = '--'
+                        linestyles['u-aw310'] = '-'
+                        timeseries_compare(
+                                 customColours,
+                                 physics=1,
+                                 bio=1,
+                                 debug=0,
+                                 year0='Historical',
+                                 jobDescriptions=jobDescriptions,
+                                 analysisname='N48_eORCA1',
+                                 lineThicknesses= cnthicknesses,
+                                 linestyles = linestyles,)
+		assert 0
 		pi_aerosols = True
 		if pi_aerosols:
 		        jobs = ['u-bg705', 'u-bg723', 'u-bg724', 'u-bc179', 'u-bc292', 'u-bc370']	        		        		        
@@ -2739,19 +2763,21 @@ def main():
 		                 }
 		        cnthicknesses = defaultdict(lambda: 1.1)
 		        linestyles = defaultdict(lambda: '-')
-		        linestyles['u-bg705'] = '--'
-		        linestyles['u-bg723'] = '--'
-		        linestyles['u-bg724'] = '--'		        
+		        linestyles['u-bc179'] = '--'
+		        linestyles['u-bc292'] = '--'
+		        linestyles['u-bc370'] = '--'		        
 		        timeseries_compare(
 		                 customColours, #{i:standards[i] for i in jobs},
 		                 physics=1,
 		                 bio=1,
-		                 debug=1,
+		                 debug=0,
 		                 year0=False,
 		                 jobDescriptions=jobDescriptions,
 		                 analysisname='UKESM1_pi_aerosols',
 		                 lineThicknesses= cnthicknesses,
 		                 linestyles = linestyles,)			
+	
+	
 
                 scenarios = 1
                 if scenarios:

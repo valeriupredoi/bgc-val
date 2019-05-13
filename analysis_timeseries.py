@@ -1862,7 +1862,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['datadetails']  	= {'name': '', 'units':''}
 		#av[name]['datadetails']  	= {'name': name, 'vars':['t_an',], 'convert': ukp.NoChange,'units':'degrees C'}
 
-		vmtregions = ['Global', 'Depth_700m', 'Depth_2000m', 'Depth_700-2000m', 'ignoreInlandSeas','Equator10','AtlanticSOcean','SouthernOcean','ArcticOcean',  'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific','WeddelSea']
+		vmtregions = ['Global', 'ignoreInlandSeas','Equator10','AtlanticSOcean','SouthernOcean','ArcticOcean',  'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific','WeddelSea']
 		vmtregions.extend(PierceRegions)
 		
 		av[name]['layers'] 		= ['layerless',]
