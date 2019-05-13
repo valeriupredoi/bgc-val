@@ -137,6 +137,7 @@ def fig2(field, range_key = 'mine'):
 	ssp245 = ['u-be537', 'u-be606', 'u-be683', 'u-be394', 'u-be398']
 	ssp370 = ['u-be647', 'u-be690', 'u-be684', 'u-be335', 'u-be395']
 	ssp585 = ['u-be653', 'u-be693', 'u-be686', 'u-be392', 'u-be396']                
+
 	
 	ssp_jobs = {'piControl':piControl, 'historical': historical, 'SSP 1 2.6': ssp126, 'SSP 2 4.5': ssp245, 'SSP 3 7.0': ssp370,'SSP 5 8.5': ssp585,}
 #	ssp_colours = {'piControl': 'black', 'historical': 'purple', 'SSP 1 2.6': 'blue', 'SSP 2 4.5': 'green', 'SSP 3 7.0': 'pink','SSP 5 8.5': 'red',}
@@ -161,7 +162,7 @@ def fig2(field, range_key = 'mine'):
 				jobname = job + '_' + str(start_times)
 				new_times = times - float(start_times) + 1601 -250.
 
-				new_times = np.ma.masked_where((new_times < 1600.) + (new_times > 1850.), new_times)
+				new_times = np.ma.masked_where((new_times < 1750.) + (new_times > 1850.), new_times)
 				new_data = np.ma.masked_where(new_times.mask, data)
 				new_times = new_times.compressed()
 				new_data = new_data.compressed()
