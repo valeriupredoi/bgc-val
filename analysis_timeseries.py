@@ -166,12 +166,12 @@ level1KeysDict = {i:n for i,n in enumerate(level1Keys)}
 # The important keys
 keymetricsfirstKeys = [
 		'TotalAirSeaFluxCO2',
-                'NoCaspianAirSeaFluxCO2',
-		'IntPP_OSU',
-		'GlobalExportRatio',
-                'TotalIceExtent', 
-                'NorthernTotalIceExtent',
-                'SouthernTotalIceExtent',
+#                'NoCaspianAirSeaFluxCO2',
+#		'IntPP_OSU',
+#		'GlobalExportRatio',
+#                'TotalIceExtent', 
+#                'NorthernTotalIceExtent',
+#                'SouthernTotalIceExtent',
 		'DrakePassageTransport',
 		'AMOC_26N',
 		'GlobalMeanTemperature',
@@ -2192,6 +2192,7 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		tregions = ['Global', 'ignoreInlandSeas','Equator10','AtlanticSOcean','SouthernOcean','ArcticOcean',  'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific','WeddelSea', 'Cornwall']
 		tregions.extend(PierceRegions)
+		#tregions = ['Global',]
 		av[name]['layers'] 		= layerList 
 		av[name]['regions'] 		= tregions
 		av[name]['metrics']		= metricList

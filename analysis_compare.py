@@ -2749,8 +2749,8 @@ def main():
                                  analysisname='N48_eORCA1',
                                  lineThicknesses= cnthicknesses,
                                  linestyles = linestyles,)
-		assert 0
-		pi_aerosols = True
+
+		pi_aerosols = False
 		if pi_aerosols:
 		        jobs = ['u-bg705', 'u-bg723', 'u-bg724', 'u-bc179', 'u-bc292', 'u-bc370']	        		        		        
 		        customColours = {
@@ -2776,7 +2776,6 @@ def main():
 		                 analysisname='UKESM1_pi_aerosols',
 		                 lineThicknesses= cnthicknesses,
 		                 linestyles = linestyles,)			
-	
 	
 
                 scenarios = 1

@@ -1,3 +1,5 @@
+#!/usr/bin/ipython
+
 # 1. (Easy) a time series of only UKESM1 u-aw310 for the full length (~1960 to year 3???) applying either a 5 year or 10 year running mean (likely the former).
 
 # 2. A time series (using the same time meaning as in 1...so likely 5 year running mean) that consists of the following:
@@ -6,7 +8,7 @@
 #    (iii) A 5-member ensemble mean for each of the 4 Tier 1 scenarios for the 85 years of the projections.
 
 
-
+import os
 import numpy as np
 from matplotlib import pyplot
 from shelve import open as shopen
@@ -85,6 +87,8 @@ def getAMOCdata(j, field='AMOC'):
         if field == 'AirSeaFluxCO2':
                 fn = '/group_workspaces/jasmin2/ukesm/BGC_data/ldemora/shelves/timeseries/'+j+'/'+j+'_TotalAirSeaFluxCO2.shelve'
 
+	if not os.path.exists(fn):
+		print 'Does not exist:', fn	
         shelve = shopen(fn)
 	data = shelve['modeldata'][index]
         shelve.close() 
@@ -156,7 +160,7 @@ def fig2(field, range_key = 'mine'):
 
         ssp_colours = {'piControl': 'black', 'historical': 'purple', 
         		'SSP 1 2.6': '#003466', 'SSP 2 4.5': '#70a0cd', 'SSP 3 7.0': '#c47900','SSP 5 8.5': '#990002',
-        		'SSP 1 1.9': 'green', 'SSP 4 3.4': 'yellow', 'SSP 5 3.4': 'orange', 
+        		'SSP 1 1.9': 'green', 'SSP 4 3.4': 'gold', 'SSP 5 3.4': 'orange', 
         		}
         # Older colours:
 #        ssp_colours = {'piControl': 'green', 'historical': 'purple', 'SSP 1 2.6': '#003466', 'SSP 2 4.5': '#70a0cd', 'SSP 3 7.0': '#c47900','SSP 5 8.5': '#990002',		}
