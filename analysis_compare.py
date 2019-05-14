@@ -2845,9 +2845,14 @@ def main():
 			ssp370 = {'r1': 'u-be647', 'r2': 'u-be690', 'r3': 'u-be684', 'r4': 'u-be335', 'r8': 'u-be395'}
 			ssp585 = {'r1': 'u-be653', 'r2': 'u-be693', 'r3': 'u-be686', 'r4': 'u-be392', 'r8': 'u-be396'}                
 			
+			# Tier2:
+			ssp119 = {'r1': 'u-bh409', 'r2': 'u-bh570', 'r3': 'u-bh716', 'r4': 'u-bh210', 'r8': 'u-bh807'}               
+			ssp434 = {'r1': 'u-bh454', 'r2': 'u-bh724', 'r3': 'u-bh717', 'r4': 'u-bh254', 'r8': 'u-bh808'}                
+			ssp534 = {'r1': 'u-bh456', 'r2': 'u-bh744', 'r3': 'u-bh718', 'r4': 'u-bh285', 'r8': 'u-bh809'}
+				
 			run_colours = {'r1': 'red', 'r2': 'orange', 'r3': 'goldenrod', 'r4': 'green', 'r8': 'blue',}
 
-			scenarios = {'ssp126': ssp126,  'ssp245': ssp245, 'ssp370': ssp370, 'ssp585': ssp585}
+			scenarios = {'ssp126': ssp126,  'ssp245': ssp245, 'ssp370': ssp370, 'ssp585': ssp585, 'ssp119':ssp119, 'ssp434':ssp434, 'ssp534':ssp534}
 			for scean, sc_list in scenarios.items():
 			    	sc_colours = {jobID: run_colours[run_i]  for run_i, jobID in sc_list.items()}
     				sc_jobDescriptions = {jobID: ' '.join(['UKESM', scean, run_i.upper()]) for run_i, jobID in sc_list.items()}

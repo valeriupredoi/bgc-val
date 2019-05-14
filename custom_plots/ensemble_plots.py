@@ -136,15 +136,30 @@ def fig2(field, range_key = 'mine'):
 	ssp126 = ['u-be509', 'u-be679', 'u-be682', 'u-be393', 'u-be397']
 	ssp245 = ['u-be537', 'u-be606', 'u-be683', 'u-be394', 'u-be398']
 	ssp370 = ['u-be647', 'u-be690', 'u-be684', 'u-be335', 'u-be395']
-	ssp585 = ['u-be653', 'u-be693', 'u-be686', 'u-be392', 'u-be396']                
-
+	ssp585 = ['u-be653', 'u-be693', 'u-be686', 'u-be392', 'u-be396']
 	
-	ssp_jobs = {'piControl':piControl, 'historical': historical, 'SSP 1 2.6': ssp126, 'SSP 2 4.5': ssp245, 'SSP 3 7.0': ssp370,'SSP 5 8.5': ssp585,}
+	# Tier2:
+	ssp119 = ['u-bh409', 'u-bh570', 'u-bh716', 'u-bh210', 'u-bh807']                
+	ssp434 = ['u-bh454', 'u-bh724', 'u-bh717', 'u-bh254', 'u-bh808']                
+	ssp534 = ['u-bh456', 'u-bh744', 'u-bh718', 'u-bh285', 'u-bh809']                
+		
+	
+	ssp_jobs = {	'piControl':piControl, 'historical': historical, 
+			'SSP 1 2.6': ssp126, 'SSP 2 4.5': ssp245, 'SSP 3 7.0': ssp370,'SSP 5 8.5': ssp585, 
+			'SSP 1 1.9': ssp119, 'SSP 4 3.4': ssp434, 'SSP 5 3.4': ssp534, 
+			}
 #	ssp_colours = {'piControl': 'black', 'historical': 'purple', 'SSP 1 2.6': 'blue', 'SSP 2 4.5': 'green', 'SSP 3 7.0': 'pink','SSP 5 8.5': 'red',}
-	order = ['piControl', 'historical', 'SSP 1 2.6', 'SSP 2 4.5', 'SSP 3 7.0','SSP 5 8.5']
-#        ssp_colours = {'piControl': 'black', 'historical': 'purple', 'SSP 1 2.6': (0., 52./256, 102./256), 'SSP 2 4.5': (112./256, 160./256, 205./256), 'SSP 3 7.0': (196./256, 121./256, 0.),'SSP 5 8.5': (153./256, 0., 2./256),}
-        ssp_colours = {'piControl': 'green', 'historical': 'purple', 'SSP 1 2.6': '#003466', 'SSP 2 4.5': '#70a0cd', 'SSP 3 7.0': '#c47900','SSP 5 8.5': '#990002',}
 
+	order = ['piControl', 'historical', 'SSP 1 1.9', 'SSP 1 2.6', 'SSP 2 4.5', 'SSP 3 7.0','SSP 4 3.4', 'SSP 5 3.4', 'SSP 5 8.5']
+	
+#        ssp_colours = {'piControl': 'black', 'historical': 'purple', 'SSP 1 2.6': (0., 52./256, 102./256), 'SSP 2 4.5': (112./256, 160./256, 205./256), 'SSP 3 7.0': (196./256, 121./256, 0.),'SSP 5 8.5': (153./256, 0., 2./256),}
+
+        ssp_colours = {'piControl': 'black', 'historical': 'purple', 
+        		'SSP 1 2.6': '#003466', 'SSP 2 4.5': '#70a0cd', 'SSP 3 7.0': '#c47900','SSP 5 8.5': '#990002',
+        		'SSP 1 1.9': 'green', 'SSP 4 3.4': 'yellow', 'SSP 5 3.4': 'orange', 
+        		}
+        # Older colours:
+#        ssp_colours = {'piControl': 'green', 'historical': 'purple', 'SSP 1 2.6': '#003466', 'SSP 2 4.5': '#70a0cd', 'SSP 3 7.0': '#c47900','SSP 5 8.5': '#990002',		}
 
         # Fill between. pi control:
         for ssp in order:
