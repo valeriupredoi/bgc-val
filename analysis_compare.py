@@ -2780,12 +2780,18 @@ def main():
 
                 scenarios = 1
                 if scenarios:
+                	tier2 = {'SSP 1 1.9': 'green', 'SSP 4 3.4': 'gold', 'SSP 5 3.4': '', 
+        		}
                         r1_colours = {
                                      'u-bc179': 'black',
                                      'u-be509': 'blue',
                                      'u-be537': 'green',
                                      'u-be647': 'pink',
                                      'u-be653': 'red',
+                                     
+                                     'u-bh409': 'green',
+                                     'u-bh454': 'gold',
+                                     'u-bh456': 'orange',
                                      }
                         r2_colours = {
                                      'u-bc292': 'black',
@@ -2793,6 +2799,9 @@ def main():
                                      'u-be606': 'green',
                                      'u-be690': 'pink',
                                      'u-be693': 'red',
+                                     'u-bh570': 'green',
+                                     'u-bh712': 'gold',
+                                     'u-bh744': 'orange',
                                      }
                         r3_colours = {
                                      'u-bc370': 'black',
@@ -2800,6 +2809,9 @@ def main():
                                      'u-be683': 'green',
                                      'u-be684': 'pink',
                                      'u-be686': 'red',
+                                     'u-bh716': 'green',
+                                     'u-bh717': 'gold',
+                                     'u-bh718': 'orange',
                                      }
                                                                                                                                        
                         r4_colours = {
@@ -2808,6 +2820,9 @@ def main():
                                      'u-be394': 'green',
                                      'u-be335': 'pink',
                                      'u-be392': 'red',
+                                     'u-bh210': 'green',
+                                     'u-bh254': 'gold',
+                                     'u-bh285': 'orange',
                                      }
                         r8_colours = {
                                      'u-bb277': 'black',                                     
@@ -2815,6 +2830,9 @@ def main():
                                      'u-be398': 'green',
                                      'u-be395': 'pink',
                                      'u-be396': 'red',   
+                                     'u-bh807': 'green',
+                                     'u-bh808': 'gold',
+                                     'u-bh809': 'orange',
                                      }  
                         run_names = {'Run1': r1_colours, 
                         	     'Run2': r2_colours, 
@@ -2837,7 +2855,7 @@ def main():
 		                         analysisname = 'UKESM_scenarios_' + run_name,
 		                         lineThicknesses= hjthicknesses)
 		                         
-                scenarios_figures = 0
+                scenarios_figures = 1
                 if scenarios_figures:
 			ssp126 = {'r1': 'u-be509', 'r2': 'u-be679', 'r3': 'u-be682', 'r4': 'u-be393', 'r8': 'u-be397'}
 			ssp245 = {'r1': 'u-be537', 'r2': 'u-be606', 'r3': 'u-be683', 'r4': 'u-be394', 'r8': 'u-be398'}
@@ -2851,7 +2869,8 @@ def main():
 				
 			run_colours = {'r1': 'red', 'r2': 'orange', 'r3': 'goldenrod', 'r4': 'green', 'r8': 'blue',}
 
-			scenarios = {'ssp126': ssp126,  'ssp245': ssp245, 'ssp370': ssp370, 'ssp585': ssp585, 'ssp119':ssp119, 'ssp434':ssp434, 'ssp534':ssp534}
+			#scenarios = {'ssp126': ssp126,  'ssp245': ssp245, 'ssp370': ssp370, 'ssp585': ssp585, 'ssp119':ssp119, 'ssp434':ssp434, 'ssp534':ssp534}
+			scenarios = {'ssp119': ssp119, 'ssp434': ssp434, 'ssp534': ssp534}			
 			for scean, sc_list in scenarios.items():
 			    	sc_colours = {jobID: run_colours[run_i]  for run_i, jobID in sc_list.items()}
     				sc_jobDescriptions = {jobID: ' '.join(['UKESM', scean, run_i.upper()]) for run_i, jobID in sc_list.items()}
