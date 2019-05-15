@@ -2780,15 +2780,12 @@ def main():
 
                 scenarios = 1
                 if scenarios:
-                	tier2 = {'SSP 1 1.9': 'green', 'SSP 4 3.4': 'gold', 'SSP 5 3.4': '', 
-        		}
                         r1_colours = {
                                      'u-bc179': 'black',
                                      'u-be509': 'blue',
                                      'u-be537': 'green',
                                      'u-be647': 'pink',
                                      'u-be653': 'red',
-                                     
                                      'u-bh409': 'green',
                                      'u-bh454': 'gold',
                                      'u-bh456': 'orange',
