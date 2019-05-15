@@ -2725,7 +2725,26 @@ def main():
 		print "Successful command line comparison"
 		exit
 	else:
-
+                emissions_driven = True
+                if emissions_driven:
+                        jobs = ['u-bh519', 'u-az513']
+                        customColours = {
+                                 'u-bh519': 'blue',
+                                 'u-az513': 'green',
+                                 }
+                        cnthicknesses = defaultdict(lambda: 1.1)
+                        linestyles = defaultdict(lambda: '-')
+                        timeseries_compare(
+                                 customColours,
+                                 physics=1,
+                                 bio=1,
+                                 debug=0,
+                                 year0='Historical',
+                                 jobDescriptions=jobDescriptions,
+                                 analysisname='emissions_driven',
+                                 lineThicknesses= cnthicknesses,
+                                 linestyles = linestyles,)
+                                 
                 low_res_atmosphere = True
                 if low_res_atmosphere:
                         jobs = ['u-bi481', 'u-bi700', 'u-aw310']
