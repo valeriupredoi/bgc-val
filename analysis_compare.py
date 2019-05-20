@@ -2727,9 +2727,10 @@ def main():
 	else:
                 emissions_driven = True
                 if emissions_driven:
-                        jobs = ['u-bh519', 'u-az513']
+                        jobs = ['u-bh519', 'u-az513', 'u-bf703']
                         customColours = {
                                  'u-bh519': 'blue',
+                                 'u-bf703': 'brown',
                                  'u-az513': 'green',
                                  }
                         cnthicknesses = defaultdict(lambda: 1.1)
@@ -2741,10 +2742,10 @@ def main():
                                  debug=0,
                                  year0='Historical',
                                  jobDescriptions=jobDescriptions,
-                                 analysisname='emissions_driven',
+                                 analysisname='Emissions_driven',
                                  lineThicknesses= cnthicknesses,
                                  linestyles = linestyles,)
-                                 
+ 	         
                 low_res_atmosphere = True
                 if low_res_atmosphere:
                         jobs = ['u-bi481', 'u-bi700', 'u-aw310']
@@ -2799,15 +2800,12 @@ def main():
 
                 scenarios = 1
                 if scenarios:
-                	tier2 = {'SSP 1 1.9': 'green', 'SSP 4 3.4': 'gold', 'SSP 5 3.4': '', 
-        		}
                         r1_colours = {
                                      'u-bc179': 'black',
                                      'u-be509': 'blue',
-                                     'u-be537': 'green',
+                                     'u-be537': 'purple',
                                      'u-be647': 'pink',
                                      'u-be653': 'red',
-                                     
                                      'u-bh409': 'green',
                                      'u-bh454': 'gold',
                                      'u-bh456': 'orange',
@@ -2815,7 +2813,7 @@ def main():
                         r2_colours = {
                                      'u-bc292': 'black',
                                      'u-be679': 'blue',
-                                     'u-be606': 'green',
+                                     'u-be606': 'purple',
                                      'u-be690': 'pink',
                                      'u-be693': 'red',
                                      'u-bh570': 'green',
@@ -2825,7 +2823,7 @@ def main():
                         r3_colours = {
                                      'u-bc370': 'black',
                                      'u-be682': 'blue',
-                                     'u-be683': 'green',
+                                     'u-be683': 'purple',
                                      'u-be684': 'pink',
                                      'u-be686': 'red',
                                      'u-bh716': 'green',
@@ -2836,7 +2834,7 @@ def main():
                         r4_colours = {
                                      'u-bb075': 'black',
                                      'u-be393': 'blue',
-                                     'u-be394': 'green',
+                                     'u-be394': 'purple',
                                      'u-be335': 'pink',
                                      'u-be392': 'red',
                                      'u-bh210': 'green',
@@ -2846,7 +2844,7 @@ def main():
                         r8_colours = {
                                      'u-bb277': 'black',                                     
                                      'u-be397': 'blue',
-                                     'u-be398': 'green',
+                                     'u-be398': 'purple',
                                      'u-be395': 'pink',
                                      'u-be396': 'red',   
                                      'u-bh807': 'green',
@@ -2860,9 +2858,10 @@ def main():
                         	     'Run8': r8_colours}
 #                        run_dicts = [: r1_colours, r2_colours, r3_colours, r4_colours, r5_colours]
 #                        run_names = ['Run1', 'Run2', 'Run3', 'Run4', 'Run5']
-                        completed_runs = ['Run1', 'Run2', 'Run3', 'Run4', 'Run8']
-                        
-                        for run_name, run_colours,  in run_names.items():                                                            
+                        completed_runs = [] #'Run1', 'Run2', 'Run3', 'Run4', 'Run8']
+                       
+                        for run_name, run_colours,  in run_names.items():
+                                                            
                         	if run_name not in completed_runs:
 				    timeseries_compare(
 		                         run_colours,
