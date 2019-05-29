@@ -2770,6 +2770,28 @@ def main():
                                  lineThicknesses= cnthicknesses,
                                  linestyles = linestyles,)
 
+                low_res_atmosphere_timePlots = True
+                if low_res_atmosphere_timePlots:
+                        jobs = [ 'u-bi700', 'u-bi913', 'u-bi914',]
+                        customColours = {
+                                 #'u-bi481': 'blue',
+                                 'u-bi700': 'red',
+                                 'u-bi913': 'orange',
+                                 'u-bi914': 'purple',                                                                  
+                                 }
+                        cnthicknesses = defaultdict(lambda: 1.1)
+                        linestyles = defaultdict(lambda: '-')
+                        timeseries_compare(
+                                 customColours,
+                                 physics=1,
+                                 bio=1,
+                                 debug=0,
+                                 year0='Historical',
+                                 jobDescriptions=jobDescriptions,
+                                 analysisname='N48_eORCA1_timesteps',
+                                 lineThicknesses= cnthicknesses,
+                                 linestyles = linestyles,)
+                                 
 		pi_aerosols = False
 		if pi_aerosols:
 		        jobs = ['u-bg705', 'u-bg723', 'u-bg724', 'u-bc179', 'u-bc292', 'u-bc370']	        		        		        
