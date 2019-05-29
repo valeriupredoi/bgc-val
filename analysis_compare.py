@@ -2748,17 +2748,17 @@ def main():
  	         
                 low_res_atmosphere = True
                 if low_res_atmosphere:
-                        jobs = ['u-bi481', 'u-bi700', 'u-aw310']
+                        jobs = [ 'u-bi700', 'u-aw310', 'u-bj002', 'u-bi831'] #'u-bi481',
                         customColours = {
-                                 'u-bi481': 'blue',
+                                 #'u-bi481': 'blue',
                                  'u-bi700': 'red',
                                  'u-aw310': 'black',
+                                 'u-bj002': 'orange',
+                                 'u-bi831': 'purple',                                                                  
                                  }
                         cnthicknesses = defaultdict(lambda: 1.1)
                         linestyles = defaultdict(lambda: '-')
-                        linestyles['u-bi481'] = '--'
-                        linestyles['u-bi700'] = '--'
-                        linestyles['u-aw310'] = '-'
+                        linestyles['u-aw310'] = '--'
                         timeseries_compare(
                                  customColours,
                                  physics=1,
