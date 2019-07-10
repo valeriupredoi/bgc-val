@@ -4,6 +4,8 @@ import os
 import numpy as np
 from matplotlib import pyplot
 from shelve import open as shopen
+from mpl_toolkits.axes_grid.inset_locator import (inset_axes, InsetPosition,
+                                                  mark_inset)
 
 
  
@@ -98,7 +100,7 @@ def get_data(j, field='AMOC'):
                 fn = '/group_workspaces/jasmin2/ukesm/BGC_data/ldemora/shelves/timeseries/'+j+'/'+j+'_DrakePassageTransport.shelve'
         if field == 'GVT':
                 fn = '/group_workspaces/jasmin2/ukesm/BGC_data/ldemora/shelves/timeseries/'+j+'/'+j+'_GlobalMeanTemperature.shelve'
-        if field == 'GMT':
+        if field == 'SST':
                 fn = '/group_workspaces/jasmin2/ukesm/BGC_data/ldemora/shelves/timeseries/'+j+'/'+j+'_Temperature.shelve'
 	        index = ('Global', 'Surface', 'mean')
         if field == 'SOMT':
@@ -122,32 +124,24 @@ def getClosestPoint(year, times, data):
 	
 	
 
-def fig1(field='GMT', window_len = 10):
+def fig1(field='SST', window_len = 10):
 	data1 = get_data('u-aw310', field=field,)
 
         times1 = sorted(data1.keys())
         data1 = [data1[t] for t in times1]
 
-	
-	#pyplot.plot(times, amoc,'k',lw=0.3)
 	newd1 = movingaverage_DT(data1, times1,window_len=window_len)
 	years = [yr[1] for cmip, yr in job_dicts.items()]
+
 
         pyplot.plot(times1, newd1,'k',lw=1.5)	
 	
 	for yr in years:
 		value = getClosestPoint(int(yr), times1, newd1)
 		pyplot.plot(float(yr), value, marker='o',ms=5, color = 'blue')
-	#f,(ax,ax2) = plt.subplots(1,2,sharey=True, facecolor='w')
 
-        
-        #ax2.plot(times1, newd1,'k',lw=1.5)             
-        
         pyplot.gca().set_xlim(1960., 2960.)
-	#ax2.set_xlim(2550., 2850.)
-	if field == 'GMT':
-	        pyplot.gca().set_ylim(17.0, 18.1)
-
+	if field == 'SST':
 		pyplot.title('Sea Surface Temperature - '+str(window_len)+' year moving average')
         	pyplot.ylabel('Celsius')
         if field == 'SOMT':
@@ -157,8 +151,64 @@ def fig1(field='GMT', window_len = 10):
 	pyplot.savefig(field+'_fig_'+str(window_len)+'.png', dpi=300)
 	pyplot.close()
 
-for field in ['GMT', 'SOMT']:	
+
+def fig2(field='SST', window_len = 10):
+
+        data1 = get_data('u-aw310', field=field,)
+
+        times1 = sorted(data1.keys())
+        data1 = [data1[t] for t in times1]
+
+        newd1 = movingaverage_DT(data1, times1,window_len=window_len)
+        years = [yr[1] for cmip, yr in job_dicts.items()]
+
+        fig, ax1 = pyplot.subplots()
+
+        pyplot.plot(times1, newd1,'k',lw=1.5)
+
+        for yr in years:
+                value = getClosestPoint(int(yr), times1, newd1)
+                pyplot.plot(float(yr), value, marker='o',ms=5, color = 'blue')
+
+        pyplot.gca().set_xlim(1960., 2960.)
+
+        if field == 'SST':
+                pyplot.gca().set_ylim(17.0, 18.1)
+
+                pyplot.title('Sea Surface Temperature - '+str(window_len)+' year moving average')
+                pyplot.ylabel('Celsius')
+        if field == 'SOMT':
+                pyplot.gca().set_ylim(4.3, 5.45)
+                pyplot.title('Southern Ocean Surface Temperature - '+str(window_len)+' year moving average')
+                pyplot.ylabel('Celsius')
+
+        # second axes:
+	# Create a set of inset Axes: these should fill the bounding box allocated to
+	# them.
+	ax2 = pyplot.axes([0,0,1,1])
+	# Manually set the position and relative size of the inset axes within ax1
+	ip = InsetPosition(ax1, [0.1, 0.075,0.75,0.25])
+	ax2.set_axes_locator(ip)
+	# Mark the region corresponding to the inset axes on ax1 and draw lines
+	# in grey linking the two axes.
+	mark_inset(ax1, ax2, loc1=2, loc2=4, fc="none", ec='0.5')
+        ax2.plot(times1, newd1,'k',lw=1.5)
+	ax2.set_xlim(2550., 2850.)
+        for yr in years:
+		print('ax2', yr)
+		if int(yr) < 2550:continue
+		if int(yr) > 2850: continue
+                value = getClosestPoint(int(yr), times1, newd1)
+		print('ax2',yr, value)	
+                ax2.plot(float(yr), value, marker='o',ms=5, color = 'blue')
+
+        pyplot.savefig(field+'_inset_fig_'+str(window_len)+'.png', dpi=300)
+        pyplot.close()
+
+
+for field in ['SST', 'SOMT']:	
     for window_len in [1,3,5,10]:
+        fig2(field = field, window_len=window_len)
 	fig1(field = field, window_len=window_len)
 
 
