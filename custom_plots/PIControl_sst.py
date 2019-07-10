@@ -117,6 +117,7 @@ def get_data(j, field='AMOC'):
 
 def getClosestPoint(year, times, data):
 	times = [int(t) for t in times]
+	print year, times.index(year), data[times.index(year)]
 	return data[times.index(year)]
 	
 	
@@ -130,27 +131,35 @@ def fig1(field='GMT', window_len = 10):
 	
 	#pyplot.plot(times, amoc,'k',lw=0.3)
 	newd1 = movingaverage_DT(data1, times1,window_len=window_len)
-	years = [yr[1] for cmip, jr in job_dicts.items()]
+	years = [yr[1] for cmip, yr in job_dicts.items()]
 
         pyplot.plot(times1, newd1,'k',lw=1.5)	
 	
 	for yr in years:
-		value = getClosestPoint(year, times, newd1)
-		pyplot.plot(year, value, ms='o')
+		value = getClosestPoint(int(yr), times1, newd1)
+		pyplot.plot(float(yr), value, marker='o',ms=5, color = 'blue')
 	#f,(ax,ax2) = plt.subplots(1,2,sharey=True, facecolor='w')
 
         
         #ax2.plot(times1, newd1,'k',lw=1.5)             
         
-        ax.set_xlim(1960., 2960.)
+        pyplot.gca().set_xlim(1960., 2960.)
 	#ax2.set_xlim(2550., 2850.)
 	if field == 'GMT':
-		pyplot.title('Sea Surface Temperature - 10 year moving average')
+	        pyplot.gca().set_ylim(17.0, 18.1)
+
+		pyplot.title('Sea Surface Temperature - '+str(window_len)+' year moving average')
         	pyplot.ylabel('Celsius')
-	pyplot.savefig('custom_plots/'+field+'_fig_'+str(window_len)+'.png', dpi=300)
+        if field == 'SOMT':
+                pyplot.title('Southern Ocean Surface Temperature - '+str(window_len)+' year moving average')
+                pyplot.ylabel('Celsius')
+
+	pyplot.savefig(field+'_fig_'+str(window_len)+'.png', dpi=300)
 	pyplot.close()
-	
-fig1()	
+
+for field in ['GMT', 'SOMT']:	
+    for window_len in [1,3,5,10]:
+	fig1(field = field, window_len=window_len)
 
 
 
