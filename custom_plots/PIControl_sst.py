@@ -21,15 +21,21 @@ RHS: 2550 to 2850
 
 Mark Historical ICs
 
-I’d suggest a plot covering 1960 to 2960 of u-aw310 (with all dates renormalized so that 1960 = 1850). And plot both global and S. Ocean SST (with time meaning tested as above) and somehow include an indication of the years of the historical ICs.
+I’d suggest a plot covering 1960 to 2960 of u-aw310 (with all dates renormalized
+ so that 1960 = 1850). And plot both global and S. Ocean SST (with time meaning 
+ tested as above) and somehow include an indication of the years of the historical ICs.
 
  
 
-Then in addition, using basically the same figure, include a blow-up of the period 2550 to 2850 to highlight the 4 ICs for historical members r16-r19 as these 4 were deliberately chosen to sample the centennial timescale variability in the S.Ocean.
+Then in addition, using basically the same figure, include a blow-up of the period 
+2550 to 2850 to highlight the 4 ICs for historical members r16-r19 as these 4 were 
+deliberately chosen to sample the centennial timescale variability in the S.Ocean.
 
  
 
-I am not sure whether we can get away with just using global SST or just S. Ocean SST or both, so if we can look at both first and then decide, along with a suitable time meaning…that would be great.
+I am not sure whether we can get away with just using global SST or just S. Ocean
+SST or both, so if we can look at both first and then decide, along with a 
+suitable time meaning that would be great.
 
  
 """
