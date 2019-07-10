@@ -121,8 +121,8 @@ def getClosestPoint(year, times, data):
 	
 	
 
-def fig1():
-	data1 = get_data('u-aw310', field='GMT', window_len = 10)
+def fig1(field='GMT', window_len = 10):
+	data1 = get_data('u-aw310', field=field,)
 
         times1 = sorted(data1.keys())
         data1 = [data1[t] for t in times1]
@@ -144,9 +144,9 @@ def fig1():
         
         ax.set_xlim(1960., 2960.)
 	#ax2.set_xlim(2550., 2850.)
-	
-	pyplot.title('Sea Surface Temperature - 10 year moving average')
-        pyplot.ylabel('Celsius')
+	if field == 'GMT':
+		pyplot.title('Sea Surface Temperature - 10 year moving average')
+        	pyplot.ylabel('Celsius')
 	pyplot.savefig('custom_plots/'+field+'_fig_'+str(window_len)+'.png', dpi=300)
 	pyplot.close()
 	
