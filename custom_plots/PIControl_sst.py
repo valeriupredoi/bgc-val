@@ -234,7 +234,7 @@ def fig2(field='SST', window_len = 10):
         pyplot.close()
 
 
-def fig2(field='SST', window_len = 10):
+def fig3(field='SST', window_len = 10):
 	tdiff = -110
 	data1 = get_data('u-aw310', field=field,)
 
@@ -304,18 +304,26 @@ def fig2(field='SST', window_len = 10):
                 value = getClosestPoint(int(yr), times1, newd1)
                 ax2.plot(float(yr)+tdiff, value, marker='o',ms=5, color = color)
 	ax2.tick_params(axis='x', labelsize = 8) #direction='out', length=6, width=2, colors='r',
-        ax2.tick_params(axis='y', labelsize = 8) #direction='out', length=6, width=2, colors='r',
+        ax2.tick_params(axis='y', labelsize = 8, right=False, left=True) #direction='out', length=6, width=2, colors='r',
+	
+	# Add 3rd set of axes
+	ax3 = ax2.twinx()
+        #x3 = pyplot.axes([0,0,1,1])
+        #p3 = InsetPosition(ax3, [0.1, 0.075,0.75,0.25])
+        #x3.set_axes_locator(ip3)
 
-
-	ax3 = ax2.twinx()  # instantiate a second axes that shares the same x-axis
-	ax3.set_xlim(2550.+tdiff, 2850.+tdiff)	
+	#ax3 = ax2.twinx()  # instantiate a second axes that shares the same x-axis
 	data2 = get_data('u-aw310', field='SST',)
-	times2 = np.array([int(t) for t in sorted(data1.keys())])
-	data2 = [data1[t] for t in sorted(data1.keys())]
+	times2 = np.array([int(t) for t in sorted(data2.keys())])
+	data2 = [data2[t] for t in sorted(data2.keys())]
+
 	color = 'tab:blue'
-	ax3.set_ylabel('SST', color=color)  # we already handled the x-label with ax1
-	ax3.plot(times2, data2, color=color)
-	ax3.tick_params(axis='y', labelcolor=color, labelsize = 8)
+	ax3.set_ylabel('SST', color=color, position='right')  
+	#x3.yaxis.set_label_position('right')
+	ax3.plot(times2+tdiff, data2, color=color,zorder=10)
+        ax3.set_xlim(2550.+tdiff, 2850.+tdiff)
+
+	ax3.tick_params(axis='y', labelcolor=color, labelsize = 8, right=True, left=False, labelright=True,labelleft=False,)
 
 	fn = field+'_inset_fig3_'+str(window_len)+'.png'
 	print("Saving:", fn)
