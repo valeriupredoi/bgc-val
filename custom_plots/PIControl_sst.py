@@ -233,7 +233,98 @@ def fig2(field='SST', window_len = 10):
         pyplot.savefig(fn, dpi=300)
         pyplot.close()
 
-fig2(field = 'SOMT', window_len=0)
+
+def fig2(field='SST', window_len = 10):
+	tdiff = -110
+	data1 = get_data('u-aw310', field=field,)
+
+	times1 = np.array([int(t) for t in sorted(data1.keys())])
+	data1 = [data1[t] for t in sorted(data1.keys())]
+
+        if window_len:
+		newd1 = movingaverage_DT(data1, times1,window_len=window_len)
+		title_suff = ' - '+str(window_len)+' year moving average'
+	else:
+		newd1 = data1[:]
+		title_suff = ''
+
+        fig, ax1 = pyplot.subplots()
+
+        pyplot.plot(times1+tdiff, newd1,'k',lw=1.5)
+	
+	for run, [jobid, yr] in job_dicts.items():
+		print yr, run, run[:3]
+                value = getClosestPoint(int(yr), times1, newd1)
+		if run[:3] in ['r16', 'r17','r18', 'r19']: 
+			color = 'red'
+		else:
+			color = 'blue'
+                pyplot.plot(float(yr)+tdiff, value, marker='o',ms=5, color = color)
+
+        pyplot.gca().set_xlim(1955.+tdiff, 2960.+tdiff)
+
+        if field == 'SST':
+                pyplot.gca().set_ylim(17.0, 18.1)
+
+                pyplot.title('Sea Surface Temperature' + title_suff)
+                pyplot.ylabel('Celsius')
+        elif field == 'SOMT':
+                pyplot.gca().set_ylim(4.2, 5.5)
+                pyplot.title('Southern Ocean Surface Temperature' + title_suff)
+                pyplot.ylabel('Celsius')
+	else:
+		ylims = pyplot.gca().get_ylim()
+		ylims = [ylims[0] - 0.45*(ylims[1] - ylims[0]), ylims[1]]
+		pyplot.gca().set_ylim(ylims)
+		pyplot.title(field + title_suff)
+
+        # second axes:
+	# Create a set of inset Axes: these should fill the bounding box allocated to
+	# them.
+	ax2 = pyplot.axes([0,0,1,1])
+	# Manually set the position and relative size of the inset axes within ax1
+	ip = InsetPosition(ax1, [0.1, 0.075,0.75,0.25])
+	ax2.set_axes_locator(ip)
+	# Mark the region corresponding to the inset axes on ax1 and draw lines
+	# in grey linking the two axes.
+	mark_inset(ax1, ax2, loc1=2, loc2=4, fc="none", ec='0.5')
+        ax2.plot(times1+tdiff, newd1,'k',lw=1.5)
+	ax2.set_xlim(2550.+tdiff, 2850.+tdiff)
+        if field == 'SOMT':
+                pyplot.gca().set_ylim(4.65, 5.45)
+
+        for run, [jobid, yr] in job_dicts.items():
+                value = getClosestPoint(int(yr), times1, newd1)
+                if run[:3] in ['r16', 'r17','r18', 'r19']: 
+			color = 'red'
+		else:
+			color = 'blue' 
+		if int(yr) < 2550:continue
+		if int(yr) > 2850: continue
+                value = getClosestPoint(int(yr), times1, newd1)
+                ax2.plot(float(yr)+tdiff, value, marker='o',ms=5, color = color)
+	ax2.tick_params(axis='x', labelsize = 8) #direction='out', length=6, width=2, colors='r',
+        ax2.tick_params(axis='y', labelsize = 8) #direction='out', length=6, width=2, colors='r',
+
+
+	ax3 = ax2.twinx()  # instantiate a second axes that shares the same x-axis
+	ax3.set_xlim(2550.+tdiff, 2850.+tdiff)	
+	data2 = get_data('u-aw310', field='SST',)
+	times2 = np.array([int(t) for t in sorted(data1.keys())])
+	data2 = [data1[t] for t in sorted(data1.keys())]
+	color = 'tab:blue'
+	ax2.set_ylabel('SST', color=color)  # we already handled the x-label with ax1
+	ax2.plot(times2, data2, color=color)
+	ax2.tick_params(axis='y', labelcolor=color, labelsize = 8)
+
+	fn = field+'_inset_fig_'+str(window_len)+'.png'
+	print("Saving:", fn)
+        pyplot.savefig(fn, dpi=300)
+        pyplot.close()
+        
+fig3(field = 'SOMT', window_len=0)
+
+
 
 #for field in ['SST', 'SOMT', 'AMOC', 'Drake', 'GVT', 'AirSeaFluxCO2']:	
 #    for window_len in [0, 1,3,5,10]:
