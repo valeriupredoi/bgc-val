@@ -5,7 +5,7 @@ import numpy as np
 from matplotlib import pyplot
 from shelve import open as shopen
 from mpl_toolkits.axes_grid.inset_locator import (inset_axes, InsetPosition,
-                                                  mark_inset)
+                                                  mark_inset, zoomed_inset_axes)
 
 
  
@@ -234,12 +234,16 @@ def fig2(field='SST', window_len = 10):
         pyplot.close()
 
 
-def fig3(field='SST', window_len = 10):
-	tdiff = -110
-	data1 = get_data('u-aw310', field=field,)
 
+
+def fig5(field='SST', window_len = 10):
+	tdiff = -110
+	
+	data1 = get_data('u-aw310', field=field,)
+	#data1 = {y:5 for i,y in enumerate(range(1750,3000))}
 	times1 = np.array([int(t) for t in sorted(data1.keys())])
 	data1 = [data1[t] for t in sorted(data1.keys())]
+
 
         if window_len:
 		newd1 = movingaverage_DT(data1, times1,window_len=window_len)
@@ -281,13 +285,20 @@ def fig3(field='SST', window_len = 10):
         # second axes:
 	# Create a set of inset Axes: these should fill the bounding box allocated to
 	# them.
-	ax2 = pyplot.axes([0,0,1,1])
+
+
+	#mark_inset(ax1, ax2, loc1=2, loc2=4, fc="none", ec="0.5")
+                             
+	ax2 = pyplot.axes([0,0,1,1], label='somt')
 	# Manually set the position and relative size of the inset axes within ax1
-	ip = InsetPosition(ax1, [0.1, 0.075,0.75,0.25])
+	axespos = [0.1,0.1,0.8,0.3]
+	ip = InsetPosition(ax1, axespos)
 	ax2.set_axes_locator(ip)
+	ax2.patch.set_alpha(0.7)	
 	# Mark the region corresponding to the inset axes on ax1 and draw lines
 	# in grey linking the two axes.
 	mark_inset(ax1, ax2, loc1=2, loc2=4, fc="none", ec='0.5')
+	
         ax2.plot(times1+tdiff, newd1,'k',lw=1.5)
 	ax2.set_xlim(2550.+tdiff, 2850.+tdiff)
         if field == 'SOMT':
@@ -303,34 +314,39 @@ def fig3(field='SST', window_len = 10):
 		if int(yr) > 2850: continue
                 value = getClosestPoint(int(yr), times1, newd1)
                 ax2.plot(float(yr)+tdiff, value, marker='o',ms=5, color = color)
-	ax2.tick_params(axis='x', labelsize = 8) #direction='out', length=6, width=2, colors='r',
-        ax2.tick_params(axis='y', labelsize = 8, right=False, left=True) #direction='out', length=6, width=2, colors='r',
-	
-	# Add 3rd set of axes
-	ax3 = ax2.twinx()
-        #x3 = pyplot.axes([0,0,1,1])
-        #p3 = InsetPosition(ax3, [0.1, 0.075,0.75,0.25])
-        #x3.set_axes_locator(ip3)
 
-	#ax3 = ax2.twinx()  # instantiate a second axes that shares the same x-axis
+	ax2.tick_params(axis='x', labelsize = 8) #direction='out', length=6, width=2, colors='r',
+        ax2.tick_params(axis='y', labelsize = 8,labelcolor='k', right=False, left=True) #direction='out', length=6, width=2, colors='r',
+
+	# Add 3rd set of axes
+	ax3 = pyplot.axes([0,0,1,1], label='sst')	
+	ax3.patch.set_alpha(0.)
+	ip3 = InsetPosition(ax1, axespos)	
+        ax3.set_axes_locator(ip3)
+	
+	#data2 = {y:17.1 for i,y in enumerate(range(1750,3000))}
 	data2 = get_data('u-aw310', field='SST',)
 	times2 = np.array([int(t) for t in sorted(data2.keys())])
-	data2 = [data2[t] for t in sorted(data2.keys())]
-
+	data2 = np.array([data2[t] for t in sorted(data2.keys())])
+	#data2[300:] = 16.9
 	color = 'tab:blue'
-	ax3.set_ylabel('SST', color=color, position='right')  
-	#x3.yaxis.set_label_position('right')
+	
+
 	ax3.plot(times2+tdiff, data2, color=color,zorder=10)
         ax3.set_xlim(2550.+tdiff, 2850.+tdiff)
-
-	ax3.tick_params(axis='y', labelcolor=color, labelsize = 8, right=True, left=False, labelright=True,labelleft=False,)
-
-	fn = field+'_inset_fig3_'+str(window_len)+'.png'
+        
+	ax3.set_ylabel('SST', color=color)  
+	ax3.yaxis.set_label_position("right")
+	ax3.yaxis.tick_right()        
+	ax3.tick_params(axis='x', labelsize = 8) #direction='out', length=6, width=2, colors='r',
+	ax3.tick_params(axis='y', labelcolor=color, labelsize = 8)
+	fn = field+'_inset_fig5_'+str(window_len)+'.png'
 	print("Saving:", fn)
         pyplot.savefig(fn, dpi=300)
         pyplot.close()
         
-fig3(field = 'SOMT', window_len=0)
+fig5(field = 'SOMT', window_len=0)                        
+#fig4(field = 'SOMT', window_len=0)
 
 
 
