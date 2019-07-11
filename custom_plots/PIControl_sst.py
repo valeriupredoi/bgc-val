@@ -119,7 +119,7 @@ def get_data(j, field='AMOC'):
 
 def getClosestPoint(year, times, data):
 	times = [int(t) for t in times]
-	print year, times.index(year), data[times.index(year)]
+	#print year, times.index(year), data[times.index(year)]
 	return data[times.index(year)]
 	
 	
@@ -153,34 +153,50 @@ def fig1(field='SST', window_len = 10):
 
 
 def fig2(field='SST', window_len = 10):
+	tdiff = -110
+	data1 = get_data('u-aw310', field=field,)
 
-        data1 = get_data('u-aw310', field=field,)
+	times1 = np.array([int(t) for t in sorted(data1.keys())])
+	data1 = [data1[t] for t in sorted(data1.keys())]
 
-        times1 = sorted(data1.keys())
-        data1 = [data1[t] for t in times1]
-
-        newd1 = movingaverage_DT(data1, times1,window_len=window_len)
-        years = [yr[1] for cmip, yr in job_dicts.items()]
+        if window_len:
+		newd1 = movingaverage_DT(data1, times1,window_len=window_len)
+		title_suff = ' - '+str(window_len)+' year moving average'
+	else:
+		newd1 = data1[:]
+		title_suff = ''
+        #years = [yr[1] for cmip, yr in job_dicts.items()]
+        #runid = [yr[0] for cmip, yr in job_dicts.items()]
 
         fig, ax1 = pyplot.subplots()
 
-        pyplot.plot(times1, newd1,'k',lw=1.5)
-
-        for yr in years:
+        pyplot.plot(times1+tdiff, newd1,'k',lw=1.5)
+	
+	for run, [jobid, yr] in job_dicts.items():
+		print yr, run, run[:3]
                 value = getClosestPoint(int(yr), times1, newd1)
-                pyplot.plot(float(yr), value, marker='o',ms=5, color = 'blue')
+		if run[:3] in ['r16', 'r17','r18', 'r19']: 
+			color = 'red'
+		else:
+			color = 'blue'
+                pyplot.plot(float(yr)+tdiff, value, marker='o',ms=5, color = color)
 
-        pyplot.gca().set_xlim(1960., 2960.)
+        pyplot.gca().set_xlim(1955.+tdiff, 2960.+tdiff)
 
         if field == 'SST':
                 pyplot.gca().set_ylim(17.0, 18.1)
 
-                pyplot.title('Sea Surface Temperature - '+str(window_len)+' year moving average')
+                pyplot.title('Sea Surface Temperature' + title_suff)
                 pyplot.ylabel('Celsius')
-        if field == 'SOMT':
-                pyplot.gca().set_ylim(4.3, 5.45)
-                pyplot.title('Southern Ocean Surface Temperature - '+str(window_len)+' year moving average')
+        elif field == 'SOMT':
+                pyplot.gca().set_ylim(4.2, 5.5)
+                pyplot.title('Southern Ocean Surface Temperature' + title_suff)
                 pyplot.ylabel('Celsius')
+	else:
+		ylims = pyplot.gca().get_ylim()
+		ylims = [ylims[0] - 0.45*(ylims[1] - ylims[0]), ylims[1]]
+		pyplot.gca().set_ylim(ylims)
+		pyplot.title(field + title_suff)
 
         # second axes:
 	# Create a set of inset Axes: these should fill the bounding box allocated to
@@ -192,24 +208,37 @@ def fig2(field='SST', window_len = 10):
 	# Mark the region corresponding to the inset axes on ax1 and draw lines
 	# in grey linking the two axes.
 	mark_inset(ax1, ax2, loc1=2, loc2=4, fc="none", ec='0.5')
-        ax2.plot(times1, newd1,'k',lw=1.5)
-	ax2.set_xlim(2550., 2850.)
-        for yr in years:
-		print('ax2', yr)
+        ax2.plot(times1+tdiff, newd1,'k',lw=1.5)
+	ax2.set_xlim(2550.+tdiff, 2850.+tdiff)
+        if field == 'SOMT':
+                pyplot.gca().set_ylim(4.65, 5.45)
+
+        for run, [jobid, yr] in job_dicts.items():
+                value = getClosestPoint(int(yr), times1, newd1)
+                if run[:3] in ['r16', 'r17','r18', 'r19']: 
+			color = 'red'
+		else:
+			color = 'blue' 
 		if int(yr) < 2550:continue
 		if int(yr) > 2850: continue
                 value = getClosestPoint(int(yr), times1, newd1)
-		print('ax2',yr, value)	
-                ax2.plot(float(yr), value, marker='o',ms=5, color = 'blue')
+                ax2.plot(float(yr)+tdiff, value, marker='o',ms=5, color = color)
+	ax2.tick_params(axis='x', labelsize = 8) #direction='out', length=6, width=2, colors='r',
+        ax2.tick_params(axis='y', labelsize = 8) #direction='out', length=6, width=2, colors='r',
 
-        pyplot.savefig(field+'_inset_fig_'+str(window_len)+'.png', dpi=300)
+               #grid_color='r', grid_alpha=0.5)
+
+	fn = field+'_inset_fig_'+str(window_len)+'.png'
+	print("Saving:", fn)
+        pyplot.savefig(fn, dpi=300)
         pyplot.close()
 
+fig2(field = 'SOMT', window_len=0)
 
-for field in ['SST', 'SOMT']:	
-    for window_len in [1,3,5,10]:
-        fig2(field = field, window_len=window_len)
-	fig1(field = field, window_len=window_len)
+#for field in ['SST', 'SOMT', 'AMOC', 'Drake', 'GVT', 'AirSeaFluxCO2']:	
+#    for window_len in [0, 1,3,5,10]:
+#        fig2(field = field, window_len=window_len)
+#	fig1(field = field, window_len=window_len)
 
 
 
