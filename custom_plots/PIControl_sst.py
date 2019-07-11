@@ -313,11 +313,11 @@ def fig2(field='SST', window_len = 10):
 	times2 = np.array([int(t) for t in sorted(data1.keys())])
 	data2 = [data1[t] for t in sorted(data1.keys())]
 	color = 'tab:blue'
-	ax2.set_ylabel('SST', color=color)  # we already handled the x-label with ax1
-	ax2.plot(times2, data2, color=color)
-	ax2.tick_params(axis='y', labelcolor=color, labelsize = 8)
+	ax3.set_ylabel('SST', color=color)  # we already handled the x-label with ax1
+	ax3.plot(times2, data2, color=color)
+	ax3.tick_params(axis='y', labelcolor=color, labelsize = 8)
 
-	fn = field+'_inset_fig_'+str(window_len)+'.png'
+	fn = field+'_inset_fig3_'+str(window_len)+'.png'
 	print("Saving:", fn)
         pyplot.savefig(fn, dpi=300)
         pyplot.close()
