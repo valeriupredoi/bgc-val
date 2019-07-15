@@ -83,7 +83,10 @@ def getAMOCdata(j, field='AMOC'):
         if field == 'GMT':
                 fn = '/group_workspaces/jasmin2/ukesm/BGC_data/ldemora/shelves/timeseries/'+j+'/'+j+'_Temperature.shelve'
 	        index = ('Global', 'Surface', 'mean')
-
+        if field == 'GMT_anomaly':
+                fn = '/group_workspaces/jasmin2/ukesm/BGC_data/ldemora/shelves/timeseries/'+j+'/'+j+'_Temperature.shelve'
+	        index = ('Global', 'Surface', 'mean')
+	        
         if field == 'AirSeaFluxCO2':
                 fn = '/group_workspaces/jasmin2/ukesm/BGC_data/ldemora/shelves/timeseries/'+j+'/'+j+'_TotalAirSeaFluxCO2.shelve'
 
@@ -164,7 +167,11 @@ def fig2(field, range_key = 'mine'):
         		}
         # Older colours:
 #        ssp_colours = {'piControl': 'green', 'historical': 'purple', 'SSP 1 2.6': '#003466', 'SSP 2 4.5': '#70a0cd', 'SSP 3 7.0': '#c47900','SSP 5 8.5': '#990002',		}
-
+	if field in ['GMT_anomaly', ]:
+                datas = getAMOCdata(ssp_jobs['piControl'],field=field)
+	        times = np.array(sorted(datas.keys()))
+                data = [datas[t] for t in times]
+		anomaly = np.mean(data)
         # Fill between. pi control:
         for ssp in order:
                 if ssp != 'piControl':continue
@@ -174,9 +181,9 @@ def fig2(field, range_key = 'mine'):
                         datas = getAMOCdata(job,field=field)
                         times = np.array(sorted(datas.keys()))
                         data = [datas[t] for t in times]
-
 			years = ['1960', '1995', '2020', '2050', '2120', '2165', '2200', '2250', '2285', '2340', '2395', '2460', '2619', '2716', '2760', '2815']
 			
+			if field in ['GMT_anomaly', ]: data =  np.array(data) - anomaly
 			for start_times in years:
 				jobname = job + '_' + str(start_times)
 				new_times = times - float(start_times) + 1601 -250.
@@ -209,6 +216,7 @@ def fig2(field, range_key = 'mine'):
                         runs[job] = getAMOCdata(job, field=field)
                 times, data = ensemblemean(runs)
                 data = movingaverage_DT(data, times,)
+		if field in ['GMT_anomaly', ]: data =  np.array(data) - anomaly                
                 pyplot.plot(times, data, ssp_colours[ssp], lw=1.5, label = ssp)
 
 
@@ -221,6 +229,7 @@ def fig2(field, range_key = 'mine'):
                         datas = getAMOCdata(job, field=field)
 			times = sorted(datas.keys())             
 			data = [datas[t] for t in times]
+			if field in ['GMT_anomaly', ]: data =  np.array(data) - anomaly                			
 	                #data = movingaverage_DT(data, times,)
 			runs[job] = {t:d for t,d in zip(times,data)}
 
@@ -255,6 +264,10 @@ def fig2(field, range_key = 'mine'):
                 pyplot.title('Global Mean Surface Temperature - 10 year moving average')
                 pyplot.ylabel('Celsius')
 	        pyplot.legend(loc = 'upper left')
+        if field == 'GMT_anomaly':
+                pyplot.title('Global Mean Surface Temperature anomaly')
+                pyplot.ylabel('Celsius')
+	        pyplot.legend(loc = 'upper left')	        
 
 
 	if field == 'AirSeaFluxCO2':
@@ -269,6 +282,8 @@ def fig2(field, range_key = 'mine'):
 		fn = 'custom_plots/'+field+'_fig2_colins_range.png'
         pyplot.savefig(fn, dpi=600)
 	pyplot.close()
+
+fig2('GMT_anomaly')
 
 fig2('GMT')
 fig2('AirSeaFluxCO2')
