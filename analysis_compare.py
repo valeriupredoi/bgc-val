@@ -2725,6 +2725,51 @@ def main():
 		print "Successful command line comparison"
 		exit
 	else:
+		a = 1
+		if a:
+		        newemissionscolours= {
+			                'u-av651': 'black',
+			                'u-aw310': 'black',
+		                        'u-az021': 'darkgreen',
+		                        'u-az417': 'rebeccapurple',
+		                        'u-az418': 'dodgerblue',
+		                        'u-az513': 'darkorange', # UKESM1 fifth Historical run (2020)
+		                        'u-az515': 'deeppink', #      UKESM1 sixth Historical run (2050)
+		                        'u-az524': 'goldenrod', # UKESM1 seventh Historical run (1995)
+		                        'u-bb075': 'green',
+		                        'u-bb277': 'dodgerblue',
+		                        'u-bc179': 'pink',#                  :standard ; UKESM1 Historical run (2250)
+                		        'u-bc292': 'brown',#                :standard ; UKESM1 Historical run(2165)
+                                        'u-bc370': 'slateblue',#                :standard ; UKESM1 Historical run(2120)
+                                        'u-bc470': 'gold',#                :standard ; UKESM1 Historical run(2120)
+		                        'u-bd288': 'orchid', 	# UKESM1 Historical run (2340)
+					'u-bd416': 'navy',	# UKESM1 Historical run (2460)
+                                        'u-bd483': 'olive',	# UKESM1 Historical run (2200)
+					'u-bf935': 'fushia', # UKESM1 Historical run '2565', ],
+					'u-bh100': 'yellow', # UKESM1 Historical run '2685', ],
+					'u-bh101': 'darkgold', # UKESM1 Historical run '2745', ],
+					'u-bf647': 'lightgreen', # UKESM1 Historical run '2629', ],
+					'u-bf656': 'cyan', # UKESM1 Historical run '2716', ],
+					'u-bf703': 'crimson', # UKESM1 Historical run '2760', ],
+					'u-bh162': 'lightpurple', # UKESM1 Historical run '2815', ],}                                       
+		                   }
+		        linestyles = defaultdict(lambda: '-')
+		        linestyles['u-av651'] = '--'
+		        linestyles['u-aw310']=':'
+		        cnthicknesses = defaultdict(lambda: 1.1)
+		        cnthicknesses['u-aw310'] = 1.7
+		        timeseries_compare(
+		                 newemissionscolours,
+		                 physics=1,
+		                 bio=1,
+		                 debug=1,
+		                 year0='ControlAligned',
+		                 jobDescriptions=jobDescriptions,
+		                 analysisname='UKESM1_ControlAligned',
+		                 lineThicknesses= cnthicknesses,
+		                 linestyles = linestyles,)
+		                 
+		                 	
                 emissions_driven = True
                 if emissions_driven:
                         jobs = ['u-bh519', 'u-az513', 'u-bf703']
@@ -3153,6 +3198,13 @@ def main():
 		                        'u-bd288': 'orchid', 	# UKESM1 Historical run (2340)
 					'u-bd416': 'navy',	# UKESM1 Historical run (2460)
                                         'u-bd483': 'olive',	# UKESM1 Historical run (2200)
+					'u-bf935': 'fushia', # UKESM1 Historical run '2565', ],
+					'u-bh100': 'yellow', # UKESM1 Historical run '2685', ],
+					'u-bh101': 'darkgold', # UKESM1 Historical run '2745', ],
+					'u-bf647': 'lightgreen', # UKESM1 Historical run '2629', ],
+					'u-bf656': 'cyan', # UKESM1 Historical run '2716', ],
+					'u-bf703': 'crimson', # UKESM1 Historical run '2760', ],
+					'u-bh162': 'lightpurple', # UKESM1 Historical run '2815', ],}                                       
 		                   }
 		        linestyles = defaultdict(lambda: '-')
 		        linestyles['u-av651'] = '--'

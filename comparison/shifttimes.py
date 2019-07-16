@@ -245,8 +245,12 @@ def shifttimes(mdata, jobID,year0=False):
 			 	'u-bf703': 2760,
 			 	#'u-bf705': 2815, # dead                                
 			 	'u-bh162': 2815, 
+				'u-bf935': 2565, 
+				'u-bh100': 2685, 
+				'u-bh101': 2745, 			 	
 			   }
-
+					
+					
        		for t in sorted(mdata.keys()):
 			if jobID in ['u-aw310',]:	t1 = t
 			elif jobID in ['u-av651',]:	t1 = t - 618.
