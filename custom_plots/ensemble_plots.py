@@ -168,7 +168,7 @@ def fig2(field, range_key = 'mine'):
         # Older colours:
 #        ssp_colours = {'piControl': 'green', 'historical': 'purple', 'SSP 1 2.6': '#003466', 'SSP 2 4.5': '#70a0cd', 'SSP 3 7.0': '#c47900','SSP 5 8.5': '#990002',		}
 	if field in ['GMT_anomaly', ]:
-                datas = getAMOCdata(ssp_jobs['piControl'],field=field)
+                datas = getAMOCdata(ssp_jobs['piControl'][0],field=field)
 	        times = np.array(sorted(datas.keys()))
                 data = [datas[t] for t in times]
 		anomaly = np.mean(data)

@@ -192,11 +192,18 @@ def fig2(field='SST', window_len = 10):
                 pyplot.gca().set_ylim(4.2, 5.5)
                 pyplot.title('Southern Ocean Surface Temperature' + title_suff)
                 pyplot.ylabel('Celsius')
+        elif field == 'Drake':
+                ylims = pyplot.gca().get_ylim()
+                ylims = [ylims[0] - 0.45*(ylims[1] - ylims[0]), ylims[1]]
+                pyplot.gca().set_ylim(ylims)
+                pyplot.title('Drake Passage Current' + title_suff)
+                pyplot.ylabel('Sv')
 	else:
 		ylims = pyplot.gca().get_ylim()
 		ylims = [ylims[0] - 0.45*(ylims[1] - ylims[0]), ylims[1]]
 		pyplot.gca().set_ylim(ylims)
 		pyplot.title(field + title_suff)
+
 
         # second axes:
 	# Create a set of inset Axes: these should fill the bounding box allocated to
@@ -213,6 +220,9 @@ def fig2(field='SST', window_len = 10):
         if field == 'SOMT':
                 pyplot.gca().set_ylim(4.65, 5.45)
 
+        if field == 'Drake':
+                pyplot.gca().set_ylim(138., 172.)
+
         for run, [jobid, yr] in job_dicts.items():
                 value = getClosestPoint(int(yr), times1, newd1)
                 if run[:3] in ['r16', 'r17','r18', 'r19']: 
@@ -223,8 +233,9 @@ def fig2(field='SST', window_len = 10):
 		if int(yr) > 2850: continue
                 value = getClosestPoint(int(yr), times1, newd1)
                 ax2.plot(float(yr)+tdiff, value, marker='o',ms=5, color = color)
-	ax2.tick_params(axis='x', labelsize = 8) #direction='out', length=6, width=2, colors='r',
-        ax2.tick_params(axis='y', labelsize = 8) #direction='out', length=6, width=2, colors='r',
+	ax2.tick_params(axis='x', labelsize = 7) #direction='out', length=6, width=2, colors='r',
+        ax2.tick_params(axis='y', labelsize = 7) #direction='out', length=6, width=2, colors='r',
+
 
                #grid_color='r', grid_alpha=0.5)
 
@@ -282,24 +293,43 @@ def fig5(field='SST', window_len = 10):
 		pyplot.gca().set_ylim(ylims)
 		pyplot.title(field + title_suff)
 
+        axespos = [0.12,0.07,0.75,0.3]
+        # Add 3rd set of axes
+        ax3 = pyplot.axes([0,0,1,1], label='sst')
+        ax3.patch.set_alpha(0.7)
+        ip3 = InsetPosition(ax1, axespos)
+        ax3.set_axes_locator(ip3)
+        ax3.set_ylim(17.39, 18.1)
+
+        #data2 = {y:17.1 for i,y in enumerate(range(1750,3000))}
+        data2 = get_data('u-aw310', field='SST',)
+        times2 = np.array([int(t) for t in sorted(data2.keys())])
+        data2 = np.array([data2[t] for t in sorted(data2.keys())])
+        #data2[300:] = 16.9
+        color = 'tab:green'
+
+        ax3.plot(times2+tdiff, data2, color=color,zorder=3, lw=0.5)
+        ax3.set_xlim(2550.+tdiff, 2850.+tdiff)
+
+        ax3.set_ylabel('SST', color=color,)# fontsize = 8)
+        ax3.yaxis.set_label_position("right")
+        ax3.yaxis.tick_right()
+        ax3.tick_params(axis='x', labelsize = 7) #direction='out', length=6, width=2, colors='r',
+        ax3.tick_params(axis='y', labelcolor=color, labelsize = 7, colors=color)
+
+
         # second axes:
 	# Create a set of inset Axes: these should fill the bounding box allocated to
 	# them.
-
-
-	#mark_inset(ax1, ax2, loc1=2, loc2=4, fc="none", ec="0.5")
-                             
 	ax2 = pyplot.axes([0,0,1,1], label='somt')
-	# Manually set the position and relative size of the inset axes within ax1
-	axespos = [0.1,0.1,0.8,0.3]
 	ip = InsetPosition(ax1, axespos)
 	ax2.set_axes_locator(ip)
-	ax2.patch.set_alpha(0.7)	
+	ax2.patch.set_alpha(0.3)	
 	# Mark the region corresponding to the inset axes on ax1 and draw lines
 	# in grey linking the two axes.
-	mark_inset(ax1, ax2, loc1=2, loc2=4, fc="none", ec='0.5')
+	mark_inset(ax1, ax2, loc1=2, loc2=4, fc="none", ec='0.5',zorder=1)
 	
-        ax2.plot(times1+tdiff, newd1,'k',lw=1.5)
+        ax2.plot(times1+tdiff, newd1,'k',lw=1.5,zorder=5)
 	ax2.set_xlim(2550.+tdiff, 2850.+tdiff)
         if field == 'SOMT':
                 pyplot.gca().set_ylim(4.65, 5.45)
@@ -313,39 +343,22 @@ def fig5(field='SST', window_len = 10):
 		if int(yr) < 2550:continue
 		if int(yr) > 2850: continue
                 value = getClosestPoint(int(yr), times1, newd1)
-                ax2.plot(float(yr)+tdiff, value, marker='o',ms=5, color = color)
+                ax2.plot(float(yr)+tdiff, value, marker='o',ms=6, color = color, zorder=6)
 
-	ax2.tick_params(axis='x', labelsize = 8) #direction='out', length=6, width=2, colors='r',
-        ax2.tick_params(axis='y', labelsize = 8,labelcolor='k', right=False, left=True) #direction='out', length=6, width=2, colors='r',
 
-	# Add 3rd set of axes
-	ax3 = pyplot.axes([0,0,1,1], label='sst')	
-	ax3.patch.set_alpha(0.)
-	ip3 = InsetPosition(ax1, axespos)	
-        ax3.set_axes_locator(ip3)
-	
-	#data2 = {y:17.1 for i,y in enumerate(range(1750,3000))}
-	data2 = get_data('u-aw310', field='SST',)
-	times2 = np.array([int(t) for t in sorted(data2.keys())])
-	data2 = np.array([data2[t] for t in sorted(data2.keys())])
-	#data2[300:] = 16.9
-	color = 'tab:blue'
-	
+        ax2.set_ylabel('SOST', color='k', )#fontsize = 8)
+        ax2.yaxis.set_label_position("left")
+	ax2.tick_params(axis='x', labelsize = 7) #direction='out', length=6, width=2, colors='r',
+        ax2.tick_params(axis='y', labelsize = 7, labelcolor='k', right=False, left=True) #direction='out', length=6, width=2, colors='r',
 
-	ax3.plot(times2+tdiff, data2, color=color,zorder=10)
-        ax3.set_xlim(2550.+tdiff, 2850.+tdiff)
-        
-	ax3.set_ylabel('SST', color=color)  
-	ax3.yaxis.set_label_position("right")
-	ax3.yaxis.tick_right()        
-	ax3.tick_params(axis='x', labelsize = 8) #direction='out', length=6, width=2, colors='r',
-	ax3.tick_params(axis='y', labelcolor=color, labelsize = 8)
+
 	fn = field+'_inset_fig5_'+str(window_len)+'.png'
 	print("Saving:", fn)
         pyplot.savefig(fn, dpi=300)
         pyplot.close()
-        
-fig5(field = 'SOMT', window_len=0)                        
+       
+fig2(field = 'Drake', window_len=0)
+#fig5(field = 'SOMT', window_len=0)                        
 #fig4(field = 'SOMT', window_len=0)
 
 
