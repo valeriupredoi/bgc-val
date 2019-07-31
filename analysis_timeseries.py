@@ -275,7 +275,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('CHN')
 			#analysisKeys.append('CHD')
 			#analysisKeys.append('CHL')	
-			
+			analysisKeys.append('pH')                      # Glodap Alkalinity			
 			#if jobID in ['u-am004','u-am005']:
 	                #        analysisKeys.append('DMS_ANDR')                 # DMS Anderson
 			#else:   analysisKeys.append('DMS_ARAN')                 # DMS Aranami Tsunogai
@@ -308,8 +308,8 @@ def analysis_timeseries(jobID = "u-ab671",
 #                        analysisKeys.append('scalarHeatContent')                        
 
 			#analysisKeys.append('VolumeMeanTemperature')#
-                        analysisKeys.append('GlobalMeanTemperature_700')
-                        analysisKeys.append('GlobalMeanTemperature_2000')
+#                        analysisKeys.append('GlobalMeanTemperature_700')
+#                        analysisKeys.append('GlobalMeanTemperature_2000')
 #			analysisKeys.append('WeddelIceExent')
 #                        analysisKeys.append('Salinity')                        # WOA Salinity
 #                        analysisKeys.append('MLD')                      # MLD
@@ -1320,6 +1320,37 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['gridFile']		= paths.orcaGridfn
 		av[name]['Dimensions']		= 3
 
+	if 'pH' in analysisKeys:
+		def convertmeqm3TOumolkg(nc,keys):
+			return nc.variables[keys[0]][:]* 1.027
+
+		name = 'pH'
+		if annual:
+			av[name]['modelFiles']  = listModelDataFiles(jobID, 'diad_T', paths.ModelFolder_pref, annual)
+			#av[name]['dataFile'] 	=  paths.GlodapDir+'p.nc'
+		else:
+			print "pH data not available for monthly Analysis"
+			assert 0
+
+		av[name]['modelcoords'] 	= medusaCoords
+		#av[name]['datacoords'] 		= glodapCoords
+
+		av[name]['modeldetails'] 	= {'name': name, 'vars':['PH3',], 'convert': ukp.NoChange,'units':'pH',}
+		#av[name]['datadetails']  	= {'name': name, 'vars':['Alk',], 'convert': convertmeqm3TOumolkg,'units':'meq/m^3',}
+
+	#	av[name]['layers'] 		=  ['Surface','100m','300m','1000m',]
+	#	av[name]['regions'] 		= regionList
+		av[name]['layers'] 		= layerList
+		av[name]['regions'] 		= regionList
+		av[name]['metrics']		= metricList
+
+		av[name]['datasource'] 		= 'GLODAP'
+		#av[name]['model']		= 'MEDUSA'
+
+		av[name]['modelgrid']		= 'eORCA1'
+		av[name]['gridFile']		= paths.orcaGridfn
+		av[name]['Dimensions']		= 3
+		
 
 	if 'AirSeaFluxCO2' in analysisKeys:
 
