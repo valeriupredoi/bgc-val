@@ -269,13 +269,15 @@ def analysis_timeseries(jobID = "u-ab671",
                         #analysisKeys.append('Dust')                    # Dust
                         #analysisKeys.append('TotalDust')               # Total Dust
                         #analysisKeys.append('TotalDust_nomask')
-			#analysisKeys.append('DIC')			# work in progress
+			analysisKeys.append('DIC')			# work in progress
 			#analysisKeys.append('DrakePassageTransport')	# DrakePassageTransport
 			#analysisKeys.append('TotalIceArea')		# work in progress
 			#analysisKeys.append('CHN')
 			#analysisKeys.append('CHD')
 			#analysisKeys.append('CHL')	
-			analysisKeys.append('pH')                      # Glodap Alkalinity			
+			analysisKeys.append('pH')                      			
+                        analysisKeys.append('Alk')     # Glodap Alkalinity
+
 			#if jobID in ['u-am004','u-am005']:
 	                #        analysisKeys.append('DMS_ANDR')                 # DMS Anderson
 			#else:   analysisKeys.append('DMS_ARAN')                 # DMS Aranami Tsunogai
@@ -298,7 +300,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('GC_CHL_DJF')			                      
                         #####
                         # Physics switches:
-#                        analysisKeys.append('Temperature')          #             # WOA Temperature
+                        analysisKeys.append('Temperature')          #             # WOA Temperature
 #                        analysisKeys.append('HeatFlux')
 #                        analysisKeys.append('TotalHeatFlux')
 

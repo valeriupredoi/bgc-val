@@ -2751,7 +2751,7 @@ def main():
 					'u-bf647': 'lightgreen', # UKESM1 Historical run '2629', ],
 					'u-bf656': 'cyan', # UKESM1 Historical run '2716', ],
 					'u-bf703': 'crimson', # UKESM1 Historical run '2760', ],
-					'u-bh162': 'lightpurple', # UKESM1 Historical run '2815', ],}                                       
+					'u-bh162': 'lavender', # UKESM1 Historical run '2815', ],}                                       
 		                   }
 		        linestyles = defaultdict(lambda: '-')
 		        linestyles['u-av651'] = '--'
@@ -2762,13 +2762,12 @@ def main():
 		                 newemissionscolours,
 		                 physics=1,
 		                 bio=1,
-		                 debug=1,
+		                 debug=0,
 		                 year0='ControlAligned',
 		                 jobDescriptions=jobDescriptions,
 		                 analysisname='UKESM1_ControlAligned',
 		                 lineThicknesses= cnthicknesses,
 		                 linestyles = linestyles,)
-		                 
 		                 	
                 emissions_driven = True
                 if emissions_driven:
@@ -3204,7 +3203,7 @@ def main():
 					'u-bf647': 'lightgreen', # UKESM1 Historical run '2629', ],
 					'u-bf656': 'cyan', # UKESM1 Historical run '2716', ],
 					'u-bf703': 'crimson', # UKESM1 Historical run '2760', ],
-					'u-bh162': 'lightpurple', # UKESM1 Historical run '2815', ],}                                       
+					'u-bh162': 'orchid', # UKESM1 Historical run '2815', ],}                                       
 		                   }
 		        linestyles = defaultdict(lambda: '-')
 		        linestyles['u-av651'] = '--'
