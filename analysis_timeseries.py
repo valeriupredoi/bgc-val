@@ -269,14 +269,14 @@ def analysis_timeseries(jobID = "u-ab671",
                         #analysisKeys.append('Dust')                    # Dust
                         #analysisKeys.append('TotalDust')               # Total Dust
                         #analysisKeys.append('TotalDust_nomask')
-			analysisKeys.append('DIC')			# work in progress
+			#analysisKeys.append('DIC')			# work in progress
 			#analysisKeys.append('DrakePassageTransport')	# DrakePassageTransport
 			#analysisKeys.append('TotalIceArea')		# work in progress
 			#analysisKeys.append('CHN')
 			#analysisKeys.append('CHD')
 			#analysisKeys.append('CHL')	
 			analysisKeys.append('pH')                      			
-                        analysisKeys.append('Alk')     # Glodap Alkalinity
+                        #analysisKeys.append('Alk')     # Glodap Alkalinity
 
 			#if jobID in ['u-am004','u-am005']:
 	                #        analysisKeys.append('DMS_ANDR')                 # DMS Anderson
@@ -300,7 +300,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('GC_CHL_DJF')			                      
                         #####
                         # Physics switches:
-                        analysisKeys.append('Temperature')          #             # WOA Temperature
+                        #analysisKeys.append('Temperature')          #             # WOA Temperature
 #                        analysisKeys.append('HeatFlux')
 #                        analysisKeys.append('TotalHeatFlux')
 
@@ -1335,19 +1335,24 @@ def analysis_timeseries(jobID = "u-ab671",
 			assert 0
 
 		av[name]['modelcoords'] 	= medusaCoords
-		#av[name]['datacoords'] 		= glodapCoords
+		av[name]['datacoords'] 		= {'name': '', 'units':''}
+                av[name]['datadetails']         =  {'name': '', 'units':''}
+                av[name]['dataFile']            = ''
+                av[name]['datasource']          = ''
 
 		av[name]['modeldetails'] 	= {'name': name, 'vars':['PH3',], 'convert': ukp.NoChange,'units':'pH',}
 		#av[name]['datadetails']  	= {'name': name, 'vars':['Alk',], 'convert': convertmeqm3TOumolkg,'units':'meq/m^3',}
 
-	#	av[name]['layers'] 		=  ['Surface','100m','300m','1000m',]
+		av[name]['layers'] 		=  ['Surface',] #'100m','300m','1000m',]
 	#	av[name]['regions'] 		= regionList
-		av[name]['layers'] 		= layerList
-		av[name]['regions'] 		= regionList
+		#av[name]['layers'] 		= layerList
+		if analysisSuite.lower() in ['debug', ]:
+			av[name]['regions']             = ['Global', ]
+		else:
+			av[name]['regions'] 		= regionList
 		av[name]['metrics']		= metricList
 
-		av[name]['datasource'] 		= 'GLODAP'
-		#av[name]['model']		= 'MEDUSA'
+		av[name]['model']		= 'MEDUSA'
 
 		av[name]['modelgrid']		= 'eORCA1'
 		av[name]['gridFile']		= paths.orcaGridfn
