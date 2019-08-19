@@ -189,6 +189,8 @@ def makeLongNameDict():
         lnd['NoCaspianAirSeaFluxCO2'] = "Air Sea CO2 Flux"
  
 	lnd['DIC'] = "DIC"  
+        lnd['pH'] = "pH"
+
 
 	lnd['TotalDust'] = 'Total Dust'
 	
