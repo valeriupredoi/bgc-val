@@ -2725,6 +2725,39 @@ def main():
 		print "Successful command line comparison"
 		exit
 	else:
+	
+                ocean_only = True
+                if ocean_only:
+                        jobs = ['u-bc370', 'u-bl710', 'u-bl711', 'u-bl712', 'u-bl713', 'u-bl714', 'u-bl715']
+                        customColours = {
+                           'u-bc370': 'black', 
+		           'u-bl710': 'red',
+		           'u-bl711': 'blue',
+		           'u-bl712': 'purple',
+		           'u-bl713': 'green',
+		           'u-bl714': 'orange',
+		           'u-bl715': 'goldenrod',
+                                 }
+			descr = {'u-bc370': 'coupled',
+		           'u-bl710': 'T, S relaxation',
+		           'u-bl711': 'T, S relaxation (time-interp)',
+		           'u-bl712': 'T-relax only',
+		           'u-bl713': 'S-relax only',
+		           'u-bl714': 'no relaxation',
+		           'u-bl715': 'no relaxation (no FWB)',}
+                        cnthicknesses = defaultdict(lambda: 1.1)
+                        linestyles = defaultdict(lambda: '-')
+                        timeseries_compare(
+                                 customColours,
+                                 physics=1,
+                                 bio=1,
+                                 debug=1,
+                                 year0='1849-1901',
+                                 jobDescriptions=descr,
+                                 analysisname='ocean_only',
+                                 lineThicknesses= cnthicknesses,
+                                 linestyles = linestyles,)
+                                 	
 		a = 1
 		if a:
 		        newemissionscolours= {
