@@ -2757,6 +2757,69 @@ def main():
                                  analysisname='ocean_only',
                                  lineThicknesses= cnthicknesses,
                                  linestyles = linestyles,)
+
+                ocean_only_TS = True
+                if ocean_only_TS:
+                        jobs = ['u-bc370', 'u-bl710', 'u-bm176', 'u-bm177', 'u-bm178', 'u-bm179',]
+                        customColours = {
+                           'u-bc370': 'black', 
+		           'u-bl710': 'red',
+		           'u-bm176': 'blue',
+		           'u-bm177': 'purple',
+		           'u-bm178': 'green',
+		           'u-bm179': 'orange',
+                                 }
+			descr = {'u-bc370': 'coupled',
+		           'u-bl710': 'T, S relaxation',
+			   'u-bm176': 'T, S relaxation; geographically uniform',
+			   'u-bm177': 'as bm176, but relaxation scaled x1/3',
+			   'u-bm178': 'as bm176, but relaxation scaled x3',
+			   'u-bm179': 'as bm176, but no S relaxation under ice',}
+		           
+                        cnthicknesses = defaultdict(lambda: 1.1)
+                        linestyles = defaultdict(lambda: '-')
+                        timeseries_compare(
+                                 customColours,
+                                 physics=1,
+                                 bio=1,
+                                 debug=0,
+                                 year0='1849-1901',
+                                 jobDescriptions=descr,
+                                 analysisname='ocean_only_TS_relaxation',
+                                 lineThicknesses= cnthicknesses,
+                                 linestyles = linestyles,)
+
+                ocean_only_S = True
+                if ocean_only_TS:
+                        jobs = ['u-bc370', 'u-bl710', 'u-bm180', 'u-bm182', 'u-bm183', 'u-bm184',]
+                        customColours = {
+                           'u-bc370': 'black', 
+		           'u-bl710': 'red',
+		           'u-bm180': 'blue',
+		           'u-bm182': 'purple',
+		           'u-bm183': 'green',
+		           'u-bm184': 'orange',
+                                 }
+			descr = {'u-bc370': 'coupled',
+		           'u-bl710': 'T, S relaxation',
+			   'u-bm180': 'S relaxation; geographically uniform',
+			   'u-bm182': 'as bm180, but relaxation scaled x1/3',
+			   'u-bm183': 'as bm180, but relaxation scaled x3 [this run ended fatally, but it still managed about a decade]',
+			   'u-bm184': 'as bm180, but no S relaxation under ice',}
+		           
+                        cnthicknesses = defaultdict(lambda: 1.1)
+                        linestyles = defaultdict(lambda: '-')
+                        timeseries_compare(
+                                 customColours,
+                                 physics=1,
+                                 bio=1,
+                                 debug=0,
+                                 year0='1849-1901',
+                                 jobDescriptions=descr,
+                                 analysisname='ocean_only_TS_relaxation',
+                                 lineThicknesses= cnthicknesses,
+                                 linestyles = linestyles,)
+                                 
                                  	
 		a = 1
 		if a:
