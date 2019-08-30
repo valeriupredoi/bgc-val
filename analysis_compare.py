@@ -2751,7 +2751,7 @@ def main():
                                  customColours,
                                  physics=1,
                                  bio=1,
-                                 debug=1,
+                                 debug=0,
                                  year0='1849-1901',
                                  jobDescriptions=descr,
                                  analysisname='ocean_only',
