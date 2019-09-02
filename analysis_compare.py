@@ -2752,7 +2752,7 @@ def main():
                                  physics=1,
                                  bio=1,
                                  debug=0,
-                                 year0='1849-1901',
+                                 year0=None,
                                  jobDescriptions=descr,
                                  analysisname='ocean_only',
                                  lineThicknesses= cnthicknesses,
@@ -2783,14 +2783,14 @@ def main():
                                  physics=1,
                                  bio=1,
                                  debug=0,
-                                 year0='1849-1901',
+                                 year0=None,
                                  jobDescriptions=descr,
                                  analysisname='ocean_only_TS_relaxation',
                                  lineThicknesses= cnthicknesses,
                                  linestyles = linestyles,)
 
                 ocean_only_S = True
-                if ocean_only_TS:
+                if ocean_only_S:
                         jobs = ['u-bc370', 'u-bl710', 'u-bm180', 'u-bm182', 'u-bm183', 'u-bm184',]
                         customColours = {
                            'u-bc370': 'black', 
@@ -2814,9 +2814,9 @@ def main():
                                  physics=1,
                                  bio=1,
                                  debug=0,
-                                 year0='1849-1901',
+                                 year0=None,
                                  jobDescriptions=descr,
-                                 analysisname='ocean_only_TS_relaxation',
+                                 analysisname='ocean_only_S_relaxation',
                                  lineThicknesses= cnthicknesses,
                                  linestyles = linestyles,)
                                  
