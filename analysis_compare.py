@@ -2726,6 +2726,43 @@ def main():
 		exit
 	else:
 	
+		#u-bg720			: standard ; AerchemMIP experiments branched from UKESM1 historical (u-bc179) with CFC and HCFC emissions fixed at 1950 values.
+		#u-bg742			: standard ; AerchemMIP experiments branched from UKESM1 historical (u-bc292) with CFC and HCFC emissions fixed at 1950 values.  
+		#u-bg743			: standard ; AerchemMIP experiments branched from UKESM1 historical (u-bc370) with CFC and HCFC emissions fixed at 1950 values. 
+                ocean_only = True
+                if ocean_only:
+                        jobs = ['u-bc179', 'u-bc292', 'u-bc370', 'u-bg720', 'u-bg742', 'u-bg743', ]
+                        customColours = {
+                           'u-bc179': 'lightcoral', 
+		           'u-bc292': 'seagreen',
+		           'u-bc370': 'dodgerblue',
+		           'u-bg720': 'red',
+		           'u-bg742': 'green',
+		           'u-bg743': 'blue',
+                                 }
+			descr = {
+			   'u-bc179': jobDescriptions['u-bc179'],
+		           'u-bc292': jobDescriptions['u-bc292'],
+		           'u-bc370': jobDescriptions['u-bc370'],
+		           'u-bg720': 'AerchemMIP experiments branched from UKESM1 historical (u-bc179) with CFC and HCFC emissions fixed at 1950 values.',
+		           'u-bg742': 'AerchemMIP experiments branched from UKESM1 historical (u-bc292) with CFC and HCFC emissions fixed at 1950 values.',
+		           'u-bg743': 'AerchemMIP experiments branched from UKESM1 historical (u-bc370) with CFC and HCFC emissions fixed at 1950 values.',
+		           }
+                        cnthicknesses = defaultdict(lambda: 1.1)
+                        linestyles = defaultdict(lambda: '-')
+                        timeseries_compare(
+                                 customColours,
+                                 physics=1,
+                                 bio=1,
+                                 debug=0,
+                                 year0=None,
+                                 jobDescriptions=descr,
+                                 analysisname='AerchemMIP_with_CFC_HCFC_fixed_1950',
+                                 lineThicknesses= cnthicknesses,
+                                 linestyles = linestyles,)
+                                 
+
+	
                 ocean_only = True
                 if ocean_only:
                         jobs = ['u-bc370', 'u-bl710', 'u-bl711', 'u-bl712', 'u-bl713', 'u-bl714', 'u-bl715']
