@@ -2820,7 +2820,6 @@ def main():
                                  lineThicknesses= cnthicknesses,
                                  linestyles = linestyles,)
                                  
-                                 	
 		a = 1
 		if a:
 		        newemissionscolours= {
