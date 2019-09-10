@@ -2726,136 +2726,7 @@ def main():
 		exit
 	else:
 	
-		#u-bg720			: standard ; AerchemMIP experiments branched from UKESM1 historical (u-bc179) with CFC and HCFC emissions fixed at 1950 values.
-		#u-bg742			: standard ; AerchemMIP experiments branched from UKESM1 historical (u-bc292) with CFC and HCFC emissions fixed at 1950 values.  
-		#u-bg743			: standard ; AerchemMIP experiments branched from UKESM1 historical (u-bc370) with CFC and HCFC emissions fixed at 1950 values. 
-                ocean_only = True
-                if ocean_only:
-                        jobs = ['u-bc179', 'u-bc292', 'u-bc370', 'u-bg720', 'u-bg742', 'u-bg743', ]
-                        customColours = {
-                           'u-bc179': 'lightcoral', 
-		           'u-bc292': 'seagreen',
-		           'u-bc370': 'dodgerblue',
-		           'u-bg720': 'red',
-		           'u-bg742': 'green',
-		           'u-bg743': 'blue',
-                                 }
-			descr = {
-			   'u-bc179': jobDescriptions['u-bc179'],
-		           'u-bc292': jobDescriptions['u-bc292'],
-		           'u-bc370': jobDescriptions['u-bc370'],
-		           'u-bg720': 'AerchemMIP experiments branched from UKESM1 historical (u-bc179) with CFC and HCFC emissions fixed at 1950 values.',
-		           'u-bg742': 'AerchemMIP experiments branched from UKESM1 historical (u-bc292) with CFC and HCFC emissions fixed at 1950 values.',
-		           'u-bg743': 'AerchemMIP experiments branched from UKESM1 historical (u-bc370) with CFC and HCFC emissions fixed at 1950 values.',
-		           }
-                        cnthicknesses = defaultdict(lambda: 1.1)
-                        linestyles = defaultdict(lambda: '-')
-                        timeseries_compare(
-                                 customColours,
-                                 physics=1,
-                                 bio=1,
-                                 debug=0,
-                                 year0=None,
-                                 jobDescriptions=descr,
-                                 analysisname='AerchemMIP_with_CFC_HCFC_fixed_1950',
-                                 lineThicknesses= cnthicknesses,
-                                 linestyles = linestyles,)
-                                 
 
-	
-                ocean_only = True
-                if ocean_only:
-                        jobs = ['u-bc370', 'u-bl710', 'u-bl711', 'u-bl712', 'u-bl713', 'u-bl714', 'u-bl715']
-                        customColours = {
-                           'u-bc370': 'black', 
-		           'u-bl710': 'red',
-		           'u-bl711': 'blue',
-		           'u-bl712': 'purple',
-		           'u-bl713': 'green',
-		           'u-bl714': 'orange',
-		           'u-bl715': 'goldenrod',
-                                 }
-			descr = {'u-bc370': 'coupled',
-		           'u-bl710': 'T, S relaxation',
-		           'u-bl711': 'T, S relaxation (time-interp)',
-		           'u-bl712': 'T-relax only',
-		           'u-bl713': 'S-relax only',
-		           'u-bl714': 'no relaxation',
-		           'u-bl715': 'no relaxation (no FWB)',}
-                        cnthicknesses = defaultdict(lambda: 1.1)
-                        linestyles = defaultdict(lambda: '-')
-                        timeseries_compare(
-                                 customColours,
-                                 physics=1,
-                                 bio=1,
-                                 debug=0,
-                                 year0=None,
-                                 jobDescriptions=descr,
-                                 analysisname='ocean_only',
-                                 lineThicknesses= cnthicknesses,
-                                 linestyles = linestyles,)
-
-                ocean_only_TS = True
-                if ocean_only_TS:
-                        jobs = ['u-bc370', 'u-bl710', 'u-bm176', 'u-bm177', 'u-bm178', 'u-bm179',]
-                        customColours = {
-                           'u-bc370': 'black', 
-		           'u-bl710': 'red',
-		           'u-bm176': 'blue',
-		           'u-bm177': 'purple',
-		           'u-bm178': 'green',
-		           'u-bm179': 'orange',
-                                 }
-			descr = {'u-bc370': 'coupled',
-		           'u-bl710': 'T, S relaxation',
-			   'u-bm176': 'T, S relaxation; geographically uniform',
-			   'u-bm177': 'as bm176, but relaxation scaled x1/3',
-			   'u-bm178': 'as bm176, but relaxation scaled x3',
-			   'u-bm179': 'as bm176, but no S relaxation under ice',}
-		           
-                        cnthicknesses = defaultdict(lambda: 1.1)
-                        linestyles = defaultdict(lambda: '-')
-                        timeseries_compare(
-                                 customColours,
-                                 physics=1,
-                                 bio=1,
-                                 debug=0,
-                                 year0=None,
-                                 jobDescriptions=descr,
-                                 analysisname='ocean_only_TS_relaxation',
-                                 lineThicknesses= cnthicknesses,
-                                 linestyles = linestyles,)
-
-                ocean_only_S = True
-                if ocean_only_S:
-                        jobs = ['u-bc370', 'u-bl710', 'u-bm180', 'u-bm182', 'u-bm183', 'u-bm184',]
-                        customColours = {
-                           'u-bc370': 'black', 
-		           'u-bl710': 'red',
-		           'u-bm180': 'blue',
-		           'u-bm182': 'purple',
-		           'u-bm183': 'green',
-		           'u-bm184': 'orange',
-                                 }
-			descr = {'u-bc370': 'coupled',
-		           'u-bl710': 'T, S relaxation',
-			   'u-bm180': 'S relaxation; geographically uniform',
-			   'u-bm182': 'as bm180, but relaxation scaled x1/3',
-			   'u-bm183': 'as bm180, but relaxation scaled x3 [this run ended fatally, but it still managed about a decade]',
-			   'u-bm184': 'as bm180, but no S relaxation under ice',}
-		           
-                        cnthicknesses = defaultdict(lambda: 1.1)
-                        linestyles = defaultdict(lambda: '-')
-                        timeseries_compare(
-                                 customColours,
-                                 physics=1,
-                                 bio=1,
-                                 debug=0,
-                                 year0=None,
-                                 jobDescriptions=descr,
-                                 analysisname='ocean_only_S_relaxation',
-                                 lineThicknesses= cnthicknesses,
-                                 linestyles = linestyles,)
                                  
 		a = 1
 		if a:
@@ -2900,73 +2771,8 @@ def main():
 		                 analysisname='UKESM1_ControlAligned',
 		                 lineThicknesses= cnthicknesses,
 		                 linestyles = linestyles,)
-		                 	
-                emissions_driven = True
-                if emissions_driven:
-                        jobs = ['u-bh519', 'u-az513', 'u-bf703']
-                        customColours = {
-                                 'u-bh519': 'blue',
-                                 'u-bf703': 'brown',
-                                 'u-az513': 'green',
-                                 }
-                        cnthicknesses = defaultdict(lambda: 1.1)
-                        linestyles = defaultdict(lambda: '-')
-                        timeseries_compare(
-                                 customColours,
-                                 physics=1,
-                                 bio=1,
-                                 debug=0,
-                                 year0='Historical',
-                                 jobDescriptions=jobDescriptions,
-                                 analysisname='Emissions_driven',
-                                 lineThicknesses= cnthicknesses,
-                                 linestyles = linestyles,)
- 	         
-                low_res_atmosphere = True
-                if low_res_atmosphere:
-                        jobs = [ 'u-bi700', 'u-aw310', 'u-bj002', 'u-bi831'] #'u-bi481',
-                        customColours = {
-                                 #'u-bi481': 'blue',
-                                 'u-bi700': 'red',
-                                 'u-aw310': 'black',
-                                 'u-bj002': 'orange',
-                                 'u-bi831': 'purple',                                                                  
-                                 }
-                        cnthicknesses = defaultdict(lambda: 1.1)
-                        linestyles = defaultdict(lambda: '-')
-                        linestyles['u-aw310'] = '--'
-                        timeseries_compare(
-                                 customColours,
-                                 physics=1,
-                                 bio=1,
-                                 debug=0,
-                                 year0='Historical',
-                                 jobDescriptions=jobDescriptions,
-                                 analysisname='N48_eORCA1',
-                                 lineThicknesses= cnthicknesses,
-                                 linestyles = linestyles,)
 
-                low_res_atmosphere_timePlots = True
-                if low_res_atmosphere_timePlots:
-                        jobs = [ 'u-bi700', 'u-bi913', 'u-bi914',]
-                        customColours = {
-                                 #'u-bi481': 'blue',
-                                 'u-bi700': 'red',
-                                 'u-bi913': 'orange',
-                                 'u-bi914': 'purple',                                                                  
-                                 }
-                        cnthicknesses = defaultdict(lambda: 1.1)
-                        linestyles = defaultdict(lambda: '-')
-                        timeseries_compare(
-                                 customColours,
-                                 physics=1,
-                                 bio=1,
-                                 debug=0,
-                                 year0='Historical',
-                                 jobDescriptions=jobDescriptions,
-                                 analysisname='N48_eORCA1_timesteps',
-                                 lineThicknesses= cnthicknesses,
-                                 linestyles = linestyles,)
+ 
                                  
 		pi_aerosols = False
 		if pi_aerosols:
@@ -2996,7 +2802,7 @@ def main():
 		                 linestyles = linestyles,)			
 	
 
-                scenarios = 1
+                scenarios = 0
                 if scenarios:
                         r1_colours = {
                                      'u-bc179': 'black',
@@ -3071,7 +2877,7 @@ def main():
 		                         analysisname = 'UKESM_scenarios_' + run_name,
 		                         lineThicknesses= hjthicknesses)
 		                         
-                scenarios_figures = 1
+                scenarios_figures = 0
                 if scenarios_figures:
 			ssp126 = {'r1': 'u-be509', 'r2': 'u-be679', 'r3': 'u-be682', 'r4': 'u-be393', 'r8': 'u-be397'}
 			ssp245 = {'r1': 'u-be537', 'r2': 'u-be606', 'r3': 'u-be683', 'r4': 'u-be394', 'r8': 'u-be398'}
@@ -3309,7 +3115,7 @@ def main():
 #		                 analysisname='UKESM_hist_new_emissions',
 #		                 lineThicknesses= hjthicknesses)
 
-		a = 1
+		a = 0
 		if a:
 		        newemissionscolours= {
 			                'u-av651': 'black',
@@ -3476,6 +3282,209 @@ def main():
                 print "Finished... "
                 return
 
+		                 	
+                emissions_driven = True
+                if emissions_driven:
+                        jobs = ['u-bh519', 'u-az513', 'u-bf703']
+                        customColours = {
+                                 'u-bh519': 'blue',
+                                 'u-bf703': 'brown',
+                                 'u-az513': 'green',
+                                 }
+                        cnthicknesses = defaultdict(lambda: 1.1)
+                        linestyles = defaultdict(lambda: '-')
+                        timeseries_compare(
+                                 customColours,
+                                 physics=1,
+                                 bio=1,
+                                 debug=0,
+                                 year0='Historical',
+                                 jobDescriptions=jobDescriptions,
+                                 analysisname='Emissions_driven',
+                                 lineThicknesses= cnthicknesses,
+                                 linestyles = linestyles,)
+ 	         
+ 	         
+ 	         
+		#u-bg720			: standard ; AerchemMIP experiments branched from UKESM1 historical (u-bc179) with CFC and HCFC emissions fixed at 1950 values.
+		#u-bg742			: standard ; AerchemMIP experiments branched from UKESM1 historical (u-bc292) with CFC and HCFC emissions fixed at 1950 values.  
+		#u-bg743			: standard ; AerchemMIP experiments branched from UKESM1 historical (u-bc370) with CFC and HCFC emissions fixed at 1950 values. 
+                ocean_only = True
+                if ocean_only:
+                        jobs = ['u-bc179', 'u-bc292', 'u-bc370', 'u-bg720', 'u-bg742', 'u-bg743', ]
+                        customColours = {
+                           'u-bc179': 'lightcoral', 
+		           'u-bc292': 'seagreen',
+		           'u-bc370': 'dodgerblue',
+		           'u-bg720': 'red',
+		           'u-bg742': 'green',
+		           'u-bg743': 'blue',
+                                 }
+			descr = {
+			   'u-bc179': jobDescriptions['u-bc179'],
+		           'u-bc292': jobDescriptions['u-bc292'],
+		           'u-bc370': jobDescriptions['u-bc370'],
+		           'u-bg720': 'AerchemMIP experiments branched from UKESM1 historical (u-bc179) with CFC and HCFC emissions fixed at 1950 values.',
+		           'u-bg742': 'AerchemMIP experiments branched from UKESM1 historical (u-bc292) with CFC and HCFC emissions fixed at 1950 values.',
+		           'u-bg743': 'AerchemMIP experiments branched from UKESM1 historical (u-bc370) with CFC and HCFC emissions fixed at 1950 values.',
+		           }
+                        cnthicknesses = defaultdict(lambda: 1.1)
+                        linestyles = defaultdict(lambda: '-')
+                        timeseries_compare(
+                                 customColours,
+                                 physics=1,
+                                 bio=1,
+                                 debug=0,
+                                 year0=None,
+                                 jobDescriptions=descr,
+                                 analysisname='AerchemMIP_with_CFC_HCFC_fixed_1950',
+                                 lineThicknesses= cnthicknesses,
+                                 linestyles = linestyles,)
+                                 
+
+	
+                ocean_only = True
+                if ocean_only:
+                        jobs = ['u-bc370', 'u-bl710', 'u-bl711', 'u-bl712', 'u-bl713', 'u-bl714', 'u-bl715']
+                        customColours = {
+                           'u-bc370': 'black', 
+		           'u-bl710': 'red',
+		           'u-bl711': 'blue',
+		           'u-bl712': 'purple',
+		           'u-bl713': 'green',
+		           'u-bl714': 'orange',
+		           'u-bl715': 'goldenrod',
+                                 }
+			descr = {'u-bc370': 'coupled',
+		           'u-bl710': 'T, S relaxation',
+		           'u-bl711': 'T, S relaxation (time-interp)',
+		           'u-bl712': 'T-relax only',
+		           'u-bl713': 'S-relax only',
+		           'u-bl714': 'no relaxation',
+		           'u-bl715': 'no relaxation (no FWB)',}
+                        cnthicknesses = defaultdict(lambda: 1.1)
+                        linestyles = defaultdict(lambda: '-')
+                        timeseries_compare(
+                                 customColours,
+                                 physics=1,
+                                 bio=1,
+                                 debug=0,
+                                 year0=None,
+                                 jobDescriptions=descr,
+                                 analysisname='ocean_only',
+                                 lineThicknesses= cnthicknesses,
+                                 linestyles = linestyles,)
+
+                ocean_only_TS = True
+                if ocean_only_TS:
+                        jobs = ['u-bc370', 'u-bl710', 'u-bm176', 'u-bm177', 'u-bm178', 'u-bm179',]
+                        customColours = {
+                           'u-bc370': 'black', 
+		           'u-bl710': 'red',
+		           'u-bm176': 'blue',
+		           'u-bm177': 'purple',
+		           'u-bm178': 'green',
+		           'u-bm179': 'orange',
+                                 }
+			descr = {'u-bc370': 'coupled',
+		           'u-bl710': 'T, S relaxation',
+			   'u-bm176': 'T, S relaxation; geographically uniform',
+			   'u-bm177': 'as bm176, but relaxation scaled x1/3',
+			   'u-bm178': 'as bm176, but relaxation scaled x3',
+			   'u-bm179': 'as bm176, but no S relaxation under ice',}
+		           
+                        cnthicknesses = defaultdict(lambda: 1.1)
+                        linestyles = defaultdict(lambda: '-')
+                        timeseries_compare(
+                                 customColours,
+                                 physics=1,
+                                 bio=1,
+                                 debug=0,
+                                 year0=None,
+                                 jobDescriptions=descr,
+                                 analysisname='ocean_only_TS_relaxation',
+                                 lineThicknesses= cnthicknesses,
+                                 linestyles = linestyles,)
+
+                ocean_only_S = True
+                if ocean_only_S:
+                        jobs = ['u-bc370', 'u-bl710', 'u-bm180', 'u-bm182', 'u-bm183', 'u-bm184',]
+                        customColours = {
+                           'u-bc370': 'black', 
+		           'u-bl710': 'red',
+		           'u-bm180': 'blue',
+		           'u-bm182': 'purple',
+		           'u-bm183': 'green',
+		           'u-bm184': 'orange',
+                                 }
+			descr = {'u-bc370': 'coupled',
+		           'u-bl710': 'T, S relaxation',
+			   'u-bm180': 'S relaxation; geographically uniform',
+			   'u-bm182': 'as bm180, but relaxation scaled x1/3',
+			   'u-bm183': 'as bm180, but relaxation scaled x3 [this run ended fatally, but it still managed about a decade]',
+			   'u-bm184': 'as bm180, but no S relaxation under ice',}
+		           
+                        cnthicknesses = defaultdict(lambda: 1.1)
+                        linestyles = defaultdict(lambda: '-')
+                        timeseries_compare(
+                                 customColours,
+                                 physics=1,
+                                 bio=1,
+                                 debug=0,
+                                 year0=None,
+                                 jobDescriptions=descr,
+                                 analysisname='ocean_only_S_relaxation',
+                                 lineThicknesses= cnthicknesses,
+                                 linestyles = linestyles,)
+                                 
+       
+       
+       
+               low_res_atmosphere = True
+                if low_res_atmosphere:
+                        jobs = [ 'u-bi700', 'u-aw310', 'u-bj002', 'u-bi831'] #'u-bi481',
+                        customColours = {
+                                 #'u-bi481': 'blue',
+                                 'u-bi700': 'red',
+                                 'u-aw310': 'black',
+                                 'u-bj002': 'orange',
+                                 'u-bi831': 'purple',                                                                  
+                                 }
+                        cnthicknesses = defaultdict(lambda: 1.1)
+                        linestyles = defaultdict(lambda: '-')
+                        linestyles['u-aw310'] = '--'
+                        timeseries_compare(
+                                 customColours,
+                                 physics=1,
+                                 bio=1,
+                                 debug=0,
+                                 year0='Historical',
+                                 jobDescriptions=jobDescriptions,
+                                 analysisname='N48_eORCA1',
+                                 lineThicknesses= cnthicknesses,
+                                 linestyles = linestyles,)
+
+                low_res_atmosphere_timePlots = True
+                if low_res_atmosphere_timePlots:
+                        jobs = [ 'u-bi700', 'u-bi913', 'u-bi914',]
+                        customColours = {
+                                 #'u-bi481': 'blue',
+                                 'u-bi700': 'red',
+                                 'u-bi913': 'orange',
+                                 'u-bi914': 'purple',                                                                  
+                                 }
+                        cnthicknesses = defaultdict(lambda: 1.1)
+                        linestyles = defaultdict(lambda: '-')
+                        timeseries_compare(
+                                 customColours,
+                                 physics=1,
+                                 bio=1,
+                                 debug=0,
+                                 year0='Historical',
+                                 jobDescriptions=jobDescriptions,
+                                 analysisname='N48_eORCA1_timesteps',
+                                 lineThicknesses= cnthicknesses,
+                                 linestyles = linestyles,)                                 
 
 
                 linestyles = defaultdict(lambda: '-')
