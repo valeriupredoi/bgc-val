@@ -3440,7 +3440,7 @@ def main():
        
        
        
-               low_res_atmosphere = True
+                low_res_atmosphere = True
                 if low_res_atmosphere:
                         jobs = [ 'u-bi700', 'u-aw310', 'u-bj002', 'u-bi831'] #'u-bi481',
                         customColours = {
