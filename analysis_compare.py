@@ -2726,7 +2726,32 @@ def main():
 		exit
 	else:
 	
-
+                faster_UKESM = True
+                if faster_UKESM:
+                        jobs = ['u-aw310', 'u-bk171', 'u-bj890', 'u-bl696',]
+                        customColours = {
+                           'u-aw310': 'black', 
+		           'u-bk171': 'red',
+		           'u-bj890': 'blue',
+		           'u-bl696': 'purple',}
+			descr = {
+			   'u-aw310': 'PI-Control',
+		           'u-bk171': '',
+		           'u-bj890': '',
+		           'u-bl696': '',}		           		           		           
+                        cnthicknesses = defaultdict(lambda: 1.1)
+                        linestyles = defaultdict(lambda: '-')
+                        timeseries_compare(
+                                 customColours,
+                                 physics=1,
+                                 bio=1,
+                                 debug=0,
+                                 year0=None,
+                                 jobDescriptions=descr,
+                                 analysisname='Progressively_faster_UKESM',
+                                 lineThicknesses= cnthicknesses,
+                                 linestyles = linestyles,)
+                                 
                                  
 		a = 1
 		if a:
