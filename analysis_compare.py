@@ -2729,6 +2729,29 @@ def main():
                 #u-bg720                        : standard ; AerchemMIP experiments branched from UKESM1 historical (u-bc179) with CFC and HCFC emissions fixed at 1950 values.
                 #u-bg742                        : standard ; AerchemMIP experiments branched from UKESM1 historical (u-bc292) with CFC and HCFC emissions fixed at 1950 values.  
                 #u-bg743                        : standard ; AerchemMIP experiments branched from UKESM1 historical (u-bc370) with CFC and HCFC emissions fixed at 1950 values. 
+                N48ORCA1 = True
+                if N48ORCA1:
+                        jobs = ['u-bm926', 'u-bo523', 'u-aw310', 'u-bc179']
+                        customColours = {
+                           'u-bm926': 'lightcoral',
+                           'u-bo523': 'seagreen',
+                           'u-aw310': 'black',
+                           'u-bc179': 'blue',
+                                 }
+                        cnthicknesses = defaultdict(lambda: 1.1)
+                        linestyles = defaultdict(lambda: '-')
+                        timeseries_compare(
+                                 customColours,
+                                 physics=1,
+                                 bio=1,
+                                 debug=0,
+                                 year0='AlignToDECK2020',
+                                 jobDescriptions=jobDescriptions,
+                                 analysisname='N48ORCA1',
+                                 lineThicknesses= cnthicknesses,
+                                 linestyles = linestyles,)
+		assert 0
+                
                 ocean_only = True
                 if ocean_only:
                         jobs = ['u-bc179', 'u-bc292', 'u-bc370', 'u-bg720', 'u-bg742', 'u-bg743', ]
@@ -2760,6 +2783,8 @@ def main():
                                  analysisname='AerchemMIP_with_CFC_HCFC_fixed_1950',
                                  lineThicknesses= cnthicknesses,
                                  linestyles = linestyles,)
+
+
 
 
                 faster_UKESM = True
