@@ -256,7 +256,7 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		if analysisSuite.lower() in ['debug',]:
 			#analysisKeys.append('AirSeaFlux')		# work in progress
-			#analysisKeys.append('TotalAirSeaFluxCO2')	# work in progress
+			analysisKeys.append('TotalAirSeaFluxCO2')	# work in progress
 			#analysisKeys.append('NoCaspianAirSeaFluxCO2')	# work in progress			
 			#analysisKeys.append('TotalOMZVolume')		# work in progress
 			#analysisKeys.append('TotalOMZVolume50')	# work in progress
@@ -329,7 +329,7 @@ def analysis_timeseries(jobID = "u-ab671",
                         #analysisKeys.append('TotalMIZfraction')                                                                                                
 
                         #analysisKeys.append('TotalIceArea')            # work in progress
-			#analysisKeys.append('TotalIceExtent')		# work in progress
+			analysisKeys.append('TotalIceExtent')		# work in progress
 			#analysisKeys.append('NorthernTotalIceExtent')	# work in progress
 			#analysisKeys.append('SouthernTotalIceExtent')	# work in progress
                         #analysisKeys.append('AMOC_32S')                # AMOC 32S
