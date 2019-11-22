@@ -2731,7 +2731,7 @@ def main():
                         jobs = ['u-aw310', 'u-bc179', 'u-bm926', 'u-bo523', ]
                         customColours = {
                            'u-aw310': 'black',
-                           'u-bc179': 'blue',
+                           'u-bc179': 'black',
                            'u-bm926': 'lightcoral',
                            'u-bo523': 'seagreen',
                                  }
@@ -2756,7 +2756,7 @@ def main():
                         jobs = [ 'u-aw310', 'u-bc179', 'u-bn824', 'u-bk437', 'u-bk575', 'u-bk712', 'u-bk713', 'u-bk741']
                         customColours = {
                            'u-aw310': 'black',
-                           'u-bc179': 'blue',
+                           'u-bc179': 'black',
                            'u-bn824': 'navy',
                            'u-bk437': 'navy', 
                            'u-aw310': 'red',
