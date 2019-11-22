@@ -2726,20 +2726,19 @@ def main():
 		exit
 	else:
 	
-                #u-bg720                        : standard ; AerchemMIP experiments branched from UKESM1 historical (u-bc179) with CFC and HCFC emissions fixed at 1950 values.
-                #u-bg742                        : standard ; AerchemMIP experiments branched from UKESM1 historical (u-bc292) with CFC and HCFC emissions fixed at 1950 values.  
-                #u-bg743                        : standard ; AerchemMIP experiments branched from UKESM1 historical (u-bc370) with CFC and HCFC emissions fixed at 1950 values. 
                 N48ORCA1 = True
                 if N48ORCA1:
-                        jobs = ['u-bm926', 'u-bo523', 'u-aw310', 'u-bc179']
+                        jobs = ['u-aw310', 'u-bc179', 'u-bm926', 'u-bo523', ]
                         customColours = {
-                           'u-bm926': 'lightcoral',
-                           'u-bo523': 'seagreen',
                            'u-aw310': 'black',
                            'u-bc179': 'blue',
+                           'u-bm926': 'lightcoral',
+                           'u-bo523': 'seagreen',
                                  }
                         cnthicknesses = defaultdict(lambda: 1.1)
                         linestyles = defaultdict(lambda: '-')
+			linestyles[ 'u-aw310'] = ':'
+			linestyles[ 'u-bm926'] = ':'			                        
                         timeseries_compare(
                                  customColours,
                                  physics=1,
