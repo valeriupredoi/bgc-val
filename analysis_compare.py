@@ -2750,9 +2750,40 @@ def main():
                                  analysisname='N48ORCA1',
                                  lineThicknesses= cnthicknesses,
                                  linestyles = linestyles,)
-		assert 0
+
+
+                N96L85 = True
+                if N96L85:
+                        jobs = [ 'u-aw310', 'u-bc179', 'u-bn824', 'u-bk437', 'u-bk575', 'u-bk712', 'u-bk713', 'u-bk741']
+                        customColours = {
+                           'u-aw310': 'black',
+                           'u-bc179': 'blue',
+                           'u-bn824': 'navy',
+                           'u-bk437': 'navy', 
+                           'u-aw310': 'red',
+                           'u-bc179': 'green',
+                           'u-bn824': 'purple',
+                           'u-bk437': 'orange',                                                     
+                                 }
+                        cnthicknesses = defaultdict(lambda: 1.1)
+                        linestyles = defaultdict(lambda: '-')
+			linestyles[ 'u-aw310'] = ':'
+			linestyles[ 'u-bn824'] = ':'			                       
+			linestyles[ 'u-bk437'] = ':'			                       			
+                        timeseries_compare(
+                                 customColours,
+                                 physics=1,
+                                 bio=1,
+                                 debug=0,
+                                 year0='AlignToDECK2020',
+                                 jobDescriptions=jobDescriptions,
+                                 analysisname='N96L85',
+                                 lineThicknesses= cnthicknesses,
+                                 linestyles = linestyles,)
+                                                                  
+		return
                 
-                ocean_only = True
+                ocean_only = 0
                 if ocean_only:
                         jobs = ['u-bc179', 'u-bc292', 'u-bc370', 'u-bg720', 'u-bg742', 'u-bg743', ]
                         customColours = {
