@@ -2725,6 +2725,29 @@ def main():
 		print "Successful command line comparison"
 		exit
 	else:
+
+                N48ORCA1 = True
+                if N48ORCA1:
+                        jobs = ['u-aw310', 'u-bp179', 'u-bk171', 'u-bo523', ]
+                        customColours = {
+                           'u-aw310': 'black',
+                           'u-bc179': 'red',
+                           'u-bk171': 'blue',
+                                 }
+                        cnthicknesses = defaultdict(lambda: 1.1)
+                        linestyles = defaultdict(lambda: '-')
+			linestyles[ 'u-aw310'] = ':'
+                        timeseries_compare(
+                                 customColours,
+                                 physics=1,
+                                 bio=1,
+                                 debug=0,
+                                 year0=False, #'AlignToDECK2020',
+                                 jobDescriptions=jobDescriptions,
+                                 analysisname='Proto_UKESM1_fast',
+                                 lineThicknesses= cnthicknesses,
+                                 linestyles = linestyles,)
+                                 
 	
                 N48ORCA1 = True
                 if N48ORCA1:
@@ -2751,6 +2774,7 @@ def main():
                                  linestyles = linestyles,)
 
 
+
                 N96L85 = True
                 if N96L85:
                         jobs = [ 'u-aw310', 'u-bc179', 'u-bn824', 'u-bk437', 'u-bk575', 'u-bk712', 'u-bk713', 'u-bk741']
@@ -2759,10 +2783,10 @@ def main():
                            'u-bc179': 'black',
                            'u-bn824': 'navy',
                            'u-bk437': 'navy', 
-                           'u-aw310': 'red',
-                           'u-bc179': 'green',
-                           'u-bn824': 'purple',
-                           'u-bk437': 'orange',                                                     
+                           'u-bk575': 'red',
+                           'u-bk712': 'green',
+                           'u-bk713': 'purple',
+                           'u-bk741': 'orange',                                                     
                                  }
                         cnthicknesses = defaultdict(lambda: 1.1)
                         linestyles = defaultdict(lambda: '-')
