@@ -2839,8 +2839,6 @@ def main():
                                  linestyles = linestyles,)
 
 
-
-
                 faster_UKESM = True
                 if faster_UKESM:
                         jobs = ['u-aw310', 'u-bk171', 'u-bj890', 'u-bl696',]
@@ -2849,11 +2847,6 @@ def main():
 		           'u-bk171': 'red',
 		           'u-bj890': 'blue',
 		           'u-bl696': 'green',}
-			descr = {
-			   'u-aw310': 'PI-Control',
-		           'u-bk171': '',
-		           'u-bj890': '',
-		           'u-bl696': '',}		           		           		           
                         cnthicknesses = defaultdict(lambda: 1.1)
                         linestyles = defaultdict(lambda: '-')
                         timeseries_compare(
@@ -2862,7 +2855,7 @@ def main():
                                  bio=1,
                                  debug=0,
                                  year0='Historical',
-                                 jobDescriptions=descr,
+                                 jobDescriptions=jobDescriptions,
                                  analysisname='Progressively_faster_UKESM',
                                  lineThicknesses= cnthicknesses,
                                  linestyles = linestyles,)
