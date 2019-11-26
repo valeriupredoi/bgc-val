@@ -2726,6 +2726,33 @@ def main():
 		exit
 	else:
 
+                GeoengineeringFudge = True
+                if GeoengineeringFudge:
+			#GeoengineeringFudge
+			#u-aj141			: control, emissions-driven esm-ssp585
+			#u-bo540			: experiment 1, default geoengineering, stops at 2050
+			#u-bp104			: experiment 2, modified geoengineering, no stop                
+                        jobs = ['u-aj141', 'u-bo540', 'u-bp104', ]
+                        customColours = {
+                           'u-aj141': 'black',
+                           'u-bo540': 'red',
+                           'u-bp104': 'blue',
+                                 }
+                        cnthicknesses = defaultdict(lambda: 1.1)
+                        linestyles = defaultdict(lambda: '-')
+			linestyles[ 'u-aj141'] = ':'
+                        timeseries_compare(
+                                 customColours,
+                                 physics=1,
+                                 bio=1,
+                                 debug=0,
+                                 year0=False, #'AlignToDECK2020',
+                                 jobDescriptions=jobDescriptions,
+                                 analysisname='GeoengineeringFudge',
+                                 lineThicknesses= cnthicknesses,
+                                 linestyles = linestyles,)
+                                 
+                                 
                 N48ORCA1 = True
                 if N48ORCA1:
                         jobs = ['u-aw310', 'u-bp179', 'u-bk171', 'u-bo523', ]
