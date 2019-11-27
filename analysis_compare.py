@@ -2729,18 +2729,18 @@ def main():
                 GeoengineeringFudge = True
                 if GeoengineeringFudge:
 			#GeoengineeringFudge
-			#u-aj141			: control, emissions-driven esm-ssp585
+			#u-bj141			: control, emissions-driven esm-ssp585
 			#u-bo540			: experiment 1, default geoengineering, stops at 2050
 			#u-bp104			: experiment 2, modified geoengineering, no stop                
-                        jobs = ['u-aj141', 'u-bo540', 'u-bp104', ]
+                        jobs = ['u-bj141', 'u-bo540', 'u-bp104', ]
                         customColours = {
-                           'u-aj141': 'black',
+                           'u-bj141': 'black',
                            'u-bo540': 'red',
                            'u-bp104': 'blue',
                                  }
                         cnthicknesses = defaultdict(lambda: 1.1)
                         linestyles = defaultdict(lambda: '-')
-			linestyles[ 'u-aj141'] = ':'
+			linestyles[ 'u-bj141'] = ':'
                         timeseries_compare(
                                  customColours,
                                  physics=1,
