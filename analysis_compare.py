@@ -2124,7 +2124,7 @@ def timeseries_compare(
 
 
 	####
-	for name in ['Temperature','Salinity','MLD','FreshwaterFlux','AirSeaFluxCO2','AirSeaFlux','Chlorophyll','Nitrate',]:
+	for name in ['Temperature','Salinity','Alkalinity','MLD','FreshwaterFlux','AirSeaFluxCO2','AirSeaFlux','Chlorophyll','Nitrate',]:
 		  if name not in av.keys():continue
 		  for region in vmtregionList:
 		    for layer in ['Surface','500m','1000m','layerless',]:
@@ -2478,8 +2478,6 @@ def timeseries_compare(
                         )
 
 
-
-
 	for name in ['MaxMonthlyMLD','MinMonthlyMLD',]:
 	  if name not in av.keys():continue
 	  for region in vmtregionList:
@@ -2751,7 +2749,6 @@ def main():
                                  analysisname='GeoengineeringFudge',
                                  lineThicknesses= cnthicknesses,
                                  linestyles = linestyles,)
-                                 
                                  
                 N48ORCA1 = True
                 if N48ORCA1:
