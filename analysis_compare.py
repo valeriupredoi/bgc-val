@@ -2730,7 +2730,7 @@ def main():
 			#u-bj141			: control, emissions-driven esm-ssp585
 			#u-bo540			: experiment 1, default geoengineering, stops at 2050
 			#u-bp104			: experiment 2, modified geoengineering, no stop                
-                        jobs = ['u-bj141', 'u-bo540', 'u-bp104', ]
+                        #jobs = ['u-bj141', 'u-bo540', 'u-bp104', ]
                         customColours = {
                            'u-bj141': 'black',
                            'u-bo540': 'red',
@@ -2752,10 +2752,11 @@ def main():
                                  
                 N48ORCA1 = True
                 if N48ORCA1:
-                        jobs = ['u-aw310', 'u-bp179', 'u-bk171', 'u-bo523', ]
+                        #jobs = ['u-aw310', 'u-bp179', 'u-bk171', 'u-bo523', ]
                         customColours = {
                            'u-aw310': 'black',
-                           'u-bc179': 'red',
+                           #u-bc179': 'red',
+                           'u-bp179': 'green',
                            'u-bk171': 'blue',
                                  }
                         cnthicknesses = defaultdict(lambda: 1.1)
@@ -2775,7 +2776,7 @@ def main():
 	
                 N48ORCA1 = True
                 if N48ORCA1:
-                        jobs = ['u-aw310', 'u-bc179', 'u-bm926', 'u-bo523', ]
+                        #jobs = ['u-aw310', 'u-bc179', 'u-bm926', 'u-bo523', ]
                         customColours = {
                            'u-aw310': 'black',
                            'u-bc179': 'black',
@@ -2822,7 +2823,7 @@ def main():
                                  physics=1,
                                  bio=1,
                                  debug=0,
-                                 year0='AlignToDECK2020',
+                                 year0='AlignToDECK2200',
                                  jobDescriptions=jobDescriptions,
                                  analysisname='N96L85',
                                  lineThicknesses= cnthicknesses,
