@@ -2790,12 +2790,13 @@ def main():
                                  
                 N48ORCA1 = True
                 if N48ORCA1:
-                        #jobs = ['u-aw310', 'u-bp179', 'u-bk171', 'u-bo523', ]
                         customColours = {
                            'u-aw310': 'black',
                            #u-bc179': 'red',
                            'u-bp179': 'green',
                            'u-bk171': 'blue',
+                           #'u-bo523': 'green',
+                           'u-bp360': 'orange',
                                  }
                         cnthicknesses = defaultdict(lambda: 1.1)
                         linestyles = defaultdict(lambda: '-')
@@ -2814,7 +2815,6 @@ def main():
 	
                 N48ORCA1 = True
                 if N48ORCA1:
-                        #jobs = ['u-aw310', 'u-bc179', 'u-bm926', 'u-bo523', ]
                         customColours = {
                            'u-aw310': 'black',
                            'u-bc179': 'black',
