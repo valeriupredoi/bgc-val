@@ -783,7 +783,7 @@ def timeseries_compare(
 			av[name]['layers'] 		=  ['Surface',] #'100m','300m','1000m',]
 		#	av[name]['regions'] 		= regionList
 			#av[name]['layers'] 		= layerList
-			if analysisSuite.lower() in ['debug', ]:
+			if debug:
 				av[name]['regions']             = ['Global', ]
 			else:
 				av[name]['regions'] 		= regionList
