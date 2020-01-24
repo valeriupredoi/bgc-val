@@ -165,7 +165,8 @@ def shifttimes(mdata, jobID,year0=False):
                                 if t < 2378. -1. : continue
                                 if t > 2405. +1. : continue
                                 t1 = t - 2405. + 1850. - 63.
-
+			elif jobID in ['u-bp705']:
+				t1 = t + 50.
 
 
 			# early cut:

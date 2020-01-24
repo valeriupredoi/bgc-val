@@ -256,7 +256,7 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		if analysisSuite.lower() in ['debug',]:
 			#analysisKeys.append('AirSeaFlux')		# work in progress
-			analysisKeys.append('TotalAirSeaFluxCO2')	# work in progress
+			#analysisKeys.append('TotalAirSeaFluxCO2')	# work in progress
 			#analysisKeys.append('NoCaspianAirSeaFluxCO2')	# work in progress			
 			#analysisKeys.append('TotalOMZVolume')		# work in progress
 			#analysisKeys.append('TotalOMZVolume50')	# work in progress
@@ -274,8 +274,8 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('TotalIceArea')		# work in progress
 			#analysisKeys.append('CHN')
 			#analysisKeys.append('CHD')
-			#analysisKeys.append('CHL')	
-			analysisKeys.append('pH')                      			
+			analysisKeys.append('CHL')	
+			#analysisKeys.append('pH')                      			
                         #analysisKeys.append('Alk')     # Glodap Alkalinity
 
 			#if jobID in ['u-am004','u-am005']:
@@ -300,7 +300,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('GC_CHL_DJF')			                      
                         #####
                         # Physics switches:
-                        #analysisKeys.append('Temperature')          #             # WOA Temperature
+                        analysisKeys.append('Temperature')          #             # WOA Temperature
 #                        analysisKeys.append('HeatFlux')
 #                        analysisKeys.append('TotalHeatFlux')
 
@@ -313,7 +313,7 @@ def analysis_timeseries(jobID = "u-ab671",
 #                        analysisKeys.append('GlobalMeanTemperature_700')
 #                        analysisKeys.append('GlobalMeanTemperature_2000')
 #			analysisKeys.append('WeddelIceExent')
-#                        analysisKeys.append('Salinity')                        # WOA Salinity
+                        analysisKeys.append('Salinity')                        # WOA Salinity
 #                        analysisKeys.append('MLD')                      # MLD
                         #analysisKeys.append('MaxMonthlyMLD')            # MLD                       
                         #analysisKeys.append('MinMonthlyMLD')
@@ -329,7 +329,7 @@ def analysis_timeseries(jobID = "u-ab671",
                         #analysisKeys.append('TotalMIZfraction')                                                                                                
 
                         #analysisKeys.append('TotalIceArea')            # work in progress
-			analysisKeys.append('TotalIceExtent')		# work in progress
+			#analysisKeys.append('TotalIceExtent')		# work in progress
 			#analysisKeys.append('NorthernTotalIceExtent')	# work in progress
 			#analysisKeys.append('SouthernTotalIceExtent')	# work in progress
                         #analysisKeys.append('AMOC_32S')                # AMOC 32S
@@ -375,6 +375,9 @@ def analysis_timeseries(jobID = "u-ab671",
   				]
 	if regions == 'short':
 		regionList 	= ['Global','SouthernHemisphere','NorthernHemisphere',]
+
+	if analysisSuite.lower() == 'debug':
+                regionList      = ['Global', 'ArcticOcean']
 
 	# Regions from Pierce 1995 - https://doi.org/10.1175/1520-0485(1995)025<2046:CROHAF>2.0.CO;2
 	PierceRegions = ['Enderby','Wilkes','Ross','Amundsen','Weddel',]
@@ -1346,10 +1349,7 @@ def analysis_timeseries(jobID = "u-ab671",
 		av[name]['layers'] 		=  ['Surface',] #'100m','300m','1000m',]
 	#	av[name]['regions'] 		= regionList
 		#av[name]['layers'] 		= layerList
-		if analysisSuite.lower() in ['debug', ]:
-			av[name]['regions']             = ['Global', ]
-		else:
-			av[name]['regions'] 		= regionList
+		av[name]['regions'] 		= regionList
 		av[name]['metrics']		= metricList
 
 		av[name]['model']		= 'MEDUSA'

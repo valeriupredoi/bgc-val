@@ -114,12 +114,15 @@ def theWholePackage(jobID,year=False,suite = 'level1'):
 	#	year = str(year)
 	
 	print "########\nThe Whole Package:\tStarting job", jobID , year
-	parrallel = True
-	cores = 8
+	parrallel = False
+	cores = 1
 
         
-        if suite =='physics':	physicsOnly=True
-        else: 			physicsOnly=False
+        if suite =='physics':	
+		physicsOnly=True
+		parrallel = False
+        else: 	
+		physicsOnly=False
 #        print "########\nThe Whole Package:\tmaking Summary report"
  #       html5Maker(jobID =jobID,
   #                 reportdir=folder('reports/'+jobID),
@@ -136,6 +139,8 @@ def theWholePackage(jobID,year=False,suite = 'level1'):
 		# Running key metrics first.
 		if suite =='level1': 
 	                remaining = sorted(keymetricsfirstDict.keys())[:]
+			print(jobID, suite, remaining)
+			#assert 0
         	        p = Pool(cores)
                 	p.map(timeseriesParrallelKMF,remaining)
 	                p.close()
