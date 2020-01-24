@@ -2785,6 +2785,52 @@ def main():
                                  lineThicknesses= cnthicknesses,
                                  linestyles = linestyles,)
 
+                UKESM_fast2 = True
+                if UKESM_fast2:
+                        customColours = {
+                           'u-aw310': 'black',
+                           #'u-bp531': 'red',
+                           #'u-bp705': 'purple',
+                           'u-bq621': 'green',
+                                 }
+                        cnthicknesses = defaultdict(lambda: 1.1)
+                        linestyles = defaultdict(lambda: '-')
+			linestyles[ 'u-aw310'] = ':'
+                        timeseries_compare(
+                                 customColours,
+                                 physics=1,
+                                 bio=0,
+                                 debug=0,
+                                 year0='AlignToDECK2020',
+                                 jobDescriptions=jobDescriptions,
+                                 analysisname='UKESM_fast_piControl',
+                                 lineThicknesses= cnthicknesses,
+                                 linestyles = linestyles,)
+
+                UKESM_fast3 = True
+                if UKESM_fast3:
+                        customColours = {
+                           'u-aw310': 'black',
+                           #'u-bp531': 'red',
+                           #'u-bp705': 'purple',
+                           'u-bq621': 'green',
+                           'u-bq834': 'red',
+                           'u-bb446': 'teal',                           
+                                 }
+                        cnthicknesses = defaultdict(lambda: 1.1)
+                        linestyles = defaultdict(lambda: '-')
+			linestyles[ 'u-aw310'] = ':'
+                        timeseries_compare(
+                                 customColours,
+                                 physics=1,
+                                 bio=0,
+                                 debug=0,
+                                 year0='AlignToDECK2020',
+                                 jobDescriptions=jobDescriptions,
+                                 analysisname='UKESM_fast_Abrupt4x',
+                                 lineThicknesses= cnthicknesses,
+                                 linestyles = linestyles,)
+                                 
 
                 GeoengineeringFudge = True
                 if GeoengineeringFudge:
