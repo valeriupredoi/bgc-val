@@ -248,7 +248,7 @@ def fig2(field='SST', window_len = 10):
 
 
 def fig5(field='SST', window_len = 10):
-	tdiff = -110
+	tdiff = 0 #-110
 	
 	data1 = get_data('u-aw310', field=field,)
 	#data1 = {y:5 for i,y in enumerate(range(1750,3000))}
@@ -357,8 +357,8 @@ def fig5(field='SST', window_len = 10):
         pyplot.savefig(fn, dpi=300)
         pyplot.close()
        
-fig2(field = 'Drake', window_len=0)
-#fig5(field = 'SOMT', window_len=0)                        
+#fig2(field = 'Drake', window_len=0)
+fig5(field = 'SOMT', window_len=0)                        
 #fig4(field = 'SOMT', window_len=0)
 
 
