@@ -2770,7 +2770,7 @@ def main():
                            'u-bk575': 'red',
                            'u-br173': 'orange',                           
                            'u-bk712': 'green',
-                           'u-br016': 'blue',
+                           'u-br106': 'blue',
                                  }
                         cnthicknesses = defaultdict(lambda: 1.1)
                         linestyles = defaultdict(lambda: '-')
