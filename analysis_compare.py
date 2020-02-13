@@ -2761,7 +2761,30 @@ def main():
 		print "Successful command line comparison"
 		exit
 	else:
-
+		# modify albedo of snow on sea ice
+                extensions = True
+                if extensions:
+                        r4_colours = {
+                                     'u-bb075': 'black',
+                                     'u-be393': 'blue',
+                                     'u-be394': 'purple',
+                                     'u-be335': 'pink',
+                                     'u-be392': 'red',
+                                     'u-bh210': 'green',
+                                     'u-bh254': 'gold',
+                                     'u-bh285': 'orange',
+                                     }
+                                                            
+			timeseries_compare(
+	                         r4_colours,
+	                         physics=1,
+	                         bio=1,
+	                         debug=0,
+	                         year0=False, 
+	                         jobDescriptions=jobDescriptions,
+	                         analysisname = 'UKESM_scenarios_extensions_' + run_name,
+	                         lineThicknesses= hjthicknesses)
+	                         
 		# modify albedo of snow on sea ice
                 N96L85 = True
                 if N96L85:
