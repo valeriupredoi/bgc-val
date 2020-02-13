@@ -159,7 +159,8 @@ def theWholePackage(jobID,year=False,suite = 'level1'):
 	else:	
 		analysis_timeseries(jobID =jobID,analysisSuite=suite, )#z_component = 'SurfaceOnly',)
 		
-		
+        # Turning off P2P analysis:
+        year=False    
 	if year not in ['*', False]:
 		if suite =='physics':pass
 		else:	suite = 'level2'
