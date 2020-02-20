@@ -2761,7 +2761,33 @@ def main():
 		print "Successful command line comparison"
 		exit
 	else:
+
 		# modify albedo of snow on sea ice
+                N96L85 = True
+                if N96L85:
+                        customColours = {
+                           'u-aw310': 'black',
+                           'u-bk575': 'red',
+                           'u-br173': 'orange',                           
+                           'u-bk712': 'green',
+                           'u-br106': 'blue',
+                           'u-br894': 'purple',
+                           'u-br896': 'goldenrod',
+                                 }
+                        cnthicknesses = defaultdict(lambda: 1.1)
+                        linestyles = defaultdict(lambda: '-')
+			linestyles[ 'u-aw310'] = ':'
+                        timeseries_compare(
+                                 customColours,
+                                 physics=1,
+                                 bio=1,
+                                 debug=0,
+                                 year0='AlignToDECK2200',
+                                 jobDescriptions=jobDescriptions,
+                                 analysisname='N96L85_mod_snow_albedo_701',
+                                 lineThicknesses= cnthicknesses,
+                                 linestyles = linestyles,)
+                                 
                 extensions = True
                 if extensions:
                         r4_colours = {
@@ -2785,31 +2811,6 @@ def main():
 	                         analysisname = 'UKESM_scenarios_extensions_' + run_name,
 	                         lineThicknesses= hjthicknesses)
 	                         
-		# modify albedo of snow on sea ice
-                N96L85 = True
-                if N96L85:
-                        customColours = {
-                           'u-aw310': 'black',
-                           'u-bk575': 'red',
-                           'u-br173': 'orange',                           
-                           'u-bk712': 'green',
-                           'u-br106': 'blue',
-                                 }
-                        cnthicknesses = defaultdict(lambda: 1.1)
-                        linestyles = defaultdict(lambda: '-')
-			linestyles[ 'u-aw310'] = ':'
-                        timeseries_compare(
-                                 customColours,
-                                 physics=1,
-                                 bio=1,
-                                 debug=0,
-                                 year0='AlignToDECK2200',
-                                 jobDescriptions=jobDescriptions,
-                                 analysisname='N96L85_mod_snow_albedo_701',
-                                 lineThicknesses= cnthicknesses,
-                                 linestyles = linestyles,)
-                                 
-                                 
 		
                 UKESM_fast = True
                 if UKESM_fast:
