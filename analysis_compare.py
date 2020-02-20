@@ -2782,9 +2782,9 @@ def main():
 	                         debug=0,
 	                         year0=False, 
 	                         jobDescriptions=jobDescriptions,
-	                         analysisname = 'UKESM_scenarios_extensions_' + run_name,
+	                         analysisname = 'UKESM_scenarios_extensions_run4',
 	                         lineThicknesses= hjthicknesses)
-	                         
+		#assert 0	
 		# modify albedo of snow on sea ice
                 N96L85 = True
                 if N96L85:
