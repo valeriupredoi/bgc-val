@@ -254,7 +254,15 @@ def analysis_timeseries(jobID = "u-ab671",
 		if analysisSuite.lower() in ['level3',]:
                         analysisKeys.append('DMS_ARAN')                 # DMS Aranami Tsunogai
 
-
+		if analysisSuite.lower() in ['spinup',]:
+                        analysisKeys.append('O2')                      # WOA Oxygen			
+			analysisKeys.append('DIC')			# work in progress
+                        analysisKeys.append('Alk')     # Glodap Alkalinity
+			analysisKeys.append('Iron')			# work in progress
+                        analysisKeys.append('N')                        # WOA Nitrate
+                        analysisKeys.append('Si')                        # WOA Nitrate  
+                        
+                                                			
 		if analysisSuite.lower() in ['debug',]:
 			#analysisKeys.append('AirSeaFlux')		# work in progress
 			#analysisKeys.append('TotalAirSeaFluxCO2')	# work in progress
@@ -264,20 +272,20 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('OMZMeanDepth')		# work in progress
 			#analysisKeys.append('OMZThickness')            # Oxygen Minimum Zone Thickness
 			#analysisKeys.append('TotalOMZVolume')		# work in progress
-                        #analysisKeys.append('O2')                      # WOA Oxygen
+                        analysisKeys.append('O2')                      # WOA Oxygen
                         #analysisKeys.append('AOU')                      # Apparent Oxygen Usage 
                         #analysisKeys.append('WindStress')               # Wind Stress                        
                         #analysisKeys.append('Dust')                    # Dust
                         #analysisKeys.append('TotalDust')               # Total Dust
                         #analysisKeys.append('TotalDust_nomask')
-			#analysisKeys.append('DIC')			# work in progress
+			analysisKeys.append('DIC')			# work in progress
 			#analysisKeys.append('DrakePassageTransport')	# DrakePassageTransport
 			#analysisKeys.append('TotalIceArea')		# work in progress
 			#analysisKeys.append('CHN')
 			#analysisKeys.append('CHD')
-			analysisKeys.append('CHL')	
+			#analysisKeys.append('CHL')	
 			#analysisKeys.append('pH')                      			
-                        #analysisKeys.append('Alk')     # Glodap Alkalinity
+                        analysisKeys.append('Alk')     # Glodap Alkalinity
 
 			#if jobID in ['u-am004','u-am005']:
 	                #        analysisKeys.append('DMS_ANDR')                 # DMS Anderson
@@ -287,8 +295,9 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('Iron')			# work in progress
                         #analysisKeys.append('DTC')                 # work in progress
 
-			#analysisKeys.append('Iron')			# work in progress
-                        #analysisKeys.append('N')                        # WOA Nitrate
+			analysisKeys.append('Iron')			# work in progress
+                        analysisKeys.append('N')                        # WOA Nitrate
+                        analysisKeys.append('Si')                        # WOA Nitrate                    
                         #analysisKeys.append('IntPP_OSU')               # OSU Integrated primpary production
                         #analysisKeys.append('Chl_CCI')
 			#analysisKeys.append('CHL_MAM')
@@ -301,7 +310,7 @@ def analysis_timeseries(jobID = "u-ab671",
 			#analysisKeys.append('GC_CHL_DJF')			                      
                         #####
                         # Physics switches:
-                        analysisKeys.append('Temperature')          #             # WOA Temperature
+                        # analysisKeys.append('Temperature')          #             # WOA Temperature
 #                        analysisKeys.append('HeatFlux')
 #                        analysisKeys.append('TotalHeatFlux')
 
@@ -314,7 +323,7 @@ def analysis_timeseries(jobID = "u-ab671",
 #                        analysisKeys.append('GlobalMeanTemperature_700')
 #                        analysisKeys.append('GlobalMeanTemperature_2000')
 #			analysisKeys.append('WeddelIceExent')
-                        analysisKeys.append('Salinity')                        # WOA Salinity
+                        #analysisKeys.append('Salinity')                        # WOA Salinity
 #                        analysisKeys.append('MLD')                      # MLD
                         #analysisKeys.append('MaxMonthlyMLD')            # MLD                       
                         #analysisKeys.append('MinMonthlyMLD')
@@ -364,10 +373,15 @@ def analysis_timeseries(jobID = "u-ab671",
 	if jobID in ['u-aj588','u-ak900','u-ar538','u-an869','u-ar977',]:
 		try:	analysisKeys.remove('FreshwaterFlux')
 		except: pass
+		
+		
 	#####
 	# Some lists of region.
 	# This are pre-made lists of regions that can be investigated.
 	# Note that each analysis below can be given its own set of regions.
+	layerList = ['Surface',]#'500m','1000m',]
+	metricList = ['mean','median', '10pc','20pc','30pc','40pc','50pc','60pc','70pc','80pc','90pc','min','max']
+		
 	if regions == 'all':
   		regionList	= ['Global', 'ignoreInlandSeas',
 		  		'SouthernOcean','ArcticOcean','AtlanticSOcean', 
@@ -379,6 +393,11 @@ def analysis_timeseries(jobID = "u-ab671",
 
 	if analysisSuite.lower() == 'debug':
                 regionList      = ['Global', 'ArcticOcean']
+
+	if analysisSuite.lower() == 'spinup':
+		regionList      = ['Global', ]
+		metricList	= ['mean', ]
+		layerList	= ['500m', '1000m',' 2000m', '4000m']
 
 	# Regions from Pierce 1995 - https://doi.org/10.1175/1520-0485(1995)025<2046:CROHAF>2.0.CO;2
 	PierceRegions = ['Enderby','Wilkes','Ross','Amundsen','Weddel',]
@@ -393,8 +412,7 @@ def analysis_timeseries(jobID = "u-ab671",
 	# It's not advised to run all the metrics and all the layers, as it'll slow down the analysis.
 	# if z_component in ['SurfaceOnly',]:
 
-	layerList = ['Surface',]#'500m','1000m',]
-	metricList = ['mean','median', '10pc','20pc','30pc','40pc','50pc','60pc','70pc','80pc','90pc','min','max']
+
 
 #	if z_component in ['FullDepth',]:
 #		layerList = [0,2,5,10,15,20,25,30,35,40,45,50,55,60,70,]
@@ -985,8 +1003,11 @@ def analysis_timeseries(jobID = "u-ab671",
 
 		av[name]['modeldetails'] 	= {'name': name, 'vars':['OXY',], 'convert': ukp.NoChange,'units':'mmol O2/m^3'}
 		av[name]['datadetails']  	= {'name': name, 'vars':['o_an',], 'convert': ukp.oxconvert,'units':'mmol O2/m^3'}
-
-		av[name]['layers'] 		=  ['Surface','500m','1000m',] #layerList
+		
+		if analysisSuite.lower() == 'spinup':
+			av[name]['layers'] 	=  layerList
+		else:
+			av[name]['layers'] 	=  ['Surface','500m','1000m',] #layerList
 		av[name]['regions'] 		= regionList
 		av[name]['metrics']		= metricList
 
