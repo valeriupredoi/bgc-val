@@ -87,6 +87,7 @@ if True:
 #        bgcKeys.append('DTC')                      # Detrital carbon
         bgcKeys.append('CHL')                      # Total Chlorophyll        
 #        bgcKeys.append('DMS_ARAN')                      # Total Chlorophyll        
+        bgcKeys.append('pH')                                              
 
 
 bgcKeysDict = {i:n for i,n in enumerate(bgcKeys)}
