@@ -2770,6 +2770,7 @@ def main():
                            'u-br173': 'orange',                           
                            'u-bk712': 'green',
                            'u-br106': 'blue',
+                           'u-bm585': 'mediumpurple',
                            'u-bm585': 'dodgerblue',
                            'u-br894': 'purple',
                            'u-bm448': 'deeppink',
