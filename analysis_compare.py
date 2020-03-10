@@ -2765,6 +2765,53 @@ def main():
                 N96L85 = True
                 if N96L85:
                         customColours = {
+                           'u-bk712': 'green',
+                           'u-bk575': 'red',
+                           'u-br173': 'orange',                           
+                           'u-bm585': 'mediumpurple',
+                           'u-bk741': 'blue',                                               
+                           'u-bm448': 'deeppink',
+                           }
+                        cnthicknesses = defaultdict(lambda: 1.1)
+                        linestyles = defaultdict(lambda: '-')
+			linestyles[ 'u-aw310'] = ':'
+                        timeseries_compare(
+                                 customColours,
+                                 physics=1,
+                                 bio=1,
+                                 debug=0,
+                                 year0='1950-2020',
+                                 jobDescriptions=jobDescriptions,
+                                 analysisname='N96L85_mod_snow_albedo_701_parents_without_snow_mod',
+                                 lineThicknesses= cnthicknesses,
+                                 linestyles = linestyles,)
+
+                N96L85 = True
+                if N96L85:
+                        customColours = {
+                           'u-br106': 'blue',
+                           'u-br173': 'orange',                           
+                           'u-br894': 'purple',
+                           'u-br896': 'goldenrod',                                                      
+                           }
+                        cnthicknesses = defaultdict(lambda: 1.1)
+                        linestyles = defaultdict(lambda: '-')
+			linestyles[ 'u-aw310'] = ':'
+                        timeseries_compare(
+                                 customColours,
+                                 physics=1,
+                                 bio=1,
+                                 debug=0,
+                                 year0='1950-2020',
+                                 jobDescriptions=jobDescriptions,
+                                 analysisname='N96L85_mod_snow_albedo_701_Difference_mods',
+                                 lineThicknesses= cnthicknesses,
+                                 linestyles = linestyles,)
+                                 
+                                 
+                N96L85 = True
+                if N96L85:
+                        customColours = {
                            'u-aw310': 'black',
                            'u-bk575': 'red',
                            'u-br173': 'orange',                           
@@ -2789,6 +2836,8 @@ def main():
                                  analysisname='N96L85_mod_snow_albedo_701',
                                  lineThicknesses= cnthicknesses,
                                  linestyles = linestyles,)
+                                 
+                                 
                                  
                 extensions = True
                 if extensions:
