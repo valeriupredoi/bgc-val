@@ -127,8 +127,7 @@ def getHorizontalSlice(nc,coords,details,layer,data = ''):
 		#return ApplyDepthSlice(data, 0)
 		
 	
-	if layer in ['Surface','100m','200m','300m','500m','1000m','2000m','3000m',]:	
-	
+	if layer in ['Surface', '100m', '200m', '300m', '500m', '1000m', '2000m', '3000m', '4000m',]:	
 		if layer == 'Surface':	z = 0.
 		if layer == '100m': 	z = 100.			
 		if layer == '200m': 	z = 200.
@@ -137,6 +136,8 @@ def getHorizontalSlice(nc,coords,details,layer,data = ''):
 		if layer == '1000m': 	z = 1000.
 		if layer == '2000m': 	z = 2000.
                 if layer == '3000m':    z = 3000.
+                if layer == '4000m':    z = 4000.
+		print z 
 		k =  ukp.getORCAdepth(z,nc.variables[coords['z']][:],debug=False)
 		if type(data) == type(''):
 		 	data = ukp.extractData(nc,details)

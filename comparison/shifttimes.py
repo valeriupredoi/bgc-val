@@ -625,6 +625,15 @@ def shifttimes(mdata, jobID,year0=False):
                         datas.append(mdata[t])
                return times, datas
 
+        if year0 =='1950-2020':
+               for t in sorted(mdata.keys()):
+                        if float(t) < 1950.: continue
+                        if float(t) > 2020.: continue
+                        times.append(float(t))
+                        datas.append(mdata[t])
+               return times, datas
+
+
 
 	if year0 == 'N48-ORCA1':
                for t in sorted(mdata.keys()):
