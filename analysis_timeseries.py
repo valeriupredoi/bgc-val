@@ -261,7 +261,11 @@ def analysis_timeseries(jobID = "u-ab671",
 			analysisKeys.append('Iron')			# work in progress
                         analysisKeys.append('N')                        # WOA Nitrate
                         analysisKeys.append('Si')                        # WOA Nitrate  
-                        
+                        analysisKeys.append('Temperature')          #             # WOA Temperature
+                        analysisKeys.append('Salinity')          #             # WOA Salinity
+                if analysisSuite.lower() in ['salinity',]:
+                        analysisKeys.append('Salinity')          #             # WOA Salinity
+
                                                 			
 		if analysisSuite.lower() in ['debug',]:
 			#analysisKeys.append('AirSeaFlux')		# work in progress
@@ -394,10 +398,10 @@ def analysis_timeseries(jobID = "u-ab671",
 	if analysisSuite.lower() == 'debug':
                 regionList      = ['Global', 'ArcticOcean']
 
-	if analysisSuite.lower() == 'spinup':
+	if analysisSuite.lower() in ['spinup', 'salinity',]:
 		regionList      = ['Global', ]
 		metricList	= ['mean', ]
-		layerList	= ['500m', '1000m',' 2000m', '4000m']
+		layerList	= ['500m', '1000m', '2000m', '4000m']
 
 	# Regions from Pierce 1995 - https://doi.org/10.1175/1520-0485(1995)025<2046:CROHAF>2.0.CO;2
 	PierceRegions = ['Enderby','Wilkes','Ross','Amundsen','Weddel',]
@@ -2253,8 +2257,12 @@ def analysis_timeseries(jobID = "u-ab671",
 		tregions = ['Global', 'ignoreInlandSeas','Equator10','AtlanticSOcean','SouthernOcean','ArcticOcean',  'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific','WeddelSea', 'Cornwall']
 		tregions.extend(PierceRegions)
 		#tregions = ['Global',]
-		av[name]['layers'] 		= layerList 
-		av[name]['regions'] 		= tregions
+                if analysisSuite.lower() == 'spinup':
+                        av[name]['layers']      = layerList
+                        av[name]['regions']     = regionList
+		else:
+                        av[name]['layers'] 	= layerList 
+			av[name]['regions'] 	= tregions
 		av[name]['metrics']		= metricList
                 	
 		#try:	
@@ -2289,8 +2297,12 @@ def analysis_timeseries(jobID = "u-ab671",
 		
 		salregions = ['Global', 'ignoreInlandSeas','Equator10','AtlanticSOcean','SouthernOcean','ArcticOcean',  'Remainder','NorthernSubpolarAtlantic','NorthernSubpolarPacific','WeddelSea']
 		salregions.extend(PierceRegions)		
-		av[name]['layers'] 		=  layerList
-		av[name]['regions'] 		= salregions
+                if analysisSuite.lower() in ['spinup', 'salinity']:
+                        av[name]['layers']      = layerList
+                        av[name]['regions']     = regionList
+                else:
+			av[name]['layers'] 	=  layerList
+			av[name]['regions']	= salregions
 		av[name]['metrics']		= metricList
 
 		av[name]['datasource'] 		= 'WOA'
@@ -3239,6 +3251,8 @@ def main():
 
 	if 'debug' in argv[1:]:	suite = 'debug'
 	#elif 'all' in argv[1:]:	suite = 'all'
+        elif 'spinup' in argv[1:]:suite='spinup'
+        elif 'salinity' in argv[1:]:suite='salinity'
 	elif 'level1' in argv[1:]:suite='level1'
 	elif 'level3' in argv[1:]:suite='level3'
         elif 'physics' in argv[1:]:suite='physics'

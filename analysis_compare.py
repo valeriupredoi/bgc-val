@@ -2815,7 +2815,7 @@ def main():
                            'u-br106': 'blue',
                            'u-br173': 'orange',                           
                            'u-br894': 'purple',
-                           'u-br896': 'goldenrod',                                                      
+                           'u-br896': 'red',                                                      
                            }
                         cnthicknesses = defaultdict(lambda: 1.1)
                         linestyles = defaultdict(lambda: '-')
@@ -2830,7 +2830,6 @@ def main():
                                  analysisname='N96L85_mod_snow_albedo_701_Difference_mods',
                                  lineThicknesses= cnthicknesses,
                                  linestyles = linestyles,)
-                                 
                                  
                 N96L85 = True
                 if N96L85:
