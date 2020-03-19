@@ -2762,6 +2762,29 @@ def main():
 		exit
 	else:
 		# modify albedo of snow on sea ice
+
+
+                UKESM11_picontrol = True
+                if UKESM11_picontrol:
+                        customColours = {
+                                'u-bs463': 'green',
+                                'u-aw310': 'black',
+                                'u-bs522': 'blue',
+                                }
+                cnthicknesses = defaultdict(lambda: 1.1)
+                linestyles = defaultdict(lambda: '-')
+                linestyles[ 'u-aw310'] = ':'
+                timeseries_compare(
+                        customColours,
+                        physics=1,
+                        bio=1,
+                        debug=0,
+                        year0='1849-1901',
+                        jobDescriptions=jobDescriptions,
+                        analysisname='UKESM11_picontrol',
+                        lineThicknesses= cnthicknesses,
+                        linestyles = linestyles,)
+
                 N96L85 = True
                 if N96L85:
                         customColours = {
