@@ -2770,6 +2770,7 @@ def main():
                                 'u-bs463': 'green',
                                 'u-aw310': 'black',
                                 'u-bs522': 'blue',
+                                'u-bs705': 'red',
                                 }
                 cnthicknesses = defaultdict(lambda: 1.1)
                 linestyles = defaultdict(lambda: '-')
@@ -2778,12 +2779,13 @@ def main():
                         customColours,
                         physics=1,
                         bio=1,
-                        debug=0,
-                        year0='1849-1901',
+                        debug=1,
+                        year0=None,#1901',
                         jobDescriptions=jobDescriptions,
                         analysisname='UKESM11_picontrol',
                         lineThicknesses= cnthicknesses,
                         linestyles = linestyles,)
+                assert 0
 
                 N96L85 = True
                 if N96L85:
