@@ -2761,9 +2761,6 @@ def main():
 		print "Successful command line comparison"
 		exit
 	else:
-		# modify albedo of snow on sea ice
-
-
                 UKESM_fast = True
                 if UKESM_fast:
                         customColours = {
@@ -2792,7 +2789,7 @@ def main():
                                 'u-bs463': 'green',
                                 'u-aw310': 'black',
                                 'u-bs522': 'blue',
-                                'u-bs705': 'red',
+                                'u-bs704': 'red',
                                 }
                         cnthicknesses = defaultdict(lambda: 1.1)
                         linestyles = defaultdict(lambda: '-')
