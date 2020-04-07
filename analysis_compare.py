@@ -2761,7 +2761,26 @@ def main():
 		print "Successful command line comparison"
 		exit
 	else:
-		# modify albedo of snow on sea ice
+                UKESM_fast = True
+                if UKESM_fast:
+                        customColours = {
+                           'u-aw310': 'black',
+                           'u-bs733': 'red',
+                                 }
+
+                        cnthicknesses = defaultdict(lambda: 1.1)
+                        linestyles = defaultdict(lambda: '-')
+                        linestyles[ 'u-aw310'] = ':'
+                        timeseries_compare(
+                                 customColours,
+                                 physics=1,
+                                 bio=0,
+                                 debug=0,
+                                 year0=None, 
+                                 jobDescriptions=jobDescriptions,
+                                 analysisname='UKESM_fast_final',
+                                 lineThicknesses= cnthicknesses,
+                                 linestyles = linestyles,)
 
 
                 UKESM11_picontrol = True
