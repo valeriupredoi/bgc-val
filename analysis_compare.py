@@ -2791,19 +2791,25 @@ def main():
                                 'u-bs522': 'blue',
                                 'u-bs704': 'red',
                                 }
-                        cnthicknesses = defaultdict(lambda: 1.1)
-                        linestyles = defaultdict(lambda: '-')
-                        linestyles[ 'u-aw310'] = ':'
-                        timeseries_compare(
-                            customColours,
-                            physics=1,
-                            bio=1,
-                            debug=1,
-                            year0=None,#1901',
-                            jobDescriptions=jobDescriptions,
-                            analysisname='UKESM11_picontrol',
-                            lineThicknesses= cnthicknesses,
-                            linestyles = linestyles,)
+	                descripts = {
+				'u-aw310' : 'UKESM1.0',
+				'u-bs463' : 'UKESM1.0.1',
+				'u-bs522' : 'UKESM1.0.1 + snow mods',
+				'u-bs704' : 'UKESM1.0.2',
+			}
+	                cnthicknesses = defaultdict(lambda: 1.1)
+        	        linestyles = defaultdict(lambda: '-')
+                	linestyles[ 'u-aw310'] = ':'
+	                timeseries_compare(
+        	                customColours,
+                	        physics=1,
+                        	bio=1,
+	                        debug=0,
+        	                year0='2300-2400',
+                	        jobDescriptions=descripts,
+                        	analysisname='UKESM11_picontrol',
+	                        lineThicknesses= cnthicknesses,
+        	                linestyles = linestyles,)
 
                 N96L85 = True
                 if N96L85:
