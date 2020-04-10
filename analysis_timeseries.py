@@ -30,6 +30,8 @@
 .. moduleauthor:: Lee de Mora <ledm@pml.ac.uk>
 
 """
+import matplotlib as mpl
+mpl.use('Agg')
 
 #####
 # Load Standard Python modules:
@@ -384,7 +386,7 @@ def analysis_timeseries(jobID = "u-ab671",
 	# This are pre-made lists of regions that can be investigated.
 	# Note that each analysis below can be given its own set of regions.
 	layerList = ['Surface',]#'500m','1000m',]
-	metricList = ['mean','median', '10pc','20pc','30pc','40pc','50pc','60pc','70pc','80pc','90pc','min','max']
+	metricList = ['mean',] #'median', '10pc','20pc','30pc','40pc','50pc','60pc','70pc','80pc','90pc','min','max']
 		
 	if regions == 'all':
   		regionList	= ['Global', 'ignoreInlandSeas',

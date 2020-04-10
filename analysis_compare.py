@@ -2761,6 +2761,41 @@ def main():
 		print "Successful command line comparison"
 		exit
 	else:
+
+                UKESM_fast2 = True
+                if UKESM_fast2:
+                        picontrol={}
+                        Co2_4x={}
+                        picontrol['N96L85'] = 'u-aw310'
+                        picontrol['N48L85'] = 'u-bk171'
+                        picontrol['N48L38'] = 'u-bs733'
+                        Co2_4x['N96L85'] = 'u-bb446'
+                        Co2_4x['N48L85'] = 'u-bk093'
+                        Co2_4x['N48L38'] = 'u-bt089'
+               
+                        for configuration in picontrol.keys():
+                            customColours = {
+                                picontrol[configuration]: 'black',
+                                Co2_4x[configuration]: 'red',
+                            }
+
+                            cnthicknesses = defaultdict(lambda: 1.1)
+                            linestyles = defaultdict(lambda: '-')
+                            linestyles[picontrol[configuration]] = ':'
+                            timeseries_compare(
+                                 customColours,
+                                 physics=1,
+                                 bio=0,
+                                 debug=1,
+                                 year0='AlignToDECK2100',
+                                 jobDescriptions=jobDescriptions,
+                                 analysisname='UKESM_fast_'+configuration,
+                                 lineThicknesses= cnthicknesses,
+                                 linestyles = linestyles,)
+		assert 0
+
+
+
                 UKESM_fast = True
                 if UKESM_fast:
                         customColours = {
@@ -2776,12 +2811,11 @@ def main():
                                  physics=1,
                                  bio=0,
                                  debug=0,
-                                 year0=None, 
+                                 year0='AlignToDECK2100', 
                                  jobDescriptions=jobDescriptions,
                                  analysisname='UKESM_fast_final',
                                  lineThicknesses= cnthicknesses,
                                  linestyles = linestyles,)
-
 
                 UKESM11_picontrol = True
                 if UKESM11_picontrol:
