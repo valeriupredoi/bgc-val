@@ -2766,13 +2766,17 @@ def main():
                 if UKESM_fast2:
                         picontrol={}
                         Co2_4x={}
+			year0={}
                         picontrol['N96L85'] = 'u-aw310'
                         picontrol['N48L85'] = 'u-bk171'
                         picontrol['N48L38'] = 'u-bs733'
                         Co2_4x['N96L85'] = 'u-bb446'
                         Co2_4x['N48L85'] = 'u-bk093'
                         Co2_4x['N48L38'] = 'u-bt089'
-               
+               		year0['N96L85'] = 'AlignToDECK2100'
+                        year0['N48L85'] = None 
+                        year0['N48L38'] = 'AlignToDECK2200'
+
                         for configuration in picontrol.keys():
                             customColours = {
                                 picontrol[configuration]: 'black',
@@ -2786,15 +2790,12 @@ def main():
                                  customColours,
                                  physics=1,
                                  bio=0,
-                                 debug=1,
-                                 year0='AlignToDECK2100',
+                                 debug=0,
+                                 year0=year0[configuration],
                                  jobDescriptions=jobDescriptions,
                                  analysisname='UKESM_fast_'+configuration,
                                  lineThicknesses= cnthicknesses,
                                  linestyles = linestyles,)
-		assert 0
-
-
 
                 UKESM_fast = True
                 if UKESM_fast:
@@ -2820,16 +2821,21 @@ def main():
                 UKESM11_picontrol = True
                 if UKESM11_picontrol:
                         customColours = {
-                                'u-bs463': 'green',
+                                #'u-bs463': 'green',
                                 'u-aw310': 'black',
                                 'u-bs522': 'blue',
                                 'u-bs704': 'red',
+				'u-bt233': 'green',
+				'u-bt320': 'purple',
                                 }
 	                descripts = {
-				'u-aw310' : 'UKESM1.0',
-				'u-bs463' : 'UKESM1.0.1',
-				'u-bs522' : 'UKESM1.0.1 + snow mods',
-				'u-bs704' : 'UKESM1.0.2',
+				'u-aw310': 'UKESM1.0',
+				# 'u-bs463' : 'UKESM1.0.1',
+				'u-bs522': 'UKESM1.0.1 + snow mods',
+				'u-bs704': 'UKESM1.0.2',
+                                'u-bt233': '',
+                                'u-bt320': '',
+
 			}
 	                cnthicknesses = defaultdict(lambda: 1.1)
         	        linestyles = defaultdict(lambda: '-')
@@ -2839,7 +2845,7 @@ def main():
                 	        physics=1,
                         	bio=1,
 	                        debug=0,
-        	                year0='2300-2400',
+        	                year0='2300-2500',
                 	        jobDescriptions=descripts,
                         	analysisname='UKESM11_picontrol',
 	                        lineThicknesses= cnthicknesses,
