@@ -2775,13 +2775,16 @@ def main():
                         Co2_4x['N48L38'] = 'u-bt089'
                		year0['N96L85'] = 'AlignToDECK2100'
                         year0['N48L85'] = None 
-                        year0['N48L38'] = 'AlignToDECK2200'
-
+                        year0['N48L38'] = 'AlignToDECK2300'
+                        others = {'N48L38': {'u-bt670':'blue', },]}
                         for configuration in picontrol.keys():
                             customColours = {
                                 picontrol[configuration]: 'black',
                                 Co2_4x[configuration]: 'red',
                             }
+                            if configuration in others.keys():
+                                customColours.update(others[configuration]
+
 
                             cnthicknesses = defaultdict(lambda: 1.1)
                             linestyles = defaultdict(lambda: '-')
@@ -2827,6 +2830,7 @@ def main():
                                 'u-bs704': 'red',
 				'u-bt233': 'green',
 				'u-bt320': 'purple',
+                                'u-bt931' : 'orange',
                                 }
 	                descripts = {
 				'u-aw310': 'UKESM1.0',
@@ -2835,6 +2839,7 @@ def main():
 				'u-bs704': 'UKESM1.0.2',
                                 'u-bt233': '',
                                 'u-bt320': '',
+                                'u-bt931' : 'continuation of u-bt233 with a slight tweak on TOA radiation',
 
 			}
 	                cnthicknesses = defaultdict(lambda: 1.1)
