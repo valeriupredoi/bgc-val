@@ -232,11 +232,11 @@ def main():
 	crontxt+= headerline+"\n# using the file: "+str(os.path.abspath(fn))
 	
 
-	crontxt += addCompare()
+	#crontxt += addCompare()
 	
 	crontxt += addMassjobs(fn)
 	
-	crontxt += addSci1jobs(fn)
+	#crontxt += addSci1jobs(fn)
 	
 	crontxt+= headerline
 	print crontxt
