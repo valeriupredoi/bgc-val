@@ -2762,6 +2762,30 @@ def main():
 		exit
 	else:
 
+                UKESM_vs_HadGEM3 = True
+                if UKESM_vs_HadGEM3:
+                        customColours = {
+                           'u-aw310': 'black',   # UKESM1 piControl
+                           'u-ar766': 'green',   # HadGEM3 piControl:
+                           'u-bb446': 'blue',    # UKESM1 abrupt-4xCO2
+                           'u-bg555': 'orange',  # HadGEM3 abrupt-4xCO2
+                           }
+                        cnthicknesses = defaultdict(lambda: 1.1)
+                        linestyles = defaultdict(lambda: '-')
+                        linestyles[ 'u-aw310'] = ':'
+                        linestyles[ 'u-ar766'] = ':'
+                        timeseries_compare(
+                                 customColours,
+                                 physics=1,
+                                 bio=1,
+                                 debug=0,
+                                 year0=None, 
+                                 jobDescriptions=jobDescriptions,
+                                 analysisname='UKESM_vs_HadGEM3',
+                                 lineThicknesses= cnthicknesses,
+                                 linestyles = linestyles,)
+            
+
                 UKESM_fast2 = True
                 if UKESM_fast2:
                         picontrol={}
