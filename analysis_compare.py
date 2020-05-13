@@ -2776,14 +2776,14 @@ def main():
                		year0['N96L85'] = 'AlignToDECK2100'
                         year0['N48L85'] = None 
                         year0['N48L38'] = 'AlignToDECK2300'
-                        others = {'N48L38': {'u-bt670':'blue', },]}
+                        others = {'N48L38': {'u-bt670':'blue', },}
                         for configuration in picontrol.keys():
                             customColours = {
                                 picontrol[configuration]: 'black',
                                 Co2_4x[configuration]: 'red',
                             }
                             if configuration in others.keys():
-                                customColours.update(others[configuration]
+                                customColours.update(others[configuration])
 
 
                             cnthicknesses = defaultdict(lambda: 1.1)
