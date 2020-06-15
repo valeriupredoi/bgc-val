@@ -2800,7 +2800,7 @@ def main():
                		year0['N96L85'] = 'AlignToDECK2100'
                         year0['N48L85'] = None 
                         year0['N48L38'] = 'AlignToDECK2300'
-                        others = {'N48L38': {'u-bt670':'blue', },}
+                        others = {'N48L38': {'u-bt670':'blue', 'u-bu847': 'green' },}
                         for configuration in picontrol.keys():
                             customColours = {
                                 picontrol[configuration]: 'black',
@@ -2879,6 +2879,38 @@ def main():
                         	analysisname='UKESM11_picontrol',
 	                        lineThicknesses= cnthicknesses,
         	                linestyles = linestyles,)
+
+
+                UKESM11_picontrol2 = True
+                if UKESM11_picontrol2:
+                        customColours = {
+                                'u-bt233': 'green',
+                                'u-bu504': 'red',
+                                'u-bu737': 'purple',
+                                'u-bu794': 'gold',
+
+                                }
+                        descripts = {
+                                'u-bt233': 'UKESM1.1 pi control',
+                                'u-bu504': 'UKESM1.1  - based on u-bt233',
+                                'u-bu737': 'UKESM1.1  - based on u-bt233',
+                                'u-bu794': 'UKESM1.1  - based on u-bt233',
+                        }
+
+                        cnthicknesses = defaultdict(lambda: 1.1)
+                        linestyles = defaultdict(lambda: '-')
+                        timeseries_compare(
+                                customColours,
+                                physics=1,
+                                bio=1,
+                                debug=0,
+                                year0='2300-2500',
+                                jobDescriptions=descripts,
+                                analysisname='UKESM11_picontrol_2',
+                                lineThicknesses= cnthicknesses,
+                                linestyles = linestyles,)
+
+
 
                 N96L85 = True
                 if N96L85:
