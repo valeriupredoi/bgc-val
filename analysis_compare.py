@@ -2784,7 +2784,6 @@ def main():
                                  analysisname='UKESM_vs_HadGEM3',
                                  lineThicknesses= cnthicknesses,
                                  linestyles = linestyles,)
-            
 
                 UKESM_fast2 = True
                 if UKESM_fast2:
@@ -2855,6 +2854,7 @@ def main():
 				'u-bt233': 'green',
 				'u-bt320': 'purple',
                                 'u-bt931' : 'orange',
+				'u-bu504': 'brown',
                                 }
 	                descripts = {
 				'u-aw310': 'UKESM1.0',
@@ -2864,6 +2864,7 @@ def main():
                                 'u-bt233': '',
                                 'u-bt320': '',
                                 'u-bt931' : 'continuation of u-bt233 with a slight tweak on TOA radiation',
+				'u-bu504': '',
 
 			}
 	                cnthicknesses = defaultdict(lambda: 1.1)
@@ -2874,7 +2875,7 @@ def main():
                 	        physics=1,
                         	bio=1,
 	                        debug=0,
-        	                year0='2300-2500',
+        	                year0='2300-2700',
                 	        jobDescriptions=descripts,
                         	analysisname='UKESM11_picontrol',
 	                        lineThicknesses= cnthicknesses,
