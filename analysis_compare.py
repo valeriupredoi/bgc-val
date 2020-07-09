@@ -2799,7 +2799,7 @@ def main():
                		year0['N96L85'] = 'AlignToDECK2100'
                         year0['N48L85'] = None 
                         year0['N48L38'] = 'AlignToDECK2300'
-                        others = {'N48L38': {'u-bt670':'blue', 'u-bu847': 'green' },}
+                        others = {'N48L38': {'u-bt670':'blue', 'u-bu847': 'green', 'u-bv334': 'purple' , 'u-bc270':'orange'},}
                         for configuration in picontrol.keys():
                             customColours = {
                                 picontrol[configuration]: 'black',
@@ -2889,13 +2889,15 @@ def main():
                                 'u-bu504': 'red',
                                 'u-bu737': 'purple',
                                 'u-bu794': 'gold',
-
+				'u-bv334': 'blue',
                                 }
                         descripts = {
                                 'u-bt233': 'UKESM1.1 pi control',
-                                'u-bu504': 'UKESM1.1  - based on u-bt233',
-                                'u-bu737': 'UKESM1.1  - based on u-bt233',
-                                'u-bu794': 'UKESM1.1  - based on u-bt233',
+                                'u-bu504': 'UKESM1.1  - based on u-bt233 + UKCA & JULES temporary logicals activated',
+                                'u-bu737': 'UKESM1.1  - based on u-bt233 + sea ice bugfix #661 included',
+                                'u-bu794': 'UKESM1.1  - based on u-bt233 + CDNC correction included',
+                                'u-bv334': 'UKESM 1.0.4',
+
                         }
 
                         cnthicknesses = defaultdict(lambda: 1.1)
@@ -2905,7 +2907,7 @@ def main():
                                 physics=1,
                                 bio=1,
                                 debug=0,
-                                year0='2300-2500',
+                                year0=None, 
                                 jobDescriptions=descripts,
                                 analysisname='UKESM11_picontrol_2',
                                 lineThicknesses= cnthicknesses,
