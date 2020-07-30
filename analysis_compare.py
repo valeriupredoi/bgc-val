@@ -2799,7 +2799,7 @@ def main():
                		year0['N96L85'] = 'AlignToDECK2100'
                         year0['N48L85'] = None 
                         year0['N48L38'] = 'AlignToDECK2300'
-                        others = {'N48L38': {'u-bt670':'blue', 'u-bu847': 'green', 'u-bv334': 'purple' , 'u-bc270':'orange'},}
+                        others = {'N48L38': {'u-bt670':'blue', 'u-bu847': 'green', 'u-bv334': 'purple' , 'u-bv270':'orange'},}
                         for configuration in picontrol.keys():
                             customColours = {
                                 picontrol[configuration]: 'black',
@@ -2844,7 +2844,7 @@ def main():
                                  lineThicknesses= cnthicknesses,
                                  linestyles = linestyles,)
 
-                UKESM11_picontrol = True
+                UKESM11_picontrol = False
                 if UKESM11_picontrol:
                         customColours = {
                                 #'u-bs463': 'green',
@@ -2882,7 +2882,7 @@ def main():
         	                linestyles = linestyles,)
 
 
-                UKESM11_picontrol2 = True
+                UKESM11_picontrol2 = False
                 if UKESM11_picontrol2:
                         customColours = {
                                 'u-bt233': 'green',
@@ -2890,13 +2890,15 @@ def main():
                                 'u-bu737': 'purple',
                                 'u-bu794': 'gold',
 				'u-bv334': 'blue',
+                                #'u-bv270': 'orange',
                                 }
                         descripts = {
                                 'u-bt233': 'UKESM1.1 pi control',
                                 'u-bu504': 'UKESM1.1  - based on u-bt233 + UKCA & JULES temporary logicals activated',
                                 'u-bu737': 'UKESM1.1  - based on u-bt233 + sea ice bugfix #661 included',
                                 'u-bu794': 'UKESM1.1  - based on u-bt233 + CDNC correction included',
-                                'u-bv334': 'UKESM 1.0.4',
+                                'u-bv334': 'UKESM 1.0.4 - two_fsd  = 1.56, ICs from aw310',
+                                #'u-bv270': 'two_fsd = 1.56 ICs from bt670',
 
                         }
 
@@ -2910,6 +2912,34 @@ def main():
                                 year0=None, 
                                 jobDescriptions=descripts,
                                 analysisname='UKESM11_picontrol_2',
+                                lineThicknesses= cnthicknesses,
+                                linestyles = linestyles,)
+
+                UKESM11_picontrol3 = True
+                if UKESM11_picontrol3:
+                        customColours = {
+                                'u-aw310': 'black',
+                                'u-bv334': 'red',
+                                'u-bv936': 'green',
+                                'u-bw161': 'blue',
+                                }
+                        descripts = {
+                                'u-aw310': 'UKESM1',
+                                'u-bv334': 'UKESM1.0.4',
+                                'u-bv936': 'UKESM1.0.5.0',
+                                'u-bw161': 'UKESM1.0.5.1',
+                        }
+
+                        cnthicknesses = defaultdict(lambda: 1.1)
+                        linestyles = defaultdict(lambda: '-')
+                        timeseries_compare(
+                                customColours,
+                                physics=1,
+                                bio=1,
+                                debug=0,
+                                year0=None,
+                                jobDescriptions=descripts,
+                                analysisname='UKESM11_picontrol_3',
                                 lineThicknesses= cnthicknesses,
                                 linestyles = linestyles,)
 
