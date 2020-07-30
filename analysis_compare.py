@@ -2937,7 +2937,7 @@ def main():
                                 physics=1,
                                 bio=1,
                                 debug=0,
-                                year0=None,
+                                year0='2300-2700',
                                 jobDescriptions=descripts,
                                 analysisname='UKESM11_picontrol_3',
                                 lineThicknesses= cnthicknesses,
