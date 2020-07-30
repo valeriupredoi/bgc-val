@@ -2921,13 +2921,13 @@ def main():
                                 'u-aw310': 'black',
                                 'u-bv334': 'red',
                                 'u-bv936': 'green',
-                                'u-bw161': 'blue',
+                                'u-bw462': 'blue',
                                 }
                         descripts = {
                                 'u-aw310': 'UKESM1',
                                 'u-bv334': 'UKESM1.0.4',
                                 'u-bv936': 'UKESM1.0.5.0',
-                                'u-bw161': 'UKESM1.0.5.1',
+                                'u-bw462': 'UKESM1.0.5.1',
                         }
 
                         cnthicknesses = defaultdict(lambda: 1.1)
