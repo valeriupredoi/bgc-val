@@ -3117,7 +3117,32 @@ def main():
                                  analysisname='UKESM_fast_Abrupt4x',
                                  lineThicknesses= cnthicknesses,
                                  linestyles = linestyles,)
-                                 
+                      
+                UKESM_fast4 = True
+                if UKESM_fast4:
+                        customColours = {
+                           'u-aw310': 'black',
+                           'u-bx082': 'red',
+                           'u-bw717': 'purple',
+#                          'u-bq621': 'green',
+#                          'u-bq834': 'red',
+#                          'u-bb446': 'teal',
+                                 }
+                        cnthicknesses = defaultdict(lambda: 1.1)
+                        linestyles = defaultdict(lambda: '-')
+                        linestyles[ 'u-aw310'] = ':'
+                        timeseries_compare(
+                                 customColours,
+                                 physics=1,
+                                 bio=0,
+                                 debug=0,
+#                                 year0='AlignToDECK2020',
+                                 jobDescriptions=jobDescriptions,
+                                 analysisname='UKESM_fast_4',
+                                 lineThicknesses= cnthicknesses,
+                                 linestyles = linestyles,)
+
+           
 
                 GeoengineeringFudge = False
                 if GeoengineeringFudge:

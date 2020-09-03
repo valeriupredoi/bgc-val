@@ -1,6 +1,9 @@
 
 while [ 1 -eq 1 ];
 do
+    ./analysis_timeseries.py u-bw717 level1;
+    ./analysis_timeseries.py u-bx082 level1;
+
     ./analysis_timeseries.py u-bx188 level1;
     #./analysis_timeseries.py u-bw837 level1; 
     ./analysis_timeseries.py u-bv936 level1; 
