@@ -2923,6 +2923,7 @@ def main():
                                 'u-bv936': 'green',
                                 'u-bw462': 'blue',
 				'u-bw837': 'orange',
+                                'u-bx188': 'darkorange'
                                 }
                         descripts = {
                                 'u-aw310': 'UKESM1',
@@ -2930,6 +2931,8 @@ def main():
                                 'u-bv936': 'UKESM1.0.5.0',
                                 'u-bw462': 'UKESM1.0.5.1',
                                 'u-bw837': '',
+                                'u-bx188': '',
+                               
                         }
 
                         cnthicknesses = defaultdict(lambda: 1.1)
