@@ -1,8 +1,8 @@
 
 while [ 1 -eq 1 ];
 do
-    ./analysis_timeseries.py u-bw717 level1;
-    ./analysis_timeseries.py u-bx082 level1;
+    ./analysis_timeseries.py u-bw717 physics
+    ./analysis_timeseries.py u-bx082 physics
 
     ./analysis_timeseries.py u-bx188 level1;
     #./analysis_timeseries.py u-bw837 level1; 
@@ -31,5 +31,5 @@ do
     ./analysis_compare.py
     rsync -av /home/users/ldemora/workspace/ukesm-validation/CompareReports /group_workspaces/jasmin4/esmeval/public/.
     echo "sleeping"
-    sleep 20000;
+    sleep 10000;
 done

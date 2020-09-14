@@ -659,6 +659,23 @@ def shifttimes(mdata, jobID,year0=False):
                         datas.append(mdata[t])
                return times, datas
 
+        if year0 =='2300-2900':
+               for t in sorted(mdata.keys()):
+                        if float(t) < 2300.: continue
+                        if float(t) > 2900.: continue
+                        times.append(float(t))
+                        datas.append(mdata[t])
+               return times, datas
+
+        if year0 == 'fast4':
+               for t in sorted(mdata.keys()):
+                        if jobID == 'u-bw717': 
+                            t1 = t -94.
+                        else: t1 = t
+                        if float(t) > 2400.: continue
+                        times.append(float(t1))
+                        datas.append(mdata[t])
+               return times, datas
 
 	if year0 == 'N48-ORCA1':
                for t in sorted(mdata.keys()):
