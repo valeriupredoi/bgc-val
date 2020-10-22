@@ -52,7 +52,7 @@ machinelocation = ''
 
 #####
 # JASMIN		
-if gethostname().find('ceda.ac.uk')>-1:
+if gethostname().find('ceda.ac.uk')>-1 or  gethostname().find('jasmin')>-1 or gethostname().find('jc.rl.ac.uk')>-1:
 	print "analysis-timeseries.py:\tBeing run at CEDA on ",gethostname()
 	machinelocation = 'JASMIN'
 			

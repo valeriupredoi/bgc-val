@@ -1,4 +1,5 @@
-#!/usr/bin/ipython
+#!/usr/bin/env python
+########!/usr/bin/python
 
 #
 # Copyright 2015, Plymouth Marine Laboratory
@@ -2595,7 +2596,7 @@ def timeseries_compare(
 		jobs = ensembles.keys()
 	comparehtml5Maker(
 		jobIDs = jobs,
-		reportdir = ukp.folder('CompareReports/'+analysisname),
+		reportdir = ukp.folder('CompareReports2/'+analysisname),
 		files = AllImages,
 		clean = False,
 		doZip= False,
@@ -2704,11 +2705,11 @@ def main():
 	thicknesses = defaultdict(lambda: 0.75)
 	thicknesses['u-ar783'] = 2.2
         thicknesses['u-at793'] = 2.2
-        thicknesses['u-at760'] = 2.2
-        thicknesses['u-at628'] = 2.2
-        thicknesses['u-at629'] = 2.2
-        thicknesses['u-at572'] = 2.2
-        thicknesses['u-au027'] = 2.2
+#        thicknesses['u-at760'] = 2.2
+#        thicknesses['u-at628'] = 2.2
+#        thicknesses['u-at629'] = 2.2
+#/        thicknesses['u-at572'] = 2.2
+#        thicknesses['u-au027'] = 2.2
 
         hjthicknesses = defaultdict(lambda: 1.75)
         hjthicknesses['u-at793'] = 1.
@@ -2791,8 +2792,8 @@ def main():
                         Co2_4x={}
 			year0={}
                         picontrol['N96L85'] = 'u-aw310'
-                        picontrol['N48L85'] = 'u-bk171'
-                        picontrol['N48L38'] = 'u-bs733'
+                        #picontrol['N48L85'] = 'u-bk171'
+                        #picontrol['N48L38'] = 'u-bs733'
                         Co2_4x['N96L85'] = 'u-bb446'
                         Co2_4x['N48L85'] = 'u-bk093'
                         Co2_4x['N48L38'] = 'u-bt089'
@@ -2823,7 +2824,7 @@ def main():
                                  lineThicknesses= cnthicknesses,
                                  linestyles = linestyles,)
 
-                UKESM_fast = True
+                UKESM_fast = False
                 if UKESM_fast:
                         customColours = {
                            'u-aw310': 'black',
@@ -2919,20 +2920,23 @@ def main():
                 if UKESM11_picontrol3:
                         customColours = {
                                 'u-aw310': 'black',
-                                'u-bv334': 'red',
+                                # 'u-bv334': 'red',
                                 'u-bv936': 'green',
                                 'u-bw462': 'blue',
 				'u-bw837': 'orange',
-                                'u-bx188': 'darkorange'
+                                'u-bx188': 'darkorange',
+                                'u-bx499': 'magenta',
+                                'u-by230': 'purple', 
                                 }
                         descripts = {
                                 'u-aw310': 'UKESM1',
-                                'u-bv334': 'UKESM1.0.4',
+                                # 'u-bv334': 'UKESM1.0.4',
                                 'u-bv936': 'UKESM1.0.5.0',
                                 'u-bw462': 'UKESM1.0.5.1',
                                 'u-bw837': '',
                                 'u-bx188': '',
-                               
+                                'u-bx499': 'Variant of bx188 with scaling on dust to iron for MEDUSA, parameter xfe_sol * 0.96',
+                                'u-by230': 'our "chilled" UKESM1.1 configuration'
                         }
 
                         cnthicknesses = defaultdict(lambda: 1.1)
@@ -2949,8 +2953,7 @@ def main():
                                 linestyles = linestyles,)
 
 
-
-                N96L85 = True
+                N96L85 = False
                 if N96L85:
                         customColours = {
                            'u-bk712': 'green',
@@ -2974,7 +2977,7 @@ def main():
                                  lineThicknesses= cnthicknesses,
                                  linestyles = linestyles,)
 
-                N96L85 = True
+                N96L85 = False
                 if N96L85:
                         customColours = {
                            'u-br106': 'blue',
@@ -2996,7 +2999,7 @@ def main():
                                  lineThicknesses= cnthicknesses,
                                  linestyles = linestyles,)
                                  
-                N96L85 = True
+                N96L85 = False
                 if N96L85:
                         customColours = {
                            'u-aw310': 'black',
@@ -3026,7 +3029,7 @@ def main():
                                  
                                  
                                  
-                extensions = True
+                extensions = False
                 if extensions:
                         r4_colours = {
                                      'u-bb075': 'black',
@@ -3050,7 +3053,7 @@ def main():
 	                         lineThicknesses= hjthicknesses)
 	                         
 		
-                UKESM_fast = True
+                UKESM_fast = False
                 if UKESM_fast:
                         customColours = {
                            'u-aw310': 'black',
@@ -3072,7 +3075,7 @@ def main():
                                  lineThicknesses= cnthicknesses,
                                  linestyles = linestyles,)
 
-                UKESM_fast2 = True
+                UKESM_fast2 = False
                 if UKESM_fast2:
                         customColours = {
                            'u-aw310': 'black',
@@ -3094,7 +3097,7 @@ def main():
                                  lineThicknesses= cnthicknesses,
                                  linestyles = linestyles,)
 
-                UKESM_fast3 = True
+                UKESM_fast3 = False
                 if UKESM_fast3:
                         customColours = {
                            'u-aw310': 'black',
@@ -3170,7 +3173,7 @@ def main():
                                  lineThicknesses= cnthicknesses,
                                  linestyles = linestyles,)
                                  
-                N48ORCA1 = True
+                N48ORCA1 = False
                 if N48ORCA1:
                         customColours = {
                            'u-aw310': 'black',
@@ -3195,7 +3198,7 @@ def main():
                                  linestyles = linestyles,)
                                  
 	
-                N48ORCA1 = True
+                N48ORCA1 = False
                 if N48ORCA1:
                         customColours = {
                            'u-aw310': 'black',
@@ -3220,7 +3223,7 @@ def main():
 
 
 
-                N96L85 = True
+                N96L85 = False
                 if N96L85:
                         jobs = [ 'u-aw310', 'u-bc179', 'u-bn824', 'u-bk437', 'u-bk575', 'u-bk712', 'u-bk713', 'u-bk741']
                         customColours = {
@@ -4376,36 +4379,7 @@ def main():
 
 
 
-		names='u-be981 u-be363 u-be980 -be979'
-                jobs = ['u-be981', 'u-be363', 'u-be980', 'u-be979']
-                timeseries_compare({
-                        i:standards[i] for i in jobs},
-                        physics=1,
-                        bio=1,
-                        debug=0,
-                        year0=False,
-                        jobDescriptions=jobDescriptions,
-                        analysisname='CRESCENDO_OO_test_10',
-                        lineThicknesses= hjthicknesses,
-                        )
 
 
-		a = True                                                                                                                   
-                if a:
-                        cncolours = {
-                                     'u-aw310': 'black',
-                                     'u-bf177': 'purple',
-				     'u-bf984': 'green',
-                                     }
-                        timeseries_compare(
-                                 cncolours,
-                                 physics=1,
-                                 bio=1,
-                                 debug=0,
-                                 year0='N48-ORCA1',
-                                 jobDescriptions=jobDescriptions,
-                                 analysisname='UKESM1_N48_ORCA1',
-                                 lineThicknesses= hjthicknesses)
-                                 
 
 if __name__=="__main__": main()
