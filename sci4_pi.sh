@@ -1,6 +1,6 @@
 module load jaspy/2.7
 x=0
-while [ $x -le 10 ]
+while [ $x -le 20 ]
 do
     ./analysis_timeseries.py u-bb446 level1; 
     ./analysis_timeseries.py u-aw310 level1;
