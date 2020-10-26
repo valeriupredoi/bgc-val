@@ -14,6 +14,6 @@ export jobid=$jobid
 
 #eval `ssh-agent -s` 
 #ssh -A -X ldemora@jasmin-login1.ceda.ac.uk '/home/users/ldemora/workspace/ukesm-validation/RemoteScripts/helloOnMass.sh' 
-ssh -A -X ldemora@jasmin-login1.ceda.ac.uk "/home/users/ldemora/workspace/ukesm-validation/RemoteScripts/downloadOnMassCli.sh $jobid"
+ssh -A -X ldemora@login1.jasmin.ac.uk "/home/users/ldemora/workspace/ukesm-validation/RemoteScripts/downloadOnMassCli.sh $jobid"
 #kill $SSH_AGENT_PID
 
