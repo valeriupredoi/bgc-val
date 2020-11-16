@@ -132,7 +132,7 @@ def findLastFinishedYear(jobID,dividby=1,numberfiles=6):
 	if jobID == '': return
 	
 	machine = gethostname()
-	if machine.find('ceda')>-1:
+	if machine.find('jasmin')>-1:
 		outputFold = "/group_workspaces/jasmin2/ukesm/BGC_data/"+jobID+'/'
 
 	if machine.find('monsoon')>-1:
@@ -306,7 +306,7 @@ def downloadMass(jobID,doMoo=True):
 	
 	machine = gethostname()
 	knownmachine = False	
-	if machine.find('ceda')>-1:
+	if machine.find('jasmin')>-1:
 		knownmachine = True
 		outputFold = "/group_workspaces/jasmin2/ukesm/BGC_data/"+jobID
 		if not os.path.exists(outputFold):

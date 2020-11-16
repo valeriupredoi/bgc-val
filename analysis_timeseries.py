@@ -1,4 +1,5 @@
-#!/usr/bin/ipython
+#!/usr/bin/env python
+#####!/usr/bin/python
 
 #
 # Copyright 2015, Plymouth Marine Laboratory
@@ -76,15 +77,15 @@ if True:
 	bgcKeys.append('IntPP_OSU')                # OSU Integrated primpary production
 	bgcKeys.append('PP_OSU')                   # OSU Integrated primpary production
 #	bgcKeys.append('LocalExportRatio')         # Export ratio (no data)
-	bgcKeys.append('GlobalExportRatio')        # Export ratio (no data)
+#	bgcKeys.append('GlobalExportRatio')        # Export ratio (no data)
 	bgcKeys.append('TotalOMZVolume')           # Total Oxygen Minimum zone Volume
-	bgcKeys.append('OMZThickness')             # Oxygen Minimum Zone Thickness
-	bgcKeys.append('OMZMeanDepth')             # Oxygen Minimum Zone mean depth
+#	bgcKeys.append('OMZThickness')             # Oxygen Minimum Zone Thickness
+#	bgcKeys.append('OMZMeanDepth')             # Oxygen Minimum Zone mean depth
 	bgcKeys.append('VolumeMeanOxygen')	   # Volune Mean regional oxygen concentation
 #	bgcKeys.append('AOU')                      # Apparent Oxygen Usage                         
 	bgcKeys.append('Iron')                     # Iron
 	bgcKeys.append('Dust')                     # Dust
-	bgcKeys.append('TotalDust')                # Total Dust
+#	bgcKeys.append('TotalDust')                # Total Dust
 #	bgcKeys.append('DiaFrac')                  # Diatom Fraction
 #        bgcKeys.append('DTC')                      # Detrital carbon
         bgcKeys.append('CHL')                      # Total Chlorophyll        
@@ -111,26 +112,26 @@ if True:
 	physKeys.append('Salinity')                        	# WOA Salinity
 	physKeys.append('MLD')				# iFERMER Mixed Layer Depth 
 	      			
-	physKeys.append('TotalIceArea')			# work in progress
-	physKeys.append('NorthernTotalIceArea')		# work in progress
-	physKeys.append('SouthernTotalIceArea')		# work in progress
-	physKeys.append('WeddelTotalIceArea')
+#	physKeys.append('TotalIceArea')			# work in progress
+#	physKeys.append('NorthernTotalIceArea')		# work in progress
+#	physKeys.append('SouthernTotalIceArea')		# work in progress
+#	physKeys.append('WeddelTotalIceArea')
 	physKeys.append('TotalIceExtent')		# work in progress
 	physKeys.append('NorthernTotalIceExtent')	# work in progress
 	physKeys.append('SouthernTotalIceExtent')	# work in progress
-        physKeys.append('WeddelIceExent')       # work in progress
+#        physKeys.append('WeddelIceExent')       # work in progress
         #physKeys.append('NorthernMIZArea')
         #physKeys.append('SouthernMIZArea')
         #physKeys.append('TotalMIZArea')           
-        physKeys.append('NorthernMIZfraction')
-        physKeys.append('SouthernMIZfraction')
-        physKeys.append('TotalMIZfraction') 
+#        physKeys.append('NorthernMIZfraction')
+#        physKeys.append('SouthernMIZfraction')
+#        physKeys.append('TotalMIZfraction') 
                 
 	physKeys.append('DrakePassageTransport')	# DrakePassageTransport
-	physKeys.append('AMOC_32S')                 	# AMOC 32S
+#	physKeys.append('AMOC_32S')                 	# AMOC 32S
 	physKeys.append('AMOC_26N')                 	# AMOC 26N
-        physKeys.append('AMOC_26N_nomexico')            # AMOC 26N
-	physKeys.append('ADRC_26N')                 	# ADRC 26N                        	                
+#        physKeys.append('AMOC_26N_nomexico')            # AMOC 26N
+#	physKeys.append('ADRC_26N')                 	# ADRC 26N                        	                
 #	physKeys.append('ZonalCurrent')             	# Zonal Veloctity
 #	physKeys.append('MeridionalCurrent')        	# Meridional Veloctity
 #	physKeys.append('VerticalCurrent')          	# Vertical Veloctity
@@ -142,9 +143,9 @@ if True:
 	##### 
 	# unused:
 
-        physKeys.append('MaxMonthlyMLD')               # MLD Monthly max           
-        physKeys.append('MinMonthlyMLD')               # MLD Monthly min           
-        physKeys.append('HeatFlux')
+#        physKeys.append('MaxMonthlyMLD')               # MLD Monthly max           
+#        physKeys.append('MinMonthlyMLD')               # MLD Monthly min           
+#        physKeys.append('HeatFlux')
         physKeys.append('TotalHeatFlux')
         physKeys.append('scvoltot')
         physKeys.append('soga')
@@ -470,8 +471,9 @@ def analysis_timeseries(jobID = "u-ab671",
 		shelvedir 	= ukp.folder(paths.shelvedir+"/timeseries/"+jobID)		
 	#####
 	# JASMIN
-	if gethostname().find('ceda.ac.uk')>-1:
-		print "analysis-timeseries.py:\tBeing run at CEDA on ",gethostname()
+        hostname = gethostname()
+	if hostname.find('ceda.ac.uk')>-1 or hostname.find('jasmin')>-1 or hostname.find('jc.rl.ac.uk') > -1:
+		print "analysis-timeseries.py:\tBeing run at CEDA on ", hostname
 		#machinelocation = 'JASMIN'
 
 		

@@ -131,6 +131,17 @@ class timeseriesAnalysis:
 	if self.debug: print "timeseriesAnalysis:\tloadModel."		
 	####
 	# load and calculate the model info
+        #if os.path.exists(self.shelvefn):
+        #    sh = shOpen(self.shelvefn)
+        #    print('seems fine:', self.shelvefn)
+        #else:
+        #    print('Does not exist', self.shelvefn)
+        #    sh = shOpen(self.shelvefn)
+        #    print (sh.keys())
+        #    readFiles       = sh['readFiles']
+        #    modeldataD      = sh['modeldata']
+        #    print(readFiles)
+
 	try:
 		if self.clean: 
 			print "timeseriesAnalysis:\tloadModel\tUser requested clean run. Wiping old data."
@@ -149,7 +160,6 @@ class timeseriesAnalysis:
 		   	modeldataD[(r,l,m)] = {}
 		   	
 		print "timeseriesAnalysis:\tloadModel\tCould not open shelve:", self.shelvefn, '\tread', len(readFiles)	
-
 	###############
 	# Check whether there has been a change in what was requested:
 	for r in self.regions:
@@ -169,19 +179,20 @@ class timeseriesAnalysis:
 	#####
 	# Check if the Input file has changed since the shelve file last changed.
         reDoFiles = []
-	for fn in sorted(readFiles):
-                #if self.debug:print "timeseriesAnalysis:\tloadModel\tChecking: ",fn
-		if ukp.shouldIMakeFile(fn, self.shelvefn,debug=False): 
-			print "timeseriesAnalysis:\tloadModel\t:this file should be re-analysed:", fn
-			readFiles.remove(fn)
-		        reDoFiles.append(fn)
+	#for fn in sorted(readFiles):
+        #        #if self.debug:print "timeseriesAnalysis:\tloadModel\tChecking: ",fn
+                
+	#	if ukp.shouldIMakeFile(fn, self.shelvefn+'*',debug=False): 
+#	#		print "timeseriesAnalysis:\tloadModel\t:this file should be re-analysed: because shelve is older thna input file.", fn
+	#		readFiles.remove(fn)
+	#	        reDoFiles.append(fn)
 
 	#####
 	# Check if the Input file has changed since the shelve file last changed.
-	for fn in sorted(readFiles):
-		if ukp.shouldIMakeFile(fn, self.shelvefn,debug=False): 
-			print "timeseriesAnalysis:\tloadModel\t:this file should be re-analysed:", fn
-			readFiles.remove(fn)
+	#for fn in sorted(readFiles):
+	#	if ukp.shouldIMakeFile(fn, self.shelvefn+'*',debug=False): 
+	#		print "timeseriesAnalysis:\tloadModel\t:this file should be re-analysed: because input file is newer)", fn
+	#		readFiles.remove(fn)
 			
 	#####
 	# Summarise checks
@@ -719,7 +730,7 @@ class timeseriesAnalysis:
 	    		if m not in ['mean', 'metricless','sum','wcvweighted',]: continue
 			filename = ukp.folder(self.imageDir+'/'+self.dataType)+'_'.join([m,self.jobID,self.dataType,r,str(l),m,])+'.png'
 		        if self.debug: print "timeseriesAnalysis:\t makePlots.\tInvestigating simpletimeseries: ",filename
-			if not ukp.shouldIMakeFile([self.shelvefn, self.shelvefn_insitu],filename,debug=False):	continue
+			if not ukp.shouldIMakeFile([self.shelvefn+'*', self.shelvefn_insitu+'*'],filename,debug=False):	continue
 			    		
 			modeldataDict = self.modeldataD[(r,l,m)]
 			times = sorted(modeldataDict.keys())

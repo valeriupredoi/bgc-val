@@ -366,6 +366,10 @@ def shouldIMakeFile(fin,fout,debug = True):
 	if not exists(fout): 
 		if debug: print 'shouldIMakeFile: out file doesn\'t exit and should be made.'
 		return True	
+        if type(fin)==type('abc') and fin.find('shelve'):
+            fin = fin+'*'
+#        if type(fout)==type('abc') and fout.find('shelve'):
+#            fout = fout+'*'
 
 	if type(fin)==type('abc') and fin.find('*')<0: # fin is a string file:
 		if not exists(fin): 

@@ -1,8 +1,14 @@
-
-while [ 1 -eq 1 ];
+module load jaspy/2.7
+x=0
+#while [ 1 -eq 1 ];
+while [ $x -le 20 ]
 do
-    ./analysis_timeseries.py u-bw717 level1;
-    ./analysis_timeseries.py u-bx082 level1;
+
+    ./analysis_timeseries.py u-by230 level1;
+    ./analysis_timeseries.py u-bx499 level1;
+
+    ./analysis_timeseries.py u-bw717 physics
+    ./analysis_timeseries.py u-bx082 physics
 
     ./analysis_timeseries.py u-bx188 level1;
     #./analysis_timeseries.py u-bw837 level1; 
@@ -25,11 +31,16 @@ do
 #    ./analysis_timeseries.py u-bs733 physics; 
 #    ./analysis_timeseries.py u-bs704 level1; 
 #    ./analysis_timeseries.py u-bs522 level1; 
-    ./analysis_timeseries.py u-bb446 level1; 
-    ./analysis_timeseries.py u-aw310 level1;
+
+# These are in sci4_pi.sh
+#    ./analysis_timeseries.py u-bb446 level1; 
+#    ./analysis_timeseries.py u-aw310 level1;
 
     ./analysis_compare.py
-    rsync -av /home/users/ldemora/workspace/ukesm-validation/CompareReports /group_workspaces/jasmin4/esmeval/public/.
-    echo "sleeping"
+    # rsync -av /home/users/ldemora/workspace/ukesm-validation/CompareReports2 /group_workspaces/jasmin4/esmeval/public/.
+    rsync -av /home/users/ldemora/workspace/ukesm-validation/CompareReports2 /group_workspaces/jasmin4/esmeval/public/CompareReports/v2/.
+
+    echo "sleeping" $x
+    x=$(( $x + 1 ))
     sleep 20000;
 done
