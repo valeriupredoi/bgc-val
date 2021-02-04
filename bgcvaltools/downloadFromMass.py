@@ -230,7 +230,16 @@ def downloadField(jobID, keys, extension='grid[-_]T', timeslice='m',name='',time
 	# moose file path:
 	massfp = "moose:/crum/"+jobID+"/on"+ts+".nc.file/*_1"+ts+'_'+timerange+'_'+extension+".nc"
 	print "downloadField:\tmoose path:",massfp
-		
+	
+        ######
+        # print files
+        #bashCommand = "moo passwd -r"
+        #print "running the command:",bashCommand
+        #process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
+        #output = process.communicate()[0]
+        #print "output",output
+        #assert 0 
+	
 	######
 	# print files
 	bashCommand = "moo ls "+massfp
@@ -344,6 +353,15 @@ def downloadMass(jobID,doMoo=True):
 	if not doMoo: return	
 	if doLs:	
 		print "Looking at the following files:"
+        	######
+	        # print files
+                
+	        #bashCommand = "moo passwd -r"
+        	#print "running the command:",bashCommand
+        	#process = subprocess.Popen(bashCommand.split(), stdout=subprocess.PIPE)
+	        #output = process.communicate()[0]
+	        #print "output",output
+
 	
 		bashCommand = "moo ls moose:/crum/"+jobID+"/ony.nc.file/*.nc"
 		print "running the command:",bashCommand

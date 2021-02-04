@@ -81,7 +81,8 @@ if gethostname().find('ceda.ac.uk')>-1 or  gethostname().find('jasmin')>-1 or ge
 
 	#####
 	# Location of data files.
-	ObsFolder 	= "/group_workspaces/jasmin4/esmeval/example_data/bgc/"
+	ObsFolder       = "/gws/nopw/j04/esmeval/example_data/bgc/"
+#	ObsFolder 	= "/group_workspaces/jasmin4/esmeval/example_data/bgc/"
 	Dustdir		= ObsFolder+"/MahowaldDust/"		
 	WOAFolder_annual= ObsFolder+"WOA/annual/"
 	WOAFolder 	= ObsFolder+"WOA/"

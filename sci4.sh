@@ -3,10 +3,27 @@ x=0
 #while [ 1 -eq 1 ];
 while [ $x -le 20 ]
 do
+    # fast:
+#    ./analysis_timeseries.py u-bz321 fast
+#    ./analysis_timeseries.py u-bz360 fast
+#    ./analysis_timeseries.py u-bz361 fast
+#    ./analysis_timeseries.py u-bz362 fast
+#    ./analysis_timeseries.py u-bz363 fast
+#    ./analysis_timeseries.py u-bz364 fast
+#    ./analysis_timeseries.py u-bz385 fast
+#    ./analysis_timeseries.py u-bz393 fast
+#    ./analysis_timeseries.py u-bz705 fast
+#
+
+    # UKESM1.1
+#    ./analysis_timeseries.py u-by791 level1;
+    ./analysis_timeseries.py u-bz502 level1;
+    ./analysis_timeseries.py u-bz897 level1;
+    ./analysis_timeseries.py u-ca306 level1;
+    ./analysis_timeseries.py u-ca811 level1;
 
     ./analysis_timeseries.py u-by230 level1;
     ./analysis_timeseries.py u-bx499 level1;
-
     ./analysis_timeseries.py u-bw717 physics
     ./analysis_timeseries.py u-bx082 physics
 
@@ -38,8 +55,8 @@ do
 
     ./analysis_compare.py
     # rsync -av /home/users/ldemora/workspace/ukesm-validation/CompareReports2 /group_workspaces/jasmin4/esmeval/public/.
-    rsync -av /home/users/ldemora/workspace/ukesm-validation/CompareReports2 /group_workspaces/jasmin4/esmeval/public/CompareReports/v2/.
-
+    #rsync -av /home/users/ldemora/workspace/ukesm-validation/CompareReports2 /group_workspaces/jasmin4/esmeval/public/CompareReports/v2/.
+    rsync -av /home/users/ldemora/workspace/ukesm-validation/CompareReports2 /gws/nopw/j04/esmeval/public/CompareReports/v2/.
     echo "sleeping" $x
     x=$(( $x + 1 ))
     sleep 20000;

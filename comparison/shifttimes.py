@@ -126,13 +126,14 @@ def shifttimes(mdata, jobID,year0=False):
                 return times, datas
 
 
-	if year0 in ['ukesm1.1-historical1',]:
+	if year0 in ['UKESM11_historical1',]:
                 for t in sorted(mdata.keys()):
+                        t1 = t
 			if jobID == 'u-by230':
-			     t = t - 2811. + 1850.              
-                        if t < 1800.: continue
-                        if t > 2050.: continue
-                        times.append(float(t))
+			     t1 = t - 2811. + 1850.              
+                        if t1 < 1800.: continue
+                        if t1 > 2050.: continue
+                        times.append(float(t1))
                         datas.append(mdata[t])
                 return times, datas
                 

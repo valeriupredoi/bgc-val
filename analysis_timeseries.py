@@ -159,12 +159,59 @@ if True:
 
 physKeysDict = {i:n for i,n in enumerate(physKeys)}
 
+fastKeys = []
+if True:
+        fastKeys.append('N')                        # WOA Nitrate
+        fastKeys.append('Si')                       # WOA Siliate
+        fastKeys.append('O2')                       # WOA Oxygen
+        fastKeys.append('Alk')                      # Glodap Alkalinity
+        fastKeys.append('DIC')                      # Globap tCO2
+        fastKeys.append('AirSeaFluxCO2')               # Air Sea Flux
+        fastKeys.append('TotalAirSeaFluxCO2')       # Total global air sea flux
+        fastKeys.append('IntPP_OSU')                # OSU Integrated primpary production
+        fastKeys.append('PP_OSU')                   # OSU Integrated primpary production
+        # fastKeys.append('TotalOMZVolume')           # Total Oxygen Minimum zone Volume
+        fastKeys.append('VolumeMeanOxygen')         # Volune Mean regional oxygen concentation
+        fastKeys.append('Iron')                     # Iron
+        fastKeys.append('Dust')                     # Dust
+        fastKeys.append('CHL')                      # Total Chlorophyll
+        fastKeys.append('pH')
+			
+        fastKeys.append('Temperature')                          # WOA Temperature
+        fastKeys.append('GlobalMeanTemperature')        # Global Mean Temperature
+        fastKeys.append('GlobalMeanTemperature_700')
+        fastKeys.append('GlobalMeanTemperature_2000')
+
+        fastKeys.append('VolumeMeanTemperature')        # Global Mean Temperature
+        fastKeys.append('GlobalMeanSalinity')           # Global Mean Salinity
+        fastKeys.append('Salinity')                             # WOA Salinity
+        fastKeys.append('MLD')                          # iFERMER Mixed Layer Depth
+
+        fastKeys.append('TotalIceExtent')               # work in progress
+        fastKeys.append('NorthernTotalIceExtent')       # work in progress
+        fastKeys.append('SouthernTotalIceExtent')       # work in progress
+
+        fastKeys.append('DrakePassageTransport')        # DrakePassageTransport
+        fastKeys.append('AMOC_26N')                     # AMOC 26N
+
+        fastKeys.append('FreshwaterFlux')               # Freshwater flux
+        fastKeys.append('sowaflup')                     # Net Upward Water Flux
+
+        fastKeys.append('TotalHeatFlux')
+        fastKeys.append('scvoltot')
+        fastKeys.append('soga')
+        fastKeys.append('thetaoga')
+
+
 #####
 # Level 1 keys
 level1Keys = []
 level1Keys.extend(physKeys)
 level1Keys.extend(bgcKeys)
 level1KeysDict = {i:n for i,n in enumerate(level1Keys)}
+
+
+
 
 #####
 # The important keys
@@ -247,7 +294,10 @@ def analysis_timeseries(jobID = "u-ab671",
 
                 if analysisSuite.lower() in ['level1',]: 
                 	analysisKeys.extend(level1Keys)
-					
+				
+                if analysisSuite.lower() in ['fast',]:
+                        analysisKeys.extend(fastKeys)
+	
                 if analysisSuite.lower() in ['bgc',]:
                 	analysisKeys.extend(bgcKeys)
 					
@@ -1372,8 +1422,12 @@ def analysis_timeseries(jobID = "u-ab671",
                 av[name]['datadetails']         =  {'name': '', 'units':''}
                 av[name]['dataFile']            = ''
                 av[name]['datasource']          = ''
-
-		av[name]['modeldetails'] 	= {'name': name, 'vars':['PH3',], 'convert': ukp.NoChange,'units':'pH',}
+                if analysisSuite.lower() == 'fast':
+                        av[name]['Dimensions']          = 2
+                        av[name]['modeldetails']        = {'name': name, 'vars':['OCN_PH',], 'convert': ukp.NoChange,'units':'pH',}
+                else:
+	        	av[name]['Dimensions']          = 3
+			av[name]['modeldetails'] 	= {'name': name, 'vars':['PH3',], 'convert': ukp.NoChange,'units':'pH',}
 		#av[name]['datadetails']  	= {'name': name, 'vars':['Alk',], 'convert': convertmeqm3TOumolkg,'units':'meq/m^3',}
 
 		av[name]['layers'] 		=  ['Surface',] #'100m','300m','1000m',]
@@ -3258,6 +3312,7 @@ def main():
         elif 'spinup' in argv[1:]:suite='spinup'
         elif 'salinity' in argv[1:]:suite='salinity'
 	elif 'level1' in argv[1:]:suite='level1'
+        elif 'fast' in argv[1:]:suite='fast'   
 	elif 'level3' in argv[1:]:suite='level3'
         elif 'physics' in argv[1:]:suite='physics'
         elif 'bgc' in argv[1:]:	suite='bgc'       

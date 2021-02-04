@@ -17,6 +17,6 @@ export jobid=$jobid
 
 # python /home/users/ldemora/workspace/ukesm-validation/RemoteScripts/hello.py $jobid
 
-ssh -X -A jasmin-sci2 "cd /home/users/ldemora/workspace/ukesm-validation; ipython /home/users/ldemora/workspace/ukesm-validation/theWholePackage.py $jobid"
+ssh -X -A sci2 "cd /home/users/ldemora/workspace/ukesm-validation; ipython /home/users/ldemora/workspace/ukesm-validation/theWholePackage.py $jobid"
 
 echo "The end of runWholePackageOnSci2.sh"

@@ -1310,7 +1310,7 @@ def timeseries_compare(
 
                 if 'ERSST' in analysisKeys:
                         name = 'ERSST'
-                        av[name]['modelFiles']  = "/group_workspaces/jasmin4/esmeval/example_data/bgc/ERSST.v4/sst.mnmean.v4.nc"
+                        av[name]['modelFiles']  = paths.ObsFolder+"/bgc/ERSST.v4/sst.mnmean.v4.nc"
 		        ERSSTCoords     = {'t':'time',    'z':'',  'lat': 'lat',      'lon': 'lon', 'cal': 'standard','tdict':['ZeroToZero'] }
 
                         av[name]['modelcoords']         = ERSSTCoords
@@ -1327,7 +1327,7 @@ def timeseries_compare(
                         av[name]['model']               = 'ERSST'
 
                         av[name]['modelgrid']           = 'ERSST_2g'
-                        av[name]['gridFile']            = '/group_workspaces/jasmin4/esmeval/example_data/bgc/ERSST.v4/sst.mnmean.v4.nc'
+                        av[name]['gridFile']            = paths.ObsFolder+"/bgc/ERSST.v4/sst.mnmean.v4.nc"
                         av[name]['Dimensions']          = 2
 
 
@@ -2763,14 +2763,132 @@ def main():
 		exit
 	else:
 
+                UKESM_fast = True
+                if UKESM_fast:
+                        customColours = {
+                                'u-aw310': 'black', 
+                                'u-by242': 'red',
+                                }
+                        cnthicknesses = defaultdict(lambda: 0.7)
+                        linestyles = defaultdict(lambda: '-')
+                        timeseries_compare(
+                                customColours,
+                                physics=1,
+                                bio=1,
+                                debug=0,
+                                year0=False,
+                                jobDescriptions=jobDescriptions,
+                                analysisname='UKESM_Fast_piControl',
+                                lineThicknesses= cnthicknesses,
+                                linestyles = linestyles,)
 
-              UKESM11_historical1 = True
+                        customColours = {
+                                'u-bc179': 'black',
+                                'u-bc292': 'black',
+                                'u-bc370': 'black',
+                                'u-bb075': 'black',
+                                'u-az513': 'black',
+                                'u-az515': 'black',
+                                'u-bz321': 'red',
+                                'u-bz360': 'red',
+                                'u-bz361': 'red',
+                                'u-bz362': 'red',
+                                'u-bz363': 'red',
+                                'u-bz364': 'red',
+                                }
+                        cnthicknesses = defaultdict(lambda: 0.7)
+                        linestyles = defaultdict(lambda: '-')
+                        timeseries_compare(
+                                customColours,
+                                physics=1,
+                                bio=1,
+                                debug=0,
+                                year0=False,
+                                jobDescriptions=jobDescriptions,
+                                analysisname='UKESM_Fast_historical',
+                                lineThicknesses= cnthicknesses,
+                                linestyles = linestyles,)
+
+                        customColours = { # u-bb446 vs. u-bz385
+                                'u-bb446': 'black',
+                                'u-bz385': 'red',
+                                }
+                        cnthicknesses = defaultdict(lambda: 0.7)
+                        linestyles = defaultdict(lambda: '-')
+                        timeseries_compare(
+                                customColours,
+                                physics=1,
+                                bio=1,
+                                debug=0,
+                                year0=False,
+                                jobDescriptions=jobDescriptions,
+                                analysisname='UKESM_Fast_4xCO2',
+                                lineThicknesses= cnthicknesses,
+                                linestyles = linestyles,)
+
+                        customColours = { # u-bb448 vs. u-bz393
+                                'u-bb448': 'black',
+                                'u-bz393': 'red',
+                                }
+                        cnthicknesses = defaultdict(lambda: 0.7)
+                        linestyles = defaultdict(lambda: '-')
+                        timeseries_compare(
+                                customColours,
+                                physics=1,
+                                bio=1,
+                                debug=0,
+                                year0=False,
+                                jobDescriptions=jobDescriptions,
+                                analysisname='UKESM_Fast_1pcCO2',
+                                lineThicknesses= cnthicknesses,
+                                linestyles = linestyles,)
+
+
+#                UKESM_fast = True
+#                if UKESM_fast:
+#                        customColours = {
+#                                'u-bz499': 'black',
+#                                'u-bz705': 'red',
+#                                }
+#                        cnthicknesses = defaultdict(lambda: 0.7)
+#                        linestyles = defaultdict(lambda: '-')
+#                        timeseries_compare(
+#                                customColours,
+#                                physics=1,
+#                                bio=1,
+#                                debug=0,
+#                                year0=False,
+#                                jobDescriptions=jobDescriptions,
+#                                analysisname='UKESM_Fast',
+#                                lineThicknesses= cnthicknesses,
+#                                linestyles = linestyles,)
+#
+#
+
+
+                UKESM11_historical1 = True
                 if UKESM11_historical1:
                         customColours = {
                                 'u-by230': 'black',
                                 'u-by791': 'green',
+                                'u-bz502': 'red',  
+                                'u-bz897': 'blue',  
+                                'u-ca306': 'purple',
+                                'u-ca811': 'orange',
+                                'u-bc179': 'black', # R1 historical
+                                'u-bc292': 'black', # R2 hist
+                                'u-bc370': 'black', # R3 histroccal
+                                'u-bb075': 'black', # R4 hist
+                                'u-bb277': 'black', # R5 hist
                                 }
-	                cnthicknesses = defaultdict(lambda: 1.1)
+	                cnthicknesses = defaultdict(lambda: 0.7)
+                        cnthicknesses['u-by791'] = 2.
+                        cnthicknesses['u-bz502'] = 2.
+                        cnthicknesses['u-bz897'] = 2.
+                        cnthicknesses['u-ca306'] = 2.
+                        cnthicknesses['u-ca811'] = 2.
+                        cnthicknesses['u-by230'] = 1.5
+
         	        linestyles = defaultdict(lambda: '-')
                 	linestyles[ 'u-by230'] = ':'
 	                timeseries_compare(
@@ -2778,7 +2896,7 @@ def main():
                 	        physics=1,
                         	bio=1,
 	                        debug=0,
-        	                year0='2300-2700',
+        	                year0='UKESM11_historical1',
                 	        jobDescriptions=jobDescriptions,
                         	analysisname='UKESM11_historical1',
 	                        lineThicknesses= cnthicknesses,
