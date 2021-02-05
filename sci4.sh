@@ -16,7 +16,7 @@ do
 #
 
     # UKESM1.1
-    ./analysis_timeseries.pyu-cb375 level1
+    ./analysis_timeseries.py u-cb375 level1;
 #    ./analysis_timeseries.py u-by791 level1;
 #    ./analysis_timeseries.py u-bz502 level1;
 #    ./analysis_timeseries.py u-bz897 level1;
