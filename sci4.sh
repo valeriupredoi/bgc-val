@@ -17,9 +17,9 @@ do
 
     # UKESM1.1
 #    ./analysis_timeseries.py u-by791 level1;
-    ./analysis_timeseries.py u-bz502 level1;
-    ./analysis_timeseries.py u-bz897 level1;
-    ./analysis_timeseries.py u-ca306 level1;
+#    ./analysis_timeseries.py u-bz502 level1;
+#    ./analysis_timeseries.py u-bz897 level1;
+#    ./analysis_timeseries.py u-ca306 level1;
     ./analysis_timeseries.py u-ca811 level1;
 
     ./analysis_timeseries.py u-by230 level1;

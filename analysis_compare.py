@@ -2763,6 +2763,25 @@ def main():
 		exit
 	else:
 
+                UKESM11_pic = True
+                if UKESM11_pic:
+                        customColours = {
+                                'u-bx188 ': 'black', 
+                                'u-cb375 ': 'red',
+                                }
+                        cnthicknesses = defaultdict(lambda: 0.7)
+                        linestyles = defaultdict(lambda: '-')
+                        timeseries_compare(
+                                customColours,
+                                physics=1,
+                                bio=1,
+                                debug=0,
+                                year0=False,
+                                jobDescriptions=jobDescriptions,
+                                analysisname='UKESM11_pic_compare',
+                                lineThicknesses= cnthicknesses,
+                                linestyles = linestyles,)
+                                
                 UKESM_fast = True
                 if UKESM_fast:
                         customColours = {
