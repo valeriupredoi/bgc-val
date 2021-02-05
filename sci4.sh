@@ -16,6 +16,7 @@ do
 #
 
     # UKESM1.1
+    ./analysis_timeseries.pyu-cb375 level1
 #    ./analysis_timeseries.py u-by791 level1;
 #    ./analysis_timeseries.py u-bz502 level1;
 #    ./analysis_timeseries.py u-bz897 level1;
@@ -23,21 +24,21 @@ do
     ./analysis_timeseries.py u-ca811 level1;
 
     ./analysis_timeseries.py u-by230 level1;
-    ./analysis_timeseries.py u-bx499 level1;
-    ./analysis_timeseries.py u-bw717 physics
+#    ./analysis_timeseries.py u-bx499 level1;
+#    ./analysis_timeseries.py u-bw717 physics
     ./analysis_timeseries.py u-bx082 physics
 
-    ./analysis_timeseries.py u-bx188 level1;
+#    ./analysis_timeseries.py u-bx188 level1;
     #./analysis_timeseries.py u-bw837 level1; 
-    ./analysis_timeseries.py u-bv936 level1; 
-    ./analysis_timeseries.py  u-bw462 level1;
+#    ./analysis_timeseries.py u-bv936 level1; 
+#    ./analysis_timeseries.py  u-bw462 level1;
     #./analysis_timeseries.py u-bv270 physics; 
     #/./analysis_timeseries.py u-bv334 level1; 
 #    ./analysis_timeseries.py u-bu847 level1;
 #    ./analysis_timeseries.py u-bu794 level1;
     #./analysis_timeseries.py u-bu737 level1; 
 #    ./analysis_timeseries.py u-bu504 level1;
-    ./analysis_timeseries.py u-bg555 physics;
+#     ./analysis_timeseries.py u-bg555 physics;
     ./analysis_timeseries.py u-ar766 physics; 
 #/    ./analysis_timeseries.py u-bt931 level1;
 #    ./analysis_timeseries.py u-bt670 physics
