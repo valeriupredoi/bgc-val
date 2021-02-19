@@ -14,9 +14,11 @@ do
 #    ./analysis_timeseries.py u-bz393 fast
 #    ./analysis_timeseries.py u-bz705 fast
 #
-
     # UKESM1.1
-    ./analysis_timeseries.pyu-cb375 level1
+    ./analysis_timeseries.py u-cb737 level1;
+    ./analysis_timeseries.py u-cb375 level1;
+    ./analysis_timeseries.py u-bz866 level1;
+
 #    ./analysis_timeseries.py u-by791 level1;
 #    ./analysis_timeseries.py u-bz502 level1;
 #    ./analysis_timeseries.py u-bz897 level1;

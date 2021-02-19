@@ -2766,8 +2766,10 @@ def main():
                 UKESM11_pic = True
                 if UKESM11_pic:
                         customColours = {
-                                'u-bx188 ': 'black', 
-                                'u-cb375 ': 'red',
+                                'u-bx188': 'black', 
+                                'u-cb375': 'red',
+                                'u-bz866': 'blue',
+                                'u-cb737': 'orange',
                                 }
                         cnthicknesses = defaultdict(lambda: 0.7)
                         linestyles = defaultdict(lambda: '-')
@@ -2781,7 +2783,6 @@ def main():
                                 analysisname='UKESM11_pic_compare',
                                 lineThicknesses= cnthicknesses,
                                 linestyles = linestyles,)
-                                
                 UKESM_fast = True
                 if UKESM_fast:
                         customColours = {
