@@ -133,8 +133,8 @@ def findLastFinishedYear(jobID,dividby=1,numberfiles=6):
 	
 	machine = gethostname()
 	if machine.find('jasmin')>-1:
-		outputFold = "/group_workspaces/jasmin2/ukesm/BGC_data/"+jobID+'/'
-
+#		outputFold = "/group_workspaces/jasmin2/ukesm/BGC_data/"+jobID+'/'
+                outputFold = "/gws/nopw/j04/ukesm/BGC_data/"+jobID+'/'
 	if machine.find('monsoon')>-1:
                 outputFold = "/projects/ukesm/ldmora/UKESM/"+jobID+'/'
                         
@@ -317,7 +317,9 @@ def downloadMass(jobID,doMoo=True):
 	knownmachine = False	
 	if machine.find('jasmin')>-1:
 		knownmachine = True
-		outputFold = "/group_workspaces/jasmin2/ukesm/BGC_data/"+jobID
+		# outputFold = "/group_workspaces/jasmin2/ukesm/BGC_data/"+jobID
+                outputFold = "/gws/nopw/j04/ukesm/BGC_data/"+jobID+'/'
+
 		if not os.path.exists(outputFold):
 			print "Making ",outputFold
     			os.makedirs(outputFold)

@@ -526,9 +526,11 @@ def analysis_timeseries(jobID = "u-ab671",
 		print "analysis-timeseries.py:\tBeing run at CEDA on ", hostname
 		#machinelocation = 'JASMIN'
 
-		
-		try:	shelvedir 	= ukp.folder("/group_workspaces/jasmin2/ukesm/BGC_data/"+getuser()+"/shelves/timeseries/"+jobID)
-		except: shelvedir       =            "/group_workspaces/jasmin2/ukesm/BGC_data/"+getuser()+"/shelves/timeseries/"+jobID
+		#try:	shelvedir 	= ukp.folder("/group_workspaces/jasmin2/ukesm/BGC_data/"+getuser()+"/shelves/timeseries/"+jobID)
+		#except: shelvedir       =            "/group_workspaces/jasmin2/ukesm/BGC_data/"+getuser()+"/shelves/timeseries/"+jobID
+                try:    shelvedir       = ukp.folder("/gws/nopw/j04/ukesm/BGC_data/"+getuser()+"/shelves/timeseries/"+jobID)
+                except: shelvedir       =            "/gws/nopw/j04/ukesm/BGC_data/"+getuser()+"/shelves/timeseries/"+jobID
+
 		if annual:	WOAFolder = paths.WOAFolder_annual
 		else:		WOAFolder = paths.WOAFolder
 
