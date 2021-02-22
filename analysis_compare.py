@@ -2763,6 +2763,31 @@ def main():
 		exit
 	else:
 
+                UKESM11_scenarios = True
+                if UKESM11_scenarios:
+                        customColours = {
+                                'u-cb261' : 'green', #                 :  UKESM1.1 ScenarioMIP ssp126 1
+                                'u-cb584' : 'blue', #                  : UKESM1.1 ScenarioMIP ssp126 2
+                                'u-cb586' : 'purple', #                  : UKESM1.1 ScenarioMIP ssp126 3
+                                'u-cb180' : 'orange', #                  : UKESM1.1 ScenarioMIP ssp370 1
+                                'u-cb581' : 'red', #                  : UKESM1.1 ScenarioMIP ssp370 2
+                                'u-cb585' : 'gold', #                  : UKESM1.1 ScenarioMIP  ssp370 3
+                                }
+                        cnthicknesses = defaultdict(lambda: 0.7)
+                        linestyles = defaultdict(lambda: '-')
+                        timeseries_compare(
+                                customColours,
+                                physics=1,
+                                bio=1,
+                                debug=0,
+                                year0=False,
+                                jobDescriptions=jobDescriptions,
+                                analysisname='UKESM11_scenarios',
+                                lineThicknesses= cnthicknesses,
+                                linestyles = linestyles,)
+
+
+
                 UKESM11_pic = True
                 if UKESM11_pic:
                         customColours = {
@@ -2894,6 +2919,8 @@ def main():
                                 'u-bz897': 'blue',  
                                 'u-ca306': 'purple',
                                 'u-ca811': 'orange',
+                                'u-ca730': 'goldenrod', # ukesm1.1 histo #6
+
                                 'u-bc179': 'black', # R1 historical
                                 'u-bc292': 'black', # R2 hist
                                 'u-bc370': 'black', # R3 histroccal

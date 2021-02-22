@@ -22,11 +22,23 @@ do
 #    ./analysis_timeseries.py u-bz897 level1;
 #    ./analysis_timeseries.py u-ca306 level1;
     ./analysis_timeseries.py u-ca811 level1;
+    ./analysis_timeseries.py u-ca720 level1;
 
-    ./analysis_timeseries.py u-by230 level1;
+
+#    ./analysis_timeseries.py u-by230 level1;
 #    ./analysis_timeseries.py u-bx499 level1;
 #    ./analysis_timeseries.py u-bw717 physics
     ./analysis_timeseries.py u-bx082 physics
+
+    # UKESM1.1 scenarios
+
+    ./analysis_timeseries.py u-cb261 level1; #               :  UKESM1.1 ScenarioMIP ssp126 1
+    ./analysis_timeseries.py u-cb584 level1; #                : UKESM1.1 ScenarioMIP ssp126 2
+    ./analysis_timeseries.py u-cb586 level1; #                : UKESM1.1 ScenarioMIP ssp126 3
+    ./analysis_timeseries.py u-cb180 level1; #                : UKESM1.1 ScenarioMIP ssp370 1
+    ./analysis_timeseries.py u-cb581 level1; #                : UKESM1.1 ScenarioMIP ssp370 2
+    ./analysis_timeseries.py u-cb585 level1; #                : UKESM1.1 ScenarioMIP  ssp370 3
+
 
 #    ./analysis_timeseries.py u-bx188 level1;
     #./analysis_timeseries.py u-bw837 level1; 
