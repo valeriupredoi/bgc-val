@@ -55,24 +55,29 @@ machinelocation = ''
 if gethostname().find('ceda.ac.uk')>-1 or  gethostname().find('jasmin')>-1 or gethostname().find('jc.rl.ac.uk')>-1:
 	print "analysis-timeseries.py:\tBeing run at CEDA on ",gethostname()
 	machinelocation = 'JASMIN'
-			
+	jasmin2 = "/gws/nopw/j04/ukesm/"		
 	#####
 	# Post processed Data location
-	shelvedir 	= folder("/group_workspaces/jasmin2/ukesm/BGC_data/"+getuser()+"/shelves/")
+	#shelvedir 	= folder("/group_workspaces/jasmin2/ukesm/BGC_data/"+getuser()+"/shelves/")
+        shelvedir       = folder(jasmin2+"BGC_data/"+getuser()+"/shelves/")
+
+
 	
 	#####
 	# Post processed p2p Data location		
-	p2p_ppDir = folder("/group_workspaces/jasmin2/ukesm/BGC_data/ukesm_postProcessed/")
-	
+	#p2p_ppDir = folder("/group_workspaces/jasmin2/ukesm/BGC_data/ukesm_postProcessed/")
+        p2p_ppDir = folder(jasmin2+"BGC_data/ukesm_postProcessed/")
+
 	######
 	# Output location for plots.
 	#imagedir	 = folder('images/')
-	imagedir	 = folder('/group_workspaces/jasmin2/ukesm/BGC_data/ldemora/images/')
+	#magedir	 = folder('/group_workspaces/jasmin2/ukesm/BGC_data/ldemora/images/')
+        imagedir         = folder(jasmin2+'BGC_data/ldemora/images/')
 
 	#####
 	# Location of model files.
-	esmvalFolder 	= "/group_workspaces/jasmin2/ukesm/BGC_data/"
-	ModelFolder_pref	= folder(esmvalFolder)
+	#esmvalFolder 	= "/group_workspaces/jasmin2/ukesm/BGC_data/"
+	ModelFolder_pref	= folder(jasmin2)
 
 	#####
 	# eORCA1 grid		
