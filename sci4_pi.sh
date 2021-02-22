@@ -4,6 +4,8 @@ while [ $x -le 20 ]
 do
     ./analysis_timeseries.py u-bb446 level1; 
     ./analysis_timeseries.py u-aw310 level1;
+    ./analysis_timeseries.py u-by230 level1; # ukesm 1.1 pi control.
+
 
 #    ./analysis_timeseries.py u-by242 kmf  
 #    ./analysis_timeseries.py u-by242 fast;
