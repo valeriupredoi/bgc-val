@@ -77,7 +77,7 @@ if gethostname().find('ceda.ac.uk')>-1 or  gethostname().find('jasmin')>-1 or ge
 	#####
 	# Location of model files.
 	#esmvalFolder 	= "/group_workspaces/jasmin2/ukesm/BGC_data/"
-	ModelFolder_pref	= folder(jasmin2)
+	ModelFolder_pref	= folder(jasmin2+"BGC_data/")
 
 	#####
 	# eORCA1 grid		
