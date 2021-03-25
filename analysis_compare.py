@@ -2911,7 +2911,50 @@ def main():
 #
 
 
-                UKESM11_historical1 = True
+                UKESM11_historical2 = True
+                if UKESM11_historical2:
+                        customColours = {
+                                'u-by230': 'black',
+                                'u-by791': 'green',
+                                'u-bz502': 'red',  
+                                'u-bz897': 'blue',  
+                                'u-ca306': 'purple',
+                                'u-ca811': 'orange',
+                                'u-cb799': 'goldenrod', # ukesm1.1 histo #6
+
+                                'u-bc179': 'black', # R1 historical
+                                'u-bc292': 'black', # R2 hist
+                                'u-bc370': 'black', # R3 histroccal
+                                'u-bd483': 'black', # R? hist
+                                'u-bc470': 'black', # R? hist                               
+                                'u-bd288': 'black', # R? hist                                                               
+                                # 'u-bb075': 'black', # R4 hist
+                                # 'u-bb277': 'black', # R5 hist
+                                }
+                                
+	                cnthicknesses = defaultdict(lambda: 0.7)
+                        cnthicknesses['u-by791'] = 2.
+                        cnthicknesses['u-bz502'] = 2.
+                        cnthicknesses['u-bz897'] = 2.
+                        cnthicknesses['u-ca306'] = 2.
+                        cnthicknesses['u-ca811'] = 2.
+                        cnthicknesses['u-cb799'] = 2.                        
+                        cnthicknesses['u-by230'] = 1.5
+
+        	        linestyles = defaultdict(lambda: '-')
+                	linestyles[ 'u-by230'] = ':'
+	                timeseries_compare(
+        	                customColours,
+                	        physics=1,
+                        	bio=1,
+	                        debug=0,
+        	                year0='UKESM11_historical1',
+                	        jobDescriptions=jobDescriptions,
+                        	analysisname='UKESM11_historical2',
+	                        lineThicknesses= cnthicknesses,
+        	                linestyles = linestyles,)
+        	                                        
+           UKESM11_historical = True
                 if UKESM11_historical1:
                         customColours = {
                                 'u-by230': 'black',
@@ -2948,7 +2991,6 @@ def main():
                         	analysisname='UKESM11_historical1',
 	                        lineThicknesses= cnthicknesses,
         	                linestyles = linestyles,)
-        	                                        
                         
                 UKESM_vs_HadGEM3 = True
                 if UKESM_vs_HadGEM3:

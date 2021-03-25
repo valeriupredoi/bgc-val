@@ -24,8 +24,8 @@ do
 #    ./analysis_timeseries.py u-bz897 level1;
 #    ./analysis_timeseries.py u-ca306 level1;
 #    ./analysis_timeseries.py u-ca811 level1;
-    ./analysis_timeseries.py u-ca730 level1;
-
+#    ./analysis_timeseries.py u-ca730 level1;
+    ./analysis_timeseries.py u-cb799 level1;
 
 #    ./analysis_timeseries.py u-by230 level1;
 #    ./analysis_timeseries.py u-bx499 level1;
