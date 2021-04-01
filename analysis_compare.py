@@ -2954,8 +2954,8 @@ def main():
 	                        lineThicknesses= cnthicknesses,
         	                linestyles = linestyles,)
         	                                        
-           UKESM11_historical = True
-                if UKESM11_historical1:
+                UKESM11_historical = True
+                if UKESM11_historical:
                         customColours = {
                                 'u-by230': 'black',
                                 'u-by791': 'green',
@@ -3156,6 +3156,8 @@ def main():
                                 'u-bx188': 'darkorange',
                                 'u-bx499': 'magenta',
                                 'u-by230': 'purple', 
+                                'u-ca730': 'red', # ukesm1.1 histo #6
+
                                 }
                         descripts = {
                                 'u-aw310': 'UKESM1',
@@ -3165,7 +3167,8 @@ def main():
                                 'u-bw837': '',
                                 'u-bx188': '',
                                 'u-bx499': 'Variant of bx188 with scaling on dust to iron for MEDUSA, parameter xfe_sol * 0.96',
-                                'u-by230': 'our "chilled" UKESM1.1 configuration'
+                                'u-by230': 'our "chilled" UKESM1.1 configuration',
+                                'u-ca730': '', # ukesm1.1 histo #6
                         }
 
                         cnthicknesses = defaultdict(lambda: 1.1)
