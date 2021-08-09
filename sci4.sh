@@ -4,6 +4,11 @@ x=0
 while [ $x -le 20 ]
 do
     # fast:
+    ./analysis_timeseries.py u-by230 fast #' : 'black', #standard UKESM1.1
+    ./analysis_timeseries.py u-cf927 fast #' : 'green', #CN-fast standard radiation
+    ./analysis_timeseries.py u-cg799 fast #' : 'red', #CN-fast rad=3h, two_fsd=1.7
+    ./analysis_timeseries.py u-cg843 fast #' : 'blue', #CN-fast, rad=3h, two_fsd=1.65
+
 #    ./analysis_timeseries.py u-bz321 fast
 #    ./analysis_timeseries.py u-bz360 fast
 #    ./analysis_timeseries.py u-bz361 fast
@@ -74,5 +79,6 @@ do
     rsync -av /home/users/ldemora/workspace/ukesm-validation/CompareReports2 /gws/nopw/j04/esmeval/public/CompareReports/v2/.
     echo "sleeping" $x
     x=$(( $x + 1 ))
-    sleep 20000;
+    sleep $((($(date -f - +%s- <<<$'03:00 tomorrow\nnow')0)%86400))
+
 done

@@ -2763,6 +2763,31 @@ def main():
 		exit
 	else:
 
+
+                UKESM11_fast = True
+                if UKESM11_fast:
+ 
+                        customColours = {
+                            'u-by230' : 'black', #standard UKESM1.1
+                            'u-cf927' : 'green', #CN-fast standard radiation
+                            'u-cg799' : 'red', #CN-fast rad=3h, two_fsd=1.7
+                            'u-cg843' : 'blue', #CN-fast, rad=3h, two_fsd=1.65
+                                }
+                        cnthicknesses = defaultdict(lambda: 0.7)
+                        linestyles = defaultdict(lambda: '-')
+                        timeseries_compare(
+                                customColours,
+                                physics=1,
+                                bio=1,
+                                debug=0,
+                                year0=False,
+                                jobDescriptions=jobDescriptions,
+                                analysisname='UKESM11_Fast_piControl',
+                                lineThicknesses= cnthicknesses,
+                                linestyles = linestyles,)
+
+                assert 0 
+
                 UKESM11_scenarios = True
                 if UKESM11_scenarios:
                         customColours = {

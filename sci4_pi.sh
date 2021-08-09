@@ -18,5 +18,6 @@ do
 
     echo "sleeping" $x
     x=$(( $x + 1 ))
-    sleep 20000;
+    sleep $((($(date -f - +%s- <<<$'01:00 tomorrow\nnow')0)%86400))
+
 done
