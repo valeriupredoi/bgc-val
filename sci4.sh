@@ -5,9 +5,12 @@ while [ $x -le 20 ]
 do
     # fast:
     ./analysis_timeseries.py u-by230 fast #' : 'black', #standard UKESM1.1
-    ./analysis_timeseries.py u-cf927 fast #' : 'green', #CN-fast standard radiation
-    ./analysis_timeseries.py u-cg799 fast #' : 'red', #CN-fast rad=3h, two_fsd=1.7
-    ./analysis_timeseries.py u-cg843 fast #' : 'blue', #CN-fast, rad=3h, two_fsd=1.65
+    ./analysis_timeseries.py u-ck416 fast #' : 'black', #standard UKESM1.1
+#    ./analysis_timeseries.py u-by230 fast #' : 'black', #standard UKESM1.1
+
+#    ./analysis_timeseries.py u-cf927 fast #' : 'green', #CN-fast standard radiation
+#    ./analysis_timeseries.py u-cg799 fast #' : 'red', #CN-fast rad=3h, two_fsd=1.7
+#    ./analysis_timeseries.py u-cg843 fast #' : 'blue', #CN-fast, rad=3h, two_fsd=1.65
 
 #    ./analysis_timeseries.py u-bz321 fast
 #    ./analysis_timeseries.py u-bz360 fast
@@ -20,17 +23,17 @@ do
 #    ./analysis_timeseries.py u-bz705 fast
 #
     # UKESM1.1
-    ./analysis_timeseries.py u-cb737 level1;
-    ./analysis_timeseries.py u-cb375 level1;
-    ./analysis_timeseries.py u-bz866 level1;
+#    ./analysis_timeseries.py u-cb737 level1;
+#    ./analysis_timeseries.py u-cb375 level1;
+#    ./analysis_timeseries.py u-bz866 level1;
 
 #    ./analysis_timeseries.py u-by791 level1;
 #    ./analysis_timeseries.py u-bz502 level1;
 #    ./analysis_timeseries.py u-bz897 level1;
 #    ./analysis_timeseries.py u-ca306 level1;
 #    ./analysis_timeseries.py u-ca811 level1;
-    ./analysis_timeseries.py u-ca730 level1;
-    ./analysis_timeseries.py u-cb799 level1;
+#    ./analysis_timeseries.py u-ca730 level1;
+#    ./analysis_timeseries.py u-cb799 level1;
 
 #    ./analysis_timeseries.py u-by230 level1;
 #    ./analysis_timeseries.py u-bx499 level1;
@@ -58,7 +61,7 @@ do
     #./analysis_timeseries.py u-bu737 level1; 
 #    ./analysis_timeseries.py u-bu504 level1;
 #     ./analysis_timeseries.py u-bg555 physics;
-    ./analysis_timeseries.py u-ar766 physics; 
+#    ./analysis_timeseries.py u-ar766 physics; 
 #/    ./analysis_timeseries.py u-bt931 level1;
 #    ./analysis_timeseries.py u-bt670 physics
 #/;    ./analysis_timeseries.py u-bt320 level1;
