@@ -2786,9 +2786,9 @@ def main():
                                 lineThicknesses= cnthicknesses,
                                 linestyles = linestyles,)
 
-                assert 0 
+                return 
 
-                UKESM11_scenarios = True
+                UKESM11_scenarios = False
                 if UKESM11_scenarios:
                         customColours = {
                                 'u-cb261' : 'green', #                 :  UKESM1.1 ScenarioMIP ssp126 1
@@ -2833,7 +2833,7 @@ def main():
                                 analysisname='UKESM11_pic_compare',
                                 lineThicknesses= cnthicknesses,
                                 linestyles = linestyles,)
-                UKESM_fast = True
+                UKESM_fast = False 
                 if UKESM_fast:
                         customColours = {
                                 'u-aw310': 'black', 
@@ -2936,7 +2936,7 @@ def main():
 #
 
 
-                UKESM11_historical2 = True
+                UKESM11_historical2 = False 
                 if UKESM11_historical2:
                         customColours = {
                                 'u-by230': 'black',
@@ -2979,7 +2979,7 @@ def main():
 	                        lineThicknesses= cnthicknesses,
         	                linestyles = linestyles,)
         	                                        
-                UKESM11_historical = True
+                UKESM11_historical = False 
                 if UKESM11_historical:
                         customColours = {
                                 'u-by230': 'black',
