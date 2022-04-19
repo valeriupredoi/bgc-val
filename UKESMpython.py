@@ -28,7 +28,6 @@
 
 """
 from sys import argv
-from string import join
 from netCDF4 import Dataset
 from os.path import exists, getmtime
 from os import mkdir, makedirs
