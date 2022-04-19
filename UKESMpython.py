@@ -35,7 +35,7 @@ from os import mkdir, makedirs
 import os
 import math
 from glob import glob
-from itertools import product, izip
+from itertools import product
 import numpy as np
 from matplotlib import pyplot
 from mpl_toolkits.basemap import Basemap
@@ -78,7 +78,7 @@ def folder(name):
         name = name + '/'
     if exists(name) is False:
         makedirs(name)
-        print('makedirs ', name)
+        print(('makedirs ', name))
     return name
 
 
@@ -98,7 +98,7 @@ def rebaseSymlinks(fn, dryrun=True):
     #	print "rebaseSymlinks:\tfile does not exist.",fn
     #	return
     if not os.path.islink(fn):
-        print("rebaseSymlinks:\tfile is not a symlink.", fn)
+        print(("rebaseSymlinks:\tfile is not a symlink.", fn))
         return
     #####
     # Real path and first target:
@@ -107,7 +107,7 @@ def rebaseSymlinks(fn, dryrun=True):
 
     if realpath == linkpath: return
 
-    print "rebaseSymlinks:\tdeleting and re-linking ", fn, '-->', realpath
+    print("rebaseSymlinks:\tdeleting and re-linking ", fn, '-->', realpath)
     if dryrun: return
     os.remove(fn)
     os.symlink(realpath, fn)
@@ -227,11 +227,11 @@ def makeThisSafe(arr, debug=True, key='', noSqueeze=False):
     ma, mi = arr.max(), arr.min()
 
     if ma > 9.E36:
-        if debug: print "makeThisSafe: \tMasked values greater than 9.E36", key
+        if debug: print("makeThisSafe: \tMasked values greater than 9.E36", key)
         arr = np.ma.masked_greater(arr, 9.E36)
 
     if np.isinf(ma) or np.isnan(ma):
-        if debug: print "makeThisSafe: \tMasking infs and Nans", key
+        if debug: print("makeThisSafe: \tMasking infs and Nans", key)
         arr = np.ma.array(arr)
         arr = np.ma.masked_where(np.isnan(arr) + arr.mask + np.isinf(arr), arr)
 
@@ -248,7 +248,7 @@ def maenumerate(marr):
 	"""
 
     mask = ~marr.mask.ravel()
-    for i, m in izip(np.ndenumerate(marr), mask):
+    for i, m in zip(np.ndenumerate(marr), mask):
         if m: yield i
 
 
@@ -288,7 +288,7 @@ def AutoVivToYaml(av, yamlFile):
 
     #print 'AutoVivToYaml:\tFinal string:\n',s
 
-    print 'AutoVivToYaml:\tSaving:', yamlFile
+    print('AutoVivToYaml:\tSaving:', yamlFile)
     fn = open(yamlFile, 'w')
     fn.write(s)
     fn.close()
@@ -298,7 +298,7 @@ def YamlToDict(yamlFile):
     """
 	Opens a yaml file and outputs it as a dictionary.
 	"""
-    print 'YamlToDict:\tLoading:', yamlFile
+    print('YamlToDict:\tLoading:', yamlFile)
     with open(yamlFile, 'r') as f:
         d = yaml.load(f)
     return d
@@ -324,7 +324,7 @@ class NestedDict(dict):
 
     def __getitem__(self, keys):
         # Let's assume *keys* is a list or tuple.
-        if not isinstance(keys, basestring):
+        if not isinstance(keys, str):
             try:
                 node = self
                 for key in keys:
@@ -340,7 +340,7 @@ class NestedDict(dict):
 
     def __setitem__(self, keys, value):
         # Let's assume *keys* is a list or tuple.
-        if not isinstance(keys, basestring):
+        if not isinstance(keys, str):
             try:
                 node = self
                 for key in keys[:-1]:
@@ -384,8 +384,8 @@ def getGridFile(grid):
         try:
             if exists(gridFile): pass
         except:
-            print "UKESMpython:\tgetGridFile:\tERROR:\tIt's not possible to load the ORCA025 grid on this machine."+ \
-                  "\n\t\t\tPlease add the ORCA025 file to the orcafn getGridFile() list to UKESMpython.py"
+            print("UKESMpython:\tgetGridFile:\tERROR:\tIt's not possible to load the ORCA025 grid on this machine."+ \
+                  "\n\t\t\tPlease add the ORCA025 file to the orcafn getGridFile() list to UKESMpython.py")
             assert False
     return gridFile
 
@@ -406,7 +406,7 @@ def shouldIMakeFile(fin, fout, debug=True):
 	"""
     if not exists(fout):
         if debug:
-            print 'shouldIMakeFile: out file doesn\'t exit and should be made.'
+            print('shouldIMakeFile: out file doesn\'t exit and should be made.')
         return True
     if type(fin) == type('abc') and fin.find('shelve'):
         fin = fin + '*'
@@ -417,21 +417,21 @@ def shouldIMakeFile(fin, fout, debug=True):
 
     if type(fin) == type('abc') and fin.find('*') < 0:  # fin is a string file:
         if not exists(fin):
-            if debug: print 'Warning: ', fin, 'does not exist'
+            if debug: print('Warning: ', fin, 'does not exist')
             return False
 
         if getmtime(fin) > getmtime(fout):
             if debug:
-                print 'shouldIMakeFile: out-file is younger than in-file, you should make it.'
+                print('shouldIMakeFile: out-file is younger than in-file, you should make it.')
             return True  #
         if debug:
-            print 'shouldIMakeFile: out-file is older than in-file, you shouldn\'t make it.'
+            print('shouldIMakeFile: out-file is older than in-file, you shouldn\'t make it.')
         return False
     if type(fin) == type('abc') and fin.find('*') > 0:
         if debug:
-            print 'shouldIMakeFile: in-file contains *, assuming it is a wildcard: ', fin
+            print('shouldIMakeFile: in-file contains *, assuming it is a wildcard: ', fin)
         fin = glob(fin)
-        if debug: print 'shouldIMakeFile: files : ', fin
+        if debug: print('shouldIMakeFile: files : ', fin)
 
     if type(fin) == type([
             'a',
@@ -440,18 +440,18 @@ def shouldIMakeFile(fin, fout, debug=True):
     ]):  # fin is many files:
         for f in fin:
             if not exists(f):
-                if debug: print 'Warning: ', f, 'does not exist'
+                if debug: print('Warning: ', f, 'does not exist')
                 return False
             if getmtime(f) > getmtime(fout):
                 if debug:
-                    print 'shouldIMakeFile: ', f, ' is younger than an ', fout, ', you should make it'
+                    print('shouldIMakeFile: ', f, ' is younger than an ', fout, ', you should make it')
                 return True
         if debug:
-            print 'shouldIMakeFile: no new files in the list. Don\'t make it.'
+            print('shouldIMakeFile: no new files in the list. Don\'t make it.')
         return False
     if debug:
-        print 'shouldIMakeFile: got to the end somehow:'
-        print type(fin), fin, fout
+        print('shouldIMakeFile: got to the end somehow:')
+        print(type(fin), fin, fout)
     return False
 
 
@@ -475,10 +475,10 @@ def makemapplot(fig,
     lats = np.array(lats)
     data = np.ma.array(data)
     if doLog and zrange[0] * zrange[1] <= 0.:
-        print "makemapplot: \tMasking"
+        print("makemapplot: \tMasking")
         data = np.ma.masked_less_equal(np.ma.array(data), 0.)
-    print data.min(), lats.min(), lons.min(
-    ), data.shape, lats.shape, lons.shape
+    print(data.min(), lats.min(), lons.min(
+    ), data.shape, lats.shape, lons.shape)
     crojp2, data, newLon, newLat = regrid(data, lats, lons)
     if type(cmap) == type('str'):
         if cmap == 'default':
@@ -540,10 +540,10 @@ def makePolarmapplot(fig,
     lats = np.array(lats)
     data = np.ma.array(data)
     if doLog and zrange[0] * zrange[1] <= 0.:
-        print "makemapplot: \tMasking"
+        print("makemapplot: \tMasking")
         data = np.ma.masked_less_equal(np.ma.array(data), 0.)
-    print data.min(), lats.min(), lons.min(
-    ), data.shape, lats.shape, lons.shape
+    print(data.min(), lats.min(), lons.min(
+    ), data.shape, lats.shape, lons.shape)
 
     crojp2, data, newLon, newLat = regrid(data, lats, lons)
 
@@ -618,7 +618,7 @@ def robinPlotSingle(
 
     if rbmi * rbma > 0. and rbma / rbmi > 100.: doLog = True
 
-    print lons.shape, lats.shape, data.shape
+    print(lons.shape, lats.shape, data.shape)
     lon0 = lons.mean()
     ax = pyplot.subplot(111,
                         projection=ccrs.PlateCarree(central_longitude=lon0, ))
@@ -637,7 +637,7 @@ def robinPlotSingle(
         doLog=doLog,
     )
 
-    print "robinPlotSingle.py:\tSaving:", filename
+    print("robinPlotSingle.py:\tSaving:", filename)
     pyplot.savefig(filename, dpi=dpi)
     pyplot.close()
 
@@ -684,7 +684,7 @@ def robinPlotPair(
     m1.drawmeridians(np.arange(0., 420., 60.))
 
     if doLog and rbmi * rbma <= 0.:
-        print "UKESMpython:\trobinPlotPair: \tMasking",
+        print("UKESMpython:\trobinPlotPair: \tMasking", end=' ')
         data1 = np.ma.masked_less_equal(ma.array(data1), 0.)
         data2 = np.ma.masked_less_equal(ma.array(data2), 0.)
     if scatter:
@@ -780,7 +780,7 @@ def robinPlotPair(
 
     pyplot.title(titles[1])
 
-    print "UKESMpython:\trobinPlotPair: \tSaving:", filename
+    print("UKESMpython:\trobinPlotPair: \tSaving:", filename)
     pyplot.savefig(filename, dpi=dpi)
     pyplot.close()
 
@@ -823,7 +823,7 @@ def robinPlotQuad(lons,
     doLog, vmin, vmax = determineLimsFromData(data1, data2)
 
     doLogs = [doLog, doLog, False, True]
-    print "robinPlotQuad:\t", len(lons), len(lats), len(data1), len(data2)
+    print("robinPlotQuad:\t", len(lons), len(lats), len(data1), len(data2))
     for i, spl in enumerate([221, 222, 223, 224]):
 
         if spl in [221, 222]:
@@ -845,7 +845,7 @@ def robinPlotQuad(lons,
             rbmi = 0.1
 
         if doLogs[i] and rbmi * rbma <= 0.:
-            print "UKESMpython:\trobinPlotQuad: \tMasking",
+            print("UKESMpython:\trobinPlotQuad: \tMasking", end=' ')
             data1 = np.ma.masked_less_equal(ma.array(data1), 0.)
             data2 = np.ma.masked_less_equal(ma.array(data2), 0.)
         data = ''
@@ -1044,8 +1044,8 @@ def robinPlotQuad(lons,
             else:
                 crojp2, newData, newLon, newLat = regrid(
                     data.squeeze(), lons, lats)
-                print "cartopy robin quad:", i, spl, newData.shape, newData.min(
-                ), newData.max(), rbmi, rbma
+                print("cartopy robin quad:", i, spl, newData.shape, newData.min(
+                ), newData.max(), rbmi, rbma)
                 if doLogs[i]:
                     ims.append(bms[i].pcolormesh(newLon,
                                                  newLat,
@@ -1121,12 +1121,12 @@ def robinPlotQuad(lons,
                  horizontalalignment='center',
                  verticalalignment='top')
     pyplot.tight_layout()
-    print "UKESMpython:\trobinPlotQuad: \tSaving:", filename
+    print("UKESMpython:\trobinPlotQuad: \tSaving:", filename)
 
     try:
         pyplot.savefig(filename, dpi=dpi)
     except:
-        print "Unable to save image."
+        print("Unable to save image.")
     pyplot.close()
 
 
@@ -1175,14 +1175,14 @@ def HovPlotQuad(
         data2 = np.ma.masked_where(depths > -10., data2)
 
         if len(data1.compressed()) == 0:
-            print "No hovmoeller for surface only plots."
+            print("No hovmoeller for surface only plots.")
             return
 
     doLog, vmin, vmax = determineLimsFromData(data1, data2)
 
     axs, bms, cbs, ims = [], [], [], []
     doLogs = [doLog, doLog, False, True]
-    print "HovPlotQuad:\t", len(depths), len(lats), len(data1), len(data2)
+    print("HovPlotQuad:\t", len(depths), len(lats), len(data1), len(data2))
 
     #####
     # Plotting coordinate with lowest standard deviation.
@@ -1212,7 +1212,7 @@ def HovPlotQuad(
             rbmi = 0.0999
 
         if doLogs[i] and rbmi * rbma <= 0.:
-            print "UKESMpython:\tHovPlotQuad: \tMasking",
+            print("UKESMpython:\tHovPlotQuad: \tMasking", end=' ')
             data1 = np.ma.masked_less_equal(ma.array(data1), 0.)
             data2 = np.ma.masked_less_equal(ma.array(data2), 0.)
         data = ''
@@ -1274,13 +1274,13 @@ def HovPlotQuad(
                     ))
 
         else:
-            print "hovXaxis:", hovXaxis.min(), hovXaxis.max(
+            print("hovXaxis:", hovXaxis.min(), hovXaxis.max(
             ), "\tdepths:", depths.min(), depths.max(), "\tdata:", data.min(
-            ), data.max()
+            ), data.max())
             newX, newY, newData = arrayify(hovXaxis, depths, data)
-            print "newX:", newX.min(), newX.max(), "\tnewY:", newY.min(
+            print("newX:", newX.min(), newX.max(), "\tnewY:", newY.min(
             ), newY.max(), "\tnewData:", newData.min(), newData.max(
-            ), 'range:', rbmi, rbma
+            ), 'range:', rbmi, rbma)
             if doLogs[i]:
                 ims.append(
                     pyplot.pcolormesh(
@@ -1365,7 +1365,7 @@ def HovPlotQuad(
     #####
     # Print and save
     pyplot.tight_layout()
-    print "UKESMpython:\tHovPlotQuad: \tSaving:", filename
+    print("UKESMpython:\tHovPlotQuad: \tSaving:", filename)
     pyplot.savefig(filename, dpi=dpi)
     pyplot.close()
 
@@ -1423,7 +1423,7 @@ def ArcticTransectPlotQuad(
         lats = np.ma.masked_where(depths < -500., lats).compressed()
         lons = np.ma.masked_where(depths < -500., lons).compressed()
         depths = np.ma.masked_where(depths < -500., depths).compressed()
-        print lons.shape, lats.shape, depths.shape, data1.shape, data2.shape
+        print(lons.shape, lats.shape, depths.shape, data1.shape, data2.shape)
         logy = False
         maskSurface = False
 
@@ -1435,8 +1435,8 @@ def ArcticTransectPlotQuad(
 
     axs, bms, cbs, ims = [], [], [], []
     doLogs = [doLog, doLog, False, True]
-    print "ArcticTransectPlotQuad:\t", len(depths), len(lats), len(data1), len(
-        data2)
+    print("ArcticTransectPlotQuad:\t", len(depths), len(lats), len(data1), len(
+        data2))
 
     #####
     # Artificially build an x axis coordinate list for the Arctic.
@@ -1473,7 +1473,7 @@ def ArcticTransectPlotQuad(
             rbmi = 0.0999
 
         if doLogs[i] and rbmi * rbma <= 0.:
-            print "UKESMpython:\tArcticTransectPlotQuad: \tMasking",
+            print("UKESMpython:\tArcticTransectPlotQuad: \tMasking", end=' ')
             data1 = np.ma.masked_less_equal(ma.array(data1), 0.)
             data2 = np.ma.masked_less_equal(ma.array(data2), 0.)
         data = ''
@@ -1535,13 +1535,13 @@ def ArcticTransectPlotQuad(
                     ))
 
         else:
-            print "ArcticTransectPlotQuad: hovXaxis:", hovXaxis.min(
+            print("ArcticTransectPlotQuad: hovXaxis:", hovXaxis.min(
             ), hovXaxis.max(), "\tdepths:", depths.min(), depths.max(
-            ), "\tdata:", data.min(), data.max()
+            ), "\tdata:", data.min(), data.max())
             newX, newY, newData = arrayify(hovXaxis, depths, data)
-            print "ArcticTransectPlotQuad: newX:", newX.min(), newX.max(
+            print("ArcticTransectPlotQuad: newX:", newX.min(), newX.max(
             ), "\tnewY:", newY.min(), newY.max(), "\tnewData:", newData.min(
-            ), newData.max(), 'range:', rbmi, rbma
+            ), newData.max(), 'range:', rbmi, rbma)
             if doLogs[i]:
                 ims.append(
                     pyplot.pcolormesh(
@@ -1644,7 +1644,7 @@ def ArcticTransectPlotQuad(
     #####
     # Print and save
     pyplot.tight_layout()
-    print "UKESMpython:\tArcticTransectPlotQuad: \tSaving:", filename
+    print("UKESMpython:\tArcticTransectPlotQuad: \tSaving:", filename)
     pyplot.savefig(filename, dpi=dpi)
     pyplot.close()
 
@@ -1660,7 +1660,7 @@ def arrayify(oldX, oldY, data, fillGaps=True, minimumGap=3., debug=False):
     # test for size restrictions.
     if len(oldX) == len(oldY) == len(data): pass
     else:
-        print "arrayify:\tArrays are the wrong size!"
+        print("arrayify:\tArrays are the wrong size!")
         assert 0
     #####
     # Create 1 D arrays for X and Y
@@ -1697,7 +1697,7 @@ def arrayify(oldX, oldY, data, fillGaps=True, minimumGap=3., debug=False):
 
     newData = np.ma.zeros((len(newY), len(newX))) - 999.
 
-    for (x, y), d in newDatad.items():
+    for (x, y), d in list(newDatad.items()):
         i = indexX[x]
         j = indexY[y]
         newData[j, i] = d
@@ -1814,11 +1814,11 @@ def histPlot(datax,
     logx, xmin, xmax = determineLimsAndLog(xmin, xmax)
 
     if datax.size < minNumPoints and datay.size < minNumPoints:
-        print "UKESMpython:\thistPlot:\tThere aren't enough points for a sensible dataplot: ", datax.size
+        print("UKESMpython:\thistPlot:\tThere aren't enough points for a sensible dataplot: ", datax.size)
         return
 
-    print "UKESMpython:\thistplot:\t preparing", Title, datax.size, datay.size, (
-        xmin, '-->', xmax)  #, datax,datay
+    print("UKESMpython:\thistplot:\t preparing", Title, datax.size, datay.size, (
+        xmin, '-->', xmax))  #, datax,datay
 
     if logx:
         n, bins, patchesx = pyplot.hist(datax,
@@ -1918,7 +1918,7 @@ def histPlot(datax,
     pyplot.xlabel(xaxislabel)
     #pyplot.ylabel(labely)
 
-    print "UKESMpython:\thistPlot:\tSaving:", filename
+    print("UKESMpython:\thistPlot:\tSaving:", filename)
     pyplot.savefig(filename, dpi=dpi)
     pyplot.close()
 
@@ -1948,7 +1948,7 @@ def histsPlot(datax,
     logx, xmin, xmax = determineLimsAndLog(xmin, xmax)
 
     if datax.size < minNumPoints and datay.size < minNumPoints:
-        print "UKESMpython:\thistsPlot:\tThere aren't enough points for a sensible dataplot: ", datax.size
+        print("UKESMpython:\thistsPlot:\tThere aren't enough points for a sensible dataplot: ", datax.size)
         return
 
     if logx:
@@ -2028,7 +2028,7 @@ def histsPlot(datax,
     if logx:
         maxd = np.ma.power(10.,
                            np.int(np.ma.max(np.ma.abs(np.ma.log10(d))) + 1))
-        print maxd, 1 / maxd
+        print(maxd, 1 / maxd)
         n, bins, patchesx = pyplot.hist(d,
                                         histtype='stepfilled',
                                         bins=10**np.linspace(
@@ -2059,7 +2059,7 @@ def histsPlot(datax,
                        label='Median Slope: ' + str(round(np.ma.median(d), 2)))
     pyplot.legend(loc='upper left')
 
-    print "UKESMpython:\thistPlot:\tSaving:", filename
+    print("UKESMpython:\thistPlot:\tSaving:", filename)
     pyplot.savefig(filename, dpi=dpi)
     pyplot.close()
 
@@ -2069,31 +2069,31 @@ def makeOneDPlot(dates, data, title, filename, minmax=[0., 0.], dpi=100):
 	Produces a single time series plot.
 	"""
 
-    print "makeOneDPlot: ", filename
+    print("makeOneDPlot: ", filename)
     fig = pyplot.figure()
     ax = fig.add_subplot(111)
     fig.set_size_inches(16, 6)
 
     if len(dates) != len(data):
-        print "makeOneDPlot:\tTHere is a size Mismatch between time and data", len(
-            dates), len(data)
+        print("makeOneDPlot:\tTHere is a size Mismatch between time and data", len(
+            dates), len(data))
         assert False
 
     ma, mi = np.ma.max(data), np.ma.min(data)
     if np.isinf(ma) or np.isnan(ma):
-        print title, "has an inf/NaN:", ma, mi, np.isinf(ma), np.isnan(ma)
+        print(title, "has an inf/NaN:", ma, mi, np.isinf(ma), np.isnan(ma))
         data = np.ma.array(data)
         data = np.ma.masked_invalid(data)
         ma = np.ma.max(data)
         mi = np.ma.min(data)
 
     if ma is np.ma.masked:
-        print 'makeOneDPlot:\tNo values in the masked array'
+        print('makeOneDPlot:\tNo values in the masked array')
         return
     try:
-        print ma + mi
+        print(ma + mi)
     except:
-        print 'makeOneDPlot:\tmaximum isn\'t a number. exiting.'
+        print('makeOneDPlot:\tmaximum isn\'t a number. exiting.')
         return
 
     if minmax != [0., 0.]:
@@ -2105,7 +2105,7 @@ def makeOneDPlot(dates, data, title, filename, minmax=[0., 0.], dpi=100):
 
     pyplot.title(title)
 
-    print "makeOneDPlot:\tSaving: " + filename
+    print("makeOneDPlot:\tSaving: " + filename)
     pyplot.savefig(filename, dpi=dpi)  #, bbox_inches='tight')
     pyplot.close()
 
@@ -2223,7 +2223,7 @@ def scatterPlot(datax,
     logy = dolog
 
     plotrange = [xmin, xmax, ymin, ymax]
-    print "UKESMpython:\tscatterPlot:\trange:", plotrange
+    print("UKESMpython:\tscatterPlot:\trange:", plotrange)
 
     #if xmin*xmax <= 0. or ymin*ymax <=.0:
     #		logx=False
@@ -2298,7 +2298,7 @@ def scatterPlot(datax,
     pyplot.xlabel(labelx)
     pyplot.ylabel(labely)
 
-    print "UKESMpython:\tscatterPlot:\tSaving:", filename
+    print("UKESMpython:\tscatterPlot:\tSaving:", filename)
     pyplot.savefig(filename, dpi=dpi)
     pyplot.close()
 
@@ -2323,11 +2323,11 @@ def getOrcaIndexCC(
     (la_ind, lo_ind) = np.unravel_index(c.argmin(), c.shape)
 
     if debug:
-        print 'location ', [
+        print('location ', [
             la_ind, lo_ind
         ], '(', latcc[la_ind,
                       lo_ind], loncc[la_ind,
-                                     lo_ind], ') is closest to:', [lat, lon]
+                                     lo_ind], ') is closest to:', [lat, lon])
     return la_ind, lo_ind
 
 
@@ -2341,7 +2341,7 @@ def getORCAdepth(z, depth_arr, debug=True):
     d = 1000.
     best = -1
     depth_arr = np.array(depth_arr)
-    print "getORCAdepth:", z, depth_arr
+    print("getORCAdepth:", z, depth_arr)
     if len(depth_arr) == 1: return 0
 
     for i, zz in enumerate(depth_arr.squeeze()):
@@ -2350,10 +2350,10 @@ def getORCAdepth(z, depth_arr, debug=True):
             d = d2
             best = i
             if debug:
-                print 'UKESMPython.getORCAdepth:', i, z, zz, depth_arr.shape, 'best:', best
+                print('UKESMPython.getORCAdepth:', i, z, zz, depth_arr.shape, 'best:', best)
     if debug:
-        print 'UKESMPython.getORCAdepth:\tdepth: in situ:', z, 'index:', best, 'distance:', d, ', closest model:', depth_arr.shape, depth_arr[
-            best]
+        print('UKESMPython.getORCAdepth:\tdepth: in situ:', z, 'index:', best, 'distance:', d, ', closest model:', depth_arr.shape, depth_arr[
+            best])
     return best
 
 
@@ -2367,7 +2367,7 @@ def getclosestlon(x, lons, debug=True):
     best = -1
     lons = np.array(lons)
     if lons.ndim > 1:
-        print "getclosestlon:\tFATAL:\tThis code only works for 1D longitude arrays"
+        print("getclosestlon:\tFATAL:\tThis code only works for 1D longitude arrays")
         assert False
     x = makeLonSafe(x)
     lons = makeLonSafeArr(lons)
@@ -2377,10 +2377,10 @@ def getclosestlon(x, lons, debug=True):
         if d2 < d:
             d = d2
             best = i
-            print 'getORCAdepth:', i, x, xx, lons.shape, 'best:', best
+            print('getORCAdepth:', i, x, xx, lons.shape, 'best:', best)
     if debug:
-        print 'lons: in situ:', x, 'index:', best, 'distance:', d, ', closest model:', lons.shape, lons[
-            best]
+        print('lons: in situ:', x, 'index:', best, 'distance:', d, ', closest model:', lons.shape, lons[
+            best])
     return best
 
 
@@ -2392,7 +2392,7 @@ def getclosestlat(x, lats, debug=True):
     d = 1000.
     best = -1
     if lats.ndim > 1:
-        print "getclosestlon:\tFATAL:\tThis code only works for 1D latitute arrays"
+        print("getclosestlon:\tFATAL:\tThis code only works for 1D latitute arrays")
         assert False
 
     for i, xx in enumerate(lats.squeeze()):
@@ -2400,10 +2400,10 @@ def getclosestlat(x, lats, debug=True):
         if d2 < d:
             d = d2
             best = i
-            print 'getORCAdepth:', i, x, xx, lats.shape, 'best:', best
+            print('getORCAdepth:', i, x, xx, lats.shape, 'best:', best)
     if debug:
-        print 'lats: in situ:', x, 'index:', best, 'distance:', d, ', closest model:', lats.shape, lats[
-            best]
+        print('lats: in situ:', x, 'index:', best, 'distance:', d, ', closest model:', lats.shape, lats[
+            best])
     return best
 
 
@@ -2426,7 +2426,7 @@ def makeLatSafe(lat):
     if -90. <= lat <= 90.: return lat
     #print 'You can\'t have a latitude > 90 or <-90',lat
     if lat is np.ma.masked: return lat
-    print "makeLatSafe:\tERROR:\tYou can\'t have a latitude > 90 or <-90", lat
+    print("makeLatSafe:\tERROR:\tYou can\'t have a latitude > 90 or <-90", lat)
     assert False
     #return np.ma.clip(lat,-90.,90.)
     #assert False
@@ -2496,7 +2496,7 @@ def Area(p1, p2):  #lat,lon
     A = (np.pi / 180.) * R * R * abs(
         np.sin(lat1 * np.pi / 180.) - np.sin(lat2 * np.pi / 180.)) * abs(lon1 -
                                                                          lon2)
-    print 'Area:', lat1, 'N->', lat2, 'N\t', lon1, 'E->', lon2, 'E,\tA=', A
+    print('Area:', lat1, 'N->', lat2, 'N\t', lon1, 'E->', lon2, 'E,\tA=', A)
 
     return A
 
@@ -2635,7 +2635,7 @@ def reducesShelves(
     outArray = []
     for shelveMD in AllShelves:
         if type(shelveMD) != emptySMDtype:
-            print "somewhere, this is not a shelveMD:", shelveMD
+            print("somewhere, this is not a shelveMD:", shelveMD)
             assert False
 
         if len(models) and shelveMD.model not in models: continue
@@ -2662,7 +2662,7 @@ class listShelvesContents:
         emptySMDtype = type(shelveMetadata())
         for shelveMD in AllShelves:
             if type(shelveMD) != emptySMDtype:
-                print "somewhere, this is not a shelveMD:", shelveMD
+                print("somewhere, this is not a shelveMD:", shelveMD)
                 assert False
 
             models[shelveMD.model] = True
@@ -2671,11 +2671,11 @@ class listShelvesContents:
             depthLevels[shelveMD.depthLevel] = True
             sliceslist[shelveMD.newSlice] = True
 
-        self.models = models.keys()
-        self.names = names.keys()
-        self.years = years.keys()
-        self.depthLevels = depthLevels.keys()
-        self.sliceslist = sliceslist.keys()
+        self.models = list(models.keys())
+        self.names = list(names.keys())
+        self.years = list(years.keys())
+        self.depthLevels = list(depthLevels.keys())
+        self.sliceslist = list(sliceslist.keys())
 
     def __repr__(self):
         string = ''
@@ -2787,13 +2787,13 @@ def convertkgToM3(nc, keys):
 
 tdicts = {
     'ZeroToZero': {i: i
-                   for i in xrange(12)},
+                   for i in range(12)},
     'OneToOne': {i + 1: i + 1
-                 for i in xrange(12)},
+                 for i in range(12)},
     'OneToZero': {i + 1: i
-                  for i in xrange(12)},
+                  for i in range(12)},
     'ZeroToOne': {i: i + 1
-                  for i in xrange(12)},
+                  for i in range(12)},
 }
 
 
@@ -2807,17 +2807,17 @@ def extractData(nc, details, key=[
   	"""
 
     if isinstance(details, dict):
-        keys = details.keys()
-        if debug: print "extractData: details is a dict", details.keys()
+        keys = list(details.keys())
+        if debug: print("extractData: details is a dict", list(details.keys()))
 
-    elif len(key) and key in nc.variables.keys():
+    elif len(key) and key in list(nc.variables.keys()):
         if debug:
-            print "extractData: details Not a dict:", details, 'but, the key is valid:', key
+            print("extractData: details Not a dict:", details, 'but, the key is valid:', key)
         return np.ma.array(nc.variables[key][:])
 
     if 'convert' in keys and 'vars' in keys:
         xd = np.ma.array(details['convert'](nc, details['vars']))
         return xd
 
-    print "extractData:\t you may have a problem in your details dictionairy:", details, key
+    print("extractData:\t you may have a problem in your details dictionairy:", details, key)
     assert False
