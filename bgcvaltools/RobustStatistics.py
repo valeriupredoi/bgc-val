@@ -30,7 +30,7 @@
 from numpy import median, empty, logical_or, arange
 from numpy.ma import getmaskarray, getdata, masked_where
 #from numpyXtns import nearest
-from scipy.misc import comb
+from scipy.special import comb
 from scipy.stats.mstats import mquantiles
 
 
