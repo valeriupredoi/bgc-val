@@ -22,8 +22,8 @@
 # Email:
 # ledm@pml.ac.uk
 
-from timeseriesPlots import *
-from timeseriesTools import *
-from timeseriesAnalysis import timeseriesAnalysis
-from profileAnalysis import profileAnalysis
-from extentMaps import extentMaps
+from .timeseriesPlots import *
+from .timeseriesTools import *
+from .timeseriesAnalysis import timeseriesAnalysis
+from .profileAnalysis import profileAnalysis
+from .extentMaps import extentMaps
