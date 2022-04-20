@@ -7,4 +7,5 @@ BGCVal.egg-info/
 bgcvalttols/__pycache__
 netcdf_manipulation/__pycache__
 timeseries/__pycache__
+Paths/__pycache__
 __pycache__
