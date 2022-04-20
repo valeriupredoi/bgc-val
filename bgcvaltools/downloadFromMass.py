@@ -35,7 +35,8 @@ from socket import gethostname
 import os
 from glob import glob
 from re import findall
-import paths
+import Paths.paths_template as paths
+
 """
 This module includes a series of tools to download the UKESM model run data from MASS.
 
