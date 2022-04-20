@@ -33,7 +33,6 @@ from numpy.ma import getmaskarray, getdata, masked_where
 from scipy.special import comb
 from scipy.stats.mstats import mquantiles
 
-
 nearest = lambda x: x < 0 and int(x - .5) or int(x + .5)
 anearest = lambda x: where(x < 0, (x - .5).astype(int), (x + .5).astype(int))
 

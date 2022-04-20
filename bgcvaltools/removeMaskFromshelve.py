@@ -5,7 +5,7 @@
 # This file is part of the bgc-val library.
 #
 # bgc-val is free software: you can redistribute it and/or modify it
-# under the terms of the Revised Berkeley Software Distribution (BSD) 3-clause license. 
+# under the terms of the Revised Berkeley Software Distribution (BSD) 3-clause license.
 
 # bgc-val is distributed in the hope that it will be useful, but
 # without any warranty; without even the implied warranty of merchantability
@@ -31,28 +31,33 @@
 
 """
 
-
 from shelve import open as shopen
 from glob import glob
 
-def removeFromShelves(fn,removeRegions):
-	print 'removing:',removeRegions, 'from', fn
-	sh = shopen(fn)
-	
-	modeldata = sh['modeldata']
-	
-	for key in modeldata.keys():
-		try: (r,l,m) = key
-		except:continue
-		if r in removeRegions: 
-			print 'modeldata[',(r,l,m),'] will be deleted'
-                        del modeldata[(r,l,m)] 
 
-	sh['modeldata'] = modeldata
-	sh.close()
+def removeFromShelves(fn, removeRegions):
+    print('removing:', removeRegions, 'from', fn)
+    sh = shopen(fn)
 
-removeRegions = ['Remainder',]	#'ignoreInlandSeas',
+    modeldata = sh['modeldata']
+
+    for key in list(modeldata.keys()):
+        try:
+            (r, l, m) = key
+        except:
+            continue
+        if r in removeRegions:
+            print('modeldata[', (r, l, m), '] will be deleted')
+            del modeldata[(r, l, m)]
+
+    sh['modeldata'] = modeldata
+    sh.close()
+
+
+removeRegions = [
+    'Remainder',
+]  #'ignoreInlandSeas',
 
 for fn in glob('shelves/timeseries/u-ab749/u-ab749_*'):
-	if fn.find('insitu')>-1:continue
-	removeFromShelves(fn,removeRegions)
+    if fn.find('insitu') > -1: continue
+    removeFromShelves(fn, removeRegions)
