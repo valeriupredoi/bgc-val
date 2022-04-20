@@ -226,7 +226,8 @@ def makeThisSafe(arr, debug=True, key='', noSqueeze=False):
     ma, mi = arr.max(), arr.min()
 
     if ma > 9.E36:
-        if debug: print("makeThisSafe: \tMasked values greater than 9.E36", key)
+        if debug:
+            print("makeThisSafe: \tMasked values greater than 9.E36", key)
         arr = np.ma.masked_greater(arr, 9.E36)
 
     if np.isinf(ma) or np.isnan(ma):
@@ -405,7 +406,8 @@ def shouldIMakeFile(fin, fout, debug=True):
 	"""
     if not exists(fout):
         if debug:
-            print('shouldIMakeFile: out file doesn\'t exit and should be made.')
+            print(
+                'shouldIMakeFile: out file doesn\'t exit and should be made.')
         return True
     if type(fin) == type('abc') and fin.find('shelve'):
         fin = fin + '*'
@@ -421,14 +423,20 @@ def shouldIMakeFile(fin, fout, debug=True):
 
         if getmtime(fin) > getmtime(fout):
             if debug:
-                print('shouldIMakeFile: out-file is younger than in-file, you should make it.')
+                print(
+                    'shouldIMakeFile: out-file is younger than in-file, you should make it.'
+                )
             return True  #
         if debug:
-            print('shouldIMakeFile: out-file is older than in-file, you shouldn\'t make it.')
+            print(
+                'shouldIMakeFile: out-file is older than in-file, you shouldn\'t make it.'
+            )
         return False
     if type(fin) == type('abc') and fin.find('*') > 0:
         if debug:
-            print('shouldIMakeFile: in-file contains *, assuming it is a wildcard: ', fin)
+            print(
+                'shouldIMakeFile: in-file contains *, assuming it is a wildcard: ',
+                fin)
         fin = glob(fin)
         if debug: print('shouldIMakeFile: files : ', fin)
 
@@ -443,7 +451,8 @@ def shouldIMakeFile(fin, fout, debug=True):
                 return False
             if getmtime(f) > getmtime(fout):
                 if debug:
-                    print('shouldIMakeFile: ', f, ' is younger than an ', fout, ', you should make it')
+                    print('shouldIMakeFile: ', f, ' is younger than an ', fout,
+                          ', you should make it')
                 return True
         if debug:
             print('shouldIMakeFile: no new files in the list. Don\'t make it.')
@@ -476,8 +485,8 @@ def makemapplot(fig,
     if doLog and zrange[0] * zrange[1] <= 0.:
         print("makemapplot: \tMasking")
         data = np.ma.masked_less_equal(np.ma.array(data), 0.)
-    print(data.min(), lats.min(), lons.min(
-    ), data.shape, lats.shape, lons.shape)
+    print(data.min(), lats.min(), lons.min(), data.shape, lats.shape,
+          lons.shape)
     crojp2, data, newLon, newLat = regrid(data, lats, lons)
     if type(cmap) == type('str'):
         if cmap == 'default':
@@ -541,8 +550,8 @@ def makePolarmapplot(fig,
     if doLog and zrange[0] * zrange[1] <= 0.:
         print("makemapplot: \tMasking")
         data = np.ma.masked_less_equal(np.ma.array(data), 0.)
-    print(data.min(), lats.min(), lons.min(
-    ), data.shape, lats.shape, lons.shape)
+    print(data.min(), lats.min(), lons.min(), data.shape, lats.shape,
+          lons.shape)
 
     crojp2, data, newLon, newLat = regrid(data, lats, lons)
 
@@ -851,16 +860,20 @@ def robinPlotQuad(lons,
 
         if spl in [
                 221,
-        ]: data = np.ma.clip(data1, rbmi, rbma)
+        ]:
+            data = np.ma.clip(data1, rbmi, rbma)
         if spl in [
                 222,
-        ]: data = np.ma.clip(data2, rbmi, rbma)
+        ]:
+            data = np.ma.clip(data2, rbmi, rbma)
         if spl in [
                 223,
-        ]: data = np.ma.clip(data1 - data2, rbmi, rbma)
+        ]:
+            data = np.ma.clip(data1 - data2, rbmi, rbma)
         if spl in [
                 224,
-        ]: data = np.ma.clip(data1 / data2, rbmi, rbma)
+        ]:
+            data = np.ma.clip(data1 / data2, rbmi, rbma)
 
         if spl in [
                 221,
@@ -871,7 +884,8 @@ def robinPlotQuad(lons,
         if spl in [
                 223,
                 224,
-        ]: cmap = pyplot.cm.RdBu_r
+        ]:
+            cmap = pyplot.cm.RdBu_r
 
         if maptype == 'Basemap':
             axs.append(fig.add_subplot(spl))
@@ -1043,8 +1057,8 @@ def robinPlotQuad(lons,
             else:
                 crojp2, newData, newLon, newLat = regrid(
                     data.squeeze(), lons, lats)
-                print("cartopy robin quad:", i, spl, newData.shape, newData.min(
-                ), newData.max(), rbmi, rbma)
+                print("cartopy robin quad:", i, spl, newData.shape,
+                      newData.min(), newData.max(), rbmi, rbma)
                 if doLogs[i]:
                     ims.append(bms[i].pcolormesh(newLon,
                                                  newLat,
@@ -1218,24 +1232,30 @@ def HovPlotQuad(
 
         if spl in [
                 221,
-        ]: data = np.ma.clip(data1, rbmi, rbma)
+        ]:
+            data = np.ma.clip(data1, rbmi, rbma)
         if spl in [
                 222,
-        ]: data = np.ma.clip(data2, rbmi, rbma)
+        ]:
+            data = np.ma.clip(data2, rbmi, rbma)
         if spl in [
                 223,
-        ]: data = np.ma.clip(data1 - data2, rbmi, rbma)
+        ]:
+            data = np.ma.clip(data1 - data2, rbmi, rbma)
         if spl in [
                 224,
-        ]: data = np.ma.clip(data1 / data2, rbmi, rbma)
+        ]:
+            data = np.ma.clip(data1 / data2, rbmi, rbma)
         if spl in [
                 221,
                 222,
-        ]: cmap = defcmap
+        ]:
+            cmap = defcmap
         if spl in [
                 223,
                 224,
-        ]: cmap = pyplot.cm.RdBu_r
+        ]:
+            cmap = pyplot.cm.RdBu_r
 
         axs.append(fig.add_subplot(spl))
         if scatter:
@@ -1273,13 +1293,13 @@ def HovPlotQuad(
                     ))
 
         else:
-            print("hovXaxis:", hovXaxis.min(), hovXaxis.max(
-            ), "\tdepths:", depths.min(), depths.max(), "\tdata:", data.min(
-            ), data.max())
+            print("hovXaxis:", hovXaxis.min(), hovXaxis.max(), "\tdepths:",
+                  depths.min(), depths.max(), "\tdata:", data.min(),
+                  data.max())
             newX, newY, newData = arrayify(hovXaxis, depths, data)
-            print("newX:", newX.min(), newX.max(), "\tnewY:", newY.min(
-            ), newY.max(), "\tnewData:", newData.min(), newData.max(
-            ), 'range:', rbmi, rbma)
+            print("newX:", newX.min(), newX.max(), "\tnewY:", newY.min(),
+                  newY.max(), "\tnewData:", newData.min(), newData.max(),
+                  'range:', rbmi, rbma)
             if doLogs[i]:
                 ims.append(
                     pyplot.pcolormesh(
@@ -1434,8 +1454,8 @@ def ArcticTransectPlotQuad(
 
     axs, bms, cbs, ims = [], [], [], []
     doLogs = [doLog, doLog, False, True]
-    print("ArcticTransectPlotQuad:\t", len(depths), len(lats), len(data1), len(
-        data2))
+    print("ArcticTransectPlotQuad:\t", len(depths), len(lats), len(data1),
+          len(data2))
 
     #####
     # Artificially build an x axis coordinate list for the Arctic.
@@ -1479,24 +1499,30 @@ def ArcticTransectPlotQuad(
 
         if spl in [
                 221,
-        ]: data = np.ma.clip(data1, rbmi, rbma)
+        ]:
+            data = np.ma.clip(data1, rbmi, rbma)
         if spl in [
                 222,
-        ]: data = np.ma.clip(data2, rbmi, rbma)
+        ]:
+            data = np.ma.clip(data2, rbmi, rbma)
         if spl in [
                 223,
-        ]: data = np.ma.clip(data1 - data2, rbmi, rbma)
+        ]:
+            data = np.ma.clip(data1 - data2, rbmi, rbma)
         if spl in [
                 224,
-        ]: data = np.ma.clip(data1 / data2, rbmi, rbma)
+        ]:
+            data = np.ma.clip(data1 / data2, rbmi, rbma)
         if spl in [
                 221,
                 222,
-        ]: cmap = defcmap
+        ]:
+            cmap = defcmap
         if spl in [
                 223,
                 224,
-        ]: cmap = pyplot.cm.RdBu_r
+        ]:
+            cmap = pyplot.cm.RdBu_r
 
         axs.append(fig.add_subplot(spl))
         if scatter:
@@ -1534,13 +1560,13 @@ def ArcticTransectPlotQuad(
                     ))
 
         else:
-            print("ArcticTransectPlotQuad: hovXaxis:", hovXaxis.min(
-            ), hovXaxis.max(), "\tdepths:", depths.min(), depths.max(
-            ), "\tdata:", data.min(), data.max())
+            print("ArcticTransectPlotQuad: hovXaxis:", hovXaxis.min(),
+                  hovXaxis.max(), "\tdepths:", depths.min(), depths.max(),
+                  "\tdata:", data.min(), data.max())
             newX, newY, newData = arrayify(hovXaxis, depths, data)
-            print("ArcticTransectPlotQuad: newX:", newX.min(), newX.max(
-            ), "\tnewY:", newY.min(), newY.max(), "\tnewData:", newData.min(
-            ), newData.max(), 'range:', rbmi, rbma)
+            print("ArcticTransectPlotQuad: newX:", newX.min(),
+                  newX.max(), "\tnewY:", newY.min(), newY.max(), "\tnewData:",
+                  newData.min(), newData.max(), 'range:', rbmi, rbma)
             if doLogs[i]:
                 ims.append(
                     pyplot.pcolormesh(
@@ -1813,11 +1839,13 @@ def histPlot(datax,
     logx, xmin, xmax = determineLimsAndLog(xmin, xmax)
 
     if datax.size < minNumPoints and datay.size < minNumPoints:
-        print("UKESMpython:\thistPlot:\tThere aren't enough points for a sensible dataplot: ", datax.size)
+        print(
+            "UKESMpython:\thistPlot:\tThere aren't enough points for a sensible dataplot: ",
+            datax.size)
         return
 
-    print("UKESMpython:\thistplot:\t preparing", Title, datax.size, datay.size, (
-        xmin, '-->', xmax))  #, datax,datay
+    print("UKESMpython:\thistplot:\t preparing", Title, datax.size, datay.size,
+          (xmin, '-->', xmax))  #, datax,datay
 
     if logx:
         n, bins, patchesx = pyplot.hist(datax,
@@ -1947,7 +1975,9 @@ def histsPlot(datax,
     logx, xmin, xmax = determineLimsAndLog(xmin, xmax)
 
     if datax.size < minNumPoints and datay.size < minNumPoints:
-        print("UKESMpython:\thistsPlot:\tThere aren't enough points for a sensible dataplot: ", datax.size)
+        print(
+            "UKESMpython:\thistsPlot:\tThere aren't enough points for a sensible dataplot: ",
+            datax.size)
         return
 
     if logx:
@@ -2074,8 +2104,8 @@ def makeOneDPlot(dates, data, title, filename, minmax=[0., 0.], dpi=100):
     fig.set_size_inches(16, 6)
 
     if len(dates) != len(data):
-        print("makeOneDPlot:\tTHere is a size Mismatch between time and data", len(
-            dates), len(data))
+        print("makeOneDPlot:\tTHere is a size Mismatch between time and data",
+              len(dates), len(data))
         assert False
 
     ma, mi = np.ma.max(data), np.ma.min(data)
@@ -2322,11 +2352,8 @@ def getOrcaIndexCC(
     (la_ind, lo_ind) = np.unravel_index(c.argmin(), c.shape)
 
     if debug:
-        print('location ', [
-            la_ind, lo_ind
-        ], '(', latcc[la_ind,
-                      lo_ind], loncc[la_ind,
-                                     lo_ind], ') is closest to:', [lat, lon])
+        print('location ', [la_ind, lo_ind], '(', latcc[la_ind, lo_ind],
+              loncc[la_ind, lo_ind], ') is closest to:', [lat, lon])
     return la_ind, lo_ind
 
 
@@ -2349,10 +2376,12 @@ def getORCAdepth(z, depth_arr, debug=True):
             d = d2
             best = i
             if debug:
-                print('UKESMPython.getORCAdepth:', i, z, zz, depth_arr.shape, 'best:', best)
+                print('UKESMPython.getORCAdepth:', i, z, zz, depth_arr.shape,
+                      'best:', best)
     if debug:
-        print('UKESMPython.getORCAdepth:\tdepth: in situ:', z, 'index:', best, 'distance:', d, ', closest model:', depth_arr.shape, depth_arr[
-            best])
+        print('UKESMPython.getORCAdepth:\tdepth: in situ:', z, 'index:', best,
+              'distance:', d, ', closest model:', depth_arr.shape,
+              depth_arr[best])
     return best
 
 
@@ -2366,7 +2395,9 @@ def getclosestlon(x, lons, debug=True):
     best = -1
     lons = np.array(lons)
     if lons.ndim > 1:
-        print("getclosestlon:\tFATAL:\tThis code only works for 1D longitude arrays")
+        print(
+            "getclosestlon:\tFATAL:\tThis code only works for 1D longitude arrays"
+        )
         assert False
     x = makeLonSafe(x)
     lons = makeLonSafeArr(lons)
@@ -2378,8 +2409,8 @@ def getclosestlon(x, lons, debug=True):
             best = i
             print('getORCAdepth:', i, x, xx, lons.shape, 'best:', best)
     if debug:
-        print('lons: in situ:', x, 'index:', best, 'distance:', d, ', closest model:', lons.shape, lons[
-            best])
+        print('lons: in situ:', x, 'index:', best, 'distance:', d,
+              ', closest model:', lons.shape, lons[best])
     return best
 
 
@@ -2391,7 +2422,9 @@ def getclosestlat(x, lats, debug=True):
     d = 1000.
     best = -1
     if lats.ndim > 1:
-        print("getclosestlon:\tFATAL:\tThis code only works for 1D latitute arrays")
+        print(
+            "getclosestlon:\tFATAL:\tThis code only works for 1D latitute arrays"
+        )
         assert False
 
     for i, xx in enumerate(lats.squeeze()):
@@ -2401,8 +2434,8 @@ def getclosestlat(x, lats, debug=True):
             best = i
             print('getORCAdepth:', i, x, xx, lats.shape, 'best:', best)
     if debug:
-        print('lats: in situ:', x, 'index:', best, 'distance:', d, ', closest model:', lats.shape, lats[
-            best])
+        print('lats: in situ:', x, 'index:', best, 'distance:', d,
+              ', closest model:', lats.shape, lats[best])
     return best
 
 
@@ -2811,12 +2844,14 @@ def extractData(nc, details, key=[
 
     elif len(key) and key in list(nc.variables.keys()):
         if debug:
-            print("extractData: details Not a dict:", details, 'but, the key is valid:', key)
+            print("extractData: details Not a dict:", details,
+                  'but, the key is valid:', key)
         return np.ma.array(nc.variables[key][:])
 
     if 'convert' in keys and 'vars' in keys:
         xd = np.ma.array(details['convert'](nc, details['vars']))
         return xd
 
-    print("extractData:\t you may have a problem in your details dictionairy:", details, key)
+    print("extractData:\t you may have a problem in your details dictionairy:",
+          details, key)
     assert False
