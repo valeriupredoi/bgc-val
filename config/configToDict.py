@@ -5,7 +5,7 @@
 # This file is part of the bgc-val library.
 #
 # bgc-val is free software: you can redistribute it and/or modify it
-# under the terms of the Revised Berkeley Software Distribution (BSD) 3-clause license. 
+# under the terms of the Revised Berkeley Software Distribution (BSD) 3-clause license.
 
 # bgc-val is distributed in the hope that it will be useful, but
 # without any warranty; without even the implied warranty of merchantability
@@ -21,46 +21,47 @@
 # Email:
 # ledm@pml.ac.uk
 #
-from ConfigParser import ConfigParser
+from configparser import ConfigParser
 import os
 
 
-def checkConfig(Config,debug=False):
-	"""
+def checkConfig(Config, debug=False):
+    """
 	If it's a string, it opens it as a ConfigParser.
 	"""
-	if type(Config) == type('string'):
-		if debug: print "Reading", Config
-		Config1 = ConfigParser()
-		Config1.read(Config)
-		Config = Config1
-	return Config
-	
-	
-def configToDict(fn):
-	Config = checkConfig(fn)
-	sections = Config.sections()
-	
-	if len(sections) == 1:
-		section = sections[0]
-		options = Config.options(section)
-		d = {o:Config.get(section, o) for o in options}
-		return d
-	
-	d = {}
-	for section in sections:
-		options 	= Config.options(section)
-		d[section] 	= {o:Config.get(section, o) for o in options}
-	return d	
+    if type(Config) == type('string'):
+        if debug: print("Reading", Config)
+        Config1 = ConfigParser()
+        Config1.read(Config)
+        Config = Config1
+    return Config
 
-if __name__=="__main__":	
-	from sys import argv
-	try:	fn = argv[1]
-	except:	
-		print "Please provide a config file"
-		exit()
-		
-	d = configToDict(fn)	
-	
-	
-	#
+
+def configToDict(fn):
+    Config = checkConfig(fn)
+    sections = Config.sections()
+
+    if len(sections) == 1:
+        section = sections[0]
+        options = Config.options(section)
+        d = {o: Config.get(section, o) for o in options}
+        return d
+
+    d = {}
+    for section in sections:
+        options = Config.options(section)
+        d[section] = {o: Config.get(section, o) for o in options}
+    return d
+
+
+if __name__ == "__main__":
+    from sys import argv
+    try:
+        fn = argv[1]
+    except:
+        print("Please provide a config file")
+        exit()
+
+    d = configToDict(fn)
+
+    #
