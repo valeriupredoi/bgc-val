@@ -86,19 +86,23 @@ class depthManipNC:
 
     def run(self):
         if not self.vars:
-            print('depthManipNC:\tERROR:\tvariables to save are no use:', self.vars)
+            print('depthManipNC:\tERROR:\tvariables to save are no use:',
+                  self.vars)
             return
         if not exists(self.fni):
-            print('depthManipNC:\tERROR:\tinputfile name does not exists:', self.fni)
+            print('depthManipNC:\tERROR:\tinputfile name does not exists:',
+                  self.fni)
             return
 
         if self.depthFlags == '':
-            print('depthManipNC:\tWARNING:\tNo depth flags given, assuming surface values only.')
+            print(
+                'depthManipNC:\tWARNING:\tNo depth flags given, assuming surface values only.'
+            )
             self.depthFlags = zeros(len(self.vars), dtype=int)
 
         if len(self.vars) != len(self.depthFlags):
-            print('depthManipNC:\tERROR:\tVariables do not match depth flags:', len(
-                self.vars), '!=', len(self.depthFlags))
+            print('depthManipNC:\tERROR:\tVariables do not match depth flags:',
+                  len(self.vars), '!=', len(self.depthFlags))
             return
         self.varflag = {}
         for var, flag in zip(self.vars, self.depthFlags):
@@ -114,7 +118,8 @@ class depthManipNC:
         #check that there are some overlap between input vars and nci:
         for v in self.vars:
             if v in list(nci.variables.keys()): continue
-            print('depthManipNC:\tERROR:\tvariable,', v, ', not found in ', self.fni)
+            print('depthManipNC:\tERROR:\tvariable,', v, ', not found in ',
+                  self.fni)
             return
 
         #create dataset and header.
@@ -123,8 +128,9 @@ class depthManipNC:
         nco = Dataset(self.fno, 'w')
         for a in nci.ncattrs():
             if self.debug:
-                print('depthManipNC:\tINFO:\tcopying attribute: \t\"' + a + '\":\t', nci.getncattr(
-                    a))
+                print(
+                    'depthManipNC:\tINFO:\tcopying attribute: \t\"' + a +
+                    '\":\t', nci.getncattr(a))
             nco.setncattr(a, nci.getncattr(a))
         appendToDesc = 'Reprocessed on ' + todaystr() + ' by ' + getuser(
         ) + ' using depthManipNC.py'
@@ -142,12 +148,15 @@ class depthManipNC:
         for d in list(nci.dimensions.keys()):
             if d in [
                     'time',
-            ]: nco.createDimension(d, None)
+            ]:
+                nco.createDimension(d, None)
             elif d in [
                     'depth',
                     'z',
-            ]: nco.createDimension(d, 1)
-            else: nco.createDimension(d, len(nci.dimensions[d]))
+            ]:
+                nco.createDimension(d, 1)
+            else:
+                nco.createDimension(d, len(nci.dimensions[d]))
 
         # create Variables:
         for var in save:
@@ -172,7 +181,8 @@ class depthManipNC:
             if self.timemean: long_name.replace('Monthly', '')
             nco.variables[var].long_name = long_name
             if self.debug:
-                print('depthManipNC:\tInfo:\tAdding long_name:', var, long_name)
+                print('depthManipNC:\tInfo:\tAdding long_name:', var,
+                      long_name)
         # Units:
         for var in save:
             units = ''
@@ -188,7 +198,8 @@ class depthManipNC:
             if self.debug:
                 print('depthManipNC:\tInfo:\tAdding units:', var, units)
 
-        if 'zbnd' in list(nci.variables.keys()): self.zbnd = nci.variables['zbnd'][:]
+        if 'zbnd' in list(nci.variables.keys()):
+            self.zbnd = nci.variables['zbnd'][:]
         if 'bathymetry' in list(nci.variables.keys()):
             self.bathy = nci.variables['bathymetry'][:]
 
@@ -199,7 +210,8 @@ class depthManipNC:
             else:
                 flag = self.varflag[var]
                 if self.debug:
-                    print('depthManipNC:\tInfo:\tFilling var:', var, 'flag:', flag)
+                    print('depthManipNC:\tInfo:\tFilling var:', var, 'flag:',
+                          flag)
                 if flag == 1:
                     arr = (nci.variables[var][:] * abs(
                         (self.zbnd[:, :, :, :, 1] - self.zbnd[:, :, :, :, 0]))
@@ -224,7 +236,8 @@ class depthManipNC:
                 timeav = True
             if timeav:
                 if self.debug:
-                    print('depthManipNC:\tInfo:\tSaving time averaged var:', var)
+                    print('depthManipNC:\tInfo:\tSaving time averaged var:',
+                          var)
                 arr = marray([
                     arr.mean(0),
                 ])
@@ -232,8 +245,8 @@ class depthManipNC:
                     arr = marray(arr[None, :])
 
             if self.debug:
-                print('depthManipNC:\tInfo:\tSaving var:', var, arr.shape, '\tdims:', nci.variables[
-                    var].dimensions)
+                print('depthManipNC:\tInfo:\tSaving var:', var, arr.shape,
+                      '\tdims:', nci.variables[var].dimensions)
             nco.variables[var][:] = arr
 
         # Close netcdfs:

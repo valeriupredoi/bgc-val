@@ -109,7 +109,8 @@ class changeNC:
             print('changeNC:\tERROR:\tchanges to make are no use:', self.av)
             return
         if not exists(self.fni):
-            print('changeNC:\tERROR:\tinputfile name does not exist:', self.fni)
+            print('changeNC:\tERROR:\tinputfile name does not exist:',
+                  self.fni)
             return
 
         if self.debug: print('changeNC:\tINFO:\tOpening dataset:\t', self.fni)
@@ -127,10 +128,13 @@ class changeNC:
                 if att in self.av['att']: attribute = self.av['att'][att]
                 else: attribute = nci.getncattr(att)
                 if self.debug:
-                    print('changeNC:\tINFO:\tadding attribute: \t\"', att, '\":\t', attribute)
+                    print('changeNC:\tINFO:\tadding attribute: \t\"', att,
+                          '\":\t', attribute)
             except:
                 if self.debug:
-                    print('changeNC:\twarning:\tThat attribute probably isn\'t using ASCII characters!')
+                    print(
+                        'changeNC:\twarning:\tThat attribute probably isn\'t using ASCII characters!'
+                    )
             nco.setncattr(att, attribute)
 
         # create new dimensions:
@@ -139,11 +143,13 @@ class changeNC:
             for dim in list(self.av['dim'].keys()):
                 if dim not in dimensions:
                     if self.debug:
-                        print('changeNC:\tINFO:\t New dimension: ', dim, 'not in ', dimensions)
+                        print('changeNC:\tINFO:\t New dimension: ', dim,
+                              'not in ', dimensions)
                     dimSize = self.av['dim'][dim]['dimSize']
                     nco.createDimension(dim, dimSize)
                     if self.debug:
-                        print('changeNC:\tINFO:\tadding New dimension: ', dim, '\t(', dimSize, ')')
+                        print('changeNC:\tINFO:\tadding New dimension: ', dim,
+                              '\t(', dimSize, ')')
 
         # manipulate old dimensions:
         for dim in dimensions:
@@ -156,7 +162,8 @@ class changeNC:
                 dimSize = self.av['dim'][dim]['newSize']
             nco.createDimension(newDim, dimSize)
             if self.debug:
-                print('changeNC:\tINFO:\tadding dimension: ', dim, '-->', newDim, '\t(', dimSize, ')')
+                print('changeNC:\tINFO:\tadding dimension: ', dim, '-->',
+                      newDim, '\t(', dimSize, ')')
 
         # list of variables to save
         keys = list(nci.variables.keys())
@@ -177,7 +184,8 @@ class changeNC:
             dimensions = self.av['newVar'][var]['newDims']
             vartype = self.av['newVar'][var]['dtype']
             if self.debug:
-                print('changeNC:\tINFO:\tadding new variable: ', var, '\t(', dimensions, ')')
+                print('changeNC:\tINFO:\tadding new variable: ', var, '\t(',
+                      dimensions, ')')
             nco.createVariable(var,
                                vartype,
                                tuple(dimensions),
@@ -211,14 +219,15 @@ class changeNC:
                                zlib=True,
                                complevel=5)
             if self.debug:
-                print('changeNC:\tINFO:\tadding variable: ', var, '-->', newname, '\t(', dimensions, ')', '\tvartype:', vartype)
+                print('changeNC:\tINFO:\tadding variable: ', var, '-->',
+                      newname, '\t(', dimensions, ')', '\tvartype:', vartype)
 
         # Long Names:
         for var in newVars:
             nco.variables[var].long_name = self.av['newVar'][var]['long_name']
             if self.debug:
-                print('changeNC:\tINFO:\tadding new long_name: ', var, '\t(', self.av[
-                    'newVar'][var]['long_name'], ')')
+                print('changeNC:\tINFO:\tadding new long_name: ', var, '\t(',
+                      self.av['newVar'][var]['long_name'], ')')
 
         for var in keys:
             if var in newVars: continue
@@ -235,14 +244,15 @@ class changeNC:
                     print('changeNC:\tWarning:\tNo long_name for ', var)
             if long_name: nco.variables[newname].long_name = long_name
             if self.debug:
-                print('changeNC:\tINFO:\tadding long_name: ', var, '-->', newname, '\t(', long_name, ')')
+                print('changeNC:\tINFO:\tadding long_name: ', var, '-->',
+                      newname, '\t(', long_name, ')')
 
         # Units:
         for var in newVars:
             nco.variables[var].units = self.av['newVar'][var]['units']
             if self.debug:
-                print('changeNC:\tINFO:\tadding units: ', var, '\t(', self.av[
-                    'newVar'][var]['units'], ')')
+                print('changeNC:\tINFO:\tadding units: ', var, '\t(',
+                      self.av['newVar'][var]['units'], ')')
         for var in keys:
             if var in newVars: continue
             units = ''
@@ -258,17 +268,18 @@ class changeNC:
                     print('changeNC:\tWarning:\tNo units for ', var)
             if units: nco.variables[newname].units = units
             if self.debug:
-                print('changeNC:\tINFO:\tadding units: ', var, '-->', newname, '\t(', units, ')')
+                print('changeNC:\tINFO:\tadding units: ', var, '-->', newname,
+                      '\t(', units, ')')
 
         # Fill Values:
         if self.debug:
-            print('changeNC:\tINFO:\tAbout to start Filling with new data:', newVars)
+            print('changeNC:\tINFO:\tAbout to start Filling with new data:',
+                  newVars)
         for var in newVars:
             if self.debug:
-                print('changeNC:\tINFO:\tFilling ', var, ' ...', self.av[
-                    'newVar'][var][
-                        'newData'].shape, 'with new data', nco.variables[
-                            var][:].shape)
+                print('changeNC:\tINFO:\tFilling ', var, ' ...',
+                      self.av['newVar'][var]['newData'].shape, 'with new data',
+                      nco.variables[var][:].shape)
             nco.variables[var][:] = self.av['newVar'][var]['newData']
         for var in keys:
             if var in newVars: continue
@@ -285,7 +296,12 @@ class changeNC:
             else:
                 arr = nci.variables[var][:]
             if self.debug:
-                print('changeNC:\tINFO:\tCopying ', var, ' ...', newname, arr.shape, end=' ')
+                print('changeNC:\tINFO:\tCopying ',
+                      var,
+                      ' ...',
+                      newname,
+                      arr.shape,
+                      end=' ')
             nco.variables[newname][:] = func(arr)
             #if self.debug: print '->', nco.variables[newname][:].shape
         # Close netcdfs:

@@ -108,8 +108,10 @@ class pruneNC:
         for d in list(nci.dimensions.keys()):
             if d in [
                     'time',
-            ]: nco.createDimension(d, None)
-            else: nco.createDimension(d, len(nci.dimensions[d]))
+            ]:
+                nco.createDimension(d, None)
+            else:
+                nco.createDimension(d, len(nci.dimensions[d]))
 
         # create Variables:
         for var in save:

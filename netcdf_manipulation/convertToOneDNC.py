@@ -78,8 +78,8 @@ def getCoordsToKeep_new(nc, variables, newMask='', debug=False):
                         i,
                     ]
         if debug:
-            print("getCoordsToKeep:\t", var, "\tndims:", nzdims, len(
-                nz[0]), "\tNumber of Coords:", len(list(CoordsToKeep.keys())))
+            print("getCoordsToKeep:\t", var, "\tndims:", nzdims, len(nz[0]),
+                  "\tNumber of Coords:", len(list(CoordsToKeep.keys())))
     return CoordsToKeep, variables
 
 
@@ -140,8 +140,8 @@ def getCoordsToKeep(nc, variables, newMask='', debug=False):
                             i,
                         ]
         if debug:
-            print("getCoordsToKeep:\t", var, "\tndims:", nzdims, len(
-                nz[0]), "\tNumber of Coords:", len(list(CoordsToKeep.keys())))
+            print("getCoordsToKeep:\t", var, "\tndims:", nzdims, len(nz[0]),
+                  "\tNumber of Coords:", len(list(CoordsToKeep.keys())))
     return CoordsToKeep, variables
 
 
@@ -164,7 +164,8 @@ class convertToOneDNC:
 
     def run(self):
         if not exists(self.fni):
-            print('convertToOneDNC:\tERROR:\tinputfile name does not exists:', self.fni)
+            print('convertToOneDNC:\tERROR:\tinputfile name does not exists:',
+                  self.fni)
             assert False
             return
 
@@ -176,17 +177,20 @@ class convertToOneDNC:
         #check that there are some overlap between input vars and nci:
         for v in self.vars:
             if v in list(nci.variables.keys()): continue
-            print('convertToOneDNC:\tERROR:\tvariable,', v, ', not found in ', self.fni)
+            print('convertToOneDNC:\tERROR:\tvariable,', v, ', not found in ',
+                  self.fni)
             return
 
         #create dataset and header.
         if self.debug:
-            print('convertToOneDNC:\tINFO:\tCreating a new dataset:\t', self.fno)
+            print('convertToOneDNC:\tINFO:\tCreating a new dataset:\t',
+                  self.fno)
         nco = Dataset(self.fno, 'w')
         for a in nci.ncattrs():
             if self.debug:
-                print('convertToOneDNC:\tINFO:\tcopying attribute: \t\"' + a + '\":\t', nci.getncattr(
-                    a))
+                print(
+                    'convertToOneDNC:\tINFO:\tcopying attribute: \t\"' + a +
+                    '\":\t', nci.getncattr(a))
             nco.setncattr(a, nci.getncattr(a))
 
         appendToDesc = 'Reprocessed on ' + todaystr() + ' by ' + getuser(
@@ -208,7 +212,8 @@ class convertToOneDNC:
         else:
             CoordsToKeep = self.dictToKeep
 
-        print("convertToOneDNC:\tinfo:\tCoordsToKeep:", save)  #, self.dictToKeep
+        print("convertToOneDNC:\tinfo:\tCoordsToKeep:",
+              save)  #, self.dictToKeep
 
         # create dimensions:
         nco.createDimension('index', None)
@@ -268,7 +273,8 @@ class convertToOneDNC:
 
             nco.variables[var].long_name = long_name
             if self.debug:
-                print('convertToOneDNC:\tINFO:\tAdding long_name for ', var, '\t', long_name)
+                print('convertToOneDNC:\tINFO:\tAdding long_name for ', var,
+                      '\t', long_name)
 
         # Units:
         nco.variables['index'].units = ''
@@ -281,8 +287,8 @@ class convertToOneDNC:
             try:
                 nco.variables[var].units = nci.variables[var].units
                 if self.debug:
-                    print('convertToOneDNC:\tINFO:\tAdding units for ', var, '\t', nci.variables[
-                        var].units)
+                    print('convertToOneDNC:\tINFO:\tAdding units for ', var,
+                          '\t', nci.variables[var].units)
             except:
                 print('convertToOneDNC:\tWARNING:\tNo units for ', var)
 
@@ -291,12 +297,12 @@ class convertToOneDNC:
             return a[1][0]
 
         sorted_Coords = sorted(iter(CoordsToKeep.items()), key=itemsgetter)
-        print("convertToOneDNC:\tINFO:\tsorted_Coords:", sorted_Coords[
-            0], sorted_Coords[-1])
+        print("convertToOneDNC:\tINFO:\tsorted_Coords:", sorted_Coords[0],
+              sorted_Coords[-1])
         data = {}
         if self.debug:
-            print('convertToOneDNC:\tINFO:\tCopying index  ...', len(
-                sorted_Coords))
+            print('convertToOneDNC:\tINFO:\tCopying index  ...',
+                  len(sorted_Coords))
         #	nco.variables['index'][:] = [ int(a[1]) for a in sorted_Coords]
 
         nco.variables['index'][:] = array([a[1][0] for a in sorted_Coords])
@@ -305,37 +311,44 @@ class convertToOneDNC:
         # 4D coordinates:
         if len(sorted_Coords[0][0]) == 4:
             print("4D:", sorted_Coords[0][0])
-            if self.debug: print('convertToOneDNC:\tINFO:\tCopying index t ...')
+            if self.debug:
+                print('convertToOneDNC:\tINFO:\tCopying index t ...')
             nco.variables['index_t'][:] = array(
                 [a[0][0] for a in sorted_Coords])
             nco.sync()
-            if self.debug: print('convertToOneDNC:\tINFO:\tCopying index z ...')
+            if self.debug:
+                print('convertToOneDNC:\tINFO:\tCopying index z ...')
             nco.variables['index_z'][:] = array(
                 [a[0][1] for a in sorted_Coords])
             nco.sync()
-            if self.debug: print('convertToOneDNC:\tINFO:\tCopying index y ...')
+            if self.debug:
+                print('convertToOneDNC:\tINFO:\tCopying index y ...')
             nco.variables['index_y'][:] = array(
                 [a[0][2] for a in sorted_Coords])
             nco.sync()
-            if self.debug: print('convertToOneDNC:\tINFO:\tCopying index x ...')
+            if self.debug:
+                print('convertToOneDNC:\tINFO:\tCopying index x ...')
             nco.variables['index_x'][:] = array(
                 [a[0][3] for a in sorted_Coords])
             nco.sync()
 
         if len(sorted_Coords[0][0]) == 3:
             print("3D:", sorted_Coords[0][0])
-            if self.debug: print('convertToOneDNC:\tINFO:\tCopying index t ...')
+            if self.debug:
+                print('convertToOneDNC:\tINFO:\tCopying index t ...')
             nco.variables['index_t'][:] = array(
                 [a[0][0] for a in sorted_Coords])
             nco.sync()
             #if self.debug: print 'convertToOneDNC:\tINFO:\tCopying index z ...'
             nco.variables['index_z'][:] = zeros(len(sorted_Coords))
             #nco.sync()
-            if self.debug: print('convertToOneDNC:\tINFO:\tCopying index y ...')
+            if self.debug:
+                print('convertToOneDNC:\tINFO:\tCopying index y ...')
             nco.variables['index_y'][:] = array(
                 [a[0][1] for a in sorted_Coords])
             nco.sync()
-            if self.debug: print('convertToOneDNC:\tINFO:\tCopying index x ...')
+            if self.debug:
+                print('convertToOneDNC:\tINFO:\tCopying index x ...')
             #tempArr = []
             #for a in sorted_Coords:
             #	print a[0]
@@ -351,7 +364,8 @@ class convertToOneDNC:
                 print('convertToOneDNC:\tINFO:\tCopying ', var, ' ...')
             arr = nci.variables[var][:]
             if len(arr) == 0:
-                print('convertToOneDNC:\tWarning:\tIt looks like the netcdf ', self.fni, 'does not contain the variable', var)
+                print('convertToOneDNC:\tWarning:\tIt looks like the netcdf ',
+                      self.fni, 'does not contain the variable', var)
 
             outarr = []
             if arr.ndim == 1 and len(sorted_Coords[0][0]) == 4:
@@ -363,8 +377,13 @@ class convertToOneDNC:
                 if var.lower() in depthNames: d = 1
                 if var.lower() in latnames: d = 2
                 if var.lower() in lonnames: d = 3
-                print(var, 'convertToOneDNC:\tINFO:\tndim: (1-4)', arr.ndim, var, sorted_Coords[
-                    0][0], d, end=' ')  #arr[0]
+                print(var,
+                      'convertToOneDNC:\tINFO:\tndim: (1-4)',
+                      arr.ndim,
+                      var,
+                      sorted_Coords[0][0],
+                      d,
+                      end=' ')  #arr[0]
                 for c in sorted_Coords:
                     try:
                         outarr.append(arr[c[0][d]])
@@ -378,8 +397,8 @@ class convertToOneDNC:
 
             elif arr.ndim == 1 and len(sorted_Coords[0][0]) == 1:
                 d = 0
-                print(var, 'convertToOneDNC:\tINFO:\tndim: (1-1)', arr.ndim, var, sorted_Coords[
-                    0][0], d)
+                print(var, 'convertToOneDNC:\tINFO:\tndim: (1-1)', arr.ndim,
+                      var, sorted_Coords[0][0], d)
                 for c in sorted_Coords:
                     try:
                         outarr.append(arr[c[0][d]])
@@ -404,8 +423,8 @@ class convertToOneDNC:
                 if var.lower() in latnames: d = 1
                 if var.lower() in lonnames: d = 2
                 #for c in (CoordsToKeep.keys()):
-                print(var, 'convertToOneDNC:\tINFO:\tndim: (1-3)', arr.ndim, var, sorted_Coords[
-                    0][0], d)
+                print(var, 'convertToOneDNC:\tINFO:\tndim: (1-3)', arr.ndim,
+                      var, sorted_Coords[0][0], d)
                 for c in sorted_Coords:
                     try:
                         outarr.append(arr[c[0][d]])
@@ -433,38 +452,39 @@ class convertToOneDNC:
                 else:
                     d = (0, 1)
 
-                print(var, 'convertToOneDNC:\tINFO:\tndim: (2)', arr.ndim, var, sorted_Coords[
-                    0][0], d)
+                print(var, 'convertToOneDNC:\tINFO:\tndim: (2)', arr.ndim, var,
+                      sorted_Coords[0][0], d)
                 for c in sorted_Coords:  #for c in sorted(CoordsToKeep.keys()):
                     try:
                         outarr.append(arr[(c[0][d[0]], c[0][d[1]])])
                     except:
                         raise AssertionError(errorScript)
             elif arr.ndim == 3:
-                print(var, 'convertToOneDNC:\tINFO:\tndim: (3)', arr.ndim, var, sorted_Coords[
-                    0][0])
+                print(var, 'convertToOneDNC:\tINFO:\tndim: (3)', arr.ndim, var,
+                      sorted_Coords[0][0])
                 for c in sorted_Coords:
                     if len(c[0]) == 4:
                         outarr.append(arr[(c[0][0], c[0][2], c[0][3])])
                     if len(c[0]) == 3:
                         outarr.append(arr[(c[0][0], c[0][1], c[0][2])])
             elif arr.ndim == 4:
-                print(var, 'convertToOneDNC:\tINFO:\tndim: (4)', arr.ndim, var, sorted_Coords[
-                    0][0])
+                print(var, 'convertToOneDNC:\tINFO:\tndim: (4)', arr.ndim, var,
+                      sorted_Coords[0][0])
                 for c in sorted_Coords:
                     #print 'convertToOneD:',var, c, c[0], arr.shape, arr[c[0]]
                     outarr.append(arr[(c[0][0], c[0][1], c[0][2], c[0][3])])
             else:
-                print("How many dimensions?", arr.ndim, len(
-                    sorted_Coords[0][0]))
+                print("How many dimensions?", arr.ndim,
+                      len(sorted_Coords[0][0]))
                 assert False
             outarrnm = np.array(outarr)
             print(var, [outarrnm.min(), outarrnm.max()], '(no mask)')
             outarr = marray(outarr)
             print(var, [outarr.min(), outarr.max()], '(masked)')
             if self.debug:
-                print('convertToOneDNC:\tINFO:\tSaving var:', var, arr.shape, '->', outarr.shape, 'coords:', len(
-                    sorted_Coords), [outarr.min(), outarr.max()])
+                print('convertToOneDNC:\tINFO:\tSaving var:', var, arr.shape,
+                      '->', outarr.shape, 'coords:', len(sorted_Coords),
+                      [outarr.min(), outarr.max()])
             nco.variables[var][:] = outarr
             nco.sync()
         # Close netcdfs:
