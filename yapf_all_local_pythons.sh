@@ -1,0 +1,11 @@
+yapf -i analysis_compare.py
+yapf -i analysis_level3_amoc.py
+yapf -i analysis_level3_dms.py
+yapf -i analysis_level3_omz.py
+yapf -i analysis_level3_sameYear.py
+yapf -i analysis_p2p.py
+yapf -i analysis_timeseries.py
+yapf -i conf.py
+yapf -i makeReport.py
+yapf -i theWholePackage.py
+yapf -i UKESMpython.py
