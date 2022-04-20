@@ -126,8 +126,8 @@ class timeseriesAnalysis:
         self.makePlots()
 
         if self.debug:
-            print("timeseriesAnalysis:\tsafely finished ", self.dataType, (
-                self.modeldetails['name']))
+            print("timeseriesAnalysis:\tsafely finished ", self.dataType,
+                  (self.modeldetails['name']))
 
     def loadModel(self):
         if self.debug: print("timeseriesAnalysis:\tloadModel.")
@@ -146,14 +146,16 @@ class timeseriesAnalysis:
 
         try:
             if self.clean:
-                print("timeseriesAnalysis:\tloadModel\tUser requested clean run. Wiping old data.")
+                print(
+                    "timeseriesAnalysis:\tloadModel\tUser requested clean run. Wiping old data."
+                )
                 assert 0
             sh = shOpen(self.shelvefn)
             readFiles = sh['readFiles']
             modeldataD = sh['modeldata']
             sh.close()
-            print("timeseriesAnalysis:\tloadModel\tOpened shelve:", self.shelvefn, '\tread', len(
-                readFiles))
+            print("timeseriesAnalysis:\tloadModel\tOpened shelve:",
+                  self.shelvefn, '\tread', len(readFiles))
         except:
             readFiles = []
             modeldataD = {}
@@ -162,8 +164,8 @@ class timeseriesAnalysis:
                     for m in self.metrics:
                         modeldataD[(r, l, m)] = {}
 
-            print("timeseriesAnalysis:\tloadModel\tCould not open shelve:", self.shelvefn, '\tread', len(
-                readFiles))
+            print("timeseriesAnalysis:\tloadModel\tCould not open shelve:",
+                  self.shelvefn, '\tread', len(readFiles))
         ###############
         # Check whether there has been a change in what was requested:
         for r in self.regions:
@@ -174,11 +176,14 @@ class timeseriesAnalysis:
                             r,
                             l,
                             m,
-                        ], '\t', end=' ')
+                        ],
+                              '\t',
+                              end=' ')
                     try:
                         if self.debug:
-                            print('has ', len(list(modeldataD[(r, l,
-                                                          m)].keys())), 'keys')
+                            print('has ',
+                                  len(list(modeldataD[(r, l, m)].keys())),
+                                  'keys')
                     except:
                         readFiles = []
                         modeldataD[(r, l, m)] = {}
@@ -212,8 +217,9 @@ class timeseriesAnalysis:
             print("timeseriesAnalysis:\tloadModel:\tpost checks...")
             #print "modeldataD:",modeldataD
             print("timeseriesAnalysis:\tloadModel\tshelveFn:", self.shelvefn)
-            print("timeseriesAnalysis:\tloadModel\treadFiles: contains ", len(
-                readFiles), end=' ')
+            print("timeseriesAnalysis:\tloadModel\treadFiles: contains ",
+                  len(readFiles),
+                  end=' ')
             try:
                 print("files.\tUp to ", sorted(readFiles)[-1])
             except:
@@ -224,8 +230,9 @@ class timeseriesAnalysis:
         if self.noNewFiles:
             self.modeldataD = modeldataD
             if self.debug:
-                print("timeseriesAnalysis:\tloadModel.\tno New Files requested. Loaded: ", len(
-                    list(modeldataD.keys())), 'Model data')
+                print(
+                    "timeseriesAnalysis:\tloadModel.\tno New Files requested. Loaded: ",
+                    len(list(modeldataD.keys())), 'Model data')
             return
 
         percentiles = {}
@@ -241,7 +248,9 @@ class timeseriesAnalysis:
         openedFiles = 0
         for fn in self.modelFiles:
             if fn in readFiles: continue
-            print("timeseriesAnalysis:\tloadModel:\tloading new file:", fn, end=' ')
+            print("timeseriesAnalysis:\tloadModel:\tloading new file:",
+                  fn,
+                  end=' ')
             nc = dataset(fn, 'r')
             ts = tst.getTimes(nc, self.modelcoords)
             meantime = np.mean(ts)
@@ -266,15 +275,18 @@ class timeseriesAnalysis:
                         if skip == False: continue
                         try:
                             a = modeldataD[(r, l, m)][meantime]
-                            print("timeseriesAnalysis:\tloadModel\tAlready created ", int(
-                                meantime), ':\t', (r, l, m), '\t=', a)
+                            print(
+                                "timeseriesAnalysis:\tloadModel\tAlready created ",
+                                int(meantime), ':\t', (r, l, m), '\t=', a)
                         except:
                             skip = False
-                            print("timeseriesAnalysis:\tloadModel\tNeed to create:\t", int(
-                                meantime), '\t', (r, l, m))
+                            print(
+                                "timeseriesAnalysis:\tloadModel\tNeed to create:\t",
+                                int(meantime), '\t', (r, l, m))
                     if fn in reDoFiles:
-                        print("timeseriesAnalysis:\tloadModel\tNeed to re-load ", int(
-                            meantime), ':\t', (r, l, m))
+                        print(
+                            "timeseriesAnalysis:\tloadModel\tNeed to re-load ",
+                            int(meantime), ':\t', (r, l, m))
                         skip = False
                     if skip: continue
 
@@ -323,8 +335,9 @@ class timeseriesAnalysis:
                                 continue  #wcvweights.append(0.)
                         wcvweights = np.array(wcvweights)
 
-                        print("Loaded Water Column Volume Weights", wcvweights.min(
-                        ), wcvweights.mean(), wcvweights.max())
+                        print("Loaded Water Column Volume Weights",
+                              wcvweights.min(), wcvweights.mean(),
+                              wcvweights.max())
 
                     if type(layerdata) == type(
                             np.ma.array([
@@ -345,8 +358,8 @@ class timeseriesAnalysis:
                         weights = weights.compressed()
                         layerdata = layerdata.compressed()
                         if len(layerdata) != len(weights):
-                            print("1.b len(	layerdata)!= len(weights)", len(
-                                layerdata), '!=', len(weights))
+                            print("1.b len(	layerdata)!= len(weights)",
+                                  len(layerdata), '!=', len(weights))
                             assert 0
 
                     if len(layerdata) == 0:
@@ -409,26 +422,25 @@ class timeseriesAnalysis:
                         if pc == 50.:
                             modeldataD[(r, l, 'median')][meantime] = dat
 
-                    print("timeseriesAnalysis:\tloadModel\tLoaded metric:\t", int(
-                        meantime), '\t', [
-                            (r, l, m)
-                        ], '\t', modeldataD[(r, l, m)][meantime])
+                    print("timeseriesAnalysis:\tloadModel\tLoaded metric:\t",
+                          int(meantime), '\t', [(r, l, m)], '\t',
+                          modeldataD[(r, l, m)][meantime])
 
             readFiles.append(fn)
             openedFiles += 1
 
             nc.close()
             if openedFiles:
-                print("timeseriesAnalysis:\tloadModel\tSaving shelve:", self.shelvefn, '\tread', len(
-                    readFiles))
+                print("timeseriesAnalysis:\tloadModel\tSaving shelve:",
+                      self.shelvefn, '\tread', len(readFiles))
                 sh = shOpen(self.shelvefn)
                 sh['readFiles'] = readFiles
                 sh['modeldata'] = modeldataD
                 sh.close()
                 openedFiles = 0
         if openedFiles:
-            print("timeseriesAnalysis:\tloadModel\tSaving shelve:", self.shelvefn, '\tread', len(
-                readFiles))
+            print("timeseriesAnalysis:\tloadModel\tSaving shelve:",
+                  self.shelvefn, '\tread', len(readFiles))
             sh = shOpen(self.shelvefn)
             sh['readFiles'] = readFiles
             sh['modeldata'] = modeldataD
@@ -436,8 +448,9 @@ class timeseriesAnalysis:
 
         self.modeldataD = modeldataD
         if self.debug:
-            print("timeseriesAnalysis:\tloadModel.\t Model loaded:", list(self.modeldataD.keys(
-            ))[:3], '...', len(list(self.modeldataD.keys())))
+            print("timeseriesAnalysis:\tloadModel.\t Model loaded:",
+                  list(self.modeldataD.keys())[:3], '...',
+                  len(list(self.modeldataD.keys())))
 
     def loadModelWeightsDict(self, ):
         """
@@ -483,8 +496,8 @@ class timeseriesAnalysis:
                 self.weightsDict[(lats[i], lons[j])] = a
 
         if self.debug:
-            print("timeseriesAnalysis:\t loadModelWeightsDict.", list(self.weightsDict.keys(
-            ))[0])
+            print("timeseriesAnalysis:\t loadModelWeightsDict.",
+                  list(self.weightsDict.keys())[0])
 
     def loadModelwcvDict(self, ):
         """
@@ -519,8 +532,8 @@ class timeseriesAnalysis:
                 self.wcvDict[(lats[i], lons[j])] = a
 
         if self.debug:
-            print("timeseriesAnalysis:\t loadModelwcvDict.", list(self.wcvDict.keys(
-            ))[0])
+            print("timeseriesAnalysis:\t loadModelwcvDict.",
+                  list(self.wcvDict.keys())[0])
 
     def AddDataArea(self, ):
         """
@@ -534,7 +547,8 @@ class timeseriesAnalysis:
         lats = nc.variables[self.datacoords['lat']][:]
         lons = nc.variables[self.datacoords['lon']][:]
         nc.close()
-        print("timeseriesAnalysis:\tAddDataArea:\t", area.shape, lats.shape, lons.shape)
+        print("timeseriesAnalysis:\tAddDataArea:\t", area.shape, lats.shape,
+              lons.shape)
         self.dataAreaDict = {}
         if lats.ndim == 2:
             for (i, j), a in np.ndenumerate(area):
@@ -564,13 +578,15 @@ class timeseriesAnalysis:
 
         if not self.dataFile:
             if self.debug:
-                print("timeseriesAnalysis:\t No data File provided:", self.dataFile)
+                print("timeseriesAnalysis:\t No data File provided:",
+                      self.dataFile)
             self.dataD = {}
             return
 
         if not os.path.exists(self.dataFile):
             if self.debug:
-                print("timeseriesAnalysis:\tWARNING:\t No such data File:", self.dataFile)
+                print("timeseriesAnalysis:\tWARNING:\t No such data File:",
+                      self.dataFile)
             self.dataD = {}
             return
 
@@ -578,16 +594,20 @@ class timeseriesAnalysis:
         # load and calculate the real data info
         try:
             if self.clean:
-                print("timeseriesAnalysis:\t loadData\tUser requested clean run. Wiping old data.")
+                print(
+                    "timeseriesAnalysis:\t loadData\tUser requested clean run. Wiping old data."
+                )
                 assert 0
             sh = shOpen(self.shelvefn_insitu)
             dataD = sh['dataD']
             sh.close()
-            print("timeseriesAnalysis:\t loadData\tOpened shelve:", self.shelvefn_insitu)
+            print("timeseriesAnalysis:\t loadData\tOpened shelve:",
+                  self.shelvefn_insitu)
             self.dataD = dataD
         except:
             dataD = {}
-            print("timeseriesAnalysis:\t loadData\tCould not open shelve:", self.shelvefn_insitu)
+            print("timeseriesAnalysis:\t loadData\tCould not open shelve:",
+                  self.shelvefn_insitu)
 
         ###############
         # Test to find out if we need to load the netcdf, or if we can just return the dict as a self.object.
@@ -597,18 +617,21 @@ class timeseriesAnalysis:
             for l in self.layers:
                 if needtoLoad: continue
                 try:
-                    print("timeseriesAnalysis:\t loadData\tChecking if need to Load:", needtoLoad, (
-                        r, l), 'len:', len(self.dataD[(r, l)]), self.dataD[(
-                            r, l)].shape, np.ma.mean(self.dataD[(r, l)]))
+                    print(
+                        "timeseriesAnalysis:\t loadData\tChecking if need to Load:",
+                        needtoLoad, (r, l), 'len:',
+                        len(self.dataD[(r, l)]), self.dataD[(r, l)].shape,
+                        np.ma.mean(self.dataD[(r, l)]))
                 except:
                     needtoLoad = True
-                    print("timeseriesAnalysis:\t loadData\tUnable to Load:", needtoLoad, (
-                        r, l))
+                    print("timeseriesAnalysis:\t loadData\tUnable to Load:",
+                          needtoLoad, (r, l))
 
         if needtoLoad: pass
         else:
-            print("timeseriesAnalysis:\t loadData\tDon't need to Load from scratch", list(dataD.keys(
-            )))
+            print(
+                "timeseriesAnalysis:\t loadData\tDon't need to Load from scratch",
+                list(dataD.keys()))
             self.dataD = dataD
             return
 
@@ -642,8 +665,8 @@ class timeseriesAnalysis:
                     meandatad = False
                     datadmask = False
 
-                print("timeseriesAnalysis:\t load in situ data,\tloaded ", (
-                    r, l), 'mean:', meandatad)
+                print("timeseriesAnalysis:\t load in situ data,\tloaded ",
+                      (r, l), 'mean:', meandatad)
                 dataD[(r, l, 'lat')] = dl.load[(r, l, 'lat')]
                 dataD[(r, l, 'lon')] = dl.load[(r, l, 'lon')]
                 if len(
@@ -682,18 +705,21 @@ class timeseriesAnalysis:
         #if meandatad and dataD[(r,l)]  == np.ma.array([-999,],mask=[True,]):
         #	print "Massive failiure here:",meandatad, dataD[(r,l)] ,dl.load[(r,l,)]
         #	assert 0
-                print("timeseriesAnalysis:\t loadData,\tloading ", (
-                    r, l), 'mean:', meandatad)
+                print("timeseriesAnalysis:\t loadData,\tloading ", (r, l),
+                      'mean:', meandatad)
 
         ###############
         # Savng shelve
-        print("timeseriesAnalysis:\t loadData.\tSaving shelve:", self.shelvefn_insitu)
+        print("timeseriesAnalysis:\t loadData.\tSaving shelve:",
+              self.shelvefn_insitu)
         try:
             sh = shOpen(self.shelvefn_insitu)
             sh['dataD'] = dataD
             sh.close()
         except:
-            print("timeseriesAnalysis:\t WARNING.\tSaving shelve failed, trying again.:", self.shelvefn_insitu)
+            print(
+                "timeseriesAnalysis:\t WARNING.\tSaving shelve failed, trying again.:",
+                self.shelvefn_insitu)
             shutil.move(self.shelvefn_insitu, self.shelvefn_insitu + '.broken')
             sh = shOpen(self.shelvefn_insitu)
             sh['dataD'] = dataD
@@ -761,12 +787,14 @@ class timeseriesAnalysis:
                 if not len(modeldata): continue
                 if modellat.mean() == 0. and modellon.mean() == 0.: continue
 
-                print("mapplotsRegionsLayers:\t", r, l, "model contains", len(
-                    modeldata), 'model data')
-                print("mapplotsRegionsLayers:\t", r, l, "model lat:", len(
-                    modellat), modellat.min(), modellat.mean(), modellat.max())
-                print("mapplotsRegionsLayers:\t", r, l, "model lon:", len(
-                    modellon), modellon.min(), modellon.mean(), modellon.max())
+                print("mapplotsRegionsLayers:\t", r, l, "model contains",
+                      len(modeldata), 'model data')
+                print("mapplotsRegionsLayers:\t", r, l, "model lat:",
+                      len(modellat), modellat.min(), modellat.mean(),
+                      modellat.max())
+                print("mapplotsRegionsLayers:\t", r, l, "model lon:",
+                      len(modellon), modellon.min(), modellon.mean(),
+                      modellon.max())
 
                 if self.dataFile:
                     datadata = self.dataD[(r, l)]
@@ -790,12 +818,14 @@ class timeseriesAnalysis:
                         True,
                     ])
 
-                print("mapplotsRegionsLayers:\t", r, l, "contains", len(
-                    datadata), 'in situ data')
-                print("mapplotsRegionsLayers:\t", r, l, "data lat:", len(
-                    datalat), datalat.min(), datalat.mean(), datalat.max())
-                print("mapplotsRegionsLayers:\t", r, l, "data lon:", len(
-                    datalon), datalon.min(), datalon.mean(), datalon.max())
+                print("mapplotsRegionsLayers:\t", r, l, "contains",
+                      len(datadata), 'in situ data')
+                print("mapplotsRegionsLayers:\t", r, l, "data lat:",
+                      len(datalat), datalat.min(), datalat.mean(),
+                      datalat.max())
+                print("mapplotsRegionsLayers:\t", r, l, "data lon:",
+                      len(datalon), datalon.min(), datalon.mean(),
+                      datalon.max())
 
                 for title_string in [
                         self.model, '(' + self.jobID + ')',
@@ -844,20 +874,23 @@ class timeseriesAnalysis:
                 #####
                 # Don't make pictures for each integer or float layer, only the ones that are strings.
                 if type(l) in [type(0), type(0.)]: continue
-                if self.debug: print("timeseriesAnalysis:\t makePlots.\t", r, l)
+                if self.debug:
+                    print("timeseriesAnalysis:\t makePlots.\t", r, l)
 
                 #####
                 # Test for presence/absence of in situ data.
                 try:
                     dataslice = self.dataD[(r, l)]
                     dataweights = self.dataD[(r, l, 'area')]
-                    print("timeseriesAnalysis:\t makePlots, \tLoaded In situ data:", (
-                        r, l))
+                    print(
+                        "timeseriesAnalysis:\t makePlots, \tLoaded In situ data:",
+                        (r, l))
                 except:
                     dataslice = []
                     dataweights = []
-                    print("timeseriesAnalysis:\t makePlots, \tNo In situ data:", (
-                        r, l))
+                    print(
+                        "timeseriesAnalysis:\t makePlots, \tNo In situ data:",
+                        (r, l))
                 try:
                     dataslice = np.ma.masked_where(
                         dataslice.mask + dataweights.mask, dataslice)
@@ -866,12 +899,14 @@ class timeseriesAnalysis:
                     dataslice = dataslice.compressed()
                     dataweights = dataweights.compressed()
                 except:
-                    print("timeseriesAnalysis:\t makePlots, \tCan not compress In situ data:", (
-                        r, l))
+                    print(
+                        "timeseriesAnalysis:\t makePlots, \tCan not compress In situ data:",
+                        (r, l))
 
                 if len(dataslice) != len(dataweights):
-                    print("timeseriesAnalysis:\t makePlots, \tlen(dataslice) != len(dataweights)" + str(
-                        len(dataslice)) + ' != ' + str(len(dataweights)))
+                    print(
+                        "timeseriesAnalysis:\t makePlots, \tlen(dataslice) != len(dataweights)"
+                        + str(len(dataslice)) + ' != ' + str(len(dataweights)))
                     print(type(dataslice), type(dataweights))
                     assert 0
 
@@ -904,7 +939,9 @@ class timeseriesAnalysis:
                                                   str(l), greyband
                                               ]) + '.png'
                         if self.debug:
-                            print("timeseriesAnalysis:\t makePlots.\tInvestigating:", filename)
+                            print(
+                                "timeseriesAnalysis:\t makePlots.\tInvestigating:",
+                                filename)
 
                         if not ukp.shouldIMakeFile(
                             [self.shelvefn, self.shelvefn_insitu],
@@ -920,8 +957,9 @@ class timeseriesAnalysis:
                                             units=self.modeldetails['units'],
                                             greyband=greyband)
                 else:
-                    print("timeseriesAnalysis:\t makePlots, \tNo percentile plots:", (
-                        r, l))
+                    print(
+                        "timeseriesAnalysis:\t makePlots, \tNo percentile plots:",
+                        (r, l))
 
             #####
             # simpletimeseries plots.
@@ -943,7 +981,9 @@ class timeseriesAnalysis:
                                               m,
                                           ]) + '.png'
                     if self.debug:
-                        print("timeseriesAnalysis:\t makePlots.\tInvestigating simpletimeseries: ", filename)
+                        print(
+                            "timeseriesAnalysis:\t makePlots.\tInvestigating simpletimeseries: ",
+                            filename)
                     if not ukp.shouldIMakeFile(
                         [self.shelvefn + '*', self.shelvefn_insitu + '*'],
                             filename,

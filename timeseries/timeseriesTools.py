@@ -30,7 +30,7 @@ from datetime import datetime, timedelta
 
 #Specific local code:
 import UKESMpython as ukp
-from convertToOneDNC import convertToOneDNC
+from netcdf_manipulation import convertToOneDNC
 from bgcvaltools.dataset import dataset
 from bgcvaltools.makeMask import makeMask
 """
@@ -114,8 +114,8 @@ def getHorizontalSlice(nc, coords, details, layer, data=''):
     if len(nc.variables[coords['z']][:]) == 1 and layer in [
             'Surface',
     ]:
-        print("getHorizontalSlice:\tNo depth field only 1 value", details[
-            'name'])
+        print("getHorizontalSlice:\tNo depth field only 1 value",
+              details['name'])
         if data == '': data = ukp.extractData(nc, details)
         return ApplyDepthSlice(data, 0)
 
@@ -128,7 +128,8 @@ def getHorizontalSlice(nc, coords, details, layer, data=''):
 
     #####
     # This is when there is only one dimension in the data/model file.
-    if len(list(nc.dimensions.keys())) == 1 and layer in ['Surface', 'layerless']:
+    if len(list(
+            nc.dimensions.keys())) == 1 and layer in ['Surface', 'layerless']:
         print("getHorizontalSlice:\tOne D file", details['name'])
         if data == '': data = ukp.extractData(nc, details)
         data = np.ma.masked_where(nc.variables[coords['z']][:] > 0, data)
@@ -159,8 +160,9 @@ def getHorizontalSlice(nc, coords, details, layer, data=''):
         k = ukp.getORCAdepth(z, nc.variables[coords['z']][:], debug=False)
         if type(data) == type(''):
             data = ukp.extractData(nc, details)
-        print("getHorizontalSlice:\tSpecific depth field requested", details[
-            'name'], layer, [k], nc.variables[coords['z']][k], data.shape)
+        print("getHorizontalSlice:\tSpecific depth field requested",
+              details['name'], layer, [k], nc.variables[coords['z']][k],
+              data.shape)
         return ApplyDepthSlice(data, k)
 
     elif layer in ['Surface - 1000m', 'Surface - 300m']:
@@ -196,7 +198,9 @@ def getHorizontalSlice(nc, coords, details, layer, data=''):
             return ApplyDepthrange(ukp.extractData(nc, details), k_surf, k_low)
         return ApplyDepthrange(data, k_surf, k_low)
     elif layer == 'depthint':
-        print("getHorizontalSlice\t:ERROR:\tDepth in should be done in the extractData phase by passing a function in the details dictionary.")
+        print(
+            "getHorizontalSlice\t:ERROR:\tDepth in should be done in the extractData phase by passing a function in the details dictionary."
+        )
         assert 0
 
     if type(layer) in [
@@ -210,20 +214,20 @@ def getHorizontalSlice(nc, coords, details, layer, data=''):
         except:
             return []
         if data == '': data = ukp.extractData(nc, details)
-        print("getHorizontalSlice:\tSpecific depth level requested", details[
-            'name'], layer, nc.variables[coords['z']][k], data.shape)
+        print("getHorizontalSlice:\tSpecific depth level requested",
+              details['name'], layer, nc.variables[coords['z']][k], data.shape)
         return ApplyDepthSlice(data, k)
 
     if layer in nc.variables[coords['z']][:]:
         z = layer
         k = ukp.getORCAdepth(z, nc.variables[coords['z']][:], debug=False)
         if data == '': data = ukp.extractData(nc, details)
-        print("getHorizontalSlice:\tSpecific depth requested", details[
-            'name'], layer, nc.variables[coords['z']][k], data.shape)
+        print("getHorizontalSlice:\tSpecific depth requested", details['name'],
+              layer, nc.variables[coords['z']][k], data.shape)
         return ApplyDepthSlice(data, k)
 
-    print("getHorizontalSlice\t:ERROR:\tunrecoginised layer instructions", layer, coords, type(
-        layer))
+    print("getHorizontalSlice\t:ERROR:\tunrecoginised layer instructions",
+          layer, coords, type(layer))
     assert 0
 
 
@@ -280,15 +284,17 @@ class DataLoader:
             except:
                 layer = l
 
-            print(l, layer, type(layer), type(layer) in [
-                type(1),
-                type(1.),
-            ], layer not in list(depths.keys()))
+            print(l, layer, type(layer),
+                  type(layer) in [
+                      type(1),
+                      type(1.),
+                  ], layer not in list(depths.keys()))
             if type(layer) in [
                     type(1),
                     type(1.),
             ] and layer not in list(depths.keys()):
-                print("DataLoader:\tLayer outside depths. Setting:", layer, 'to a masked value.')
+                print("DataLoader:\tLayer outside depths. Setting:", layer,
+                      'to a masked value.')
                 for region in self.regions:
                     self.maskedload(region, layer)
                 continue
@@ -312,9 +318,14 @@ class DataLoader:
 
                 print("DataLoader:\tLoaded", self.name, 'in', end=' ')
                 print('{:<24} layer: {:<8}'.format(region, layer), end=' ')
-                print('\tdata length:', len(self.load[(region, layer)]), end=' ')
-                print('\tmean:', self.load[(region, layer)].mean(), 'of', len(
-                    self.load[(region, layer)]), end=' ')
+                print('\tdata length:',
+                      len(self.load[(region, layer)]),
+                      end=' ')
+                print('\tmean:',
+                      self.load[(region, layer)].mean(),
+                      'of',
+                      len(self.load[(region, layer)]),
+                      end=' ')
                 print('\trange:', [
                     self.load[(region, layer)].min(),
                     self.load[(region, layer)].max()
@@ -326,7 +337,9 @@ class DataLoader:
         try:
             ts = getTimes(self.nc, self.coords)
         except:
-            print("DataLoaded:\t_makeTimeDict_:\tUnable to load time array, probably due to time zero in file.")
+            print(
+                "DataLoaded:\t_makeTimeDict_:\tUnable to load time array, probably due to time zero in file."
+            )
             return
         self.timedict = {i: t for i, t in enumerate(ts)}
         self.timedict_ti = {t: i for i, t in enumerate(ts)}
@@ -424,7 +437,8 @@ class DataLoader:
                 dat,
             ])
             l = len(dat)
-            print("createOneDDataArray: \tWarning:\tdata was a single float:", self.name, dat, l, dat.shape, dat.ndim)
+            print("createOneDDataArray: \tWarning:\tdata was a single float:",
+                  self.name, dat, l, dat.shape, dat.ndim)
         if l == 0:
             a = np.ma.array([
                 -999.,
@@ -432,6 +446,7 @@ class DataLoader:
                 True,
             ])
             return a, a, a, a, a
+
 
 #####
 # Create Temporary Output Arrays.
@@ -516,7 +531,8 @@ class DataLoader:
 
         elif dat.ndim == 1:
             if dims[0] == 'index':
-                print('createDataArray', self.name, layer, "1 D data:", dims, dat.shape)
+                print('createDataArray', self.name, layer, "1 D data:", dims,
+                      dat.shape)
                 for i, v in enumerate(dat):
                     la = lat[i]
                     lo = lon[i]
@@ -527,7 +543,8 @@ class DataLoader:
                     arr_lat.append(la)
                     arr_lon.append(lo)
             elif len(dat) == 1:
-                print('createDataArray', self.name, layer, "single point data:", dims, dat.shape)
+                print('createDataArray', self.name, layer,
+                      "single point data:", dims, dat.shape)
                 arr = dat
                 arr_t = [
                     0,
@@ -586,11 +603,14 @@ def makeArea(fn, coordsdict):
                 [lats[a] + meanLatDiff / 2., meanLonDiff / 2.])
         return area
     elif lats.ndim == 2:
-        print("timeseriesTools.py:\tWARNING: Setting area to flat for uneven grid! ")
+        print(
+            "timeseriesTools.py:\tWARNING: Setting area to flat for uneven grid! "
+        )
         return np.ones_like(lats)
 
     else:
-        print("timeseriesTools.py:\tNot implemeted makeArea for this grid. ", lats.ndim, coordsdict)
+        print("timeseriesTools.py:\tNot implemeted makeArea for this grid. ",
+              lats.ndim, coordsdict)
         assert 0, 'timeseriesTools.py:\tNot implemeted makeArea for this grid. ' + str(
             lats.ndim)
 
