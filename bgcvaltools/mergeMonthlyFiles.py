@@ -32,7 +32,7 @@ import os
 from re import findall
 
 import UKESMpython as ukp
-from mergeNC import mergeNC
+from netcdf_manipulation.mergeNC import mergeNC
 
 
 def getYearFromFile(fn):
