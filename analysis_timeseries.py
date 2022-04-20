@@ -60,7 +60,7 @@ from bgcvaltools.dataset import dataset
 
 #####
 # User defined set of paths pointing towards the datasets.
-import paths
+import Paths as paths
 
 #####
 # Biogeochemistry keys
