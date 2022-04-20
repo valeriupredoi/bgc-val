@@ -55,7 +55,7 @@ from timeseries import timeseriesPlots as tsp
 
 #####
 # User defined set of paths pointing towards the datasets.
-import paths
+import Paths.paths_template as paths
 
 
 def analysis_omz(jobID=''):

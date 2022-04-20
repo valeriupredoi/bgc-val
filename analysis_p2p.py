@@ -53,7 +53,7 @@ from p2p.shelveToDictionary import shelveToDictionary
 
 #####
 # User defined set of paths pointing towards the datasets.
-import paths
+import Paths.paths_template as paths
 
 #####
 # code plan:
