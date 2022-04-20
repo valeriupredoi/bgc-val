@@ -3,7 +3,7 @@
 # This file is part of the bgc-val library.
 #
 # bgc-val is free software: you can redistribute it and/or modify it
-# under the terms of the Revised Berkeley Software Distribution (BSD) 3-clause license. 
+# under the terms of the Revised Berkeley Software Distribution (BSD) 3-clause license.
 
 # bgc-val is distributed in the hope that it will be useful, but
 # without any warranty; without even the implied warranty of merchantability
@@ -19,7 +19,6 @@
 # Email:
 # ledm@pml.ac.uk
 #
-
 """
 .. module:: summaryTargets
    :platform: Unix
@@ -28,26 +27,45 @@
 
 """
 
-
 import UKESMpython as ukp
 from p2p import makeTargets
 
-def summaryTargets(shelvesAV, imageFold, year):
-	"""	Produces some straightforward summary metrics, using a list of shelves.
-	"""
-	
-	#####
-	# makeTargets:
-	# Make a target diagram of the shelves of this group. 	
-	BGCVALregions = ['Global','ignoreInlandSeas','Equator10', 'ArcticOcean','NorthernSubpolarAtlantic','NorthernSubpolarPacific','SouthernOcean','Remainder',]
-	
-	for r in BGCVALregions:
-	    	shelves = ukp.reducesShelves(shelvesAV, models = ['NEMO','MEDUSA',], sliceslist =[r,])
 
-	  	filename = imageFold+'Summary_'+year+'_'+r+'.png'
-		print "Summary Target",shelves, '\nfilename:',filename
-		makeTargets(	shelves, 
-				filename,
-				legendKeys = ['name', ],
-				)
-		#####	
+def summaryTargets(shelvesAV, imageFold, year):
+    """	Produces some straightforward summary metrics, using a list of shelves.
+	"""
+
+    #####
+    # makeTargets:
+    # Make a target diagram of the shelves of this group.
+    BGCVALregions = [
+        'Global',
+        'ignoreInlandSeas',
+        'Equator10',
+        'ArcticOcean',
+        'NorthernSubpolarAtlantic',
+        'NorthernSubpolarPacific',
+        'SouthernOcean',
+        'Remainder',
+    ]
+
+    for r in BGCVALregions:
+        shelves = ukp.reducesShelves(shelvesAV,
+                                     models=[
+                                         'NEMO',
+                                         'MEDUSA',
+                                     ],
+                                     sliceslist=[
+                                         r,
+                                     ])
+
+        filename = imageFold + 'Summary_' + year + '_' + r + '.png'
+        print("Summary Target", shelves, '\nfilename:', filename)
+        makeTargets(
+            shelves,
+            filename,
+            legendKeys=[
+                'name',
+            ],
+        )
+    #####
