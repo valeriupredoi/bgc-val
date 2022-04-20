@@ -60,7 +60,7 @@ from bgcvaltools.dataset import dataset
 
 #####
 # User defined set of paths pointing towards the datasets.
-import Paths as paths
+import Paths.paths_template as paths
 
 #####
 # Biogeochemistry keys
@@ -621,7 +621,11 @@ def analysis_timeseries(
     if not paths.machinelocation:
         print("analysis-timeseries.py:\tFATAL:\tWas unable to determine location of host: ", gethostname())
         print("Please set up paths.py, based on Paths/paths_template.py")
-        assert False
+        #FIXME this is just for local testing by V
+        if gethostname() == "valeriu-PORTEGE-Z30-C":
+            assert True
+        else:
+            assert False
 
 #####
 # Because we can never be sure someone won't randomly rename the
