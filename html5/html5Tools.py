@@ -140,7 +140,7 @@ def addImagesText(imagePath, title=''):
     # Halves the title if it is too long
     if len(title) > 40:
         line = title.split(' ')
-        line.insert(len(line) / 2, '<br>')
+        line.insert(int(len(line) / 2), '<br>')
         title = ' '.join(line)
 
     for l, line in enumerate(contents):
