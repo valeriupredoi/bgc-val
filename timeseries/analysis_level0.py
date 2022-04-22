@@ -34,7 +34,7 @@ from sys import argv, exit
 import os
 import numpy as np
 from bgcvaltools.pftnames import getLongName
-from Paths.paths_template import shelvedir
+from Paths.paths import shelvedir
 
 def printableName(field, region, layer, metric):
     #####
