@@ -1,4 +1,4 @@
-#!/usr/bin/ipython
+#!/usr/bin/python
 #
 # Copyright 2015, Plymouth Marine Laboratory
 #
