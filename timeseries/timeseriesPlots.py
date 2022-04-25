@@ -1124,9 +1124,7 @@ def makemapplot(
                             lw=0,
                             marker='s',
                             transform=cartopy.crs.PlateCarree(),
-                            norm=LogNorm(),
-                            vmin=zrange[0],
-                            vmax=zrange[1])
+                            norm=LogNorm(vmin=zrange[0], vmax=zrange[1]))
         else:
             im = ax.scatter(lons,
                             lats,
